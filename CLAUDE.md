@@ -942,7 +942,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   airfield mast; the stand sign on the gate sign's cells; ground equipment for Roads'
   `BlockUtilityBox` (two blocks long, drawn whole by the root); and the jet bridge (tunnel, cab,
   rotunda, drive leg, rotunda column) drawn up to a block past its cell, its section numbers
-  shared with `BlockJetBridge`'s collision boxes; `--check`, `--fragments`
+  shared with `BlockJetBridge`'s collision boxes; and the sloped tunnel (`BlockJetBridgeSlope`), the
+  level corridor sheared along its length into one OBJ a grade and step; `--check`, `--fragments`
 - `gen_transit_boards.py` -- the bus departure board and bay display (Transit; bus only, rail
   boards are RCMC's): the monitor and its screen texture (header with a bus pictogram, column
   heads' and rows' bands; every word is `TileEntityBusDepartureBoardRenderer`'s, which shares its

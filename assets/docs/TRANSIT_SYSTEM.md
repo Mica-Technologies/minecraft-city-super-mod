@@ -1148,13 +1148,31 @@ so inside the corridor everything else can still be clicked.
 - **Drive leg** and **rotunda column** (`BlockPlatformColumn`): the leg's two posts stand under
   the tunnel's walls, with a yoke under the floor where nothing stacks above and the wheel bogie
   where nothing stacks below; the column is a thick round pier with a plinth and a head. Build the
-  bridge up on them to the terminal's upper floor. The bridge is level: there are no sloping
-  pieces.
+  bridge up on them to the terminal's upper floor.
+- **Sloped tunnel** (`BlockJetBridgeSlope`, 2026-10): a real bridge runs down from the terminal's
+  door to the aircraft's lower sill (or up, to a big jet's). A run of sloped pieces drops one whole
+  block over 8 pieces (about 7 degrees) or 4 (about 14), so the piece after it meets a level
+  tunnel, the cab or the next run a block lower; sneak and use with an empty hand to cycle the
+  grade (down or up, over 8 or 4). Each piece counts the pieces of its grade and facing uphill of
+  it on its own level for its place in the run (`step`), so a run is just placed in a line, eight
+  (or four) on a level and then on a block lower. The model is the level tunnel's corridor sheared
+  along its length, as OBJ (`jet_bridge_slope` in `gen_transit_airside.py`, one a grade and step,
+  written from the same elements as the level tunnel's JSON), since a JSON element can be neither
+  sheared nor turned to that angle. Level pieces count a sloped run a block above or below as
+  carrying on, so no frame closes the join.
 
 Each piece gives light 9 inside. The facing is the way to the aircraft (the model's north), the
 same for every piece of one bridge.
 
 #### Traps
+
+- **A sloped floor has to be walked by a player 0.6 blocks long.** A player stands on the highest
+  floor under any of their footprint, which covers two or three of the slope's sixteenth steps, so
+  a floor and roof that collided where they are drawn stopped a player at the second step (their
+  head, still at the level tunnel's height, met the lowered roof) and again at the cab. The
+  sloped tunnel's floor collides a player's length ahead of where it is drawn and its roof a few
+  sixteenths above (`BlockJetBridgeSlope.boxes`): feet sink a sixteenth or two into the carpet,
+  and nobody sees the roof. Walked down and up both grades, 2026-10-04.
 
 - **The jet bridge's numbers are in two places.** `BlockJetBridge`'s collision boxes and floors
   and the generator's `JB_*`, `CAB_*` and `ROT` share the section; change one, change both.

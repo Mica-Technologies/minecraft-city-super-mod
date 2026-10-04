@@ -125,20 +125,51 @@ public class BlockJetBridge extends BlockPlatformFixture {
 
   /**
    * Whether the bridge carries on from {@code pos} towards {@code dir}: a tunnel or cab on the
-   * same axis right beyond this piece's edge, or a rotunda whose collar reaches that edge.
+   * same axis right beyond this piece's edge, or a rotunda whose collar reaches that edge, or a
+   * sloped run beyond the edge a block above or below.
    */
   private boolean continues(IBlockAccess world, BlockPos pos, EnumFacing dir, EnumFacing facing) {
     int edge = kind == Kind.ROTUNDA ? 2 : 1;
-    IBlockState next = world.getBlockState(pos.offset(dir, edge));
-    if (next.getBlock() instanceof BlockJetBridge
-        && ((BlockJetBridge) next.getBlock()).kind != Kind.ROTUNDA
-        && next.getValue(FACING).getAxis() == facing.getAxis()) {
+    BlockPos next = pos.offset(dir, edge);
+    if (isBridgeOnAxis(world, next, facing.getAxis())
+        || isRotundaOnAxis(world, pos.offset(dir, edge + 1), facing.getAxis())) {
       return true;
     }
-    IBlockState far = world.getBlockState(pos.offset(dir, edge + 1));
-    return far.getBlock() instanceof BlockJetBridge
-        && ((BlockJetBridge) far.getBlock()).kind == Kind.ROTUNDA
-        && far.getValue(FACING).getAxis() == facing.getAxis();
+    // a sloped run, its low end a block above this level or its high end a block below
+    return isSlopeOnAxis(world, next.up(), facing.getAxis())
+        || isSlopeOnAxis(world, next.down(), facing.getAxis());
+  }
+
+  /**
+   * Whether a tunnel, cab or sloped tunnel on an axis is at a position: the pieces that meet
+   * another at the edge of their own block.
+   *
+   * @param world the world
+   * @param pos   the position
+   * @param axis  the bridge's axis
+   *
+   * @return whether one is there
+   */
+  static boolean isBridgeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+    IBlockState s = world.getBlockState(pos);
+    if (s.getBlock() instanceof BlockJetBridge) {
+      return ((BlockJetBridge) s.getBlock()).kind != Kind.ROTUNDA
+          && s.getValue(FACING).getAxis() == axis;
+    }
+    return isSlopeOnAxis(world, pos, axis);
+  }
+
+  /** Whether a rotunda on an axis is at a position (its collar reaches a block past its own). */
+  static boolean isRotundaOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+    IBlockState s = world.getBlockState(pos);
+    return s.getBlock() instanceof BlockJetBridge
+        && ((BlockJetBridge) s.getBlock()).kind == Kind.ROTUNDA
+        && s.getValue(FACING).getAxis() == axis;
+  }
+
+  private static boolean isSlopeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+    IBlockState s = world.getBlockState(pos);
+    return s.getBlock() instanceof BlockJetBridgeSlope && s.getValue(FACING).getAxis() == axis;
   }
 
   /** What the player aims at: the floor, so the corridor's inside can still be clicked. */

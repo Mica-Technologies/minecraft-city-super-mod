@@ -1,0 +1,3292 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "down4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "down4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "down4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "down4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_0_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_1_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_2_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_3_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "4",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "4",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_4_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "5",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "5",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_5_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "6",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "6",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_6_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "7",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up8",
+        "step": "7",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_8_7_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "grade": "up4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "grade": "up4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "grade": "up4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "0"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "0",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "0",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_0_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "1",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "1",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_1_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "2",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "2",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_2_north.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_body.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "3",
+        "ahead": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_south.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "grade": "up4",
+        "step": "3",
+        "behind": "false"
+      },
+      "apply": {
+        "model": "csm:transit/airside/airport_jet_bridge_slope_4_3_north.obj",
+        "y": 90
+      }
+    }
+  ]
+}
