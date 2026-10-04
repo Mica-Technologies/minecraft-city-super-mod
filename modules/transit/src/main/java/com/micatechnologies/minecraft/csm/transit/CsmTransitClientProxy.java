@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.transit;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoard;
+import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoardLarge;
+import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoardLargeRenderer;
 import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoardRenderer;
 import com.micatechnologies.minecraft.csm.transit.board.BusBoardAnnouncer;
 import com.micatechnologies.minecraft.csm.transit.board.BusStation;
@@ -52,6 +54,8 @@ public class CsmTransitClientProxy extends CsmTransitCommonProxy {
         new TileEntityPlatformClockRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlightBoard.class,
         new TileEntityFlightBoardRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityFlightBoardLarge.class,
+        new TileEntityFlightBoardLargeRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBusDepartureBoard.class,
         new TileEntityBusDepartureBoardRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBusBayDisplay.class,

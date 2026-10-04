@@ -835,7 +835,7 @@ panes and a fastener kit. `audit_fabricator_costs.py` mirrors the branch.
 
 ## Airports
 
-Twenty-five blocks and one item in `transit.airport`, and the large hanging sign in
+Twenty-seven blocks and one item in `transit.airport`, and the large hanging sign in
 `transit.wayfinding`, all drawn by `gen_transit_airport.py`, with one sound (`kiosk_print`) from `gen_transit_sounds.py`. Every airline, flight number and city is
 invented, and every pictogram generic (a plane, a suitcase, a bus, a taxi).
 
@@ -868,6 +868,7 @@ the world: an install without Life Safety simply has no detector.
 | Boarding Pass Scanner | `csm:airport_boarding_pass_scanner` | `BlockBoardingPassScanner` |
 | Airport Seating (Black, Blue) | `csm:airport_seating_black`, `_blue` | `transit.platform.BlockPlatformBench` |
 | Flight Information Board (Departures, Arrivals) | `csm:airport_flight_board_departures`, `_arrivals` | `BlockFlightBoard` |
+| Large Flight Board (Departures, Arrivals) | `csm:airport_flight_board_large_departures`, `_arrivals` | `BlockFlightBoardLarge` |
 | Baggage Carousel | `csm:airport_baggage_carousel` | `BlockBaggageCarousel` |
 | Gate Sign | `csm:airport_gate_sign` | `BlockGateSign` |
 | Airport Sign (Gates, Arrivals, Check-In, Baggage Claim, Ground Transport) | `csm:airport_sign_<name>` | `transit.platform.BlockPlatformFixture` |
@@ -924,6 +925,56 @@ sixteen list calls a frame:
 
 The screen's place and the bands (`SCREEN_*`, `HEADER_H`, `COLHEAD_H`, `ROW_PITCH`, `ROWS` and the
 256 x 148 window) are in both the generator and the renderer: change one, change both.
+
+### The large flight boards
+
+Under a terminal ceiling fourteen blocks up the one-block board reads as a dot, so there is a
+large one beside it (the small board is unchanged): `airport_flight_board_large_departures` and
+`_arrivals`, `BlockFlightBoardLarge`, a screen built to size from cells.
+
+- **Building it.** Cells of one board placed side by side and stacked, facing the same way (each
+  faces the player who places it), join into one screen from one cell up to 8 wide and 5 tall
+  (`MAX_WIDTH`, `MAX_HEIGHT`). The rules are the large hanging sign's, through the same code
+  (`transit.panel.CellPanel` and `PanelLayout`, factored out of the sign): the bottom-left cell as
+  read is the controller, its row's run to the reader's right the width and its column's run up
+  the height, and a cell outside that rectangle is drawn as a plain bezel. Departures and arrivals
+  are two blocks and never join each other. Nothing is set up and nothing is saved, so a script
+  places them with `/setblock` (facing in the metadata) and needs no NBT.
+- **The model.** A cell is a dark bezel slab against the back of its block (z 13..16 facing
+  north) with a graphite frame on the board's outer edges only, the same four `edge_*` actual-state
+  booleans as the sign (4 x 16 states). Nothing of the screen is baked: past 96 blocks only the
+  bezel shows. The item shows a cell with the small board's screen on it.
+- **Hanging.** Against a wall the board just sits on it. With nothing behind a column's top cell,
+  the renderer hangs rods from the board's top to the first block above, as the sign's are (two, or
+  one for about every four blocks, at most 24 blocks up, none with a block right on top).
+- **Scale.** `TileEntityFlightBoardLargeRenderer` draws the small board bigger: the same header,
+  column-head band, row pitch and text heights in the same proportions, times
+  `k = 2 (height / 2)^0.75`: 1.2 for one block tall, 2 for two (the text twice the small
+  board's), 2.7 for three, 4 for five, so a taller board has both bigger text and more rows. A
+  board narrower in proportion than the small board at that scale is scaled down to fit its
+  columns. As many rows of the scaled pitch as fit under the heads are drawn, then spread to fill
+  the screen: 9 on a 2 x 1 board, 13 on a 4 x 2, 15 on a 6 x 3, 18 on an 8 x 5. (A one-wide column
+  of cells is width-bound: tall and thin, it lists up to 96 rows of small text.) Extra width
+  goes to the city column; time and flight keep the left, gate and remark the right, each as far
+  from its edge as on the small board.
+- **Pages.** A page is `rows` flights from `page x rows` in the list, as a bank of small boards
+  pages. A board whose page holds fewer than 24 flights (`PAGE_FLIGHTS`) turns through enough pages
+  to list 24, one every eight seconds of world time (`PAGE_TICKS`, total time, so a board pauses
+  with the game), all boards in step, with PAGE n/m in the header beside the clock: a 4 x 2 board
+  turns two pages of 13, a 2 x 1 three of 9.
+- **The screen** is the small board's texture (`fids_departures`, `fids_arrivals`) cut into its
+  bands rather than stretched whole: the header's left part (the plane and the title) at its own
+  proportions, the rest of the header, the column heads' band and the two zebra row bands stretched
+  across, fullbright, one draw. No texture is added.
+- **The text.** Display lists shared by every large board, each compiled in the font's units from
+  x = 0 and placed and scaled outside, so one list serves every size: a row's time and flight
+  (keyed by the flight's place in the day), its city (and by its room, in steps of eight font
+  units, as the city is cut to fit), its gate, its remark, the two halves of the column heads, the
+  clock and the page. Geometry only, as "Display lists: one texture, no cached state" asks. The
+  renderer is global (a board eight wide reaches past its controller's section) and draws to 96
+  blocks.
+- **What it costs.** A non-controller cell, two block lookups a frame. A controller, one draw for
+  the screen and four list calls a row: about 55 on a 4 x 2 board.
 
 ### Check-in and the kiosk
 
@@ -1105,6 +1156,12 @@ panel built to size from cells, the legend set in a screen rather than baked.
   are written to NBT by their `id` strings (`p`, `a`, `s`), never their ordinals, so they may be
   reordered or added to; the pictogram ids are also the sprites' names in the generator's
   `PANEL_PICTOGRAMS`, which must list the same ones.
+- **The large board reads its bands off the small board's texture.** Its renderer's `HEADER_V`,
+  `COLHEAD_V0`/`_V1`, `ROW0_V`, `ROW1_V` and `TITLE_U` are texels of the 256 square `fids()` draws
+  the screen on (the header's 27 rows, the column heads' band to 40, the first two rows' bands, the
+  title ending before x 160): move a band in `fids()` and the large board samples the wrong one,
+  with no error. They sample each row band's middle, so a band's edge blurred by the texture's
+  reduction to 128 never shows.
 - **The boards follow the world's time of day, not total time.** `/time set` jumps the boards with
   the clocks, which is right; total world time would put them out of step with every clock in the
   mod.
@@ -1115,7 +1172,8 @@ panel built to size from cells, the legend set in a screen rather than baked.
 the scale a sheet metal, a control board and a wiring harness; the kiosk a control board, an LED
 module and sheet metal; the X-ray an enclosure shell, a control board, an optical sensor and a
 wiring harness; the pass scanner a control board, an optical sensor and sheet metal; a board an LED
-module, a control board and sheet metal; the carousel two sheet metal, a wiring harness and a
+module, a control board and sheet metal, and each cell of a large board an LED module and sheet
+metal; the carousel two sheet metal, a wiring harness and a
 fastener kit; a stanchion a pole section and a fastener kit; trays and the cart a sheet metal and a
 fastener kit; the signs a sign blank and a fastener kit, and each cell of the large hanging sign a
 sign blank and an LED module; the rollers, divesting table, seating and

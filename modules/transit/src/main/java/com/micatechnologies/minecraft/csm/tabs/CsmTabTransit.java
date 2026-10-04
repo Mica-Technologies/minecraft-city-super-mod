@@ -9,6 +9,7 @@ import com.micatechnologies.minecraft.csm.transit.airport.BlockBaggageCarousel;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockBoardingPassScanner;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockCheckinDesk;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockFlightBoard;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockFlightBoardLarge;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockGateSign;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridge;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridgeSlope;
@@ -237,6 +238,8 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockPlatformBench("airport_seating_blue", new double[]{0, 0, 2.8, 16, 15, 11}));
     initTabBlock(new BlockFlightBoard("airport_flight_board_departures", new double[]{0, 3, 14.8, 16, 13, 16}, false));
     initTabBlock(new BlockFlightBoard("airport_flight_board_arrivals", new double[]{0, 3, 14.8, 16, 13, 16}, true));
+    initTabBlock(new BlockFlightBoardLarge("airport_flight_board_large_departures", false));
+    initTabBlock(new BlockFlightBoardLarge("airport_flight_board_large_arrivals", true));
     initTabBlock(new BlockBaggageCarousel("airport_baggage_carousel"));
     initTabBlock(new BlockGateSign("airport_gate_sign", new double[]{2, 3, 7, 14, 16, 9}));
     initTabBlock(new BlockPlatformFixture("airport_sign_gates", new double[]{0, 5, 7, 16, 16, 9}));

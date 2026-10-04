@@ -26,7 +26,8 @@ transit.airport unless another is named):
   shares) and the hanging gate sign (BlockGateSign: A1 to D20, clicked like the platform number).
 - **The flight information boards** (BlockFlightBoard, TileEntityFlightBoardRenderer): departures
   and arrivals monitors that list a made-up daily schedule off the world's clock; a bank of them
-  side by side lists one page after another.
+  side by side lists one page after another. The large boards (BlockFlightBoardLarge) are cells
+  that join into one screen up to 8 x 5, drawn by their renderer from the small board's texture.
 - **Baggage claim**: the carousel (BlockBaggageCarousel), whose pieces join on four sides into a
   loop of any size, the belt drawn moving round it clockwise.
 - **Luggage carts**: a cart, and a rack of nested carts that joins into a row (BlockPlatformRun).
@@ -1174,6 +1175,56 @@ def boards():
               item=item_of(parts, tex, display=gui_display(0.6, 0.0, (0, 180, 0))), tab=TAB)
 
 
+# BlockFlightBoardLarge / TileEntityFlightBoardLargeRenderer: a cell's slab against the back of
+# its block, its face at z 13 (the renderer's FACE_Z), and the frame on the board's outer edges
+# standing 0.6 proud of it. The renderer draws the screen 1.4 in from the board's outer edges
+# (INSET), inside the frame.
+BOARD_Z0 = 13.0
+BOARD_FRAME = 0.8
+BOARD_LIP = 0.6
+BOARD_FRAME_BACK = 15.6   # short of the slab's back (z 16), so the two backs never meet
+
+
+def boards_large():
+    """The large flight boards: cells that join into one screen up to 8 x 5
+    (BlockFlightBoardLarge), each a dark bezel slab with a frame only on the board's outer edges
+    (`edge_*`, actual state). Nothing of the screen is baked: the controller's renderer draws it
+    from the small board's texture, with every word. The item shows a cell with the small board's
+    screen on it, which no placed cell draws."""
+    f, z0, z1 = BOARD_FRAME, BOARD_Z0 - BOARD_LIP, BOARD_FRAME_BACK
+    # facing north the reader looks south, so the reader's left is east (x = 16)
+    parts = [
+        ("body", {}, [B((0, 0, BOARD_Z0), (16, 16, 16), "bezel", ("north", "south"))]),
+        ("edge_left", {"edge_left": True}, [B((16 - f, 0, z0), (16, 16, z1), "frame", ALL)]),
+        ("edge_right", {"edge_right": True}, [B((0, 0, z0), (f, 16, z1), "frame", ALL)]),
+        ("edge_top", {"edge_top": True}, [B((0, 16 - f, z0), (16, 16, z1), "frame", ALL)]),
+        ("edge_bottom", {"edge_bottom": True}, [B((0, 0, z0), (16, f, z1), "frame", ALL)]),
+    ]
+    tex = {"bezel": C.T("bezel"), "frame": C.T("graphite"), "particle": C.T("bezel")}
+    # the two boards' cells are the same: one set of models, written with the first
+    models, state = multipart(parts, "airport_flight_board_large", tex)
+    for reg, screen, arrivals, names in (
+            ("airport_flight_board_large_departures", "fids_departures", "false",
+             names_of("Large Flight Board (Departures)",
+                      "Große Fluginformationsanzeige (Abflug)",
+                      "Pantalla Grande de Información de Vuelos (Salidas)",
+                      "Stor Flyginformationstavla (Avgångar)")),
+            ("airport_flight_board_large_arrivals", "fids_arrivals", "true",
+             names_of("Large Flight Board (Arrivals)",
+                      "Große Fluginformationsanzeige (Ankunft)",
+                      "Pantalla Grande de Información de Vuelos (Llegadas)",
+                      "Stor Flyginformationstavla (Ankomster)"))):
+        item = item_of(parts, tex, keep=lambda cond: True,
+                       display=gui_display(0.6, 0.0, (0, 180, 0)))
+        item["textures"]["screen"] = C.T(screen)
+        item["elements"].append(
+            B((1.4, 3.6, BOARD_Z0 - 0.3), (14.6, 12.4, BOARD_Z0), "screen", ("north",),
+              uv={"north": win(FIDS_W, FIDS_H, FIDS_W)}))
+        C.add(reg, 'new BlockFlightBoardLarge("%s", %s)' % (reg, arrivals), names, models, state,
+              item=item, tab=TAB)
+        models = {}
+
+
 # ------------------------------------------------------------------------------------------
 # Baggage claim
 # ------------------------------------------------------------------------------------------
@@ -1609,6 +1660,7 @@ trays()
 scanner()
 seating()
 boards()
+boards_large()
 carousel()
 gate_sign()
 wayfinding_signs()

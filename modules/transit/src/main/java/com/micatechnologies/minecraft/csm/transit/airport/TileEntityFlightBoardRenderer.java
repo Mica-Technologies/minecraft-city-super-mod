@@ -55,30 +55,30 @@ public class TileEntityFlightBoardRenderer
   private static final float SCREEN_LEFT_X = 15.6f;
   private static final float SCREEN_TOP_Y = 12.4f;
   private static final float SCREEN_Z = 14.6f;
-  private static final float WIDTH = 15.2f;
+  static final float WIDTH = 15.2f;
   private static final float HEIGHT = 8.8f;
   /**
    * How much of the texture's height the screen's window takes: a fraction of the sprite, measured
    * where the generator draws it (a 256 square) and true at the size it is stored at (128).
    */
-  private static final float WINDOW_V = 148f / 256f;
+  static final float WINDOW_V = 148f / 256f;
   /** The bands down the screen, in sixteenths. */
-  private static final float HEADER = 1.6f;
-  private static final float COLHEAD = 0.8f;
-  private static final float PITCH = 0.9f;
+  static final float HEADER = 1.6f;
+  static final float COLHEAD = 0.8f;
+  static final float PITCH = 0.9f;
   /** Text heights and spacing, in sixteenths. */
-  private static final float TEXT_H = 0.5f;
-  private static final float HEAD_TEXT_H = 0.38f;
-  private static final float CLOCK_TEXT_H = 0.72f;
-  private static final float EDGE = 0.3f;
-  private static final float GAP = 0.3f;
+  static final float TEXT_H = 0.5f;
+  static final float HEAD_TEXT_H = 0.38f;
+  static final float CLOCK_TEXT_H = 0.72f;
+  static final float EDGE = 0.3f;
+  static final float GAP = 0.3f;
   /** How far in front of the baked screen the lit one and the text are, in sixteenths. */
   private static final float SCREEN_LIFT = 0.02f;
   private static final float TEXT_LIFT = 0.02f;
 
-  private static final int HEAD_COLOUR = 0x9FB4D8;
-  private static final int CLOCK_COLOUR = 0xFFC830;
-  private static final int ROW_COLOUR = 0xF2F4F8;
+  static final int HEAD_COLOUR = 0x9FB4D8;
+  static final int CLOCK_COLOUR = 0xFFC830;
+  static final int ROW_COLOUR = 0xF2F4F8;
 
   private static final CsmSharedDisplayLists ROW_LISTS =
       new CsmSharedDisplayLists("flight_board_rows");
@@ -98,15 +98,15 @@ public class TileEntityFlightBoardRenderer
   private static final long[] SLOTS = new long[ROWS];
 
   /** The layout, in the font's units at each text height, worked out once the font exists. */
-  private static float rowScale;
-  private static float headScale;
-  private static float clockScale;
-  private static float xTime;
-  private static float xFlight;
-  private static float xCity;
-  private static float xGate;
-  private static float xRemark;
-  private static float cityWidth;
+  static float rowScale;
+  static float headScale;
+  static float clockScale;
+  static float xTime;
+  static float xFlight;
+  static float xCity;
+  static float xGate;
+  static float xRemark;
+  static float cityWidth;
 
   @Override
   public void render(TileEntityFlightBoard te, double x, double y, double z, float partialTicks,
@@ -200,18 +200,18 @@ public class TileEntityFlightBoardRenderer
   }
 
   /** Pushes a frame at (x, y) sixteenths, in font units at a text height's scale. */
-  private static void at(float x, float y, float scale) {
+  static void at(float x, float y, float scale) {
     GlStateManager.pushMatrix();
     GlStateManager.translate(x, y, 0);
     GlStateManager.scale(scale, scale, 1);
   }
 
-  private static void colour(int rgb) {
+  static void colour(int rgb) {
     GlStateManager.color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f,
         (rgb & 0xFF) / 255f, 1.0f);
   }
 
-  private static void layout(CsmFontRenderer fr) {
+  static void layout(CsmFontRenderer fr) {
     if (rowScale != 0) {
       return;
     }
@@ -293,7 +293,7 @@ public class TileEntityFlightBoardRenderer
   }
 
   /** The text cut short to fit a width in font units. Compile time only. */
-  private static String fit(CsmFontRenderer fr, String text, float width) {
+  static String fit(CsmFontRenderer fr, String text, float width) {
     String out = text;
     while (out.length() > 1 && fr.getStringWidth(out) > width) {
       out = out.substring(0, out.length() - 1).trim();
