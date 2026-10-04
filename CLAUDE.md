@@ -792,9 +792,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   laundry tub; and the commercial restroom: flushometer toilets (floor-mounted and wall-hung,
   manual and sensor) and urinals with the valve drawn once by `flush_valve()`, the waterless
   urinal and urinal screen, toilet partitions (`BlockToiletPartition`: door, pilaster and panel
-  fronts two blocks tall at the outer edge of the block in front of the toilet, a stall two
-  blocks deep, whose stall panels stand on the block line and reach back into the toilet's block, `left`/`right` from actual state; the open door written out swung about its
-  hinge), the wall-hung lavatory and the joining trough sink with sensor faucets, two hand
+  fronts at the outer edge of the block in front of the toilet, the stall panels on the block
+  line reaching back into the toilet's block; pilaster and panel pieces are one-block cells
+  that stack to any height, shoes on the bottom cell and headrail on the top, a cell on a
+  door making a floor-to-ceiling stall with a transom; panel cells on the floor behind a front
+  deepen a stall; pilasters beside a door widen it with no divider; the door stays two tall,
+  its open pose written out swung about its hinge; see NOVELTIES_SYSTEM.md), the wall-hung lavatory and the joining trough sink with sensor faucets, two hand
   dryers, the jumbo roll and seat cover dispensers and the napkin bin; `--check`, `--fragments`.
   `gen_furniture_sounds.py` synthesises the flush, flushometer flush, hand dryer, shower,
   washer, dryer and iron sounds
