@@ -10,8 +10,10 @@ Vehicles (IV, mod id `mts`, formerly Minecraft Transport Simulator). It does two
   provide.
 
 - **The tree crew** (#251). A chip bed for UNU's Contractor trucks, with a chipper on its tail that
-  turns the logs, brush and leaves dropped behind the truck into Parks' Mulch. The stump grinder
-  that goes with it is a hand tool in Parks, beside the chainsaw (`PARKS_GREENERY_SYSTEM.md`).
+  turns the logs, brush and leaves dropped behind the truck into Parks' Mulch; a towed brush
+  chipper that does the same into its own hopper; a self-propelled stump grinder, and an equipment
+  trailer to carry it. The hand-guided stump grinder is in Parks, beside the chainsaw
+  (`PARKS_GREENERY_SYSTEM.md`), and the vehicle grinds by the same rules.
 
 - **The fleet.** Our own fire engine, ladder truck, ambulance and police SUV, with their lights,
   siren, horn and emitter built in; three city work trucks (a public works dump truck, a power
@@ -165,6 +167,60 @@ whenever a crafter chips something.
 pack's `treecrew/` subfolder, and `packdefinition.json` activates it only when `csm_parks` is
 loaded. Models and textures stay at the pack's top level, since IV resolves them from the pack id,
 not from the folder the JSON was in.
+
+**A crate's slot needs its size.** IV fits an interactable part to a slot only when the slot's
+`minValue`..`maxValue` holds the part's `inventoryUnits` (`ItemPartInteractable
+.isPartValidForPackDef`). The chip box is 6 units, and its slot on the chip bed first declared no
+range, so IV refused it without a word: a chip bed fitted from its item came without its box, and
+nothing chipped. Both chip box slots (the bed's and the chipper trailer's) now take 6..6
+(`CHIPBOX_UNITS` in `gen_vehicle_parts.py`). Verified 2026-10-04 on a real UNU Contractor pickup
+(the bed fitted through saved data, since MCMCP cannot fit parts) and on the chipper trailer placed
+from its item: the whole chain is there, and logs, sticks and leaves dropped behind it come out as
+Mulch at 2 a log, 1 for 8 sticks and 1 for 4 leaves.
+
+### The chipper trailer, the equipment trailer and the stump grinder
+
+Three more of the tree crew, in the fleet generator (`gen_vehicle_fleet.py`), as the issue asked:
+
+| Vehicle | What it is | Loads |
+|---|---|---|
+| `csm_chipper_trailer` | A towed brush chipper: tongue, the chip hopper over its axle, engine, drum with its discharge chute blowing forward into the hopper, and the infeed hood and feed table at the back. Three liveries | with Parks (`treecrew/`) |
+| `csm_equipment_trailer` | A low tread-plate deck between fenders, ramps stood up at the tail, and a tie-down at the front of the deck. Two liveries | always |
+| `csm_stump_grinder` | A self-propelled grinder on rubber tracks, driven from a platform at its back, with its cutter wheel on a boom at the front. Three liveries | with Parks (`treecrew/`) |
+
+**Trailers.** A trailer is `motorized.isTrailer` with no engine or seats; its lamps follow the
+towing vehicle through `hookupVariables` (running lights, brakes, turn signals). Both hook up by
+`trailer_standard`, the type UNU's hitch bumpers offer (16 hookups across the installed packs, the
+most common), and the DPW dump truck, the bucket truck and the tow truck now carry a rear
+`trailer_standard` hitch, connected from their panel.
+
+**The chipper's start lever.** IV's panel lists the custom switches of the vehicle you sit in and
+of its parts, never a towed trailer's, so the chipper cannot be switched from the cab. It has a
+lever on the engine housing instead: a `click` collision box whose action toggles `CHIPPER`. Its
+chip box is the chip bed's own part (`csm_chipbox` with the intake and three crafters), placed so
+the intake's offset lands behind the feed table.
+
+**Loading the grinder.** The equipment trailer's deck is a mounted `tow_flatbed` hitch, as the tow
+truck's bed is, and every fleet vehicle has the `tow_flatbed` hookup at its front. Nobody rides in
+a trailer, so the hitch is worked by a `click` box on the striped tie-down that sets IV's
+`connection_requested` to the deck group (UNU's hitch bumpers do the same): drive the grinder onto
+the deck, click the tie-down, and it is carried; click again to unload. IV connects a hitch to a
+hookup of the same type within the hitch's `distance` (3 blocks here); whatever the reason it does
+not, it reports "No trailers were found anywhere near this vehicle".
+
+**The grinder.** GRIND lowers the boom 20 degrees about its pin (40 ticks) and runs the grind
+sound, Parks' own `csm:stump_grinder_grind`. IV knows nothing of stumps (its DRILL effector breaks
+whatever is in its box), so `StumpGrinderMachines` does the grinding: every 5 ticks it finds the
+pack's grinders with GRIND on, works out where the cutter wheel is (the boom's geometry, in the
+vehicle's frame, turned by its orientation), and once the boom is down and the wheel has stayed on
+one log for 2 seconds (the hand-guided grinder's pace), grinds it through Core's
+`CsmStumpGrinders`. Parks registers its rules there (`ParksStumpGrinder`, shared with
+`ItemStumpGrinder`), so a stump standing in the ground goes with its roots and leaves Mulch, and a
+standing tree or a log on a floor is left alone. It grinds as the player at the controls (the
+controller seat's rider; IV sets `lastController` only once a control is used), or else the last
+driver, for build permissions; one nobody has driven grinds nothing. Verified 2026-10-04: a stump
+and its root ground to Mulch; a standing oak in the same place left alone; the grinder loaded onto
+the equipment trailer by the tie-down; the chipper trailer towed by the dump truck's hitch.
 
 ### The fleet
 
@@ -430,7 +486,8 @@ Verified 2026-10-03 against IV's fire truck in the dev client:
 
 ## What is next
 
-- A towed trailer chipper, alongside the chip bed, once there is a fleet to tow it.
+- A hand check of the tree crew's panel, lever and tie-down by a player, and of fitting the chip
+  bed with the wrench (MCMCP drives clicks on collision boxes, but not part fitting or the panel).
 - The ladder truck, with an animated aerial; more liveries; driving and sound tuning from play.
 - Transit signal priority for other packs' buses: they have no `TSP` switch, so they would
   need one fitted as a part, or a name list like the emergency one.

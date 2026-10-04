@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.vehicles;
 
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPreemptSources;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +16,9 @@ import org.apache.logging.log4j.Logger;
  * itself, by scanning every jar in the mods folder for a {@code packdefinition.json}, so nothing
  * here registers it. And it tells Roads' preempt detectors where the emergency vehicles are, by
  * registering {@link IvPreemptSource} with Core's {@link CsmPreemptSources}: an intersection
- * preempts for any Immersive Vehicles vehicle running its emergency lights towards it.</p>
+ * preempts for any Immersive Vehicles vehicle running its emergency lights towards it. And it
+ * grinds stumps under the pack's stump grinder ({@link StumpGrinderMachines}), by CSM: Parks &amp;
+ * Greenery's rules through Core's {@code CsmStumpGrinders}.</p>
  *
  * <p>Immersive Vehicles is a hard dependency: without it this module has nothing to do. The
  * dependency pins Core and Roads to this exact version, like every module.</p>
@@ -51,5 +54,6 @@ public class CsmVehicles {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
     CsmPreemptSources.register(new IvPreemptSource());
+    MinecraftForge.EVENT_BUS.register(new StumpGrinderMachines());
   }
 }

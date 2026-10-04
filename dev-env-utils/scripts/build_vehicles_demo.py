@@ -321,7 +321,9 @@ ROW_B = (['csm_transit_bus_' + s for s in ('metro', 'cityline', 'riverway', 'ver
                                            'emberline')]
          + ['csm_tow_truck_' + s for s in ('white', 'red', 'yellow', 'black')]
          + ['csm_dpw_truck_' + s for s in ('orange', 'yellow', 'white')]
-         + ['csm_bucket_truck_' + s for s in ('white', 'yellow', 'green')])
+         + ['csm_bucket_truck_' + s for s in ('white', 'yellow', 'green')]
+         + ['csm_chipper_trailer_orange', 'csm_equipment_trailer_black',
+            'csm_stump_grinder_orange'])
 
 PARTS = ['csm_lightbar_led_redblue', 'csm_lightbar_led_red', 'csm_lightbar_led_redwhite',
          'csm_lightbar_led_amber', 'csm_preempt_emitter', 'csm_siren_speaker',
@@ -338,7 +340,8 @@ def extent(model):
 
 def model_of(item):
     for m in ('fire_engine', 'ladder_truck', 'ambulance', 'police_suv', 'transit_bus',
-              'tow_truck', 'dpw_truck', 'bucket_truck'):
+              'tow_truck', 'dpw_truck', 'bucket_truck', 'chipper_trailer',
+              'equipment_trailer', 'stump_grinder'):
         if item.startswith('csm_' + m):
             return 'csm_' + m
     raise ValueError(item)

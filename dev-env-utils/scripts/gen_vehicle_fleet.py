@@ -65,6 +65,9 @@ CELLS = {
     'hosebed': cell(5, 2), 'plate': cell(6, 2), 'rubber': cell(7, 2),
     'lamp_amber': cell(0, 3), 'bed': cell(1, 3), 'bucket': cell(2, 3), 'blade': cell(3, 3),
     'sign': cell(4, 3, 4, 1),
+    # the tree crew's cells, drawn only into the textures of the vehicles that use them
+    'hazard': cell(0, 4), 'deck': cell(1, 4), 'cutter': cell(2, 4), 'track': cell(3, 4),
+    'mulch': cell(4, 4),
 }
 
 LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4FF',
@@ -631,6 +634,160 @@ def bed_animations():
     ]
 
 
+def trailer_lights(v, rear_z, x_out, y):
+    """A trailer's tail, brake and turn lamps, lit from the towing vehicle (its hookup
+    variables carry the running lights, brakes and turn signals over the hitch)."""
+    brake = [{'animationType': 'translation', 'axis': [0, 0.5, 0], 'variable': 'running_light'},
+             {'animationType': 'translation', 'axis': [0, 1, 0], 'variable': 'brake'}]
+    back = ('n', 'e', 'w', 'u', 'd')
+    for side, sx in (('L', 1), ('R', -1)):
+        xs = sorted((sx * (x_out - 0.05), sx * (x_out - 0.25)))
+        v.lamp('Brake' + side, (xs[0], y, rear_z - 0.03), (xs[1], y + 0.14, rear_z),
+               'tail', '#FF0000', brake, [0, 0, -1], faces=back)
+        v.lamp('Turn' + side, (xs[0], y + 0.16, rear_z - 0.03), (xs[1], y + 0.26, rear_z),
+               'amber', '#FFA000',
+               [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
+                vp.lit_by('10_10_0_cycle')], [0, 0, -1], faces=back)
+
+
+def trailer_tongue(v, front_z, coupler_z, y=0.0):
+    """An A-frame tongue from the front of a trailer's frame to its coupler."""
+    for sx in (1, -1):
+        xs = sorted((sx * 0.08, sx * 0.45))
+        v.box((xs[0], y, front_z), (xs[1], y + 0.12, front_z + 0.5), 'black')
+    v.box((-0.08, y, front_z + 0.5), (0.08, y + 0.12, coupler_z - 0.2), 'black')
+    v.box((-0.11, y - 0.02, coupler_z - 0.2), (0.11, y + 0.18, coupler_z), 'chrome')  # coupler
+    v.box((0.12, y - 0.45, front_z + 0.75), (0.2, y + 0.3, front_z + 0.83), 'black')  # jack
+
+
+# The chipper trailer: the chip box sits over the axle, its intake 3.9 blocks behind it (the
+# chip box's own sub-part offsets, shared with the chip bed), so the body is laid out round them.
+CHIP_BOX_Z = 0.8          # the chip box part's centre on the trailer
+CHIPPER_LEVER = (0.74, 0.75, -0.55)   # the start lever, on the left of the engine housing
+
+
+def chipper_trailer():
+    """A towed brush chipper: tongue and coupler at the front, the chip hopper over the axle,
+    the engine, the drum with its discharge chute blowing forward into the hopper, and the
+    infeed hood and feed table at the back, where the crew drops the brush. A lever on the
+    engine housing starts it (CHIPPER): the panel cannot, since nobody rides in a trailer."""
+    v = Vehicle()
+    g = -0.4
+    v.box((-0.45, -0.05, -2.6), (0.45, 0.12, 1.75), 'black')                  # frame
+    trailer_tongue(v, 1.75, 3.45)
+    v.both((0.82, 0.3, -1.0), (1.12, 0.38, -0.05), 'black')                    # fenders
+    v.both((1.08, -0.05, -1.0), (1.12, 0.3, -0.92), 'black')
+    # the hopper: floor, walls, and the chips heaped inside
+    h0, h1 = CHIP_BOX_Z - 0.85, CHIP_BOX_Z + 0.85
+    v.box((-0.82, 0.12, h0), (0.82, 0.2, h1), 'paint')
+    v.both((0.74, 0.2, h0), (0.82, 1.45, h1), 'paint')
+    v.box((-0.74, 0.2, h1 - 0.08), (0.74, 1.6, h1), 'paint')
+    v.box((-0.74, 0.2, h0), (0.74, 1.3, h0 + 0.08), 'paint')
+    v.box((-0.74, 0.2, h0 + 0.08), (0.74, 1.0, h1 - 0.08), 'mulch', faces=('u',))
+    v.both((0.82, 0.9, h0 + 0.1), (0.835, 1.15, h1 - 0.1), 'decal', faces=('e', 'w'))
+    # the engine housing behind the hopper, vents on its sides
+    v.box((-0.7, 0.12, -1.15), (0.7, 1.05, h0), 'paint2')
+    v.both((0.7, 0.35, -1.05), (0.71, 0.85, h0 - 0.15), 'grille', faces=('e', 'w'))
+    v.box((-0.1, 1.05, -0.95), (0.1, 1.45, -0.75), 'black')                    # exhaust
+    # the start lever, with a yellow knob
+    lx, ly, lz = CHIPPER_LEVER
+    v.box((0.70, ly - 0.1, lz - 0.12), (0.73, ly + 0.1, lz + 0.12), 'black')
+    v.box((0.73, ly - 0.04, lz - 0.03), (0.80, ly + 0.25, lz + 0.03), 'chrome')
+    v.box((0.71, ly + 0.25, lz - 0.06), (0.83, ly + 0.33, lz + 0.06), 'blade')
+    # the drum housing and the discharge chute, up and forward over the hopper
+    v.box((-0.55, 0.15, -1.95), (0.55, 1.2, -1.15), 'paint')
+    v.box((-0.16, 1.2, -1.75), (0.16, 1.95, -1.4), 'paint')
+    v.box((-0.16, 1.7, -1.4), (0.16, 1.95, CHIP_BOX_Z + 0.2), 'paint')
+    v.box((-0.2, 1.55, CHIP_BOX_Z + 0.2), (0.2, 1.95, CHIP_BOX_Z + 0.32), 'paint')  # deflector
+    # the infeed: a hood with a dark throat, the feed table and the control bar round it
+    v.both((0.5, 0.25, -2.75), (0.6, 1.05, -1.95), 'paint')
+    v.box((-0.6, 1.05, -2.75), (0.6, 1.12, -1.95), 'paint')
+    v.box((-0.48, 0.3, -2.0), (0.48, 1.0, -1.95), 'black', faces=('n',))
+    v.box((-0.62, 0.25, -3.2), (0.62, 0.32, -1.95), 'hazard')
+    v.both((0.55, 0.32, -3.2), (0.62, 0.65, -2.75), 'paint')
+    v.box((-0.64, 0.95, -3.15), (0.64, 1.0, -3.05), 'blade')                    # control bar
+    v.both((0.6, 0.65, -3.15), (0.64, 0.95, -3.05), 'blade')
+    trailer_lights(v, -2.6, 0.95, 0.15)
+    return v, g
+
+
+EQUIPMENT_DECK_Y = 0.42
+EQUIPMENT_DECK = (-2.0, 1.8)      # rear and front of the deck
+
+
+def equipment_trailer():
+    """A low equipment trailer: a tread-plate deck between fenders, ramps stood up at the tail,
+    and a tie-down point that carries a machine (a mounted tow_flatbed hitch, as the tow
+    truck's bed carries a car). Click the tie-down at the front of the deck to load what is
+    standing on it."""
+    v = Vehicle()
+    g = -0.4
+    z0, z1 = EQUIPMENT_DECK
+    y = EQUIPMENT_DECK_Y
+    v.box((-0.45, 0.05, z0), (0.45, 0.22, z1), 'black')                       # frame
+    v.box((-0.95, 0.22, z0), (0.95, y, z1), 'deck')
+    v.both((0.95, 0.22, z0), (1.0, y + 0.08, z1), 'black')                    # rub rails
+    v.both((0.98, 0.3, -1.0), (1.25, 0.55, 0.2), 'black')                     # fenders
+    v.both((1.21, 0.0, -1.0), (1.25, 0.3, -0.92), 'black')
+    trailer_tongue(v, z1, z1 + 1.6, y=0.05)
+    v.box((-0.95, y, z1 - 0.1), (0.95, y + 0.55, z1), 'black')                # headboard
+    v.box((-0.12, y, z1 - 0.45), (0.12, y + 0.08, z1 - 0.25), 'hazard')       # tie-down
+    for sx in (1, -1):                                                        # ramps, stowed
+        xs = sorted((sx * 0.25, sx * 0.8))
+        v.box((xs[0], y, z0 - 0.08), (xs[1], y + 1.0, z0), 'deck')
+    trailer_lights(v, z0, 0.95, 0.15)
+    return v, g
+
+
+GRIND_PIVOT = (0.0, 0.55, 0.45)    # where the cutter boom pins to the body
+GRIND_LOWER = 20                   # degrees the boom drops to put the wheel on the ground
+
+
+def stump_grinder():
+    """A self-propelled stump grinder: a compact body on rubber tracks, the engine, a stand-on
+    platform at the back, and the cutter wheel on a boom at the front. GRIND lowers the boom and
+    puts the wheel to the stump in front of it (CSM: Vehicles' StumpGrinderMachines grinds it by
+    Parks' stump rules); raised, it travels."""
+    v = Vehicle()
+    g = -0.39
+    v.both((0.3, g, -0.85), (0.57, 0.4, 0.85), 'track')
+    v.box((-0.3, 0.05, -0.85), (0.3, 0.75, 0.5), 'paint')                     # engine body
+    v.box((-0.26, 0.75, -0.6), (0.26, 0.78, 0.3), 'grille', faces=('u',))
+    v.box((-0.08, 0.75, -0.75), (0.08, 1.05, -0.62), 'black')                 # exhaust
+    v.box((-0.45, 0.0, -1.3), (0.45, 0.08, -0.85), 'deck')                    # platform
+    v.box((-0.32, 0.75, -0.9), (0.32, 1.2, -0.8), 'paint2')                   # control tower
+    v.box((-0.25, 0.85, -0.91), (0.25, 1.1, -0.9), 'black', faces=('n',))
+    v.box((-0.35, 1.2, -1.0), (0.35, 1.25, -0.95), 'chrome')                  # handle bar
+    v.both((0.32, 1.0, -1.0), (0.35, 1.25, -0.8), 'chrome')
+    v.box((-0.28, 0.4, 0.5), (0.28, 0.7, 0.62), 'black')                      # boom mount
+    v.group('cutter_boom', [
+        ((-0.12, 0.45, 0.45), (0.12, 0.65, 1.45), 'paint'),                   # arm
+        ((-0.05, 0.0, 1.25), (0.07, 0.7, 1.95), 'cutter'),                    # the wheel
+        ((-0.2, 0.55, 1.2), (0.2, 0.8, 2.0), 'paint'),                        # guard
+        ((0.2, 0.25, 1.2), (0.23, 0.8, 2.0), 'paint'),
+        ((-0.23, 0.25, 1.2), (-0.2, 0.8, 2.0), 'paint'),
+        ((-0.2, 0.25, 1.95), (0.2, 0.55, 2.0), 'rubber'),                     # chip curtain
+    ])
+    v.lamp('Beacon', (-0.06, 1.25, -0.98), (0.06, 1.37, -0.86), 'lamp_amber', LAMP_LIT['lamp_amber'],
+           [vp.visible_on('GRIND'), vp.lit_by('0_5_11_cycle')], [0, 1, 0], 0.4)
+    return v, g
+
+
+def grinder_animations():
+    return [{'objectName': 'cutter_boom', 'animations': [
+        aerial_animation('rotation', [GRIND_LOWER, 0, 0], (0, 40, 0), GRIND_PIVOT,
+                         variable='GRIND')]}]
+
+
+def trailer_hitch(v):
+    """A rear trailer hitch (trailer_standard, the type UNU's hitch bumpers offer), for the work
+    trucks that tow the tree crew's trailers. Connected from the panel."""
+    rear = min(b[0][2] for b in v.outline)
+    return {'groupName': 'Trailer', 'isHitch': True, 'canInitiateConnections': True,
+            'connections': [{'type': 'trailer_standard', 'pos': [0, -0.25, round(rear - 0.15, 3)],
+                             'distance': 2}]}
+
+
 def tow_hitches(v):
     return [
         {'groupName': 'Flatbed', 'isHitch': True, 'canInitiateConnections': True,
@@ -769,8 +926,31 @@ LIVERIES = {
     ],
 }
 
+LIVERIES.update({
+    'csm_chipper_trailer': [
+        ('_orange', 'Brush Chipper Trailer', '#E8761C', '#2E2E30', '#1C1C1C', 'TREE CREW',
+         '#1C1C1C'),
+        ('_yellow', 'Brush Chipper Trailer (Yellow)', '#E8C21A', '#2E2E30', '#1C1C1C',
+         'TREE CREW', '#1C1C1C'),
+        ('_green', 'Brush Chipper Trailer (Green)', '#2E6B3A', '#2E2E30', '#F2F2EE', 'TREE CREW',
+         '#F2F2EE'),
+    ],
+    'csm_equipment_trailer': [
+        ('_black', 'Equipment Trailer', '#2A2A2C', '#2A2A2C', '#E8C21A', '', '#2A2A2C'),
+        ('_orange', 'Equipment Trailer (Orange)', '#E8761C', '#2A2A2C', '#1C1C1C', '',
+         '#E8761C'),
+    ],
+    'csm_stump_grinder': [
+        ('_orange', 'Stump Grinder', '#E8761C', '#2E2E30', '#1C1C1C', '', '#E8761C'),
+        ('_yellow', 'Stump Grinder (Yellow)', '#E8C21A', '#2E2E30', '#1C1C1C', '', '#E8C21A'),
+        ('_green', 'Stump Grinder (Green)', '#2E6B3A', '#2E2E30', '#F2F2EE', '', '#2E6B3A'),
+    ],
+})
+
 # Where each vehicle's door lettering sits: on the main paint, or on the second colour.
-DECAL_ON = {'csm_fire_engine': 'paint', 'csm_ladder_truck': 'paint', 'csm_ambulance': 'paint2',
+DECAL_ON = {'csm_chipper_trailer': 'paint', 'csm_equipment_trailer': 'paint',
+            'csm_stump_grinder': 'paint',
+            'csm_fire_engine': 'paint', 'csm_ladder_truck': 'paint', 'csm_ambulance': 'paint2',
             'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint',
             'csm_tow_truck': 'paint', 'csm_transit_bus': 'paint2'}
 
@@ -779,7 +959,7 @@ def shade(c, k):
     return tuple(max(0, min(255, int(v * k))) for v in c)
 
 
-def vehicle_texture(livery, decal_on='paint'):
+def vehicle_texture(livery, decal_on='paint', extras=False):
     _, _, paint, paint2, stripe, text, text_colour = livery[:7]
     sign = livery[7] if len(livery) > 7 else ''
     img = Image.new('RGBA', (T, T), (0, 0, 0, 0))
@@ -840,7 +1020,50 @@ def vehicle_texture(livery, decal_on='paint'):
     d.rectangle((sx0, sy0, sx1 - 1, sy1 - 1), fill=(16, 16, 16, 255))
     if sign:
         lc.draw_text_centred(img, sign, (sx0 + sx1) // 2, sy0 + 5, (255, 170, 20), 1)
+    if extras:
+        tree_crew_cells(img)
     return img
+
+
+def tree_crew_cells(img):
+    """The tree crew's cells: hazard stripes, tread plate, the grinder's toothed wheel, rubber
+    track and a heap of chips. Only the trailers' and the grinder's textures carry them, so the
+    other vehicles' textures stay as they were."""
+    d = ImageDraw.Draw(img)
+
+    def box(name):
+        x0, y0, x1, y1 = CELLS[name]
+        return x0, y0, x1 - 1, y1 - 1
+
+    x0, y0, x1, y1 = box('hazard')
+    stripes = Image.new('RGBA', (16, 16), (232, 168, 28, 255))
+    sd = ImageDraw.Draw(stripes)
+    for k in range(-16, 16, 6):
+        sd.polygon([(k, 15), (k + 3, 15), (k + 18, 0), (k + 15, 0)], fill=(24, 24, 24, 255))
+    img.paste(stripes, (x0, y0))
+    x0, y0, x1, y1 = box('deck')
+    d.rectangle((x0, y0, x1, y1), fill=(118, 122, 128, 255))
+    for i in range(0, 16, 4):                     # tread plate: raised diamonds
+        for j in range(0, 16, 4):
+            dx, dy = x0 + i + (2 if (j // 4) % 2 else 0), y0 + j
+            d.line((dx, dy + 1, dx + 1, dy), fill=(168, 172, 178, 255))
+    x0, y0, x1, y1 = box('cutter')
+    d.rectangle((x0, y0, x1, y1), fill=(52, 54, 58, 255))
+    d.ellipse((x0 + 1, y0 + 1, x1 - 1, y1 - 1), fill=(96, 98, 104, 255))
+    for k in range(8):                            # carbide teeth round the rim
+        a = k * math.pi / 4
+        tx, ty = x0 + 7.5 + 6.5 * math.cos(a), y0 + 7.5 + 6.5 * math.sin(a)
+        d.rectangle((int(tx), int(ty), int(tx) + 1, int(ty) + 1), fill=(220, 222, 226, 255))
+    d.ellipse((x0 + 6, y0 + 6, x0 + 9, y0 + 9), fill=(30, 30, 32, 255))
+    x0, y0, x1, y1 = box('track')
+    d.rectangle((x0, y0, x1, y1), fill=(30, 30, 30, 255))
+    for i in range(0, 16, 3):                     # grousers
+        d.line((x0 + i, y0, x0 + i, y1), fill=(58, 58, 60, 255))
+    x0, y0, x1, y1 = box('mulch')
+    d.rectangle((x0, y0, x1, y1), fill=(112, 76, 44, 255))
+    for x, y in [(3, 2), (9, 5), (13, 1), (6, 10), (1, 13), (11, 12), (14, 8), (4, 6), (8, 14)]:
+        d.point((x0 + x, y0 + y), fill=(150, 108, 64, 255))
+        d.point((x0 + (x + 7) % 16, y0 + (y + 5) % 16), fill=(84, 56, 32, 255))
 
 
 def vehicle_icon(v, ground, texture):
@@ -1056,7 +1279,8 @@ FLEET = {
         wheels=[(0.95, 4.6, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.45, 0.85, 3.7, True), (-0.45, 0.85, 3.7, False)],
         engine_pos=(0.0, 0.6, 5.4), boxes=[-1.5, 1.0, 3.5, 5.6], box_width=2.5,
-        box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP'], animated=dump_animations),
+        box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP'], animated=dump_animations,
+        trailer_hitch=True),
     'csm_bucket_truck': dict(
         build=bucket_truck,
         description='A power company bucket truck. BEACONS runs its amber lights (not emergency '
@@ -1066,7 +1290,8 @@ FLEET = {
         wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False)],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
-        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations),
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations,
+        trailer_hitch=True),
     'csm_tow_truck': dict(
         build=tow_truck,
         description='A rollback tow truck. BED slides the flatbed back and tilts it; the panel '
@@ -1077,7 +1302,7 @@ FLEET = {
         seats=[(0.45, 0.85, 3.8, True), (-0.45, 0.85, 3.8, False)],
         engine_pos=(0.0, 0.6, 5.5), boxes=[-2.0, 0.5, 3.0, 5.5], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BED'], animated=bed_animations,
-        hitches=tow_hitches),
+        hitches=tow_hitches, trailer_hitch=True),
     'csm_transit_bus': dict(
         build=transit_bus,
         description='A 40 ft low-floor city bus. DOORS opens the front and rear doors. TSP, on '
@@ -1110,11 +1335,59 @@ FLEET = {
                (0.42, 0.3, 0.45, False), (-0.42, 0.3, 0.45, False)],
         engine_pos=(0.0, 0.4, 3.4), boxes=[-0.2, 1.6, 3.3], box_width=2.0, box_height=1.8,
         box_y=0.6),
+    # The tree crew (#251): a towed chipper, an equipment trailer and a stump grinder. The
+    # chipper and the grinder load only with CSM: Parks & Greenery (the pack's treecrew
+    # subfolder), since one makes Parks' Mulch and the other grinds by Parks' stump rules.
+    'csm_chipper_trailer': dict(
+        build=chipper_trailer, trailer=True, subfolder='treecrew', extras=True,
+        description='A towed brush chipper. Hitch it to a truck (trailer_standard, as UNU\'s '
+                    'hitch bumpers and CSM\'s work trucks offer), pull the lever on the engine '
+                    'housing to start it, and drop logs, brush and leaves on the feed table: they '
+                    'come out as Mulch in the hopper. Click the hopper to open it. It takes '
+                    'anything dropped behind it, so stop it when you are done.',
+        mass=1200, wheel='csm_wheel_van', wheels=[(0.95, -0.55, False)],
+        hookup=(0.05, 3.45), boxes=[-2.4, -0.8, 0.8, 2.4], box_width=1.9, box_height=1.9,
+        box_y=0.6, switches=['CHIPPER'],
+        chip_box=(0.0, 0.5, CHIP_BOX_Z),
+        clicks=[(CHIPPER_LEVER, 0.35, 0.5, 'CHIPPER', 'toggle')],
+        sounds=[('chipper_run', 'CHIPPER')]),
+    'csm_equipment_trailer': dict(
+        build=equipment_trailer, trailer=True, extras=True,
+        description='A low equipment trailer for small machines, the stump grinder among them. '
+                    'Hitch it to a truck (trailer_standard), drive the machine onto the deck and '
+                    'click the striped tie-down at the front of the deck to load it; click it '
+                    'again to unload.',
+        mass=900, wheel='csm_wheel_van', wheels=[(1.1, -0.4, False)],
+        hookup=(0.1, 3.4), boxes=[-1.3, 0.5, 2.6], box_width=2.1, box_height=0.8,
+        box_y=0.1, switches=[],
+        hitches=lambda v: [{'groupName': 'Deck', 'isHitch': True,
+                            'canInitiateConnections': True,
+                            'connections': [{'type': 'tow_flatbed', 'mounted': True,
+                                             'distance': 3,
+                                             'pos': [0, EQUIPMENT_DECK_Y,
+                                                     EQUIPMENT_DECK[1] - 0.6]}]}],
+        clicks=[((0.0, EQUIPMENT_DECK_Y + 0.05, EQUIPMENT_DECK[1] - 0.35), 0.4, 0.3,
+                 'connection_requested', 'set1')]),
+    'csm_stump_grinder': dict(
+        build=stump_grinder, subfolder='treecrew', extras=True,
+        description='A self-propelled stump grinder on rubber tracks, driven from the platform '
+                    'at its back. Drive the cutter wheel up to a stump and switch GRIND on: the '
+                    'boom lowers and grinds the stump and its roots away, leaving Mulch, by the '
+                    'same rules as the hand-guided grinder (a stump in the ground, never a '
+                    'standing tree or a log on a floor). Carry it on the equipment trailer.',
+        mass=700, wheel='csm_wheel_car', engine='csm_engine_petrol', horn='horn_car',
+        wheels=[(0.42, 0.55, True), (0.42, -0.55, False)],
+        seats=[(0.0, 0.45, -1.05, True)],
+        engine_pos=(0.0, 0.4, -0.2), boxes=[-0.6, 0.6], box_width=1.2, box_height=1.2,
+        box_y=0.2, switches=['GRIND'], animated=grinder_animations,
+        sounds=[('csm:stump_grinder_grind', 'GRIND')]),
 }
 
 
 def vehicle_json(name, v):
     spec = FLEET[name]
+    if spec.get('trailer'):
+        return trailer_json(name, v)
     diameter = WHEELS[spec['wheel']][1]
     wheel = '%s:%s' % (PACK, spec['wheel'])
     parts = []
@@ -1164,7 +1437,7 @@ def vehicle_json(name, v):
             'collisionTypes': ['block', 'entity', 'attack'],
             'collisions': [{'pos': [0, spec['box_y'], z], 'width': spec['box_width'],
                             'height': spec['box_height']} for z in spec['boxes']],
-        }],
+        }] + click_groups(spec),
         'rendering': {
             'modelType': 'obj',
             'customVariables': switches,
@@ -1172,7 +1445,7 @@ def vehicle_json(name, v):
                         'activeAnimations': [vp.visible_on('horn')]}] +
                       [{'name': '%s:%s' % (PACK, sound), 'looping': True,
                         'activeAnimations': [vp.visible_on(variable)]}
-                       for variable, sound in tones],
+                       for variable, sound in tones] + extra_sounds(spec),
             'lightObjects': v.lights,
         },
     }
@@ -1193,6 +1466,85 @@ def vehicle_json(name, v):
         {'type': 'tow_flatbed', 'pos': [0, round(ground + 0.1, 3), round(front_z, 3)],
          'distance': 2},
     ]}]
+    if 'hitches' in spec:
+        groups = spec['hitches'](v) + groups
+    if spec.get('trailer_hitch'):
+        groups = [trailer_hitch(v)] + groups
+    definition['connectionGroups'] = groups
+    return definition
+
+
+def extra_sounds(spec):
+    """A vehicle's own looping sounds, each on while its switch is: (sound, variable). A sound
+    named without a domain is this pack's."""
+    return [{'name': sound if ':' in sound else '%s:%s' % (PACK, sound), 'looping': True,
+             'activeAnimations': [vp.visible_on(variable)]}
+            for sound, variable in spec.get('sounds', [])]
+
+
+def click_groups(spec):
+    """The clickable boxes on a vehicle: (centre, width, height, variable, action), where the
+    action is 'toggle' or 'set<value>'. IV runs the action on a click, as on a door."""
+    clicks = []
+    for centre, width, height, variable, action in spec.get('clicks', []):
+        if action == 'toggle':
+            act = {'action': 'toggle', 'variable': variable, 'value': 1}
+        else:
+            act = {'action': 'set', 'variable': variable, 'value': int(action[3:])}
+        clicks.append({'pos': [round(c, 3) for c in centre], 'width': width, 'height': height,
+                       'action': act})
+    return [{'collisionTypes': ['click'], 'collisions': clicks}] if clicks else []
+
+
+def trailer_json(name, v):
+    """A trailer: no engine or seats, the towing vehicle's lights and signals carried over the
+    hitch, a trailer_standard hookup on its tongue, and whatever it carries as parts."""
+    spec = FLEET[name]
+    diameter = WHEELS[spec['wheel']][1]
+    wheel = '%s:%s' % (PACK, spec['wheel'])
+    parts = []
+    for x, z, _ in spec['wheels']:
+        for sx in (1, -1):
+            slot = {'pos': [sx * x, 0.0, z], 'minValue': round(diameter * 0.6, 3),
+                    'maxValue': round(diameter * 1.2, 3), 'types': ['ground_wheel'],
+                    'defaultPart': wheel}
+            if sx < 0:
+                slot['rot'] = [0, 180, 0]
+                slot['isMirrored'] = True
+            parts.append(slot)
+    if 'chip_box' in spec:
+        parts.append({'pos': list(spec['chip_box']), 'types': ['interactable_csm_chipbox'],
+                      'minValue': vp.CHIPBOX_UNITS, 'maxValue': vp.CHIPBOX_UNITS,
+                      'defaultPart': '%s:csm_chipbox' % PACK})
+    definitions = [{'name': livery[1], 'subName': livery[0], 'extraMaterialLists': [[]]}
+                   for livery in LIVERIES[name]]
+    hy, hz = spec['hookup']
+    definition = {
+        'definitions': definitions,
+        'general': {'description': spec['description'],
+                    'materialLists': [['minecraft:iron_block:0:3', 'minecraft:iron_ingot:0:8']]},
+        'motorized': {'isTrailer': True, 'emptyMass': spec['mass'],
+                      'hookupVariables': ['electric_power', 'engine_reversed_1', 'engines_on',
+                                          'right_turn_signal', 'left_turn_signal',
+                                          'running_light', 'headlight', 'brake'],
+                      'fuelCapacity': 0, 'defaultFuelQty': 0, 'axleRatio': 0,
+                      'brakingFactor': 1.0, 'dragCoefficient': 0.5},
+        'parts': parts,
+        'collisionGroups': [{
+            'collisionTypes': ['block', 'entity', 'attack'],
+            'collisions': [{'pos': [0, spec['box_y'], z], 'width': spec['box_width'],
+                            'height': spec['box_height']} for z in spec['boxes']],
+        }] + click_groups(spec),
+        'rendering': {
+            'modelType': 'obj',
+            'customVariables': spec.get('switches', []),
+            'sounds': extra_sounds(spec),
+            'lightObjects': v.lights,
+        },
+    }
+    groups = [{'groupName': 'Trailer', 'isHookup': True,
+               'connections': [{'type': 'trailer_standard', 'pos': [0, hy, hz],
+                                'distance': 2}]}]
     if 'hitches' in spec:
         groups = spec['hitches'](v) + groups
     definition['connectionGroups'] = groups
@@ -1345,10 +1697,11 @@ def catalogue():
         v, ground = FLEET[name]['build']()
         put(os.path.join(PACK_DIR, 'objmodels', 'vehicles', name + '.obj'),
             v.obj.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py').encode('utf-8'))
-        put(os.path.join(PACK_DIR, 'jsondefs', 'vehicles', name + '.json'),
+        sub = FLEET[name].get('subfolder', '')
+        put(os.path.join(PACK_DIR, sub, 'jsondefs', 'vehicles', name + '.json'),
             vp.json_bytes(vehicle_json(name, v)))
         for livery in LIVERIES[name]:
-            texture = vehicle_texture(livery, DECAL_ON[name])
+            texture = vehicle_texture(livery, DECAL_ON[name], FLEET[name].get('extras', False))
             put(os.path.join(PACK_DIR, 'textures', 'vehicles', name + livery[0] + '.png'),
                 vp.png_bytes(texture))
             item('vehicles', name + livery[0], vehicle_icon(v, ground, texture))
@@ -1378,6 +1731,8 @@ def catalogue():
     item('parts', 'csm_vehicle_seat', seat_icon)
 
     for name in FLEET:
+        if FLEET[name].get('trailer'):
+            continue  # nobody drives a trailer: no HUD
         switches = FLEET[name].get('switches', ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'])
         put(os.path.join(PACK_DIR, 'textures', 'guis', name + '_hud.png'),
             vp.png_bytes(hud_texture(switches)))

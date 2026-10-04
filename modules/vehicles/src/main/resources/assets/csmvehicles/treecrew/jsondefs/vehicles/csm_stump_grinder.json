@@ -1,0 +1,350 @@
+{
+  "definitions": [
+    {
+      "name": "Stump Grinder",
+      "subName": "_orange",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Stump Grinder (Yellow)",
+      "subName": "_yellow",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Stump Grinder (Green)",
+      "subName": "_green",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A self-propelled stump grinder on rubber tracks, driven from the platform at its back. Drive the cutter wheel up to a stump and switch GRIND on: the boom lowers and grinds the stump and its roots away, leaving Mulch, by the same rules as the hand-guided grinder (a stump in the ground, never a standing tree or a log on a floor). Carry it on the equipment trailer.",
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:6",
+        "minecraft:glass_pane:0:6",
+        "minecraft:redstone_block:0:1"
+      ]
+    ]
+  },
+  "motorized": {
+    "emptyMass": 700,
+    "fuelCapacity": 15000,
+    "defaultFuelQty": 15000,
+    "axleRatio": 3.55,
+    "brakingFactor": 1.0,
+    "dragCoefficient": 0.5,
+    "hasHeadlights": true,
+    "hasRunningLights": true,
+    "hasTurnSignals": true,
+    "litVariable": "headlight",
+    "panel": "mts:default_car",
+    "hudTexture": "csmvehicles:textures/guis/csm_stump_grinder_hud.png"
+  },
+  "parts": [
+    {
+      "pos": [
+        0.42,
+        0.0,
+        0.55
+      ],
+      "minValue": 0.468,
+      "maxValue": 0.936,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_car",
+      "turnsWithSteer": true
+    },
+    {
+      "pos": [
+        -0.42,
+        0.0,
+        0.55
+      ],
+      "minValue": 0.468,
+      "maxValue": 0.936,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_car",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true,
+      "turnsWithSteer": true
+    },
+    {
+      "pos": [
+        0.42,
+        0.0,
+        -0.55
+      ],
+      "minValue": 0.468,
+      "maxValue": 0.936,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_car"
+    },
+    {
+      "pos": [
+        -0.42,
+        0.0,
+        -0.55
+      ],
+      "minValue": 0.468,
+      "maxValue": 0.936,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_car",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true
+    },
+    {
+      "pos": [
+        0.0,
+        0.45,
+        -1.05
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        1.6,
+        0.0,
+        -1.05
+      ],
+      "isController": true
+    },
+    {
+      "pos": [
+        0.0,
+        0.4,
+        -0.2
+      ],
+      "minValue": 0.25,
+      "maxValue": 1.0,
+      "types": [
+        "engine_car"
+      ],
+      "defaultPart": "csmvehicles:csm_engine_petrol",
+      "linkedParts": [
+        3,
+        4
+      ]
+    }
+  ],
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "block",
+        "entity",
+        "attack"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0,
+            0.2,
+            -0.6
+          ],
+          "width": 1.2,
+          "height": 1.2
+        },
+        {
+          "pos": [
+            0,
+            0.2,
+            0.6
+          ],
+          "width": 1.2,
+          "height": 1.2
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "obj",
+    "customVariables": [
+      "GRIND"
+    ],
+    "sounds": [
+      {
+        "name": "csmvehicles:horn_car",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "horn",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      },
+      {
+        "name": "csm:stump_grinder_grind",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "GRIND",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&Beacon",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "GRIND",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "0_5_11_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.0,
+              1.31,
+              -0.92
+            ],
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "flareHeight": 0.4,
+            "flareWidth": 0.4
+          }
+        ]
+      }
+    ],
+    "animatedObjects": [
+      {
+        "objectName": "cutter_boom",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "GRIND",
+            "axis": [
+              20,
+              0,
+              0
+            ],
+            "duration": 40,
+            "forwardsDelay": 0,
+            "reverseDelay": 0,
+            "centerPoint": [
+              0.0,
+              0.55,
+              0.45
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "instruments": [
+    {
+      "hudX": 140,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_speedometer",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    },
+    {
+      "hudX": 200,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_tachometer",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    },
+    {
+      "hudX": 260,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_fuel",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    }
+  ],
+  "connectionGroups": [
+    {
+      "groupName": "Towing",
+      "isHookup": true,
+      "connections": [
+        {
+          "type": "tow_bumper",
+          "pos": [
+            0,
+            0.11,
+            2.0
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_wheel",
+          "pos": [
+            0,
+            -0.24,
+            0.55
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_flatbed",
+          "pos": [
+            0,
+            -0.29,
+            2.0
+          ],
+          "distance": 2
+        }
+      ]
+    }
+  ]
+}

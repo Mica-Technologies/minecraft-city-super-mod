@@ -854,6 +854,22 @@
   ],
   "connectionGroups": [
     {
+      "groupName": "Trailer",
+      "isHitch": true,
+      "canInitiateConnections": true,
+      "connections": [
+        {
+          "type": "trailer_standard",
+          "pos": [
+            0,
+            -0.25,
+            -4.35
+          ],
+          "distance": 2
+        }
+      ]
+    },
+    {
       "groupName": "Flatbed",
       "isHitch": true,
       "canInitiateConnections": true,

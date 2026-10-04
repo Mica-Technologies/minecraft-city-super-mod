@@ -1,0 +1,341 @@
+{
+  "definitions": [
+    {
+      "name": "Brush Chipper Trailer",
+      "subName": "_orange",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Brush Chipper Trailer (Yellow)",
+      "subName": "_yellow",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Brush Chipper Trailer (Green)",
+      "subName": "_green",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A towed brush chipper. Hitch it to a truck (trailer_standard, as UNU's hitch bumpers and CSM's work trucks offer), pull the lever on the engine housing to start it, and drop logs, brush and leaves on the feed table: they come out as Mulch in the hopper. Click the hopper to open it. It takes anything dropped behind it, so stop it when you are done.",
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:3",
+        "minecraft:iron_ingot:0:8"
+      ]
+    ]
+  },
+  "motorized": {
+    "isTrailer": true,
+    "emptyMass": 1200,
+    "hookupVariables": [
+      "electric_power",
+      "engine_reversed_1",
+      "engines_on",
+      "right_turn_signal",
+      "left_turn_signal",
+      "running_light",
+      "headlight",
+      "brake"
+    ],
+    "fuelCapacity": 0,
+    "defaultFuelQty": 0,
+    "axleRatio": 0,
+    "brakingFactor": 1.0,
+    "dragCoefficient": 0.5
+  },
+  "parts": [
+    {
+      "pos": [
+        0.95,
+        0.0,
+        -0.55
+      ],
+      "minValue": 0.48,
+      "maxValue": 0.96,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_van"
+    },
+    {
+      "pos": [
+        -0.95,
+        0.0,
+        -0.55
+      ],
+      "minValue": 0.48,
+      "maxValue": 0.96,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_van",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true
+    },
+    {
+      "pos": [
+        0.0,
+        0.5,
+        0.8
+      ],
+      "types": [
+        "interactable_csm_chipbox"
+      ],
+      "minValue": 6,
+      "maxValue": 6,
+      "defaultPart": "csmvehicles:csm_chipbox"
+    }
+  ],
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "block",
+        "entity",
+        "attack"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0,
+            0.6,
+            -2.4
+          ],
+          "width": 1.9,
+          "height": 1.9
+        },
+        {
+          "pos": [
+            0,
+            0.6,
+            -0.8
+          ],
+          "width": 1.9,
+          "height": 1.9
+        },
+        {
+          "pos": [
+            0,
+            0.6,
+            0.8
+          ],
+          "width": 1.9,
+          "height": 1.9
+        },
+        {
+          "pos": [
+            0,
+            0.6,
+            2.4
+          ],
+          "width": 1.9,
+          "height": 1.9
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0.74,
+            0.75,
+            -0.55
+          ],
+          "width": 0.35,
+          "height": 0.5,
+          "action": {
+            "action": "toggle",
+            "variable": "CHIPPER",
+            "value": 1
+          }
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "obj",
+    "customVariables": [
+      "CHIPPER"
+    ],
+    "sounds": [
+      {
+        "name": "csmvehicles:chipper_run",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "CHIPPER",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&BrakeL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.8,
+              0.22,
+              -2.615
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.8,
+              0.22,
+              -2.615
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.8,
+              0.36,
+              -2.615
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "right_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.8,
+              0.36,
+              -2.615
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ]
+  },
+  "connectionGroups": [
+    {
+      "groupName": "Trailer",
+      "isHookup": true,
+      "connections": [
+        {
+          "type": "trailer_standard",
+          "pos": [
+            0,
+            0.05,
+            3.45
+          ],
+          "distance": 2
+        }
+      ]
+    }
+  ]
+}
