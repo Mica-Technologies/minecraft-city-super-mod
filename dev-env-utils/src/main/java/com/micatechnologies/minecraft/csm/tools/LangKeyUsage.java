@@ -54,7 +54,14 @@ import java.util.regex.Pattern;
  */
 final class LangKeyUsage {
 
-  private static final Pattern STRING_LITERAL = Pattern.compile("\"((?:[^\"\\\\\\n]|\\\\.)*)\"");
+  /**
+   * A string literal, unrolled ({@code [^"\\]*+} runs, a group only per escape) rather than
+   * {@code (?:[^"\\]|\\.)*}: Java matches each repeat of a group recursively, so the alternation
+   * form overflowed the stack on a generated source with literals tens of thousands of characters
+   * long ({@code JetBridgeTurnShape}).
+   */
+  private static final Pattern STRING_LITERAL =
+      Pattern.compile("\"([^\"\\\\\\n]*+(?:\\\\.[^\"\\\\\\n]*+)*+)\"");
 
   /** A string literal ending in a dot and followed by {@code +}: the head of a template. */
   private static final Pattern TEMPLATE_HEAD = Pattern.compile(
