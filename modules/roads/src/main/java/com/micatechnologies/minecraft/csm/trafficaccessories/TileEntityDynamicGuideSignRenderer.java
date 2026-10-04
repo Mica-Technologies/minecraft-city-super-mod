@@ -82,6 +82,19 @@ public class TileEntityDynamicGuideSignRenderer
 
   private static final float POST_WIDTH = 2.5f;
   private static final float POST_DEPTH = 1.5f;
+  /** A truss hanger bracket's width and depth, and the clamp at its top. */
+  private static final float HANGER_WIDTH = 1.5f;
+  private static final float HANGER_DEPTH = 0.6f;
+  /** Furthest the renderer looks above and below the sign for the truss it hangs from, blocks. */
+  private static final int TRUSS_LOOK_UP = 8;
+  private static final int TRUSS_LOOK_DOWN = 4;
+
+  /**
+   * Where the hanger brackets of a {@link PostType#TRUSS} sign reach to, in the sign's pixel
+   * space: the top of the truss behind it, or {@code NaN} with none there (the brackets then stop
+   * at the sign's top). Set per sign in {@link #render} before it is drawn.
+   */
+  private float trussTop = Float.NaN;
 
   // Legend text renders in the FHWA-style highway font (GuideSignFontRenderer); all
   // text sizes below are CAP HEIGHTS in sign pixel units.
@@ -259,6 +272,8 @@ public class TileEntityDynamicGuideSignRenderer
 
     EnumFacing facing = te.getWorld().getBlockState(te.getPos())
         .getValue(BlockHorizontal.FACING);
+    trussTop = data.getPostType() == PostType.TRUSS
+        ? trussTopBehind(te.getWorld(), te.getPos(), facing) : Float.NaN;
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x, y, z);
@@ -325,6 +340,7 @@ public class TileEntityDynamicGuideSignRenderer
    * center at y=8; quads land at z ~14-16 plus small negative offsets.
    */
   public void renderForGui(GuideSignData data) {
+    trussTop = Float.NaN;   // the preview has no world, so no truss behind it
     worldSkyLight = FULLBRIGHT;
     worldBlockLight = FULLBRIGHT;
     ambientSkyLight = FULLBRIGHT;
@@ -557,7 +573,8 @@ public class TileEntityDynamicGuideSignRenderer
       return;
     }
     // Bits 0-31 the combined light, 32 lit, 33 and 34 the skip toggles.
-    long hardwareKey = backgroundKey | (skipPost ? 1L << 33 : 0L) | (skipLighting ? 1L << 34 : 0L);
+    long hardwareKey = backgroundKey | (skipPost ? 1L << 33 : 0L) | (skipLighting ? 1L << 34 : 0L)
+        | (Float.isNaN(trussTop) ? 0L : ((long) (trussTop + 128) & 0x3FFL) << 35);
     // Bound outside the list, every frame (the legend pass leaves it bound; this is a no-op then).
     Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
     int hardwareList = bakeable
@@ -585,7 +602,7 @@ public class TileEntityDynamicGuideSignRenderer
       float signTop, float totalSignWidth, float faceZ, int borderWidth, boolean skipPost,
       boolean skipLighting) {
     if (!skipPost) {
-      renderPost(data.getPostType(), signLeft, signBottom, totalSignWidth, faceZ);
+      renderPost(data.getPostType(), signLeft, signBottom, signTop, totalSignWidth, faceZ);
     }
     if (!skipLighting) {
       renderSignLighting(data, signLeft, signBottom, signTop, totalSignWidth, faceZ,
@@ -1219,8 +1236,25 @@ public class TileEntityDynamicGuideSignRenderer
     LEGEND_LISTS.draw(tess);
   }
 
+  /**
+   * The top of the overhead sign truss behind a sign, in the sign's pixel space (16 a block, 0 the
+   * bottom of its own block), or {@code NaN} with none within reach. The panel sits on the side
+   * opposite the way the sign faces, so the truss is in the block behind it that way.
+   */
+  private static float trussTopBehind(net.minecraft.world.World world, BlockPos pos,
+      EnumFacing facing) {
+    BlockPos behind = pos.offset(facing.getOpposite());
+    for (int dy = TRUSS_LOOK_UP; dy >= -TRUSS_LOOK_DOWN; dy--) {
+      if (world.getBlockState(behind.up(dy)).getBlock()
+          instanceof com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockSignTruss) {
+        return (dy + 1) * 16.0f - 0.5f;
+      }
+    }
+    return Float.NaN;
+  }
+
   private void renderPost(PostType postType, float signLeft, float signBottom,
-      float signWidth, float faceZ) {
+      float signTop, float signWidth, float faceZ) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
@@ -1253,6 +1287,26 @@ public class TileEntityDynamicGuideSignRenderer
         posts.add(new RenderHelper.Box(
             new float[]{cX, postBottom, postFrontZ},
             new float[]{cX + POST_WIDTH, postTop, postBackZ}));
+        break;
+      case TRUSS:
+        // Hanger brackets on the back of the sign, up to the truss (or the sign's top with no
+        // truss found), each with a clamp over the truss's front chord.
+        float top = Float.isNaN(trussTop) ? signTop - 1.0f : trussTop;
+        int count = Math.max(2, 1 + Math.round(signWidth / 64.0f));
+        float inset = Math.min(6.0f, signWidth / 4.0f);
+        for (int i = 0; i < count; i++) {
+          float hx = signLeft + inset + (signWidth - 2 * inset) * i / (count - 1)
+              - HANGER_WIDTH / 2.0f;
+          float hTop = Math.max(top, signTop);
+          posts.add(new RenderHelper.Box(
+              new float[]{hx, signBottom + 1.0f, postFrontZ},
+              new float[]{hx + HANGER_WIDTH, hTop, postFrontZ + HANGER_DEPTH}));
+          if (!Float.isNaN(trussTop)) {
+            posts.add(new RenderHelper.Box(
+                new float[]{hx - 0.5f, hTop - 1.5f, postFrontZ},
+                new float[]{hx + HANGER_WIDTH + 0.5f, hTop, postFrontZ + 2.2f}));
+          }
+        }
         break;
       case RURAL:
         float r1 = signLeft + signWidth * 0.25f - POST_WIDTH / 2.0f;
