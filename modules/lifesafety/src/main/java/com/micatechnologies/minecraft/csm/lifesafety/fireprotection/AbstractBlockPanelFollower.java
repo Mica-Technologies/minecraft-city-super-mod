@@ -29,6 +29,11 @@ import net.minecraft.world.World;
  * <p>Stored in metadata: the facing (two bits) and {@link #ALARM} (the third), so the model and
  * redstone read it without a tile entity lookup.</p>
  *
+ * <p>The look runs on a scheduled update that starts when the block is placed, and random ticks
+ * start it again if it is ever missing: a device put down by a tool that skips
+ * {@code onBlockAdded} (a WorldEdit paste, a schematic) had no update scheduled, never looked,
+ * and showed normal through any alarm (#261).</p>
+ *
  * @since 2026.9
  */
 public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp implements
@@ -43,6 +48,8 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
     super(registryName, box, false);
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
         .withProperty(ALARM, false));
+    // A random tick runs updateTick, which reschedules the look if it was never started
+    setTickRandomly(true);
   }
 
   @Override
@@ -73,11 +80,28 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
   @Override
   public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
     boolean alarm = isInAlarm(world, pos);
-    if (alarm != state.getValue(ALARM)) {
-      world.setBlockState(pos, state.withProperty(ALARM, alarm), 3);
-      onAlarmChanged(world, pos, alarm);
+    IBlockState next = followPanel(world, pos, state.withProperty(ALARM, alarm));
+    if (!next.equals(state)) {
+      world.setBlockState(pos, next, 3);
+      if (alarm != state.getValue(ALARM)) {
+        onAlarmChanged(world, pos, alarm);
+      }
     }
+    // A scheduled update already pending is not duplicated, so a random tick costs nothing more
     world.scheduleUpdate(pos, this, POLL_TICKS);
+  }
+
+  /**
+   * Fills in whatever else this device shows of its panel, on the server, once a second.
+   *
+   * @param world the world
+   * @param pos   the device
+   * @param state its state with {@link #ALARM} already set
+   *
+   * @return the state to show
+   */
+  protected IBlockState followPanel(World world, BlockPos pos, IBlockState state) {
+    return state;
   }
 
   /** Whether the panel this device follows is in alarm. */

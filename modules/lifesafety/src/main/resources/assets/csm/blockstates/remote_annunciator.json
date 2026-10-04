@@ -4,28 +4,132 @@
     "model": "csm:lifesafety/fireprotection/remote_annunciator"
   },
   "variants": {
-    "facing": {
-      "north": {},
-      "east": {
-        "y": 90
-      },
-      "south": {
-        "y": 180
-      },
-      "west": {
-        "y": 270
-      }
-    },
     "inventory": [
       {}
     ],
-    "alarm": {
-      "false": {},
-      "true": {
+    "alarm=false,facing=north,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator"
+        }
+      }
+    ],
+    "alarm=true,facing=north,trouble=false": [
+      {
         "textures": {
           "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm"
         }
       }
-    }
+    ],
+    "alarm=false,facing=north,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_trouble"
+        }
+      }
+    ],
+    "alarm=true,facing=north,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm_trouble"
+        }
+      }
+    ],
+    "alarm=false,facing=east,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator"
+        },
+        "y": 90
+      }
+    ],
+    "alarm=true,facing=east,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm"
+        },
+        "y": 90
+      }
+    ],
+    "alarm=false,facing=east,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_trouble"
+        },
+        "y": 90
+      }
+    ],
+    "alarm=true,facing=east,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm_trouble"
+        },
+        "y": 90
+      }
+    ],
+    "alarm=false,facing=south,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator"
+        },
+        "y": 180
+      }
+    ],
+    "alarm=true,facing=south,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm"
+        },
+        "y": 180
+      }
+    ],
+    "alarm=false,facing=south,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_trouble"
+        },
+        "y": 180
+      }
+    ],
+    "alarm=true,facing=south,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm_trouble"
+        },
+        "y": 180
+      }
+    ],
+    "alarm=false,facing=west,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator"
+        },
+        "y": 270
+      }
+    ],
+    "alarm=true,facing=west,trouble=false": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm"
+        },
+        "y": 270
+      }
+    ],
+    "alarm=false,facing=west,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_trouble"
+        },
+        "y": 270
+      }
+    ],
+    "alarm=true,facing=west,trouble=true": [
+      {
+        "textures": {
+          "face": "csm:blocks/lifesafety/fireprotection/annunciator_alarm_trouble"
+        },
+        "y": 270
+      }
+    ]
   }
 }

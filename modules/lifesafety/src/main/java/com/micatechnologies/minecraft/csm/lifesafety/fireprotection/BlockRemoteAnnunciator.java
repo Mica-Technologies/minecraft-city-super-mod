@@ -1,8 +1,12 @@
 package com.micatechnologies.minecraft.csm.lifesafety.fireprotection;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSensor;
+import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,15 +19,60 @@ import net.minecraft.world.World;
 
 /**
  * A remote annunciator: the small panel by the front door that tells a firefighter what the main
- * panel says without walking to it. Its lamp lights while the panel is in alarm (the model reads
- * {@link #ALARM}); right-click reads out the panel's status and where the alarm came from.
+ * panel says without walking to it. Its display and lamps show the panel's alarm ({@link #ALARM},
+ * red) and trouble ({@link #TROUBLE}, amber); right-click reads out the panel's status and where
+ * the alarm came from.
+ *
+ * <p>Trouble is lit while the panel has an unacknowledged trouble or any linked device missing, as
+ * a real annunciator's trouble lamp stays on until the fault is put right. It needs the panel
+ * itself, so while the panel's chunk is not loaded the lamp keeps what it last showed.</p>
  *
  * @since 2026.9
  */
 public class BlockRemoteAnnunciator extends AbstractBlockPanelFollower {
 
+  public static final PropertyBool TROUBLE = PropertyBool.create("trouble");
+
   public BlockRemoteAnnunciator(String registryName, int[] box) {
     super(registryName, box);
+  }
+
+  @Override
+  @Nonnull
+  protected BlockStateContainer createBlockState() {
+    return new CsmBlockStateContainer(this, FACING, ALARM, TROUBLE);
+  }
+
+  @Override
+  public int getMetaFromState(IBlockState state) {
+    return super.getMetaFromState(state) | (state.getValue(TROUBLE) ? 8 : 0);
+  }
+
+  @Override
+  @Nonnull
+  public IBlockState getStateFromMeta(int meta) {
+    return super.getStateFromMeta(meta & 7).withProperty(TROUBLE, (meta & 8) != 0);
+  }
+
+  @Override
+  protected IBlockState followPanel(World world, BlockPos pos, IBlockState state) {
+    TileEntity te = world.getTileEntity(pos);
+    BlockPos panelPos = te instanceof TileEntityFireAlarmSensor
+        ? ((TileEntityFireAlarmSensor) te).getLinkedPanelPos(world) : null;
+    if (panelPos == null) {
+      return state.withProperty(TROUBLE, false);
+    }
+    if (!world.isBlockLoaded(panelPos)) {
+      return state;   // keep what it last showed
+    }
+    TileEntity panelTe = world.getTileEntity(panelPos);
+    if (!(panelTe instanceof TileEntityFireAlarmControlPanel)) {
+      return state.withProperty(TROUBLE, true);   // the panel itself is gone
+    }
+    TileEntityFireAlarmControlPanel panel = (TileEntityFireAlarmControlPanel) panelTe;
+    return state.withProperty(TROUBLE, panel.getTrouble()
+        || !panel.getMissingAppliances().isEmpty()
+        || !panel.getMissingInitiatingDevices().isEmpty());
   }
 
   @Override
