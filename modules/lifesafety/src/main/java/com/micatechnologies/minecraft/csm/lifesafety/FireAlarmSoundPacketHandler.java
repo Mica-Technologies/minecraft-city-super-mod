@@ -47,6 +47,16 @@ public class FireAlarmSoundPacketHandler implements
       return;
     }
 
+    // Update: the same channel with a new list of positions; its sound plays on
+    if (message.isUpdate()) {
+      ActiveStrobeRegistry.setChannel(channel, message.getSpeakerPositions());
+      FireAlarmVoiceEvacSound playing = activeSounds.get(channel);
+      if (playing != null) {
+        playing.setSpeakerPositions(message.getSpeakerPositions());
+      }
+      return;
+    }
+
     // Start: stop existing sound on this channel, then create a new one
     if (message.getSpeakerPositions().isEmpty()) {
       return;
