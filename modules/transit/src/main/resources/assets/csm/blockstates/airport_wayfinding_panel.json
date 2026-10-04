@@ -1,0 +1,195 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "edge_left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "edge_left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "edge_left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "edge_left": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "edge_right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "edge_right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "edge_right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "edge_right": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "edge_top": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_top"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "edge_top": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "edge_top": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "edge_top": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "edge_bottom": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_bottom"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "edge_bottom": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "edge_bottom": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "edge_bottom": "true"
+      },
+      "apply": {
+        "model": "csm:transit/airport/airport_wayfinding_panel_edge_bottom",
+        "y": 270
+      }
+    }
+  ]
+}
