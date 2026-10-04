@@ -37,8 +37,9 @@ import net.minecraft.world.World;
  * pieces only.</p>
  *
  * <p>Pieces join along the facing's axis ({@link #AHEAD}, {@link #BEHIND}, actual state): a
- * tunnel or cab next to it, or a rotunda two blocks away (the rotunda's collar reaches the edge of
- * its three blocks). Where a piece does not continue it draws a frame round the open end. The cab
+ * tunnel or cab next to it, a turn's open end ({@link BlockJetBridgeTurn}), or a rotunda two
+ * blocks away (the rotunda's collar reaches the edge of its three blocks); {@link #opensToward} is
+ * the one test. Where a piece does not continue it draws a frame round the open end. The cab
  * is open at the front, where the canopy's bellows would meet a door, and a safety bar across the
  * bumper stops a player walking off it.</p>
  *
@@ -188,44 +189,72 @@ public class BlockJetBridge extends BlockPlatformFixture {
   /**
    * Whether the bridge carries on from {@code pos} towards {@code dir}: a tunnel or cab on the
    * same axis right beyond this piece's edge, or a rotunda whose collar reaches that edge, or a
-   * sloped run beyond the edge a block above or below.
+   * turn open towards it, or a sloped run beyond the edge a block above or below.
    */
   private boolean continues(IBlockAccess world, BlockPos pos, EnumFacing dir, EnumFacing facing) {
     int edge = kind == Kind.ROTUNDA ? 2 : 1;
-    BlockPos next = pos.offset(dir, edge);
-    if (isBridgeOnAxis(world, next, facing.getAxis(), large)
-        || isRotundaOnAxis(world, pos.offset(dir, edge + 1), facing.getAxis(), large)) {
-      return true;
-    }
-    // a sloped run, its low end a block above this level or its high end a block below
-    return isSlopeOnAxis(world, next.up(), facing.getAxis(), large)
-        || isSlopeOnAxis(world, next.down(), facing.getAxis(), large);
+    return continuesFrom(world, pos.offset(dir, edge - 1), dir, large);
   }
 
   /**
-   * Whether a tunnel, cab or sloped tunnel on an axis is at a position: the pieces that meet
-   * another at the edge of their own block.
+   * Whether the bridge carries on past the edge of the cell at {@code last} towards {@code dir}:
+   * whatever is beyond opens back towards it ({@link #opensToward}), or a sloped run beyond the
+   * edge a block above or below. A level piece (a tunnel, cab, rotunda or turn) asks this of its
+   * open ends.
    *
    * @param world the world
-   * @param pos   the position
-   * @param axis  the bridge's axis
+   * @param last  the piece's last cell before the edge
+   * @param dir   the way out through the edge
    * @param large whether the large bridge is meant (the two sizes do not join)
    *
-   * @return whether one is there
+   * @return whether the bridge continues there
    */
-  static boolean isBridgeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis,
-      boolean large) {
+  static boolean continuesFrom(IBlockAccess world, BlockPos last, EnumFacing dir, boolean large) {
+    BlockPos next = last.offset(dir);
+    if (opensToward(world, next, dir.getOpposite(), large)) {
+      return true;
+    }
+    // a sloped run, its low end a block above this level or its high end a block below
+    return isSlopeOnAxis(world, next.up(), dir.getAxis(), large)
+        || isSlopeOnAxis(world, next.down(), dir.getAxis(), large);
+  }
+
+  /**
+   * Whether the bridge at {@code pos} is open towards {@code back}, on the face of that cell:
+   * a tunnel, cab or sloped tunnel along that axis (open at both ends), a turn whose open end is
+   * that face of that cell ({@link BlockJetBridgeTurn#opensAt}), or a rotunda on that axis a block
+   * further on, whose collar reaches the cell's far edge. The one test every piece uses to ask
+   * whether what is beyond its open end carries the corridor on.
+   *
+   * @param world the world
+   * @param pos   the cell beyond the asking piece's edge
+   * @param back  the way from that cell back to the asking piece
+   * @param large whether the large bridge is meant (the two sizes do not join)
+   *
+   * @return whether the bridge there opens towards the asking piece
+   */
+  static boolean opensToward(IBlockAccess world, BlockPos pos, EnumFacing back, boolean large) {
+    EnumFacing.Axis axis = back.getAxis();
     IBlockState s = world.getBlockState(pos);
     if (s.getBlock() instanceof BlockJetBridge) {
       BlockJetBridge bridge = (BlockJetBridge) s.getBlock();
-      return bridge.kind != Kind.ROTUNDA && bridge.large == large
-          && s.getValue(FACING).getAxis() == axis;
+      if (bridge.kind != Kind.ROTUNDA && bridge.large == large
+          && s.getValue(FACING).getAxis() == axis) {
+        return true;
+      }
+    } else if (s.getBlock() instanceof BlockJetBridgeTurn) {
+      BlockJetBridgeTurn turn = (BlockJetBridgeTurn) s.getBlock();
+      if (turn.isLarge() == large && turn.opensAt(world, pos, s, back)) {
+        return true;
+      }
+    } else if (isSlopeOnAxis(world, pos, axis, large)) {
+      return true;
     }
-    return isSlopeOnAxis(world, pos, axis, large);
+    return isRotundaOnAxis(world, pos.offset(back.getOpposite()), axis, large);
   }
 
   /** Whether a rotunda on an axis is at a position (its collar reaches a block past its own). */
-  static boolean isRotundaOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis,
+  private static boolean isRotundaOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis,
       boolean large) {
     IBlockState s = world.getBlockState(pos);
     return s.getBlock() instanceof BlockJetBridge

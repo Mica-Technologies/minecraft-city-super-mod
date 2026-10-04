@@ -13,6 +13,8 @@ import com.micatechnologies.minecraft.csm.transit.airport.BlockFlightBoardLarge;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockGateSign;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridge;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridgeSlope;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockJetBridgeTurn;
+import com.micatechnologies.minecraft.csm.transit.airport.JetBridgeTurnShape;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockQueueStanchion;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityLine;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityTray;
@@ -287,5 +289,11 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockJetBridgeSlope("airport_jet_bridge_large_slope", true));
     initTabBlock(new BlockJetBridge("airport_jet_bridge_large_cab", BlockJetBridge.Kind.CAB, true));
     initTabBlock(new BlockPlatformColumn("airport_jet_bridge_large_drive", new double[]{-16, 0, 5.6, 32, 16, 10.4}));
+    initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_corner", JetBridgeTurnShape.CORNER));
+    initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_turn", JetBridgeTurnShape.TURN));
+    initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_uturn", JetBridgeTurnShape.UTURN));
+    initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_large_corner", JetBridgeTurnShape.CORNER_LARGE));
+    initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_large_turn", JetBridgeTurnShape.TURN_LARGE));
+    initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_large_uturn", JetBridgeTurnShape.UTURN_LARGE));
   }
 }

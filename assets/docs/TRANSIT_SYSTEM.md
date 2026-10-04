@@ -1210,6 +1210,8 @@ neither is drawn here. No exit or emergency-exit signs either: Life Safety has t
 | Wheel Chocks, Ground Power Unit, Baggage Tug, Baggage Cart, Air Stairs | `csm:airport_wheel_chocks` and the rest | Roads' `streetscape.BlockUtilityBox` |
 | Jet Bridge (Tunnel, Cab, Rotunda) | `csm:airport_jet_bridge_tunnel`, `_cab`, `_rotunda` | `BlockJetBridge` |
 | Jet Bridge (Drive Leg, Rotunda Column) | `csm:airport_jet_bridge_drive`, `_column` | `transit.platform.BlockPlatformColumn` |
+| Jet Bridge (Corner, Curved Turn, U-Turn) | `csm:airport_jet_bridge_corner`, `_turn`, `_uturn` | `BlockJetBridgeTurn` |
+| Large Jet Bridge (Corner, Curved Turn, U-Turn) | `csm:airport_jet_bridge_large_corner`, `_large_turn`, `_large_uturn` | `BlockJetBridgeTurn` |
 
 **Airfield lights are simple on purpose.** The lights live in Transit rather than Lighting, and
 Transit may name only Core and Roads, so none of Lighting's light logic (the 4-state control, the
@@ -1325,6 +1327,77 @@ so inside the corridor everything else can still be clicked.
 Each piece gives light 9 inside. The facing is the way to the aircraft (the model's north), the
 same for every piece of one bridge.
 
+#### Turns
+
+A bridge can turn (2026-10): a square **corner** room, a **curved turn** (a quarter circle) and a
+**U-turn** back to a line beside the one it came in on, each at the level bridge's size and the
+large one's (`BlockJetBridgeTurn`, six blocks). All are level; a sloped run before or after a turn
+changes height.
+
+**Why a turn is several blocks.** A corridor two blocks wide (three and a bit for the large one)
+cannot turn inside one cell. Two tunnel lines at right angles next to one cell overlap each
+other's walls, and across a large turn the far wall is more than a block from any one cell, which is
+as far as the game looks for collision boxes. So a turn is several real blocks, placed and broken as
+one, as the mast arm curves are (MAST_ARM_CURVE_SYSTEM.md). Every cell is the same block. Its index
+is in `TileEntityJetBridgeTurn`, read into the `cell` actual-state property, and each cell draws and
+collides its own share of one shape. Metadata holds `facing` and `left`; `frame` is actual state.
+That is 4 x 2 x cells x 2 states, at most 400 (the large corner), and the multipart picks one OBJ a
+cell plus the tunnel's own end frame, so the baked parts are a cell's OBJ in four turns.
+
+**The shapes.** One rule sizes them all: a tunnel that joins a turn starts where it does not
+overlap the other line's band, half the corridor (16, large 26.5 sixteenths) past the crossing line,
+rounded up to the next whole block.
+
+| Turn | Cells | Footprint | End A (entry) | End B (exit) |
+|---|---|---|---|---|
+| Corner | 9 | a room 3 x 3 blocks, centred where the two lines cross | south face of (0, 0) | east face of (1, -1) |
+| Curved turn | 8 | centreline radius 2.5 blocks | south face of (0, 0) | east face of (2, -2) |
+| U-turn | 6 | legs 2 blocks apart, the walls between them one wall with a round end | south face of (0, 0) | south face of (2, 0) |
+| Large corner | 25 | a room 5 x 5 blocks | south face of (0, 0) | east face of (2, -2) |
+| Large curved turn | 11 | centreline radius 3.5 blocks | south face of (0, 0) | east face of (3, -3) |
+| Large U-turn | 12 | legs 4 blocks apart, a round-ended wall between them | south face of (0, 0) | south face of (4, 0) |
+
+Cells are (x, z) in blocks for a right-hand turn whose entry looks north: x is to the right, and z
+is negative ahead. A turn's open ends are block faces on the corridor's line, so a tunnel, slope, cab
+or rotunda meets them exactly as it meets another tunnel.
+
+**One source.** `gen_transit_airside.py` (`jet_bridge_turns`) builds each shape once, as a
+right-hand turn, from the straight tunnel's section and textures. That means the carpet, panelled
+walls with a window a block, the lit ceiling strip (along the centreline: an L in a corner room),
+the skin with its navy band, and the roof. Curves are many short straight pieces. The whole shape
+is flat polygons, cut at the block lines. Each piece goes to the cell it lies in, or, past the
+turn's cells, to the turn's cell beside it (as a tunnel's walls lie half a block past its own). The
+generator writes one OBJ a cell and `JetBridgeTurnShape.java`: each shape's cells, its exit and
+each cell's collision boxes, from the same walls and floors. Floors and the level roof collide as
+rectangles of the plan, and walls as the box of each two-sixteenth length of wall. The turn's cells
+start as the block-wide band along the centreline (every cell of a room). The generator then walks
+a player over every spot of every shape, as the game looks for collision boxes: blocks within a
+block of the moving box, leaving out that range's four corner columns. It adds a cell wherever a
+box could be missed. None of the six needed one; a test that starved the cells did need them.
+
+**A left-hand turn is not a mirror.** A corner and a curved turn are symmetric about their
+diagonal, so the left-hand turn is the same cells turned a quarter, entered at end B. A U-turn is
+symmetric about its middle, so the left-hand one is the same cells entered at the other leg. No
+shape has mirrored models.
+
+**Placing.** Stand at the end the bridge comes from and look the way it goes. The turn is laid out
+ahead of the block placed, which is its entry (unlike the other pieces, which face the player).
+It turns towards the side of straight ahead the player looks to: look a little right of the line
+for a right turn. Every cell is placed or none, and the status bar says what is in the way. To
+change the side, sneak and use with an empty hand on any cell: the turn swings over about the same
+entry, if there is room. Breaking any cell takes the whole turn and drops one item. A turn is
+priced at its cells' worth of tunnel (`TransitFabricatorRules.price`).
+
+**Joining.** `BlockJetBridge.opensToward(world, pos, back, large)` is the one test of whether the
+piece at a cell opens back towards the asker. A tunnel, cab or slope opens along its axis. A turn
+opens if that cell is one of its ends and that face is the end's face (`BlockJetBridgeTurn.opensAt`).
+A rotunda counts a block further on, since its collar reaches the cell's far edge. Tunnels, cabs,
+rotundas and slopes ask it in place of the old axis-only checks, so with no turn about they behave
+exactly as before. A turn asks the same, through `BlockJetBridge.continuesFrom`, of whatever is
+beyond each end. Where nothing continues, it draws the straight tunnel's own end frame
+(`airport_jet_bridge_tunnel_end_behind`, or the large one's OBJ) turned to that face. Large turns
+join large pieces only.
+
 #### Traps
 
 - **A sloped floor has to be walked by a player 0.6 blocks long.** A player stands on the highest
@@ -1339,6 +1412,15 @@ same for every piece of one bridge.
   from the root's cell (beside a wall, or on the roof) is out of the reach that makes a single
   block work: the roof cannot be stood on, and an outer wall stops a player only once they are
   inside its thickness. Nobody walks there on a real bridge either.
+- **A face on a block line belongs to one cell.** A turn is cut at the block lines, and a face
+  lying exactly on one (the large corner's jambs: its openings are 48 sixteenths, so their sides fall
+  on block lines) was kept by both cells. One copy looked into its block, at the depth of the
+  neighbour's own face. The cutter gives such a face only to the cell it looks out of
+  (`_faces_into`); `audit_obj_models.py` catches it.
+- **The game skips the corner columns.** `World.getCollisionBoxes` asks the blocks within a block of
+  the moving box, but not the four columns at the corners of that range. A box drawn past its own
+  cell is safe only when the cell holding it is beside the player, not diagonal. The generator's
+  walk (`_turn_cells`) checks every turn against that rule before it writes the table.
 - **The jet bridge's numbers are in two places.** `BlockJetBridge`'s collision boxes and floors
   and the generator's `JB_*`, `CAB_*` and `ROT` share the section; change one, change both.
 - **An element may not reach past -16 or 32**, so the corridor stops at two blocks tall, the
@@ -1368,6 +1450,9 @@ sheet metal, a control board and a wiring harness; the ground power unit an encl
 control board and two harnesses; the cart two sheet metal; the stairs and a tunnel three sheet
 metal; the cab adds a control board; the rotunda four sheet metal; the drive leg two pole
 sections and a harness; the column two concrete mix; the chocks one sheet metal.
+A jet bridge turn is priced at the top of `TransitFabricatorRules.price`: its cells' worth of tunnel,
+a tunnel of its size a cell (the level tunnel's three sheet metal and a fastener kit; the large
+tunnel's two and one), so the level corner is 27 sheet metal and 9 fastener kits.
 `audit_fabricator_costs.py` mirrors the branch.
 
 ## Demo world

@@ -108,6 +108,27 @@ def _metal_dye(registry):
     return "dye:white"
 
 
+_TURN_CELLS = None
+
+
+def jet_bridge_turn_cells():
+    """{registry: (cells, large)} for the jet bridge turns, from JetBridgeTurnShape.java (which
+    gen_transit_airside.py writes) and the tab line naming each turn's shape."""
+    global _TURN_CELLS
+    if _TURN_CELLS is None:
+        import os
+        root = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+        base = os.path.join(root, "modules", "transit", "src", "main", "java", "com",
+                            "micatechnologies", "minecraft", "csm")
+        java = io.open(os.path.join(base, "transit", "airport", "JetBridgeTurnShape.java"),
+                       encoding="utf-8").read()
+        shapes = {m.group(1): (len(m.group(3).split(";")), m.group(2) == "true")
+                  for m in re.finditer(r'^  (\w+)\((true|false), "([^"]*)"', java, re.M)}
+        tab = io.open(os.path.join(base, "tabs", "CsmTabTransit.java"), encoding="utf-8").read()
+        _TURN_CELLS = {m.group(1): shapes[m.group(2)] for m in re.finditer(
+            r'new BlockJetBridgeTurn\("(\w+)", JetBridgeTurnShape\.(\w+)\)', tab)}
+    return _TURN_CELLS
+
 def cost_for(registry, info, ancestors):
     """Mirror of CsmFabricatorCosts.getCost, returning a tuple of ingredient labels or None."""
     tab = info["tab"]
@@ -361,6 +382,11 @@ def cost_for(registry, info, ancestors):
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtransit":
+        if has("BlockJetBridgeTurn"):
+            # a turn is its cells' worth of tunnel (TransitFabricatorRules.price): a tunnel of its
+            # size a cell, the cell count read from the generated JetBridgeTurnShape.java
+            cells, large = jet_bridge_turn_cells()[registry]
+            return ("SHEET_METAL x%d" % (cells * (2 if large else 3)), "FASTENER_KIT x%d" % cells)
         # Mirrors TransitFabricatorRules: the bus stops and the station fit-out by what they
         # are made of, and the fare equipment at the price it kept from Technology.
         if registry.startswith("bus_stop_flag_"):
