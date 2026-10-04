@@ -1123,9 +1123,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   redrawn with UVs that suit concrete, and again as an octagon for the straight vertical
   sections) and the `concrete_light_pole` texture itself; `--check` fails on drift
 - `gen_preempt_detector.py` -- the preempt detector's model and blockstate: a small black optical
-  head (octagon body, lens in a bezel, cable connector, stepped sun-shield fin) on a clamp that
-  straddles a thin traffic pole in the cell below, so it sits on top of a mast arm; and on the same
-  clamp the arm-mounted confirmation lights (white and blue PAR lamps in a yoke, a red 360 degree
+  head (octagon body, lens in a bezel, cable connector, stepped sun-shield fin) on a mount stub
+  reaching down to a thin traffic pole in the cell below, so it sits on top of a mast arm; and on
+  the same stub the arm-mounted confirmation lights (white and blue PAR lamps in a yoke, a red 360 degree
   dome), whose lens boxes `BlockPreemptConfirmationLight` must match; `--check`
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
   tapered base with its access door and the clamp bracket as OBJ, and emits the five

@@ -3,17 +3,16 @@
 gen_preempt_detector.py -- the preempt detector and the confirmation lights (Roads): models and
 blockstates.
 
-The detector is drawn after an optical preemption detector: a small black head on a clamp that
-straddles the top of a mast arm, its lens looking up the approach and a sun-shield fin off one
-side. It sits in the cell ABOVE a thin traffic pole (`trafficpolehorizontal`, 8 px across, so its
-top is 4 px under this cell's floor): the clamp reaches down round the pole, and the head stands
-on it.
+The detector is drawn after an optical preemption detector: a small black head on a mount stub on
+top of a mast arm, its lens looking up the approach and a sun-shield fin off one side. It sits in
+the cell ABOVE a thin traffic pole (`trafficpolehorizontal`, 8 px across, so its top is 4 px under
+this cell's floor): the stub reaches down to the pole, and into a full block if one is below.
 
 Model space: the lens faces north (-z), the arm runs east-west under it, which is how it stands
 on an arm across the approach it watches; the blockstate turns it with the block's facing.
 Round parts are exact octagons, four boxes each, two of them turned 45 degrees.
 
-The confirmation lights stand on the same clamp: a PAR lamp in a yoke (white and blue), its lens
+The confirmation lights stand on the same stub: a PAR lamp in a yoke (white and blue), its lens
 looking up the approach as the detector's does, and a 360 degree dome beacon (red). Their glow is
 the traffic beacon renderer's, which needs each lens box in BlockPreemptConfirmationLight's
 subclasses to match LIGHTS below.
@@ -92,21 +91,18 @@ def octagon_z(a, z0, z1, tex=BODY, cx=8.0, cy=8.0, lens_face=None):
     return out
 
 
-def clamp():
-    """The saddle on top of the arm, its cheeks, the strap under the pole and the plate on top."""
-    return [box((6.5, -4.0, 3.5), (9.5, -3.0, 12.5), METAL),
-            box((6.5, -8.0, 3.5), (9.5, -4.0, 4.0), METAL),
-            box((6.5, -8.0, 12.0), (9.5, -4.0, 12.5), METAL),
-            box((7.5, -12.5, 3.5), (8.5, -12.0, 12.5), METAL),
-            box((7.5, -12.0, 3.5), (8.5, -8.0, 3.9), METAL, faces='nsewd'),
-            box((7.5, -12.0, 12.1), (8.5, -8.0, 12.5), METAL, faces='nsewd'),
-            box((6.0, -3.0, 6.0), (10.0, -2.2, 10.0), METAL)]
+def stub(top):
+    """The mount: a square stub from the top of a thin pole below (4 px under this cell's floor)
+    up to `top`, on a small foot. It meets a thin pole and sinks into the top of a full block
+    below. (A clamp drawn round the pole never matched its round contour.)"""
+    return [box((6.6, -4.0, 6.6), (9.4, -3.5, 9.4), METAL),
+            box((7.3, -3.5, 7.3), (8.7, top, 8.7), METAL, faces='nsew')]
 
 
 def par_elements():
-    """A PAR lamp in a yoke on the clamp, its lens north: the confirmation light that faces the
+    """A PAR lamp in a yoke on the stub, its lens north: the confirmation light that faces the
     approach."""
-    els = clamp()
+    els = stub(-2.2)
     els.append(box((4.6, -2.2, 7.2), (11.4, -1.4, 8.8), METAL))                # yoke base
     els.append(box((4.6, -1.4, 7.2), (5.2, 4.6, 8.8), METAL))                  # yoke arms
     els.append(box((10.8, -1.4, 7.2), (11.4, 4.6, 8.8), METAL))
@@ -117,8 +113,8 @@ def par_elements():
 
 
 def dome_elements():
-    """A 360 degree dome beacon on the clamp."""
-    els = clamp()
+    """A 360 degree dome beacon on the stub."""
+    els = stub(-2.2)
     els += octagon(3.0, -2.2, -0.6)                                          # base
     els += [dict(e, faces={k: dict(v, texture=LENS) for k, v in e['faces'].items()})
             for e in octagon(2.5, -0.6, 4.4, tex=LENS)]                      # the dome
@@ -159,33 +155,45 @@ def light_blockstate(name):
     }
 
 
+# The head is drawn at half the size it was first drawn at (it read as far too big on an arm),
+# scaled about the point it was first drawn standing on.
+HEAD_SCALE = 0.5
+PIVOT = (8.0, -2.2, 8.0)
+
+
+def _s(p):
+    return tuple(PIVOT[k] + (p[k] - PIVOT[k]) * HEAD_SCALE for k in range(3))
+
+
+def _sy(y):
+    return PIVOT[1] + (y - PIVOT[1]) * HEAD_SCALE
+
+
 def elements():
-    els = []
-    # the clamp: a saddle on top of the arm, cheeks down its sides and a strap under it, then
-    # the mounting plate and stem the head stands on
-    els.append(box((6.5, -4.0, 3.5), (9.5, -3.0, 12.5), METAL))
-    els.append(box((6.5, -8.0, 3.5), (9.5, -4.0, 4.0), METAL))
-    els.append(box((6.5, -8.0, 12.0), (9.5, -4.0, 12.5), METAL))
-    els.append(box((7.5, -12.5, 3.5), (8.5, -12.0, 12.5), METAL))
-    els.append(box((7.5, -12.0, 3.5), (8.5, -8.0, 3.9), METAL, faces='nsewd'))
-    els.append(box((7.5, -12.0, 12.1), (8.5, -8.0, 12.5), METAL, faces='nsewd'))
-    els.append(box((6.0, -3.0, 6.0), (10.0, -2.2, 10.0), METAL))
-    els.append(box((7.25, -2.2, 7.25), (8.75, 2.0, 8.75), METAL, faces='nsew'))
-    # the head: knuckle, body, collar, the lens housing and its cap
-    els += octagon(1.4, 2.0, 3.5)
-    els += octagon(2.4, 3.5, 9.5)
-    els += octagon(2.7, 9.5, 10.0)
-    els += octagon(2.5, 10.0, 14.0)
-    els += octagon(2.7, 14.0, 14.6)
+    # the mount stub, up to where the head's knuckle starts
+    els = stub(_sy(2.0))
+    # the head, drawn full size here and scaled: stem, knuckle, body, collar, the lens housing
+    # and its cap
+    def b(lo, hi, tex, **kw):
+        return box(_s(lo), _s(hi), tex, **kw)
+
+    def o(a, y0, y1):
+        return octagon(a * HEAD_SCALE, _sy(y0), _sy(y1))
+
+    els += o(1.4, 2.0, 3.5)
+    els += o(2.4, 3.5, 9.5)
+    els += o(2.7, 9.5, 10.0)
+    els += o(2.5, 10.0, 14.0)
+    els += o(2.7, 14.0, 14.6)
     # the lens, in a bezel standing proud of the housing's north face (at z 5.5)
-    els.append(box((6.4, 10.6, 5.2), (9.6, 13.4, 5.6), BODY, faces='nsewud'))
-    els.append(box((6.7, 10.9, 5.15), (9.3, 13.1, 5.2), BODY, faces='n', lens_face='n'))
+    els.append(b((6.4, 10.6, 5.2), (9.6, 13.4, 5.6), BODY, faces='nsewud'))
+    els.append(b((6.7, 10.9, 5.15), (9.3, 13.1, 5.2), BODY, faces='n', lens_face='n'))
     # the cable connector on the body's front
-    els.append(box((7.2, 5.0, 5.35), (8.8, 6.6, 5.7), METAL, faces='nsewud'))
+    els.append(b((7.2, 5.0, 5.35), (8.8, 6.6, 5.7), METAL, faces='nsewud'))
     # the sun-shield fin off the east side, tapering in steps
-    els.append(box((10.4, 11.3, 7.2), (12.5, 11.8, 8.8), BODY))
-    els.append(box((12.5, 11.3, 7.5), (14.0, 11.8, 8.5), BODY))
-    els.append(box((14.0, 11.3, 7.8), (15.2, 11.8, 8.2), BODY))
+    els.append(b((10.4, 11.3, 7.2), (12.5, 11.8, 8.8), BODY))
+    els.append(b((12.5, 11.3, 7.5), (14.0, 11.8, 8.5), BODY))
+    els.append(b((14.0, 11.3, 7.8), (15.2, 11.8, 8.2), BODY))
     return els
 
 

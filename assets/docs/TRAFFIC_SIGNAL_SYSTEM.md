@@ -1033,7 +1033,7 @@ and min-dwell elapses) → **exit** → resume.
 #### The preempt detector
 
 `BlockPreemptDetector` (`csm:preempt_detector`) is the small black optical head real intersections
-clamp on top of the mast arm: it sees an approaching emergency vehicle's emitter long before the vehicle reaches
+mount on top of the mast arm: it sees an approaching emergency vehicle's emitter long before the vehicle reaches
 the stop bar, where a sensor zone would first see it. It is linked to a circuit with the Signal
 Link Tool like a sensor, and a preempt whose **Trig MOV** is set to **DET** fires while any of that
 circuit's detectors is called (`TrafficSignalPreempt.triggerOnDetectors`, NBT `td`; the sensor
@@ -1052,9 +1052,10 @@ A detector is called by:
 - **redstone**, which is how a fire station's alert relay holds the road for its trucks.
 
 It looks the way it faces: place it on top of the arm over the approach it serves, facing up that
-approach. Its model (`gen_preempt_detector.py`) stands in the cell above a thin traffic pole, its
-clamp reaching 4 px down round the pole and a strap under it, with the head, lens, connector and
-sun-shield fin above. It has no lamp of its own (an early version had a small one underneath, too
+approach. Its model (`gen_preempt_detector.py`) stands in the cell above a thin traffic pole on a
+square mount stub reaching 4 px down to the pole's top (or into a full block below), with a
+half-size head, lens, connector and sun-shield fin above it. A clamp drawn round the pole never
+matched its round contour, and a full-size head read far too big on an arm. It has no lamp of its own (an early version had a small one underneath, too
 small to see): the confirmation light is the preemption beacon.
 
 **The preemption beacon** (`tlpreemptbeacon`, Traffic Accessories) is the confirmation light. It
@@ -1070,7 +1071,7 @@ to the side of a pole: facing the approach, it sits in the cell beside the mast 
 **Arm-mounted confirmation lights** (`BlockPreemptConfirmationLight`, a preemption beacon in all
 but its model, lens and flash): a white and a blue PAR lamp in a yoke, facing the approach and
 flashing once a second, and a red 360 degree dome with the beacon's double flash. They stand on the
-detector's clamp on top of a thin pole (`gen_preempt_detector.py` writes their models, whose lens
+detector's mount stub on top of a thin pole (`gen_preempt_detector.py` writes their models, whose lens
 boxes the class's must match) and face the player placing them, never up, though they are placed
 onto the top of an arm.
 
