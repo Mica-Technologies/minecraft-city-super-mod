@@ -1412,3 +1412,5 @@ gui.csm.utility_box.line=Línea %d
 gui.csm.utility_box.automatic=Deje el número vacío para uno automático
 gui.csm.utility_box.phone=Teléfono de averías
 gui.csm.utility_box.phone_default=Deje el teléfono vacío para %s
+tile.sign_truss.name=Celosía para Señales Elevadas
+tile.sign_truss_large.name=Celosía para Señales Elevadas (2x2)

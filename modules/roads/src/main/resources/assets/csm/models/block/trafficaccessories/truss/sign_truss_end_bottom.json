@@ -1,0 +1,282 @@
+{
+  "textures": {
+    "chord": "csm:blocks/trafficaccessories/truss/truss_chord",
+    "lace": "csm:blocks/trafficaccessories/truss/truss_lace",
+    "plate": "csm:blocks/trafficaccessories/truss/truss_plate",
+    "particle": "csm:blocks/trafficaccessories/truss/truss_chord"
+  },
+  "elements": [
+    {
+      "from": [
+        2.0,
+        0,
+        0.5
+      ],
+      "to": [
+        14.0,
+        1,
+        2.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            14.0,
+            15,
+            15.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            15,
+            2.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            0.5,
+            14.0,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            14.0,
+            14.0,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.0,
+        0,
+        14.0
+      ],
+      "to": [
+        14.0,
+        1,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            15,
+            2.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            14.0,
+            15,
+            15.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            14.0,
+            14.0,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            0.5,
+            14.0,
+            2.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        0,
+        2.0
+      ],
+      "to": [
+        2.0,
+        1,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            14.0,
+            15,
+            15.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            15,
+            2.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            2.0,
+            2.0,
+            14.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            2.0,
+            2.0,
+            14.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        14.0,
+        0,
+        2.0
+      ],
+      "to": [
+        15.5,
+        1,
+        14.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            0.5,
+            15,
+            2.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            14.0,
+            15,
+            15.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            2.0,
+            15,
+            14.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            14.0,
+            2.0,
+            15.5,
+            14.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            14.0,
+            2.0,
+            15.5,
+            14.0
+          ]
+        }
+      }
+    }
+  ]
+}

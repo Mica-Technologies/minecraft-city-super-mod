@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "389 blocks in this tab"
+!!! info "391 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -111,6 +111,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Octagon Concrete Thick Traffic Pole | `csm:trafficpoleverticalconcreteoctagon` | 2 | 10 | pickaxe | 1 |
 | Octagon Concrete Thin Traffic Pole | `csm:trafficpolehorizontalconcreteoctagon` | 2 | 10 | pickaxe | 1 |
 | Overhead Message Sign | `csm:overhead_message_sign` | 2 | 10 | pickaxe | 1 |
+| Overhead Sign Truss | `csm:sign_truss` | 3.0 | 12.0 | pickaxe | 1 |
+| Overhead Sign Truss (2x2) | `csm:sign_truss_large` | 3.0 | 12.0 | pickaxe | 1 |
 | Overhead Variable Speed Limit Sign | `csm:overhead_speed_limit_sign` | 2 | 10 | pickaxe | 1 |
 | Plumbizer Signal Mount | `csm:plumbizer_signal_mount` |  | 10 | pickaxe | 1 |
 | Pole Finial | `csm:trafficpolefinial` | 2 | 10 | pickaxe | 1 |

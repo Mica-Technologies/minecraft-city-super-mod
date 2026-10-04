@@ -1,0 +1,133 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficaccessories/truss/sign_truss_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "y"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_chords"
+      }
+    },
+    {
+      "when": {
+        "axis": "y"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_lacing"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_end_top"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "end_neg": "true",
+        "base": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_end_bottom"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_base"
+      }
+    },
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_chords",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_lacing",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_end_top",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_end_bottom",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_chords",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_lacing",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_end_top",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_end_bottom",
+        "x": 90,
+        "y": 90
+      }
+    }
+  ]
+}

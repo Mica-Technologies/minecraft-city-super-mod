@@ -1,0 +1,632 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficaccessories/truss/sign_truss_large_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "false",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "false",
+        "end_neg": "true",
+        "base": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "false",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_base"
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "false",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "false",
+        "end_neg": "true",
+        "base": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "false",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "true",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "true",
+        "end_neg": "true",
+        "base": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "true",
+        "b_high": "true",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "true",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "true",
+        "end_neg": "true",
+        "base": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "y",
+        "a_high": "false",
+        "b_high": "true",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "false",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "false",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "true",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "false",
+        "b_high": "true",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "false",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "false",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "true",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "a_high": "true",
+        "b_high": "true",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 270,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "false",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "false",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "true",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "false",
+        "b_high": "true",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 270,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "false"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "false",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "false",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 90,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_chord",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_lacing",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "true",
+        "end_pos": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_top",
+        "x": 270,
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "a_high": "true",
+        "b_high": "true",
+        "end_neg": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_large_end_bottom",
+        "x": 270,
+        "y": 270
+      }
+    }
+  ]
+}
