@@ -75,6 +75,12 @@ public class BlockSignTrussLight extends AbstractBlock implements ISignTruss {
   public static final PropertyBool JOIN_POS = PropertyBool.create("join_pos");
   /** A frame standing on something that is not truss or air: base plates. */
   public static final PropertyBool BASE = PropertyBool.create("base");
+  /**
+   * A road sign hangs on the span's negative side across its depth (north for a span along x,
+   * west for one along z): clips run from its chords out to the sign's post.
+   */
+  public static final PropertyBool SIGN_NEG = PropertyBool.create("sign_neg");
+  public static final PropertyBool SIGN_POS = PropertyBool.create("sign_pos");
 
   /** The span's top chord's top, in its cell (gen_sign_truss.py's LT_TOP). */
   private static final float SPAN_TOP = 14.0f;
@@ -98,7 +104,8 @@ public class BlockSignTrussLight extends AbstractBlock implements ISignTruss {
     setDefaultState(blockState.getBaseState().withProperty(KIND, Kind.SPAN_X)
         .withProperty(END_NEG, false).withProperty(END_POS, false)
         .withProperty(JOIN_NEG, false).withProperty(JOIN_POS, false)
-        .withProperty(BASE, false));
+        .withProperty(BASE, false).withProperty(SIGN_NEG, false)
+        .withProperty(SIGN_POS, false));
   }
 
   private static Material stash(String registryName) {
@@ -114,7 +121,8 @@ public class BlockSignTrussLight extends AbstractBlock implements ISignTruss {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, KIND, END_NEG, END_POS, JOIN_NEG, JOIN_POS, BASE);
+    return new CsmBlockStateContainer(this, KIND, END_NEG, END_POS, JOIN_NEG, JOIN_POS, BASE,
+        SIGN_NEG, SIGN_POS);
   }
 
   @Override
@@ -163,6 +171,10 @@ public class BlockSignTrussLight extends AbstractBlock implements ISignTruss {
       Kind p = kindAt(world, pos.offset(neg.getOpposite()));
       boolean joinNeg = n != null && !n.isSpan() && n.spanAxis() == kind.spanAxis();
       boolean joinPos = p != null && !p.isSpan() && p.spanAxis() == kind.spanAxis();
+      // across the span's depth: z for a span along x, x for one along z
+      EnumFacing side = kind.spanAxis() == EnumFacing.Axis.X ? EnumFacing.NORTH : EnumFacing.WEST;
+      state = state.withProperty(SIGN_NEG, hangsSign(world, pos.offset(side)))
+          .withProperty(SIGN_POS, hangsSign(world, pos.offset(side.getOpposite())));
       return state.withProperty(JOIN_NEG, joinNeg).withProperty(JOIN_POS, joinPos)
           .withProperty(END_NEG, n != kind && !joinNeg)
           .withProperty(END_POS, p != kind && !joinPos)
@@ -173,7 +185,16 @@ public class BlockSignTrussLight extends AbstractBlock implements ISignTruss {
         && !world.isAirBlock(pos.down());
     return state.withProperty(END_NEG, endNeg)
         .withProperty(END_POS, kindAt(world, pos.up()) != kind)
-        .withProperty(BASE, base).withProperty(JOIN_NEG, false).withProperty(JOIN_POS, false);
+        .withProperty(BASE, base).withProperty(JOIN_NEG, false).withProperty(JOIN_POS, false)
+        .withProperty(SIGN_NEG, false).withProperty(SIGN_POS, false);
+  }
+
+  /** Whether a road sign at a position hangs on a truss behind it (this one). */
+  private static boolean hangsSign(IBlockAccess world, BlockPos pos) {
+    return world.getBlockState(pos).getBlock()
+        instanceof com.micatechnologies.minecraft.csm.trafficsigns.AbstractBlockSign
+        && com.micatechnologies.minecraft.csm.trafficsigns.AbstractBlockSign
+        .getBlockIsInFrontOfSignTruss(world, pos);
   }
 
   @Override

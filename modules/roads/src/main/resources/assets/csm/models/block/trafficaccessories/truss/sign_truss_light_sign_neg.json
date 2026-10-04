@@ -1,0 +1,148 @@
+{
+  "textures": {
+    "chord": "csm:blocks/trafficaccessories/truss/truss_chord",
+    "plate": "csm:blocks/trafficaccessories/truss/truss_plate",
+    "lace": "csm:blocks/trafficaccessories/truss/truss_light_lace",
+    "brace": "csm:blocks/trafficaccessories/truss/truss_light_brace",
+    "ladder": "csm:blocks/trafficaccessories/truss/truss_ladder",
+    "particle": "csm:blocks/trafficaccessories/truss/truss_chord"
+  },
+  "elements": [
+    {
+      "from": [
+        7.25,
+        2.0,
+        0
+      ],
+      "to": [
+        8.75,
+        3.25,
+        3.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            12.75,
+            8.75,
+            14.0
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            12.75,
+            8.75,
+            14.0
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            13.0,
+            12.75,
+            16.0,
+            14.0
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            12.75,
+            3.0,
+            14.0
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            3.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            13.0,
+            8.75,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.25,
+        12.75,
+        0
+      ],
+      "to": [
+        8.75,
+        14.0,
+        3.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            2.0,
+            8.75,
+            3.25
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            2.0,
+            8.75,
+            3.25
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            13.0,
+            2.0,
+            16.0,
+            3.25
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            2.0,
+            3.0,
+            3.25
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            3.0
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            7.25,
+            13.0,
+            8.75,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

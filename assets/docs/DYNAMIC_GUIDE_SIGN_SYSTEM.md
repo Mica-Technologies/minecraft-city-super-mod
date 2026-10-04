@@ -395,6 +395,11 @@ assets from `gen_sign_truss.py`) are what a guide sign hangs from over a road.
   of the truss in the block behind it (`trussTopBehind`, looking 8 blocks up and 4 down), with a
   clamp over the truss's front chord. A sign placed against a truss starts as TRUSS. The truss
   top is part of the hardware display list's key, so a truss built after the sign is picked up.
+- **Road signs**: an `AbstractBlockSign` facing square away from a truss span behind it takes
+  the setback shift (`getBlockIsInFrontOfSignTruss`, beside the signal arm case), which puts its
+  own post against the truss as the hanger. Nothing is added to the signs' 686 blockstates; the
+  low-profile truss draws clips from its chords out to the post instead (`sign_neg`, `sign_pos`,
+  on the truss), since its chords sit three sixteenths in from the face.
 
 ## Key Bugs Fixed (design constraints to preserve)
 
