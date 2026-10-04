@@ -1415,3 +1415,4 @@ gui.csm.utility_box.phone=Trouble Phone Number
 gui.csm.utility_box.phone_default=Leave the phone number empty for %s
 tile.sign_truss.name=Overhead Sign Truss
 tile.sign_truss_large.name=Overhead Sign Truss (2x2)
+tile.sign_truss_catwalk.name=Sign Truss Catwalk

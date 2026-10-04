@@ -1,0 +1,122 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficaccessories/truss/sign_truss_catwalk_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_west": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_west"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_east": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_east"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_west": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_west",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_east": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_east",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_west": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_west",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_east": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_east",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_west": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_west",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_east": "true"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/truss/sign_truss_catwalk_end_east",
+        "y": 270
+      }
+    }
+  ]
+}

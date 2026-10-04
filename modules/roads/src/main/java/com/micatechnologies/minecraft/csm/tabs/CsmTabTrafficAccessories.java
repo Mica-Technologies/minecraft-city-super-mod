@@ -694,6 +694,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
         fmlPreInitializationEvent);
     initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockSignTruss("sign_truss", false));
     initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockSignTruss("sign_truss_large", true));
+    initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.truss.BlockTrussCatwalk("sign_truss_catwalk"));
 
     // --- Class-based: Dynamic Street Sign ---
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockDynamicStreetSign.class,
