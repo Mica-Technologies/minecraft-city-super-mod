@@ -1222,6 +1222,20 @@ so inside the corridor everything else can still be clicked.
   sheared nor turned to that angle. Level pieces count a sloped run a block above or below as
   carrying on, so no frame closes the join.
 
+- **Large jet bridge** (2026-10): for terminals built at a large scale, with 14-block ceilings
+  and more, where the level bridge reads as a pipe. The tunnel, sloped tunnel, cab and drive leg
+  again, three blocks wide and four tall inside (`airport_jet_bridge_large_*`). It is the same
+  bridge scaled, drawn from the same elements (`gen_transit_airside.py`'s `jet_bridge_large`,
+  `LJ_SX` and `LJ_SY`): across about the block's middle, and up above the floor's top, so the
+  floor keeps its thickness and both sizes meet a door at the same height. The cab's console,
+  bumper and safety bar keep their real heights. Every piece reaches up to two and a half blocks
+  past its cell, so all of it is OBJ. It still needs no other block. The game looks for collision
+  boxes in the blocks within a block of the *player's* box, not of the block's, and a player
+  inside a three-wide corridor is never more than a block from its centre line, nor far above its
+  floor. So the root's boxes (`BlockJetBridge.toLarge`, the level boxes scaled the same way) are
+  always looked at. The two sizes do not join each other. There is no large rotunda: a room that
+  wide would put a player more than a block from its root, and it would need part blocks.
+
 Each piece gives light 9 inside. The facing is the way to the aircraft (the model's north), the
 same for every piece of one bridge.
 
@@ -1235,6 +1249,10 @@ same for every piece of one bridge.
   sixteenths above (`BlockJetBridgeSlope.boxes`): feet sink a sixteenth or two into the carpet,
   and nobody sees the roof. Walked down and up both grades, 2026-10-04.
 
+- **The large jet bridge collides only from inside.** From outside, a player more than a block
+  from the root's cell (beside a wall, or on the roof) is out of the reach that makes a single
+  block work: the roof cannot be stood on, and an outer wall stops a player only once they are
+  inside its thickness. Nobody walks there on a real bridge either.
 - **The jet bridge's numbers are in two places.** `BlockJetBridge`'s collision boxes and floors
   and the generator's `JB_*`, `CAB_*` and `ROT` share the section; change one, change both.
 - **An element may not reach past -16 or 32**, so the corridor stops at two blocks tall, the

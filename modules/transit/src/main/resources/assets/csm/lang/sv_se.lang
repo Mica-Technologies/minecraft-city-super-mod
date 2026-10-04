@@ -204,3 +204,7 @@ gui.csm.wayfinding.scheme.metro=Tunnelbana
 gui.csm.wayfinding.scheme.exit=Utgång
 gui.csm.wayfinding.scheme.info=Information
 tile.airport_wayfinding_panel.name=Stor Hängande Skylt
+tile.airport_jet_bridge_large_tunnel.name=Stor Flygbrygga (Tunnel)
+tile.airport_jet_bridge_large_cab.name=Stor Flygbrygga (Hytt)
+tile.airport_jet_bridge_large_slope.name=Stor Flygbrygga (Lutande Tunnel)
+tile.airport_jet_bridge_large_drive.name=Stor Flygbrygga (Drivben)

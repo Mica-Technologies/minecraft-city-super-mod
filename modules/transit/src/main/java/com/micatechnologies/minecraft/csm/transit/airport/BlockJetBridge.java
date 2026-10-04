@@ -28,6 +28,14 @@ import net.minecraft.world.World;
  * solid without any other block being placed. What the player aims at is the floor alone, so from
  * inside the corridor anything else there can still be clicked.</p>
  *
+ * <p>The large pieces ({@link #isLarge}) are the same bridge scaled for terminals built at a
+ * large scale: three blocks wide and four tall inside ({@link #toLarge}, gen_transit_airside.py's
+ * {@code LJ_SX} and {@code LJ_SY}). They still need no other block: a player inside is never more
+ * than a block from the piece's own cell, across or up, so its collision boxes are always looked
+ * at. From outside, beyond that block, they are not: the large bridge's roof cannot be stood on
+ * and its outer walls stop a player only once they are inside them. Large pieces join large
+ * pieces only.</p>
+ *
  * <p>Pieces join along the facing's axis ({@link #AHEAD}, {@link #BEHIND}, actual state): a
  * tunnel or cab next to it, or a rotunda two blocks away (the rotunda's collar reaches the edge of
  * its three blocks). Where a piece does not continue it draws a frame round the open end. The cab
@@ -71,7 +79,19 @@ public class BlockJetBridge extends BlockPlatformFixture {
   private static final double[] CAB_FLOOR = {-10, 0, -5.4, 26, 1.5, 16};
   private static final double[] ROTUNDA_FLOOR = {-14, 0, -16, 30, 1.5, 32};
 
+  /**
+   * How the large bridge scales the level one, across about the block's middle and up above the
+   * floor's top (gen_transit_airside.py's {@code LJ_SX}, {@code LJ_SY}).
+   */
+  static final double LARGE_SX = 48.0 / 29.0;
+  static final double LARGE_SY = 64.0 / 29.0;
+  /** The floor's top, which the large bridge keeps, so both meet a door at the same height. */
+  static final double FLOOR = 1.5;
+  /** The cab's safety bar: a fence's height at any size (CAB's last box). */
+  private static final int CAB_BAR = 5;
+
   private final Kind kind;
+  private final boolean large;
   private final AxisAlignedBB[] boxes;
   private final AxisAlignedBB floor;
 
@@ -82,15 +102,57 @@ public class BlockJetBridge extends BlockPlatformFixture {
    * @param kind         what it is
    */
   public BlockJetBridge(String registryName, Kind kind) {
-    super(registryName, floorOf(kind), false, LIGHT);
+    this(registryName, kind, false);
+  }
+
+  /**
+   * Constructs a piece of jet bridge, level or large.
+   *
+   * @param registryName its registry name
+   * @param kind         what it is (a large bridge has no rotunda)
+   * @param large        whether it is the large bridge, three blocks wide and four tall inside
+   */
+  public BlockJetBridge(String registryName, Kind kind, boolean large) {
+    super(registryName, large ? toLarge(floorOf(kind), true) : floorOf(kind), false, LIGHT);
+    if (large && kind == Kind.ROTUNDA) {
+      throw new IllegalArgumentException("the large jet bridge has no rotunda");
+    }
     this.kind = kind;
+    this.large = large;
     double[][] from = kind == Kind.TUNNEL ? TUNNEL : kind == Kind.CAB ? CAB : ROTUNDA;
     this.boxes = new AxisAlignedBB[from.length];
     for (int i = 0; i < from.length; i++) {
-      this.boxes[i] = box(from[i]);
+      double[] b = from[i];
+      if (large) {
+        b = toLarge(b, !(kind == Kind.CAB && i == CAB_BAR));
+      }
+      this.boxes[i] = box(b);
     }
-    this.floor = box(floorOf(kind));
+    this.floor = box(large ? toLarge(floorOf(kind), true) : floorOf(kind));
     setDefaultState(getDefaultState().withProperty(AHEAD, false).withProperty(BEHIND, false));
+  }
+
+  /**
+   * A box of the level bridge as the large bridge has it: across about the block's middle, and
+   * (with {@code up}) up above the floor's top.
+   *
+   * @param b  x0, y0, z0, x1, y1, z1 in sixteenths
+   * @param up whether its heights scale too
+   *
+   * @return the large bridge's box
+   */
+  static double[] toLarge(double[] b, boolean up) {
+    return new double[]{8 + (b[0] - 8) * LARGE_SX, up ? largeY(b[1]) : b[1], b[2],
+        8 + (b[3] - 8) * LARGE_SX, up ? largeY(b[4]) : b[4], b[5]};
+  }
+
+  private static double largeY(double y) {
+    return y <= FLOOR ? y : FLOOR + (y - FLOOR) * LARGE_SY;
+  }
+
+  /** Whether this is the large bridge. */
+  public boolean isLarge() {
+    return large;
   }
 
   private static double[] floorOf(Kind kind) {
@@ -131,13 +193,13 @@ public class BlockJetBridge extends BlockPlatformFixture {
   private boolean continues(IBlockAccess world, BlockPos pos, EnumFacing dir, EnumFacing facing) {
     int edge = kind == Kind.ROTUNDA ? 2 : 1;
     BlockPos next = pos.offset(dir, edge);
-    if (isBridgeOnAxis(world, next, facing.getAxis())
-        || isRotundaOnAxis(world, pos.offset(dir, edge + 1), facing.getAxis())) {
+    if (isBridgeOnAxis(world, next, facing.getAxis(), large)
+        || isRotundaOnAxis(world, pos.offset(dir, edge + 1), facing.getAxis(), large)) {
       return true;
     }
     // a sloped run, its low end a block above this level or its high end a block below
-    return isSlopeOnAxis(world, next.up(), facing.getAxis())
-        || isSlopeOnAxis(world, next.down(), facing.getAxis());
+    return isSlopeOnAxis(world, next.up(), facing.getAxis(), large)
+        || isSlopeOnAxis(world, next.down(), facing.getAxis(), large);
   }
 
   /**
@@ -147,29 +209,37 @@ public class BlockJetBridge extends BlockPlatformFixture {
    * @param world the world
    * @param pos   the position
    * @param axis  the bridge's axis
+   * @param large whether the large bridge is meant (the two sizes do not join)
    *
    * @return whether one is there
    */
-  static boolean isBridgeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+  static boolean isBridgeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis,
+      boolean large) {
     IBlockState s = world.getBlockState(pos);
     if (s.getBlock() instanceof BlockJetBridge) {
-      return ((BlockJetBridge) s.getBlock()).kind != Kind.ROTUNDA
+      BlockJetBridge bridge = (BlockJetBridge) s.getBlock();
+      return bridge.kind != Kind.ROTUNDA && bridge.large == large
           && s.getValue(FACING).getAxis() == axis;
     }
-    return isSlopeOnAxis(world, pos, axis);
+    return isSlopeOnAxis(world, pos, axis, large);
   }
 
   /** Whether a rotunda on an axis is at a position (its collar reaches a block past its own). */
-  static boolean isRotundaOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+  static boolean isRotundaOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis,
+      boolean large) {
     IBlockState s = world.getBlockState(pos);
     return s.getBlock() instanceof BlockJetBridge
         && ((BlockJetBridge) s.getBlock()).kind == Kind.ROTUNDA
+        && ((BlockJetBridge) s.getBlock()).large == large
         && s.getValue(FACING).getAxis() == axis;
   }
 
-  private static boolean isSlopeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis) {
+  private static boolean isSlopeOnAxis(IBlockAccess world, BlockPos pos, EnumFacing.Axis axis,
+      boolean large) {
     IBlockState s = world.getBlockState(pos);
-    return s.getBlock() instanceof BlockJetBridgeSlope && s.getValue(FACING).getAxis() == axis;
+    return s.getBlock() instanceof BlockJetBridgeSlope
+        && ((BlockJetBridgeSlope) s.getBlock()).isLarge() == large
+        && s.getValue(FACING).getAxis() == axis;
   }
 
   /** What the player aims at: the floor, so the corridor's inside can still be clicked. */

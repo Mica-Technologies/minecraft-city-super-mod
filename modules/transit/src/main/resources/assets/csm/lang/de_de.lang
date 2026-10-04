@@ -204,3 +204,7 @@ gui.csm.wayfinding.scheme.metro=Metro
 gui.csm.wayfinding.scheme.exit=Ausgang
 gui.csm.wayfinding.scheme.info=Information
 tile.airport_wayfinding_panel.name=Großes Hängeschild
+tile.airport_jet_bridge_large_tunnel.name=Große Fluggastbrücke (Tunnel)
+tile.airport_jet_bridge_large_cab.name=Große Fluggastbrücke (Kabine)
+tile.airport_jet_bridge_large_slope.name=Große Fluggastbrücke (Geneigter Tunnel)
+tile.airport_jet_bridge_large_drive.name=Große Fluggastbrücke (Fahrwerk)

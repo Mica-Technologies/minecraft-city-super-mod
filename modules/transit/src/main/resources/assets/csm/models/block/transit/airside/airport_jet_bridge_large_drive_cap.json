@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "leg": "csm:blocks/transit/airside/jb_leg",
+    "tyre": "csm:blocks/transit/airside/tyre",
+    "particle": "csm:blocks/transit/airside/jb_leg"
+  },
+  "elements": [
+    {
+      "from": [
+        -16,
+        13.4,
+        5.6
+      ],
+      "to": [
+        32,
+        16,
+        10.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#leg",
+          "uv": [
+            0,
+            0,
+            16,
+            2.6
+          ]
+        },
+        "south": {
+          "texture": "#leg",
+          "uv": [
+            0,
+            0,
+            16,
+            2.6
+          ]
+        },
+        "east": {
+          "texture": "#leg",
+          "uv": [
+            5.6,
+            0,
+            10.4,
+            2.6
+          ]
+        },
+        "west": {
+          "texture": "#leg",
+          "uv": [
+            5.6,
+            0,
+            10.4,
+            2.6
+          ]
+        },
+        "up": {
+          "texture": "#leg",
+          "uv": [
+            0,
+            0,
+            16,
+            4.8
+          ]
+        },
+        "down": {
+          "texture": "#leg",
+          "uv": [
+            0,
+            0,
+            16,
+            4.8
+          ]
+        }
+      }
+    }
+  ]
+}

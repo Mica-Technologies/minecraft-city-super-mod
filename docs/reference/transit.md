@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside.
 
-!!! info "121 blocks in this tab"
+!!! info "125 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -78,6 +78,10 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Jet Bridge (Sloped Tunnel) | `csm:airport_jet_bridge_slope` | 2.0 | 6.0 | pickaxe | 1 |
 | Jet Bridge (Tunnel) | `csm:airport_jet_bridge_tunnel` | 2.0 | 6.0 | pickaxe | 1 |
 | Large Hanging Sign | `csm:airport_wayfinding_panel` | 2.0 | 6.0 | pickaxe | 1 |
+| Large Jet Bridge (Cab) | `csm:airport_jet_bridge_large_cab` | 2.0 | 6.0 | pickaxe | 1 |
+| Large Jet Bridge (Drive Leg) | `csm:airport_jet_bridge_large_drive` | 2.0 | 6.0 | pickaxe | 1 |
+| Large Jet Bridge (Sloped Tunnel) | `csm:airport_jet_bridge_large_slope` | 2.0 | 6.0 | pickaxe | 1 |
+| Large Jet Bridge (Tunnel) | `csm:airport_jet_bridge_large_tunnel` | 2.0 | 6.0 | pickaxe | 1 |
 | Line Bullet | `csm:station_line_bullet` | 2.0 | 6.0 | pickaxe | 1 |
 | Luggage Cart | `csm:airport_luggage_cart` | 2.0 | 6.0 | pickaxe | 1 |
 | Luggage Cart Rack | `csm:airport_cart_rack` | 2.0 | 6.0 | pickaxe | 1 |
