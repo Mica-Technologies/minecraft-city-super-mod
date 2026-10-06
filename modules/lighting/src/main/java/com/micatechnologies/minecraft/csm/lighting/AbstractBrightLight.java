@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -38,6 +39,18 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     this.setDefaultState(this.blockState.getBaseState()
         .withProperty(FACING, EnumFacing.NORTH)
         .withProperty(STATE, STATE_RS_OFF));
+    // A light can arrive already lit without passing through neighborChanged or onBlockActivated:
+    // a FAWE paste writes chunk sections directly and never calls onBlockAdded. The random tick
+    // (which vanilla routes to updateTick) is what notices its missing lightupair.
+    setTickRandomly(true);
+  }
+
+  /**
+   * Whether the state is one of the two lit states.
+   */
+  public static boolean isLit(IBlockState state) {
+    int stateValue = state.getValue(STATE);
+    return stateValue == STATE_MAN_ON || stateValue == STATE_RS_ON;
   }
 
   /**
@@ -130,10 +143,24 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     return cachedLightupAirBlock;
   }
 
-  private void handleAirLightBlock(boolean on, World world, BlockPos pos) {
+  /**
+   * Places this light's lightupair if it is missing, which is what a light that arrived already
+   * lit (setblock, fill, clone, a structure, a WorldEdit or FAWE paste) needs. Does nothing if the
+   * column below already holds one, so it is safe to call as often as the ticks come.
+   *
+   * @return {@code true} if a lightupair was placed
+   */
+  public boolean ensureAirLightBlock(World world, BlockPos pos) {
+    if (world.isRemote) {
+      return false;
+    }
+    return handleAirLightBlock(true, world, pos);
+  }
+
+  private boolean handleAirLightBlock(boolean on, World world, BlockPos pos) {
     Block lightupAir = getLightupAirBlock();
     if (lightupAir == null) {
-      return;
+      return false;
     }
     final int xWithOffset = pos.getX() + getBrightLightXOffset();
     final int zWithOffset = pos.getZ() + getBrightLightZOffset();
@@ -143,6 +170,15 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
       for (int findy = -1; findy >= -16; findy--) {
         final int yWithOffset = pos.getY() + findy;
         BlockPos test = new BlockPos(xWithOffset, yWithOffset, zWithOffset);
+        // An offset column can reach into a neighbouring chunk; never load one to light it
+        if (!world.isBlockLoaded(test)) {
+          return false;
+        }
+        // Already lit: a lightupair is not air, so without this the scan would stop on it and
+        // place a second one in the cell above, and every later call another
+        if (world.getBlockState(test).getBlock() == lightupAir) {
+          return false;
+        }
         // found block that is not air
         if (world.isAirBlock(test)) {
           // dont add light if block is right below street light
@@ -156,6 +192,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
       // add if marked for add
       if (doAddAt != null) {
         world.setBlockState(doAddAt, lightupAir.getDefaultState(), 3);
+        return true;
       }
     }
     // Remove light
@@ -175,6 +212,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
         }
       }
     }
+    return false;
   }
 
   abstract public int getBrightLightXOffset();
@@ -197,6 +235,20 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
       IBlockState p_onBlockAdded_3_) {
     p_onBlockAdded_1_.scheduleUpdate(p_onBlockAdded_2_, this, this.tickRate(p_onBlockAdded_1_));
     super.onBlockAdded(p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_);
+  }
+
+  /**
+   * Gives a lit light its lightupair if it has none. Runs from the update {@link #onBlockAdded}
+   * schedules (setblock, fill, clone, structures, WorldEdit), a tick late so a paste has finished
+   * writing the floor below, and from every random tick (FAWE, and worlds that already hold dark
+   * lit fixtures).
+   */
+  @Override
+  public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+    super.updateTick(world, pos, state, rand);
+    if (!world.isRemote && isLit(state)) {
+      ensureAirLightBlock(world, pos);
+    }
   }
 
   @Override

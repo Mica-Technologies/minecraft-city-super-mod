@@ -6,6 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -57,5 +58,10 @@ public class CsmLighting {
   public void init(FMLInitializationEvent event) {
     // Client: bind this module's tile-entity renderers. Server: nothing.
     proxy.init(event);
+  }
+
+  @Mod.EventHandler
+  public void serverStarting(FMLServerStartingEvent event) {
+    event.registerServerCommand(new CommandLighting());
   }
 }
