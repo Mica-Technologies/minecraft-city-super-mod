@@ -50,6 +50,12 @@ public final class CsmRenderToggles {
    */
   public static boolean skipSignalVisibilityMask = false;
 
+  /**
+   * Skip the per-frame fade of incandescent sections, so their lenses switch on and off at once
+   * like an LED's. Only a head with an incandescent section that is mid-fade draws it at all.
+   */
+  public static boolean skipSignalIncandescentFade = false;
+
   /** Skip the traffic signal head's cached body/door/visor display list. Measurement only. */
   public static boolean skipSignalBody = false;
 
@@ -164,6 +170,7 @@ public final class CsmRenderToggles {
     values.put("signalBody", skipSignalBody);
     values.put("signalVisibilityWash", skipSignalVisibilityWash);
     values.put("signalVisibilityMask", skipSignalVisibilityMask);
+    values.put("signalIncandescentFade", skipSignalIncandescentFade);
     values.put("visorInteriorsPerFrame", visorInteriorsPerFrame);
     values.put("bulbsPerFrame", bulbsPerFrame);
     values.put("crosswalkArms", skipCrosswalkArms);
@@ -207,6 +214,8 @@ public final class CsmRenderToggles {
       skipSignalVisibilityWash = skipped;
     } else if ("signalVisibilityMask".equalsIgnoreCase(name)) {
       skipSignalVisibilityMask = skipped;
+    } else if ("signalIncandescentFade".equalsIgnoreCase(name)) {
+      skipSignalIncandescentFade = skipped;
     } else if ("visorInteriorsPerFrame".equalsIgnoreCase(name)) {
       visorInteriorsPerFrame = skipped;
     } else if ("bulbsPerFrame".equalsIgnoreCase(name)) {
@@ -259,6 +268,7 @@ public final class CsmRenderToggles {
     skipSignalBody = false;
     skipSignalVisibilityWash = false;
     skipSignalVisibilityMask = false;
+    skipSignalIncandescentFade = false;
     visorInteriorsPerFrame = false;
     bulbsPerFrame = false;
     skipCrosswalkArms = false;

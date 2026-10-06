@@ -1337,6 +1337,34 @@ life behind a `shaderCompatibilityMode` config gate, but the white-tint bug occu
 shaders too (any time display-list compile order leaves `white1px` bound), so the bind is no
 longer gated. Any reference to a `shaderCompatibilityMode` option is legacy.
 
+### Incandescent fade
+
+A section with the incandescent bulb style warms up and cools down instead of switching, the
+way a filament does; LED, GTX and DR6 sections still switch within a frame. The model is
+`logic/IncandescentFade`: an exponential rise (time constant 50 ms, 90% at about 115 ms) and a
+slower exponential decay (90 ms, 10% at about 205 ms), since a lamp is driven while it heats and
+only radiates while it cools. The numbers are scaled from measured 12 V automotive signal bulbs
+(about 140 ms rise and 120 ms decay; Agilent/Broadcom AN 1155-3), a little quicker for the
+thinner filament of a 120 V traffic lamp. A lamp switched again mid-fade starts from where it
+was, so a fast flasher never jumps.
+
+Nothing is baked for it. The bulb display list already shows the new state, and
+`renderIncandescentFades` draws the state being left over it, one lens quad per fading section
+through `emitBulbQuad`, at the opacity that state still shows. A settled head draws nothing, and
+a head with no incandescent section never makes its `IncandescentFade.Tracker` (a transient
+field on the tile entity, client only, never saved).
+
+Two rules keep it from fading at the wrong time:
+
+* A change first seen after `STALE_MILLIS` (250 ms) with no frame drawn is shown settled, so a
+  head that switched while off screen does not fade the moment it comes back into view.
+* Sections behind louvers or a programmable visor are left out. Their visibility is worked out
+  for lit sections only, so a lamp cooling behind one would glow at angles the louvers hide.
+
+`/csm renderpass skip signalIncandescentFade` turns it off. Measured in a flashing-red burst at
+night, the incandescent lens climbed over about 130 ms and dimmed over about 250 ms, while an LED
+head beside it switched within one frame.
+
 ## Signal Backplate Colourways
 
 Every backplate block is one of six model families -- `tlborder` (3-section, plus `8inch` and

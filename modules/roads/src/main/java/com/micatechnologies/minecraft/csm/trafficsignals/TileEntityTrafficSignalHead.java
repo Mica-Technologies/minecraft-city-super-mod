@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLi
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireHangOffset;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.SpanWireManager;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.IncandescentFade;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalVisibilityArea;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
@@ -368,6 +369,22 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
   /** The cached render layout, or null when it must be derived again. Client only in practice. */
   private transient RenderLayout renderLayout;
+
+  /**
+   * How far each incandescent lamp has heated or cooled, as the renderer last drew it. Client only,
+   * made on the first frame that draws an incandescent section and never saved.
+   */
+  private transient IncandescentFade.Tracker incandescentFade;
+
+  /** This head's incandescent fade tracker, made on first use. Called from the renderer only. */
+  public IncandescentFade.Tracker getIncandescentFade() {
+    IncandescentFade.Tracker tracker = incandescentFade;
+    if (tracker == null) {
+      tracker = new IncandescentFade.Tracker();
+      incandescentFade = tracker;
+    }
+    return tracker;
+  }
 
   /**
    * The last layout signature this head's server copy sent its clients, or
