@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
@@ -30,6 +31,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -146,6 +148,9 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * change. MIN_VALUE forces the next write, after a link or unlink.
    */
   private transient int litPreemptCircuit = Integer.MIN_VALUE;
+
+  /** Whether the preempt last shown on the beacons was an emergency vehicle's. */
+  private transient boolean litPreemptEmergency = false;
 
   /**
    * The list of cached phases for the traffic signal controller.
@@ -794,7 +799,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           }
         }
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
-        showPreemptIndicators(advancedRuntime.getActivePreemptTriggerCircuit(plan));
+        showPreemptIndicators(advancedRuntime.getActivePreemptTriggerCircuit(plan),
+            advancedRuntime.isActivePreemptEmergency(plan));
       } else if (resumeOnPrimaryGreen && currentPhase == null
           && operatingMode == TrafficSignalControllerMode.NORMAL) {
         // Out of yellow-red flash: the main street's flashing yellow goes to green and the side
@@ -821,7 +827,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       }
       resumeOnPrimaryGreen = false;
       if (operatingMode != TrafficSignalControllerMode.ADVANCED) {
-        showPreemptIndicators(-1);   // preemption runs in ADVANCED mode only
+        showPreemptIndicators(-1, false);   // preemption runs in ADVANCED mode only
       }
 
       // If the phase index has changed, update the phase
@@ -2938,20 +2944,35 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   // endregion
   /**
    * Lights the preemption beacons of the circuit whose preempt is running and darkens every
-   * other circuit's. Written only when that circuit changes, or after a link or unlink.
+   * other circuit's -- except the red beacons, which an emergency-vehicle preempt lights on every
+   * circuit, so each approach sees that an emergency vehicle has the intersection. Written only
+   * when the running preempt changes, or after a link or unlink.
    *
-   * @param circuit the running preempt's trigger circuit, or -1 for none
+   * @param circuit   the running preempt's trigger circuit, or -1 for none
+   * @param emergency whether the running preempt is an emergency vehicle's
    */
-  private void showPreemptIndicators(int circuit) {
-    if (circuit == litPreemptCircuit || getWorld() == null || circuits == null) {
+  private void showPreemptIndicators(int circuit, boolean emergency) {
+    if ((circuit == litPreemptCircuit && emergency == litPreemptEmergency)
+        || getWorld() == null || circuits == null) {
       return;
     }
     litPreemptCircuit = circuit;
+    litPreemptEmergency = emergency;
     for (int i = 0; i < circuits.getCircuitCount(); i++) {
       for (BlockPos pos : circuits.getCircuit(i).getPreemptIndicators()) {
-        setIndicator(pos, i == circuit);
+        setIndicator(pos, i == circuit || (emergency && isLitForAnyEmergencyPreempt(pos)));
       }
     }
+  }
+
+  /** Whether the beacon at {@code pos} is a red, every-circuit one; false if unloaded. */
+  private boolean isLitForAnyEmergencyPreempt(BlockPos pos) {
+    if (!getWorld().isBlockLoaded(pos)) {
+      return false;
+    }
+    Block block = getWorld().getBlockState(pos).getBlock();
+    return block instanceof BlockPreemptBeacon
+        && ((BlockPreemptBeacon) block).isLitForAnyEmergencyPreempt();
   }
 
   /** Sets one preemption beacon's controller call, if its chunk is loaded. */

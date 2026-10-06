@@ -1063,7 +1063,7 @@ lights for redstone, as it always has, and for a controller: linked to a circuit
 Link Tool (`SIGNAL_SIDE.PREEMPT_INDICATOR`, the circuit's `pib` list), it is lit while a preempt
 triggered from that circuit runs, entry to exit (`RingBarrierState.getActivePreemptTriggerCircuit`).
 The controller writes each beacon's `TileEntityTrafficBeacon.controllerLit` only when that circuit
-changes or a device is linked or unlinked, and the beacon shows POWERED while either its controller
+(or its type) changes or a device is linked or unlinked, and the beacon shows POWERED while either its controller
 or redstone says so (`BlockPreemptBeacon.showPower`). Unlinking one darkens it. Preemption runs in
 ADVANCED mode only, so in any other mode a linked beacon answers redstone alone. Its bracket clips
 to the side of a pole: facing the approach, it sits in the cell beside the mast pole.
@@ -1074,6 +1074,13 @@ flashing once a second, and a red 360 degree dome with the beacon's double flash
 detector's mount stub on top of a thin pole (`gen_preempt_detector.py` writes their models, whose lens
 boxes the class's must match) and face the player placing them, never up, though they are placed
 onto the top of an arm.
+
+**The red ones answer every approach.** The beacon and the red dome
+(`BlockPreemptBeacon.isLitForAnyEmergencyPreempt`, true for both, false for the white and blue PAR
+lamps) are also lit while an emergency-vehicle preempt triggered from *any* of the controller's
+circuits runs (`RingBarrierState.isActivePreemptEmergency`), so every approach sees that an
+emergency vehicle has the intersection. A railroad or transit priority preempt still lights only
+its own circuit's lamps, and the white and blue lamps still confirm only their own approach.
 
 A **transit** emitter (a bus) is a separate call (`isTransitCalled()`, counted as
 `getTransitDetectorCalls()`): it never calls a preempt and never lights the lamp. It calls ADVANCED

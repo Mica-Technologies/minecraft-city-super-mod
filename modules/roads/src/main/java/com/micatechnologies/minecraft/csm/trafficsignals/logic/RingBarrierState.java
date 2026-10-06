@@ -2476,6 +2476,16 @@ public class RingBarrierState {
     return plan.getPreempts().get(activePreemptIndex).getTriggerCircuitIndex();
   }
 
+  /** Whether the preempt running now, whichever circuit called it, is an emergency vehicle's. */
+  public boolean isActivePreemptEmergency(TrafficSignalProgrammedPhasePlan plan) {
+    if (preemptStage == PreemptStage.NONE || activePreemptIndex < 0
+        || activePreemptIndex >= plan.getPreempts().size()) {
+      return false;
+    }
+    return plan.getPreempts().get(activePreemptIndex).getType()
+        == TrafficSignalPreemptType.EMERGENCY;
+  }
+
   private boolean isPreemptCalled(TrafficSignalPreempt preempt) {
     if (preempt.isTriggerOnDetectors()) {
       TrafficSignalSensorSummary summary = summaryForCircuit(preempt.getTriggerCircuitIndex());

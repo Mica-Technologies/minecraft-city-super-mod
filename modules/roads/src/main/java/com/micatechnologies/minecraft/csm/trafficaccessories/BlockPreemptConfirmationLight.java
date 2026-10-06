@@ -65,6 +65,12 @@ public abstract class BlockPreemptConfirmationLight extends BlockPreemptBeacon {
     return PAR_LENS_TO;
   }
 
+  /** A confirmation light answers its own approach only; the red dome overrides this. */
+  @Override
+  public boolean isLitForAnyEmergencyPreempt() {
+    return false;
+  }
+
   /** A PAR lamp flashes once a second, longer than the beacon's double strobe. */
   @Override
   public long getBeaconCycleMillis() {
