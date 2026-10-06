@@ -80,11 +80,39 @@ ground well. The solution is invisible "light-up air" blocks.
 ### How It Works
 
 When a light turns ON, `handleAirLightBlock(true, world, pos)` is called:
-1. Scans **downward** from the light's position (up to 16 blocks)
-2. Finds the first **air block** (skips the block directly beneath the light)
+1. Scans **downward** from the light's position (up to 16 blocks), through the air below it
+2. Takes the **lowest** air cell before the first non-air block, the one just above the floor,
+   unless that is the cell directly beneath the light
 3. Places a `BlockLightupAir` at that position (invisible, passable, emits light level 15)
 
-When a light turns OFF, the method removes any `BlockLightupAir` blocks in the column below.
+If the scan meets a `BlockLightupAir` first, the light already has one and nothing is placed: the
+lightupair is not air, so without that check the scan would stop on it and stack a second one in
+the cell above. Nor does the scan load a chunk; an offset column in an unloaded one is left alone.
+
+When a light turns OFF, the method removes the first `BlockLightupAir` in the column below.
+
+### Lights That Arrive Already Lit
+
+`neighborChanged` and `onBlockActivated` are not the only ways a lit state gets into the world:
+`/setblock`, `/fill`, `/clone`, structure blocks and WorldEdit or FAWE pastes all write one
+directly, and a light that arrives that way rendered lit but cast no light (issue #264). So a lit
+light heals itself, always on the lit side only (an off light never removes a lightupair):
+
+- `onBlockAdded` schedules an update, and `updateTick` places the missing lightupair. The tick
+  comes a little later so a paste has written the floor below first. This covers setblock, fill,
+  clone, structures and WorldEdit.
+- Bright lights tick randomly, and vanilla routes a random tick to `updateTick`. FAWE writes
+  chunk sections directly and never calls `onBlockAdded`, so this is what catches its pastes, and
+  worlds that already hold dark lit fixtures, about a minute after a player comes near at the
+  default `randomTickSpeed`. The heal is a short column scan that stops on the existing lightupair.
+  Test it at the default speed: FAWE's tick limiter (`physics-ms` in its `config.yml`) drops most
+  random ticks once `randomTickSpeed` is turned far up, so a cranked-up test reads as a heal that
+  never runs.
+- `/csmlighting relight <x1 y1 z1> <x2 y2 z2>` (op) does a whole box at once, loaded chunks only,
+  up to 512 x 64 x 512 blocks.
+
+A redstone light pasted in state 1 (on) with no power stays on: the heal never re-reads redstone,
+so a fixture set lit on purpose is not switched off.
 
 ### Light X-Offset
 
@@ -104,7 +132,7 @@ public int getBrightLightXOffset() { return 1; }  // 1 block to the side
 - Extends `AbstractBlockRotatableNSEWUD`
 - Invisible and passable (null collision box, tiny render box)
 - Replaceable (can be overwritten by block placement)
-- Render layer: TRANSLUCENT
+- Render layer: CUTOUT
 - Emits light level 15
 
 ## AbstractBrightLight Base Class
