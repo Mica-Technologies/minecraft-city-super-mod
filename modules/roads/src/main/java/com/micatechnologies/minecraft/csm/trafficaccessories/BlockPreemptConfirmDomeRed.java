@@ -47,6 +47,12 @@ public class BlockPreemptConfirmDomeRed extends BlockPreemptConfirmationLight {
     return DOME_LENS_TO;
   }
 
+  /** Red, so it lights for every emergency preempt, as the beacon does. */
+  @Override
+  public boolean isLitForAnyEmergencyPreempt() {
+    return true;
+  }
+
   /** The dome keeps the beacon's emergency double flash. */
   @Override
   public long getBeaconCycleMillis() {

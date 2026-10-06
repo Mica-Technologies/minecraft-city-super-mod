@@ -40,6 +40,16 @@ public class BlockPreemptBeacon extends AbstractPoweredBlockRotatableNSEWUD
     return "tlpreemptbeacon";
   }
 
+  /**
+   * Whether the controller lights this beacon for an emergency-vehicle preempt from any circuit,
+   * not only for a preempt its own circuit triggers. True for the red beacons, which tell every
+   * approach that an emergency vehicle has the intersection; the white and blue confirmation
+   * lights say only which approach was answered.
+   */
+  public boolean isLitForAnyEmergencyPreempt() {
+    return true;
+  }
+
   /** Redstone or the controller: lit while either says so. */
   @Override
   public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn,
