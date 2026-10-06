@@ -1355,11 +1355,16 @@ only radiates while it cools. The numbers are scaled from measured 12 V automoti
 thinner filament of a 120 V traffic lamp. A lamp switched again mid-fade starts from where it
 was, so a fast flasher never jumps.
 
-Nothing is baked for it. The bulb display list already shows the new state, and
-`renderIncandescentFades` draws the state being left over it, one lens quad per fading section
-through `emitBulbQuad`, at the opacity that state still shows. A settled head draws nothing, and
-a head with no incandescent section never makes its `IncandescentFade.Tracker` (a transient
-field on the tile entity, client only, never saved).
+Nothing is baked for it. `incandescentFadeLevels` works out each fading section's brightness
+once a frame (null when nothing is mid-fade), and two passes draw from it. The bulb display list
+already shows the new lens, and `renderIncandescentLensFades` draws the state being left over it,
+one lens quad per fading section through `emitBulbQuad`, at the opacity that state still shows.
+The visor interior fades with it: an unlit interior is black and a lit one is the bulb's tint at
+fullbright, so `renderIncandescentVisorFades` redraws the inner faces opaque at the lit tint times
+the brightness, over the same faces the display list drew (the overdraw the louvered visors' wash
+already relies on). A settled head draws nothing, and a head with no incandescent section never
+makes its `IncandescentFade.Tracker` (a transient field on the tile entity, client only, never
+saved).
 
 Two rules keep it from fading at the wrong time:
 
@@ -1369,8 +1374,8 @@ Two rules keep it from fading at the wrong time:
   for lit sections only, so a lamp cooling behind one would glow at angles the louvers hide.
 
 `/csm renderpass skip signalIncandescentFade` turns it off. Measured in a flashing-red burst at
-night, the incandescent lens climbed over about 130 ms and dimmed over about 250 ms, while an LED
-head beside it switched within one frame.
+night, the incandescent lens and its visor interior climbed over about 130 ms and dimmed over
+about 250 ms, while an LED head beside it switched within one frame.
 
 ## Signal Backplate Colourways
 

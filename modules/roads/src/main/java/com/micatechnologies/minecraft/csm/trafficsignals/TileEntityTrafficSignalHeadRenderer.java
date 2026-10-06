@@ -24,6 +24,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalText
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVertexData;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -398,6 +399,21 @@ public class TileEntityTrafficSignalHeadRenderer extends
       GL11.glCallList(displayList);
     }
 
+    // Wall-clock flash timer — threaded into the bulb/Barlo paths so they can do 1300 ms /
+    // 1000 ms modulo timing by reading the once-per-frame cached value instead of each
+    // calling System.currentTimeMillis() (a JNI call that adds up with many visible signals).
+    long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
+
+    // An incandescent lamp heats up and cools down instead of switching. Null unless a section is
+    // mid-fade; the lens and the visor interior both draw from these levels.
+    float[] fadeLevels = CsmRenderToggles.skipSignalIncandescentFade
+        ? null
+        : incandescentFadeLevels(te, sectionInfos, litMask, gameMillis);
+    if (fadeLevels != null && !CsmRenderToggles.skipSignalVisorInteriors) {
+      renderIncandescentVisorFades(sectionInfos, fadeLevels, sectionYPositions,
+          sectionXPositions, sectionSizes, zPushBack, tintScale, viewAngle);
+    }
+
     // The pre-baking path, kept behind a toggle purely so the two can be compared inside one
     // session. Uses the raw tint rather than the bucketed one, as it did before.
     if (CsmRenderToggles.visorInteriorsPerFrame && !CsmRenderToggles.skipSignalVisorInteriors) {
@@ -412,10 +428,6 @@ public class TileEntityTrafficSignalHeadRenderer extends
           zPushBack, rawTintScale, viewAngle, INTERIORS_VIEW_ANGLE_ONLY);
     }
 
-    // Wall-clock flash timer — threaded into the bulb/Barlo paths so they can do 1300 ms /
-    // 1000 ms modulo timing by reading the once-per-frame cached value instead of each
-    // calling System.currentTimeMillis() (a JNI call that adds up with many visible signals).
-    long gameMillis = CsmRenderUtils.gameMillis(te.getWorld(), partialTicks);
     if (!CsmRenderToggles.skipSignalBulbs) {
       // The bulb lens quads are static for a given lit/colour state, so they bake the same way the
       // body does -- but they sample the signal atlas, not the white pixel, and that difference is
@@ -459,11 +471,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
       } else {
         GL11.glCallList(bulbList);
       }
-      // An incandescent lamp heats up and cools down instead of switching: the baked lens shows
-      // the new state, and one quad per fading section draws the state it is leaving over it.
-      if (!CsmRenderToggles.skipSignalIncandescentFade) {
-        renderIncandescentFades(te, sectionInfos, litMask, sectionYPositions, sectionXPositions,
-            sectionSizes, zPushBack, gameMillis);
+      // The baked lens shows the new state; one quad per fading section draws the state it is
+      // leaving over it.
+      if (fadeLevels != null) {
+        renderIncandescentLensFades(sectionInfos, fadeLevels, sectionYPositions,
+            sectionXPositions, sectionSizes, zPushBack);
       }
       // The mask a louvered or programmable lens shows from outside its window: the section's
       // unlit lens drawn over the lit one, as opaque as the lens is hidden. Per frame, one quad
@@ -658,8 +670,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * mapped to white because those bulb types render as white-LED textures.
    */
   private static float[] computeVisorInnerTint(TrafficSignalSectionInfo sectionInfo) {
+    return computeVisorInnerTint(sectionInfo, sectionInfo.isBulbLit());
+  }
+
+  /** The visor interior tint a section shows when {@code lit}, whatever its state now. */
+  private static float[] computeVisorInnerTint(TrafficSignalSectionInfo sectionInfo, boolean lit) {
     float[] out = new float[]{VISOR_INNER_R, VISOR_INNER_G, VISOR_INNER_B};
-    if (!sectionInfo.isBulbLit()) {
+    if (!lit) {
       return out;
     }
     TrafficSignalBulbColor bulbColor = sectionInfo.getBulbCustomColor();
@@ -1205,45 +1222,102 @@ public class TileEntityTrafficSignalHeadRenderer extends
   private static final float INCANDESCENT_FADE_Z_BIAS = -0.025f;
 
   /**
-   * Draws each incandescent section that is still heating or cooling: the unlit lens over a lamp
-   * coming on, as opaque as it is still dark, and the lit lens over a lamp going off, as opaque as
-   * it is still bright. The baked bulb list already shows the new state, so a settled head draws
-   * nothing here, and a head with no incandescent section never touches its tracker.
+   * How bright each incandescent section's lamp is this frame, or null when none is mid-fade (so
+   * a settled head draws nothing more). A section that is settled, or not incandescent, is -1. A
+   * head with no incandescent section never touches its tracker.
    */
-  private void renderIncandescentFades(TileEntityTrafficSignalHead te,
-      TrafficSignalSectionInfo[] sectionInfos, int litMask, float[] sectionYPositions,
-      float[] sectionXPositions, int[] sectionSizes, float zPushBack, long now) {
+  private static float[] incandescentFadeLevels(TileEntityTrafficSignalHead te,
+      TrafficSignalSectionInfo[] sectionInfos, int litMask, long now) {
     boolean anyIncandescent = false;
     for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
       if (incandescentFadeApplies(sectionInfo)) { anyIncandescent = true; break; }
     }
-    if (!anyIncandescent) return;
+    if (!anyIncandescent) return null;
 
     IncandescentFade.Tracker tracker = te.getIncandescentFade();
     tracker.observe(litMask, sectionInfos.length, now);
-
-    BufferBuilder buffer = null;
+    float[] levels = null;
     for (int i = 0; i < sectionInfos.length; i++) {
-      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
-      if (!incandescentFadeApplies(sectionInfo)) continue;
-      boolean lit = sectionInfo.isBulbLit();
+      if (!incandescentFadeApplies(sectionInfos[i])) continue;
+      boolean lit = sectionInfos[i].isBulbLit();
       float brightness = tracker.brightness(i, lit, now);
-      // The state being left, as opaque as it still shows
-      float alpha = lit ? 1.0f - brightness : brightness;
-      if (alpha <= 0.0f) continue;
-      if (buffer == null) {
-        buffer = Tessellator.getInstance().getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      if (brightness == (lit ? 1.0f : 0.0f)) continue;   // settled
+      if (levels == null) {
+        levels = new float[sectionInfos.length];
+        Arrays.fill(levels, -1.0f);
       }
+      levels[i] = brightness;
+    }
+    return levels;
+  }
+
+  /**
+   * Draws each fading lens: the unlit lens over a lamp coming on, as opaque as it is still dark,
+   * and the lit lens over a lamp going off, as opaque as it is still bright.
+   */
+  private void renderIncandescentLensFades(TrafficSignalSectionInfo[] sectionInfos,
+      float[] fadeLevels, float[] sectionYPositions, float[] sectionXPositions,
+      int[] sectionSizes, float zPushBack) {
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    for (int i = 0; i < sectionInfos.length; i++) {
+      if (fadeLevels[i] < 0.0f) continue;
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
+      boolean lit = sectionInfo.isBulbLit();
+      // The state being left, as opaque as it still shows
+      float alpha = lit ? 1.0f - fadeLevels[i] : fadeLevels[i];
       TextureInfo leaving = TrafficSignalTextureMap.getTextureInfoForBulb(
           sectionInfo.getBulbStyle(), sectionInfo.getBulbType(),
           sectionInfo.getBulbCustomColor(), !lit);
       emitBulbQuad(buffer, leaving, sectionXPositions[i], sectionYPositions[i], sectionSizes[i],
           zPushBack, INCANDESCENT_FADE_Z_BIAS, alpha);
     }
-    if (buffer != null) {
-      Tessellator.getInstance().draw();
+    tessellator.draw();
+  }
+
+  /**
+   * Redraws each fading section's visor interior at the lamp's brightness. An unlit interior is
+   * black and a lit one is the bulb's tint at fullbright, so the interior at brightness b is the
+   * lit tint times b, drawn opaque over the same faces the display list drew -- the overdraw the
+   * per-frame wash of a louvered visor already relies on. Coming on, it dims the baked lit wash;
+   * going off, it lights the baked black.
+   */
+  private void renderIncandescentVisorFades(TrafficSignalSectionInfo[] sectionInfos,
+      float[] fadeLevels, float[] sectionYPositions, float[] sectionXPositions,
+      int[] sectionSizes, float zPushBack, float tintScale, ViewAngleState viewAngle) {
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    Minecraft.getMinecraft().getTextureManager().bindTexture(WHITE_TEXTURE);
+    buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+    for (int i = 0; i < sectionInfos.length; i++) {
+      if (fadeLevels[i] < 0.0f) continue;
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
+      TrafficSignalVisorType visorType = sectionInfo.getVisorType();
+      List<RenderHelper.Box> visorData = resolveVisorData(visorType, sectionSizes[i]);
+      if (visorData == null) continue;
+
+      float[] inner = computeVisorInnerTint(sectionInfo, true);
+      float scale = tintScale * fadeLevels[i];
+      float r = inner[0] * scale;
+      float g = inner[1] * scale;
+      float b = inner[2] * scale;
+      float xOffset = sectionXPositions[i];
+      float yOffset = sectionYPositions[i];
+      if (visorType != TrafficSignalVisorType.NONE) {
+        RenderHelper.addTiltedBoxesInnerFacesToBufferLit(visorData, buffer,
+            r, g, b, 1.0f,
+            xOffset, yOffset, zPushBack, VISOR_PIVOT_Z + zPushBack, VISOR_TILT_DEGREES,
+            VISOR_CENTER_X, VISOR_CENTER_Y, louverTiltAdjustFor(viewAngle, i, yOffset),
+            LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
+      } else {
+        RenderHelper.addBoxesInnerFacesToBufferLit(visorData, buffer,
+            r, g, b, 1.0f,
+            xOffset, yOffset, zPushBack, VISOR_CENTER_X, VISOR_CENTER_Y,
+            LIGHTMAP_FULLBRIGHT_SKY, LIGHTMAP_FULLBRIGHT_BLOCK);
+      }
     }
+    tessellator.draw();
   }
 
   private static boolean incandescentFadeApplies(TrafficSignalSectionInfo sectionInfo) {
