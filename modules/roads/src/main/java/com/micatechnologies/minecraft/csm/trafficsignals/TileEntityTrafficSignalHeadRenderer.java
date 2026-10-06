@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.IncandescentFade;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBoundingBoxHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
@@ -457,6 +458,12 @@ public class TileEntityTrafficSignalHeadRenderer extends
             zPushBack);
       } else {
         GL11.glCallList(bulbList);
+      }
+      // An incandescent lamp heats up and cools down instead of switching: the baked lens shows
+      // the new state, and one quad per fading section draws the state it is leaving over it.
+      if (!CsmRenderToggles.skipSignalIncandescentFade) {
+        renderIncandescentFades(te, sectionInfos, litMask, sectionYPositions, sectionXPositions,
+            sectionSizes, zPushBack, gameMillis);
       }
       // The mask a louvered or programmable lens shows from outside its window: the section's
       // unlit lens drawn over the lit one, as opaque as the lens is hidden. Per frame, one quad
@@ -1192,6 +1199,58 @@ public class TileEntityTrafficSignalHeadRenderer extends
     tessellator.draw();
     // Leave the bulb atlas current again, as everything after the bulb pass expects.
     Minecraft.getMinecraft().getTextureManager().bindTexture(ATLAS_TEXTURE);
+  }
+
+  /** How far in front of the lens an incandescent fade is drawn, in model units. */
+  private static final float INCANDESCENT_FADE_Z_BIAS = -0.025f;
+
+  /**
+   * Draws each incandescent section that is still heating or cooling: the unlit lens over a lamp
+   * coming on, as opaque as it is still dark, and the lit lens over a lamp going off, as opaque as
+   * it is still bright. The baked bulb list already shows the new state, so a settled head draws
+   * nothing here, and a head with no incandescent section never touches its tracker.
+   */
+  private void renderIncandescentFades(TileEntityTrafficSignalHead te,
+      TrafficSignalSectionInfo[] sectionInfos, int litMask, float[] sectionYPositions,
+      float[] sectionXPositions, int[] sectionSizes, float zPushBack, long now) {
+    boolean anyIncandescent = false;
+    for (TrafficSignalSectionInfo sectionInfo : sectionInfos) {
+      if (incandescentFadeApplies(sectionInfo)) { anyIncandescent = true; break; }
+    }
+    if (!anyIncandescent) return;
+
+    IncandescentFade.Tracker tracker = te.getIncandescentFade();
+    tracker.observe(litMask, sectionInfos.length, now);
+
+    BufferBuilder buffer = null;
+    for (int i = 0; i < sectionInfos.length; i++) {
+      TrafficSignalSectionInfo sectionInfo = sectionInfos[i];
+      if (!incandescentFadeApplies(sectionInfo)) continue;
+      boolean lit = sectionInfo.isBulbLit();
+      float brightness = tracker.brightness(i, lit, now);
+      // The state being left, as opaque as it still shows
+      float alpha = lit ? 1.0f - brightness : brightness;
+      if (alpha <= 0.0f) continue;
+      if (buffer == null) {
+        buffer = Tessellator.getInstance().getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
+      }
+      TextureInfo leaving = TrafficSignalTextureMap.getTextureInfoForBulb(
+          sectionInfo.getBulbStyle(), sectionInfo.getBulbType(),
+          sectionInfo.getBulbCustomColor(), !lit);
+      emitBulbQuad(buffer, leaving, sectionXPositions[i], sectionYPositions[i], sectionSizes[i],
+          zPushBack, INCANDESCENT_FADE_Z_BIAS, alpha);
+    }
+    if (buffer != null) {
+      Tessellator.getInstance().draw();
+    }
+  }
+
+  private static boolean incandescentFadeApplies(TrafficSignalSectionInfo sectionInfo) {
+    // Not behind louvers or a programmable visor: their visibility is worked out for lit sections
+    // only, so a lamp cooling behind one would glow at angles its louvers hide.
+    return sectionInfo.getBulbStyle() == TrafficSignalBulbStyle.INCANDESCENT
+        && !sectionInfo.getVisorType().isViewAngleSensitive();
   }
 
   /** How far in front of the lens its mask is drawn, in model units, so the two never z-fight. */
