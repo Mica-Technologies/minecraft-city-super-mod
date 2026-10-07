@@ -1348,12 +1348,37 @@ longer gated. Any reference to a `shaderCompatibilityMode` option is legacy.
 
 A section with the incandescent bulb style warms up and cools down instead of switching, the
 way a filament does; LED, GTX and DR6 sections still switch within a frame. The model is
-`logic/IncandescentFade`: an exponential rise (time constant 50 ms, 90% at about 115 ms) and a
-slower exponential decay (90 ms, 10% at about 205 ms), since a lamp is driven while it heats and
-only radiates while it cools. The numbers are scaled from measured 12 V automotive signal bulbs
-(about 140 ms rise and 120 ms decay; Agilent/Broadcom AN 1155-3), a little quicker for the
-thinner filament of a 120 V traffic lamp. A lamp switched again mid-fade starts from where it
-was, so a fast flasher never jumps.
+`logic/IncandescentFade`, and it models the filament's temperature, not a brightness:
+
+* **Heating:** `dθ/dt = k (θ^-1.2 - θ^4) / c(θ)`, with `θ` the temperature as a fraction of the
+  operating 2650 K. Power in is `V²/R` and tungsten's resistance grows as `T^1.2`, so a cold
+  filament draws about fourteen times its running current. Power out is radiation, and the heat
+  capacity `c(θ)` grows with temperature.
+* **Cooling:** `dθ/dt = -k θ^4 / c(θ)`.
+* **Light through the lens:** Wien's law at the lens's wavelength, `exp(c2/(λ T_op) (1 - 1/θ))`,
+  then raised to `1/2.2` because the lens blend and the visor tint both mix gamma-encoded values.
+
+That is what gives the filament look, which the first version's pair of exponentials (time
+constants 50 and 90 ms, used directly as the blend) did not have. That version started the rise
+at once, about a quarter of the way up in the first frame, and its decay read as a crossfade.
+Now, switched on, nothing shows for about the first 20 ms while the filament is still below red
+heat, then the light climbs steeply. Switched off, the light halves within a frame and lingers as
+a dim glow for a couple of hundred milliseconds. A green lens goes dark first and a red one last,
+since a cooling filament loses its short wavelengths soonest.
+
+The two curves are integrated once into 1 ms tables. A lamp switched again mid-fade carries on
+from the temperature it had, found by inverting the table, so a fast flasher never jumps.
+
+The time scale is the one setting: how long a cold lamp takes to reach 90% through a red lens,
+120 ms by default. The decay follows from the same filament and is not set separately. The 120 ms
+is a judgement. A 12 V automotive bulb shows discernible light after about 50 ms and reaches 90%
+after about 250 ms (Palaniappan et al., arXiv 2010.10584, citing the stop-lamp literature). A
+120 V traffic lamp's filament is thinner, and a 230 V 100 W lamp settles to its running current
+within about 50 ms (lamptech.co.uk, incandescent starting characteristics). The older 140 ms rise
+and 120 ms decay figure (AN 1155-3) is not used, since its lamp and detector are not known; a
+silicon photodiode sees infrared, which lingers longer than the visible glow.
+`/csm incandescent <ms>` changes the time scale for the session (`reset` restores it), so the fade
+can be judged by eye without a rebuild.
 
 Nothing is baked for it. `incandescentFadeLevels` works out each fading section's brightness
 once a frame (null when nothing is mid-fade), and two passes draw from it. The bulb display list
@@ -1373,9 +1398,7 @@ Two rules keep it from fading at the wrong time:
 * Sections behind louvers or a programmable visor are left out. Their visibility is worked out
   for lit sections only, so a lamp cooling behind one would glow at angles the louvers hide.
 
-`/csm renderpass skip signalIncandescentFade` turns it off. Measured in a flashing-red burst at
-night, the incandescent lens and its visor interior climbed over about 130 ms and dimmed over
-about 250 ms, while an LED head beside it switched within one frame.
+`/csm renderpass skip signalIncandescentFade` turns it off.
 
 ## Signal Backplate Colourways
 

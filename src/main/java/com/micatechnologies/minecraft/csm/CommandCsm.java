@@ -35,6 +35,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  *       tables and, on a client, baked models and quads); {@code dump} writes the full report;
  *       {@code variants} counts, on a client, how many blockstate variants and baked models
  *       repeat another's content</li>
+ *   <li>{@code /csm incandescent [ms|reset]} — shows or sets, for this session, how long an
+ *       incandescent signal lamp takes to reach 90% through a red lens</li>
  *   <li>{@code /csm statecheck} — checks every CSM block's state container against vanilla's,
  *       state by state (see {@code CsmStateCheck}); read only</li>
  * </ul>
@@ -46,7 +48,7 @@ public class CommandCsm extends CommandBase {
 
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
-          + "|renderpass <list|skip|draw|reset> [pass]|displaylists"
+          + "|renderpass <list|skip|draw|reset> [pass]|incandescent [ms|reset]|displaylists"
           + "|memstats [dump|variants]|statecheck>";
 
   @Override
@@ -86,6 +88,9 @@ public class CommandCsm extends CommandBase {
       case "renderpass":
         handleRenderPass(sender, args);
         return;
+      case "incandescent":
+        handleIncandescent(sender, args);
+        return;
       case "displaylists":
         handleDisplayLists(sender);
         return;
@@ -121,6 +126,30 @@ public class CommandCsm extends CommandBase {
    *
    * @throws CommandException on bad usage
    */
+  /**
+   * Shows or sets how fast an incandescent signal lamp heats: the milliseconds to 90% through a
+   * red lens, the cooling following from the same filament. For judging the fade by eye in one
+   * session; not persisted.
+   *
+   * @param sender the command sender
+   * @param args   the full argument array
+   *
+   * @throws CommandException on bad usage
+   */
+  private static void handleIncandescent(ICommandSender sender, String[] args)
+      throws CommandException {
+    if (args.length >= 2) {
+      if ("reset".equalsIgnoreCase(args[1])) {
+        CsmRenderToggles.incandescentRise90Millis = CsmRenderToggles.INCANDESCENT_RISE_90_DEFAULT;
+      } else {
+        CsmRenderToggles.incandescentRise90Millis = (float) parseDouble(args[1], 10.0, 2000.0);
+      }
+    }
+    sendSuccess(sender, String.format("Incandescent lamps reach 90%% in %.0f ms (default %.0f)",
+        CsmRenderToggles.incandescentRise90Millis,
+        CsmRenderToggles.INCANDESCENT_RISE_90_DEFAULT));
+  }
+
   /**
    * Reports how many display lists the render caches are holding, and the client's heap use.
    *
@@ -286,7 +315,7 @@ public class CommandCsm extends CommandBase {
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore", "renderpass",
-          "displaylists", "memstats", "statecheck");
+          "incandescent", "displaylists", "memstats", "statecheck");
     }
     if (args.length == 2 && "memstats".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "dump", "variants");

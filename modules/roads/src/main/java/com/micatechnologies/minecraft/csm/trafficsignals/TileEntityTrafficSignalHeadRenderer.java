@@ -1234,13 +1234,17 @@ public class TileEntityTrafficSignalHeadRenderer extends
     }
     if (!anyIncandescent) return null;
 
+    IncandescentFade.setRise90Millis(CsmRenderToggles.incandescentRise90Millis);
     IncandescentFade.Tracker tracker = te.getIncandescentFade();
     tracker.observe(litMask, sectionInfos.length, now);
     float[] levels = null;
     for (int i = 0; i < sectionInfos.length; i++) {
       if (!incandescentFadeApplies(sectionInfos[i])) continue;
       boolean lit = sectionInfos[i].isBulbLit();
-      float brightness = tracker.brightness(i, lit, now);
+      // The lens colour sets how fast the light goes with the filament's heat: green first
+      TrafficSignalBulbColor lens = sectionInfos[i].getBulbCustomColor() != null
+          ? sectionInfos[i].getBulbCustomColor() : sectionInfos[i].getBulbColor();
+      float brightness = tracker.brightness(i, lit, now, lens);
       if (brightness == (lit ? 1.0f : 0.0f)) continue;   // settled
       if (levels == null) {
         levels = new float[sectionInfos.length];
