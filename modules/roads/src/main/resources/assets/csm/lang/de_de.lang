@@ -302,6 +302,7 @@ tile.signbikesallowedusefulllane.name=Radfahrer Dürfen Gesamte Spur Nutzen Schi
 tile.signbikesallowedusefulllanelarge.name=Radfahrer Dürfen Gesamte Spur Nutzen Schild (Groß)
 tile.signbikesignal.name=Fahrrad-Signal-Schild
 tile.signbikesignaldoublesided.name=Fahrrad-Signal-Schild (Doppelseitig)
+tile.signbikesignalsquare.name=Fahrrad-Signal-Schild (Quadratisch)
 tile.signbikeyieldtopeds.name=Radfahrer Vorfahrt für Fußgänger Schild
 tile.signblastingzone.name=Sprengzone-Schild
 tile.signbridgeout.name=Brücke Gesperrt Schild

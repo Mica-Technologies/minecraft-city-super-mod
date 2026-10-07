@@ -302,6 +302,7 @@ tile.signbikesallowedusefulllane.name=Bikes Allowed to Use Full Lane Sign
 tile.signbikesallowedusefulllanelarge.name=Bikes Allowed to Use Full Lane Sign (Large)
 tile.signbikesignal.name=Bike Signal Sign
 tile.signbikesignaldoublesided.name=Bike Signal Sign (Double Sided)
+tile.signbikesignalsquare.name=Bike Signal Sign (Square)
 tile.signbikeyieldtopeds.name=Bike Yield to Pedestrians Sign
 tile.signblastingzone.name=Blasting Zone Sign
 tile.signbridgeout.name=Bridge Out Sign

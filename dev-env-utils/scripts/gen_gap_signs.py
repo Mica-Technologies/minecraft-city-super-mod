@@ -313,6 +313,46 @@ def ART_SYM(name, colour, size=256):
     return make
 
 
+def BIKE_OVER(shape, lines, chapter='Regulatory', page=122):
+    """The book's bicycle over the mod's own ``lines`` on a plate the R9-5 panel cannot be
+    stretched to: the bike is lifted off the blank panel at its own proportions and set in the
+    top of the rounded panel, the lines below it as text_sign sets them."""
+    def make():
+        import numpy as np
+        panel = shs.recolour(shs.book_sign(chapter, page, blank=True), shs.SHS_PALETTE)
+        a = np.asarray(panel.convert('RGBA')).astype(np.int32)
+        h, w = a.shape[:2]
+        dark = (a[..., :3].sum(axis=2) < 200) & (a[..., 3] > 128)
+        # inside the border only: the bike is the ink in the top half, clear of the rim
+        m = int(min(w, h) * 0.1)
+        inner = np.zeros_like(dark)
+        inner[m:h // 2, m:w - m] = True
+        ys, xs = np.where(dark & inner)
+        bike = panel.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
+        img = _canvas(SHAPES[shape][1])
+        _d, (x0, y0, x1, y1) = _rounded_panel(img, WHITE, BLACK)
+        bw, bh = x1 - x0, y1 - y0
+        # the bike takes the top 55% of the field, the legend the rest
+        sy1 = y0 + bh * 0.55
+        scale = min(bw * 0.86 / bike.width, (sy1 - y0) * 0.9 / bike.height)
+        bike = bike.resize((int(bike.width * scale), int(bike.height * scale)), Image.LANCZOS)
+        img.alpha_composite(bike, (int((x0 + x1 - bike.width) / 2), int((y0 + sy1 - bike.height) / 2)))
+        n = len(lines)
+        band = y1 - sy1
+        cap = min(band * 0.6, band / (n * 1.5 - 0.5) * 0.9)
+        while cap > 8:
+            series = shs.pick_series(lines, cap, bw, ('D', 'C', 'B'))
+            if all(shs.legend_width(t, series, cap) <= bw for t in lines):
+                break
+            cap *= 0.97
+        pitch = cap * 1.5
+        first = (sy1 + y1) / 2 - (n - 1) * pitch / 2
+        for k, t in enumerate(lines):
+            shs.set_legend_line(img, t, (x0 + x1) / 2, first + k * pitch, cap, bw, BLACK, series)
+        return _finish(img, _size(shape))
+    return make
+
+
 def T(shape, lines, bg=YELLOW, fg=BLACK):
     return lambda: text_sign(shape, lines, bg, fg)
 
@@ -668,6 +708,13 @@ CATALOGUE = [
      'Radroute-Schild',
      'Cykelled-Vägmärke'),
      'landscape', SHS('landscape', 'Guide', 85, 0), 'signtobikeroute'),
+    # The bike signal sign on a square plate, for a bike head where the tall R9-5 panel does
+    # not fit: the book's bike at its own proportions over SIGNAL (#268)
+    ('signbikesignalsquare', ('Bike Signal Sign (Square)',
+     'Señal de Semáforo para Bicicletas (Cuadrada)',
+     'Fahrrad-Signal-Schild (Quadratisch)',
+     'Cykelsignal-Vägmärke (Kvadratisk)'),
+     'square', BIKE_OVER('square', ['SIGNAL']), 'signbikesignaldoublesided'),
     # --- recreation: no golf symbol in the book, so the golfer is artwork on the RS panel
     ('signgolf', ('Golf Sign', 'Señal de Golf', 'Golf-Schild', 'Golf-Vägmärke'),
      'square', ART_SYM('golfer.png', 'brown'), 'signpicnic'),
