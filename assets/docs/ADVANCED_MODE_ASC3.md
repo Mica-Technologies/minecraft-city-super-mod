@@ -200,8 +200,9 @@ included phases' **yellow** then **red**, which provides the overlap's own clear
 
 **Lead (advance) green** (`leadGreen`, ASC/3 Lead Overlap): the overlap goes **green** for a
 configured time *before* an included phase's **vehicle** green (`ringLeadsInto`). The lead counts
-back from the end of the phase's delayed green (DLY GRN, or a transit queue jump) when it has one,
-so it runs in two windows:
+back from the end of the phase's delayed green (DLY GRN) when it has one, so it runs in two
+windows (never into a transit queue jump, whose hold is the bus's alone: an overlap greening into
+it would turn across the bus as it pulls away):
 
 - **In the included phase's own delay.** The vehicle green is then known exactly, however the
   phase was entered, across a barrier included. This is the **leading bike interval**: bike heads
