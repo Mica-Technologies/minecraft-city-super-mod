@@ -614,8 +614,8 @@ public class RingBarrierState {
         boolean trailing = ov.getTrailGreen() > 0L && last != null
             && (now - last) < ov.getTrailGreen();
         eff = trailing ? VehInterval.GREEN : base;
-        // Lead (advance) green: green early during the red clearance that precedes an included
-        // phase's green (within-barrier).
+        // Lead (advance) green: green early before an included phase's vehicle green, in its
+        // own delayed green or the within-barrier red clearance ahead of it.
         if (eff != VehInterval.GREEN && ov.getLeadGreen() > 0L
             && leadingIntoIncluded(ov, plan, now, called)) {
           eff = VehInterval.GREEN;
@@ -692,24 +692,45 @@ public class RingBarrierState {
   }
 
   /**
-   * Whether {@code ring} is in a red clearance whose next within-barrier phase is
-   * {@code includedPhase}, and we are within {@code leadGreen} of that clearance ending (i.e. the
-   * overlap should be leading green into that phase now).
+   * Whether the overlap should be leading green into {@code includedPhase} on {@code ring} now:
+   * we are within {@code leadGreen} of that phase's <em>vehicle</em> green, counted back from
+   * the end of its delayed green ({@code DLY GRN} or a queue jump) when it has one.
+   *
+   * <p>Two windows. While the included phase is itself in its delay, the vehicle green is known
+   * exactly, whichever way the phase was entered (across a barrier included), so a bike overlap
+   * can lead the vehicles the way the walk does: a leading bike interval (#267). Before that,
+   * during the red clearance of the phase ahead of it on the same barrier, the next phase is
+   * predicted ({@link #peekNextWithinBarrier}) and so is its delay ({@link #startDelay}); the
+   * cross-barrier next phase is not determined until the barrier is crossed, so there the lead
+   * starts with the phase.</p>
    */
   private boolean ringLeadsInto(RingRuntime ring, int ringNum, int includedPhase, long leadGreen,
       TrafficSignalProgrammedPhasePlan plan, long now, boolean[] called) {
-    if (ring.interval != VehInterval.RED || ring.activePhase == 0) {
-      return false; // lead green is shown only during a red clearance preceding the phase
+    if (ring.activePhase == 0) {
+      return false;
+    }
+    if (ring.interval == VehInterval.GREEN) {
+      // the included phase's own delay: its vehicles are still red until delayStart + delayLength
+      return ring.activePhase == includedPhase && ring.delayActive
+          && (ring.delayStart + ring.delayLength - now) <= leadGreen;
+    }
+    if (ring.interval != VehInterval.RED) {
+      return false; // lead green is shown only in the red before the phase's vehicle green
     }
     TrafficSignalProgrammedPhase active = plan.getPhase(ring.activePhase);
     if (active == null) {
       return false;
     }
     long clearEnd = ring.intervalStart + active.getRedClear();
-    if (now >= clearEnd || (clearEnd - now) > leadGreen) {
-      return false; // clearance already done, or not yet inside the lead window
+    if (now >= clearEnd) {
+      return false; // clearance already done
     }
-    return peekNextWithinBarrier(ring, ringNum, plan, called) == includedPhase;
+    if (peekNextWithinBarrier(ring, ringNum, plan, called) != includedPhase) {
+      return false;
+    }
+    TrafficSignalProgrammedPhase next = plan.getPhase(includedPhase);
+    long vehicleGreen = clearEnd + (next == null ? 0L : startDelay(next, pedServiceAtStart(next)));
+    return (vehicleGreen - now) <= leadGreen; // inside the lead window
   }
 
   /**
@@ -1161,20 +1182,11 @@ public class RingBarrierState {
     ring.lastActuation = now;
     ring.resting = false;
     // Begin a pedestrian service when called or recalled.
-    boolean ped = phase.isPedRecall()
-        || phase.getRecallMode() == TrafficSignalRecallMode.PEDESTRIAN
-        || pedRequestPresent(phase);
+    boolean ped = pedServiceAtStart(phase);
     ring.pedServing = ped;
     ring.pedStart = now;
-    // ASC/3 DLY GRN: the delay applies only when this phase starts with a ped service. The walk
-    // is extended to the end of the delay when the delay exceeds the configured walk.
-    // A transit queue jump is the same hold with the bus bar lit, so it runs as a delay too: the
-    // longer of the two, and the walk (if any) runs through it.
-    long delay = ped ? phase.getDelayedGreen() : 0L;
+    long delay = startDelay(phase, ped);
     ring.queueJump = queueJumpTicks > 0L && phase.getPhaseNumber() == queueJumpPhase;
-    if (ring.queueJump) {
-      delay = Math.max(delay, queueJumpTicks);
-    }
     ring.delayActive = delay > 0L;
     ring.delayLength = delay;
     ring.delayStart = now;
@@ -2304,6 +2316,27 @@ public class RingBarrierState {
       default:
         return 0;
     }
+  }
+
+  /** Whether {@code phase} would begin a pedestrian service if it greened now. */
+  private boolean pedServiceAtStart(TrafficSignalProgrammedPhase phase) {
+    return phase.isPedRecall()
+        || phase.getRecallMode() == TrafficSignalRecallMode.PEDESTRIAN
+        || pedRequestPresent(phase);
+  }
+
+  /**
+   * How long {@code phase}'s vehicles are held red after it greens. ASC/3 DLY GRN: the delay
+   * applies only when the phase starts with a ped service (the walk is extended to its end when
+   * it exceeds the configured walk). A transit queue jump is the same hold with the bus bar lit,
+   * so it runs as a delay too: the longer of the two, and the walk (if any) runs through it.
+   */
+  private long startDelay(TrafficSignalProgrammedPhase phase, boolean ped) {
+    long delay = ped ? phase.getDelayedGreen() : 0L;
+    if (queueJumpTicks > 0L && phase.getPhaseNumber() == queueJumpPhase) {
+      delay = Math.max(delay, queueJumpTicks);
+    }
+    return delay;
   }
 
   private boolean pedRequestPresent(TrafficSignalProgrammedPhase phase) {

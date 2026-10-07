@@ -71,6 +71,14 @@ Three cases where the overlap clears normally instead, all of them deliberate:
   pedestrians a head start across the very path the overlap turns across, so the overlap has to be
   red for it.
 
+### Leading bike interval
+
+An overlap's **lead green** counts back from its included phase's *vehicle* green, so it also runs
+inside that phase's delayed green. Put the bike heads on an overlap of the parallel through, with
+the lead set to the through's delayed green: when the through starts with a ped call, the bikes go
+green with the walk and the vehicles follow when the delay ends. Within a barrier the lead can also
+start in the red clearance before the phase.
+
 ## Actuation and volume-density timing
 
 The ASC/3's actuated timing is modelled: maximum 2, added initial, gap reduction, and the

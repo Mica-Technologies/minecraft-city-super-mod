@@ -199,13 +199,24 @@ included phases' **yellow** then **red**, which provides the overlap's own clear
 `trailGreen` ≤ the included phases' yellow + red clearance to keep that clean).
 
 **Lead (advance) green** (`leadGreen`, ASC/3 Lead Overlap): the overlap goes **green** for a
-configured time *before* an included phase greens, during the preceding **red clearance**. The
-engine detects this by checking whether a ring is in red clearance whose next within-barrier phase
-(`peekNextWithinBarrier`, mirroring `fillIdleRing`) is one of the overlap's included phases, and the
-clearance ends within `leadGreen`. **Scope/safety:** only the *within-barrier* next phase is
-determined (the cross-barrier case isn't, so lead green doesn't apply across a barrier); and as on a
-real ASC/3, the controller does not validate the lead time — the operator is responsible for keeping
-it within the preceding clearance so the overlap doesn't conflict with a movement still clearing.
+configured time *before* an included phase's **vehicle** green (`ringLeadsInto`). The lead counts
+back from the end of the phase's delayed green (DLY GRN, or a transit queue jump) when it has one,
+so it runs in two windows:
+
+- **In the included phase's own delay.** The vehicle green is then known exactly, however the
+  phase was entered, across a barrier included. This is the **leading bike interval**: bike heads
+  on an overlap of the parallel through (`in` = the through, `lg` ≤ its `dg`) go green with the
+  walk while the through's vehicles are still held (#267). With no ped call there is no delay and so
+  no lead from this window.
+- **In the red clearance ahead of it, within the barrier.** The next phase is predicted
+  (`peekNextWithinBarrier`, mirroring `fillIdleRing`) and so is its delay (`startDelay`, the same
+  ped-call rule `startGreen` applies). The cross-barrier next phase isn't determined until the
+  barrier is crossed, so across a barrier the lead can only start with the phase.
+
+**Safety:** as on a real ASC/3, the controller does not validate the lead time — the operator is
+responsible for keeping it within the preceding clearance plus delay so the overlap doesn't
+conflict with a movement still clearing. If a predicted phase doesn't come, the output clearance
+enforcer still gives the overlap its yellow.
 
 **Parent to parent: no clearance at all.** Lag and lead green are configured *extensions* past the
 parents. On top of them the overlap is held **green** — unconditionally, with neither timer set —
@@ -699,8 +710,9 @@ a bus no sensor counts still calls its phase, and no heads, no bus or a zero jum
 Only niche / poor-fit items remain:
 
 1. **`PPLT FYA` overlap type** — would duplicate the working per-phase FYA mechanism (§4); low value.
-2. **Cross-barrier lead green** — the within-barrier case is implemented (§4a); extending it across a
-   barrier needs speculative barrier-cross resolution.
+2. **Cross-barrier lead green into the clearance** — a lead during the included phase's own delay
+   works across a barrier (§4a); leading during the *clearance* before a barrier crossing needs
+   speculative barrier-cross resolution.
 3. **Secondary ped:** Walk 2 / Ped Clear 2 / Ped Carryover — built around a `WALK2` detector input
    this mod doesn't model.
 

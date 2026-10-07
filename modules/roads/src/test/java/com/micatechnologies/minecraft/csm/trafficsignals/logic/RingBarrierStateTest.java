@@ -561,6 +561,110 @@ class RingBarrierStateTest {
         "overlap leads green during the clearance before its included phase greens");
   }
 
+  @Test
+  @DisplayName("overlap lead green runs in its included phase's own delayed green: a leading bike interval (#267)")
+  void overlapLeadGreenDuringDelayedGreen() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 2, 0);
+    plan.getPhase(2).setDelayedGreen(60L);
+
+    net.minecraft.util.math.BlockPos throughHead = new net.minecraft.util.math.BlockPos(10, 0, 0);
+    net.minecraft.util.math.BlockPos bikeHead = new net.minecraft.util.math.BlockPos(80, 0, 0);
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getThroughSignals().add(throughHead);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getProtectedSignals().add(bikeHead);
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    ckts.addCircuit(c0);
+    ckts.addCircuit(c1); // circuit 1: the bike heads, an overlap of the through
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.LEFT);
+    ov.setIncludedPhases(new int[] {2});
+    ov.setLeadGreen(40L);
+    plan.getVehicleOverlaps().add(ov);
+
+    // Phase 2 is entered from rest (no clearance ahead of it), with a ped call: the walk starts
+    // at 0 and the vehicles are held red until 60
+    Demand d = new Demand().veh(0, 1, 0, 0).ped(0);
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, d);
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(throughHead),
+        "the through is held red in its delayed green");
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(bikeHead),
+        "60 ticks before the vehicle green is outside a 40 tick lead");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 25L, d);
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(throughHead),
+        "the through is still held red");
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(bikeHead),
+        "the bike overlap leads the through by its lead green");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 70L, d);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(throughHead),
+        "the through greens when the delay ends");
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(bikeHead),
+        "the overlap stays green with its included phase");
+  }
+
+  @Test
+  @DisplayName("overlap lead green into a delayed-green phase counts back from its vehicle green")
+  void overlapLeadGreenIntoDelayedGreenFromClearance() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]);
+    enable(plan, 1, 2); // its own circuit, so the ped call is phase 2's alone
+    enable(plan, 2, 0);
+    TrafficSignalProgrammedPhase p1 = plan.getPhase(1);
+    p1.setMinGreen(20L);
+    p1.setPassage(10L);
+    p1.setYellow(20L);
+    p1.setRedClear(40L);
+    plan.getPhase(2).setDelayedGreen(40L);
+
+    net.minecraft.util.math.BlockPos rightHead = new net.minecraft.util.math.BlockPos(80, 0, 0);
+    TrafficSignalControllerCircuit c1 = new TrafficSignalControllerCircuit();
+    c1.getRightSignals().add(rightHead);
+    TrafficSignalControllerCircuits ckts = circuits(1);
+    ckts.addCircuit(c1);
+    ckts.addCircuit(new TrafficSignalControllerCircuit());
+
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+    ov.setIncludedPhases(new int[] {2});
+    ov.setLeadGreen(20L);
+    plan.getVehicleOverlaps().add(ov);
+
+    Demand start = new Demand().veh(0, 1, 0, 0).veh(2, 0, 1, 0).ped(0);
+    Demand gapped = new Demand().veh(0, 1, 0, 0).ped(0);
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, start);   // phase 1 green
+    rb.tick(plan, ckts, NO_OVERLAPS, 30L, gapped); // phase 1 -> yellow
+    rb.tick(plan, ckts, NO_OVERLAPS, 50L, gapped); // red clearance, ends at 90
+    // tick by tick from here, so phase 2 greens at 90 and its vehicles at 130
+    for (long t = 51L; t <= 75L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, gapped);
+    }
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "the lead counts back from the vehicle green after the delay, not the clearance's end");
+    for (long t = 76L; t <= 100L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, gapped);
+    }
+    assertEquals(2, rb.getLastServed(1).phaseNumber, "phase 2 is up");
+    assertEquals(VehInterval.RED, rb.getLastServed(1).vehicle, "phase 2 is in its delayed green");
+    assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "30 ticks before the vehicle green is outside a 20 tick lead");
+    for (long t = 101L; t <= 115L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, gapped);
+    }
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(rightHead),
+        "the overlap leads green in the delay");
+  }
+
   // region: Parent-to-parent overlap hold
 
   /** The right-turn overlap output head the parent-to-parent hold tests watch. */
