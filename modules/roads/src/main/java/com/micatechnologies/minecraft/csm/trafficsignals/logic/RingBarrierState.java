@@ -694,7 +694,8 @@ public class RingBarrierState {
   /**
    * Whether the overlap should be leading green into {@code includedPhase} on {@code ring} now:
    * we are within {@code leadGreen} of that phase's <em>vehicle</em> green, counted back from
-   * the end of its delayed green ({@code DLY GRN} or a queue jump) when it has one.
+   * the end of its delayed green ({@code DLY GRN}) when it has one. Never into a transit queue
+   * jump: that hold is the bus's alone.
    *
    * <p>Two windows. While the included phase is itself in its delay, the vehicle green is known
    * exactly, whichever way the phase was entered (across a barrier included), so a bike overlap
@@ -710,8 +711,10 @@ public class RingBarrierState {
       return false;
     }
     if (ring.interval == VehInterval.GREEN) {
-      // the included phase's own delay: its vehicles are still red until delayStart + delayLength
-      return ring.activePhase == includedPhase && ring.delayActive
+      // the included phase's own delay: its vehicles are still red until delayStart + delayLength.
+      // Not a transit queue jump: that hold is the bus's alone, and an overlap greening into it
+      // would turn across the bus as it pulls away
+      return ring.activePhase == includedPhase && ring.delayActive && !ring.queueJump
           && (ring.delayStart + ring.delayLength - now) <= leadGreen;
     }
     if (ring.interval != VehInterval.RED) {
@@ -729,6 +732,9 @@ public class RingBarrierState {
       return false;
     }
     TrafficSignalProgrammedPhase next = plan.getPhase(includedPhase);
+    if (next != null && queueJumpTicks > 0L && includedPhase == queueJumpPhase) {
+      return false; // it will open with a queue jump, which the overlap does not lead into
+    }
     long vehicleGreen = clearEnd + (next == null ? 0L : startDelay(next, pedServiceAtStart(next)));
     return (vehicleGreen - now) <= leadGreen; // inside the lead window
   }
