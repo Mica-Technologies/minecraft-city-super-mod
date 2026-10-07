@@ -1718,8 +1718,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     y += 12;
     fontRenderer.drawString("Lead:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 76, 9, "Lead (Advance) Green",
-        "Seconds the overlap greens BEFORE an included phase greens,",
-        "during the preceding red clearance (within-barrier). 0 = off.");
+        "Seconds the overlap greens BEFORE an included phase's vehicles,",
+        "in its delayed green or the red clearance before it. 0 = off.");
     y += 12;
     fontRenderer.drawString("Call:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 76, 9, "Call Phase (detector assignment)",
