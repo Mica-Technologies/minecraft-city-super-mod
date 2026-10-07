@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficsigns;
 
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
 import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
@@ -252,6 +253,16 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     return below.getBlock() instanceof AbstractBlockSign;
   }
 
+  /**
+   * Whether {@code state} is signal arm hardware a sign hangs in front of: a pole or straight arm,
+   * or a cell of a curved mast arm upsweep (#269), which is not a traffic pole block but carries
+   * the same tube through its cell.
+   */
+  private static boolean isSignalArm(IBlockState state) {
+    return state.getBlock() instanceof AbstractBlockTrafficPole
+        || state.getBlock() instanceof BlockTrafficPoleMastArmCurve;
+  }
+
   public boolean getBlockIsInFrontOfSignalArm(IBlockAccess source, BlockPos pos) {
     IBlockState sourceBlockState = source.getBlockState(pos);
     if (!(sourceBlockState.getBlock() instanceof AbstractBlockSign)) {
@@ -259,45 +270,33 @@ public abstract class AbstractBlockSign extends AbstractBlockRotatableHZEight
     }
     DirectionEight facing8 = source.getBlockState(pos).getValue(FACING);
     if (facing8 == DirectionEight.N) {
-      return source.getBlockState(pos.offset(
-              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.S) {
-      return source.getBlockState(pos.offset(
-              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.E) {
-      return source.getBlockState(
-              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.W) {
-      return source.getBlockState(
-              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.NE) {
-      return source.getBlockState(pos.offset(
-              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
-              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))) || isSignalArm(source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.NW) {
-      return source.getBlockState(pos.offset(
-              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
-              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.NORTH, EnumFacing.SOUTH)))) || isSignalArm(source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.SE) {
-      return source.getBlockState(pos.offset(
-              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
-              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))) || isSignalArm(source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.EAST, EnumFacing.SOUTH))));
     } else if (facing8 == DirectionEight.SW) {
-      return source.getBlockState(pos.offset(
-              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole || source.getBlockState(
-              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH)))
-          .getBlock() instanceof AbstractBlockTrafficPole;
+      return isSignalArm(source.getBlockState(pos.offset(
+              BlockUtils.getRelativeFacing(EnumFacing.SOUTH, EnumFacing.SOUTH)))) || isSignalArm(source.getBlockState(
+              pos.offset(BlockUtils.getRelativeFacing(EnumFacing.WEST, EnumFacing.SOUTH))));
     }
     return false;
   }
