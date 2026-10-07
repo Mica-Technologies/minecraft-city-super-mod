@@ -657,8 +657,8 @@ public class TileEntityDynamicGuideSignRenderer
       // edge, and stacked lower panels have no free edge for one (they would all pile
       // up at the sign top and overlap).
       if (pi == 0 && panel.hasExitTab()) {
-        renderExitTab(panel.getExitTab(), signLeft, signTop, totalSignWidth,
-            faceZ, borderWidth, cornerStyle, legendR, legendG, legendB);
+        renderExitTab(panel.getExitTab(), exitTabScale(panel), signLeft, signTop,
+            totalSignWidth, faceZ, borderWidth, cornerStyle, legendR, legendG, legendB);
       }
 
       List<GuideSignRow> panelRows = panel.getRows();
@@ -816,7 +816,7 @@ public class TileEntityDynamicGuideSignRenderer
     }
   }
 
-  private void renderExitTab(ExitTabData tab, float signLeft, float signTop,
+  private void renderExitTab(ExitTabData tab, float scale, float signLeft, float signTop,
       float signWidth, float faceZ, int borderWidth, CornerStyle cornerStyle,
       float legendR, float legendG, float legendB) {
     String tabText = tab.getText();
@@ -824,21 +824,21 @@ public class TileEntityDynamicGuideSignRenderer
       tabText = "EXIT";
     }
 
-    // The tab scales with the sign's auto-fit content scale, like all other legend.
-    float tabCap = EXIT_TAB_CAP_HEIGHT * contentScale;
+    // The tab scales with the panel's legend (exitTabScale), auto-fit included.
+    float tabCap = EXIT_TAB_CAP_HEIGHT * scale;
     float tabTextW = GuideSignFontRenderer.getStringWidth(tabText, tabCap);
-    float tabPad = (tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING) * contentScale;
+    float tabPad = (tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING) * scale;
     float tabWidth = tabTextW + tabPad * 2;
     // Toll exits get a purple TOLL segment prepended to the tab.
-    float tollCap = EXIT_TAB_TOLL_CAP_HEIGHT * contentScale;
+    float tollCap = EXIT_TAB_TOLL_CAP_HEIGHT * scale;
     float tollSegW = 0;
     float tollTextW = 0;
     if (tab.isToll()) {
       tollTextW = GuideSignFontRenderer.getStringWidth("TOLL", tollCap);
-      tollSegW = tollTextW + EXIT_TAB_TOLL_PADDING * 2 * contentScale;
+      tollSegW = tollTextW + EXIT_TAB_TOLL_PADDING * 2 * scale;
       tabWidth += tollSegW;
     }
-    float tabHeight = EXIT_TAB_HEIGHT * contentScale;
+    float tabHeight = EXIT_TAB_HEIGHT * scale;
 
     float tabX;
     switch (tab.getPosition()) {
@@ -1542,12 +1542,42 @@ public class TileEntityDynamicGuideSignRenderer
 
   /**
    * How much the APL band grows on wide signs: arrows and band scale with lane pitch
-   * so a sign stretched over real lanes doesn't render spindly arrows. 1.0 at the
-   * classic minimum pitch; capped at 3x.
+   * so a sign stretched over real lanes doesn't render spindly arrows, but never past the
+   * panel's legend, so arrows keep the proportion to the text they have at 1.0 (over
+   * real lanes the pitch alone always reached the cap, putting 3x arrows under a 2x
+   * legend, #266). 1.0 at the classic minimum pitch; capped at 3x.
    */
   private float aplScale(GuideSignPanel panel, float contentWidth) {
     float pitch = contentWidth / Math.max(1, panel.getAplLanes());
-    return Math.max(1.0f, Math.min(3.0f, pitch / 13.0f));
+    float s = pitch / 13.0f;
+    float legend = panelLegendScale(panel);
+    if (legend > 0) {
+      s = Math.min(s, legend * contentScale);
+    }
+    return Math.max(1.0f, Math.min(3.0f, s));
+  }
+
+  /**
+   * The exit tab's scale: the panel's legend, so the tab keeps the 0.8 ratio of its cap
+   * height to the legend's that it has at text scale 1.0 (MUTCD sets the tab's letters a
+   * size or so under the destinations) instead of staying small beside large legends.
+   * Never below the auto-fit content scale, so a sign of small text keeps its tab.
+   */
+  private float exitTabScale(GuideSignPanel panel) {
+    return Math.max(1.0f, panelLegendScale(panel)) * contentScale;
+  }
+
+  /** The largest text scale among the panel's text elements, or 0 when it has none. */
+  private static float panelLegendScale(GuideSignPanel panel) {
+    float max = 0;
+    for (GuideSignRow row : panel.getRows()) {
+      for (GuideSignElement e : row.getElements()) {
+        if (e.getType() == GuideSignElement.TYPE_TEXT && e.getTextScale() > max) {
+          max = e.getTextScale();
+        }
+      }
+    }
+    return max;
   }
 
   private float aplBandHeight(GuideSignPanel panel, float contentWidth) {
@@ -1633,13 +1663,14 @@ public class TileEntityDynamicGuideSignRenderer
         tabText = "EXIT";
       }
       float tabPad = tab.isWide() ? EXIT_TAB_PADDING_WIDE : EXIT_TAB_PADDING;
+      float ts = exitTabScale(panels.get(0));
       float tabW = GuideSignFontRenderer.getStringWidth(tabText,
-          EXIT_TAB_CAP_HEIGHT * contentScale) + tabPad * 2 * contentScale;
+          EXIT_TAB_CAP_HEIGHT * ts) + tabPad * 2 * ts;
       if (tab.isToll()) {
         // Must match renderExitTab's TOLL segment width.
         tabW += GuideSignFontRenderer.getStringWidth("TOLL",
-            EXIT_TAB_TOLL_CAP_HEIGHT * contentScale)
-            + EXIT_TAB_TOLL_PADDING * 2 * contentScale;
+            EXIT_TAB_TOLL_CAP_HEIGHT * ts)
+            + EXIT_TAB_TOLL_PADDING * 2 * ts;
       }
       float tabNeed = tabW + PANEL_PADDING_SIDE * 2;
       if (tabNeed > width) {
