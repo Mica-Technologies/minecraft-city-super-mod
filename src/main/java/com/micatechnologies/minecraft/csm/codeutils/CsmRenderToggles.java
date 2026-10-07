@@ -56,6 +56,16 @@ public final class CsmRenderToggles {
    */
   public static boolean skipSignalIncandescentFade = false;
 
+  /** The shipping value of {@link #incandescentRise90Millis} (Roads' IncandescentFade default). */
+  public static final float INCANDESCENT_RISE_90_DEFAULT = 120.0f;
+
+  /**
+   * How long an incandescent signal lamp takes to reach 90% through a red lens, in milliseconds;
+   * the decay follows from the same filament. Set by {@code /csm incandescent} to judge the fade
+   * by eye without a rebuild; not persisted.
+   */
+  public static float incandescentRise90Millis = INCANDESCENT_RISE_90_DEFAULT;
+
   /** Skip the traffic signal head's cached body/door/visor display list. Measurement only. */
   public static boolean skipSignalBody = false;
 
