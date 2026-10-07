@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "691 blocks in this tab"
+!!! info "692 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -94,6 +94,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Bike Signal Alto MTA Tolled Lane | `csm:tolledbikelanesign` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Sign | `csm:signbikesignal` | 2 | 10 | pickaxe | 1 |
 | Bike Signal Sign (Double Sided) | `csm:signbikesignaldoublesided` | 2 | 10 | pickaxe | 1 |
+| Bike Signal Sign (Square) | `csm:signbikesignalsquare` | 2 | 10 | pickaxe | 1 |
 | Bike Yield to Pedestrians Sign | `csm:signbikeyieldtopeds` | 2 | 10 | pickaxe | 1 |
 | Bikes Allowed to Use Full Lane Sign | `csm:signbikesallowedusefulllane` | 2 | 10 | pickaxe | 1 |
 | Bikes Allowed to Use Full Lane Sign (Large) | `csm:signbikesallowedusefulllanelarge` | 2 | 10 | pickaxe | 1 |

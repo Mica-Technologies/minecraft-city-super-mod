@@ -574,6 +574,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signbikelaneplaque"));
     initTabBlock(new BlockTrafficSign("signbikesignal"));
     initTabBlock(new BlockTrafficSign("signbikesignaldoublesided"));
+    initTabBlock(new BlockTrafficSign("signbikesignalsquare"));
     initTabBlock(new BlockTrafficSign("signbikeyieldtopeds"));
     initTabBlock(new BlockTrafficSign("signbikesallowedusefulllane"));
     initTabBlock(new BlockTrafficSign("signbikesallowedusefulllanelarge"));

@@ -302,6 +302,7 @@ tile.signbikesallowedusefulllane.name=Señal de Bicicletas Autorizadas a Usar To
 tile.signbikesallowedusefulllanelarge.name=Señal de Bicicletas Autorizadas a Usar Todo el Carril (Grande)
 tile.signbikesignal.name=Señal de Semáforo para Bicicletas
 tile.signbikesignaldoublesided.name=Señal de Semáforo para Bicicletas (Doble Cara)
+tile.signbikesignalsquare.name=Señal de Semáforo para Bicicletas (Cuadrada)
 tile.signbikeyieldtopeds.name=Señal de Bicicletas Ceden el Paso a Peatones
 tile.signblastingzone.name=Señal de Zona de Voladuras
 tile.signbridgeout.name=Señal de Puente Fuera de Servicio

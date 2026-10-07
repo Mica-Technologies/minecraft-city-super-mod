@@ -302,6 +302,7 @@ tile.signbikesallowedusefulllane.name=Cyklar Tillåtna Använda Hela Körfältet
 tile.signbikesallowedusefulllanelarge.name=Cyklar Tillåtna Använda Hela Körfältet-Vägmärke (Stor)
 tile.signbikesignal.name=Cykelsignal-Vägmärke
 tile.signbikesignaldoublesided.name=Cykelsignal-Vägmärke (Dubbelsidig)
+tile.signbikesignalsquare.name=Cykelsignal-Vägmärke (Kvadratisk)
 tile.signbikeyieldtopeds.name=Cyklar Väjningsplikt för Fotgängare-Vägmärke
 tile.signblastingzone.name=Sprängzon-Vägmärke
 tile.signbridgeout.name=Bro Avstängd-Vägmärke
