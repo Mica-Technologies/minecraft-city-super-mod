@@ -105,7 +105,7 @@ public class TileEntitySpanWireHangerRenderer
     // The foot stands on the payload, not on the middle of the block. For a signal head those
     // are not the same place -- the body is set back in its block and the visors hang off the
     // front, so a drop down the block centre line lands on the top visor.
-    final Vec3d mountPoint = te.getHardwareFootPoint();
+    final Vec3d mountPoint = te.getDrawnFootPoint();
 
     // Grip the cable directly above the mast, not at the mount's own place along the span.
     //
@@ -208,7 +208,7 @@ public class TileEntitySpanWireHangerRenderer
     // diagonal is not where the head actually is -- so evaluating there put the tie's foot off to
     // one side and left it leaning. Asking the wire for its point below the head keeps the tie
     // plumb, and keeps it touching the wire even where the two do not quite agree.
-    final Vec3d foot = te.getHardwareFootPoint();
+    final Vec3d foot = te.getDrawnFootPoint();
     emitTetherTieAt(buffer, tether, te.getSpan(), foot, tieY, origin, skyLight, blockLight);
   }
 

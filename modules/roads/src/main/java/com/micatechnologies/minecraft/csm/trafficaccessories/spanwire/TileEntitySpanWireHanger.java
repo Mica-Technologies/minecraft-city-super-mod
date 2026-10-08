@@ -63,6 +63,12 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
   private transient Vec3d payloadHardwareOffset = Vec3d.ZERO;
 
   /**
+   * How far a builder has nudged the payload by hand, in blocks and world axes. Added only to
+   * where the mast is drawn; see {@link #getDrawnFootPoint()}.
+   */
+  private transient Vec3d payloadHandOffset = Vec3d.ZERO;
+
+  /**
    * The height a box span's tether ties to on the payload below, or {@code NaN} for a payload
    * that takes no tie. Cached with everything else derived from the payload.
    */
@@ -163,6 +169,9 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     // values, and this keeps the key stable against the last bit of floating point noise.
     key = key * 31L + Math.round(payloadHardwareOffset.x * 64.0);
     key = key * 31L + Math.round(payloadHardwareOffset.z * 64.0);
+    // A nudge moves the head, so it moves the mast; see getDrawnFootPoint.
+    key = key * 31L + Math.round(payloadHandOffset.x * 64.0);
+    key = key * 31L + Math.round(payloadHandOffset.z * 64.0);
     // How far the payload reaches, which is what the drop and the tether tie are drawn to. Left
     // out until now, so bolting an add-on onto a head redrew nothing unless the change happened
     // to move the span as well.
@@ -206,6 +215,7 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     payloadReadTick = world == null ? Long.MIN_VALUE : world.getTotalWorldTime();
     final boolean previousFeed = payloadTakesConductorFeed;
     final Vec3d previousOffset = payloadHardwareOffset;
+    final Vec3d previousHand = payloadHandOffset;
 
     final IBlockState below = world == null ? null : world.getBlockState(pos.down());
     if (below != null && below.getBlock() instanceof ISpanWireHangable) {
@@ -213,18 +223,21 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
       payloadTakesConductorFeed = payload.needsSpanConductorFeed();
       payloadTakesRise = payload.takesSpanRise();
       payloadHardwareOffset = payload.getSpanHardwareOffset(world, pos.down(), below);
+      payloadHandOffset = payload.getSpanHandOffset(world, pos.down(), below);
       payloadTetherTieY = payload.getSpanTetherTieY(world, pos.down(), below);
       payloadTopY = payload.getSpanHangerTopY(world, pos.down(), below);
     } else {
       payloadTakesConductorFeed = true;
       payloadTakesRise = false;
       payloadHardwareOffset = Vec3d.ZERO;
+      payloadHandOffset = Vec3d.ZERO;
       payloadTetherTieY = Double.NaN;
       payloadTopY = Double.NaN;
     }
 
     if ((previousFeed != payloadTakesConductorFeed
-        || !previousOffset.equals(payloadHardwareOffset))
+        || !previousOffset.equals(payloadHardwareOffset)
+        || !previousHand.equals(payloadHandOffset))
         && world != null && world.isRemote) {
       SpanWireCableRenderer.cleanupDisplayList(pos);
     }
@@ -364,6 +377,30 @@ public class TileEntitySpanWireHanger extends AbstractTileEntitySpanWireAttachme
     // reporting nonsense cannot stretch the drop to the ground.
     final double reach = Math.max(foot.y - MAX_HANGER_REACH, Math.min(foot.y, payloadTop));
     return new Vec3d(foot.x, reach, foot.z);
+  }
+
+  /**
+   * Where the mast actually comes down: on the payload where it has ended up, not where it rests.
+   *
+   * <p>{@link #getHardwareFootPoint()} is the payload at rest, and it exists to work out the slide
+   * from -- it cannot include the slide itself, since {@link #getPayloadSlide} is measured from it.
+   * But the head is drawn slid under the clamp, so a mast standing on the resting foot came down
+   * beside the housing with an arm reaching across to the wire, which is what #270 showed on every
+   * span carrying heads that face opposite ways: no single Signal Side sits over both, so one pair
+   * slides by the whole setback. Adding the slide back puts the mast on the housing and plumb under
+   * the clamp, and the arm is left only for a payload that does not move (a sign, an extending
+   * mast), where the gap it bridges is real.
+   *
+   * <p>The hand nudge is added here and only here. Put into the resting foot, the slide would undo
+   * it and the head would land back under the clamp whatever the builder asked for.
+   *
+   * @return the drawn foot, in world coordinates.
+   */
+  public Vec3d getDrawnFootPoint() {
+    final Vec3d foot = getHardwareFootPoint();
+    final Vec3d slide = getPayloadSlide(pos.down());
+    final Vec3d hand = payloadMoves() ? payloadHandOffset : Vec3d.ZERO;
+    return new Vec3d(foot.x + slide.x + hand.x, foot.y, foot.z + slide.z + hand.z);
   }
 
   public SpanWireMountStyle getMountStyle() {

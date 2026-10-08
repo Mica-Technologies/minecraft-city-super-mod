@@ -428,6 +428,17 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
   }
 
   /**
+   * A cluster's mast stands on the bracket, which does not move: the heads slide onto the bar,
+   * not the bar onto a head. So the single mount's drawn foot -- its resting foot plus its
+   * payload's slide -- would ask about whichever head happens to sit under this block and walk
+   * the mast off the middle of the bar after it.
+   */
+  @Override
+  public Vec3d getDrawnFootPoint() {
+    return getHardwareFootPoint();
+  }
+
+  /**
    * The direction the bracket runs, as a unit vector along the cable at this mount. Falls back to
    * east for an unlinked cluster, which is only ever used to draw a bracket nothing hangs from.
    */
