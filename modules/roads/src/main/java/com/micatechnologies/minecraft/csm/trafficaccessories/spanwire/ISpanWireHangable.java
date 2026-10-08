@@ -75,6 +75,22 @@ public interface ISpanWireHangable {
   }
 
   /**
+   * How far a builder has moved this block by hand, horizontally, in blocks and world axes.
+   *
+   * <p>Kept apart from {@link #getSpanHardwareOffset} on purpose. That one says where the hardware
+   * meets the block at rest, and the mount works out the slide that puts the block under its
+   * clamp from it; folding a hand-placed move into it would have the slide undo the move, landing
+   * the block back under the clamp whatever the builder asked for. This one is only added to where
+   * the mast is drawn, so the hardware follows the block wherever it was put.
+   *
+   * <p>Zero by default: only a block drawn by a tile entity renderer can be moved a fraction of a
+   * block at all.
+   */
+  default Vec3d getSpanHandOffset(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return Vec3d.ZERO;
+  }
+
+  /**
    * The world height a box span's lower tether should tie to on this block -- its underside --
    * or {@code NaN} for a payload that should not be tied at all.
    *

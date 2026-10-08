@@ -108,8 +108,22 @@ twice and stands the mast off the back of the housing — which is exactly what 
 span's own default started following these same payload offsets.
 
 Kept separate, the geometry corrects itself: when span and payload offsets agree, which is what
-`AUTO` arranges, the offset arm has zero length and the mast is plumb. When a builder overrides the
-side, the arm grows by the difference and still reaches. Neither case needs a special path.
+`AUTO` arranges, the offset arm has zero length and the mast is plumb. When they do not, a head
+that takes the rise also slides the rest of the way under the clamp (`getPayloadSlide`).
+
+**The foot is where the payload rests; the mast is drawn where it ends up.** `getHardwareFootPoint`
+is the resting foot, and the slide is measured from it, so it can never include the slide itself.
+The renderer draws the mast and the tether tie on `getDrawnFootPoint` instead: the resting foot
+plus the slide, plus the head's hand-placed nudge. Drawing on the resting foot stood the mast where
+the head would have been, beside the housing, with an arm out to the clamp (#270). It showed on
+every span carrying heads facing opposite ways -- no one Signal Side sits over both, so one pair
+slides the whole setback. The arm remains only for a payload that does not move (a sign, an
+extending mast), where the gap it bridges is real.
+
+The nudge reaches the mount through its own question, `ISpanWireHangable.getSpanHandOffset`, and
+never through `getSpanHardwareOffset`: the slide would be measured from a nudged foot and undo the
+nudge, putting the head back under the clamp whatever the builder asked for. A cluster keeps its
+mast on the bracket (`getDrawnFootPoint` is its resting foot), since its heads slide onto the bar.
 
 **Anything with a fixed block model needs the same treatment.** An anchor's eyebolt is drawn by a
 JSON model, identical for every anchor in the world and sitting on the block's centre line, so once

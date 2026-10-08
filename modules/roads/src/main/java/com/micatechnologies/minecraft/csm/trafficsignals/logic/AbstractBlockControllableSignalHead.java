@@ -45,6 +45,25 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   }
 
   /**
+   * The head's hand-placed nudge, so the mast above follows it rather than standing where the
+   * head would have been. The nudge is in model units; the span wire package works in blocks.
+   */
+  @Override
+  public net.minecraft.util.math.Vec3d getSpanHandOffset(
+      net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state) {
+    final TileEntity tileEntity =
+        world == null || pos == null ? null : BlockUtils.getTileEntitySafe(world, pos);
+    if (!(tileEntity instanceof TileEntityTrafficSignalHead)) {
+      return net.minecraft.util.math.Vec3d.ZERO;
+    }
+    final TileEntityTrafficSignalHead head = (TileEntityTrafficSignalHead) tileEntity;
+    if (head.getNudgeForward() == 0 && head.getNudgeSide() == 0) {
+      return net.minecraft.util.math.Vec3d.ZERO;
+    }
+    return getNudgeOffset(head.getNudgeForward(), head.getNudgeSide(), state).scale(1.0 / 16.0);
+  }
+
+  /**
    * Shared "no pivot offset" result for {@link #getTiltPivotOffset(IBlockAccess, BlockPos)}.
    *
    * <p><b>Read-only.</b> The section-layout accessors on this class have always been free to
