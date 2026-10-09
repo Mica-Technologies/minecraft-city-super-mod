@@ -332,11 +332,12 @@ public class CsmConfig {
             + "some is given back, in percent. HIGH uses 40, MEDIUM 30, LOW 25.");
     chunkBuilderLimit = config.getInt("chunkBuilderLimit", CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_CHUNK_BUILDER_LIMIT, 0, 1024,
-        "CUSTOM only. The most chunk builders to keep. 0 keeps Minecraft's own number, ten per "
-            + "chunk build thread up to 30% of the heap at about 10 MB each. Fewer use less "
+        "The most chunk builders to keep, on every level: it can only lower the level's own "
+            + "number (HIGH keeps Minecraft's, ten per chunk build thread up to 30% of the heap at "
+            + "about 10 MB each; MEDIUM four per thread; LOW two). 0 adds no limit. Fewer use less "
             + "memory but load chunks more slowly while you travel. Never fewer than two per "
             + "build thread. Lowering it takes effect within seconds; raising it again needs a "
-            + "restart. HIGH keeps Minecraft's number, MEDIUM four per thread, LOW two.");
+            + "restart.");
     customMaxRenderDistance = config.getInt("maxRenderDistance", CATEGORY_PERFORMANCE, 0, 0, 512,
         "CUSTOM only. The farthest, in blocks, that CSM's animated blocks (signals, crosswalks, "
             + "guide and street signs, message boards, beacons, cranes, ad boards) are drawn. 0 "
@@ -473,7 +474,7 @@ public class CsmConfig {
   }
 
   /**
-   * CUSTOM only: the most chunk builders to keep, or 0 for Minecraft's own number. What applies
+   * The chunkBuilderLimit entry: a cap on every level, 0 for none. What applies
    * is {@code CsmPerformance.chunkBuilderLimit(int)}.
    *
    * @return the limit

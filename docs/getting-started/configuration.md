@@ -164,11 +164,16 @@ their own.
 | `thermostatDisplayDistance` | `I:` | `0` | 0–256 | *CUSTOM only.* Within this many blocks thermostats show their live screen; `0` for any distance |
 | `incandescentFade` | `B:` | `true` | | *CUSTOM only.* Whether incandescent signal lamps fade on and off like a filament, rather than switching like an LED |
 | `adBoardTransitions` | `B:` | `true` | | *CUSTOM only.* Whether advertising boards fade or scroll between ads, rather than cutting |
-| `chunkBuilderLimit` | `I:` | `0` | 0–1024 | *CUSTOM only.* The most chunk builders to keep. `0` keeps Minecraft's own number. Fewer use less memory but load chunks more slowly while you travel. Never fewer than two per chunk build thread. Lowering it takes effect within seconds; raising it again needs a restart. |
+| `chunkBuilderLimit` | `I:` | `0` | 0–1024 | **Every level.** The most chunk builders to keep; it can only lower the level's own number. `0` adds no limit. Fewer use less memory but load chunks more slowly while you travel. Never fewer than two per chunk build thread. Lowering it takes effect within seconds; raising it again needs a restart. |
 | `chunkBuilderBudgetPercent` | `I:` | `40` | 10–90 | *CUSTOM only.* How much of the direct memory limit the chunk builders may hold before some is given back |
 
 The *CUSTOM only* defaults are the `HIGH` values, so switching to `CUSTOM` changes nothing until you
 edit them.
+
+`chunkBuilderLimit` is the exception: it applies on every level and can only lower the number of
+builders. With OptiFine, chunks are built by only a few builders, so a limit of about twice your
+chunk build threads (20 is typical) gives back hundreds of megabytes without changing how anything
+looks. A modpack can ship it in its `csm.cfg`.
 
 ### trafficpoles
 

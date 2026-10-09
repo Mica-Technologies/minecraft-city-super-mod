@@ -294,22 +294,30 @@ public final class CsmPerformance {
 
   /**
    * The most chunk builders to keep, or 0 for Minecraft's own number: Minecraft's on
-   * {@code HIGH}, four per build thread on {@code MEDIUM}, two on {@code LOW}.
+   * {@code HIGH}, four per build thread on {@code MEDIUM}, two on {@code LOW}. The
+   * {@code chunkBuilderLimit} entry caps it further on every level, as a switch would (a pack can
+   * ship it to give back builders OptiFine never uses without changing anyone's visuals).
    *
    * @param buildThreads the chunk build threads
    *
    * @return the limit, 0 for none
    */
   public static int chunkBuilderLimit(int buildThreads) {
+    int preset;
     switch (mode()) {
       case MEDIUM:
-        return buildThreads * 4;
+        preset = buildThreads * 4;
+        break;
       case LOW:
-        return buildThreads * 2;
-      case CUSTOM:
-        return CsmConfig.getChunkBuilderLimit();
+        preset = buildThreads * 2;
+        break;
       default:
-        return 0;
+        preset = 0;
     }
+    int entry = CsmConfig.getChunkBuilderLimit();
+    if (preset <= 0) {
+      return Math.max(0, entry);
+    }
+    return entry <= 0 ? preset : Math.min(preset, entry);
   }
 }
