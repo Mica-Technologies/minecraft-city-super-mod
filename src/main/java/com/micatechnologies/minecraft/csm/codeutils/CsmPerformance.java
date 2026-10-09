@@ -295,8 +295,9 @@ public final class CsmPerformance {
   /**
    * The most chunk builders to keep, or 0 for Minecraft's own number: Minecraft's on
    * {@code HIGH}, four per build thread on {@code MEDIUM}, two on {@code LOW}. The
-   * {@code chunkBuilderLimit} entry caps it further on every level, as a switch would (a pack can
-   * ship it to give back builders OptiFine never uses without changing anyone's visuals).
+   * {@code chunkBuilderLimit} entry, and the same entry in a modpack's {@code csm_pack.cfg}, cap
+   * it further on every level, as a switch would: a pack can give back the builders OptiFine never
+   * uses without changing anyone's visuals or touching their {@code csm.cfg}.
    *
    * @param buildThreads the chunk build threads
    *
@@ -314,10 +315,15 @@ public final class CsmPerformance {
       default:
         preset = 0;
     }
-    int entry = CsmConfig.getChunkBuilderLimit();
-    if (preset <= 0) {
-      return Math.max(0, entry);
+    return smallestLimit(smallestLimit(preset, CsmConfig.getChunkBuilderLimit()),
+        CsmConfig.getPackChunkBuilderLimit());
+  }
+
+  /** The smaller of two limits where 0 (or less) means none. */
+  private static int smallestLimit(int a, int b) {
+    if (a <= 0) {
+      return Math.max(0, b);
     }
-    return entry <= 0 ? preset : Math.min(preset, entry);
+    return b <= 0 ? a : Math.min(a, b);
   }
 }

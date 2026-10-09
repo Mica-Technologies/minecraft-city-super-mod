@@ -105,8 +105,10 @@ public class CommandCsmClient extends CommandBase {
     int perThread = mode == CsmPerformance.Mode.MEDIUM ? 4
         : mode == CsmPerformance.Mode.LOW ? 2 : 0;
     int cap = CsmConfig.getChunkBuilderLimit();
+    int packCap = CsmConfig.getPackChunkBuilderLimit();
     say(sender, "  chunk builders: " + (perThread > 0 ? perThread + " per build thread"
-        : "Minecraft's number") + (cap > 0 ? ", at most " + cap : "") + ", trimmed over "
+        : "Minecraft's number") + (cap > 0 ? ", at most " + cap : "")
+        + (packCap > 0 ? ", at most " + packCap + " (modpack)" : "") + ", trimmed over "
         + CsmPerformance.chunkBuilderBudgetPercent() + "% of direct memory"
         + (CsmPerformance.trimChunkBuilders() ? "" : " (trimming off)"));
   }
