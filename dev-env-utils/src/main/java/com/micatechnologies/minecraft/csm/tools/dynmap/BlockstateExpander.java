@@ -122,6 +122,7 @@ public final class BlockstateExpander {
         // not real block properties).
         Map<String, List<String>> propertyValues = new LinkedHashMap<>();
         JsonObject normalOverride = null;
+        List<ResolvedVariant> fullStateKeyed = new ArrayList<>();
         for (Map.Entry<String, JsonElement> e : variants.entrySet()) {
             String key = e.getKey();
             if ("inventory".equals(key)) continue;
@@ -129,9 +130,29 @@ public final class BlockstateExpander {
                 normalOverride = unwrap(e.getValue());
                 continue;
             }
+            if (key.contains("=")) {
+                // Forge also takes vanilla's whole-state keys ("facing=east,open=true"), each
+                // naming one state outright rather than one property's value.
+                Map<String, String> state = new LinkedHashMap<>();
+                for (String pair : key.split(",")) {
+                    String[] kv = pair.split("=", 2);
+                    if (kv.length == 2) state.put(kv[0], kv[1]);
+                }
+                ResolvedVariant merged = mergeChain(defaults, unwrap(e.getValue()),
+                        new LinkedHashMap<>(), propertyValues, variants);
+                fullStateKeyed.add(new ResolvedVariant(state, merged.model, merged.textures,
+                        merged.xRotation, merged.yRotation, merged.uvlock));
+                continue;
+            }
             JsonObject inner = e.getValue().getAsJsonObject();
             List<String> values = new ArrayList<>(inner.keySet());
             propertyValues.put(key, values);
+        }
+
+        if (!fullStateKeyed.isEmpty()) {
+            String firstModel = fullStateKeyed.get(0).model;
+            boolean objStates = isObj || (firstModel != null && firstModel.endsWith(".obj"));
+            return new ExpandedBlockstate(objStates ? Kind.OBJ : Kind.FORGE, fullStateKeyed);
         }
 
         List<ResolvedVariant> resolved = new ArrayList<>();
