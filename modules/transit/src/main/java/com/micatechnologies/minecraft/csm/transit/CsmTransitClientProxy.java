@@ -20,7 +20,9 @@ import com.micatechnologies.minecraft.csm.transit.stop.TileEntityBusStopFlagRend
 import com.micatechnologies.minecraft.csm.transit.wayfinding.TileEntityWayfindingPanel;
 import com.micatechnologies.minecraft.csm.transit.wayfinding.TileEntityWayfindingPanelRenderer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -68,5 +70,17 @@ public class CsmTransitClientProxy extends CsmTransitCommonProxy {
       BusStation.clear();
       announcer.clear();
     });
+    MinecraftForge.EVENT_BUS.register(new WorldUnloadListener());
+  }
+
+  /** Drops what the client keeps per world when that world goes, as on a dimension change. */
+  public static final class WorldUnloadListener {
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+      if (event.getWorld().isRemote) {
+        BusStation.forget(event.getWorld());
+      }
+    }
   }
 }

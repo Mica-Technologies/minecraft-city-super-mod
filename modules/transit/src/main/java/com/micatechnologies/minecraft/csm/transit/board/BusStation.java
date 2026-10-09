@@ -154,6 +154,17 @@ public final class BusStation {
     STATIONS.clear();
   }
 
+  /**
+   * Forgets the stations of a world being unloaded. A dimension change unloads the client world
+   * without a disconnect, and each station holds its world, which would keep the old one in memory
+   * until the next disconnect.
+   *
+   * @param world the world being unloaded
+   */
+  public static void forget(World world) {
+    STATIONS.values().removeIf(station -> station.world == world);
+  }
+
   private static BusStation scan(World world, int cx, int cz, int band, long now) {
     int y0 = band * 16 - HEIGHT_REACH;
     int y1 = band * 16 + 15 + HEIGHT_REACH;
