@@ -233,11 +233,11 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 | `csm_fire_engine` (custom-cab pumper, 9.4 m) | `_red`, `_lime`, `_blackred`, `_white`, `_airport` | `csm_wheel_truck` (1.1 m), duals behind | `csm_engine_diesel` | 4 |
 | `csm_ladder_truck` (rear-mount aerial, 11.2 m) | `_red`, `_lime`, `_blackred`, `_white` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 4 |
 | `csm_ambulance` (Type III, 7.2 m) | `_red`, `_orange`, `_blue`, `_green` (stripes), `_yellow` (high-vis) | `csm_wheel_van` (0.8 m), duals behind | `csm_engine_diesel` | 3 |
-| `csm_police_suv` (5.4 m) | `_blackwhite`, `_white`, `_blue`, `_sheriff`, `_state`, `_unmarked` |
+| `csm_police_suv` (5.4 m) | `_blackwhite`, `_white`, `_blue`, `_sheriff`, `_state`, `_unmarked` | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
 | `csm_dpw_truck` (dump truck with plow, 9.7 m) | `_orange`, `_yellow`, `_white` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
 | `csm_tow_truck` (rollback carrier, 10.0 m) | `_white`, `_red`, `_yellow`, `_black` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
 | `csm_transit_bus` (40 ft low floor, 13.2 m) | `_metro`, `_cityline`, `_riverway`, `_verdant`, `_emberline` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` (rear) | 13 |
-| `csm_bucket_truck` (aerial lift, 9.1 m) | `_white`, `_yellow`, `_green` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 | `csm_wheel_car` (0.78 m) | `csm_engine_petrol` (V8) | 4 |
+| `csm_bucket_truck` (aerial lift, 9.1 m) | `_white`, `_yellow`, `_green` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
 
 **How a vehicle is built.**
 - **Model:** a spec of boxes, each wearing a named cell of a 128 px texture. Liveries are only

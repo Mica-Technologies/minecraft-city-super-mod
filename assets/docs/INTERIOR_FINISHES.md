@@ -139,7 +139,7 @@ tile, fabric acoustic panels, beadboard and a wood slat wall. Chosen over full-b
   face and the other wraps round onto the wall's end face, outside the guard's own cell. A guard
   placed on another takes its facing and edge, so a stack is one guard.
 - **Harvesting.** Drywall and vinyl are clay to the game, which comes off by hand; rock would
-  need a pickaxe to drop anything. Tile is rock and takes a pickaxe, stainless an iron one.
+  need a pickaxe to drop anything. Tile is rock and takes a pickaxe, and so does stainless (any pickaxe, wood up).
 
 Priced by material: drywall paper and a dye, wall tile two clay (it is ceramic), acoustic panels a
 wool, beadboard and slat wall a plank, a stainless guard an iron ingot and a vinyl one paper and a

@@ -73,7 +73,7 @@ The RetroFuturaGradle plugin is pinned to `1.4.7` (build.gradle): `1.4.0` was re
 
 ## Architecture Overview
 
-This is a **Minecraft 1.12.2 Forge mod** (mod ID: `csm`) that adds 1,550+ city-themed blocks and 35+ items. The build system is GregTechCEu Buildscripts (RetroFuturaGradle wrapper).
+This is a **Minecraft 1.12.2 Forge mod** (mod ID: `csm`) that adds 3,500+ city-themed blocks and 50+ items. The build system is GregTechCEu Buildscripts (RetroFuturaGradle wrapper).
 
 The mod is aimed at creative play, but all of its content is also obtainable in survival via a
 two-tier chain: vanilla ores/ingots → CSM parts (crafting table) → CSM blocks (CSM Fabricator).

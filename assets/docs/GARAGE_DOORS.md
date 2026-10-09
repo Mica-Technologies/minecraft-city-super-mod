@@ -25,8 +25,8 @@ Fill an opening with door blocks, placed from outside looking in: the door faces
 player looked, and its tracks, springs and hood go on the inside. A grille is the other way round,
 since it is fitted and worked from inside the shop: its hood and guides go on the player's side.
 Sneak while placing to put them on the other side, for any kind. A block added to a door joins it
-whichever side it is placed from. Blocks of one kind hung the same way are one door, up to
-16 x 16. Right-click any block of it, or give any block of it a redstone
+whichever side it is placed from. Blocks of one kind hung the same way are one door, of up to
+256 blocks in any shape. Right-click any block of it, or give any block of it a redstone
 signal, and the whole door opens or closes. Only the rising edge of a signal counts, so a button
 opens the door rather than opening it and closing it again at once, and a lever works it on every
 flip. As with the blinds, what was powered is remembered only while the world is loaded.
@@ -116,7 +116,7 @@ The **opener** hangs in the row just above the top of the door, where a sectiona
 track runs, placed looking at the door. Its rail runs forward over as much air as there is (up to
 ten blocks) and ends in a bracket on whatever it meets -- the wall over the door. The length is
 actual state (an OBJ per length), so nothing is set up and nothing ticks. Right-click it, or give it
-a redstone signal, and it works the first garage door in the three blocks below the rail's end: a
+a redstone signal, and it works the first garage door in the block the rail meets or the three below it: a
 button on the wall wired to the opener is a wall button.
 
 The **hanger** is perforated angle hung from the ceiling, stacked a block at a time so it reaches
