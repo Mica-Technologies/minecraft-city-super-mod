@@ -183,9 +183,7 @@ public class CsmClientProxy implements ICsmProxy {
     if (Minecraft.getMinecraft().world == null) {
       return;
     }
-    com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers.maintain(
-        CsmConfig.getChunkBuilderLimit(), CsmConfig.isChunkBuilderTrimEnabled(),
-        CsmConfig.getChunkBuilderBudgetPercent());
+    com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers.maintain();
   }
 
   @SubscribeEvent

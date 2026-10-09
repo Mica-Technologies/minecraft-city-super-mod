@@ -1,8 +1,8 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -135,7 +135,8 @@ public class TileEntityFireAlarmStrobeRenderer
   @Override
   public void render(AbstractTileEntity te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
-    if (!CsmConfig.isStrobeEffectEnabled()) return;
+    if (!CsmPerformance.strobeEffect()) return;
+    CsmPerformance.StrobeDetail detail = CsmPerformance.strobeDetail();
     if (te.getWorld() == null) return;
     if (!ActiveStrobeRegistry.isActive(te.getPos())) return;
 
@@ -273,7 +274,9 @@ public class TileEntityFireAlarmStrobeRenderer
     float lensH = maxY - minY;
     float coneReach = CONE_MAX_PROJECTION_DIST * (1.0f + DARK_CONE_STRETCH * darkness);
 
-    for (int i = 0; i < CONE_SEGMENTS; i++) {
+    // The beam is left out at LENS detail
+    int coneSegments = detail == CsmPerformance.StrobeDetail.LENS ? 0 : CONE_SEGMENTS;
+    for (int i = 0; i < coneSegments; i++) {
       // Apply per-frame, per-block values to the precomputed segment factors
       float nearZ = quadZ - 0.03f - CONE_T[i] * coneReach;
       float farZ = quadZ - 0.03f - CONE_T[i + 1] * coneReach;
@@ -300,7 +303,7 @@ public class TileEntityFireAlarmStrobeRenderer
     // light onto their own backing, and it is the piece you cannot miss because it sits right where
     // you are already looking. Drawn just in front of the block's back face, so the device's own
     // model occludes the middle of it -- the appliance casts a shadow on its own wall.
-    if (darkness > 0.01f) {
+    if (detail == CsmPerformance.StrobeDetail.FULL && darkness > 0.01f) {
       BlockPos behind = te.getPos().offset(facing.getOpposite());
       if (world.getBlockState(behind).isSideSolid(world, behind, facing)) {
         float washA = WALL_WASH_ALPHA * intensity * darkness;
@@ -317,7 +320,7 @@ public class TileEntityFireAlarmStrobeRenderer
     // Pools of light where the beam actually lands. Placed in world axes rather than the device's,
     // because the surface a pool sits on has its own orientation and nothing to do with how the
     // appliance happens to be turned.
-    if (darkness > 0.01f) {
+    if (detail == CsmPerformance.StrobeDetail.FULL && darkness > 0.01f) {
       renderSurfacePools(world, te.getPos(), facing, cenX, cenY, quadZ, intensity, r, g, b,
           tessellator, buffer);
     }

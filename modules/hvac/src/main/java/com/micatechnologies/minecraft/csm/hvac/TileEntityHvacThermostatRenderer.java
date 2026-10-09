@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -89,7 +90,8 @@ public class TileEntityHvacThermostatRenderer
   @Override
   public void render(TileEntity tileEntity, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
-    if (!CsmConfig.isThermostatDisplayEnabled()) {
+    // Within the mode's distance only (x, y and z are already measured from the camera)
+    if (x * x + y * y + z * z > CsmPerformance.thermostatDisplayDistanceSq()) {
       return;
     }
     if (!(tileEntity instanceof IHvacThermostatDisplay)) {

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.transit.panel.PanelLayout;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -50,7 +51,7 @@ public class TileEntityFlightBoardLarge extends AbstractTileEntity {
   /** A board meant to be read across a concourse. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 96.0 * 96.0;
+    return CsmPerformance.capRenderDistanceSq(96.0 * 96.0);
   }
 
   /** Nothing a baked model draws comes from here. */

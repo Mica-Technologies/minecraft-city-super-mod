@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -252,7 +253,7 @@ public class TileEntityCrosswalkSignal extends AbstractTickableTileEntity {
   /** Same reach as the new-style crosswalk signal and the heads it shares a pole with. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 
   /**

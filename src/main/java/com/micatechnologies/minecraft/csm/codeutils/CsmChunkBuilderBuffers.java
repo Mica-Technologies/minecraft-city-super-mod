@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.Csm;
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -189,8 +188,9 @@ public final class CsmChunkBuilderBuffers {
       lines.add(String.format(Locale.ROOT,
           "  direct memory in use: %.1f of %.1f MB, %d buffers; trim budget %.1f MB (%s)",
           mb(CsmDirectMemory.used()), mb(CsmDirectMemory.max()), CsmDirectMemory.count(),
-          mb(CsmDirectMemory.max() * CsmConfig.getChunkBuilderBudgetPercent() / 100),
-          CsmConfig.isChunkBuilderTrimEnabled() ? "on" : "off"));
+          mb(CsmDirectMemory.max() * CsmPerformance.chunkBuilderBudgetPercent() / 100),
+          CsmPerformance.trimChunkBuilders() ? "on" : "off"));
+      lines.add("  performance mode: " + CsmPerformance.mode());
     } catch (Exception e) {
       lines.add("chunkbuffers: could not measure (" + e + ")");
     }
@@ -270,11 +270,9 @@ public final class CsmChunkBuilderBuffers {
    * <p>Not covered: a machine with one chunk build thread builds on the client thread with a
    * builder of its own that is never in the free queue, so that one builder is never trimmed.</p>
    *
-   * @param limit         the most builders to keep, 0 for vanilla's number
-   * @param trim          whether to trim over the budget
-   * @param budgetPercent the share of the direct memory limit the pool may hold
+   * <p>The limit, the budget and whether to trim come from {@link CsmPerformance}.</p>
    */
-  public static void maintain(int limit, boolean trim, int budgetPercent) {
+  public static void maintain() {
     if (!available()) {
       return;
     }
@@ -283,11 +281,10 @@ public final class CsmChunkBuilderBuffers {
       if (queue == null) {
         return;
       }
-      if (limit > 0) {
-        retireSurplus(queue, limit);
-      }
-      if (trim) {
-        trimToBudget(queue, CsmDirectMemory.max() * budgetPercent / 100);
+      retireSurplus(queue);
+      if (CsmPerformance.trimChunkBuilders()) {
+        trimToBudget(queue,
+            CsmDirectMemory.max() * CsmPerformance.chunkBuilderBudgetPercent() / 100);
       }
     } catch (Exception e) {
       Csm.getLogger().warn("Could not maintain the chunk builder buffers", e);
@@ -301,13 +298,17 @@ public final class CsmChunkBuilderBuffers {
    * pool would hang the game there. Client thread only, which is also the only thread that stops
    * chunk updates.
    */
-  private static void retireSurplus(BlockingQueue<RegionRenderCacheBuilder> queue, int limit)
+  private static void retireSurplus(BlockingQueue<RegionRenderCacheBuilder> queue)
       throws Exception {
     Object dispatcher = RENDER_DISPATCHER.get(Minecraft.getMinecraft().renderGlobal);
     if (dispatcher == null || WORKER_THREADS == null) {
       return;
     }
     int threads = Math.max(1, ((List<?>) WORKER_THREADS.get(dispatcher)).size());
+    int limit = CsmPerformance.chunkBuilderLimit(threads);
+    if (limit <= 0) {
+      return;
+    }
     int target = Math.max(limit, threads * 2);
     int count = COUNT_BUILDERS.getInt(dispatcher);
     while (count > target) {

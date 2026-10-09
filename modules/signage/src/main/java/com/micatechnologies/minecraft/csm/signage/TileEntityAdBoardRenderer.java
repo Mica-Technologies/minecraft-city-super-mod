@@ -134,7 +134,8 @@ public class TileEntityAdBoardRenderer extends TileEntitySpecialRenderer<TileEnt
     AdTransition transition = te.getTransition();
     double p = 1.0;
     AdEntry was = null;
-    if (te.getRotation() != AdRotation.SINGLE && transition != AdTransition.CUT && time > 0) {
+    if (te.getRotation() != AdRotation.SINGLE && transition != AdTransition.CUT && time > 0
+        && com.micatechnologies.minecraft.csm.codeutils.CsmPerformance.adBoardTransitions()) {
       long step = te.stepTicks();
       p = AdTransition.progress(Math.floorMod(time, step) + partialTicks);
       if (p < 1.0) {

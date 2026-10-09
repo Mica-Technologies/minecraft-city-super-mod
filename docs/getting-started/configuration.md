@@ -80,7 +80,7 @@ setting in their own file restarts their game to apply it.
 | [`arrowBoardSpeedPercent`](#arrowboardspeedpercent) | Client | `100` | How fast arrow boards run their sequences |
 | [`enableUpdateCheck`](#enableupdatecheck) | Client | `true` | A chat message when a newer release exists |
 
-The memory settings have a category of their own: [performance](#performance).
+The performance mode and the memory settings have a category of their own: [performance](#performance). On `HIGH`, `MEDIUM` and `LOW` these switches can only turn their effect off; on `CUSTOM` they decide on their own.
 
 #### `enableStrobeEffect`
 
@@ -137,16 +137,38 @@ for example in a modpack that manages its own versions or on a machine with no i
 
 ### performance
 
-**Client.** These keep Minecraft's chunk builders from filling direct memory, which otherwise ends
-a long session in a busy city with `OutOfMemoryError: Direct buffer memory`. What they do and why
-is in [Performance & Graphics](performance-and-graphics.md#running-out-of-memory-after-a-while).
-Each player's own setting applies.
+**Client.** How much CSM draws, and how much memory it lets Minecraft keep. Each player's own
+setting applies, on any server. What each level does, and why, is in
+[Performance & Graphics](performance-and-graphics.md#performance-mode).
+
+#### `performanceMode`
+
+`S:` · default `HIGH` · values `HIGH`, `MEDIUM`, `LOW`, `CUSTOM` · **client**
+
+`HIGH` is how CSM has always looked. `MEDIUM` and `LOW` draw less and keep less memory. `CUSTOM`
+takes each value from the entries marked *CUSTOM only* below, which the other three levels ignore.
+Change it in game with [`/csmclient performance`](commands.md#csmclient); the command saves it here.
+
+The switches `enableStrobeEffect`, `animateDoors`, `enableThermostatDisplay` and `trimChunkBuilders`
+still count. On `HIGH`, `MEDIUM` and `LOW` they can only turn a thing off; on `CUSTOM` they decide on
+their own.
 
 | Entry | Type | Default | Range | What it does |
 |---|---|---|---|---|
-| `trimChunkBuilders` | `B:` | `true` | | Gives back the memory the chunk builders grew, largest first, whenever they hold more than `chunkBuilderBudgetPercent` of the direct memory limit. Below that it does nothing. |
-| `chunkBuilderBudgetPercent` | `I:` | `40` | 10–90 | How much of the direct memory limit the chunk builders may hold before some is given back |
-| `chunkBuilderLimit` | `I:` | `0` | 0–1024 | The most chunk builders to keep. `0` keeps Minecraft's own number. Fewer use less memory but load chunks more slowly while you travel. Never fewer than two per chunk build thread. Lowering it takes effect within seconds; raising it again needs a restart. |
+| `trimChunkBuilders` | `B:` | `true` | | Gives back the memory the chunk builders grew, largest first, whenever they hold more than their share of the direct memory limit. Below that it does nothing. A switch. |
+| `maxRenderDistance` | `I:` | `0` | 0–512 | *CUSTOM only.* The farthest, in blocks, that CSM's animated blocks are drawn. `0` keeps each block's own distance, mostly 128. |
+| `signDetailDistance` | `I:` | `64` | 8–256 | *CUSTOM only.* Within this many blocks guide and street signs draw their legends; farther away, only the blank sign |
+| `arrowBoardHaloDistance` | `I:` | `48` | 0–128 | *CUSTOM only.* Within this many blocks an arrow board's lit lamps glow; `0` turns the glow off |
+| `strobeDetail` | `S:` | `FULL` | `FULL`, `CONE`, `LENS` | *CUSTOM only.* How much of a fire alarm strobe's flash is drawn: the lens, its beam and the light it throws on walls and floors; no light on surfaces; or the lens alone |
+| `emergencyLightGlow` | `B:` | `true` | | *CUSTOM only.* Whether lit emergency lights cast their glow |
+| `thermostatDisplayDistance` | `I:` | `0` | 0–256 | *CUSTOM only.* Within this many blocks thermostats show their live screen; `0` for any distance |
+| `incandescentFade` | `B:` | `true` | | *CUSTOM only.* Whether incandescent signal lamps fade on and off like a filament, rather than switching like an LED |
+| `adBoardTransitions` | `B:` | `true` | | *CUSTOM only.* Whether advertising boards fade or scroll between ads, rather than cutting |
+| `chunkBuilderLimit` | `I:` | `0` | 0–1024 | *CUSTOM only.* The most chunk builders to keep. `0` keeps Minecraft's own number. Fewer use less memory but load chunks more slowly while you travel. Never fewer than two per chunk build thread. Lowering it takes effect within seconds; raising it again needs a restart. |
+| `chunkBuilderBudgetPercent` | `I:` | `40` | 10–90 | *CUSTOM only.* How much of the direct memory limit the chunk builders may hold before some is given back |
+
+The *CUSTOM only* defaults are the `HIGH` values, so switching to `CUSTOM` changes nothing until you
+edit them.
 
 ### trafficpoles
 

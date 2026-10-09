@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -200,7 +201,7 @@ public abstract class AbstractTileEntitySpanWireAttachment extends AbstractTileE
     final double dz = Math.max(cz - bounds.minZ, bounds.maxZ - cz);
     final double reach = Math.sqrt(dx * dx + dy * dy + dz * dz);
     final double distance = LONG_RANGE_RENDER_DISTANCE + reach;
-    return distance * distance;
+    return CsmPerformance.capRenderDistanceSq(distance * distance);
   }
 
   @Override

@@ -1,9 +1,10 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
-import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignAtlas;
@@ -358,7 +359,6 @@ public class TileEntityDynamicStreetSignRenderer
   }
 
   private static final int FULLBRIGHT = 240;
-  private static final double LOD_FULL_DETAIL_DIST_SQ = 64.0 * 64.0;
   private static final int LEGEND_DARK = 0x101010;
   private static final int LEGEND_WHITE = 0xFFFFFF;
 
@@ -421,7 +421,7 @@ public class TileEntityDynamicStreetSignRenderer
       GlStateManager.popMatrix();
       return;
     }
-    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
+    boolean farLod = x * x + y * y + z * z > CsmPerformance.signDetailDistanceSq()
         || CsmRenderToggles.streetSignForceFarLod;
     Object cached = te.getRenderCache();
     Memo memo = cached instanceof Memo && ((Memo) cached).data == data

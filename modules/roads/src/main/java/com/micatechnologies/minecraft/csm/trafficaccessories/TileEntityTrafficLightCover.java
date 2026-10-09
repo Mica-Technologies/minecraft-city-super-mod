@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -151,6 +152,6 @@ public class TileEntityTrafficLightCover extends AbstractTileEntity {
   /** A cover is on a head; it has to stay in view exactly as long as the head does. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 }

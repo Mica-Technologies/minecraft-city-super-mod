@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.transit.stop.BusDepartures;
 import com.micatechnologies.minecraft.csm.transit.stop.TileEntityBusStopFlag;
 import net.minecraft.block.state.IBlockState;
@@ -97,7 +98,7 @@ public class TileEntityBusBayDisplay extends AbstractTileEntity {
   /** The same reach as the flight and departure boards. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 48.0 * 48.0;
+    return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
   }
 
   @Override

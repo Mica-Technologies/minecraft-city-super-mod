@@ -1,12 +1,12 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableHZEight;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
-import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import java.util.ArrayList;
@@ -71,9 +71,6 @@ public class TileEntityArrowBoardRenderer
    */
   private static final CsmSharedDisplayLists GLOW_LISTS =
       new CsmSharedDisplayLists("arrow_board_glow");
-
-  /** Beyond this distance the small halos contribute little but cost two blended passes. */
-  private static final double GLOW_DISTANCE_SQUARED = 48.0 * 48.0;
 
   /** The orange every trailer and mast on one of these is built in. */
   private static final float[] COL_FRAME = {0.910f, 0.416f, 0.094f, 1.0f};
@@ -155,8 +152,8 @@ public class TileEntityArrowBoardRenderer
     double dx = x + 0.5;
     double dy = y + 2.0;
     double dz = z + 0.5;
-    if (dx * dx + dy * dy + dz * dz <= GLOW_DISTANCE_SQUARED
-        && CsmConfig.isStrobeEffectEnabled() && hasLitLamp(pattern.getStageLamps(stage))) {
+    if (dx * dx + dy * dy + dz * dz <= CsmPerformance.arrowBoardHaloDistanceSq()
+        && hasLitLamp(pattern.getStageLamps(stage))) {
       renderGlow(pattern, stage);
     }
 

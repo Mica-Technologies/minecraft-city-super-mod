@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -37,7 +38,7 @@ public class TileEntityResidentialClock extends AbstractTileEntity {
   /** A clock's face is small: past this there is nothing to read. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 32.0 * 32.0;
+    return CsmPerformance.capRenderDistanceSq(32.0 * 32.0);
   }
 
   /** Nothing a baked model draws comes from here. */

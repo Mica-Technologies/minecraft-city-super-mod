@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -93,7 +94,7 @@ public class TileEntityVariableSpeedLimit extends AbstractTileEntity {
 
   @Override
   public double getMaxRenderDistanceSquared() {
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 
   @Override

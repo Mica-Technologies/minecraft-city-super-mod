@@ -3,20 +3,72 @@
 How to run CSM comfortably on a modest machine: where its memory and frame time actually go,
 which of your settings change them, and what to do when something goes wrong.
 
-!!! info "No quality preset, yet"
-    CSM has no single low / medium / high switch. What it has is a handful of separate
-    [config options](configuration.md), your Minecraft video settings, and your choice of modules.
-    This page covers all three.
-
 ## The short version
 
 | If you are short on… | Do this |
 |---|---|
+| **Anything, and you want one switch** | Type **`/csmclient performance medium`** or **`low`** in chat. See [Performance mode](#performance-mode) |
 | **RAM** (the game crashes or freezes while loading) | Give the game **2 GB** (`-Xmx2G`), or install fewer [modules](installation.md) |
 | **Direct memory** (the game stops after a while with "Direct buffer memory") | See [Running out of memory after a while](#running-out-of-memory-after-a-while) |
 | **Video memory** (the game stops while loading textures, or stutters) | Install fewer modules, and turn **Mipmap Levels** down |
 | **Frame rate** near busy intersections or towns | Turn off [`enableStrobeEffect`](configuration.md#enablestrobeeffect), lower **Render Distance**, and use **Fast** graphics if you have many trees |
 | **Server tick time** | See [On a server](#on-a-server) |
+
+## Performance mode
+
+One setting decides how much CSM draws and how much memory it lets Minecraft keep. It has four
+levels:
+
+| | **HIGH** (default) | **MEDIUM** | **LOW** | **CUSTOM** |
+|---|---|---|---|---|
+| How far animated blocks are drawn¹ | their own distance, mostly 128 blocks | 96 blocks | 64 blocks | `maxRenderDistance` |
+| Guide and street sign legends shown within | 64 blocks | 48 | 24 | `signDetailDistance` |
+| Arrow board glow within | 48 blocks | 32 | off | `arrowBoardHaloDistance` |
+| Fire alarm strobe flash | full: lens, beam and light on walls and floors | lens and beam | lens only | `strobeDetail` |
+| Emergency light glow | on | on | off | `emergencyLightGlow` |
+| Thermostat screens | on | within 24 blocks | off | `thermostatDisplayDistance` |
+| Door swing | on | on | off: doors snap | `animateDoors` |
+| Incandescent signal fade | on | on | off: lamps switch like LEDs | `incandescentFade` |
+| Ad board fades and scrolls | on | on | off: ads cut | `adBoardTransitions` |
+| Chunk builders kept | Minecraft's number | 4 per build thread | 2 per build thread | `chunkBuilderLimit` |
+| Chunk builders trimmed over | 40% of direct memory | 30% | 25% | `chunkBuilderBudgetPercent` |
+
+¹ Signals, crosswalks, guide and street signs, message and speed signs, beacons, arrow boards,
+barricade lights, crossing gates, cranes, sirens, ad boards, departure and flight boards, clocks.
+Never farther than your own Minecraft render distance.
+
+**HIGH is exactly how CSM has always looked**, so nothing changes unless you choose a level.
+**MEDIUM** keeps the look and trims what costs the most for the least: the farthest blocks, the
+light a strobe throws on surfaces, and thermostat text across the room. **LOW** is for a laptop or
+an older machine: animated blocks are drawn no farther than Minecraft's own default for such
+blocks, and the extras are off. **CUSTOM** uses a configuration entry for each line of the table
+instead; they are listed in [Configuration](configuration.md#performance).
+
+### Changing it in game
+
+Type in chat:
+
+```
+/csmclient performance low
+```
+
+with `high`, `medium`, `low` or `custom`. The change applies at once, without a restart, and is
+saved to your `config/csm.cfg`, so it stays the next time you play. `/csmclient performance` on its
+own shows the level you are on and exactly what it is doing.
+
+`/csmclient` runs in your own game. It works on any server, needs no operator rights, and changes
+nothing for anyone else.
+
+### The mode and your other settings
+
+The switches you may already have set, such as
+[`enableStrobeEffect`](configuration.md#enablestrobeeffect),
+[`animateDoors`](configuration.md#animatedoors) and
+[`enableThermostatDisplay`](configuration.md#enablethermostatdisplay), still apply:
+
+- On **HIGH, MEDIUM and LOW** a switch can only turn something **off**. If you turned strobes off,
+  they stay off on HIGH; no level turns them back on.
+- On **CUSTOM** the switches decide on their own, together with the CUSTOM entries.
 
 ## Memory (RAM)
 
@@ -58,12 +110,11 @@ Most of it belongs to Minecraft's **chunk builders**, which turn chunks into mes
   garbage from their growing reach it, the game stops.
 
 **CSM keeps the builders in check for you.** Every five seconds it checks how much they hold. If it
-is more than 40% of the direct memory limit, it gives back the largest grown buffers until it is
-under. On a machine with plenty of memory it never has to. The settings are in the
-[performance section](configuration.md#performance) of the configuration. If memory is tight, you
-can also lower `chunkBuilderLimit` to keep fewer builders. With OptiFine, chunks are built by only a
-handful of the builders, so most of the pool is never used: a limit of about twice your chunk
-build threads gives that memory back at no cost. To see the builders in your own game,
+is more than its share of the direct memory limit (40% on HIGH), it gives back the largest grown
+buffers until it is under. On a machine with plenty of memory it never has to. MEDIUM and LOW also
+keep fewer builders, four and two per build thread. With OptiFine, chunks are built by only a
+handful of the builders, so most of the pool is never used, and MEDIUM gives that memory back at no
+cost. See [Performance mode](#performance-mode). To see the builders in your own game,
 run [`/csmclient chunkbuffers`](commands.md#diagnostics), which works on any server.
 
 !!! warning "For modpack makers: JVM flags"
@@ -129,8 +180,9 @@ signalised intersections all facing you at once, is where the frame time shows.
 
 ### CSM's own options
 
-All are in `config/csm.cfg` and are each player's own choice, even on a server. See
-[Configuration](configuration.md).
+The quickest lever is the [performance mode](#performance-mode). Beyond it, three switches turn
+single effects off whatever the mode. All are in `config/csm.cfg` and are each player's own choice,
+even on a server. See [Configuration](configuration.md).
 
 | Option | Set it to | Saves |
 |---|---|---|

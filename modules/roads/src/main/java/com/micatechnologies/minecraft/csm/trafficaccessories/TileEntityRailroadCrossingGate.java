@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -143,6 +144,6 @@ public class TileEntityRailroadCrossingGate extends AbstractTickableTileEntity {
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 }

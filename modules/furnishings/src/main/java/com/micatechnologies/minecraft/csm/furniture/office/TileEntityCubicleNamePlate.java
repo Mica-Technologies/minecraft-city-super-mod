@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.office;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -87,7 +88,7 @@ public class TileEntityCubicleNamePlate extends AbstractTileEntity {
   /** The print is small: past this there is nothing to read, and the plate is the model's. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 32.0 * 32.0;
+    return CsmPerformance.capRenderDistanceSq(32.0 * 32.0);
   }
 
   /** Nothing a baked model draws comes from here. */

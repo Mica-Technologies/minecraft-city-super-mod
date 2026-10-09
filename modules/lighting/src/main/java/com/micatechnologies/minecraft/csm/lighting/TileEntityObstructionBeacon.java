@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import javax.annotation.Nonnull;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
@@ -27,7 +28,7 @@ public class TileEntityObstructionBeacon extends AbstractTileEntity {
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
-    return RENDER_DISTANCE * RENDER_DISTANCE;
+    return CsmPerformance.capRenderDistanceSq(RENDER_DISTANCE * RENDER_DISTANCE);
   }
 
   @Override

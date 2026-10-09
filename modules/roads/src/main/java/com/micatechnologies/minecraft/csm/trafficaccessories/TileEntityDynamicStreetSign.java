@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignMount;
 import net.minecraft.nbt.NBTTagCompound;
@@ -206,6 +207,6 @@ public class TileEntityDynamicStreetSign extends AbstractTileEntity {
     // Matched to the guide sign (and the traffic signal heads) at 128 blocks. Blades stopped
     // at 96 while every other dynamic sign around them kept drawing, which reads as the blade
     // popping out of a junction rather than as distance. Full detail holds to 64 blocks.
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 }

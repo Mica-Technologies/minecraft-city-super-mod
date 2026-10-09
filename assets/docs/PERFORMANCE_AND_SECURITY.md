@@ -608,6 +608,18 @@ Each rule below exists because breaking it once produced a confident wrong answe
 
 ## Rules for render code
 
+- **Every quality decision goes through `CsmPerformance`.** It turns the player's performance mode
+  (`HIGH` default and unchanged behaviour, `MEDIUM`, `LOW`, `CUSTOM`) into the values renderers
+  read: every `getMaxRenderDistanceSquared` returns
+  `CsmPerformance.capRenderDistanceSq(ownDistanceSquared)`, and sign detail, the arrow board
+  glow, strobe detail, emergency light glow, thermostat screens, door swing, the incandescent fade,
+  ad transitions and the chunk builder limit and budget each have a getter there. A new renderer
+  with a distance or an optional effect wires it the same way and adds a line to the table in
+  `docs/getting-started/performance-and-graphics.md`; `HIGH` must keep exactly today's look. The
+  general-category switches (`enableStrobeEffect`, `animateDoors`, `enableThermostatDisplay`) and
+  `trimChunkBuilders` combine inside the getters: on the presets they can only turn things off, on
+  `CUSTOM` they decide alone. `mode()` is cached on the configuration's version, since it is read
+  per block per frame.
 - **A display list holds geometry for exactly one texture, bound outside it, and no cached
   `GlStateManager` call.** `bindTexture`, `depthMask`, `color`, `blend` and `cull` are all cached,
   so one issued while compiling can be missing from the list. The full rule and the mechanism are

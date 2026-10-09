@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.transit.stop.BusAgency;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -185,7 +186,7 @@ public class TileEntityBusDepartureBoard extends AbstractTileEntity {
   /** Text half a sixteenth of a block high is not read from further away than this. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 48.0 * 48.0;
+    return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
   }
 
   /** Nothing a baked model draws comes from here: the filter and the title are the renderer's. */
