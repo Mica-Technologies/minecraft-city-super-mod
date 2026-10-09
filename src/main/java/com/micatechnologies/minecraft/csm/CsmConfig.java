@@ -144,6 +144,21 @@ public class CsmConfig {
   private static final String FIELD_DEFAULT_CHAINSAW_BRUSH_PILES = "FEW";
   private static final String[] FIELD_VALUES_CHAINSAW_BRUSH_PILES = {"NONE", "FEW", "MANY"};
 
+  private static final String CATEGORY_PERFORMANCE = "performance";
+  private static final String CATEGORY_PERFORMANCE_DESCRIPTION =
+      "Client memory. Minecraft builds chunk meshes with a pool of builders in direct (off-heap) "
+          + "memory, sized from your heap and processor count, and a builder that meets a heavy "
+          + "chunk section grows and never shrinks. These settings keep that pool from filling "
+          + "direct memory, which crashes the game with \"OutOfMemoryError: Direct buffer "
+          + "memory\" after a while in a busy city. Each player's own setting applies.";
+  private static final boolean FIELD_DEFAULT_TRIM_CHUNK_BUILDERS = true;
+  private static final int FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT = 40;
+  private static final int FIELD_DEFAULT_CHUNK_BUILDER_LIMIT = 0;
+
+  private static boolean trimChunkBuilders = FIELD_DEFAULT_TRIM_CHUNK_BUILDERS;
+  private static int chunkBuilderBudgetPercent = FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT;
+  private static int chunkBuilderLimit = FIELD_DEFAULT_CHUNK_BUILDER_LIMIT;
+
   private static String chainsawBrushPiles = FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
 
   private static int parkingEmeraldsPerBlock = FIELD_DEFAULT_PARKING_EMERALDS_PER_BLOCK;
@@ -278,6 +293,22 @@ public class CsmConfig {
     chainsawBrushPiles = config.getString(FIELD_KEY_CHAINSAW_BRUSH_PILES, CATEGORY_PARKS,
         FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
         FIELD_VALUES_CHAINSAW_BRUSH_PILES);
+    config.setCategoryComment(CATEGORY_PERFORMANCE, CATEGORY_PERFORMANCE_DESCRIPTION);
+    trimChunkBuilders = config.getBoolean("trimChunkBuilders", CATEGORY_PERFORMANCE,
+        FIELD_DEFAULT_TRIM_CHUNK_BUILDERS,
+        "Give back the direct memory the chunk builders grew, largest first, whenever they hold "
+            + "more than chunkBuilderBudgetPercent of the direct memory limit. Below that it does "
+            + "nothing, so a client with plenty of memory never trims.");
+    chunkBuilderBudgetPercent = config.getInt("chunkBuilderBudgetPercent", CATEGORY_PERFORMANCE,
+        FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT, 10, 90,
+        "How much of the direct memory limit the chunk builders may hold before trimChunkBuilders "
+            + "gives some back, in percent.");
+    chunkBuilderLimit = config.getInt("chunkBuilderLimit", CATEGORY_PERFORMANCE,
+        FIELD_DEFAULT_CHUNK_BUILDER_LIMIT, 0, 1024,
+        "The most chunk builders to keep. 0 keeps Minecraft's own number, ten per processor "
+            + "thread up to 30% of the heap at about 10 MB each. Fewer use less memory but load "
+            + "chunks more slowly while you travel. Never fewer than two per chunk build thread. "
+            + "Lowering it takes effect within seconds; raising it again needs a restart.");
     configVersion++;
 
     if (config.hasChanged()) {
@@ -359,6 +390,40 @@ public class CsmConfig {
       }
     }
     return FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
+  }
+
+  /**
+   * Whether the chunk builders' grown buffers are given back when they hold more than their share
+   * of direct memory. Client only.
+   *
+   * @return whether to trim
+   *
+   * @since 2026.10
+   */
+  public static boolean isChunkBuilderTrimEnabled() {
+    return trimChunkBuilders;
+  }
+
+  /**
+   * The share of the direct memory limit the chunk builders may hold before they are trimmed.
+   *
+   * @return a percentage, 10 to 90
+   *
+   * @since 2026.10
+   */
+  public static int getChunkBuilderBudgetPercent() {
+    return chunkBuilderBudgetPercent;
+  }
+
+  /**
+   * The most chunk builders to keep, or 0 for Minecraft's own number.
+   *
+   * @return the limit
+   *
+   * @since 2026.10
+   */
+  public static int getChunkBuilderLimit() {
+    return chunkBuilderLimit;
   }
 
   /** Emeralds a newly placed parking meter charges per block of time. */

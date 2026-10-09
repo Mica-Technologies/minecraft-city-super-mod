@@ -13,6 +13,7 @@ which of your settings change them, and what to do when something goes wrong.
 | If you are short on… | Do this |
 |---|---|
 | **RAM** (the game crashes or freezes while loading) | Give the game **2 GB** (`-Xmx2G`), or install fewer [modules](installation.md) |
+| **Direct memory** (the game stops after a while with "Direct buffer memory") | See [Running out of memory after a while](#running-out-of-memory-after-a-while) |
 | **Video memory** (the game stops while loading textures, or stutters) | Install fewer modules, and turn **Mipmap Levels** down |
 | **Frame rate** near busy intersections or towns | Turn off [`enableStrobeEffect`](configuration.md#enablestrobeeffect), lower **Render Distance**, and use **Fast** graphics if you have many trees |
 | **Server tick time** | See [On a server](#on-a-server) |
@@ -36,13 +37,49 @@ and the `-Xmx` setting is in your launcher profile's JVM arguments.
 and no textures. A pack that only wants roads and signals can ship Core and CSM: Roads & Traffic
 and use a fraction of the memory.
 
-**Running out of memory after playing a while.** If the game loads fine but later stops with an
-`OutOfMemoryError`, it is something that grows during play, and the log names no culprit.
-Please [report it](https://github.com/Mica-Technologies/minecraft-city-super-mod/issues) with your
-`logs/latest.log`, your `-Xmx`, your mod list and roughly how long you had played. Before you
-report, it helps to run `/csm displaylists` once early in the session and again shortly before the
-crash. It reports CSM's geometry caches and the heap in use, so the two readings show whether
-CSM's share grew. See [Commands](commands.md#diagnostics).
+### Running out of memory after a while
+
+A game that runs fine for twenty minutes or more and then stops with
+**`OutOfMemoryError: Direct buffer memory`**, often while it is "Tesselating block model", has run
+out of **direct memory**. That is memory outside the heap, which Java uses for data on its way to
+the graphics card.
+
+Most of it belongs to Minecraft's **chunk builders**, which turn chunks into meshes:
+
+- Minecraft keeps **ten builders per processor thread**, up to 30% of your heap, about 10 MB of
+  direct memory each before anything else happens. On a sixteen-thread machine that is 160
+  builders and 1.6 GB.
+- A builder that meets a chunk section heavier than its buffer **grows** the buffer, and keeps the
+  bigger buffer for the rest of the session.
+- Builders take turns, so one heavy section that is rebuilt again and again (a busy intersection,
+  a dense build you are working on) grows them **one after another**. A dense city is exactly
+  that.
+- Direct memory is capped, by default at your heap size (`-Xmx`). Once the builders and the
+  garbage from their growing reach it, the game stops.
+
+**CSM keeps the builders in check for you.** Every five seconds it checks how much they hold. If it
+is more than 40% of the direct memory limit, it gives back the largest grown buffers until it is
+under. On a machine with plenty of memory it never has to. The settings are in the
+[performance section](configuration.md#performance) of the configuration. If memory is tight, you
+can also lower `chunkBuilderLimit` to keep fewer builders. With OptiFine, chunks are built by only a
+handful of the builders, so most of the pool is never used: a limit of about twice your chunk
+build threads gives that memory back at no cost. To see the builders in your own game,
+run [`/csmclient chunkbuffers`](commands.md#diagnostics), which works on any server.
+
+!!! warning "For modpack makers: JVM flags"
+    `-XX:+DisableExplicitGC`, a common line in modpack JVM arguments, makes this crash far more
+    likely. A dead direct buffer is freed only when the garbage collector finds it. When direct
+    memory runs short, Java asks for a collection to find some, and that flag turns the request
+    off. Use these instead:
+
+    - **Drop `-XX:+DisableExplicitGC`**, or replace it with **`-XX:+ExplicitGCInvokesConcurrent`**
+      (G1), which runs that collection without pausing the game.
+    - Optionally set **`-XX:MaxDirectMemorySize`** to a fixed amount, so direct memory has a limit
+      of its own rather than borrowing the heap's size.
+
+If the game stops with **`Java heap space`** after a while instead, that is the heap, and something
+different. Please [report it](https://github.com/Mica-Technologies/minecraft-city-super-mod/issues)
+with your `logs/latest.log`, your `-Xmx`, your mod list and roughly how long you had played.
 
 ## Video memory (VRAM)
 

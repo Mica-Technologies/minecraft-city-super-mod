@@ -54,6 +54,8 @@ public class CsmClientProxy implements ICsmProxy {
 
     // Register on the event bus early so we receive ModelRegistryEvent (fires during preInit)
     MinecraftForge.EVENT_BUS.register(this);
+    // /csmclient: reports on this game, so it works on a multiplayer server too
+    net.minecraftforge.client.ClientCommandHandler.instance.registerCommand(new CommandCsmClient());
     // Clears static sound/strobe/cache state on disconnect (see perf plan §15)
     MinecraftForge.EVENT_BUS.register(
         new com.micatechnologies.minecraft.csm.codeutils.CsmClientLifecycleHandler());
@@ -158,6 +160,32 @@ public class CsmClientProxy implements ICsmProxy {
       lines.addAll(com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers.describe());
       reply.accept(lines);
     });
+  }
+
+  /** Client ticks between chunk builder upkeep passes: five seconds. */
+  private static final int CHUNK_BUILDER_UPKEEP_TICKS = 100;
+
+  private int chunkBuilderUpkeepCountdown = CHUNK_BUILDER_UPKEEP_TICKS;
+
+  /**
+   * Keeps vanilla's chunk builders inside their direct memory budget (see
+   * {@link com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers#maintain}).
+   *
+   * @param event the client tick
+   */
+  @SubscribeEvent
+  public void onClientTick(net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent event) {
+    if (event.phase != net.minecraftforge.fml.common.gameevent.TickEvent.Phase.END
+        || --chunkBuilderUpkeepCountdown > 0) {
+      return;
+    }
+    chunkBuilderUpkeepCountdown = CHUNK_BUILDER_UPKEEP_TICKS;
+    if (Minecraft.getMinecraft().world == null) {
+      return;
+    }
+    com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers.maintain(
+        CsmConfig.getChunkBuilderLimit(), CsmConfig.isChunkBuilderTrimEnabled(),
+        CsmConfig.getChunkBuilderBudgetPercent());
   }
 
   @SubscribeEvent
