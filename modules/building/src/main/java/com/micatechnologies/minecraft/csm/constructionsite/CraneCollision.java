@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.GetCollisionBoxesEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
@@ -76,6 +77,20 @@ public final class CraneCollision {
    */
   public static void register() {
     MinecraftForge.EVENT_BUS.register(new CraneCollision());
+  }
+
+  /**
+   * Forgets a world's heads when the world goes. The maps are weak, but each head holds its world,
+   * so an entry would never let go of its key: a client changing dimension or leaving a world with
+   * a crane loaded kept the whole old world in memory, since that path does not unload chunks and
+   * so never reaches the head's {@code onChunkUnload}.
+   *
+   * @param event the unload
+   */
+  @SubscribeEvent
+  public void onWorldUnload(WorldEvent.Unload event) {
+    HEADS.remove(event.getWorld());
+    GRID.remove(event.getWorld());
   }
 
   static void add(TileEntityCraneHead head) {
