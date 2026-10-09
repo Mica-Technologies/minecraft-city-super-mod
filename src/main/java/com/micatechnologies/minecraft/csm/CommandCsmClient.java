@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -26,7 +27,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class CommandCsmClient extends CommandBase {
 
-  private static final String USAGE = "/csmclient chunkbuffers [trim]";
+  private static final String USAGE =
+      "/csmclient <performance [high|medium|low|custom]|chunkbuffers [trim]>";
 
   @Override
   public String getName() {
@@ -51,6 +53,10 @@ public class CommandCsmClient extends CommandBase {
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws WrongUsageException {
+    if (args.length > 0 && "performance".equalsIgnoreCase(args[0])) {
+      performance(sender, args);
+      return;
+    }
     if (args.length == 0 || !"chunkbuffers".equalsIgnoreCase(args[0])) {
       throw new WrongUsageException(USAGE);
     }
@@ -64,6 +70,54 @@ public class CommandCsmClient extends CommandBase {
     }
   }
 
+  /**
+   * {@code /csmclient performance [mode]}: with a mode, sets it, saves it to the configuration and
+   * applies it at once; either way, reports the mode and what it does now.
+   */
+  private static void performance(ICommandSender sender, String[] args)
+      throws WrongUsageException {
+    if (args.length > 1) {
+      if (!CsmConfig.setPerformanceMode(args[1])) {
+        throw new WrongUsageException("/csmclient performance <high|medium|low|custom>");
+      }
+      say(sender, "Performance mode set to " + CsmPerformance.mode() + " and saved.");
+    }
+    CsmPerformance.Mode mode = CsmPerformance.mode();
+    say(sender, "Performance mode: " + mode
+        + (mode == CsmPerformance.Mode.CUSTOM ? " (values from config/csm.cfg)" : ""));
+    double far = CsmPerformance.capRenderDistanceSq(Double.MAX_VALUE);
+    say(sender, "  animated blocks drawn to: " + (far == Double.MAX_VALUE
+        ? "their own distance (mostly 128)" : blocks(Math.sqrt(far))));
+    say(sender, "  sign legends within: "
+        + blocks(Math.sqrt(CsmPerformance.signDetailDistanceSq())));
+    double halo = CsmPerformance.arrowBoardHaloDistanceSq();
+    say(sender, "  arrow board glow: "
+        + (halo <= 0 ? "off" : "within " + blocks(Math.sqrt(halo))));
+    say(sender, "  strobes: " + (CsmPerformance.strobeEffect()
+        ? CsmPerformance.strobeDetail().name().toLowerCase(Locale.ROOT) : "off")
+        + ", emergency light glow: " + onOff(CsmPerformance.emergencyLightGlow()));
+    double thermostat = CsmPerformance.thermostatDisplayDistanceSq();
+    say(sender, "  thermostat screens: " + (thermostat <= 0 ? "off"
+        : thermostat >= Double.MAX_VALUE ? "on" : "within " + blocks(Math.sqrt(thermostat))));
+    say(sender, "  door swing: " + onOff(CsmPerformance.doorAnimation())
+        + ", incandescent fade: " + onOff(CsmPerformance.incandescentFade())
+        + ", ad transitions: " + onOff(CsmPerformance.adBoardTransitions()));
+    int perThread = CsmPerformance.chunkBuilderLimit(1);
+    say(sender, "  chunk builders: " + (perThread <= 0 ? "Minecraft's number"
+        : mode == CsmPerformance.Mode.CUSTOM ? "at most " + perThread
+        : perThread + " per build thread") + ", trimmed over "
+        + CsmPerformance.chunkBuilderBudgetPercent() + "% of direct memory"
+        + (CsmPerformance.trimChunkBuilders() ? "" : " (trimming off)"));
+  }
+
+  private static String blocks(double d) {
+    return Math.round(d) + " blocks";
+  }
+
+  private static String onOff(boolean on) {
+    return on ? "on" : "off";
+  }
+
   private static void say(ICommandSender sender, String line) {
     TextComponentString text = new TextComponentString("[CSM] " + line);
     text.getStyle().setColor(TextFormatting.GREEN);
@@ -74,7 +128,10 @@ public class CommandCsmClient extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "chunkbuffers");
+      return getListOfStringsMatchingLastWord(args, "performance", "chunkbuffers");
+    }
+    if (args.length == 2 && "performance".equalsIgnoreCase(args[0])) {
+      return getListOfStringsMatchingLastWord(args, "high", "medium", "low", "custom");
     }
     if (args.length == 2 && "chunkbuffers".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "trim");

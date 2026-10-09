@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.signage;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -317,7 +318,7 @@ public class TileEntityAdBoard extends AbstractTileEntity {
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
     double reach = LONG_RANGE_RENDER_DISTANCE + width + height;
-    return reach * reach;
+    return CsmPerformance.capRenderDistanceSq(reach * reach);
   }
 
   @Override

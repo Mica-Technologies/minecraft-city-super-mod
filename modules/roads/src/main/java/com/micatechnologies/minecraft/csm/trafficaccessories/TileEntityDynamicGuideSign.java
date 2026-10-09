@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -146,6 +147,6 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
     // Matches the traffic signal heads' 128 blocks. The renderer draws full detail
     // (text, shields, arrows) only inside 64 blocks; between 64 and 128 it draws a
     // cheap LOD of just the sign body, back, and posts.
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 }

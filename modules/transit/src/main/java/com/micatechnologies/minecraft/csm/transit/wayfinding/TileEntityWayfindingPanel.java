@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.wayfinding;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.transit.panel.PanelLayout;
 import com.micatechnologies.minecraft.csm.transit.wayfinding.WayfindingSign.Arrow;
 import com.micatechnologies.minecraft.csm.transit.wayfinding.WayfindingSign.Pictogram;
@@ -148,7 +149,7 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
   /** A backlit sign meant to be read down a concourse. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 96.0 * 96.0;
+    return CsmPerformance.capRenderDistanceSq(96.0 * 96.0);
   }
 
   /** Nothing a baked model draws comes from here. */

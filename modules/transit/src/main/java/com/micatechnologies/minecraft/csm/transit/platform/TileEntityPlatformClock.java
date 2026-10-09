@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.platform;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -22,7 +23,7 @@ public class TileEntityPlatformClock extends AbstractTileEntity {
   /** Hands a finger long are not read from further away than this. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 48.0 * 48.0;
+    return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
   }
 
   /** Nothing a baked model draws comes from here. */

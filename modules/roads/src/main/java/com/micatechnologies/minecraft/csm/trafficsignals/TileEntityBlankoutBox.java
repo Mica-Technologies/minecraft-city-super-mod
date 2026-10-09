@@ -1,12 +1,13 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVisorType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
-import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficLightMountKit;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -100,7 +101,7 @@ public class TileEntityBlankoutBox extends AbstractTileEntity {
 
     @Override
     public double getMaxRenderDistanceSquared() {
-        return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+        return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
     }
 
     @Override

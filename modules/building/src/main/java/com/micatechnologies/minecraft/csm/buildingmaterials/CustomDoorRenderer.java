@@ -1,8 +1,8 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor.Half;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor.Hinge;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -176,7 +176,7 @@ public final class CustomDoorRenderer {
           continue;
         }
         draw(world, pos, (BlockCustomDoor) lower.getBlock(), move,
-            CsmConfig.isDoorAnimationEnabled() ? move.openness(now) : (move.opening ? 1 : 0),
+            CsmPerformance.doorAnimation() ? move.openness(now) : (move.opening ? 1 : 0),
             cx, cy, cz);
       }
       GlStateManager.disableBlend();

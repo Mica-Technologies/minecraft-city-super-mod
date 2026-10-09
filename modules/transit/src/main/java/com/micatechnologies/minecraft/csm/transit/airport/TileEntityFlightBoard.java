@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit.airport;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -99,7 +100,7 @@ public class TileEntityFlightBoard extends AbstractTileEntity {
   /** Text a sixteenth of a block high is not read from further away than this. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return 48.0 * 48.0;
+    return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
   }
 
   /** Nothing a baked model draws comes from here. */

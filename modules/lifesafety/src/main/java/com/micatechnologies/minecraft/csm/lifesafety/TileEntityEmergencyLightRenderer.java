@@ -1,8 +1,8 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import net.minecraft.block.Block;
@@ -91,7 +91,7 @@ public class TileEntityEmergencyLightRenderer
   @Override
   public void render(AbstractTileEntity te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
-    if (!CsmConfig.isStrobeEffectEnabled()) return;
+    if (!CsmPerformance.emergencyLightGlow()) return;
     if (te.getWorld() == null) return;
 
     IBlockState state = te.getWorld().getBlockState(te.getPos());

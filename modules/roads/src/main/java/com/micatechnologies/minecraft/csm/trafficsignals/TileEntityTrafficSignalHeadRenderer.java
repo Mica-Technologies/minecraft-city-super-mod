@@ -1,26 +1,27 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionSixteen;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.IncandescentFade;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBoundingBoxHelper;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalVisibility;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalVisibilityArea;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBoundingBoxHelper;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashPattern;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalHeadMountType;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalVisibility;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.SignalVisibilityArea;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap.TextureInfo;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalTextureMap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVertexData;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.util.ArrayList;
@@ -407,6 +408,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // An incandescent lamp heats up and cools down instead of switching. Null unless a section is
     // mid-fade; the lens and the visor interior both draw from these levels.
     float[] fadeLevels = CsmRenderToggles.skipSignalIncandescentFade
+        || !CsmPerformance.incandescentFade()
         ? null
         : incandescentFadeLevels(te, sectionInfos, litMask, gameMillis);
     if (fadeLevels != null && !CsmRenderToggles.skipSignalVisorInteriors) {

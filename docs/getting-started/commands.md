@@ -10,7 +10,7 @@ to be an op. `/csmclient` runs in your own game and anyone can use it.
 | [`/csmfirealarm`](#csmfirealarm) | Life Safety | Wiring a whole building to a fire alarm panel at once, and checking a panel |
 | [`/csmhvac`](#csmhvac) | HVAC | Inspecting and testing the room temperature simulation |
 | [`/csmlighting`](#csmlighting) | Lighting | Repairing the light a lamp throws |
-| [`/csmclient`](#diagnostics) | Core | Measuring your own game's chunk builder memory, on any server |
+| [`/csmclient`](#csmclient) | Core | Your own game: the performance mode, and its chunk builder memory, on any server |
 
 Each command shows its own usage if you type it with no arguments, and tab completes its
 subcommands and coordinates. Coordinates take `~` like vanilla commands.
@@ -67,8 +67,7 @@ draws nothing.
 | `chunkbuffers trim` | Gives back what the chunk builders grew: each idle builder's oversized buffers are replaced at their starting size and the memory freed at once |
 
 On a multiplayer server `/csm` runs on the server, which has no chunk builders. Use
-**`/csmclient chunkbuffers [trim]`** instead: it runs in your own game, on any server, and needs no
-operator rights.
+[`/csmclient chunkbuffers`](#csmclient) instead.
 | `statecheck` | Checks every CSM block's states against how vanilla would build them, and reports any difference. Read only |
 
 **Render passes.** Each pass is one piece of an expensive renderer, such as the bulbs of a signal
@@ -83,6 +82,32 @@ with `draw`. A pass that is off is simply missing from the world until you `draw
 
 `memstats` and `statecheck` print to chat and to the game log. `memstats` only reads: it never
 builds a model just to measure it.
+
+## `/csmclient`
+
+```
+/csmclient performance [high|medium|low|custom]
+/csmclient chunkbuffers [trim]
+```
+
+Commands that act on **your own game**, not the server. They work in single player and on any
+multiplayer server, need no operator rights, and change nothing for other players.
+
+**`/csmclient performance`** shows your [performance mode](performance-and-graphics.md#performance-mode)
+and what it is doing now: how far animated blocks are drawn, sign detail, strobes, thermostats,
+door swing and the chunk builder settings. Add a level to change it:
+
+```
+/csmclient performance medium
+```
+
+The new level applies at once, with no restart, and is saved to your `config/csm.cfg` for next
+time. `custom` uses the *CUSTOM only* entries in the [configuration](configuration.md#performance).
+
+**`/csmclient chunkbuffers`** reports the direct (off-heap) memory held by Minecraft's chunk
+builders, the same report as `/csm chunkbuffers` but from your own game. Add `trim` to give back
+what they grew at once. You do not normally need to: CSM trims them automatically when they hold
+too much (see [Running out of memory after a while](performance-and-graphics.md#running-out-of-memory-after-a-while)).
 
 ## `/csmfirealarm`
 

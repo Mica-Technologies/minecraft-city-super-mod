@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkBulbType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
@@ -207,7 +208,7 @@ public class TileEntityCrosswalkSignalNew extends AbstractTickableTileEntity {
 
     @Override
     public double getMaxRenderDistanceSquared() {
-        return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+        return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
     }
 
     /**

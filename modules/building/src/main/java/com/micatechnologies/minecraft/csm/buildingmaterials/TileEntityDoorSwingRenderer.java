@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
-import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.state.IBlockState;
@@ -81,7 +81,7 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     IBlockState door = upper.getActualState(te.getWorld(), upperPos);
     EnumFacing facing = door.getValue(BlockBuildingDoor.FACING);
     boolean left = door.getValue(BlockBuildingDoor.HINGE) == BlockBuildingDoor.Hinge.LEFT;
-    double p = CsmConfig.isDoorAnimationEnabled() ? te.progress(partialTicks) : 1.0;
+    double p = CsmPerformance.doorAnimation() ? te.progress(partialTicks) : 1.0;
     double eased = 1 - (1 - p) * (1 - p);
     double openness = te.isOpening() ? eased : 1 - eased;
     double turn = 90.0 * openness;

@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.RenderHelper;
-import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.BannerPosition;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.CornerStyle;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
@@ -19,6 +19,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.RowAlignment;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightType;
+import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
@@ -142,10 +143,9 @@ public class TileEntityDynamicGuideSignRenderer
   // Per-step chamfer for ROUND corners. Two stair steps approximate a small radius.
   private static final float CORNER_STEP = 0.6f;
 
-  // Beyond this camera distance the sign renders as a cheap LOD (body, back, and
-  // posts only — no text, shields, or arrows). The TE's render distance is 128 to
-  // match traffic signals; full detail is unreadable past ~64 blocks anyway.
-  private static final double LOD_FULL_DETAIL_DIST_SQ = 64.0 * 64.0;
+  // Beyond CsmPerformance.signDetailDistanceSq() (64 blocks on HIGH) the sign renders as a cheap
+  // LOD (body, back, and posts only — no text, shields, or arrows). The TE's render distance is
+  // 128 to match traffic signals; full detail is unreadable past ~64 blocks anyway.
 
   private static final int LEGEND_DARK = 0x101010;
   private static final int LEGEND_WHITE = 0xFFFFFF;
@@ -332,7 +332,7 @@ public class TileEntityDynamicGuideSignRenderer
       GlStateManager.popMatrix();
       return;
     }
-    boolean farLod = x * x + y * y + z * z > LOD_FULL_DETAIL_DIST_SQ
+    boolean farLod = x * x + y * y + z * z > CsmPerformance.signDetailDistanceSq()
         || CsmRenderToggles.guideSignForceFarLod;
     Object cached = te.getRenderCache();
     Memo memo = cached instanceof Memo && ((Memo) cached).data == data

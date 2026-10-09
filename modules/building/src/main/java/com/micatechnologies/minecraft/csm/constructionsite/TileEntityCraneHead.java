@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import javax.annotation.Nonnull;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -289,6 +290,6 @@ public class TileEntityCraneHead extends AbstractTileEntity {
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
     double d = LONG_RANGE_RENDER_DISTANCE + getReach();
-    return d * d;
+    return CsmPerformance.capRenderDistanceSq(d * d);
   }
 }

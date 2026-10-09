@@ -159,6 +159,29 @@ public class CsmConfig {
   private static int chunkBuilderBudgetPercent = FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT;
   private static int chunkBuilderLimit = FIELD_DEFAULT_CHUNK_BUILDER_LIMIT;
 
+  private static final String FIELD_KEY_PERFORMANCE_MODE = "performanceMode";
+  private static final String FIELD_DESCRIPTION_PERFORMANCE_MODE =
+      "How much CSM draws, and how much memory it lets Minecraft keep: HIGH (everything, the "
+          + "default), MEDIUM, LOW, or CUSTOM to use the entries marked \"CUSTOM only\" below. "
+          + "On HIGH, MEDIUM and LOW the switches in the general category (enableStrobeEffect, "
+          + "animateDoors, enableThermostatDisplay) and trimChunkBuilders can still turn a thing "
+          + "off but never on; on CUSTOM they decide on their own. Change it in game with "
+          + "/csmclient performance <high|medium|low|custom>.";
+  private static final String FIELD_DEFAULT_PERFORMANCE_MODE = "HIGH";
+  private static final String[] FIELD_VALUES_PERFORMANCE_MODE =
+      {"HIGH", "MEDIUM", "LOW", "CUSTOM"};
+  private static final String[] FIELD_VALUES_STROBE_DETAIL = {"FULL", "CONE", "LENS"};
+
+  private static String performanceMode = FIELD_DEFAULT_PERFORMANCE_MODE;
+  private static int customMaxRenderDistance = 0;
+  private static int customSignDetailDistance = 64;
+  private static int customArrowBoardHaloDistance = 48;
+  private static String customStrobeDetail = "FULL";
+  private static boolean customEmergencyLightGlow = true;
+  private static int customThermostatDisplayDistance = 0;
+  private static boolean customIncandescentFade = true;
+  private static boolean customAdBoardTransitions = true;
+
   private static String chainsawBrushPiles = FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
 
   private static int parkingEmeraldsPerBlock = FIELD_DEFAULT_PARKING_EMERALDS_PER_BLOCK;
@@ -294,21 +317,54 @@ public class CsmConfig {
         FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
         FIELD_VALUES_CHAINSAW_BRUSH_PILES);
     config.setCategoryComment(CATEGORY_PERFORMANCE, CATEGORY_PERFORMANCE_DESCRIPTION);
+    performanceMode = config.getString(FIELD_KEY_PERFORMANCE_MODE, CATEGORY_PERFORMANCE,
+        FIELD_DEFAULT_PERFORMANCE_MODE, FIELD_DESCRIPTION_PERFORMANCE_MODE,
+        FIELD_VALUES_PERFORMANCE_MODE);
     trimChunkBuilders = config.getBoolean("trimChunkBuilders", CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_TRIM_CHUNK_BUILDERS,
         "Give back the direct memory the chunk builders grew, largest first, whenever they hold "
-            + "more than chunkBuilderBudgetPercent of the direct memory limit. Below that it does "
-            + "nothing, so a client with plenty of memory never trims.");
+            + "more than their budget of the direct memory limit. Below that it does nothing, so "
+            + "a client with plenty of memory never trims. A switch: on HIGH, MEDIUM and LOW it "
+            + "can only turn trimming off.");
     chunkBuilderBudgetPercent = config.getInt("chunkBuilderBudgetPercent", CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT, 10, 90,
-        "How much of the direct memory limit the chunk builders may hold before trimChunkBuilders "
-            + "gives some back, in percent.");
+        "CUSTOM only. How much of the direct memory limit the chunk builders may hold before "
+            + "some is given back, in percent. HIGH uses 40, MEDIUM 30, LOW 25.");
     chunkBuilderLimit = config.getInt("chunkBuilderLimit", CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_CHUNK_BUILDER_LIMIT, 0, 1024,
-        "The most chunk builders to keep. 0 keeps Minecraft's own number, ten per processor "
-            + "thread up to 30% of the heap at about 10 MB each. Fewer use less memory but load "
-            + "chunks more slowly while you travel. Never fewer than two per chunk build thread. "
-            + "Lowering it takes effect within seconds; raising it again needs a restart.");
+        "CUSTOM only. The most chunk builders to keep. 0 keeps Minecraft's own number, ten per "
+            + "chunk build thread up to 30% of the heap at about 10 MB each. Fewer use less "
+            + "memory but load chunks more slowly while you travel. Never fewer than two per "
+            + "build thread. Lowering it takes effect within seconds; raising it again needs a "
+            + "restart. HIGH keeps Minecraft's number, MEDIUM four per thread, LOW two.");
+    customMaxRenderDistance = config.getInt("maxRenderDistance", CATEGORY_PERFORMANCE, 0, 0, 512,
+        "CUSTOM only. The farthest, in blocks, that CSM's animated blocks (signals, crosswalks, "
+            + "guide and street signs, message boards, beacons, cranes, ad boards) are drawn. 0 "
+            + "keeps each block's own distance, mostly 128. HIGH uses 0, MEDIUM 96, LOW 64.");
+    customSignDetailDistance = config.getInt("signDetailDistance", CATEGORY_PERFORMANCE, 64, 8,
+        256, "CUSTOM only. Within this many blocks guide and street signs draw their legends; "
+            + "farther away only the blank sign. HIGH uses 64, MEDIUM 48, LOW 24.");
+    customArrowBoardHaloDistance = config.getInt("arrowBoardHaloDistance", CATEGORY_PERFORMANCE,
+        48, 0, 128, "CUSTOM only. Within this many blocks an arrow board's lit lamps glow; 0 "
+            + "turns the glow off. HIGH uses 48, MEDIUM 32, LOW 0.");
+    customStrobeDetail = config.getString("strobeDetail", CATEGORY_PERFORMANCE, "FULL",
+        "CUSTOM only. How much of a fire alarm strobe's flash is drawn: FULL (the lens, its "
+            + "beam, and the light it throws on walls and floors), CONE (no light on surfaces) or "
+            + "LENS (the lens alone). HIGH uses FULL, MEDIUM CONE, LOW LENS.",
+        FIELD_VALUES_STROBE_DETAIL);
+    customEmergencyLightGlow = config.getBoolean("emergencyLightGlow", CATEGORY_PERFORMANCE,
+        true, "CUSTOM only. Whether lit emergency lights cast their glow. HIGH and MEDIUM draw "
+            + "it, LOW does not.");
+    customThermostatDisplayDistance = config.getInt("thermostatDisplayDistance",
+        CATEGORY_PERFORMANCE, 0, 0, 256,
+        "CUSTOM only. Within this many blocks thermostats show their live screen; 0 for any "
+            + "distance. HIGH uses 0, MEDIUM 24, LOW none at all.");
+    customIncandescentFade = config.getBoolean("incandescentFade", CATEGORY_PERFORMANCE, true,
+        "CUSTOM only. Whether incandescent signal lamps fade on and off like a filament, rather "
+            + "than switching like an LED. HIGH and MEDIUM fade, LOW switches.");
+    customAdBoardTransitions = config.getBoolean("adBoardTransitions", CATEGORY_PERFORMANCE,
+        true, "CUSTOM only. Whether advertising boards fade or scroll between ads, rather than "
+            + "cutting. HIGH and MEDIUM do, LOW cuts.");
     configVersion++;
 
     if (config.hasChanged()) {
@@ -393,8 +449,8 @@ public class CsmConfig {
   }
 
   /**
-   * Whether the chunk builders' grown buffers are given back when they hold more than their share
-   * of direct memory. Client only.
+   * The trimChunkBuilders switch as written. What applies is
+   * {@link com.micatechnologies.minecraft.csm.codeutils.CsmPerformance#trimChunkBuilders()}.
    *
    * @return whether to trim
    *
@@ -405,7 +461,8 @@ public class CsmConfig {
   }
 
   /**
-   * The share of the direct memory limit the chunk builders may hold before they are trimmed.
+   * CUSTOM only: the share of the direct memory limit the chunk builders may hold before they are
+   * trimmed. What applies is {@code CsmPerformance.chunkBuilderBudgetPercent()}.
    *
    * @return a percentage, 10 to 90
    *
@@ -416,7 +473,8 @@ public class CsmConfig {
   }
 
   /**
-   * The most chunk builders to keep, or 0 for Minecraft's own number.
+   * CUSTOM only: the most chunk builders to keep, or 0 for Minecraft's own number. What applies
+   * is {@code CsmPerformance.chunkBuilderLimit(int)}.
    *
    * @return the limit
    *
@@ -424,6 +482,100 @@ public class CsmConfig {
    */
   public static int getChunkBuilderLimit() {
     return chunkBuilderLimit;
+  }
+
+  /**
+   * The performance mode as written, upper case: {@code HIGH}, {@code MEDIUM}, {@code LOW} or
+   * {@code CUSTOM}; {@code HIGH} if the file holds anything else. Read through
+   * {@link com.micatechnologies.minecraft.csm.codeutils.CsmPerformance}, which turns it into the
+   * values every renderer uses.
+   *
+   * @return the mode's name
+   *
+   * @since 2026.10
+   */
+  public static String getPerformanceModeName() {
+    String v = performanceMode == null ? "" : performanceMode.trim().toUpperCase();
+    for (String allowed : FIELD_VALUES_PERFORMANCE_MODE) {
+      if (allowed.equals(v)) {
+        return v;
+      }
+    }
+    return FIELD_DEFAULT_PERFORMANCE_MODE;
+  }
+
+  /**
+   * Sets the performance mode and saves it to the file, as {@code /csmclient performance} does.
+   *
+   * @param mode {@code HIGH}, {@code MEDIUM}, {@code LOW} or {@code CUSTOM}, any case
+   *
+   * @return false if the mode is not one of those or the configuration is not loaded
+   *
+   * @since 2026.10
+   */
+  public static synchronized boolean setPerformanceMode(String mode) {
+    if (config == null || mode == null) {
+      return false;
+    }
+    String upper = mode.trim().toUpperCase();
+    for (String allowed : FIELD_VALUES_PERFORMANCE_MODE) {
+      if (allowed.equals(upper)) {
+        config.get(CATEGORY_PERFORMANCE, FIELD_KEY_PERFORMANCE_MODE,
+            FIELD_DEFAULT_PERFORMANCE_MODE, FIELD_DESCRIPTION_PERFORMANCE_MODE,
+            FIELD_VALUES_PERFORMANCE_MODE).set(upper);
+        performanceMode = upper;
+        configVersion++;
+        config.save();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /** CUSTOM only: the farthest CSM's animated blocks are drawn, in blocks; 0 for no limit. */
+  public static int getCustomMaxRenderDistance() {
+    return customMaxRenderDistance;
+  }
+
+  /** CUSTOM only: within how many blocks guide and street signs draw their legends. */
+  public static int getCustomSignDetailDistance() {
+    return customSignDetailDistance;
+  }
+
+  /** CUSTOM only: within how many blocks an arrow board's lamps glow; 0 for never. */
+  public static int getCustomArrowBoardHaloDistance() {
+    return customArrowBoardHaloDistance;
+  }
+
+  /** CUSTOM only: {@code FULL}, {@code CONE} or {@code LENS}, upper case; {@code FULL} if not. */
+  public static String getCustomStrobeDetail() {
+    String v = customStrobeDetail == null ? "" : customStrobeDetail.trim().toUpperCase();
+    for (String allowed : FIELD_VALUES_STROBE_DETAIL) {
+      if (allowed.equals(v)) {
+        return v;
+      }
+    }
+    return "FULL";
+  }
+
+  /** CUSTOM only: whether lit emergency lights cast their glow. */
+  public static boolean isCustomEmergencyLightGlow() {
+    return customEmergencyLightGlow;
+  }
+
+  /** CUSTOM only: within how many blocks thermostats show their screen; 0 for any distance. */
+  public static int getCustomThermostatDisplayDistance() {
+    return customThermostatDisplayDistance;
+  }
+
+  /** CUSTOM only: whether incandescent signal lamps fade. */
+  public static boolean isCustomIncandescentFade() {
+    return customIncandescentFade;
+  }
+
+  /** CUSTOM only: whether advertising boards fade or scroll between ads. */
+  public static boolean isCustomAdBoardTransitions() {
+    return customAdBoardTransitions;
   }
 
   /** Emeralds a newly placed parking meter charges per block of time. */

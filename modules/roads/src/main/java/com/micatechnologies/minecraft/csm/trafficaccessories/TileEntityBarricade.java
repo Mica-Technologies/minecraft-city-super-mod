@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import java.util.concurrent.ThreadLocalRandom;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -171,6 +172,6 @@ public class TileEntityBarricade extends AbstractTileEntity {
   /** Drawn as far as the signals and the arrow board it stands with. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+    return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
   }
 }

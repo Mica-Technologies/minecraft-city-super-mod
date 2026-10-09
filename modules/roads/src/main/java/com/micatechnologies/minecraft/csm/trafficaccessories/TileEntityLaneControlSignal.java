@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.BlankoutBoxVisorType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.CrosswalkMountType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
@@ -86,7 +87,7 @@ public class TileEntityLaneControlSignal extends AbstractTileEntity {
 
     @Override
     public double getMaxRenderDistanceSquared() {
-        return LONG_RANGE_RENDER_DISTANCE_SQUARED;
+        return CsmPerformance.capRenderDistanceSq(LONG_RANGE_RENDER_DISTANCE_SQUARED);
     }
 
     /** {@link #getRenderBoundingBox()}'s box and the position it was made for. */
