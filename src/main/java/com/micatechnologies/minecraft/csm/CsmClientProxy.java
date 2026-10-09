@@ -146,6 +146,20 @@ public class CsmClientProxy implements ICsmProxy {
         com.micatechnologies.minecraft.csm.codeutils.CsmMemStatsVariants.run()));
   }
 
+  @Override
+  public void runChunkBuffers(boolean trim, Consumer<List<String>> reply) {
+    Minecraft.getMinecraft().addScheduledTask(() -> {
+      List<String> lines = new java.util.ArrayList<>();
+      if (trim) {
+        long freed = com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers.trim(0);
+        lines.add(String.format(java.util.Locale.ROOT, "chunkbuffers: trimmed %.1f MB",
+            freed / (1024.0 * 1024.0)));
+      }
+      lines.addAll(com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers.describe());
+      reply.accept(lines);
+    });
+  }
+
   @SubscribeEvent
   public void onEntityJoinWorld(EntityJoinWorldEvent event) {
     if (event.getWorld().isRemote
