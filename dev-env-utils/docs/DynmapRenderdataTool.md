@@ -27,13 +27,19 @@ Two files written to `dev-env-utils/dynmapRenderdataOutput/`:
    each model element's `from`/`to`/`rotation`/`faces` into a Dynmap `box=…` segment. Parent-only
    models that resolve to a known vanilla terminal (`cube_all`, `fence_post`, `half_slab`, etc.)
    use hard-coded geometry.
-4. **Validates and filters** — implements two checks that fix the bulk of the previous tool's bugs:
+4. **Validates and filters** — implements three checks that fix the bulk of the previous tool's bugs:
    - **Degenerate-face filter:** skips emitting a side face when the box dimension on that face's
      normal axis is below 0.0001 model units, or when the face's UV rectangle has zero area.
      These produce patches Dynmap rejects with "Invalid modellist patch" warnings.
    - **Range simulation:** mirrors Dynmap's `PatchDefinition.outOfRange` ([-1, 2] per axis after
      rotation, in unit space). Boxes whose corners exceed this range are replaced with a single
      AABB-cube approximation derived from the model's overall extent.
+   - **Dynmap's own face check:** reproduces `PatchDefinition.validate()`, including the two
+     swapped coefficients that make it reject a face whose UV window is much narrower than the
+     face (a colour swatch on a thin plate edge) although the face is in range. Dynmap leaves such
+     a face out of the render and logs one FATAL line for it, so the tool leaves it out of the file.
+     Without this the May 2026 output drew 73,107 "Invalid modellist patch" lines on the Alto
+     server's startup. See §2.4 of the architecture doc.
 5. **Writes output** — emits both files in deterministic registry-name + state order. Texture IDs
    are derived from the path with `/` → `_` for guaranteed uniqueness across the texture tree.
 
@@ -179,24 +185,23 @@ These remain on the roadmap:
    per-block textures (e.g. yellow signal bodies for school-zone signals) would require a
    per-recipe texture override table.
 
-## Statistics (current CSM state, May 2026)
+## Statistics (current CSM state, October 2026)
 
 | Metric | Value |
 |---|---:|
-| Blocks discovered | 1,440 |
-| Blocks processed | 1,440 |
-| Variants emitted | 35,540 |
-| Boxes emitted | 379,411 |
-| Textures registered | 871 |
-| Faces skipped (degenerate filter) | 2,728 |
-| Boxes replaced (AABB fallback) | 18,628 |
-| Blocks via TESR geometry | 149 |
-| Blocks via `.obj` geometry | 86 |
-| Multipart blocks (handled) | 15 |
+| Blocks processed | 3,040 |
+| Variants emitted | 69,637 |
+| Boxes emitted | 645,301 |
+| Textures registered | 2,525 |
+| Faces skipped (degenerate filter) | 10,714 |
+| Faces skipped (Dynmap would reject) | 246,779 |
+| Boxes replaced (AABB fallback) | 4,086 |
+| Blocks via TESR geometry | 157 |
 | Missing texture files | 0 |
-| Variants — `OPAQUE` | 617 |
-| Variants — `TRANSPARENT` | 34,761 |
-| Variants — `SEMITRANSPARENT` | 162 |
+| Failed blocks | 0 |
 
-The `Faces skipped (degenerate)` and `Missing texture files: 0` lines are the two key indicators
-that this tool's output won't reproduce the previous tool's ~226k server-startup warnings.
+`csm-models.txt` is about 190 MB and `csm-texture.txt` about 14 MB. A port of Dynmap's face check
+run over the written `csm-models.txt` finds none of its 3,077,379 faces rejected.
+
+`Missing texture files: 0` and `failed: 0` (under "Blockstate kinds") are the indicators to watch. The skipped-face
+counts are not a measure of loss: every face counted there is one Dynmap would not draw.

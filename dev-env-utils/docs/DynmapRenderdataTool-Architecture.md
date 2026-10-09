@@ -154,6 +154,31 @@ around `(0.5, 0.5, 0.5)`, and checks each axis against `RANGE_MIN = -1.0` / `RAN
 **any** box in a model is out of range, the entire model is replaced with a single AABB cube derived
 from its overall extent (clamped to `[0, 16]`), rather than emitting partially-clipped geometry.
 
+### 2.4 What `validate()` actually tests (the UV window trap)
+
+The box corners are not what `validate()` checks. `PatchDefinition.updateModelFace` builds each face
+as a patch spanning the **whole texture**: an origin and U/V vectors scaled so that the face's UV
+window lands on the face. A window much narrower than its face (a half-pixel colour swatch on a
+14 px plate edge) gives a U vector many blocks long. `validate()` then tests four points of that
+patch, and two of them take `vmin`/`vmax` as their U coefficient where the face's own corner would
+use `umin`/`umax`:
+
+```java
+double xx1 = x0 + (xu - x0) * vmin + (xv - x0) * vmax;   // corner would be umin, vmax
+double xx3 = x0 + (xu - x0) * vmax + (xv - x0) * vmax;   // corner would be umax, vmax
+```
+
+So the point tested is the face corner moved along U by `(vmin - umin)` whole textures, and a face
+whose window is narrow and off the texture's diagonal fails although every corner of its box is in
+range. Still the same on Dynmap's main branch in October 2026, so a newer Dynmap does not help.
+
+The May 2026 output passed §2.3 and the degenerate filter but drew 73,107 of these on the Alto
+server's startup, every one a face Dynmap then left out of the render. 99.6% of them would pass a
+correct corner check. `PatchValidator.passesDynmapFaceCheck` ports `updateModelFace` and
+`validate()` with the swapped coefficients kept, against the numbers as written to the file, and
+the tool leaves out every face it rejects. That changes nothing on the map (Dynmap was dropping
+them) and removes the log lines.
+
 ---
 
 ## 3. Pipeline
@@ -182,7 +207,8 @@ The generator runs one block at a time through these stages
 5. **Render-layer / transparency classification** (`RenderLayerResolver`) — derives the
    `transparency=` keyword from each block's `getBlockRenderLayer()`; see §4.4.
 
-6. **Emission** — for each variant: run the degenerate-face filter and the out-of-range check,
+6. **Emission** — for each variant: run the out-of-range check, the degenerate-face filter and
+   Dynmap's own face check (§2.4),
    register textures, build the per-block patch list, and append one `ModelListRecord` and one
    `BlockRecord`. `DynmapEmitter` then writes both files in deterministic registry-name + state
    order.
@@ -191,11 +217,13 @@ The generator runs one block at a time through these stages
    boxes, faces skipped, AABB replacements, TESR/OBJ counts, transparency split, missing texture
    files). A separate re-parse-own-output pass was deemed redundant because the in-pipeline filters
    already enforce Dynmap's rules; the load-bearing indicators are `Faces skipped (degenerate)` > 0
-   and `Missing texture files: 0`.
+   and `Missing texture files: 0`. That reasoning held only as long as the filters matched Dynmap,
+   which §2.4 shows they did not; when a server log shows "Invalid modellist patch" lines again,
+   re-parse the output against a port of Dynmap's code rather than trusting the report.
 
-### 3.1 The two filters that fix the previous tool's output
+### 3.1 The filters that fix the previous tool's output
 
-`PatchValidator` implements both:
+`PatchValidator` implements all three:
 
 - **Degenerate-face filter** (`withoutDegenerateFaces`): skips a side face when the box's dimension
   on that face's normal axis is below `DEGENERATE_THICKNESS_EPSILON_MODEL_UNITS` (0.0001 model
@@ -204,6 +232,9 @@ The generator runs one block at a time through these stages
   rectangles like `u/v/u_max/v_max = 0/0/2/0`; Dynmap rejected each one. This single filter
   eliminates ~225,000 of the ~226,000 warnings.
 - **Range simulation** (`isOutOfRange`): the `[-1, 2]` check from §2.3, with AABB-cube fallback.
+- **Dynmap's face check** (`withoutRejectedFaces`): §2.4. Drops the faces the other two let through
+  and Dynmap still rejects (246,779 in October 2026, most of them colour swatch windows a pixel
+  or less across, on thin plate edges).
 
 ---
 
@@ -213,7 +244,7 @@ The generator runs one block at a time through these stages
 
 | Format | Count | Handling |
 |---|---:|---|
-| Forge marker (`forge_marker: 1`) | ~1,425 | `defaults` + cartesian product of `variants.<property>.<value>` (`inventory`/`normal` are render-context selectors, excluded; 256-combo safety cap) |
+| Forge marker (`forge_marker: 1`) | ~1,425 | `defaults` + cartesian product of `variants.<property>.<value>` (`inventory`/`normal` are render-context selectors, excluded; 256-combo safety cap). Whole-state keys (`"facing=east,open=true"`, which Forge also takes) are one state each, merged over `defaults`; before October 2026 they were read as property names, giving one malformed row or a failed block |
 | Vanilla `multipart` | 15 | The `*metal_fence` blockstates; see below |
 | `.obj` model references | 86 | Dispatch to `ObjModelParser`; see §4.3 |
 

@@ -72,6 +72,7 @@ public class DynmapRenderdataTool {
         private int variantsEmitted;
         private int boxesEmitted;
         private int facesSkippedDegenerate;
+        private int facesSkippedDynmapCheck;
         private int boxesReplacedAabb;
         private int blocksFallbackVanilla;
         private int blocksHandledMultipart;
@@ -206,12 +207,15 @@ public class DynmapRenderdataTool {
                 }
                 for (Box b : source) {
                     Box filtered = PatchValidator.withoutDegenerateFaces(b);
-                    if (filtered != null) {
-                        sanitisedBoxes.add(filtered);
-                        facesSkippedDegenerate += (b.faces.size() - filtered.faces.size());
-                    } else {
+                    if (filtered == null) {
                         facesSkippedDegenerate += b.faces.size();
+                        continue;
                     }
+                    facesSkippedDegenerate += b.faces.size() - filtered.faces.size();
+                    Box accepted = PatchValidator.withoutRejectedFaces(filtered);
+                    facesSkippedDynmapCheck += filtered.faces.size()
+                            - (accepted != null ? accepted.faces.size() : 0);
+                    if (accepted != null) sanitisedBoxes.add(accepted);
                 }
                 if (sanitisedBoxes.isEmpty()) continue;
 
@@ -331,6 +335,7 @@ public class DynmapRenderdataTool {
             System.out.println("Textures registered:        " + textureCount);
             System.out.println();
             System.out.println("Faces skipped (degenerate): " + facesSkippedDegenerate);
+            System.out.println("Faces skipped (Dynmap would reject): " + facesSkippedDynmapCheck);
             System.out.println("Boxes replaced (AABB):      " + boxesReplacedAabb);
             System.out.println("Blocks via TESR geometry:   " + blocksUsedTesrGeometry);
             System.out.println("Blocks via .obj geometry:   " + blocksUsedObjGeometry);
