@@ -256,8 +256,58 @@ public class CsmConfig {
   static void init(File configFile) {
     if (config == null) {
       config = new Configuration(configFile);
+      packConfigFile = new File(configFile.getParentFile(), PACK_CONFIG_FILE_NAME);
       loadConfig();
     }
+  }
+
+  /** The modpack's own file, beside {@code csm.cfg}. */
+  private static final String PACK_CONFIG_FILE_NAME = "csm_pack.cfg";
+
+  private static File packConfigFile;
+
+  /** {@code chunkBuilderLimit} from {@code csm_pack.cfg}; 0 when absent. */
+  private static int packChunkBuilderLimit = 0;
+
+  /**
+   * Reads {@code config/csm_pack.cfg}, the file a modpack ships to set limits for its players
+   * without touching their {@code csm.cfg}. The game only reads it, never writes or creates it, so
+   * a launcher can refresh it on every launch without overwriting anything a player chose (a
+   * {@code csm.cfg} shipped the same way would wipe their performance mode and switches each
+   * time). A missing or unreadable file sets nothing.
+   */
+  private static void loadPackConfig() {
+    packChunkBuilderLimit = 0;
+    if (packConfigFile == null || !packConfigFile.isFile()) {
+      return;
+    }
+    try {
+      Configuration pack = new Configuration(packConfigFile);
+      pack.load();
+      // Read without creating: an absent entry must not be written back, and nothing is saved
+      if (pack.hasCategory(CATEGORY_PERFORMANCE)
+          && pack.getCategory(CATEGORY_PERFORMANCE).containsKey("chunkBuilderLimit")) {
+        packChunkBuilderLimit = Math.max(0, Math.min(1024,
+            pack.getCategory(CATEGORY_PERFORMANCE).get("chunkBuilderLimit").getInt(0)));
+      }
+      Csm.getLogger().info("Read {}: chunkBuilderLimit {}", PACK_CONFIG_FILE_NAME,
+          packChunkBuilderLimit);
+    } catch (Exception e) {
+      Csm.getLogger().warn("Could not read {}; it sets nothing", PACK_CONFIG_FILE_NAME, e);
+      packChunkBuilderLimit = 0;
+    }
+  }
+
+  /**
+   * The modpack's cap on chunk builders, from {@code config/csm_pack.cfg}; 0 for none. Like the
+   * player's own {@code chunkBuilderLimit}, it can only lower the number.
+   *
+   * @return the cap, 0 for none
+   *
+   * @since 2026.10
+   */
+  public static int getPackChunkBuilderLimit() {
+    return packChunkBuilderLimit;
   }
 
   /**
@@ -366,6 +416,7 @@ public class CsmConfig {
     customAdBoardTransitions = config.getBoolean("adBoardTransitions", CATEGORY_PERFORMANCE,
         true, "CUSTOM only. Whether advertising boards fade or scroll between ads, rather than "
             + "cutting. HIGH and MEDIUM do, LOW cuts.");
+    loadPackConfig();
     configVersion++;
 
     if (config.hasChanged()) {

@@ -10,6 +10,7 @@ a server owner edits, and what each entry does.
 | `config/csm.cfg` | Core | The general options, plus the parking meter and Parks tool settings, whichever modules you installed |
 | `config/csm_signage.cfg` | CSM: Signage & Advertising | Whether a server offers its own ads, and whether a client takes them |
 | `config/csm/ads/` | You | A folder of PNG images a server shows on the advertising boards (see [Advertising](../guides/advertising.md)) |
+| `config/csm_pack.cfg` | A modpack, optionally | Limits a pack sets for its players without touching their `csm.cfg` (see [csm_pack.cfg](#csm_packcfg-for-modpacks)) |
 
 `config/` is the folder next to `mods/` in your game or server directory. Each file is written the
 first time the game starts with the jar that owns it, with every entry at its default and a comment
@@ -265,6 +266,34 @@ export that the mod no longer has. The current version reads neither, so leave t
     A `csm.cfg` written by an older version can hold entries that have since been retired, such as
     `shaderCompatibilityMode` under `general`, with no comment above them. Nothing reads them any
     more and they do no harm. Delete them if you want a tidy file.
+
+## csm_pack.cfg (for modpacks)
+
+**Client.** A file a modpack ships to set limits for all its players. CSM only reads it: the game
+never creates it, writes it or adds comments to it. So a launcher can put the pack's copy back on
+every launch without overwriting anything a player chose. Shipping `csm.cfg` that way would reset
+each player's performance mode and switches on every launch. Players don't need this file, and
+without it nothing changes.
+
+It uses the same format as `csm.cfg`. Today it holds one entry:
+
+```
+performance {
+    I:chunkBuilderLimit=20
+}
+```
+
+| Entry | Category | Type | Range | What it does |
+|---|---|---|---|---|
+| `chunkBuilderLimit` | `performance` | `I:` | 0–1024 | The most chunk builders to keep, on every performance level. Like the player's own [`chunkBuilderLimit`](#performance), it can only lower the number; the smallest of the level's number, the player's limit and the pack's applies. `0` or a missing entry adds no limit. |
+
+**Why a pack would set it.** With OptiFine, chunks are built by only a few of Minecraft's chunk
+builders, and the rest sit unused, each holding about 10 MB of direct memory. A limit of about twice
+the chunk build threads, typically 20, gives that memory back without changing how anything looks.
+See [Running out of memory after a while](performance-and-graphics.md#running-out-of-memory-after-a-while).
+
+The file is read at startup and by `/csm reloadconfig`.
+[`/csmclient performance`](commands.md#csmclient) shows a pack's limit as "(modpack)".
 
 ## csm_signage.cfg
 

@@ -130,6 +130,10 @@ run [`/csmclient chunkbuffers`](commands.md#diagnostics), which works on any ser
     - Optionally set **`-XX:MaxDirectMemorySize`** to a fixed amount, so direct memory has a limit
       of its own rather than borrowing the heap's size.
 
+    A pack that runs OptiFine can also ship a [`csm_pack.cfg`](configuration.md#csm_packcfg-for-modpacks)
+    with `chunkBuilderLimit=20`. That gives back the builders OptiFine never uses, hundreds of
+    megabytes, without touching anyone's own settings.
+
 If the game stops with **`Java heap space`** after a while instead, that is the heap, and something
 different. Please [report it](https://github.com/Mica-Technologies/minecraft-city-super-mod/issues)
 with your `logs/latest.log`, your `-Xmx`, your mod list and roughly how long you had played.
