@@ -33,7 +33,11 @@ and the lang/tab fragments.
 
 ## Options are sibling blocks, not state
 
-Post material, sidedness and rail family are **separate blocks**, swapped in place by the tool. A
+Post material, sidedness and rail family are **separate blocks**. The tool swaps a rail in place
+for its sibling within the same family (post material, sidedness, box beam's stacked pair), never
+across families: W-beam never becomes thrie, which would break the run either side. It acts only on
+`BlockGuardrail` and its subclasses (the rails, and the transition's post); ends, cable anchors and
+the crash cushion are passed over. A
 guardrail run is long; a tile entity per cell puts thousands of them on a highway, which is the
 cost pattern the performance work is trying to reduce elsewhere. Swapping a block for its sibling
 is stateless and free.

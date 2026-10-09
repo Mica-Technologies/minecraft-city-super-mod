@@ -5,7 +5,8 @@ posts, temporary pavement markers, barrier walls, sand barrels and the arrow boa
 blocks, all generated from one script, and all sharing one behaviour — they **settle onto the
 surface underneath them** instead of floating a cell above it. Thirty-four are in the Traffic
 Accessories tab; the three delineators are in the Streetscape tab, with the other street fixtures
-that settle the same way (the fire hydrant among them).
+that settle the same way (the fire hydrant among them, and the U-channel and flexible delineators
+`gen_road_markers.py` writes on the same class).
 
 This document covers that settling mechanism, the barricade connection and customization systems,
 and the arrow board's animated display. It does not cover the traffic signs that can be mounted
@@ -30,7 +31,7 @@ on a barricade; those are `assets/docs/TRAFFIC_SIGNS.md`.
 | `channelizing_wall_orange`, `_white` | `BlockWorkZoneWall` | the plastic wall filled with water on site |
 | `concrete_barrier` | `BlockWorkZoneWall` | precast, in the New Jersey profile |
 | `road_plate` | `BlockWorkZonePlate` | steel plate over an open trench |
-| `safety_fence` | `BlockWorkZoneDeviceDiagonal` | orange mesh fence closing off the work area |
+| `safety_fence` | `BlockWorkZoneFence` | orange mesh fence closing off the work area |
 | `vertical_panel_left`, `_right` | `BlockWorkZoneDeviceDiagonal` | narrow striped panel for places too tight for a barricade |
 | `flagger_paddle` | `BlockWorkZoneDeviceDiagonal` | the STOP/SLOW paddle parked in a rubber foot: STOP on one face, the SLOW diamond on the other, both drawn into halves of one 128 px sprite since the family's 32 px cannot carry a legend |
 | `portable_signal_trailer_arm` | `BlockWorkZoneDeviceRotatable` | towed signal; carries no heads of its own. The one device here kept to four facings — see below |
