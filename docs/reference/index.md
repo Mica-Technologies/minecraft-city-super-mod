@@ -31,7 +31,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Signage & Advertising](signage.md) | 6 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Streetscape](streetscape.md) | 102 | Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
-| [Technology](technology.md) | 54 | Servers, routers, screens and consumer electronics. |
+| [Technology](technology.md) | 54 | Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set. |
 | [Traffic Accessories](traffic-accessories.md) | 393 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 89 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Transit](transit.md) | 135 | Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside. |

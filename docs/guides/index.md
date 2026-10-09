@@ -46,6 +46,20 @@ How each system works, and how to build with it.
 
     The realistically scaled curved upsweeps, why they are several blocks, and what mounts to them.
 
+-   :material-traffic-cone:{ .lg .middle } **[Roadside & Work Zones](roadside-and-work-zones.md)**
+
+    ---
+
+    Cones, drums, barricades and the arrow board; guardrails and their end treatments; overhead
+    sign trusses, concrete and pedestal poles, enforcement cameras and mile markers.
+
+-   :material-car-emergency:{ .lg .middle } **[Vehicles & Preemption](vehicles.md)**
+
+    ---
+
+    Lightbars, sirens and a city fleet for Immersive Vehicles, and emergency vehicles that turn
+    the signals green ahead of them.
+
 </div>
 
 ## Signs
@@ -56,7 +70,7 @@ How each system works, and how to build with it.
 
     ---
 
-    644 MUTCD signs, automatic post extensions, and why stacking them aligns them for you.
+    Nearly 700 MUTCD signs, automatic post extensions, and why stacking them aligns them for you.
 
 -   :material-sign-direction:{ .lg .middle } **[Guide & Street Signs](dynamic-signs.md)**
 
@@ -122,6 +136,34 @@ How each system works, and how to build with it.
 
     Meters and panels, water towers built to size, pump stations, lift stations, outfalls, a gas
     regulator yard, cell sites and small cells.
+
+-   :material-wall:{ .lg .middle } **[Building Materials](building-materials.md)**
+
+    ---
+
+    Brick, block, stucco, siding, cladding and stone; glass that joins into one window; stud walls
+    and structural steel; blinds, flooring and wall finishes.
+
+-   :material-door:{ .lg .middle } **[Doors](doors.md)**
+
+    ---
+
+    Doors that pair, close themselves and lock with a keypad, and garage doors built to the size of
+    the opening, with openers.
+
+-   :material-crane:{ .lg .middle } **[Construction Site](construction-site.md)**
+
+    ---
+
+    Scaffolding, formwork, site fences, containers built to size, a job trailer, and a tower crane
+    that climbs.
+
+-   :material-bell-ring:{ .lg .middle } **[Technology & Text to Speech](technology.md)**
+
+    ---
+
+    Computers and network gear, a school's clocks, bells and PA on a schedule, and a block that
+    reads text aloud.
 
 </div>
 

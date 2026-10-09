@@ -26,6 +26,33 @@ clear the selection before you start on another building. Its tooltip shows whic
 The panel groups its appliances by the sound they play, so one channel drives every horn making
 the same noise rather than each one shouting independently.
 
+!!! tip "Sensitive to flashing light?"
+    Each player can turn off the strobes' flash in their own game with
+    [`enableStrobeEffect`](../getting-started/configuration.md#enablestrobeeffect). The alarm still
+    sounds.
+
+### A whole building at once
+
+A building with a few hundred appliances is a few hundred aimed clicks, and a wall speaker is a
+thin plate the crosshair has to find. The **Fire Alarm Area Linker** links by box instead:
+
+1. Click the **panel** to select it.
+2. Click one **corner** of the building, then the **opposite corner**.
+
+Every fire alarm device inside the box is then linked as if you had clicked each one with the
+linker. Appliances join the panel. Pull stations, detectors, door holders and annunciators are
+pointed at it. A device that belonged to another panel moves to this one. The linker reports how
+many of each it linked.
+
+**Sneak-click the second corner** to unlink everything in the box from the panel instead. Sneak-click
+the air to forget a half-made box, and again to forget the panel. Sneak-clicking a panel prunes its
+missing devices, as the plain linker does.
+
+A box can hold at most 128 × 128 × 128 blocks in all (a tall tower fits easily). Only loaded chunks are linked, so stand near the
+building. Operators can do the same from a command block with
+[`/csmfirealarm link`](../getting-started/commands.md#csmfirealarm), which also offers `status`
+to list a panel's devices and the missing ones.
+
 ### Unlinking
 
 **Sneak-click a device** with the linker to unlink it from the selected panel. Sneak-clicking a

@@ -1,6 +1,6 @@
 # Technology
 
-Servers, routers, screens and consumer electronics.
+Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set.
 
 !!! info "54 blocks in this tab"
 

@@ -1,6 +1,6 @@
 site_name: City Super Mod
 site_description: >-
-  The City Super Mod for Minecraft 1.12.2 — 1,600+ city blocks: working traffic signals, fire
+  The City Super Mod for Minecraft 1.12.2 — 3,500+ city blocks: working traffic signals, fire
   alarm systems, street lighting, road signs, HVAC and more.
 site_url: https://mica-technologies.github.io/minecraft-city-super-mod/
 repo_url: https://github.com/Mica-Technologies/minecraft-city-super-mod
@@ -100,6 +100,9 @@ nav:
       - Installation: getting-started/installation.md
       - Compatibility: getting-started/compatibility.md
       - Player & Developer Safety: getting-started/safety.md
+      - Configuration: getting-started/configuration.md
+      - Commands: getting-started/commands.md
+      - Performance & Graphics: getting-started/performance-and-graphics.md
   - Guides:
       - guides/index.md
       - Survival & Crafting: guides/survival-and-crafting.md
@@ -110,6 +113,7 @@ nav:
       - Lane Control: guides/lane-control.md
       - Span Wire: guides/span-wire.md
       - Mast Arms: guides/mast-arms.md
+      - Roadside & Work Zones: guides/roadside-and-work-zones.md
       - Road Signs: guides/road-signs.md
       - Guide & Street Signs: guides/dynamic-signs.md
       - Message & Speed Signs: guides/message-signs.md
@@ -120,11 +124,16 @@ nav:
       - HVAC: guides/hvac.md
       - Power Grid: guides/power-grid.md
       - Utilities: guides/utilities.md
+      - Building Materials: guides/building-materials.md
+      - Doors: guides/doors.md
+      - Construction Site: guides/construction-site.md
+      - Technology & Text to Speech: guides/technology.md
       - Novelties: guides/novelties.md
       - Furniture: guides/furniture.md
       - Advertising: guides/advertising.md
       - Parks & Greenery: guides/parks-and-greenery.md
       - Transit: guides/transit.md
+      - Vehicles & Preemption: guides/vehicles.md
   - Block Reference:
       - reference/index.md
       - Building Materials: reference/building-materials.md
