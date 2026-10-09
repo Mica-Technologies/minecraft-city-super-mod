@@ -30,12 +30,14 @@ levels:
 | Door swing | on | on | off: doors snap | `animateDoors` |
 | Incandescent signal fade | on | on | off: lamps switch like LEDs | `incandescentFade` |
 | Ad board fades and scrolls | on | on | off: ads cut | `adBoardTransitions` |
-| Chunk builders kept | Minecraft's number | 4 per build thread | 2 per build thread | `chunkBuilderLimit` |
+| Chunk builders kept² | Minecraft's number | 4 per build thread | 2 per build thread | `chunkBuilderLimit` |
 | Chunk builders trimmed over | 40% of direct memory | 30% | 25% | `chunkBuilderBudgetPercent` |
 
 ¹ Signals, crosswalks, guide and street signs, message and speed signs, beacons, arrow boards,
 barricade lights, crossing gates, cranes, sirens, ad boards, departure and flight boards, clocks.
 Never farther than your own Minecraft render distance.
+
+² `chunkBuilderLimit` also caps this on every level; see [Configuration](configuration.md#performance).
 
 **HIGH is exactly how CSM has always looked**, so nothing changes unless you choose a level.
 **MEDIUM** keeps the look and trims what costs the most for the least: the farthest blocks, the

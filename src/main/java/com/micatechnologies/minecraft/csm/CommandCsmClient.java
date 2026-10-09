@@ -102,10 +102,11 @@ public class CommandCsmClient extends CommandBase {
     say(sender, "  door swing: " + onOff(CsmPerformance.doorAnimation())
         + ", incandescent fade: " + onOff(CsmPerformance.incandescentFade())
         + ", ad transitions: " + onOff(CsmPerformance.adBoardTransitions()));
-    int perThread = CsmPerformance.chunkBuilderLimit(1);
-    say(sender, "  chunk builders: " + (perThread <= 0 ? "Minecraft's number"
-        : mode == CsmPerformance.Mode.CUSTOM ? "at most " + perThread
-        : perThread + " per build thread") + ", trimmed over "
+    int perThread = mode == CsmPerformance.Mode.MEDIUM ? 4
+        : mode == CsmPerformance.Mode.LOW ? 2 : 0;
+    int cap = CsmConfig.getChunkBuilderLimit();
+    say(sender, "  chunk builders: " + (perThread > 0 ? perThread + " per build thread"
+        : "Minecraft's number") + (cap > 0 ? ", at most " + cap : "") + ", trimmed over "
         + CsmPerformance.chunkBuilderBudgetPercent() + "% of direct memory"
         + (CsmPerformance.trimChunkBuilders() ? "" : " (trimming off)"));
   }
