@@ -91,4 +91,16 @@ public interface ICsmProxy {
     reply.accept(java.util.Collections.singletonList(
         "memstats variants: models exist only on a client"));
   }
+
+  /**
+   * Runs {@code /csm chunkbuffers [trim]}: the direct memory vanilla's chunk builders hold, and
+   * with {@code trim} gives back what they grew. Client only.
+   *
+   * @param trim  true to trim the idle builders first
+   * @param reply receives the chat lines
+   */
+  default void runChunkBuffers(boolean trim, Consumer<List<String>> reply) {
+    reply.accept(java.util.Collections.singletonList(
+        "chunkbuffers: chunk builders exist only on a client"));
+  }
 }

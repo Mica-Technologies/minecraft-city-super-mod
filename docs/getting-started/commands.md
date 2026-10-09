@@ -62,6 +62,8 @@ draws nothing.
 | `memstats` | Reports what each block costs in memory: its states, and in a game with a client, its baked models |
 | `memstats dump` | The same, and writes the full report as CSV files under `csm-memstats/<time>/` in the game folder |
 | `memstats variants` | Counts the model variants and baked parts that repeat |
+| `chunkbuffers` | Reports the direct (off-heap) memory held by Minecraft's chunk builders: how many there are, how much each render layer holds, and how many have grown past their starting size |
+| `chunkbuffers trim` | Gives back what the chunk builders grew: each idle builder's oversized buffers are replaced at their starting size and the memory freed at once |
 | `statecheck` | Checks every CSM block's states against how vanilla would build them, and reports any difference. Read only |
 
 **Render passes.** Each pass is one piece of an expensive renderer, such as the bulbs of a signal

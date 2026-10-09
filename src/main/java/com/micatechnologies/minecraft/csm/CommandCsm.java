@@ -49,7 +49,7 @@ public class CommandCsm extends CommandBase {
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
           + "|renderpass <list|skip|draw|reset> [pass]|incandescent [ms|reset]|displaylists"
-          + "|memstats [dump|variants]|statecheck>";
+          + "|memstats [dump|variants]|chunkbuffers [trim]|statecheck>";
 
   @Override
   public String getName() {
@@ -96,6 +96,14 @@ public class CommandCsm extends CommandBase {
         return;
       case "memstats":
         handleMemStats(server, sender, args);
+        return;
+      case "chunkbuffers":
+        Csm.proxy.runChunkBuffers(args.length > 1 && "trim".equalsIgnoreCase(args[1]), lines -> {
+          for (String line : lines) {
+            Csm.getLogger().info("[chunkbuffers] {}", line);
+            sendSuccess(sender, line);
+          }
+        });
         return;
       case "statecheck":
         for (String line : com.micatechnologies.minecraft.csm.codeutils.CsmStateCheck.run()) {
@@ -315,7 +323,10 @@ public class CommandCsm extends CommandBase {
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore", "renderpass",
-          "incandescent", "displaylists", "memstats", "statecheck");
+          "incandescent", "displaylists", "memstats", "chunkbuffers", "statecheck");
+    }
+    if (args.length == 2 && "chunkbuffers".equalsIgnoreCase(args[0])) {
+      return getListOfStringsMatchingLastWord(args, "trim");
     }
     if (args.length == 2 && "memstats".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "dump", "variants");
