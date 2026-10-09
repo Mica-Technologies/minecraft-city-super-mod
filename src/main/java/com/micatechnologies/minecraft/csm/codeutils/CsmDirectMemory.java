@@ -75,6 +75,31 @@ public final class CsmDirectMemory {
     return DIRECT_POOL == null ? 0 : DIRECT_POOL.getMemoryUsed();
   }
 
+  /**
+   * The direct memory limit: {@code -XX:MaxDirectMemorySize}, which defaults to the heap's maximum.
+   * Read from {@code sun.misc.VM} on Java 8; where that is not reachable, the heap's maximum.
+   *
+   * @return the limit in bytes
+   */
+  public static long max() {
+    return MAX;
+  }
+
+  private static final long MAX = findMax();
+
+  private static long findMax() {
+    try {
+      Method maxDirect = Class.forName("sun.misc.VM").getMethod("maxDirectMemory");
+      long max = (Long) maxDirect.invoke(null);
+      if (max > 0) {
+        return max;
+      }
+    } catch (Throwable notJava8) {
+      // Fall through to the default the JVM uses
+    }
+    return Runtime.getRuntime().maxMemory();
+  }
+
   /** How many direct buffers exist, live or awaiting collection, or 0 if the JVM does not say. */
   public static long count() {
     return DIRECT_POOL == null ? 0 : DIRECT_POOL.getCount();

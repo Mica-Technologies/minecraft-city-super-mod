@@ -498,6 +498,57 @@ section of 216 tomato crates (about 565,000 triangles) with a tile entity syncin
 (`benchmarks/block-inventory-2026-09-20/evidence/`). At 64 crates (167,000 triangles) the same sync
 rate produced a 445 ms hitch instead. Ordinary sections are unaffected.
 
+### Direct memory: the chunk builder pool
+
+That failure is not limited to dense test sections. It is how a client in a busy city dies 20-30
+minutes in (2026-10-09). Vanilla builds chunk meshes with a pool of `RegionRenderCacheBuilder`s,
+each one `BufferBuilder` per layer in direct memory:
+
+- **The pool is `min(threads x 10, 30% of -Xmx / 10 MB)` builders**, each SOLID 8 MB, CUTOUT and
+  CUTOUT_MIPPED 0.5 MB, TRANSLUCENT 1 MB to begin with: 160 builders and 1.6 GB on sixteen threads
+  (dev client and Alto alike). A 2 GB heap on the same machine still gets 61 builders, 640 MB of a
+  2 GB direct cap.
+- **A builder grows and never shrinks.** `growBuffer` steps up 2 MB at a time, dropping each
+  smaller buffer as garbage. CUTOUT_MIPPED, where most CSM blocks draw, starts at 0.5 MB: about
+  4,700 quads, or 24 vertical curve connectors (3,120 quads each) in one section.
+- **The pool is first in, first out**, so a heavy section that keeps being rebuilt grows every
+  builder in turn. Measured in the dev client: 64 curve connectors in one section, rebuilt 60
+  times, took 98 of 160 builders to 22.5 MB, the pool to 3.7 GB and direct memory to 5.4 of its
+  5.5 GB cap (the cap defaults to `-Xmx`).
+- **The Alto pack is different.** Measured in `run/obfuscated` with AltoTEST's 128 mods and JVM
+  flags at `-Xmx4G` (OptiFine, VintageFix): 10 build threads and 100 builders (1,000 MB), but
+  however many sections were rebuilt, only 10 builders ever grew, so growth stops near ten times
+  the heaviest section. The other 90 sit at their starting size and are never used: 900 MB that
+  `chunkBuilderLimit` 20 gave back (direct memory 1,530 to 622 MB), with no hang on a world
+  reload or a render distance change. A pack client that dies of direct memory late is
+  therefore probably not dying of builder growth alone.
+- **`-XX:+DisableExplicitGC` makes it fatal.** Running short, `Bits.reserveMemory` asks for a
+  `System.gc()` to free dead buffers, and that flag turns the request off. The Alto pack runs it.
+
+`CsmChunkBuilderBuffers` keeps the pool in a budget: every five seconds (client tick), if the
+idle builders hold more than `chunkBuilderBudgetPercent` (40%) of the direct cap, it replaces their
+largest grown buffers with new ones at the starting size, largest first, and frees the old memory
+at once through `CsmDirectMemory.free` instead of leaving it to a collection. **Keep it
+budget-driven.** Trimming every grown buffer looks simpler, but a busy section regrows from 0.5
+MB on the next rebuild, and each regrow to 22.5 MB leaves about 130 MB of intermediate buffers as
+garbage: with the budget at 10% in a stress test, the pool stayed at 1.7 GB while direct memory
+still reached 5 GB of garbage before a collection drained it. `chunkBuilderLimit` (0 = vanilla)
+retires idle builders past a limit, never below two per build thread.
+
+The traps:
+
+- **Touch only builders in the free queue**, each taken out (`queue.remove`) while its slot is
+  swapped and put back after. A builder a worker holds is never visited. Freeing a buffer
+  something still reads crashes the JVM natively, with an `hs_err` file and no log line.
+- **Lower `countRenderBuilders` with every builder retired.** `stopChunkUpdates` (world change,
+  render distance, F3+A) loops until it holds that many builders, so a count above the pool
+  hangs the game for good. Retiring runs on the client thread, the only thread that stops chunk
+  updates.
+- **A machine with one build thread is not covered:** it builds on the client thread with a
+  builder of its own that is never in the free queue.
+- **`/csm chunkbuffers` runs on the server.** On a multiplayer client use `/csmclient
+  chunkbuffers`, a client command.
+
 ## Measuring without fooling yourself
 
 The instruments are `dev-env-utils/scripts/csm_bench.py` (build a deterministic scene, measure it

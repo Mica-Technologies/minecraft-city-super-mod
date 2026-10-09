@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -61,6 +62,9 @@ public final class CsmChunkBuilderBuffers {
   @Nullable
   private static final Field COUNT_BUILDERS =
       find(ChunkRenderDispatcher.class, "field_188249_c", "countRenderBuilders");
+  @Nullable
+  private static final Field WORKER_THREADS =
+      find(ChunkRenderDispatcher.class, "field_188250_d", "listWorkerThreads");
   @Nullable
   private static final Field WORLD_RENDERERS =
       find(RegionRenderCacheBuilder.class, "field_179040_a", "worldRenderers");
@@ -182,8 +186,11 @@ public final class CsmChunkBuilderBuffers {
             "  %s: %.1f MB in all, largest %.1f MB (starts %.1f MB), %d grown",
             layer.name(), mb(total[i]), mb(largest[i]), mb(defaultBytes(i)), grown[i]));
       }
-      lines.add(String.format(Locale.ROOT, "  direct memory in use: %.1f MB",
-          mb(CsmDirectMemory.used())));
+      lines.add(String.format(Locale.ROOT,
+          "  direct memory in use: %.1f of %.1f MB, %d buffers; trim budget %.1f MB (%s)",
+          mb(CsmDirectMemory.used()), mb(CsmDirectMemory.max()), CsmDirectMemory.count(),
+          mb(CsmDirectMemory.max() * CsmConfig.getChunkBuilderBudgetPercent() / 100),
+          CsmConfig.isChunkBuilderTrimEnabled() ? "on" : "off"));
     } catch (Exception e) {
       lines.add("chunkbuffers: could not measure (" + e + ")");
     }
@@ -245,6 +252,120 @@ public final class CsmChunkBuilderBuffers {
       Csm.getLogger().warn("Could not trim the chunk builder buffers", e);
     }
     return freed;
+  }
+
+  /**
+   * The periodic upkeep, from the client tick: retires builders past {@code chunkBuilderLimit},
+   * then, if {@code trimChunkBuilders} is on and the pool holds more than its share of the direct
+   * memory limit, trims the largest idle buffers until it does not.
+   *
+   * <p>The trim is driven by a budget, not by size, on purpose. Trimming every grown buffer would
+   * be simpler, but in a busy city the same heavy sections are rebuilt all the time, and each
+   * rebuild on a trimmed builder grows it again from its starting size in 2 MB steps, leaving
+   * every intermediate buffer as garbage: about 130 MB of dead direct memory to regrow one
+   * builder to 22 MB, which a pack running {@code -XX:+DisableExplicitGC} collects late. Under
+   * the budget nothing is touched, so a client with memory to spare keeps vanilla's behaviour
+   * exactly, and a small one gives back only what takes it over.</p>
+   *
+   * <p>Not covered: a machine with one chunk build thread builds on the client thread with a
+   * builder of its own that is never in the free queue, so that one builder is never trimmed.</p>
+   *
+   * @param limit         the most builders to keep, 0 for vanilla's number
+   * @param trim          whether to trim over the budget
+   * @param budgetPercent the share of the direct memory limit the pool may hold
+   */
+  public static void maintain(int limit, boolean trim, int budgetPercent) {
+    if (!available()) {
+      return;
+    }
+    try {
+      BlockingQueue<RegionRenderCacheBuilder> queue = freeBuilders();
+      if (queue == null) {
+        return;
+      }
+      if (limit > 0) {
+        retireSurplus(queue, limit);
+      }
+      if (trim) {
+        trimToBudget(queue, CsmDirectMemory.max() * budgetPercent / 100);
+      }
+    } catch (Exception e) {
+      Csm.getLogger().warn("Could not maintain the chunk builder buffers", e);
+    }
+  }
+
+  /**
+   * Retires idle builders until the pool is down to {@code limit}, never below two a build
+   * thread, and lowers the dispatcher's count to match: vanilla stops chunk updates (world change,
+   * render distance, F3+A) by waiting until it holds that many builders, so a count left above the
+   * pool would hang the game there. Client thread only, which is also the only thread that stops
+   * chunk updates.
+   */
+  private static void retireSurplus(BlockingQueue<RegionRenderCacheBuilder> queue, int limit)
+      throws Exception {
+    Object dispatcher = RENDER_DISPATCHER.get(Minecraft.getMinecraft().renderGlobal);
+    if (dispatcher == null || WORKER_THREADS == null) {
+      return;
+    }
+    int threads = Math.max(1, ((List<?>) WORKER_THREADS.get(dispatcher)).size());
+    int target = Math.max(limit, threads * 2);
+    int count = COUNT_BUILDERS.getInt(dispatcher);
+    while (count > target) {
+      RegionRenderCacheBuilder builder = queue.poll();
+      if (builder == null) {
+        return; // The rest are busy; try again next time
+      }
+      count--;
+      COUNT_BUILDERS.setInt(dispatcher, count);
+      for (BufferBuilder buffer : (BufferBuilder[]) WORLD_RENDERERS.get(builder)) {
+        CsmDirectMemory.free((ByteBuffer) BYTE_BUFFER.get(buffer));
+      }
+    }
+  }
+
+  /** Trims the largest idle buffers until the pool holds no more than {@code budget} bytes. */
+  private static void trimToBudget(BlockingQueue<RegionRenderCacheBuilder> queue, long budget)
+      throws Exception {
+    long total = 0;
+    List<long[]> grown = new ArrayList<>(); // {capacity, builder index, layer}
+    List<RegionRenderCacheBuilder> builders = new ArrayList<>();
+    for (RegionRenderCacheBuilder builder : queue) {
+      BufferBuilder[] buffers = (BufferBuilder[]) WORLD_RENDERERS.get(builder);
+      for (int i = 0; i < buffers.length && i < DEFAULT_INTS.length; i++) {
+        long cap = capacity(buffers[i]);
+        total += cap;
+        if (cap > defaultBytes(i)) {
+          grown.add(new long[]{cap, builders.size(), i});
+        }
+      }
+      builders.add(builder);
+    }
+    if (total <= budget || grown.isEmpty()) {
+      return;
+    }
+    grown.sort((a, b) -> Long.compare(b[0], a[0]));
+    for (long[] g : grown) {
+      if (total <= budget) {
+        return;
+      }
+      RegionRenderCacheBuilder builder = builders.get((int) g[1]);
+      // Out of the queue while it is changed; if a worker has taken it meanwhile, skip it
+      if (!queue.remove(builder)) {
+        continue;
+      }
+      try {
+        BufferBuilder[] buffers = (BufferBuilder[]) WORLD_RENDERERS.get(builder);
+        int layer = (int) g[2];
+        ByteBuffer old = (ByteBuffer) BYTE_BUFFER.get(buffers[layer]);
+        if (old != null && old.capacity() > defaultBytes(layer)) {
+          buffers[layer] = new BufferBuilder(DEFAULT_INTS[layer]);
+          total -= old.capacity() - defaultBytes(layer);
+          CsmDirectMemory.free(old);
+        }
+      } finally {
+        queue.add(builder);
+      }
+    }
   }
 
   static double mb(long bytes) {

@@ -1,8 +1,8 @@
 # Commands
 
-Every chat command CSM adds. All of them are **operator commands** (permission level 2): in single
-player turn cheats on, or open the world to LAN with cheats allowed. On a server you need to be an
-op.
+Every chat command CSM adds. All but `/csmclient` are **operator commands** (permission level 2):
+in single player turn cheats on, or open the world to LAN with cheats allowed. On a server you need
+to be an op. `/csmclient` runs in your own game and anyone can use it.
 
 | Command | Module | For |
 |---|---|---|
@@ -10,6 +10,7 @@ op.
 | [`/csmfirealarm`](#csmfirealarm) | Life Safety | Wiring a whole building to a fire alarm panel at once, and checking a panel |
 | [`/csmhvac`](#csmhvac) | HVAC | Inspecting and testing the room temperature simulation |
 | [`/csmlighting`](#csmlighting) | Lighting | Repairing the light a lamp throws |
+| [`/csmclient`](#diagnostics) | Core | Measuring your own game's chunk builder memory, on any server |
 
 Each command shows its own usage if you type it with no arguments, and tab completes its
 subcommands and coordinates. Coordinates take `~` like vanilla commands.
@@ -64,6 +65,10 @@ draws nothing.
 | `memstats variants` | Counts the model variants and baked parts that repeat |
 | `chunkbuffers` | Reports the direct (off-heap) memory held by Minecraft's chunk builders: how many there are, how much each render layer holds, and how many have grown past their starting size |
 | `chunkbuffers trim` | Gives back what the chunk builders grew: each idle builder's oversized buffers are replaced at their starting size and the memory freed at once |
+
+On a multiplayer server `/csm` runs on the server, which has no chunk builders. Use
+**`/csmclient chunkbuffers [trim]`** instead: it runs in your own game, on any server, and needs no
+operator rights.
 | `statecheck` | Checks every CSM block's states against how vanilla would build them, and reports any difference. Read only |
 
 **Render passes.** Each pass is one piece of an expensive renderer, such as the bulbs of a signal

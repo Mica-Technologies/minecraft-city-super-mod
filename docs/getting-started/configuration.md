@@ -80,6 +80,8 @@ setting in their own file restarts their game to apply it.
 | [`arrowBoardSpeedPercent`](#arrowboardspeedpercent) | Client | `100` | How fast arrow boards run their sequences |
 | [`enableUpdateCheck`](#enableupdatecheck) | Client | `true` | A chat message when a newer release exists |
 
+The memory settings have a category of their own: [performance](#performance).
+
 #### `enableStrobeEffect`
 
 `B:` · default `true` · **client**
@@ -132,6 +134,19 @@ This sets the speed you see, so players on one server can each pick their own.
 When you join a world, CSM asks GitHub for the latest release. If yours is older, you get a chat
 message with a **[Download]** link to the releases page. Set this to `false` to stop the request,
 for example in a modpack that manages its own versions or on a machine with no internet access.
+
+### performance
+
+**Client.** These keep Minecraft's chunk builders from filling direct memory, which otherwise ends
+a long session in a busy city with `OutOfMemoryError: Direct buffer memory`. What they do and why
+is in [Performance & Graphics](performance-and-graphics.md#running-out-of-memory-after-a-while).
+Each player's own setting applies.
+
+| Entry | Type | Default | Range | What it does |
+|---|---|---|---|---|
+| `trimChunkBuilders` | `B:` | `true` | | Gives back the memory the chunk builders grew, largest first, whenever they hold more than `chunkBuilderBudgetPercent` of the direct memory limit. Below that it does nothing. |
+| `chunkBuilderBudgetPercent` | `I:` | `40` | 10–90 | How much of the direct memory limit the chunk builders may hold before some is given back |
+| `chunkBuilderLimit` | `I:` | `0` | 0–1024 | The most chunk builders to keep. `0` keeps Minecraft's own number. Fewer use less memory but load chunks more slowly while you travel. Never fewer than two per chunk build thread. Lowering it takes effect within seconds; raising it again needs a restart. |
 
 ### trafficpoles
 
