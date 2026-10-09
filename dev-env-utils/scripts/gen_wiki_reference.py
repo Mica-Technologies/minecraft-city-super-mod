@@ -158,7 +158,7 @@ TABS = {
                             "Steel and wood stud walls, the structure that spans between "
                             "them, and structural steel."),
     "tabtechnology": ("technology", "Technology",
-                      "Servers, routers, screens and consumer electronics."),
+                      "Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set."),
     "tabtransit": ("transit", "Transit",
                    "Public transit: bus stop flags, timetable and map cases and the arrival "
                    "display (road signs, stood on the Road Signs tab's sign posts), bus "

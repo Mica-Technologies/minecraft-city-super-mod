@@ -33,7 +33,7 @@ An **element** is one of:
 | Setting | Options |
 |---|---|
 | Colour | Green, blue, brown, yellow, white, black, purple — the seven FHWA sign colours |
-| Post | Overhead, or ground-mounted |
+| Post | Left, right or center (where the post stands), rural (two posts), overhead (no posts), or truss (hung from an [overhead sign truss](roadside-and-work-zones.md) on hanger brackets; a sign placed against a truss starts as this) |
 | Border | Width |
 | Corners | Round or square |
 | Minimum width / height | Floors, in sign pixels — 16 px is one block. Surplus height centres the content |

@@ -32,7 +32,7 @@ across a building, street lights that switch, a road sign set drawn from the MUT
 
     ---
 
-    Every one of the 1,639 blocks, with the registry id you need for `/give` and `/setblock`.
+    Every block, over 3,500 of them, with the registry id you need for `/give` and `/setblock`.
 
     [:octicons-arrow-right-24: Block reference](reference/index.md)
 
@@ -48,13 +48,13 @@ across a building, street lights that switch, a road sign set drawn from the MUT
 
 ## What is in it
 
-The City Super Mod adds **over 3,200 blocks and 35+ items** to Minecraft 1.12.2, all of it aimed at
+The City Super Mod adds **over 3,500 blocks and 35+ items** to Minecraft 1.12.2, all of it aimed at
 making a city look and behave like one.
 
 | | |
 |---|---|
 | **Traffic signals** | Signal heads on poles, mast arms and span wire, driven by a controller with real phases, clearance intervals and an MMU that faults when a conflict would occur. |
-| **Road signs** | 574 signs, grouped the way the MUTCD groups them, plus highway guide signs and street name blades you fill in yourself. |
+| **Road signs** | Nearly 700 signs, grouped the way the MUTCD groups them, plus highway guide signs and street name blades you fill in yourself. |
 | **Life safety** | Horns, strobes, speakers, pull stations and panels, wired to a control panel that sounds them together on a channel. |
 | **Lighting** | Street and area lighting with a four-state on/off control, plus a decorative pendant and sconce family. |
 | **HVAC** | Heating and cooling that simulates room temperature rather than just looking the part. |
@@ -63,6 +63,9 @@ making a city look and behave like one.
 | **Transit** | Fare gates and cards, bus stops, shelters and departure boards, station fit-out, and an airport terminal and airside. |
 | **Building materials** | Concrete block, brick, stucco, siding, metal cladding, stone veneer and coloured metal, with matching stairs, slabs and fences. |
 | **Furniture** | Homes, offices and shops: furniture that joins into runs, beds you sleep in, working kitchen appliances, and a grocery store's cases, shelving and checkout. |
+| **Doors & construction** | Doors that pair, close and lock, garage doors built to size, scaffolding, site fences, containers and a tower crane that climbs. |
+| **Technology** | Computers, a school's clocks, bells and PA on a schedule, and a block that reads text aloud. |
+| **Vehicles** | With Immersive Vehicles: lightbars, sirens, a city fleet, and emergency vehicles that preempt the signals. |
 | **Parks & signage** | Street trees built from blocks, park amenities, and ad kiosks, poster boards and billboards. |
 
 It is aimed at creative building, but **everything is obtainable in survival** through a two-tier
