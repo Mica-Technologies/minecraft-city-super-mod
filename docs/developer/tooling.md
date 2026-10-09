@@ -18,6 +18,7 @@ Each has an IntelliJ run configuration, and per-tool documentation in `dev-env-u
 | **Registry Consistency** | Cross-checks registrations |
 | **Resource Usage / Texture Audit** | Finds unused and missing resources |
 | **Forge Blockstate Validator** | Validates the blockstate JSON |
+| **Dynmap Renderdata** (`DynmapRenderdataTool`) | Writes the `csm-models.txt` and `csm-texture.txt` that let a [Dynmap](https://github.com/webbukkit/dynmap) web map draw CSM blocks, into `dev-env-utils/dynmapRenderdataOutput/` (gitignored). It expands every blockstate variant, resolves its models and leaves out the faces Dynmap would reject, including the ones its own face check rejects by mistake, so the server log stays quiet. Run it with a 4 GB heap (IntelliJ: **Generate Dynmap Renderdata**). Details in `dev-env-utils/docs/DynmapRenderdataTool.md` |
 
 !!! danger "Bounding Box Extraction rewrites the whole repo"
 
@@ -90,7 +91,17 @@ In `dev-env-utils/scripts/`, run directly. Pillow required for the image ones.
 ```
 /csm renderpass <list|skip|draw|reset> [pass]
 /csm displaylists
+/csm memstats [dump|variants]
+/csm chunkbuffers [trim]
+/csmclient chunkbuffers [trim]
+/csmclient performance [high|medium|low|custom]
 ```
+
+Every command is described in [Commands](../getting-started/commands.md). `memstats` reports what
+each block costs in memory, `chunkbuffers` the direct memory held by Minecraft's chunk builders,
+and `/csmclient performance` the [performance mode](../getting-started/performance-and-graphics.md#performance-mode),
+which also sets how far renderers draw. A renderer's distance and optional effects come from
+`CsmPerformance`; see "Rules for render code" in `assets/docs/PERFORMANCE_AND_SECURITY.md`.
 
 `renderpass` turns an individual render pass off mid-session. Attributing **inside** a renderer this
 way, rather than by deleting blocks, is what finds the real target — on the crosswalk, the pass
