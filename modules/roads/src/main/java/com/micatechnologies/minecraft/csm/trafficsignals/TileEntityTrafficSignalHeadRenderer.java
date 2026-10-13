@@ -1776,6 +1776,37 @@ public class TileEntityTrafficSignalHeadRenderer extends
     return false;
   }
 
+  /**
+   * How big the mount hardware at one end of the head is drawn, relative to a 12-inch head's: the
+   * size of the section at that end over twelve. A 100 mm repeater's bracket is a third the size
+   * of a 300 mm head's, as the real castings are; at full size it dwarfed the head it held.
+   */
+  private static float mountScaleFor(int[] sectionSizes, int section) {
+    int size = section >= 0 && section < sectionSizes.length ? sectionSizes[section] : 12;
+    return Math.min(1.0f, size / 12.0f);
+  }
+
+  /**
+   * Where the bracket at one end bolts on, in model z before the push-back: the same setback,
+   * scaled, from the rear of that end's own housing. A smaller housing is scaled about its door
+   * (z = {@link TrafficSignalVertexData#BODY_FACE_Z}), so its rear is nearer the front than a
+   * 12-inch one's; anchored at the 12-inch depth the bracket stood behind it, clear of the
+   * housing. A head with any PV section keeps {@link #bodyRearAnchorZ}, which already follows the
+   * PV box and its couplings.
+   */
+  private static float mountAnchorZFor(TrafficSignalSectionInfo[] sectionInfos,
+      int[] sectionSizes, int section, float headAnchorZ) {
+    for (TrafficSignalSectionInfo info : sectionInfos) {
+      if (info.getBodyStyle() == TrafficSignalBodyStyle.PV) {
+        return headAnchorZ;
+      }
+    }
+    float scale = mountScaleFor(sectionSizes, section);
+    float rear = TrafficSignalVertexData.BODY_FACE_Z
+        + (16.0f - TrafficSignalVertexData.BODY_FACE_Z) * scale;
+    return rear - MOUNT_SETBACK_FROM_REAR * scale;
+  }
+
   private static boolean allSectionsPv(TrafficSignalSectionInfo[] sectionInfos) {
     for (TrafficSignalSectionInfo info : sectionInfos) {
       if (info.getBodyStyle() != TrafficSignalBodyStyle.PV) {
@@ -1981,8 +2012,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // A head with another head stacked directly on top of it hangs from that one, not from
       // the arm — the pair shares a hanger, the same way the other types share a bracket.
       if (!suppressHighEnd) {
-        renderOverheadHanger(topY, color, zPushBack, skyLight, blockLight, bodyRearAnchorZ,
-            highInset);
+        renderOverheadHanger(topY, color, zPushBack, skyLight, blockLight,
+            mountAnchorZFor(styles, sectionSizes, topSection, bodyRearAnchorZ), highInset,
+            mountScaleFor(sectionSizes, topSection));
       }
       return;
     }
@@ -2021,12 +2053,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // head where the housing's depth changes nothing.
     float rearReachBlocks = housingEntersBlockBehind(styles, sectionSizes) ? 2.0f : 1.0f;
 
+    // Each end's bracket is sized to, and bolted onto, the section at that end.
+    int highSection = horizontal ? rightSection : topSection;
+    int lowSection = horizontal ? leftSection : bottomSection;
+    float highScale = mountScaleFor(sectionSizes, highSection);
+    float lowScale = mountScaleFor(sectionSizes, lowSection);
+    float highAnchor = mountAnchorZFor(styles, sectionSizes, highSection, bodyRearAnchorZ);
+    float lowAnchor = mountAnchorZFor(styles, sectionSizes, lowSection, bodyRearAnchorZ);
     if (horizontal) {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset, rearReachBlocks));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset, rearReachBlocks));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(rightX, 6.0f, true,  true,  poleLeg, mountTiltAngle, highAnchor, highInset, rearReachBlocks, highScale));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(leftX,  6.0f, true,  false, poleLeg, mountTiltAngle, lowAnchor, lowInset, rearReachBlocks, lowScale));
     } else {
-      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle, bodyRearAnchorZ, highInset, rearReachBlocks));
-      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle, bodyRearAnchorZ, lowInset, rearReachBlocks));
+      if (!suppressHighEnd) brackets.add(new BracketSpec(8.0f, topY,    false, true,  poleLeg, mountTiltAngle, highAnchor, highInset, rearReachBlocks, highScale));
+      if (!suppressLowEnd)  brackets.add(new BracketSpec(8.0f, bottomY, false, false, poleLeg, mountTiltAngle, lowAnchor, lowInset, rearReachBlocks, lowScale));
     }
 
     if (brackets.isEmpty()) return;
@@ -2090,18 +2129,19 @@ public class TileEntityTrafficSignalHeadRenderer extends
    * @param color  mount hardware colour
    */
   private void renderOverheadHanger(float topY, TrafficSignalBodyColor color, float zPushBack,
-      int skyLight, int blockLight, float bodyRearAnchorZ, float stubInset) {
+      int skyLight, int blockLight, float bodyRearAnchorZ, float stubInset, float scale) {
     // First block boundary strictly above the body. Math.floor rather than Math.ceil so a body
     // that happens to end exactly on a boundary still gets a post rather than a zero-length one.
     float reachY = ((float) Math.floor(topY / 16.0f) + 1.0f) * 16.0f + HANGER_OVERSHOOT;
 
-    float half = HANGER_SIZE / 2.0f;
+    // Sized to the top section, like the brackets: a small head hangs from a small hanger.
+    float half = HANGER_SIZE * scale / 2.0f;
     // The cap is drawn a little PROUD of the post on every side they share, and the post starts
     // inside the cap rather than on top of it, so the two never put a face in the same plane.
     // Flush would z-fight along all four of them.
-    float capHalf = half + 0.35f;
-    float capTop = topY + HANGER_CAP_HEIGHT;
-    float postBottom = topY + HANGER_CAP_HEIGHT * 0.3f;
+    float capHalf = half + 0.35f * scale;
+    float capTop = topY + HANGER_CAP_HEIGHT * scale;
+    float postBottom = topY + HANGER_CAP_HEIGHT * scale * 0.3f;
 
     // Everything here is drawn through the same zPushBack offset as the body, which is what
     // keeps the cap sitting on the housing when a small-lens head is pushed back. The POST must
@@ -2116,7 +2156,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // The cap sinks into the housing by the stub inset for the same reason the brackets do: a
     // bubbled seam has fallen away to almost nothing where the cap's rear half would rest.
     boxes.add(new RenderHelper.Box(
-        new float[]{BLOCK_CENTRE - capHalf, topY - 0.6f - stubInset, postZ - capHalf},
+        new float[]{BLOCK_CENTRE - capHalf, topY - 0.6f * scale - stubInset, postZ - capHalf},
         new float[]{BLOCK_CENTRE + capHalf, capTop, bodyRearAnchorZ + capHalf}));
     // Post: up the centre axis from inside the cap to the boundary above.
     boxes.add(new RenderHelper.Box(
@@ -2163,6 +2203,9 @@ public class TileEntityTrafficSignalHeadRenderer extends
     // Elbow centre in model space — pivot for the arm's tilt rotation.
     final float elbowX, elbowY, elbowZ;
 
+    // The hardware's size relative to a 12-inch head's (see mountScaleFor).
+    private final float scale;
+
     // Tilt axis vector, normalised. Passed to glRotatef as the axis arguments. Computed
     // per bracket so the arm rotates from pure pole-axis direction onto the direction from
     // elbow → neighbour block centre (i.e., aims the arm at the pole's block).
@@ -2176,10 +2219,13 @@ public class TileEntityTrafficSignalHeadRenderer extends
      *                  instead of starting in the air behind it. Zero for a flat-topped housing.
      * @param rearReachBlocks how many blocks behind the head the pole of a REAR mount stands:
      *                  one, or two when a PV housing occupies the first block behind.
+     * @param scale     the hardware's size relative to a 12-inch head's: the stub, elbow and
+     *                  arm sections and the stub's length all scale by it.
      */
     BracketSpec(float bodyCenterX, float bodyCenterY, boolean horizontalSignal,
         boolean isHighEnd, PoleLeg poleLeg, float tiltAngleDeg, float bodyRearAnchorZ,
-        float stubInset, float rearReachBlocks) {
+        float stubInset, float rearReachBlocks, float scale) {
+      this.scale = scale;
       this.stubSign = isHighEnd ? 1f : -1f;
       if (horizontalSignal) {
         this.crossAxisIdx1 = 1;  // Y
@@ -2195,7 +2241,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
       this.housingEdge = nominalEdge - stubSign * stubInset;
       this.crossCenter1 = horizontalSignal ? 6.0f : 8.0f;
       this.crossCenter2 = bodyRearAnchorZ;
-      this.stubEnd = nominalEdge + stubSign * STUB_LENGTH;
+      this.stubEnd = nominalEdge + stubSign * STUB_LENGTH * scale;
 
       // Pole-leg direction → axis + sign.
       switch (poleLeg) {
@@ -2309,7 +2355,7 @@ public class TileEntityTrafficSignalHeadRenderer extends
         float worldTubeAngleRad = (float) Math.acos(cosWorldTubeAngle);
         float tanWorld = (float) Math.tan(worldTubeAngleRad);
         if (tanWorld > 3f) tanWorld = 3f;  // cap to avoid degenerate shrinks near 90°
-        unshrunkTubeLength = distance - (TUBE_SIZE / 2f) * tanWorld;
+        unshrunkTubeLength = distance - (TUBE_SIZE * scale / 2f) * tanWorld;
       }
       this.tubeLength = Math.max(0.5f, unshrunkTubeLength);
 
@@ -2343,10 +2389,11 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // Stub — square cross-section running from housingEdge to stubEnd.
       float[] stubFrom = new float[3];
       float[] stubTo = new float[3];
-      stubFrom[crossAxisIdx1] = crossCenter1 - STUB_SIZE / 2f;
-      stubTo[crossAxisIdx1]   = crossCenter1 + STUB_SIZE / 2f;
-      stubFrom[crossAxisIdx2] = crossCenter2 - STUB_SIZE / 2f;
-      stubTo[crossAxisIdx2]   = crossCenter2 + STUB_SIZE / 2f;
+      float stubHalf = STUB_SIZE * scale / 2f;
+      stubFrom[crossAxisIdx1] = crossCenter1 - stubHalf;
+      stubTo[crossAxisIdx1]   = crossCenter1 + stubHalf;
+      stubFrom[crossAxisIdx2] = crossCenter2 - stubHalf;
+      stubTo[crossAxisIdx2]   = crossCenter2 + stubHalf;
       stubFrom[stubAxisIdx]   = Math.min(housingEdge, stubEnd);
       stubTo[stubAxisIdx]     = Math.max(housingEdge, stubEnd);
       boxes.add(new RenderHelper.Box(stubFrom, stubTo));
@@ -2354,13 +2401,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
       // Elbow — chunkier cube centred on the joint.
       float[] elbowFrom = new float[3];
       float[] elbowTo = new float[3];
-      elbowFrom[crossAxisIdx1] = crossCenter1 - ELBOW_SIZE / 2f;
-      elbowTo[crossAxisIdx1]   = crossCenter1 + ELBOW_SIZE / 2f;
-      elbowFrom[crossAxisIdx2] = crossCenter2 - ELBOW_SIZE / 2f;
-      elbowTo[crossAxisIdx2]   = crossCenter2 + ELBOW_SIZE / 2f;
+      float elbowHalf = ELBOW_SIZE * scale / 2f;
+      elbowFrom[crossAxisIdx1] = crossCenter1 - elbowHalf;
+      elbowTo[crossAxisIdx1]   = crossCenter1 + elbowHalf;
+      elbowFrom[crossAxisIdx2] = crossCenter2 - elbowHalf;
+      elbowTo[crossAxisIdx2]   = crossCenter2 + elbowHalf;
       float elbowCoord = stubEnd;
-      elbowFrom[stubAxisIdx] = elbowCoord - ELBOW_SIZE / 2f;
-      elbowTo[stubAxisIdx]   = elbowCoord + ELBOW_SIZE / 2f;
+      elbowFrom[stubAxisIdx] = elbowCoord - elbowHalf;
+      elbowTo[stubAxisIdx]   = elbowCoord + elbowHalf;
       boxes.add(new RenderHelper.Box(elbowFrom, elbowTo));
     }
 
@@ -2384,8 +2432,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
         } else {
           c = crossCenter2;
         }
-        tubeFrom[axis] = c - TUBE_SIZE / 2f;
-        tubeTo[axis]   = c + TUBE_SIZE / 2f;
+        tubeFrom[axis] = c - TUBE_SIZE * scale / 2f;
+        tubeTo[axis]   = c + TUBE_SIZE * scale / 2f;
       }
       // Anchor on the tube axis at the elbow and extend in tubeSign direction.
       float tubeAnchor;
