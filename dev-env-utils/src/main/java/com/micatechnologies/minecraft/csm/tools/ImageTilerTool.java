@@ -101,7 +101,12 @@ public class ImageTilerTool {
       "euro_arrow_red_off",
       "euro_arrow_green_on",
       "euro_arrow_yellow_on",
-      "euro_arrow_red_on"
+      "euro_arrow_red_on",
+      // 76-79: European pedestrian figures, masked (gen_euro_lenses.py)
+      "euro_ped_standing_off",
+      "euro_ped_standing_on",
+      "euro_ped_walking_off",
+      "euro_ped_walking_on"
   };
 
   public static void main(String[] args) {

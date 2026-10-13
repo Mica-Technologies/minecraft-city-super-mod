@@ -15,7 +15,14 @@ public enum TrafficSignalBulbType implements IStringSerializable {
   TRANSIT_LEFT("transit_left", "Transit Left"),
   TRANSIT("transit", "Transit"),
   TRANSIT_RIGHT("transit_right", "Transit Right"),
-  AHEAD("ahead", "Ahead");
+  AHEAD("ahead", "Ahead"),
+  /**
+   * The European pedestrian lens's standing figure (red), masked like an arrow. Appended, with
+   * {@link #PED_WALKING}, so the ordinals stored in existing worlds keep their meaning.
+   */
+  PED_STANDING("ped_standing", "Pedestrian (Standing)"),
+  /** The European pedestrian lens's walking figure (green), masked like an arrow. */
+  PED_WALKING("ped_walking", "Pedestrian (Walking)");
 
   // Instance fields
   private final String name;          // The identifier used for serialization

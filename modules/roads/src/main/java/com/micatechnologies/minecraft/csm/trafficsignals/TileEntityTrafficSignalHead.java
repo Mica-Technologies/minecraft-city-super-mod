@@ -1086,7 +1086,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       // overrides the normal mapping with a per-section alternating pattern; otherwise
       // fall through to the block's color mapping or the default mapping.
       boolean lit;
-      boolean flashing = sectionInfo.isBulbFlashing();
+      boolean flashing = sectionInfo.isBulbFlashing()
+          || (useBlockMapping
+              && signalBlock.shouldFlashBulb(currentBulbColor, sectionInfo.getBulbColor()));
       if (sectionInfo.isBimodal()) {
         // Bimodal sections switch appearance with the FYA flag: flashing yellow while the
         // permissive arrow is commanded, otherwise their base color, solid.

@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignalHead;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
 import java.util.function.Supplier;
@@ -46,6 +47,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   final boolean hasSignalYOffset;
   final boolean lightAllOnRedYellow;
   final boolean lightAllOnYellow;
+  @Nullable final PedestrianClearance pedestrianClearance;
   @Nullable final TrafficSignalBulbStyle enforcedBulbStyle;
   final boolean addon;
   final boolean allowsHorizontalFlip;
@@ -71,6 +73,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     this.hasSignalYOffset = builder.hasSignalYOffset;
     this.lightAllOnRedYellow = builder.lightAllOnRedYellow;
     this.lightAllOnYellow = builder.lightAllOnYellow;
+    this.pedestrianClearance = builder.pedestrianClearance;
     this.enforcedBulbStyle = builder.enforcedBulbStyle;
     this.addon = builder.addon;
     // Static-horizontal and add-on signals don't offer the flip toggle: the former are
@@ -83,6 +86,39 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   private static Material initRegistryName(Builder builder) {
     PENDING_REGISTRY_NAME.set(builder.registryName);
     return Material.ROCK;
+  }
+
+  /**
+   * What a red/green pedestrian head shows while the controller commands the pedestrian
+   * clearance (yellow, which the head has no lens for).
+   */
+  public enum PedestrianClearance {
+    /** The red figure, steady: the clearance is already "don't start crossing". */
+    STEADY_RED(TrafficSignalBulbColor.RED),
+    /** The green figure, flashing, until the red comes on. */
+    FLASHING_GREEN(TrafficSignalBulbColor.GREEN);
+
+    final TrafficSignalBulbColor lit;
+
+    PedestrianClearance(TrafficSignalBulbColor lit) {
+      this.lit = lit;
+    }
+
+    /** Whether the controller's colour state is the pedestrian clearance (yellow, 1). */
+    public boolean isClearance(int colorState) {
+      return colorState == 1;
+    }
+
+    /** Whether a lens of this colour is lit through the clearance. */
+    public boolean lights(TrafficSignalBulbColor bulbColor) {
+      return bulbColor == lit;
+    }
+
+    /** Whether a lit lens of this colour flashes in the given colour state. */
+    public boolean flashes(int colorState, TrafficSignalBulbColor bulbColor) {
+      return this == FLASHING_GREEN && isClearance(colorState)
+          && bulbColor == TrafficSignalBulbColor.GREEN;
+    }
   }
 
   @Override
@@ -132,6 +168,19 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
   @Override
   public float getSignalYOffset() {
     return hasSignalYOffset ? signalYOffset : super.getSignalYOffset();
+  }
+
+  @Override
+  public boolean shouldLightBulb(int colorState, TrafficSignalBulbColor bulbColor) {
+    if (pedestrianClearance != null && pedestrianClearance.isClearance(colorState)) {
+      return pedestrianClearance.lights(bulbColor);
+    }
+    return super.shouldLightBulb(colorState, bulbColor);
+  }
+
+  @Override
+  public boolean shouldFlashBulb(int colorState, TrafficSignalBulbColor bulbColor) {
+    return pedestrianClearance != null && pedestrianClearance.flashes(colorState, bulbColor);
   }
 
   @Override
@@ -404,6 +453,7 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
     boolean hasSignalYOffset = false;
     boolean lightAllOnRedYellow = false;
     boolean lightAllOnYellow = false;
+    PedestrianClearance pedestrianClearance = null;
     TrafficSignalBulbStyle enforcedBulbStyle = null;
     boolean addon = false;
     boolean allowsHorizontalFlip = true;
@@ -458,6 +508,17 @@ public class BlockControllableSignal extends AbstractBlockControllableSignalHead
      */
     public Builder lightAllOnYellow(boolean lightAll) {
       this.lightAllOnYellow = lightAll;
+      return this;
+    }
+
+    /**
+     * Makes this a two-lens red/green pedestrian head, and says what it shows through the
+     * pedestrian clearance. The controller commands that clearance as yellow, which such a head
+     * has no lens for: in most of Europe the red figure comes on and stays on, in some places the
+     * green figure flashes until the red comes on.
+     */
+    public Builder pedestrianClearance(PedestrianClearance clearance) {
+      this.pedestrianClearance = clearance;
       return this;
     }
 

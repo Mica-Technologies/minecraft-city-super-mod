@@ -191,6 +191,9 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL1288_INCH);
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL2_SECTION);
+    initTabBlock(TrafficSignalBlocks.EURO_PEDESTRIAN_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.EURO_PEDESTRIAN_SIGNAL_FLASHING_GREEN);
+    initTabBlock(TrafficSignalBlocks.EURO_PEDESTRIAN_SIGNAL_REPEATER);
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL8812_INCH);
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL8_INCH);
     initTabBlock(TrafficSignalBlocks.VERTICAL_SOLID_SIGNAL_NO_RED_VISOR);

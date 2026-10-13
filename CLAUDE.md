@@ -647,8 +647,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   is drawn at the base's size (the plate's). Re-run it whenever a base face changes; `--check`
   fails on drift
 - `gen_euro_lenses.py` -- the European signal lens tiles (diffused ball and masked arrow, off and
-  on, in green, amber and red) that `ImageTilerTool` appends to the lens atlas at cells 64-75;
-  `--check` fails on drift, `--sheet` writes a contact sheet
+  on, in green, amber and red, and the masked standing and walking pedestrian figures) that
+  `ImageTilerTool` appends to the lens atlas at cells 64-79, plus the pedestrian heads' opaque
+  inventory lenses; `--check` fails on drift, `--sheet` writes a contact sheet
 - `gen_pv_lens_atlas.py` -- the programmable-visibility lens atlas (`lights/atlas_pv.png`) from the
   light atlas: an edge-preserving smoothing that removes the LED dot texture but keeps legends and
   the lens rim crisp and never pushes colour past the disc's alpha; `--check` fails on drift

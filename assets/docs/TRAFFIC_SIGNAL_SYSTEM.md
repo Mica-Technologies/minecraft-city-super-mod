@@ -1190,6 +1190,30 @@ Rules the phase builders follow so the monitor never trips:
   This still lets that first post-reload phase visually snap heads straight to red without a
   yellow (pre-existing behavior, unchanged) — only the false fault is suppressed.
 
+## European Pedestrian Heads
+
+Three ordinary signal heads (`BlockControllableSignal`) that report `PEDESTRIAN`, so the link tool
+puts them in a circuit's pedestrian list like a crosswalk signal: `controllableeuropedsignal`
+(200 mm), `controllableeuropedsignalflashinggreen` (200 mm) and `controllableeuropedsignal4inch`
+(the 100 mm repeater mounted low on the pole). Each is two sections, a standing red figure over a
+walking green one (`TrafficSignalBulbType.PED_STANDING` / `PED_WALKING`, appended; atlas cells
+76-79, one drawing each whatever the section's style or colour, from `gen_euro_lenses.py`), in the
+European housing, hood and lens. Linked as pedestrian signals they take walk as green, don't walk
+as red, and the pedestrian clearance as **yellow**, which a red/green head has no lens for.
+`BlockControllableSignal.PedestrianClearance` decides what it shows instead:
+
+| Clearance | Shown | Where |
+|---|---|---|
+| `STEADY_RED` | the red figure, steady | most of Europe |
+| `FLASHING_GREEN` | the green figure, flashing until the red comes on | some countries |
+
+The lighting goes through `shouldLightBulb`, and the flashing through a new head hook,
+`AbstractBlockControllableSignalHead.shouldFlashBulb(colorState, bulbColor)` (default false),
+which the head tile entity ORs with the section's own flashing flag. They are dark in flash mode
+(`doesFlash` false). Their inventory icons use opaque copies of the lit lenses
+(`shared_textures/euro_ped_*_item`), since the two-section item model paints its body from a corner
+of the lens texture.
+
 ## Red+Amber Before Green
 
 The European indication that a red is about to change: red and amber together for a moment,
