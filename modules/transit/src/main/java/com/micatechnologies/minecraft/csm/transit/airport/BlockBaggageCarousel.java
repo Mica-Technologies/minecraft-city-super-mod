@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.transit.airport;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -28,7 +29,7 @@ import net.minecraft.world.IBlockAccess;
  *
  * @since 2026.9
  */
-public class BlockBaggageCarousel extends AbstractBlock {
+public class BlockBaggageCarousel extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   public static final PropertyBool NORTH = PropertyBool.create("north");
   public static final PropertyBool EAST = PropertyBool.create("east");

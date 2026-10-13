@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.furniture.outdoor;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -37,7 +38,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockBounceCastlePart extends AbstractBlock implements IBouncy {
+public class BlockBounceCastlePart extends AbstractBlock
+    implements ICsmTrafficPoleBystander, IBouncy {
 
   /** Its place round the root: 0 to 7 on the floor, 8 to 15 above ({@link BounceCastleLayout}). */
   public static final PropertyInteger INDEX = PropertyInteger.create("index", 0,

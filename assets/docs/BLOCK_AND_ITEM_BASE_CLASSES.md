@@ -203,9 +203,22 @@ the empty marker `ICsmTrafficPoleIgnored`.
 The marker is matched by assignability, exactly as the class entries in `IGNORE_BLOCK` are, so
 implementing it on an abstract base (`AbstractBlockControllableSignalHead`,
 `AbstractBlockControllableCrosswalkSignalNew`) covers every subclass. `IGNORE_BLOCK` itself now
-holds only the marker plus the vanilla blocks (snow, plants, rails, wires, torches, carpets),
-which cannot implement a CSM interface -- that is what keeps `codeutils` free of any subsystem
-import.
+holds only the marker plus the vanilla blocks (snow, plants, rails, wires, torches, carpets, and
+things that stand beside a pole rather than on it: flower pots, signs, banners, heads, beds,
+chests, cakes, cauldrons, brewing stands, anvils, ladders, buttons, levers, pressure plates,
+tripwire), which cannot implement a CSM interface -- that is what keeps `codeutils` free of any
+subsystem import. Vanilla building materials (logs, walls, fences, glass) stay mountable: a pole
+beside a wall is mounted to it.
+
+The second reason to opt out is that a block merely stands beside a pole, which has no reason to
+bolt onto it: trees and their leaves, plantings, park amenities, furniture, novelties, the arcade
+and game room, produce crates, transit furniture, construction site props. These implement
+`ICsmTrafficPoleBystander`, a sub-interface of the marker, usually on a family's base class
+(`BlockResidentialFurniture`, `BlockParkProp`, `BlockPlatformFixture`). The flanks treat the two
+alike. The pole ends do not: the concrete and pedestal poles run their end flush into
+`ICsmTrafficPoleIgnored` hardware, but treat a bystander as they treat vanilla leaves or carpet,
+so the end keeps its cap. A new free-standing prop should implement `ICsmTrafficPoleBystander`;
+a new block that draws its own pole hardware, `ICsmTrafficPoleIgnored`.
 
 `ICsmTrafficPoleStateIgnored` is the state-aware form, for a block whose mounting hardware is
 part of its configuration rather than its type:

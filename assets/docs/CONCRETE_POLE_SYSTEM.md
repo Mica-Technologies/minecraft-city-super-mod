@@ -118,7 +118,8 @@ is 1,536 states.
 
 1. another `BlockTrafficPoleConcrete`: `NONE`
 2. an `ICsmPostTopFixture`: `TENON`
-3. air, anything replaceable, or vanilla clutter: `CAP`
+3. air, anything replaceable, vanilla clutter or an `ICsmTrafficPoleBystander` (a tree, a
+   bench, a crate): `CAP`
 4. vertical, pointing down, and the block below is neither a pole nor `ICsmTrafficPoleIgnored`:
    `BASE`
 5. otherwise `NONE`

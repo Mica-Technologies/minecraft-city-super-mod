@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.parks.landscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +31,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockParkJoining extends AbstractBlock {
+public class BlockParkJoining extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   public static final PropertyBool NORTH = PropertyBool.create("north");
   public static final PropertyBool EAST = PropertyBool.create("east");

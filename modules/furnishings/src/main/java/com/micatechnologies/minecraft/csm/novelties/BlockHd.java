@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -30,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockHd extends AbstractBlockRotatableNSEWUD {
+public class BlockHd extends AbstractBlockRotatableNSEWUD implements ICsmTrafficPoleBystander {
 
   private static final long DRYER_DURATION_MS = 16000;
 

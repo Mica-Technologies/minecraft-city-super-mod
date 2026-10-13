@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.novelties;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -34,7 +35,7 @@ import net.minecraft.world.World;
  * @since 2026.8
  */
 public class BlockArcadeMultiGame extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider {
+    implements ICsmTrafficPoleBystander, ICsmTileEntityProvider {
 
   /**
    * The GUI ID used to open the arcade screen. Distinct from every other GUI in

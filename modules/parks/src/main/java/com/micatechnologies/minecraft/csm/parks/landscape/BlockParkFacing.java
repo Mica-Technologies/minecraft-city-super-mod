@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.parks.landscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPoleFitted;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,7 +30,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockParkFacing extends AbstractBlockRotatableNSEW {
+public class BlockParkFacing extends AbstractBlockRotatableNSEW
+    implements ICsmTrafficPoleBystander {
 
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
 

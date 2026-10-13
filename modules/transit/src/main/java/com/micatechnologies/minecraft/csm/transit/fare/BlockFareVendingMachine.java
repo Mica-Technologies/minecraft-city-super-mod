@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.transit.fare;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -30,7 +31,8 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.5
  */
-public class BlockFareVendingMachine extends AbstractBlockRotatableNSEWUD {
+public class BlockFareVendingMachine extends AbstractBlockRotatableNSEWUD
+    implements ICsmTrafficPoleBystander {
 
   /** GUI handler ID used in {@link com.micatechnologies.minecraft.csm.CsmGuiHandler}. */
   public static final int GUI_ID = 16;

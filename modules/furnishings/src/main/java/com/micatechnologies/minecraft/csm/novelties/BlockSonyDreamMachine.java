@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -23,7 +24,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockSonyDreamMachine extends AbstractBlockRotatableNSEW {
+public class BlockSonyDreamMachine extends AbstractBlockRotatableNSEW
+    implements ICsmTrafficPoleBystander {
 
   private static final AxisAlignedBB BOUNDING_BOX =
       new AxisAlignedBB(2.5 / 16, 0, 4 / 16.0, 13.5 / 16, 11 / 16.0, 12.5 / 16);

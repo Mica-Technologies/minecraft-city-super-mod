@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.parks.amenities;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -35,7 +36,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockParkBench extends AbstractBlockRotatableNSEW {
+public class BlockParkBench extends AbstractBlockRotatableNSEW implements ICsmTrafficPoleBystander {
 
   /** The run continues to the sitter's left. */
   public static final PropertyBool LEFT = PropertyBool.create("left");

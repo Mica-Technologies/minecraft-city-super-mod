@@ -16,6 +16,10 @@ package com.micatechnologies.minecraft.csm.codeutils;
  * how the signal head and new-style crosswalk signal families are covered. The remaining entries
  * in {@code IGNORE_BLOCK} are vanilla blocks, which cannot implement a CSM interface.
  *
+ * <p>Blocks that are ignored only because they stand beside a pole -- trees, furniture, props --
+ * implement the sub-interface {@link ICsmTrafficPoleBystander} instead, which the pole family's
+ * end rules tell apart from hardware.
+ *
  * <p>The pole additionally honours the user's {@code trafficPoleIgnoreBlocks} config list and
  * {@link ICsmTrafficPoleStateIgnored}, for blocks that are only ignored in some of their states.
  *

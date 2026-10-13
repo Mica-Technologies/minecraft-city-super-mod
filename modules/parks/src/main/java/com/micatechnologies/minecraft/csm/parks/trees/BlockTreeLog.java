@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.parks.trees;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,7 +46,7 @@ import net.minecraftforge.common.property.IUnlistedProperty;
  *
  * @since 2026.9
  */
-public class BlockTreeLog extends AbstractBlock {
+public class BlockTreeLog extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   /** The axis the log was placed along (meta 0-2). */
   public static final PropertyEnum<EnumFacing.Axis> AXIS = PropertyEnum.create("axis",

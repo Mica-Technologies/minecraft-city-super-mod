@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.furniture.office;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockCubiclePanel extends AbstractBlock {
+public class BlockCubiclePanel extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   /** What a side of the panel does. */
   public enum Side implements IStringSerializable {

@@ -4,16 +4,33 @@ import com.micatechnologies.minecraft.csm.CsmConfig;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockBanner;
+import net.minecraft.block.BlockBasePressurePlate;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockBrewingStand;
 import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockButton;
 import net.minecraft.block.BlockCactus;
+import net.minecraft.block.BlockCake;
 import net.minecraft.block.BlockCarpet;
+import net.minecraft.block.BlockCauldron;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockFlowerPot;
+import net.minecraft.block.BlockLadder;
 import net.minecraft.block.BlockLeaves;
+import net.minecraft.block.BlockLever;
 import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.BlockSnowBlock;
 import net.minecraft.block.BlockTorch;
+import net.minecraft.block.BlockTripWire;
+import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.block.BlockVine;
 import net.minecraft.block.BlockWeb;
 import net.minecraft.block.SoundType;
@@ -111,19 +128,29 @@ public abstract class AbstractBlockTrafficPole extends AbstractBlockRotatableNSE
    * <p>Every CSM block in this list is covered by the single {@link ICsmTrafficPoleIgnored} entry:
    * a block that draws its own mounting hardware -- crosswalk signal mounts, signal heads, sensor
    * housings, mast arm curves, beacons -- implements that marker itself rather than being named
-   * here, which is what keeps this class free of any subsystem import.
+   * here, which is what keeps this class free of any subsystem import. So does anything that
+   * merely stands beside a pole, which a pole has no reason to bolt onto: trees, plantings, park
+   * amenities, furniture, props, through the sub-interface {@link ICsmTrafficPoleBystander}.
    *
-   * <p>The rest are vanilla natural/decorative blocks whose geometry would not align with a pole's
-   * mounting visuals (snow layers, plants, rails, wires, torches, carpets, etc.). They cannot
-   * implement a CSM interface, so they stay listed. Subclass relationships are honored: for
-   * example, {@link BlockBush} covers flowers, saplings, tall grass, dead bushes, mushrooms, lily
-   * pads, double plants, and crops.
+   * <p>The rest are vanilla blocks of the same two kinds: natural blocks whose geometry would not
+   * align with a pole's mounting visuals (snow layers, plants, rails, wires, torches, carpets), and
+   * things that stand or hang beside a pole rather than on it (flower pots, signs, banners, heads,
+   * beds, chests, cakes, cauldrons, brewing stands, anvils, ladders, buttons, levers, pressure
+   * plates, tripwire). They cannot implement a CSM interface, so they stay listed. Building
+   * materials -- logs, walls, fences, glass -- are deliberately absent: a pole beside a wall is
+   * mounted to it. Subclass relationships are honored: for example, {@link BlockBush} covers
+   * flowers, saplings, tall grass, dead bushes, mushrooms, lily pads, double plants, and crops.
    */
   public static final Class<?>[] IGNORE_BLOCK =
       {ICsmTrafficPoleIgnored.class,
           BlockSnow.class, BlockSnowBlock.class, BlockBush.class, BlockLeaves.class,
           BlockVine.class, BlockCarpet.class, BlockTorch.class, BlockRedstoneWire.class,
-          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class};
+          BlockRailBase.class, BlockCactus.class, BlockReed.class, BlockWeb.class,
+          BlockFlowerPot.class, BlockSign.class, BlockBanner.class, BlockSkull.class,
+          BlockBed.class, BlockChest.class, BlockEnderChest.class, BlockCake.class,
+          BlockCauldron.class, BlockBrewingStand.class, BlockAnvil.class, BlockLadder.class,
+          BlockButton.class, BlockLever.class, BlockBasePressurePlate.class,
+          BlockTripWireHook.class, BlockTripWire.class};
 
 
   /**

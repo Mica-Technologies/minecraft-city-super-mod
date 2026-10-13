@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.parks.amenities;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -29,7 +30,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockSprinkler extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockSprinkler extends AbstractBlock
+    implements ICsmTrafficPoleBystander, ICsmTileEntityProvider {
 
   public static final PropertyBool POWERED = PropertyBool.create("powered");
 

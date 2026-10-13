@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.parks.trees;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -31,7 +32,8 @@ import net.minecraftforge.common.property.IUnlistedProperty;
  *
  * @since 2026.9
  */
-public class BlockTreeLeaves extends AbstractBlock implements ICsmTreeLeaves {
+public class BlockTreeLeaves extends AbstractBlock
+    implements ICsmTrafficPoleBystander, ICsmTreeLeaves {
 
   /** {@link TreeLeavesGeometry#key}: open faces and variant, for the client model. */
   public static final IUnlistedProperty<Integer> SHAPE = new IUnlistedProperty<Integer>() {

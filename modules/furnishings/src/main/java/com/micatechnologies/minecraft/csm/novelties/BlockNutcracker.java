@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -18,7 +19,8 @@ import net.minecraft.world.IBlockAccess;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockNutcracker extends AbstractBlockRotatableNSEWUD {
+public class BlockNutcracker extends AbstractBlockRotatableNSEWUD
+    implements ICsmTrafficPoleBystander {
 
   public BlockNutcracker() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

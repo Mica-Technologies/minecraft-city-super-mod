@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -25,7 +26,7 @@ import net.minecraft.world.IBlockAccess;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockSiteProp extends AbstractBlock {
+public class BlockSiteProp extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
 

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.amenities;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -28,7 +29,7 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockWbt extends AbstractBlockRotatableNSEWUD {
+public class BlockWbt extends AbstractBlockRotatableNSEWUD implements ICsmTrafficPoleBystander {
 
   public BlockWbt() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.landscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockParkProp extends AbstractBlock {
+public class BlockParkProp extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   /** What a prop is, which decides everything but its size. */
   public enum Kind {

@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.furniture.residential;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,7 +44,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockSwitchRelay extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockSwitchRelay extends AbstractBlock
+    implements ICsmTrafficPoleBystander, ICsmTileEntityProvider {
 
   /** The way from the block it powers to the relay. */
   public static final PropertyDirection FACING = PropertyDirection.create("facing");
