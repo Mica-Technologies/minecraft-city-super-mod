@@ -361,6 +361,10 @@ parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / T
   beside (`RingRuntime.clearedAlongside` vs the other ring's `serviceSeq`) and never re-enters a
   companion beside that same green — otherwise a companion cleared for a call that then dropped
   went green → yellow → red → green for nobody. The ring waits at the barrier for the next cross.
+  A flagged companion also ends without gapping out (issue #275): with no demand of its own, its
+  only extender is MAX recall, which re-arms the passage timer every tick, and a coordinated phase
+  dual-entered on MAX recall is exempt from max-out, force-off and the coordinated yield too — so
+  once the ring it rode with had finished, nothing ended it and the controller froze in that green.
 - **Pedestrian call on a phase already in green** — served when nothing conflicting is waiting
   (`advanceRing`: the walk is recycled — a real controller does the same for a resting phase);
   with a conflicting call the phase terminates and the latched request recalls it. Before this a
@@ -505,6 +509,13 @@ owes the full interval) plus yellow and red. It ends a coordinated green, with o
 - The exception: outside its own window, it also yields when a waiting conflicting phase's window is
   **about to open** (a lead left at the top of the cycle, after an early return), timed so that
   phase starts at its window start. The time given up was never the coordinated phase's own.
+  When that phase is in the same ring and sits **behind** the coordinated phase in the sequence,
+  only the within-barrier wrap reaches it, and the wrap is closed while another barrier calls —
+  which under coordination is always. So the ring remembers the phase it yielded for
+  (`RingRuntime.yieldedFor`) and may wrap to that one phase, but only while the other ring is
+  still working the barrier; once the other ring is done the barrier crosses instead, or the
+  next barrier's phases would be skipped for a cycle. Wrapping to every committed call looped the
+  barrier's phases (issue #275).
 
 A non-coordinated phase is served at most **once per window**, so a recall phase that gaps out early
 does not re-register a standing call for the rest of its window.

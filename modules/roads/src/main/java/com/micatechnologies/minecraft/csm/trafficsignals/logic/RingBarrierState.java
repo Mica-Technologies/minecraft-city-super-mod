@@ -127,6 +127,10 @@ public class RingBarrierState {
     // phase whose window is about to open: that phase's number, or 0. Latched so the yield still
     // happens when min green or a pedestrian clearance holds the green past the opening point.
     int coordYieldFor = 0;
+    // The phase a coordinated green of this ring last ended for (coordYieldFor at termination),
+    // or 0. The ring may wrap back to that one phase even while another barrier is calling; see
+    // fillIdleRing. Cleared by the next green this ring starts.
+    int yieldedFor = 0;
     // Barrier hold: this ring's green is finished with — everything still calling against it is on
     // another barrier — but it is being held because the other ring is not done with this barrier
     // yet, so terminating would only turn the ring dark. The flag is what the other ring reads to
@@ -793,6 +797,7 @@ public class RingBarrierState {
     ring.condServiceUsed = false;
     ring.clearedAlongside = -1;
     ring.coordYieldFor = 0;
+    ring.yieldedFor = 0;
     ring.barrierWaiting = false;
   }
 
@@ -988,8 +993,15 @@ public class RingBarrierState {
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
         // green). A dual-entry companion follows the same rule: with no conflicting demand it
         // simply holds green alongside whatever the other ring serves on this barrier.
+        //
+        // Except that it need not gap out. While flagged it has no demand of its own (a call
+        // clears the flag above), so the only thing extending it is MAX recall, which re-arms the
+        // passage timer every tick. A coordinated phase dual-entered on MAX recall is also exempt
+        // from max-out, force-off and the coordinated yield, so once the ring it rode with had
+        // finished, nothing could end it and it held green for good (issue #275).
+        boolean gapDone = gapOut || ring.dualEntry;
         boolean terminate = maxOut || forceOff || (coordYieldDue && pedDone)
-            || (!coordHold && minMet && pedDone && gapOut && conflict);
+            || (!coordHold && minMet && pedDone && gapDone && conflict);
 
         // Hold at the barrier. Everything still calling against this green is on ANOTHER barrier,
         // so terminating releases nothing: the barrier cannot cross while the other ring is still
@@ -1025,6 +1037,7 @@ public class RingBarrierState {
             // Its window has not opened yet, so its call is not accepted and the commitment
             // above missed it; without this the idle ring would re-serve the coordinated phase.
             committedCalls[windowOpeningFor] = true;
+            ring.yieldedFor = windowOpeningFor;
           }
           if (forceOff) {
             // Forcing off consumes the window acceptance: the phase's window has closed, so it has
@@ -1133,6 +1146,29 @@ public class RingBarrierState {
         }
       }
     }
+    // The phase this ring's coordinated green just yielded for, when it sits behind that green in
+    // the sequence. The wrap above is closed while another barrier calls, which under
+    // coordination is always, so the yield served nothing: the coordinated green ended early and
+    // the ring sat dark beside the other ring's green (issue #275). Wrap to that one phase only,
+    // and only while the other ring is still working this barrier: once it is done, the barrier
+    // can cross, and wrapping here would hold the next barrier's phases out for another service.
+    // Re-serving every committed call this way looped the barrier's phases.
+    RingRuntime otherRing = ring == ring1 ? ring2 : ring1;
+    if (ring.yieldedFor != 0
+        && ringWorkingBarrier(otherRing, ringNum == 1 ? 2 : 1, plan, called)) {
+      int target = ring.yieldedFor;
+      ring.yieldedFor = 0;
+      for (int idx = 0; idx < seq.length; idx++) {
+        TrafficSignalProgrammedPhase phase = plan.getPhase(seq[idx]);
+        if (seq[idx] == target && phase != null && phase.isActive()
+            && phase.getBarrier() == currentBarrier && target < called.length && called[target]
+            && target != ring1.activePhase && target != ring2.activePhase) {
+          startGreen(ring, phase, now);
+          ring.sequencePos = idx;
+          return;
+        }
+      }
+    }
     // Nothing more to serve on this barrier for this ring: it is parked at the barrier.
   }
 
@@ -1204,6 +1240,7 @@ public class RingBarrierState {
     ring.maxStart = -1L; // NEMA MAX: (re)starts timing at the first conflicting call, not at green
     ring.dualEntry = false; // normal service; fillDualEntry re-flags its own entries afterward
     ring.coordYieldFor = 0;
+    ring.yieldedFor = 0;
     ring.barrierWaiting = false;
   }
 
