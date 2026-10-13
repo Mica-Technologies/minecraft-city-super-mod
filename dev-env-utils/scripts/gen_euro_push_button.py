@@ -264,6 +264,13 @@ def main():
     drift = []
     for path, data in outputs().items():
         old = open(path, 'rb').read() if os.path.exists(path) else None
+        if path.endswith('.json') and old is not None:
+            # git may check text out with CRLF (core.autocrlf): compare without it, and keep the
+            # file's own line endings when rewriting it
+            if old.replace(b'\r\n', b'\n') == data:
+                continue
+            if b'\r\n' in old:
+                data = data.replace(b'\n', b'\r\n')
         if old == data:
             continue
         if check:
