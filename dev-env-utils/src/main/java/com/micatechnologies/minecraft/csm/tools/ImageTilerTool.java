@@ -20,7 +20,13 @@ public class ImageTilerTool {
   private static final String INPUT_EXTENSION = ".png";
 
   private static final int TILE_SIZE = 128;
-  private static final int OUTPUT_SIZE = 1024;
+  private static final int OUTPUT_WIDTH = 1024;
+  // Eight columns by sixteen rows. The first eight rows are the original 8x8 atlas, unchanged,
+  // so every existing cell index keeps its place; the European lenses start at cell 64.
+  private static final int OUTPUT_HEIGHT = 2048;
+
+  /** A name that leaves its cell transparent: spare cells, and 63, the texture map's fallback. */
+  private static final String EMPTY = "";
 
   private static final String[] INPUT_IMAGE_NAMES = {
       "biled_green_off",
@@ -81,7 +87,21 @@ public class ImageTilerTool {
       "dr6_off",
       "dr6_green_on",
       "dr6_yellow_on",
-      "dr6_red_on"
+      "dr6_red_on",
+      EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
+      // 64-75: European lenses (dev-env-utils/scripts/gen_euro_lenses.py)
+      "euro_green_off",
+      "euro_yellow_off",
+      "euro_red_off",
+      "euro_green_on",
+      "euro_yellow_on",
+      "euro_red_on",
+      "euro_arrow_green_off",
+      "euro_arrow_yellow_off",
+      "euro_arrow_red_off",
+      "euro_arrow_green_on",
+      "euro_arrow_yellow_on",
+      "euro_arrow_red_on"
   };
 
   public static void main(String[] args) {
@@ -93,17 +113,22 @@ public class ImageTilerTool {
           AssetFolder inputFolder = AssetFolder.ofAsset(layout, INPUT_FOLDER);
           File outputFile = layout.assetInFolderForWrite(INPUT_FOLDER, OUTPUT_FILE_NAME);
 
-          int tilesPerRow = OUTPUT_SIZE / TILE_SIZE;
-          int totalSlots = tilesPerRow * tilesPerRow;
+          int tilesPerRow = OUTPUT_WIDTH / TILE_SIZE;
+          int rows = OUTPUT_HEIGHT / TILE_SIZE;
+          int totalSlots = tilesPerRow * rows;
 
           if (INPUT_IMAGE_NAMES.length > totalSlots) {
             System.err.println("Error: " + INPUT_IMAGE_NAMES.length + " images exceed atlas capacity of "
-                + totalSlots + " slots (" + tilesPerRow + "x" + tilesPerRow + " at " + TILE_SIZE + "px).");
+                + totalSlots + " slots (" + tilesPerRow + "x" + rows + " at " + TILE_SIZE + "px).");
             return;
           }
 
           BufferedImage[] loadedImages = new BufferedImage[INPUT_IMAGE_NAMES.length];
           for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
+            if (INPUT_IMAGE_NAMES[i].isEmpty()) {
+              loadedImages[i] = createTransparentTile();
+              continue;
+            }
             File imgFile = inputFolder.file(INPUT_IMAGE_NAMES[i] + INPUT_EXTENSION);
             try {
               loadedImages[i] = ImageIO.read(imgFile);
@@ -118,7 +143,8 @@ public class ImageTilerTool {
             }
           }
 
-          BufferedImage outputImage = new BufferedImage(OUTPUT_SIZE, OUTPUT_SIZE, BufferedImage.TYPE_INT_ARGB);
+          BufferedImage outputImage = new BufferedImage(OUTPUT_WIDTH, OUTPUT_HEIGHT,
+              BufferedImage.TYPE_INT_ARGB);
           Graphics2D g2d = outputImage.createGraphics();
 
           for (int i = 0; i < INPUT_IMAGE_NAMES.length; i++) {
@@ -131,8 +157,8 @@ public class ImageTilerTool {
 
           ImageIO.write(outputImage, "png", outputFile);
           System.out.println("Atlas generated: " + outputFile.getAbsolutePath());
-          System.out.println("  " + INPUT_IMAGE_NAMES.length + " tiles in " + tilesPerRow + "x" + tilesPerRow
-              + " grid (" + OUTPUT_SIZE + "x" + OUTPUT_SIZE + "px)");
+          System.out.println("  " + INPUT_IMAGE_NAMES.length + " cells in " + tilesPerRow + "x" + rows
+              + " grid (" + OUTPUT_WIDTH + "x" + OUTPUT_HEIGHT + "px)");
         });
   }
 

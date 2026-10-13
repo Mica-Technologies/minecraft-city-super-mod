@@ -8,7 +8,12 @@ public enum TrafficSignalBulbStyle implements IStringSerializable {
   LED("led", "LED"),
   LED_DOTTED("led_dotted", "LED Dotted"),
   GTX("gtx", "GE GTX"),
-  DR6("dr6", "GE DR6");
+  DR6("dr6", "GE DR6"),
+  /**
+   * The lens of a European LED head: one evenly lit disc behind a diffuser, with arrows lit
+   * through a black mask. Appended so the ordinals stored in existing worlds keep their meaning.
+   */
+  EURO("euro", "European LED");
 
   // Instance fields
   private final String name;          // The identifier used for serialization
