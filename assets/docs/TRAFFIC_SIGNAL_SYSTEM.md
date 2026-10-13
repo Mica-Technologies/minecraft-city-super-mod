@@ -1190,6 +1190,27 @@ Rules the phase builders follow so the monitor never trips:
   This still lets that first post-reload phase visually snap heads straight to red without a
   yellow (pre-existing behavior, unchanged) — only the false fault is suppressed.
 
+## European Vehicle Heads
+
+Preset `BlockControllableSignal`s in the European housing, hood and lens
+(`TrafficSignalBlocks.europeanSections(type)`: red, amber, green of one legend), each mirroring the
+side and layout of its US counterpart, so they link and behave exactly as those do:
+
+| Block | Side | Lenses |
+|---|---|---|
+| `controllableeurosignal` | THROUGH | 3 x 300 mm ball |
+| `controllableeurosignal200` | THROUGH | 3 x 200 mm ball |
+| `controllableeurosignal300200` | THROUGH | 300 mm red, 200 mm amber and green |
+| `controllableeurosignalleft` / `right` / `ahead` | LEFT / RIGHT / THROUGH | 3 x 300 mm masked arrow |
+| `controllableeurosignalbike` | PROTECTED | 3 x 200 mm bicycle (the bike lens, as on US heads) |
+| `controllableeurosignalrepeater` | THROUGH | 3 x 100 mm ball, the low pole-mounted repeater |
+
+Every appearance setting can still be changed per section with the head configuration tool; the
+presets only choose the defaults. The housing ends at the block's back face like the standard one,
+so the existing backplates (black/white is the usual European contrast board) and mounts fit
+without a European family of their own. Inventory icons use the opaque lens textures
+`gen_euro_lenses.py` writes to `shared_textures/euro_*_item`.
+
 ## European Pedestrian Heads
 
 Three ordinary signal heads (`BlockControllableSignal`) that report `PEDESTRIAN`, so the link tool

@@ -2337,6 +2337,103 @@ public final class TrafficSignalBlocks {
           .build();
 
   /**
+   * The three lenses of a European vehicle head, red, amber and green, each of the given legend,
+   * in the European modular housing with its hood and lens.
+   */
+  private static TrafficSignalSectionInfo[] europeanSections(TrafficSignalBulbType type) {
+    TrafficSignalBulbColor[] colors = {TrafficSignalBulbColor.RED, TrafficSignalBulbColor.YELLOW,
+        TrafficSignalBulbColor.GREEN};
+    TrafficSignalSectionInfo[] infos = new TrafficSignalSectionInfo[colors.length];
+    for (int i = 0; i < colors.length; i++) {
+      infos[i] = new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,
+          TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+          TrafficSignalVisorType.EURO_HOOD, TrafficSignalBulbStyle.EURO, type, colors[i], false);
+      infos[i].setBodyStyle(TrafficSignalBodyStyle.EURO);
+    }
+    return infos;
+  }
+
+  /** European vehicle head, three 300 mm lenses. */
+  public static final BlockControllableSignal EURO_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignal",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.BALL))
+          .build();
+
+  /** European vehicle head, three 200 mm lenses. */
+  public static final BlockControllableSignal EURO_SIGNAL_200 =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignal200",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.BALL))
+          .sectionYPositions(2.0f, -6.0f, -14.0f)
+          .sectionSizes(8, 8, 8)
+          .build();
+
+  /** European vehicle head, a 300 mm red over 200 mm amber and green. */
+  public static final BlockControllableSignal EURO_SIGNAL_300_200 =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignal300200",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.BALL))
+          .sectionYPositions(4.0f, -6.0f, -14.0f)
+          .sectionSizes(12, 8, 8)
+          .build();
+
+  /** European left arrow head, three 300 mm masked arrow lenses. */
+  public static final BlockControllableSignal EURO_SIGNAL_LEFT =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignalleft",
+          SIGNAL_SIDE.LEFT,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.LEFT))
+          .build();
+
+  /** European right arrow head, three 300 mm masked arrow lenses. */
+  public static final BlockControllableSignal EURO_SIGNAL_RIGHT =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignalright",
+          SIGNAL_SIDE.RIGHT,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.RIGHT))
+          .build();
+
+  /** European straight-ahead arrow head, three 300 mm masked arrow lenses. */
+  public static final BlockControllableSignal EURO_SIGNAL_AHEAD =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignalahead",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.UP))
+          .build();
+
+  /** European bicycle head, three 200 mm lenses. */
+  public static final BlockControllableSignal EURO_SIGNAL_BIKE =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignalbike",
+          SIGNAL_SIDE.PROTECTED,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.BIKE))
+          .sectionYPositions(2.0f, -6.0f, -14.0f)
+          .sectionSizes(8, 8, 8)
+          .build();
+
+  /** European repeater, three 100 mm lenses, for low on the pole where the stop line is too close to see the main head. */
+  public static final BlockControllableSignal EURO_SIGNAL_REPEATER =
+      new BlockControllableSignal.Builder(
+          "controllableeurosignalrepeater",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> europeanSections(TrafficSignalBulbType.BALL))
+          .sectionYPositions(-1.0f, -5.0f, -9.0f)
+          .sectionSizes(4, 4, 4)
+          .build();
+
+  /**
    * The two lenses of a European pedestrian head: the standing red figure over the walking green
    * one, in the European modular housing with its hood and lens.
    */

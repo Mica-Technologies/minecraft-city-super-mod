@@ -79,6 +79,17 @@ Every time is in ticks, and 20 ticks is a second.
 | Leading pedestrian interval | 0 (off) | Walk starts this far before the parallel vehicle green |
 | Red+amber | 0 (off) | Heads about to turn green show red and amber together this long first, the European sequence; Off, 1s or 2s in the simple view, any value up to 3s in the visual editor's **R+A** field |
 
+## European signals
+
+The **European Traffic Signal** heads come ready set up in the European housing: rounded modules
+under open-bottomed hoods, with evenly lit LED lenses and arrows lit through a black mask. There
+are 300 mm, 200 mm and 300/200/200 mm heads, left, right and straight-ahead arrow heads, a
+bicycle head and a small 100 mm repeater for low on the pole. They link and run like any other
+head, and every part of their look can still be changed with the Signal Head Configuration Tool,
+so any existing head can be given the European look the same way. A black/white backplate is the
+usual European contrast board. To run them the European way, turn on **Red+Amber** in the
+controller (see Timing).
+
 ## European pedestrian signals
 
 The **European Pedestrian Signal** heads show a standing red figure and a walking green one in the
