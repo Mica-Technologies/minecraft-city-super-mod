@@ -317,4 +317,39 @@ class TrafficSignalPhaseTest {
     assertEquals(Arrays.asList(new BlockPos(1, 2, 3)), back.getRedAmberSignals());
     assertEquals(TrafficSignalPhaseApplicability.RED_AMBER, back.getApplicability());
   }
+
+  @Test
+  void flashingGreenResolvesBelowGreenAndAboveFya() {
+    BlockPos a = new BlockPos(1, 0, 0);
+    BlockPos b = new BlockPos(2, 0, 0);
+    TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.GREEN_FLASH);
+    phase.addFlashingGreenSignal(a);
+    phase.addFyaSignal(a);
+    phase.addFlashingGreenSignal(b);
+    phase.addGreenSignal(b);
+    Map<BlockPos, Integer> resolved = phase.resolveVehicleSignalStates();
+    assertEquals(TrafficSignalPhase.INDICATION_FLASHING_GREEN, (int) resolved.get(a));
+    assertEquals(AbstractBlockControllableSignal.SIGNAL_GREEN, (int) resolved.get(b));
+    assertTrue(TrafficSignalPhase.isGreenIndication(TrafficSignalPhase.INDICATION_FLASHING_GREEN));
+    assertFalse(TrafficSignalPhase.isGreenIndication(TrafficSignalPhase.INDICATION_FYA));
+    assertEquals(AbstractBlockControllableSignal.SIGNAL_GREEN,
+        TrafficSignalPhase.indicationColor(TrafficSignalPhase.INDICATION_FLASHING_GREEN));
+  }
+
+  @Test
+  void flashingGreenListRoundTripsAndIsAbsentWhenEmpty() {
+    TrafficSignalPhase plain = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+    plain.addYellowSignal(new BlockPos(1, 2, 3));
+    assertFalse(plain.toNBT().hasKey("fgS"));
+
+    TrafficSignalPhase phase = new TrafficSignalPhase(1, plain,
+        TrafficSignalPhaseApplicability.GREEN_FLASH);
+    phase.addFlashingGreenSignal(new BlockPos(1, 2, 3));
+    TrafficSignalPhase back = TrafficSignalPhase.fromNBT(phase.toNBT());
+    assertEquals(phase, back);
+    assertEquals(Arrays.asList(new BlockPos(1, 2, 3)), back.getFlashingGreenSignals());
+    assertEquals(TrafficSignalPhaseApplicability.GREEN_FLASH, back.getApplicability());
+  }
 }

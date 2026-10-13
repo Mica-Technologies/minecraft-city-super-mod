@@ -2183,4 +2183,72 @@ class RingBarrierStateTest {
   }
 
   // endregion
+
+  // region: green flash
+
+  @Test
+  @DisplayName("green flash: off by default, a green never flashes")
+  void greenFlashOffByDefault() {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalProgrammedPhasePlan plan = minRecallPlan();
+    for (long t = 0; t < 2000L; t++) {
+      rb.tick(plan, circuits(2), NO_OVERLAPS, t, new Demand().veh(0, 0, 0, 0).veh(1, 0, 0, 0));
+      ServedMovement m = rb.getLastServed(1);
+      assertFalse(m != null && m.flashingGreen, "flashed at " + t);
+    }
+  }
+
+  @Test
+  @DisplayName("green flash: the last of the green flashes, and the green is no longer for it")
+  void greenFlashIsTheLastOfTheGreen() {
+    RingBarrierState rb = new RingBarrierState();
+    rb.setGreenFlashTicks(40L);
+    TrafficSignalProgrammedPhasePlan plan = minRecallPlan();
+    net.minecraft.util.math.BlockPos head = new net.minecraft.util.math.BlockPos(10, 0, 0);
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getThroughSignals().add(head);
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    ckts.addCircuit(c0);
+    ckts.addCircuit(new TrafficSignalControllerCircuit());
+    Demand none = new Demand().veh(0, 0, 0, 0).veh(1, 0, 0, 0);
+    long start = -1L;
+    long flashStart = -1L;
+    for (long t = 0; t < 2000L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, none);
+      ServedMovement m = rb.getLastServed(1);
+      boolean green = m != null && m.phaseNumber == 2 && m.vehicle == VehInterval.GREEN;
+      if (green && start < 0L) {
+        start = t;
+      }
+      if (green && m.flashingGreen && flashStart < 0L) {
+        flashStart = t;
+        assertTrue(rb.getLastAppliedPhase().getFlashingGreenSignals().contains(head));
+        assertFalse(rb.getLastAppliedPhase().getGreenSignals().contains(head));
+      }
+      if (!green && start >= 0L) {
+        assertEquals(VehInterval.YELLOW, m.vehicle);
+        assertEquals(100L, t - start, "green ran " + (t - start) + ", flash and all");
+        assertEquals(40L, t - flashStart, "flashed " + (t - flashStart));
+        return;
+      }
+    }
+    org.junit.jupiter.api.Assertions.fail("phase 2 never ended its green");
+  }
+
+  /** Phases 2 and 4 on minimum recall: min green 100, passage 40, max 400. */
+  private static TrafficSignalProgrammedPhasePlan minRecallPlan() {
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    for (int n : new int[] {2, 4}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      p.setMinGreen(100L);
+      p.setPassage(40L);
+      p.setMaxGreen(400L);
+    }
+    return plan;
+  }
+
+  // endregion
 }

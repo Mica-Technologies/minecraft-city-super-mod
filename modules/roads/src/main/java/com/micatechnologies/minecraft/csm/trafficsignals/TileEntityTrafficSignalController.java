@@ -260,6 +260,15 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private long redAmberTime = 0;
 
   /**
+   * The green flash time in ticks: how much of the end of each green flashes before its yellow,
+   * as in Mexico. The flash is taken out of the green, not added to it. Zero, the default, turns
+   * it off.
+   *
+   * @since 2026.10
+   */
+  private long greenFlashTime = 0;
+
+  /**
    * Boolean indicating whether the traffic signal controller should use all-red flashing instead
    * of yellow/red flashing when in flash mode (including nightly and power loss fallback flash).
    *
@@ -808,6 +817,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           }
         }
         advancedRuntime.setRedAmberTicks(redAmberTime);
+        advancedRuntime.setGreenFlashTicks(greenFlashTime);
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
         showPreemptIndicators(advancedRuntime.getActivePreemptTriggerCircuit(plan),
             advancedRuntime.isActivePreemptEmergency(plan));
@@ -834,7 +844,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             dedicatedPedSignalTime,
             leadPedestrianIntervalTime,
             allRedFlash,
-            redAmberTime));
+            redAmberTime,
+            greenFlashTime));
       }
       resumeOnPrimaryGreen = false;
       if (operatingMode != TrafficSignalControllerMode.ADVANCED) {
@@ -1071,6 +1082,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     redAmberTime = compound.hasKey(TrafficSignalControllerNBTKeys.RED_AMBER_TIME)
         ? Math.max(0L, compound.getLong(TrafficSignalControllerNBTKeys.RED_AMBER_TIME)) : 0L;
 
+    // Load the green flash time; absent means off
+    greenFlashTime = compound.hasKey(TrafficSignalControllerNBTKeys.GREEN_FLASH_TIME)
+        ? Math.max(0L, compound.getLong(TrafficSignalControllerNBTKeys.GREEN_FLASH_TIME)) : 0L;
+
     // Load the traffic signal controller all red flash setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.ALL_RED_FLASH)) {
       allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH);
@@ -1286,6 +1301,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the red+amber time, only while it is on
     if (redAmberTime > 0) {
       compound.setLong(TrafficSignalControllerNBTKeys.RED_AMBER_TIME, redAmberTime);
+    }
+
+    // Write the green flash time, only while it is on
+    if (greenFlashTime > 0) {
+      compound.setLong(TrafficSignalControllerNBTKeys.GREEN_FLASH_TIME, greenFlashTime);
     }
 
     // Write the all red flash setting to NBT
@@ -1640,6 +1660,32 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     long clamped = Math.max(0L, redAmberTime);
     if (this.redAmberTime != clamped) {
       this.redAmberTime = clamped;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the green flash time: how much of the end of each green flashes before its yellow.
+   *
+   * @return the green flash time in ticks (0 = off)
+   *
+   * @since 2026.10
+   */
+  public long getGreenFlashTime() {
+    return greenFlashTime;
+  }
+
+  /**
+   * Sets the green flash time. Zero turns the green flash off.
+   *
+   * @param greenFlashTime the green flash time in ticks (0 = off)
+   *
+   * @since 2026.10
+   */
+  public void setGreenFlashTime(long greenFlashTime) {
+    long clamped = Math.max(0L, greenFlashTime);
+    if (this.greenFlashTime != clamped) {
+      this.greenFlashTime = clamped;
       resetController(false, true);
     }
   }

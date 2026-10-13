@@ -29,6 +29,7 @@ public class SignalControllerConfigPacketHandler implements
   // Red+amber before green: off (the default), then Germany's 1 s and the UK's 2 s. Whole
   // seconds, since NORMAL mode ticks once a second.
   static final long[] RED_AMBER_OPTIONS = {0, 20, 40};
+  static final long[] GREEN_FLASH_OPTIONS = {0, 40, 60, 80};
 
   @Override
   public IMessage onMessage(SignalControllerConfigPacket message, MessageContext ctx) {
@@ -118,6 +119,10 @@ public class SignalControllerConfigPacketHandler implements
         case CYCLE_RED_AMBER_TIME:
           controller.setRedAmberTime(
               cycleValue(controller.getRedAmberTime(), RED_AMBER_OPTIONS));
+          break;
+        case CYCLE_GREEN_FLASH_TIME:
+          controller.setGreenFlashTime(
+              cycleValue(controller.getGreenFlashTime(), GREEN_FLASH_OPTIONS));
           break;
       }
       // Force sync to client so the GUI sees updated values

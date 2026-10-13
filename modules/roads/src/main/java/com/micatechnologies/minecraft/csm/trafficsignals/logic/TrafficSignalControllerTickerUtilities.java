@@ -282,6 +282,74 @@ public class TrafficSignalControllerTickerUtilities {
   }
 
   /**
+   * Puts a green flash in front of a yellow when the controller has the green flash on and the
+   * yellow takes at least one vehicle head off green. The flash is the last part of the green,
+   * not time added to it: the NORMAL ticker brings its decision to end a green forward by the
+   * same time.
+   *
+   * @param originatingPhase the phase being left
+   * @param nextPhase        the phase the ticker chose, or null for no change
+   * @param greenFlashTime   green flash time in ticks; 0 or less is off
+   *
+   * @return the green flash phase leading into {@code nextPhase}, or {@code nextPhase} unchanged
+   *
+   * @since 2026.10
+   */
+  public static TrafficSignalPhase maybeWrapWithGreenFlash(TrafficSignalPhase originatingPhase,
+      TrafficSignalPhase nextPhase, long greenFlashTime) {
+    if (greenFlashTime <= 0 || originatingPhase == null || nextPhase == null
+        || originatingPhase.getApplicability() == TrafficSignalPhaseApplicability.GREEN_FLASH
+        || nextPhase.getApplicability()
+        != TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING) {
+      return nextPhase;
+    }
+    TrafficSignalPhase wrapped = getGreenFlashPhaseForYellow(originatingPhase, nextPhase);
+    return wrapped.getFlashingGreenSignals().isEmpty() ? nextPhase : wrapped;
+  }
+
+  /**
+   * Creates the green flash in front of a yellow: vehicle heads the yellow takes off green flash
+   * green; heads the yellow takes off a flashing arrow or off dark keep showing that until the
+   * yellow; everything else, walk signals included, already shows what the yellow shows.
+   *
+   * @param originatingPhase the phase being left (a green, or its pedestrian clearance)
+   * @param yellowPhase      the yellow that follows the flash
+   *
+   * @return the green flash phase, whose upcoming phase is {@code yellowPhase}; its flashing green
+   *     list is empty when no head goes from green to yellow
+   *
+   * @since 2026.10
+   */
+  public static TrafficSignalPhase getGreenFlashPhaseForYellow(TrafficSignalPhase originatingPhase,
+      TrafficSignalPhase yellowPhase) {
+    TrafficSignalPhase phase = new TrafficSignalPhase(originatingPhase.getCircuit(), yellowPhase,
+        TrafficSignalPhaseApplicability.GREEN_FLASH);
+    List<BlockPos> originGreen = originatingPhase.getGreenSignals();
+    List<BlockPos> originFya = originatingPhase.getFyaSignals();
+    List<BlockPos> originOff = originatingPhase.getOffSignals();
+    for (BlockPos yellow : yellowPhase.getYellowSignals()) {
+      if (originGreen.contains(yellow)) {
+        phase.addFlashingGreenSignal(yellow);
+      } else if (originFya.contains(yellow)) {
+        phase.addFyaSignal(yellow);
+      } else if (originOff.contains(yellow)) {
+        phase.addOffSignal(yellow);
+      } else {
+        phase.addYellowSignal(yellow);
+      }
+    }
+    phase.addGreenSignals(yellowPhase.getGreenSignals());
+    phase.addFyaSignals(yellowPhase.getFyaSignals());
+    phase.addRedSignals(yellowPhase.getRedSignals());
+    phase.addOffSignals(yellowPhase.getOffSignals());
+    phase.addRedAmberSignals(yellowPhase.getRedAmberSignals());
+    phase.addWalkSignals(yellowPhase.getWalkSignals());
+    phase.addFlashDontWalkSignals(yellowPhase.getFlashDontWalkSignals());
+    phase.addDontWalkSignals(yellowPhase.getDontWalkSignals());
+    return phase;
+  }
+
+  /**
    * Whether a phase of this applicability may be led into by red+amber: a green. Clearance
    * intervals, the all-red, the lead pedestrian interval and red+amber itself may not.
    */
@@ -293,6 +361,7 @@ public class TrafficSignalControllerTickerUtilities {
       case LEAD_PEDESTRIAN_INTERVAL:
       case ALL_RED:
       case RED_AMBER:
+      case GREEN_FLASH:
         return false;
       default:
         return true;
@@ -1309,7 +1378,7 @@ public class TrafficSignalControllerTickerUtilities {
     Map<BlockPos, Integer> after = next.resolveVehicleSignalStates();
     for (Map.Entry<BlockPos, Integer> entry : before.entrySet()) {
       int was = entry.getValue();
-      boolean permissive = was == AbstractBlockControllableSignal.SIGNAL_GREEN
+      boolean permissive = TrafficSignalPhase.isGreenIndication(was)
           || was == TrafficSignalPhase.INDICATION_FYA;
       if (!permissive) {
         continue;
@@ -1322,7 +1391,9 @@ public class TrafficSignalControllerTickerUtilities {
         continue;
       }
       return "Skipped yellow clearance at " + entry.getKey() + ": "
-          + (was == TrafficSignalPhase.INDICATION_FYA ? "FYA" : "GREEN") + " -> RED ("
+          + (was == TrafficSignalPhase.INDICATION_FYA ? "FYA"
+              : was == TrafficSignalPhase.INDICATION_FLASHING_GREEN ? "FLASHING GREEN" : "GREEN")
+          + " -> RED ("
           + previous.getApplicability() + " -> " + next.getApplicability() + ")";
     }
     return null;

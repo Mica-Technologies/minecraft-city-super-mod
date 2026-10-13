@@ -78,6 +78,7 @@ Every time is in ticks, and 20 ticks is a second.
 | Pedestrian walk | 160 (~8s) | Minimum walk indication |
 | Leading pedestrian interval | 0 (off) | Walk starts this far before the parallel vehicle green |
 | Red+amber | 0 (off) | Heads about to turn green show red and amber together this long first, the European sequence; Off, 1s or 2s in the simple view, any value up to 3s in the visual editor's **R+A** field |
+| Green flash | 0 (off) | The last part of each green flashes before the yellow, as in Mexico; the flash comes out of the green, so greens are no longer. Off, 2s, 3s or 4s in the simple view, any value up to 5s in the visual editor's **G Flash** field |
 
 ## European signals
 

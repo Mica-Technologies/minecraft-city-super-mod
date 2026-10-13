@@ -702,7 +702,11 @@ public final class AdvancedPhaseBuilder {
       phase.removeSignals(vehicleSignals);
       switch (served.vehicle) {
         case GREEN:
-          phase.addGreenSignals(vehicleSignals);
+          if (served.flashingGreen) {
+            phase.addFlashingGreenSignals(vehicleSignals);
+          } else {
+            phase.addGreenSignals(vehicleSignals);
+          }
           break;
         case YELLOW:
           phase.addYellowSignals(vehicleSignals);

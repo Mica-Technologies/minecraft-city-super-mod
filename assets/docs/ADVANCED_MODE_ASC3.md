@@ -110,6 +110,14 @@ after any DLY GRN, with the green clocks held exactly as the delay holds them
 (`RingRuntime.raActive`, `RingBarrierState.setRedAmberTicks`). Splits must allow for it:
 `findSplitShortfall` adds it to what a phase needs.
 
+### Green flash before yellow
+
+When the controller's green flash option is on (off by default; see "Green Flash Before Yellow" in
+`TRAFFIC_SIGNAL_SYSTEM.md`), a ring that decides to end a green flashes it for that long before
+the yellow (`RingRuntime.gfActive`, `RingBarrierState.setGreenFlashTicks`). The flash is taken out
+of the green: min and max green are judged that much sooner, and the coordinated yield point and
+force-off budget the flash with the yellow and red, so splits need nothing extra.
+
 ## 4. PPLT FYA — Protected/Permissive Flashing Yellow Arrow lefts
 
 ### What the ASC/3 does

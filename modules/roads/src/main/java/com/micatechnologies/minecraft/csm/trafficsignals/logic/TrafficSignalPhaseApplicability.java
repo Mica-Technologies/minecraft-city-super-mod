@@ -267,7 +267,17 @@ public enum TrafficSignalPhaseApplicability {
    *
    * @since 2026.10
    */
-  RED_AMBER;
+  RED_AMBER,
+
+  /**
+   * Enumeration value for the green flash: the last moments of a green, flashing, before its
+   * yellow. The phase's upcoming phase is that yellow; vehicle heads about to turn yellow from
+   * green flash green, everything else already shows what the yellow will show. Appended so the
+   * ordinals stored in existing worlds keep their meaning.
+   *
+   * @since 2026.10
+   */
+  GREEN_FLASH;
 
   // endregion
 

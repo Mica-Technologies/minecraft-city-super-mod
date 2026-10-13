@@ -248,6 +248,15 @@ public class TrafficSignalControllerNBTKeys {
   public static final String RED_AMBER_TIME = "tcRaT";
 
   /**
+   * The key for storing and retrieving the traffic signal controller's green flash time (the last
+   * part of a green, flashing, before its yellow), in ticks. Written only when the green flash is
+   * on, so a controller that never had it keeps the tag it always had; absent means off.
+   *
+   * @since 2026.10
+   */
+  public static final String GREEN_FLASH_TIME = "tcGfT";
+
+  /**
    * The key for storing and retrieving the traffic signal controller's all red flash setting from
    * NBT data.
    *

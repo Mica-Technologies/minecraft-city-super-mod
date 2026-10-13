@@ -112,6 +112,12 @@ public class SignalControllerSetValuePacketHandler implements
             controller.setRedAmberTime(tickValue);
           }
           break;
+        case "greenFlash":
+          // 0 turns the green flash off; up to 5 s, taken out of the end of each green
+          if (tickValue >= 0 && tickValue <= 100) {
+            controller.setGreenFlashTime(tickValue);
+          }
+          break;
         case "nightlyFlash":
           controller.setNightlyFallbackToFlashMode(tickValue != 0);
           break;

@@ -211,4 +211,28 @@ class TileEntityTrafficSignalHeadNbtTest {
     assertTrue(te.setRedAmberActive(false));
     assertFalse(te.isRedAmberActive());
   }
+
+  @Test
+  void greenFlashActiveRoundTripsAndDefaultsToFalse() {
+    int[][] sections = {{0, 0, 0, 0, 0, 5, 2, 2, 0, 0}};
+
+    // Absent key -> not active, and not written back, so existing heads keep their tag
+    NBTTagCompound input = new NBTTagCompound();
+    input.setTag("sInfs", buildSectionInfos(1, sections));
+    TileEntityTrafficSignalHead te = new TileEntityTrafficSignalHead();
+    te.readNBT(input);
+    assertFalse(te.isGreenFlashActive());
+    assertFalse(te.writeNBT(new NBTTagCompound()).hasKey("gFl"));
+
+    // Present and true -> active, written back
+    input.setBoolean("gFl", true);
+    te = new TileEntityTrafficSignalHead();
+    te.readNBT(input);
+    assertTrue(te.isGreenFlashActive());
+    assertTrue(te.writeNBT(new NBTTagCompound()).getBoolean("gFl"));
+
+    assertFalse(te.setGreenFlashActive(true));
+    assertTrue(te.setGreenFlashActive(false));
+    assertFalse(te.isGreenFlashActive());
+  }
 }

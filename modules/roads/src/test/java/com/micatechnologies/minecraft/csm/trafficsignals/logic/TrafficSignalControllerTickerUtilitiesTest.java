@@ -6504,5 +6504,105 @@ class TrafficSignalControllerTickerUtilitiesTest {
         "red to red+amber is clean");
   }
 
+  /** A green with one head ending, one carrying on, one flashing arrow ending, and a walk. */
+  private static TrafficSignalPhase greenFlashOrigin(BlockPos ending, BlockPos running,
+      BlockPos arrow, BlockPos walk) {
+    TrafficSignalPhase origin = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    origin.addGreenSignal(ending);
+    origin.addGreenSignal(running);
+    origin.addFyaSignal(arrow);
+    origin.addWalkSignal(walk);
+    return origin;
+  }
+
+  @Test
+  @DisplayName("green flash: heads leaving green flash, the rest show what the yellow shows")
+  void greenFlashPhaseLeadsTheYellow() {
+    BlockPos ending = new BlockPos(1, 0, 0);
+    BlockPos running = new BlockPos(2, 0, 0);
+    BlockPos arrow = new BlockPos(3, 0, 0);
+    BlockPos walk = new BlockPos(4, 0, 0);
+    TrafficSignalPhase upcoming = new TrafficSignalPhase(2, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    upcoming.addGreenSignal(running);
+    upcoming.addRedSignal(ending);
+    upcoming.addRedSignal(arrow);
+    upcoming.addDontWalkSignal(walk);
+    TrafficSignalPhase origin = greenFlashOrigin(ending, running, arrow, walk);
+    origin.removeSignals(Collections.singletonList(walk));
+    origin.addDontWalkSignal(walk); // its clearance has already run
+    TrafficSignalPhase yellow =
+        TrafficSignalControllerTickerUtilities.getYellowTransitionPhaseForUpcoming(origin,
+            upcoming);
+    TrafficSignalPhase gf =
+        TrafficSignalControllerTickerUtilities.getGreenFlashPhaseForYellow(origin, yellow);
+
+    assertEquals(TrafficSignalPhaseApplicability.GREEN_FLASH, gf.getApplicability());
+    assertSame(yellow, gf.getUpcomingPhase());
+    assertEquals(Collections.singletonList(ending), gf.getFlashingGreenSignals());
+    assertEquals(Collections.singletonList(running), gf.getGreenSignals());
+    assertEquals(Collections.singletonList(arrow), gf.getFyaSignals());
+    assertTrue(gf.getYellowSignals().isEmpty());
+    assertTrue(gf.getDontWalkSignals().contains(walk));
+    assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(origin, gf, null));
+    assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(gf, yellow, null));
+  }
+
+  @Test
+  @DisplayName("green flash: off by default, wraps only a yellow, never its own release")
+  void greenFlashWrapsOnlyYellowsWhenOn() {
+    BlockPos ending = new BlockPos(1, 0, 0);
+    BlockPos running = new BlockPos(2, 0, 0);
+    TrafficSignalPhase origin = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    origin.addGreenSignal(ending);
+    origin.addGreenSignal(running);
+    TrafficSignalPhase yellow = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+    yellow.addYellowSignal(ending);
+    yellow.addGreenSignal(running);
+
+    assertSame(yellow,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithGreenFlash(origin, yellow, 0L),
+        "off (0) leaves the yellow alone");
+
+    TrafficSignalPhase wrapped =
+        TrafficSignalControllerTickerUtilities.maybeWrapWithGreenFlash(origin, yellow, 60L);
+    assertEquals(TrafficSignalPhaseApplicability.GREEN_FLASH, wrapped.getApplicability());
+
+    assertSame(yellow,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithGreenFlash(wrapped, yellow, 60L),
+        "releasing a green flash goes straight to its yellow");
+
+    TrafficSignalPhase green = new TrafficSignalPhase(2, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    green.addGreenSignal(ending);
+    assertSame(green,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithGreenFlash(origin, green, 60L),
+        "only a yellow is led by the green flash");
+
+    TrafficSignalPhase arrowOnly = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+    arrowOnly.addGreenSignal(ending);
+    arrowOnly.addGreenSignal(running);
+    assertSame(arrowOnly,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithGreenFlash(origin, arrowOnly, 60L),
+        "no head leaving green: nothing to flash");
+  }
+
+  @Test
+  @DisplayName("green flash: a flashing green going straight to red is a skipped clearance")
+  void flashingGreenToRedIsSkippedClearance() {
+    BlockPos head = new BlockPos(1, 0, 0);
+    TrafficSignalPhase gf = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.GREEN_FLASH);
+    gf.addFlashingGreenSignal(head);
+    TrafficSignalPhase red = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_RED);
+    red.addRedSignal(head);
+    assertNotNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(gf, red, null));
+  }
+
   // endregion
 }

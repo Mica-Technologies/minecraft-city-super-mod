@@ -72,6 +72,12 @@ public class RingBarrierState {
      */
     public final boolean redAmber;
 
+    /**
+     * Whether the movement's heads flash their green: {@link #vehicle} is GREEN, in the last
+     * moments before its yellow. Everything that judges clearance or follows a green sees green.
+     */
+    public final boolean flashingGreen;
+
     public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian) {
       this(phaseNumber, vehicle, pedestrian, false);
     }
@@ -83,11 +89,17 @@ public class RingBarrierState {
 
     public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian,
         boolean queueJump, boolean redAmber) {
+      this(phaseNumber, vehicle, pedestrian, queueJump, redAmber, false);
+    }
+
+    public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian,
+        boolean queueJump, boolean redAmber, boolean flashingGreen) {
       this.phaseNumber = phaseNumber;
       this.vehicle = vehicle;
       this.pedestrian = pedestrian;
       this.queueJump = queueJump;
       this.redAmber = redAmber;
+      this.flashingGreen = flashingGreen;
     }
   }
 
@@ -119,6 +131,10 @@ public class RingBarrierState {
     boolean raActive = false;
     long raStart = 0L;
     boolean raDefersWalk = false;
+    // Green flash: the green has been told to end and flashes for greenFlashTicks before its
+    // yellow. The decision is not revisited; the interval stays GREEN until the yellow.
+    boolean gfActive = false;
+    long gfStart = 0L;
     // Volume-density snapshots captured at green start: the queue length (for added initial) and
     // whether a bike call was present (for bike minimum green).
     long queueAtStart = 0L;
@@ -369,6 +385,23 @@ public class RingBarrierState {
   }
 
   /**
+   * The green flash at the end of each green, in ticks (0 = off): the controller's setting,
+   * handed in before each tick. The flash is the last part of the green rather than time added to
+   * it: a green is told to end that much sooner (min green, max green, the coordinated yield and
+   * force-off), then flashes, then turns yellow. Preemption clearances never get it.
+   */
+  private long greenFlashTicks = 0L;
+
+  /**
+   * Sets the green flash time. A change applies from the next green a ring ends.
+   *
+   * @param ticks green flash time in ticks; 0 or less is off
+   */
+  public void setGreenFlashTicks(long ticks) {
+    this.greenFlashTicks = Math.max(0L, ticks);
+  }
+
+  /**
    * Advances the controller one tick and returns the phase to apply, or {@code null} if the
    * displayed indication is unchanged since the last applied phase.
    */
@@ -513,7 +546,7 @@ public class RingBarrierState {
       }
       Integer was = before.get(entry.getKey());
       boolean permissive = was != null
-          && (was == AbstractBlockControllableSignal.SIGNAL_GREEN
+          && (TrafficSignalPhase.isGreenIndication(was)
               || was == TrafficSignalPhase.INDICATION_FYA);
       if (permissive && !holds.containsKey(entry.getKey())) {
         holds.put(entry.getKey(), now);
@@ -838,6 +871,7 @@ public class RingBarrierState {
     ring.delayActive = false;
     ring.queueJump = false;
     ring.raActive = false;
+    ring.gfActive = false;
     ring.maxStart = -1L;
     ring.dualEntry = false;
     ring.condServiceUsed = false;
@@ -863,6 +897,15 @@ public class RingBarrierState {
 
     switch (ring.interval) {
       case GREEN: {
+        // Green flash: the green has already been told to end; flash out its time, then yellow.
+        if (ring.gfActive) {
+          if (now - ring.gfStart >= greenFlashTicks) {
+            ring.gfActive = false;
+            ring.interval = VehInterval.YELLOW;
+            ring.intervalStart = now;
+          }
+          break;
+        }
         // A vehicle call holds (extends) the green.
         // Delayed green (DLY GRN): hold the vehicle red while the leading ped walk runs. The
         // green/max/passage clocks do not start until the delay ends, so the phase still gets its
@@ -957,7 +1000,8 @@ public class RingBarrierState {
           pedRemaining = ring.resting ? phase.getPedClear()
               : Math.max(0L, ring.pedStart + ring.walkHold + phase.getPedClear() - now);
         }
-        long coordClearance = phase.getYellow() + phase.getRedClear() + pedRemaining;
+        long coordClearance = phase.getYellow() + phase.getRedClear() + pedRemaining
+            + greenFlashTicks;
         // A coordinated green OUTSIDE its own window is not always running late: after an early
         // return (a side street that gapped out) it came up early, and the time it is filling may
         // be another conflicting phase's window — typically a lead left at the top of the cycle.
@@ -1006,6 +1050,10 @@ public class RingBarrierState {
             phase.getMaxGreen(), phase.getMax2(), coordinated);
         effMaxGreen = applyPriorityToMaxGreen(plan, phaseNum, phase, ringNum, effMaxGreen,
             effMinGreen);
+        // Green flash: the flash is the last part of the green, so the green is told to end that
+        // much sooner and still turns yellow when it would have without it.
+        effMinGreen = Math.max(0L, effMinGreen - greenFlashTicks);
+        effMaxGreen = Math.max(0L, effMaxGreen - greenFlashTicks);
         long effPassage = AdvancedActuationTiming.effectivePassage(phase.getPassage(),
             phase.getMinGap(), phase.getTimeBeforeReduce(), phase.getTimeToReduce(), greenElapsed);
         boolean minMet = greenElapsed >= effMinGreen;
@@ -1048,7 +1096,8 @@ public class RingBarrierState {
         // its own split/force-off apply only when it is served on its own call; the pair ends via
         // the companion's termination.
         boolean forceOff = coordinated && !isCoord && !ring.resting && !ring.dualEntry
-            && pastYieldPoint(plan, phaseNum, phase.getYellow() + phase.getRedClear()) && pedDone;
+            && pastYieldPoint(plan, phaseNum,
+                phase.getYellow() + phase.getRedClear() + greenFlashTicks) && pedDone;
 
         // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
@@ -1109,8 +1158,13 @@ public class RingBarrierState {
             // bare min green and pulls the controller permanently off its offset.
             windowAccepted[phaseNum] = false;
           }
-          ring.interval = VehInterval.YELLOW;
-          ring.intervalStart = now;
+          if (greenFlashTicks > 0L) {
+            ring.gfActive = true; // flash the last of the green, then yellow (above)
+            ring.gfStart = now;
+          } else {
+            ring.interval = VehInterval.YELLOW;
+            ring.intervalStart = now;
+          }
           ring.pedServing = false;
         } else if (phase.isRestInWalk() && !conflict) {
           // Rest in Walk: while this phase holds green with nothing else calling, recall the WALK
@@ -1296,6 +1350,7 @@ public class RingBarrierState {
     ring.walkHold = ped ? Math.max(phase.getWalk(), delay) : phase.getWalk();
     ring.raActive = redAmberTicks > 0L;
     ring.raStart = now;
+    ring.gfActive = false;
     ring.raDefersWalk = delay <= 0L;
     // Volume-density / bike snapshots at green start.
     ring.queueAtStart = vehicleCount(phase);
@@ -1322,8 +1377,8 @@ public class RingBarrierState {
       if (active == null || active.getBarrier() != currentBarrier) {
         return false;
       }
-      if (ring.interval == VehInterval.GREEN) {
-        return true;
+      if (ring.interval == VehInterval.GREEN && !ring.gfActive) {
+        return true; // (a green already flashing out is ending, not working the barrier)
       }
     }
     if (peekNextWithinBarrier(ring, ringNum, plan, called) != 0) {
@@ -2726,8 +2781,9 @@ public class RingBarrierState {
     // GREEN; the leading ped walk (computed above as WALK, since walkHold >= the delay) shows.
     // Red+amber is likewise red, flagged so the heads light their amber beside it.
     VehInterval veh = ring.delayActive || redAmber ? VehInterval.RED : ring.interval;
+    boolean flashingGreen = ring.gfActive && veh == VehInterval.GREEN;
     return new ServedMovement(ring.activePhase, veh, ped, ring.delayActive && ring.queueJump,
-        redAmber);
+        redAmber, flashingGreen);
   }
 
   // endregion

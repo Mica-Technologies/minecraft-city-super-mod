@@ -86,6 +86,24 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
    */
   public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor,
       boolean fya, boolean redAmber) {
+    return changeSignalColor(world, blockPos, signalColor, fya, redAmber, false);
+  }
+
+  /**
+   * Sets the color state of the signal at the given position and its FYA, red+amber and green
+   * flash flags. The green flash, the last moments of a green flashing before its yellow, is
+   * {@link #SIGNAL_GREEN} with the flag on the head's tile entity
+   * ({@code TileEntityTrafficSignalHead#setGreenFlashActive}), so everything reading the colour
+   * sees green; any other color or indication clears it. Heads with no tile entity show a steady
+   * green.
+   *
+   * @param greenFlash true when {@code signalColor} is green and the indication is the green
+   *                   flash
+   *
+   * @see #changeSignalColor(World, BlockPos, int, boolean, boolean)
+   */
+  public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor,
+      boolean fya, boolean redAmber, boolean greenFlash) {
     // Skip signals in unloaded chunks — not a fault, just out of range
     if (!world.isBlockLoaded(blockPos)) {
       return true;
@@ -103,6 +121,9 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
         // Likewise red+amber, which keeps COLOR at red.
         ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) fyaTe)
             .setRedAmberActive(redAmber && signalColor == SIGNAL_RED);
+        // And the green flash, which keeps COLOR at green.
+        ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) fyaTe)
+            .setGreenFlashActive(greenFlash && !fya && signalColor == SIGNAL_GREEN);
       }
 
       // Skip if color already matches — avoids redundant setBlockState calls

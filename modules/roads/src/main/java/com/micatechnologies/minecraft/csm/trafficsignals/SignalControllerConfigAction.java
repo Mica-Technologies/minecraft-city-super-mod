@@ -26,5 +26,6 @@ public enum SignalControllerConfigAction {
   // inserting above would silently remap every saved/queued action.
   CYCLE_MIN_REQUESTABLE_SERVICE_TIME,
   CYCLE_MAX_REQUESTABLE_SERVICE_TIME,
-  CYCLE_RED_AMBER_TIME
+  CYCLE_RED_AMBER_TIME,
+  CYCLE_GREEN_FLASH_TIME
 }
