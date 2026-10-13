@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyTilt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbColor;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
@@ -2333,6 +2334,66 @@ public final class TrafficSignalBlocks {
           .sectionYPositions(0.0f, -12.0f)
           .sectionSizes(12, 12)
           .lightAllOnYellow(true)
+          .build();
+
+  /**
+   * The two lenses of a European pedestrian head: the standing red figure over the walking green
+   * one, in the European modular housing with its hood and lens.
+   */
+  private static TrafficSignalSectionInfo[] europeanPedestrianSections() {
+    TrafficSignalSectionInfo red = new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,
+        TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+        TrafficSignalVisorType.EURO_HOOD, TrafficSignalBulbStyle.EURO,
+        TrafficSignalBulbType.PED_STANDING, TrafficSignalBulbColor.RED, false);
+    TrafficSignalSectionInfo green = new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK,
+        TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+        TrafficSignalVisorType.EURO_HOOD, TrafficSignalBulbStyle.EURO,
+        TrafficSignalBulbType.PED_WALKING, TrafficSignalBulbColor.GREEN, false);
+    red.setBodyStyle(TrafficSignalBodyStyle.EURO);
+    green.setBodyStyle(TrafficSignalBodyStyle.EURO);
+    return new TrafficSignalSectionInfo[] {red, green};
+  }
+
+  /** European pedestrian head, 200 mm lenses; the red figure comes on for the clearance. */
+  public static final BlockControllableSignal EURO_PEDESTRIAN_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableeuropedsignal",
+          SIGNAL_SIDE.PEDESTRIAN,
+          false,
+          TrafficSignalBlocks::europeanPedestrianSections)
+          .sectionYPositions(2.0f, -6.0f)
+          .sectionSizes(8, 8)
+          .pedestrianClearance(BlockControllableSignal.PedestrianClearance.STEADY_RED)
+          .allowsHorizontalFlip(false)
+          .build();
+
+  /** European pedestrian head, 200 mm lenses; the green figure flashes for the clearance. */
+  public static final BlockControllableSignal EURO_PEDESTRIAN_SIGNAL_FLASHING_GREEN =
+      new BlockControllableSignal.Builder(
+          "controllableeuropedsignalflashinggreen",
+          SIGNAL_SIDE.PEDESTRIAN,
+          false,
+          TrafficSignalBlocks::europeanPedestrianSections)
+          .sectionYPositions(2.0f, -6.0f)
+          .sectionSizes(8, 8)
+          .pedestrianClearance(BlockControllableSignal.PedestrianClearance.FLASHING_GREEN)
+          .allowsHorizontalFlip(false)
+          .build();
+
+  /**
+   * European pedestrian repeater, 100 mm lenses, for low on the pole facing the kerb; the red
+   * figure comes on for the clearance.
+   */
+  public static final BlockControllableSignal EURO_PEDESTRIAN_SIGNAL_REPEATER =
+      new BlockControllableSignal.Builder(
+          "controllableeuropedsignal4inch",
+          SIGNAL_SIDE.PEDESTRIAN,
+          false,
+          TrafficSignalBlocks::europeanPedestrianSections)
+          .sectionYPositions(-1.0f, -5.0f)
+          .sectionSizes(4, 4)
+          .pedestrianClearance(BlockControllableSignal.PedestrianClearance.STEADY_RED)
+          .allowsHorizontalFlip(false)
           .build();
 
   public static final BlockControllableSignal VERTICAL_SOLID_SIGNAL1288_INCH =

@@ -118,6 +118,17 @@ public class TrafficSignalTextureMap {
     // 50:    gtx off                  51-53: gtx on (G/Y/R)           [GE GTX ball]
     // 54:    wled_red_x                                               [unused/future]
     // 55:    dr6 off                  56-58: dr6 on (G/Y/R)           [GE DR6 ball]
+    // 59-63: empty (63 is the fallback below and must stay empty)
+    // 64-66: euro off (G/Y/R)        67-69: euro on (G/Y/R)          [EURO ball]
+    // 70-72: euro arrow off (G/Y/R)  73-75: euro arrow on (G/Y/R)    [EURO masked arrow]
+    // 76/77: standing figure off/on  78/79: walking figure off/on    [PED_STANDING/WALKING]
+    // European pedestrian figures: one drawing each, whatever the style or section colour
+    if (type == TrafficSignalBulbType.PED_STANDING) {
+      return isLit ? 77 : 76;
+    }
+    if (type == TrafficSignalBulbType.PED_WALKING) {
+      return isLit ? 79 : 78;
+    }
     if (!isLit) {
       switch (type) {
         case BIKE:

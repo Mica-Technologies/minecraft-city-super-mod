@@ -191,6 +191,24 @@ class TrafficSignalTextureMapTest {
     assertEquals(90f, up.getRotation(), 0.001f);
   }
 
+  @Test
+  void pedestrianFiguresHaveOneCellEachWhateverTheStyleOrColour() {
+    // Cells 76/77 (standing) and 78/79 (walking): row 9, columns 4-7
+    for (TrafficSignalBulbStyle style : TrafficSignalBulbStyle.values()) {
+      for (TrafficSignalBulbColor color : TrafficSignalBulbColor.values()) {
+        var standingOn = TrafficSignalTextureMap.getTextureInfoForBulb(
+            style, TrafficSignalBulbType.PED_STANDING, color, true);
+        var walkingOff = TrafficSignalTextureMap.getTextureInfoForBulb(
+            style, TrafficSignalBulbType.PED_WALKING, color, false);
+        assertEquals(9f / 16f, standingOn.getV1(), 1e-6f);
+        assertEquals(5f / 8f, standingOn.getU1(), 1e-6f);
+        assertEquals(9f / 16f, walkingOff.getV1(), 1e-6f);
+        assertEquals(6f / 8f, walkingOff.getU1(), 1e-6f);
+        assertEquals(0f, standingOn.getRotation(), 1e-6f);
+      }
+    }
+  }
+
   private void assertValidUV(TrafficSignalTextureMap.TextureInfo info) {
     assertValidUV(info, "");
   }

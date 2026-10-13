@@ -79,6 +79,14 @@ Every time is in ticks, and 20 ticks is a second.
 | Leading pedestrian interval | 0 (off) | Walk starts this far before the parallel vehicle green |
 | Red+amber | 0 (off) | Heads about to turn green show red and amber together this long first, the European sequence; Off, 1s or 2s in the simple view, any value up to 3s in the visual editor's **R+A** field |
 
+## European pedestrian signals
+
+The **European Pedestrian Signal** heads show a standing red figure and a walking green one in the
+European housing. Link them to a circuit as pedestrian signals, the way you link a crosswalk
+signal. Through the pedestrian clearance (when a US signal flashes DON'T WALK) the plain head
+shows its red figure, and the **Flashing Green Clearance** head flashes its green figure instead.
+The **100 mm Repeater** is the small head mounted low on the pole, facing the people waiting.
+
 ## The conflict monitor
 
 Real cabinets carry a malfunction management unit that watches the signal outputs and drops the

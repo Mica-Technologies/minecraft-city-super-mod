@@ -23,7 +23,7 @@ Constants in the source code (not configurable at runtime):
 | `TILE_SIZE` | 128 | Expected width/height of each input texture in pixels |
 | `OUTPUT_WIDTH` | 1024 | Width of the output atlas in pixels (eight tiles) |
 | `OUTPUT_HEIGHT` | 2048 | Height of the output atlas in pixels (sixteen tiles) |
-| `INPUT_IMAGE_NAMES` | 76 entries | Ordered list of texture filenames (without `.png`); `EMPTY` (`""`) leaves a cell transparent |
+| `INPUT_IMAGE_NAMES` | 80 entries | Ordered list of texture filenames (without `.png`); `EMPTY` (`""`) leaves a cell transparent |
 
 ## Atlas Layout
 
@@ -47,7 +47,8 @@ re-laid so no existing mapping moved.
 | 59-63 | empty; 63 is `TrafficSignalTextureMap`'s fallback and must stay empty |
 | 64-69 | European ball off (G/Y/R), on (G/Y/R) |
 | 70-75 | European masked arrow off (G/Y/R), on (G/Y/R) |
-| 76-127 | spare |
+| 76-79 | European pedestrian figures: standing off, on; walking off, on |
+| 80-127 | spare |
 
 The European tiles are drawn by `dev-env-utils/scripts/gen_euro_lenses.py`; run it before this
 tool when they change. After this tool, run `gen_pv_lens_atlas.py`, which derives

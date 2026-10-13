@@ -358,6 +358,17 @@ public abstract class AbstractBlockControllableSignalHead extends AbstractBlockC
   public abstract TrafficSignalSectionInfo[] getDefaultTrafficSignalSectionInfo();
 
   /**
+   * Returns whether a lit section of the given bulb color flashes in the given blockstate color
+   * value, on top of the section's own flashing setting. Default is false: a section flashes only
+   * when its section info says so. Override for heads whose flashing depends on what the
+   * controller commands, such as a European pedestrian head flashing its green figure through
+   * the pedestrian clearance.
+   */
+  public boolean shouldFlashBulb(int colorState, TrafficSignalBulbColor bulbColor) {
+    return false;
+  }
+
+  /**
    * Returns whether the given blockstate color value (0=red, 1=yellow, 2=green, 3=off)
    * should light up sections with the given bulb color. The default maps color=0 to RED,
    * color=1 to YELLOW, color=2 to GREEN, and color=3 to nothing.
