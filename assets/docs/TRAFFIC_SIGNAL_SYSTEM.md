@@ -1328,6 +1328,22 @@ companion ring ends with it rather than after it. Preemption clearances do not f
 Not covered: requestable (HAWK and pedestrian) controllers, the preemption clearance, and vehicle
 overlaps in ADVANCED (an overlap follows its parent's green steadily, then its yellow).
 
+## European Signals Demo World
+
+`dev-env-utils/scripts/build_euro_signals_demo.py` builds a flat world named "Euro Signals Demo"
+with everything above in use: a gallery of every European head (the presets, an anthracite head, a
+US head with European lenses, the pedestrian heads and an anthracite RRFB) cycling red,
+red+amber, green, flashing green, amber on one NORMAL controller; a German junction (NORMAL,
+red+amber, heads at the stop line with a 100 mm repeater, steady red pedestrian clearance); a
+Mexican one (ADVANCED, US heads, 3 s green flash, flashing green pedestrian clearance); and an
+Austrian one (ADVANCED, red+amber and a 4 s green flash). Measured on it (2026-10-13): Mexico
+12 s green, 3.0 s flash, yellow at its 15 s max; Austria 1.0 s red+amber, 11 s green, 4.0 s
+flash, yellow at 15 s; the pedestrian clearance ends before its street's flash.
+
+Pedestrian heads are linked differently in the two modes: NORMAL walks a circuit's pedestrian
+heads while the *other* circuit is green (they are listed under the street they cross), ADVANCED
+walks them with their own circuit's phase. The script lists them accordingly.
+
 ## Known Considerations
 
 - Sensors detect `EntityPlayer` and `EntityVillager` as vehicle proxies -- there are no
