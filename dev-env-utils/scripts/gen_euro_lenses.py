@@ -199,13 +199,29 @@ def tiles() -> list[tuple[str, Image.Image]]:
     return out
 
 
+def opaque(tile: Image.Image) -> Image.Image:
+    """A lens tile on the inventory icons' opaque ground."""
+    icon = Image.new("RGBA", (TILE, TILE), ICON_GROUND)
+    icon.alpha_composite(tile)
+    return icon.convert("RGB").convert("RGBA")
+
+
+# The arrow tile points left; the inventory icons are turned to each head's direction
+# (Pillow turns anticlockwise).
+ICON_ARROW_TURNS = {"left": 0, "right": 180, "up": -90}
+
+
 def icons() -> list[tuple[Path, Image.Image]]:
-    """The pedestrian heads' inventory lens textures: each figure lit, on an opaque ground."""
+    """The European heads' inventory lens textures, every lens lit, on an opaque ground."""
     out = []
     for legend, colour in (("standing", "red"), ("walking", "green")):
-        icon = Image.new("RGBA", (TILE, TILE), ICON_GROUND)
-        icon.alpha_composite(lens(colour, True, legend))
-        out.append((SHARED / f"euro_ped_{legend}_item.png", icon.convert("RGB").convert("RGBA")))
+        out.append((SHARED / f"euro_ped_{legend}_item.png", opaque(lens(colour, True, legend))))
+    for colour in COLOUR_ORDER:
+        out.append((SHARED / f"euro_{colour}_item.png", opaque(lens(colour, True, False))))
+        arrow = lens(colour, True, True)
+        for direction, turn in ICON_ARROW_TURNS.items():
+            turned = arrow.rotate(turn, resample=Image.BICUBIC) if turn else arrow
+            out.append((SHARED / f"euro_arrow_{direction}_{colour}_item.png", opaque(turned)))
     return out
 
 

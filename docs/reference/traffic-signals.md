@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "92 blocks in this tab"
+!!! info "100 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -31,6 +31,14 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | European Pedestrian Signal (100 mm Repeater) | `csm:controllableeuropedsignal4inch` |  |  |  |  |
 | European Pedestrian Signal (200 mm) | `csm:controllableeuropedsignal` |  |  |  |  |
 | European Pedestrian Signal (200 mm, Flashing Green Clearance) | `csm:controllableeuropedsignalflashinggreen` |  |  |  |  |
+| European Traffic Signal (100 mm Repeater) | `csm:controllableeurosignalrepeater` |  |  |  |  |
+| European Traffic Signal (200 mm) | `csm:controllableeurosignal200` |  |  |  |  |
+| European Traffic Signal (300 mm) | `csm:controllableeurosignal` |  |  |  |  |
+| European Traffic Signal (300/200/200 mm) | `csm:controllableeurosignal300200` |  |  |  |  |
+| European Traffic Signal (Bicycle, 200 mm) | `csm:controllableeurosignalbike` |  |  |  |  |
+| European Traffic Signal (Left Arrow, 300 mm) | `csm:controllableeurosignalleft` |  |  |  |  |
+| European Traffic Signal (Right Arrow, 300 mm) | `csm:controllableeurosignalright` |  |  |  |  |
+| European Traffic Signal (Straight Arrow, 300 mm) | `csm:controllableeurosignalahead` |  |  |  |  |
 | Hawk Traffic Signal | `csm:controllablehawksignal` | 2 | 10 | pickaxe | 1 |
 | In-Roadway Warning Light | `csm:in_roadway_warning_light` | 2 | 10 | pickaxe | 1 |
 | Overheight Detection Sensor | `csm:overheight_detection_sensor` | 2 | 10 | pickaxe | 1 |
