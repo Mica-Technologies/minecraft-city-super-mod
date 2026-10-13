@@ -69,6 +69,23 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
    */
   public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor,
       boolean fya) {
+    return changeSignalColor(world, blockPos, signalColor, fya, false);
+  }
+
+  /**
+   * Sets the color state of the signal at the given position, the FYA flag, and the red+amber
+   * flag. Red+amber, the European indication shown before green, is {@link #SIGNAL_RED} with the
+   * flag on the head's tile entity
+   * ({@code TileEntityTrafficSignalHead#setRedAmberActive}): the block's state stays red, so the
+   * conflict monitor and everything else reading the colour sees red, and the flag is cleared by
+   * any other color. Heads with no tile entity ignore it and show red.
+   *
+   * @param redAmber true when {@code signalColor} is red and the indication is red+amber
+   *
+   * @see #changeSignalColor(World, BlockPos, int, boolean)
+   */
+  public static boolean changeSignalColor(World world, BlockPos blockPos, int signalColor,
+      boolean fya, boolean redAmber) {
     // Skip signals in unloaded chunks — not a fault, just out of range
     if (!world.isBlockLoaded(blockPos)) {
       return true;
@@ -83,6 +100,9 @@ public abstract class AbstractBlockControllableSignal extends AbstractBlockRotat
       if (fyaTe instanceof com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) {
         ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) fyaTe)
             .setFyaActive(fyaActive);
+        // Likewise red+amber, which keeps COLOR at red.
+        ((com.micatechnologies.minecraft.csm.trafficsignals.TileEntityTrafficSignalHead) fyaTe)
+            .setRedAmberActive(redAmber && signalColor == SIGNAL_RED);
       }
 
       // Skip if color already matches — avoids redundant setBlockState calls

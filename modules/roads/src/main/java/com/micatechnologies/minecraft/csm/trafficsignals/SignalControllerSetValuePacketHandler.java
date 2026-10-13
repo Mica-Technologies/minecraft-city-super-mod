@@ -106,6 +106,12 @@ public class SignalControllerSetValuePacketHandler implements
             controller.setLeadPedestrianIntervalTime(tickValue);
           }
           break;
+        case "redAmber":
+          // 0 turns red+amber off; up to 3 s, beyond any country's practice
+          if (tickValue >= 0 && tickValue <= 60) {
+            controller.setRedAmberTime(tickValue);
+          }
+          break;
         case "nightlyFlash":
           controller.setNightlyFallbackToFlashMode(tickValue != 0);
           break;

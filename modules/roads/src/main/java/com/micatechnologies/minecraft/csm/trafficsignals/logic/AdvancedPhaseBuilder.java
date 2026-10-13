@@ -709,7 +709,11 @@ public final class AdvancedPhaseBuilder {
           break;
         case RED:
         default:
-          phase.addRedSignals(vehicleSignals);
+          if (served.redAmber) {
+            phase.addRedAmberSignals(vehicleSignals);
+          } else {
+            phase.addRedSignals(vehicleSignals);
+          }
           break;
       }
     }

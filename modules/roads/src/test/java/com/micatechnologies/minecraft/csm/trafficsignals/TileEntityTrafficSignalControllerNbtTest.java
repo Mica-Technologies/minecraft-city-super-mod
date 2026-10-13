@@ -125,4 +125,20 @@ class TileEntityTrafficSignalControllerNbtTest {
     assertEquals(45L, output.getLong("tcYt"));
     assertTrue(output.getBoolean("tcArF"));
   }
+
+  @Test
+  void redAmberTimeIsOffByDefaultAndRoundTrips() {
+    // A controller saved before red+amber existed: off, and nothing new written back
+    TileEntityTrafficSignalController te = new TileEntityTrafficSignalController();
+    te.readNBT(new NBTTagCompound());
+    assertEquals(0L, te.getRedAmberTime());
+    assertFalse(te.writeNBT(new NBTTagCompound()).hasKey("tcRaT"));
+
+    NBTTagCompound input = new NBTTagCompound();
+    input.setLong("tcRaT", 40L);
+    te = new TileEntityTrafficSignalController();
+    te.readNBT(input);
+    assertEquals(40L, te.getRedAmberTime());
+    assertEquals(40L, te.writeNBT(new NBTTagCompound()).getLong("tcRaT"));
+  }
 }

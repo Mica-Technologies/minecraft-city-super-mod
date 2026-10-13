@@ -47,7 +47,7 @@ public class TrafficSignalControllerTicker {
         ctx.getMaxRequestableServiceTime(), ctx.getMinGreenTime(), ctx.getMaxGreenTime(),
         ctx.getMinGreenTimeSecondary(), ctx.getMaxGreenTimeSecondary(),
         ctx.getDedicatedPedSignalTime(), ctx.getLeadPedestrianIntervalTime(),
-        ctx.isAllRedFlash());
+        ctx.isAllRedFlash(), ctx.getRedAmberTime());
   }
 
   /**
@@ -134,7 +134,8 @@ public class TrafficSignalControllerTicker {
       long maxGreenTimeSecondary,
       long dedicatedPedSignalTime,
       long leadPedestrianIntervalTime,
-      boolean allRedFlash) {
+      boolean allRedFlash,
+      long redAmberTime) {
     // Call appropriate tick method based on mode
     switch (operatingMode) {
       case FORCED_FAULT:
@@ -163,7 +164,7 @@ public class TrafficSignalControllerTicker {
             timeSinceLastPhaseChange,
             overlapPedestrianSignals, yellowTime, flashDontWalkTime, allRedTime,
             minGreenTime, maxGreenTime, minGreenTimeSecondary, maxGreenTimeSecondary,
-            dedicatedPedSignalTime, leadPedestrianIntervalTime);
+            dedicatedPedSignalTime, leadPedestrianIntervalTime, redAmberTime);
       case FLASH:
       default:
         return flashModeTick(configuredMode, cachedPhases, alternatingFlash, allRedFlash);
@@ -607,7 +608,8 @@ public class TrafficSignalControllerTicker {
       long minGreenTimeSecondary,
       long maxGreenTimeSecondary,
       long dedicatedPedSignalTime,
-      long leadPedestrianIntervalTime) {
+      long leadPedestrianIntervalTime,
+      long redAmberTime) {
     // Create variable to store next phase (null phase indicates no change)
     TrafficSignalPhase nextPhase = null;
 
@@ -634,6 +636,13 @@ public class TrafficSignalControllerTicker {
         == TrafficSignalPhaseApplicability.LEAD_PEDESTRIAN_INTERVAL &&
         timeSinceLastPhaseChange >= leadPedestrianIntervalTime) {
       nextPhase = originalPhase.getUpcomingPhase();
+    }
+    // If original phase is red+amber, change to the green it leads into once its time is up. The
+    // phase is never treated as a green: it has no min or max of its own.
+    else if (originalPhase.getApplicability() == TrafficSignalPhaseApplicability.RED_AMBER) {
+      if (timeSinceLastPhaseChange >= redAmberTime) {
+        nextPhase = originalPhase.getUpcomingPhase();
+      }
     }
     // If original phase is flashing don't walk transitioning and FDW time is complete,
     // re-check demand before proceeding. At this point ped clearance has fully completed
@@ -910,6 +919,12 @@ public class TrafficSignalControllerTicker {
       }
     }
 
+    // Red+amber: a green that turns vehicle heads green that were not already green goes in behind
+    // a red+amber interval, so its green timers start when the green does. Never wraps the
+    // release of a red+amber interval, which would hold the green off for ever.
+    nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(originalPhase,
+        nextPhase, redAmberTime);
+
     // Apply overlaps to transition phases so overlap targets get yellow/red clearance
     // matching their source signals (green phases already have overlaps applied)
     if (nextPhase != null && (
@@ -952,6 +967,7 @@ public class TrafficSignalControllerTicker {
         overridden.addYellowSignals(nextPhase.getYellowSignals());
         overridden.addRedSignals(nextPhase.getRedSignals());
         overridden.addFyaSignals(nextPhase.getFyaSignals());
+        overridden.addRedAmberSignals(nextPhase.getRedAmberSignals());
         overridden.addWalkSignals(nextPhase.getWalkSignals());
         overridden.addDontWalkSignals(nextPhase.getDontWalkSignals());
         overridden.addFlashDontWalkSignals(nextPhase.getFlashDontWalkSignals());

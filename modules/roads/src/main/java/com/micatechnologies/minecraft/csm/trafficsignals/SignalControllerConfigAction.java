@@ -25,5 +25,6 @@ public enum SignalControllerConfigAction {
   // Appended, not inserted: the ordinal is what travels in SignalControllerConfigPacket, so
   // inserting above would silently remap every saved/queued action.
   CYCLE_MIN_REQUESTABLE_SERVICE_TIME,
-  CYCLE_MAX_REQUESTABLE_SERVICE_TIME
+  CYCLE_MAX_REQUESTABLE_SERVICE_TIME,
+  CYCLE_RED_AMBER_TIME
 }

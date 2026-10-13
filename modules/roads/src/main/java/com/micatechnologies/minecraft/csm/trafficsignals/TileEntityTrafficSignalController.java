@@ -251,6 +251,15 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private long leadPedestrianIntervalTime = 0;
 
   /**
+   * The red+amber time in ticks: how long vehicle heads about to turn green show red and amber
+   * together first, the European indication. Zero, the default, turns it off, so a controller
+   * runs the US sequence unless someone asks for this.
+   *
+   * @since 2026.10
+   */
+  private long redAmberTime = 0;
+
+  /**
    * Boolean indicating whether the traffic signal controller should use all-red flashing instead
    * of yellow/red flashing when in flash mode (including nightly and power loss fallback flash).
    *
@@ -798,6 +807,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             advancedRuntime.beginOnRestPhases();
           }
         }
+        advancedRuntime.setRedAmberTicks(redAmberTime);
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
         showPreemptIndicators(advancedRuntime.getActivePreemptTriggerCircuit(plan),
             advancedRuntime.isActivePreemptEmergency(plan));
@@ -823,7 +833,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             maxGreenTimeSecondary,
             dedicatedPedSignalTime,
             leadPedestrianIntervalTime,
-            allRedFlash));
+            allRedFlash,
+            redAmberTime));
       }
       resumeOnPrimaryGreen = false;
       if (operatingMode != TrafficSignalControllerMode.ADVANCED) {
@@ -1056,6 +1067,10 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME);
     }
 
+    // Load the red+amber time; absent means off
+    redAmberTime = compound.hasKey(TrafficSignalControllerNBTKeys.RED_AMBER_TIME)
+        ? Math.max(0L, compound.getLong(TrafficSignalControllerNBTKeys.RED_AMBER_TIME)) : 0L;
+
     // Load the traffic signal controller all red flash setting
     if (compound.hasKey(TrafficSignalControllerNBTKeys.ALL_RED_FLASH)) {
       allRedFlash = compound.getBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH);
@@ -1267,6 +1282,11 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the lead pedestrian interval time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
         leadPedestrianIntervalTime);
+
+    // Write the red+amber time, only while it is on
+    if (redAmberTime > 0) {
+      compound.setLong(TrafficSignalControllerNBTKeys.RED_AMBER_TIME, redAmberTime);
+    }
 
     // Write the all red flash setting to NBT
     compound.setBoolean(TrafficSignalControllerNBTKeys.ALL_RED_FLASH, allRedFlash);
@@ -1594,6 +1614,32 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public void setLeadPedestrianIntervalTime(long leadPedestrianIntervalTime) {
     if (this.leadPedestrianIntervalTime != leadPedestrianIntervalTime) {
       this.leadPedestrianIntervalTime = leadPedestrianIntervalTime;
+      resetController(false, true);
+    }
+  }
+
+  /**
+   * Gets the red+amber time: how long heads about to turn green show red and amber first.
+   *
+   * @return the red+amber time in ticks (0 = off)
+   *
+   * @since 2026.10
+   */
+  public long getRedAmberTime() {
+    return redAmberTime;
+  }
+
+  /**
+   * Sets the red+amber time. Zero turns red+amber off.
+   *
+   * @param redAmberTime the red+amber time in ticks (0 = off)
+   *
+   * @since 2026.10
+   */
+  public void setRedAmberTime(long redAmberTime) {
+    long clamped = Math.max(0L, redAmberTime);
+    if (this.redAmberTime != clamped) {
+      this.redAmberTime = clamped;
       resetController(false, true);
     }
   }

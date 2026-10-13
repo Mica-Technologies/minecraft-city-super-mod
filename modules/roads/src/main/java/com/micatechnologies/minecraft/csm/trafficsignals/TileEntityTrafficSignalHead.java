@@ -764,6 +764,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String FYA_ACTIVE_KEY = "fya";
   private boolean fyaActive = false;
 
+  /**
+   * Whether the controller is commanding red+amber, the European indication shown for a moment
+   * before green. The block's {@code COLOR} property stays at red (0) while this is set, so
+   * everything that reads the colour (the conflict monitor among it) sees red; the head lights
+   * its amber sections beside its red ones. Persisted and synced to the client; absent means
+   * not active, so a head that never had it keeps the tag it always had.
+   */
+  private static final String RED_AMBER_ACTIVE_KEY = "rAm";
+  private boolean redAmberActive = false;
+
   // Bulb aging fields (short-form keys; LEGACY_* variants retained for back-compat reads)
   private static final String AGING_ENABLED_KEY = "agE";
   private static final String LEGACY_AGING_ENABLED_KEY = "agingEnabled";
@@ -847,6 +857,10 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
 
     // Get the FYA (permissive flashing yellow arrow) state; absent means not active
     fyaActive = compound.hasKey(FYA_ACTIVE_KEY) && compound.getBoolean(FYA_ACTIVE_KEY);
+
+    // Get the red+amber state; absent means not active
+    redAmberActive = compound.hasKey(RED_AMBER_ACTIVE_KEY)
+        && compound.getBoolean(RED_AMBER_ACTIVE_KEY);
 
     // Get the horizontal-flip setting
     if (compound.hasKey(HORIZONTAL_FLIP_KEY)) {
@@ -976,6 +990,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     if (fyaActive) {
       compound.setBoolean(FYA_ACTIVE_KEY, true);
     }
+    if (redAmberActive) {
+      compound.setBoolean(RED_AMBER_ACTIVE_KEY, true);
+    }
     compound.setBoolean(HORIZONTAL_FLIP_KEY, horizontalFlip);
     compound.setInteger(MOUNT_TYPE_KEY, mountType.toNBT());
     compound.setInteger(MOUNT_COLOR_KEY, mountColor.toNBT());
@@ -1046,6 +1063,11 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       }
     }
 
+    // Red+amber — the controller holds the colour at red and sets the flag for the moment before
+    // green. Every section the block would light for red or for amber lights, so a head's own
+    // colour mapping is respected rather than assumed.
+    boolean redAmber = redAmberActive && currentBulbColor == 0;
+
     // Flash phase — the head's flash pattern decides when a flashing bulb is lit: OFF and B are
     // the two halves of a wig-wag pair, C is the rapid Barlo-style strobe. Uses the wall-clock
     // flash timer so the flash rate stays visually constant through tick lag spikes (decoupled
@@ -1082,6 +1104,12 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         lit = hawkBlock.shouldLightWigwagSection(i, gameMillis);
       } else if (currentBulbColor == 3) {
         lit = false;
+      } else if (redAmber) {
+        TrafficSignalBulbColor bulbColor = sectionInfo.getBulbColor();
+        lit = useBlockMapping
+            ? lightAllSections || signalBlock.shouldLightBulb(0, bulbColor)
+                || signalBlock.shouldLightBulb(1, bulbColor)
+            : bulbColor == TrafficSignalBulbColor.RED || bulbColor == TrafficSignalBulbColor.YELLOW;
       } else if (useBlockMapping) {
         lit = lightAllSections
             || signalBlock.shouldLightBulb(currentBulbColor, sectionInfo.getBulbColor());
@@ -1595,6 +1623,32 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       return false;
     }
     this.fyaActive = fyaActive;
+    dirty = true;
+    if (world != null) {
+      markDirtySync(world, pos, true);
+    }
+    return true;
+  }
+
+  /**
+   * Returns whether the controller is currently commanding red+amber on this head. Only
+   * meaningful while the block's color state is red (0).
+   */
+  public boolean isRedAmberActive() {
+    return redAmberActive;
+  }
+
+  /**
+   * Sets the red+amber state. Persists and syncs to the client only when the value actually
+   * changes, so the per-tick controller apply stays cheap.
+   *
+   * @return true if the value changed
+   */
+  public boolean setRedAmberActive(boolean redAmberActive) {
+    if (this.redAmberActive == redAmberActive) {
+      return false;
+    }
+    this.redAmberActive = redAmberActive;
     dirty = true;
     if (world != null) {
       markDirtySync(world, pos, true);

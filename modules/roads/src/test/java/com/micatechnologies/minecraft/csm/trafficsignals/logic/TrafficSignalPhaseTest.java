@@ -283,4 +283,38 @@ class TrafficSignalPhaseTest {
   }
 
   // endregion
+
+  @Test
+  void redAmberResolvesBelowYellowAndAboveRed() {
+    BlockPos a = new BlockPos(1, 0, 0);
+    BlockPos b = new BlockPos(2, 0, 0);
+    TrafficSignalPhase phase = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.RED_AMBER);
+    phase.addRedAmberSignal(a);
+    phase.addRedSignal(a);
+    phase.addRedAmberSignal(b);
+    phase.addYellowSignal(b);
+    Map<BlockPos, Integer> resolved = phase.resolveVehicleSignalStates();
+    assertEquals(TrafficSignalPhase.INDICATION_RED_AMBER, (int) resolved.get(a));
+    assertEquals(AbstractBlockControllableSignal.SIGNAL_YELLOW, (int) resolved.get(b));
+    assertTrue(TrafficSignalPhase.isRedIndication(TrafficSignalPhase.INDICATION_RED_AMBER));
+    assertEquals(AbstractBlockControllableSignal.SIGNAL_RED,
+        TrafficSignalPhase.indicationColor(TrafficSignalPhase.INDICATION_RED_AMBER));
+  }
+
+  @Test
+  void redAmberListRoundTripsAndIsAbsentWhenEmpty() {
+    TrafficSignalPhase plain = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    plain.addGreenSignal(new BlockPos(1, 2, 3));
+    assertFalse(plain.toNBT().hasKey("raS"));
+
+    TrafficSignalPhase phase = new TrafficSignalPhase(1, plain,
+        TrafficSignalPhaseApplicability.RED_AMBER);
+    phase.addRedAmberSignal(new BlockPos(1, 2, 3));
+    TrafficSignalPhase back = TrafficSignalPhase.fromNBT(phase.toNBT());
+    assertEquals(phase, back);
+    assertEquals(Arrays.asList(new BlockPos(1, 2, 3)), back.getRedAmberSignals());
+    assertEquals(TrafficSignalPhaseApplicability.RED_AMBER, back.getApplicability());
+  }
 }

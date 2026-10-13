@@ -257,7 +257,17 @@ public enum TrafficSignalPhaseApplicability {
    *
    * @since 1.0
    */
-  OVERHEIGHT_ACTIVE;
+  OVERHEIGHT_ACTIVE,
+
+  /**
+   * Enumeration value for the red+amber interval: the European indication shown for a moment
+   * before green. The phase's upcoming phase is the green it leads into; vehicle heads newly
+   * turning green show red and amber together, everything else holds what it showed. Appended so
+   * the ordinals stored in existing worlds keep their meaning.
+   *
+   * @since 2026.10
+   */
+  RED_AMBER;
 
   // endregion
 

@@ -1190,6 +1190,52 @@ Rules the phase builders follow so the monitor never trips:
   This still lets that first post-reload phase visually snap heads straight to red without a
   yellow (pre-existing behavior, unchanged) — only the false fault is suppressed.
 
+## Red+Amber Before Green
+
+The European indication that a red is about to change: red and amber together for a moment,
+then green. A per-controller option, **off by default** (`redAmberTime`, NBT `tcRaT`, written
+only while on), so a controller runs the US sequence unless someone asks for this. The config
+GUI cycles it Off / 1 s / 2 s (Germany uses 1 s, the UK 2 s; NORMAL ticks once a second, so finer
+steps would not take effect); the visual editor takes any value up to 3 s in its **R+A** field
+and draws the interval before each green in the cycle bars. Copy/paste carries it, including
+"off".
+
+**On the head it is a flag, not a colour.** `COLOR` (4 values) times `FACING` (4) fills all 16
+metadata values, so red+amber is `COLOR=RED` plus the tile entity flag `rAm`, exactly as the
+flashing yellow arrow is green plus `fya`. The head lights every section its block would light for
+red or for amber (`shouldLightBulb`), so a block's own colour mapping is respected. Everything
+that reads the block colour, the conflict monitor included, sees red; a head with no tile entity
+just shows red.
+
+**In a phase it is a list and a pseudo-indication.** `TrafficSignalPhase` carries
+`redAmberSignals` (NBT `raS`, only when non-empty) and resolves them as `INDICATION_RED_AMBER`,
+ranked GREEN > FYA > YELLOW > RED+AMBER > RED > OFF. `apply()` writes it through
+`changeSignalColor(..., redAmber)`; the plain overloads clear the flag, so any other colour write
+ends it. Both clearance checks (`findSkippedClearance` and ADVANCED's `enforceOutputClearance`)
+ask `TrafficSignalPhase.isRedIndication`, which counts red+amber as red: comparing against red
+alone would let a green go straight to red+amber unnoticed.
+
+**NORMAL mode: a wrapper phase**, built like the lead pedestrian interval. Whenever the ticker
+chooses a green that turns a vehicle head green that was not already green or flashing,
+`maybeWrapWithRedAmber` puts a `RED_AMBER` phase in front of it (applicability appended to its
+enum): the newly green heads show red+amber, heads that keep their indication keep it, a newly
+permissive FYA is held red, and a walk that is not already walking (from an LPI) waits for the
+green. When the red+amber time is up the ticker applies the wrapped green, so its min and max
+green start when the green does. The release itself is never wrapped, nor is any clearance, the
+all-red or the LPI.
+
+**ADVANCED mode: a ring stage after delayed green.** `startGreen` arms red+amber; the GREEN case
+holds the green, max, gap-out and force-off clocks while it runs, after any DLY GRN, then rebases
+them. `describe()` reports the movement as RED with `redAmber` set and `applyServed` lists those
+heads as red+amber, so overlaps, FYA lenses and the output clearance stage all treat them as red.
+The walk starts with the green unless a leading walk is already running. The overlap lead-green
+prediction and the coordination split advisory both add the red+amber time. Preemption greens do
+not get it.
+
+Not covered: requestable (HAWK and pedestrian) controllers, the flash-exit straight to primary
+green, and vehicle overlaps in ADVANCED (an overlap follows its parent's green, so it goes red to
+green without red+amber).
+
 ## Known Considerations
 
 - Sensors detect `EntityPlayer` and `EntityVillager` as vehicle proxies -- there are no

@@ -2093,4 +2093,94 @@ class RingBarrierStateTest {
   }
 
   // endregion
+
+  // region: red+amber
+
+  @Test
+  @DisplayName("red+amber: off by default, a served green carries no red+amber")
+  void redAmberOffByDefault() {
+    RingBarrierState rb = new RingBarrierState();
+    rb.tick(twoThroughPlan(), circuits(2), NO_OVERLAPS, 0L,
+        new Demand().veh(0, 3, 0, 0).veh(1, 3, 0, 0));
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertFalse(rb.getLastServed(1).redAmber);
+  }
+
+  @Test
+  @DisplayName("red+amber: the heads show red+amber for its time, then green")
+  void redAmberThenGreen() {
+    RingBarrierState rb = new RingBarrierState();
+    rb.setRedAmberTicks(40L);
+    TrafficSignalProgrammedPhasePlan plan = twoThroughPlan();
+    net.minecraft.util.math.BlockPos head = new net.minecraft.util.math.BlockPos(10, 0, 0);
+    TrafficSignalControllerCircuit c0 = new TrafficSignalControllerCircuit();
+    c0.getThroughSignals().add(head);
+    TrafficSignalControllerCircuits ckts = new TrafficSignalControllerCircuits();
+    ckts.addCircuit(c0);
+    ckts.addCircuit(new TrafficSignalControllerCircuit());
+    Demand d = new Demand().veh(0, 3, 0, 0).veh(1, 3, 0, 0);
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 0L, d);
+    assertEquals(VehInterval.RED, rb.getLastServed(1).vehicle);
+    assertTrue(rb.getLastServed(1).redAmber);
+    assertTrue(rb.getLastAppliedPhase().getRedAmberSignals().contains(head));
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 38L, d);
+    assertTrue(rb.getLastServed(1).redAmber, "still red+amber before its time is up");
+
+    rb.tick(plan, ckts, NO_OVERLAPS, 40L, d);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertFalse(rb.getLastServed(1).redAmber);
+    assertTrue(rb.getLastAppliedPhase().getGreenSignals().contains(head));
+  }
+
+  @Test
+  @DisplayName("red+amber: min green is timed from the green, not from the red+amber")
+  void redAmberDoesNotEatMinGreen() {
+    RingBarrierState rb = new RingBarrierState();
+    rb.setRedAmberTicks(40L);
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    enable(plan, 2, 0);
+    enable(plan, 4, 1);
+    for (int n : new int[] {2, 4}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      p.setMinGreen(100L);
+      p.setPassage(40L);
+      p.setMaxGreen(400L);
+    }
+    TrafficSignalControllerCircuits ckts = circuits(2);
+    Demand none = new Demand().veh(0, 0, 0, 0).veh(1, 0, 0, 0);
+    long start = -1L;
+    for (long t = 0; t < 2000L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, none);
+      ServedMovement m = rb.getLastServed(1);
+      boolean green = m != null && m.phaseNumber == 2 && m.vehicle == VehInterval.GREEN;
+      if (green && start < 0L) {
+        start = t;
+      } else if (!green && start >= 0L) {
+        assertEquals(100L, t - start, "green ran " + (t - start));
+        return;
+      }
+    }
+    org.junit.jupiter.api.Assertions.fail("phase 2 never ended its green");
+  }
+
+  @Test
+  @DisplayName("red+amber: a green going to red+amber is held yellow by the output stage")
+  void outputStageHoldsGreenToRedAmber() {
+    net.minecraft.util.math.BlockPos head = new net.minecraft.util.math.BlockPos(1, 0, 0);
+    TrafficSignalPhase green = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    green.addGreenSignal(head);
+    TrafficSignalPhase ra = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.RED_AMBER);
+    ra.addRedAmberSignal(head);
+    TrafficSignalPhase out = RingBarrierState.enforceOutputClearance(green, ra,
+        new java.util.HashMap<>(), 60L, 0L);
+    assertTrue(out.getYellowSignals().contains(head));
+    assertFalse(out.getRedAmberSignals().contains(head));
+  }
+
+  // endregion
 }
