@@ -927,6 +927,171 @@ public class TrafficSignalVertexData {
   public static final List<Box> SIGNAL_BODY_PV_SHADE_4INCH_VERTEX_DATA =
       scaleBoxes(SIGNAL_BODY_PV_SHADE_VERTEX_DATA, SCALE_4_INCH, true);
 
+  // --- European (modular) section housing ---
+
+  /** Corner radius of a European module, front and back, for a 12-inch section. */
+  public static final float EURO_CORNER_RADIUS = 1.0f;
+
+  /**
+   * A slab with rounded corners in the section's face plane: a full-height middle and two
+   * stepped strips top and bottom, so the corners read round from the front and from the side.
+   * The boxes touch and never overlap.
+   */
+  private static void addRoundedSlab(List<Box> out, float x1, float x2, float y1, float y2,
+      float z1, float z2, float r) {
+    final float step = r * 0.3f;
+    out.add(new Box(new float[]{x1, y1 + r, z1}, new float[]{x2, y2 - r, z2}));
+    out.add(new Box(new float[]{x1 + step, y1 + step, z1}, new float[]{x2 - step, y1 + r, z2}));
+    out.add(new Box(new float[]{x1 + step, y2 - r, z1}, new float[]{x2 - step, y2 - step, z2}));
+    out.add(new Box(new float[]{x1 + r, y1, z1}, new float[]{x2 - r, y1 + step, z2}));
+    out.add(new Box(new float[]{x1 + r, y2 - step, z1}, new float[]{x2 - r, y2, z2}));
+  }
+
+  /**
+   * Builds the European modular housing: every section its own module, a near-square front frame
+   * with rounded corners, then a straight-sided body the same outline less a hair, closing at the
+   * back in two smaller rounded steps onto a flat rear at the block's back face. A darker groove
+   * runs round the module where the frame meets the body, the joint between the two mouldings.
+   * No hinges show: the door of a European head hinges inside the frame.
+   *
+   * <p>As slim as the standard housing (its rear is the block's back face), so the mounts, the
+   * backplates and the rear-pole aiming see it exactly as they see the standard one.</p>
+   *
+   * @param shadedParts false for the body proper, true for the groove drawn a shade darker
+   */
+  private static List<Box> buildEuroBody(boolean shadedParts) {
+    final float faceZ = BODY_FACE_Z;
+    final float r = EURO_CORNER_RADIUS;
+    final float left = 2.0f;
+    final float right = 14.0f;
+    final float bottom = 0.0f;
+    final float top = 12.0f;
+    List<Box> body = new ArrayList<>();
+    List<Box> shaded = new ArrayList<>();
+    // Front frame, the full module outline.
+    addRoundedSlab(body, left, right, bottom, top, faceZ, faceZ + 0.5f, r);
+    // The joint between the frame and the body moulding.
+    addRoundedSlab(shaded, left + 0.15f, right - 0.15f, bottom + 0.15f, top - 0.15f,
+        faceZ + 0.5f, faceZ + 0.7f, r);
+    // The body, straight-sided.
+    addRoundedSlab(body, left + 0.1f, right - 0.1f, bottom + 0.1f, top - 0.1f,
+        faceZ + 0.7f, 15.2f, r);
+    // Rounding onto the flat rear.
+    addRoundedSlab(body, left + 0.5f, right - 0.5f, bottom + 0.5f, top - 0.5f, 15.2f, 15.6f, r);
+    addRoundedSlab(body, left + 1.1f, right - 1.1f, bottom + 1.1f, top - 1.1f, 15.6f, 16.0f,
+        r * 0.8f);
+    return shadedParts ? shaded : body;
+  }
+
+  public static final List<Box> SIGNAL_BODY_EURO_VERTEX_DATA = buildEuroBody(false);
+  public static final List<Box> SIGNAL_BODY_EURO_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_BODY_EURO_VERTEX_DATA);
+  public static final List<Box> SIGNAL_BODY_EURO_8INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_EURO_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> SIGNAL_BODY_EURO_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_EURO_VERTEX_DATA, SCALE_4_INCH, true);
+
+  /** The European module's frame joint, drawn a shade darker than the body. */
+  public static final List<Box> SIGNAL_BODY_EURO_SHADE_VERTEX_DATA = buildEuroBody(true);
+  public static final List<Box> SIGNAL_BODY_EURO_SHADE_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_BODY_EURO_SHADE_VERTEX_DATA);
+  public static final List<Box> SIGNAL_BODY_EURO_SHADE_8INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_EURO_SHADE_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> SIGNAL_BODY_EURO_SHADE_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_BODY_EURO_SHADE_VERTEX_DATA, SCALE_4_INCH, true);
+
+  /** The European module's door: the standard door's plane, with the module's rounded corners. */
+  private static List<Box> buildEuroDoor() {
+    List<Box> door = new ArrayList<>();
+    addRoundedSlab(door, 2.0f, 14.0f, 0.0f, 12.0f, 10.75f, 11.0f, EURO_CORNER_RADIUS);
+    return door;
+  }
+
+  public static final List<Box> SIGNAL_DOOR_EURO_VERTEX_DATA = buildEuroDoor();
+  public static final List<Box> SIGNAL_DOOR_EURO_HORIZONTAL_VERTEX_DATA =
+      rotateBoxes90Z(SIGNAL_DOOR_EURO_VERTEX_DATA);
+  public static final List<Box> SIGNAL_DOOR_EURO_8INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_DOOR_EURO_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> SIGNAL_DOOR_EURO_4INCH_VERTEX_DATA =
+      scaleBoxes(SIGNAL_DOOR_EURO_VERTEX_DATA, SCALE_4_INCH, true);
+
+  /**
+   * Resolves the door geometry for a body style, orientation and section size. Every style but
+   * the European one shares the standard square door; the European module's door has its
+   * rounded corners, or its corners would stand proud of the housing.
+   *
+   * @param style       the section's housing style
+   * @param horizontal  whether the head is in horizontal orientation
+   * @param sectionSize the section size in inches: 12, 8 or 4
+   *
+   * @return the door boxes, never null
+   */
+  public static List<Box> resolveDoorData(TrafficSignalBodyStyle style, boolean horizontal,
+      int sectionSize) {
+    if (style == TrafficSignalBodyStyle.EURO) {
+      if (horizontal) return SIGNAL_DOOR_EURO_HORIZONTAL_VERTEX_DATA;
+      return selectVisorData(SIGNAL_DOOR_EURO_VERTEX_DATA, SIGNAL_DOOR_EURO_8INCH_VERTEX_DATA,
+          SIGNAL_DOOR_EURO_4INCH_VERTEX_DATA, sectionSize);
+    }
+    if (horizontal) return SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA;
+    return selectVisorData(SIGNAL_DOOR_VERTEX_DATA, SIGNAL_DOOR_8INCH_VERTEX_DATA,
+        SIGNAL_DOOR_4INCH_VERTEX_DATA, sectionSize);
+  }
+
+  // --- European hood ---
+
+  /** Radius of the hood's wall about the lens centre, to the middle of the wall. */
+  public static final float EURO_HOOD_RADIUS = 5.5f;
+
+  /** How far the hood reaches in front of the door at its crown, for a 12-inch section. */
+  public static final float EURO_HOOD_DEPTH = 8.0f;
+
+  /** Depth of the collar the hood keeps all the way round the lens, under the cut. */
+  public static final float EURO_HOOD_COLLAR = 0.6f;
+
+  /**
+   * How far below the lens centre the hood's sides come down before only the collar is left, as
+   * an angle below the horizontal. The sides are cut back in a straight line from here to the
+   * crown, which is what makes the open-bottomed European hood read differently from a tunnel.
+   */
+  public static final float EURO_HOOD_SIDE_ANGLE_DEGREES = 35.0f;
+
+  /**
+   * Builds the European hood: a wall of small square boxes round the lens, each overlapping the
+   * next (the way the tunnel visor's wall is built), at full depth over the crown and cut back
+   * in a straight line down each side to the collar a little below the lens centre. Underneath
+   * only the collar remains, so the hood is open at the bottom.
+   */
+  private static List<Box> buildEuroHood() {
+    final float cx = CENTER_X;
+    final float cy = CENTER_Y;
+    final float faceZ = BODY_FACE_Z;
+    final float half = 0.2f; // half the wall thickness
+    final float radius = EURO_HOOD_RADIUS;
+    final float lowY = cy - radius
+        * (float) Math.sin(Math.toRadians(EURO_HOOD_SIDE_ANGLE_DEGREES));
+    final float topY = cy + radius;
+    final float arcStep = 0.3f; // less than the box size, so neighbouring boxes overlap
+    final int steps = (int) Math.ceil(2 * Math.PI * radius / arcStep);
+    List<Box> boxes = new ArrayList<>();
+    for (int i = 0; i < steps; i++) {
+      double angle = 2 * Math.PI * i / steps;
+      float x = cx + radius * (float) Math.cos(angle);
+      float y = cy + radius * (float) Math.sin(angle);
+      float t = Math.max(0.0f, Math.min(1.0f, (y - lowY) / (topY - lowY)));
+      float depth = EURO_HOOD_COLLAR + (EURO_HOOD_DEPTH - EURO_HOOD_COLLAR) * t;
+      boxes.add(new Box(new float[]{x - half, y - half, faceZ - depth},
+          new float[]{x + half, y + half, faceZ}));
+    }
+    return boxes;
+  }
+
+  public static final List<Box> EURO_HOOD_VISOR_VERTEX_DATA = buildEuroHood();
+  public static final List<Box> EURO_HOOD_VISOR_8INCH_VERTEX_DATA =
+      scaleBoxes(EURO_HOOD_VISOR_VERTEX_DATA, SCALE_8_INCH, true);
+  public static final List<Box> EURO_HOOD_VISOR_4INCH_VERTEX_DATA =
+      scaleBoxes(EURO_HOOD_VISOR_VERTEX_DATA, SCALE_4_INCH, true);
+
   /**
    * The part of a housing drawn a shade darker than the rest, so recesses read under the flat
    * lighting the signal renderer uses, or {@code null} for a style that has none.
@@ -939,6 +1104,12 @@ public class TrafficSignalVertexData {
    */
   public static List<Box> resolveBodyShadeData(TrafficSignalBodyStyle style, boolean horizontal,
       int sectionSize) {
+    if (style == TrafficSignalBodyStyle.EURO) {
+      if (horizontal) return SIGNAL_BODY_EURO_SHADE_HORIZONTAL_VERTEX_DATA;
+      return selectVisorData(SIGNAL_BODY_EURO_SHADE_VERTEX_DATA,
+          SIGNAL_BODY_EURO_SHADE_8INCH_VERTEX_DATA, SIGNAL_BODY_EURO_SHADE_4INCH_VERTEX_DATA,
+          sectionSize);
+    }
     if (style != TrafficSignalBodyStyle.PV) {
       return null;
     }
@@ -972,6 +1143,10 @@ public class TrafficSignalVertexData {
         if (horizontal) return SIGNAL_BODY_PV_HORIZONTAL_VERTEX_DATA;
         return selectVisorData(SIGNAL_BODY_PV_VERTEX_DATA, SIGNAL_BODY_PV_8INCH_VERTEX_DATA,
             SIGNAL_BODY_PV_4INCH_VERTEX_DATA, sectionSize);
+      case EURO:
+        if (horizontal) return SIGNAL_BODY_EURO_HORIZONTAL_VERTEX_DATA;
+        return selectVisorData(SIGNAL_BODY_EURO_VERTEX_DATA, SIGNAL_BODY_EURO_8INCH_VERTEX_DATA,
+            SIGNAL_BODY_EURO_4INCH_VERTEX_DATA, sectionSize);
       case STANDARD:
       default:
         if (horizontal) return SIGNAL_BODY_HORIZONTAL_VERTEX_DATA;
@@ -1080,6 +1255,9 @@ public class TrafficSignalVertexData {
         // signal renderer draws over the lens, not the visor.
         return selectVisorData(CIRCLE_VISOR_VERTEX_DATA, CIRCLE_VISOR_8INCH_VERTEX_DATA,
             CIRCLE_VISOR_4INCH_VERTEX_DATA, sectionSize);
+      case EURO_HOOD:
+        return selectVisorData(EURO_HOOD_VISOR_VERTEX_DATA, EURO_HOOD_VISOR_8INCH_VERTEX_DATA,
+            EURO_HOOD_VISOR_4INCH_VERTEX_DATA, sectionSize);
       case NONE:
         return selectVisorData(NONE_VISOR_VERTEX_DATA, NONE_VISOR_8INCH_VERTEX_DATA,
             NONE_VISOR_4INCH_VERTEX_DATA, sectionSize);

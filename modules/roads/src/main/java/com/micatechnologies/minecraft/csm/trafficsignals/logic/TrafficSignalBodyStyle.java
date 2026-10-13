@@ -18,7 +18,13 @@ public enum TrafficSignalBodyStyle implements IStringSerializable {
   STANDARD("standard", "Standard (Flat Back)"),
   BUBBLED("bubbled", "Bubbled (Eagle)"),
   /** Appended so the ordinals stored in existing worlds keep their meaning. */
-  PV("pv", "PV (Deep)");
+  PV("pv", "PV (Deep)"),
+  /**
+   * The modular polycarbonate housing of a European head: each section its own near-square
+   * module with rounded corners, straight sides and a flat rear, as slim as the standard housing.
+   * Appended so the ordinals stored in existing worlds keep their meaning.
+   */
+  EURO("euro", "European (Modular)");
 
   // Instance fields
   private final String name;          // The identifier used for serialization

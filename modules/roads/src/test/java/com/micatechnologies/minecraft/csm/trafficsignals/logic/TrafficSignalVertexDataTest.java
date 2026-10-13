@@ -230,6 +230,85 @@ class TrafficSignalVertexDataTest {
 
   // endregion
 
+  // region: European housing and hood
+
+  @Test
+  void euroBodyStaysInsideTheStandardHousingEnvelope() {
+    List<Box> all = new ArrayList<>(TrafficSignalVertexData.SIGNAL_BODY_EURO_VERTEX_DATA);
+    all.addAll(TrafficSignalVertexData.SIGNAL_BODY_EURO_SHADE_VERTEX_DATA);
+    float minZ = Float.MAX_VALUE;
+    float maxZ = -Float.MAX_VALUE;
+    for (Box box : all) {
+      assertTrue(box.from[0] >= 2.0f - 1e-6 && box.to[0] <= 14.0f + 1e-6, "x outside the frame");
+      assertTrue(box.from[1] >= -1e-6 && box.to[1] <= 12.0f + 1e-6, "y outside the frame");
+      minZ = Math.min(minZ, box.from[2]);
+      maxZ = Math.max(maxZ, box.to[2]);
+    }
+    // Starts at the door plane and ends at the block's back face, as the standard housing does,
+    // so the mounts and backplates need nothing new for it.
+    assertEquals(TrafficSignalVertexData.BODY_FACE_Z, minZ, 1e-6);
+    assertEquals(16.0f, maxZ, 1e-6);
+    assertEquals(16.0f, TrafficSignalVertexData.bodyRearZ(TrafficSignalBodyStyle.EURO, 12), 1e-6);
+    assertEquals(16.0f, TrafficSignalVertexData.bodyMaxZ(TrafficSignalBodyStyle.EURO, 12), 1e-6);
+  }
+
+  @Test
+  void euroDoorHasRoundedCornersAndOnlyTheEuroStyleUsesIt() {
+    // A corner of the square door is not covered by the rounded one.
+    for (Box box : TrafficSignalVertexData.SIGNAL_DOOR_EURO_VERTEX_DATA) {
+      boolean coversCorner = box.from[0] <= 2.05f && box.from[1] <= 0.05f;
+      assertTrue(!coversCorner, "rounded door covers the frame corner");
+    }
+    assertSame(TrafficSignalVertexData.SIGNAL_DOOR_EURO_8INCH_VERTEX_DATA,
+        TrafficSignalVertexData.resolveDoorData(TrafficSignalBodyStyle.EURO, false, 8));
+    assertSame(TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA,
+        TrafficSignalVertexData.resolveDoorData(TrafficSignalBodyStyle.PV, false, 12));
+    assertSame(TrafficSignalVertexData.SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA,
+        TrafficSignalVertexData.resolveDoorData(TrafficSignalBodyStyle.STANDARD, true, 8));
+    assertSame(TrafficSignalVertexData.SIGNAL_DOOR_4INCH_VERTEX_DATA,
+        TrafficSignalVertexData.resolveDoorData(TrafficSignalBodyStyle.BUBBLED, false, 4));
+  }
+
+  @Test
+  void euroHoodIsDeepOverTheCrownAndOpenUnderneath() {
+    float crownDepth = 0;
+    float bottomDepth = Float.MAX_VALUE;
+    for (Box box : TrafficSignalVertexData.EURO_HOOD_VISOR_VERTEX_DATA) {
+      assertTrue(box.to[2] <= TrafficSignalVertexData.BODY_FACE_Z + 1e-6,
+          "hood reaches behind the door plane");
+      float depth = box.to[2] - box.from[2];
+      float yMid = (box.from[1] + box.to[1]) / 2;
+      if (yMid > 11.0f) crownDepth = Math.max(crownDepth, depth);
+      if (yMid < 1.0f) bottomDepth = Math.min(bottomDepth, depth);
+    }
+    assertEquals(TrafficSignalVertexData.EURO_HOOD_DEPTH, crownDepth, 0.2f);
+    assertEquals(TrafficSignalVertexData.EURO_HOOD_COLLAR, bottomDepth, 1e-4f);
+  }
+
+  @Test
+  void everyVisorTypeResolvesAtEverySize() {
+    for (TrafficSignalVisorType type : TrafficSignalVisorType.values()) {
+      for (int size : new int[]{12, 8, 4}) {
+        List<Box> data = TrafficSignalVertexData.resolveVisorData(type, size);
+        assertNotNull(data, type + " at " + size);
+        assertTrue(!data.isEmpty(), type + " at " + size);
+      }
+    }
+  }
+
+  @Test
+  void everyBodyStyleResolvesAtEverySize() {
+    for (TrafficSignalBodyStyle style : TrafficSignalBodyStyle.values()) {
+      for (int size : new int[]{12, 8, 4}) {
+        assertTrue(!TrafficSignalVertexData.resolveBodyData(style, false, size).isEmpty());
+        assertTrue(!TrafficSignalVertexData.resolveDoorData(style, false, size).isEmpty());
+      }
+      assertTrue(!TrafficSignalVertexData.resolveBodyData(style, true, 12).isEmpty());
+    }
+  }
+
+  // endregion
+
   // region: Scaled variants preserve box count
 
   @Test

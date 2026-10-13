@@ -561,21 +561,14 @@ public class TileEntityTrafficSignalHeadRenderer extends
       boolean is8Inch = sectionSizes[i] == 8;
       boolean is4Inch = sectionSizes[i] == 4;
 
-      // The housing style only swaps the body geometry — doors, visors and bulbs are shared
-      // between the standard flat-back, the bubbled Eagle-style and the deep PV castings. The
+      // The housing style swaps the body geometry — visors and bulbs are shared between the
+      // standard flat-back, the bubbled Eagle-style, the deep PV and the European modular
+      // castings, and so is the door, except that the European module's has rounded corners. The
       // mounts notice a PV rear, but that is decided per head in render(), not here.
       List<RenderHelper.Box> bodyData = TrafficSignalVertexData.resolveBodyData(
           sectionInfo.getBodyStyle(), horizontal, sectionSizes[i]);
-      List<RenderHelper.Box> doorData;
-      if (horizontal) {
-        doorData = TrafficSignalVertexData.SIGNAL_DOOR_HORIZONTAL_VERTEX_DATA;
-      } else if (is4Inch) {
-        doorData = TrafficSignalVertexData.SIGNAL_DOOR_4INCH_VERTEX_DATA;
-      } else if (is8Inch) {
-        doorData = TrafficSignalVertexData.SIGNAL_DOOR_8INCH_VERTEX_DATA;
-      } else {
-        doorData = TrafficSignalVertexData.SIGNAL_DOOR_VERTEX_DATA;
-      }
+      List<RenderHelper.Box> doorData = TrafficSignalVertexData.resolveDoorData(
+          sectionInfo.getBodyStyle(), horizontal, sectionSizes[i]);
 
       List<RenderHelper.Box> shadeData = TrafficSignalVertexData.resolveBodyShadeData(
           sectionInfo.getBodyStyle(), horizontal, sectionSizes[i]);
