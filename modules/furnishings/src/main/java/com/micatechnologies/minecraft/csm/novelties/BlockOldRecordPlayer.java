@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.novelties;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -24,7 +25,8 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockOldRecordPlayer extends AbstractBlockRotatableNSEWUD {
+public class BlockOldRecordPlayer extends AbstractBlockRotatableNSEWUD
+    implements ICsmTrafficPoleBystander {
 
   public BlockOldRecordPlayer() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 1F, 10F, 0F, 0);

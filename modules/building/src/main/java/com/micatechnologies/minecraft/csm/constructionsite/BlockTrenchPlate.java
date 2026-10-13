@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -27,7 +28,7 @@ import net.minecraft.world.IBlockAccess;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockTrenchPlate extends AbstractBlock {
+public class BlockTrenchPlate extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   public static final PropertyBool NORTH = PropertyBool.create("north");
   public static final PropertyBool EAST = PropertyBool.create("east");

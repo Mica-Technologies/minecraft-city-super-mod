@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
@@ -242,13 +243,18 @@ public class BlockTrafficPolePedestal extends AbstractBlockTrafficPole {
    * for mounting (leaves, vines, torches, rails, carpets, ...). Those do not stop a tube
    * ending in the open either, so an end against them still wears its cap. CSM's own opt-out
    * marker, {@link ICsmTrafficPoleIgnored}, is deliberately not included: a signal head sat on
-   * the post top is solid hardware the tube should run straight into.
+   * the post top is solid hardware the tube should run straight into. A
+   * {@link ICsmTrafficPoleBystander} -- a tree, a bench, a crate -- is not hardware, so it counts
+   * as clutter here, as vanilla leaves and carpet do.
    *
    * @param block the block beyond the tube end
    *
-   * @return {@code true} if the block is vanilla clutter the end should ignore
+   * @return {@code true} if the block is clutter the end should ignore
    */
   private static boolean isNaturalClutter(Block block) {
+    if (block instanceof ICsmTrafficPoleBystander) {
+      return true;
+    }
     Class<?> blockClass = block.getClass();
     for (Class<?> ignored : IGNORE_BLOCK) {
       if (ignored != ICsmTrafficPoleIgnored.class && ignored.isAssignableFrom(blockClass)) {

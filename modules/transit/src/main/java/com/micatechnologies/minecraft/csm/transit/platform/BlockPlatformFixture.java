@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.transit.platform;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -24,7 +25,8 @@ import net.minecraft.world.IBlockAccess;
  *
  * @since 2026.9
  */
-public class BlockPlatformFixture extends AbstractBlockRotatableNSEW implements ICsmGlassFronted {
+public class BlockPlatformFixture extends AbstractBlockRotatableNSEW
+    implements ICsmTrafficPoleBystander, ICsmGlassFronted {
 
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
 

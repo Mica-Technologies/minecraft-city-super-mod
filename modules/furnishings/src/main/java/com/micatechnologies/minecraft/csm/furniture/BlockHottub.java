@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -12,7 +13,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockHottub extends AbstractBlockRotatableNSEWUD {
+public class BlockHottub extends AbstractBlockRotatableNSEWUD implements ICsmTrafficPoleBystander {
 
   public BlockHottub() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

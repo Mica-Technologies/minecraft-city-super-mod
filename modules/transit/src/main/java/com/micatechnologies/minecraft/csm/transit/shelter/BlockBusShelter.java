@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.transit.shelter;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -63,7 +64,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockBusShelter extends AbstractBlockRotatableNSEW implements ICsmGlassFronted {
+public class BlockBusShelter extends AbstractBlockRotatableNSEW
+    implements ICsmTrafficPoleBystander, ICsmGlassFronted {
 
   /** Whether this is the upper half. */
   public static final PropertyBool UPPER = PropertyBool.create("upper");

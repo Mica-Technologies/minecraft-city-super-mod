@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.outdoor;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -21,7 +22,7 @@ import net.minecraft.world.IBlockAccess;
  *
  * @since 2026.9
  */
-public class BlockSteppingStones extends AbstractBlock {
+public class BlockSteppingStones extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   private static final AxisAlignedBB BOX = new AxisAlignedBB(0, 0, 0, 1, 1 / 16.0, 1);
 

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.AxisAlignedBB;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockSiteAxialProp extends AbstractBlockSiteAxial {
+public class BlockSiteAxialProp extends AbstractBlockSiteAxial implements ICsmTrafficPoleBystander {
 
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
 

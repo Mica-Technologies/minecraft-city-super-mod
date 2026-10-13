@@ -110,11 +110,12 @@ the argument expression nowhere to go.
    tube end; a dome under that collar would be a cap inside a casting.
 3. **Nothing worth abutting** — `CAP`. Air, anything `isReplaceable` (tall grass, snow layers,
    water) and the vanilla natural clutter the pole family ignores for mounting (leaves, vines,
-   torches, rails, carpets…). The CSM opt-out marker `ICsmTrafficPoleIgnored` is deliberately
-   *not* in this set: a signal head sat on the post top is solid hardware the tube should run
-   straight into, even though the flanks ignore it.
+   torches, rails, carpets…), plus CSM's `ICsmTrafficPoleBystander` blocks (trees, furniture,
+   props). The rest of the CSM opt-out marker `ICsmTrafficPoleIgnored` is deliberately *not* in
+   this set: a signal head sat on the post top is solid hardware the tube should run straight
+   into, even though the flanks ignore it.
 4. **Vertical, and the end points down, and the block below is not pole hardware** — `BASE`.
-   "Pole hardware" is any `AbstractBlockTrafficPole` or any `ICsmTrafficPoleIgnored`: stand a
+   "Pole hardware" is any `AbstractBlockTrafficPole` or any other `ICsmTrafficPoleIgnored`: stand a
    pedestal pole on a thick pole or a mast arm cell and the two meet flush.
 5. Otherwise `NONE`.
 

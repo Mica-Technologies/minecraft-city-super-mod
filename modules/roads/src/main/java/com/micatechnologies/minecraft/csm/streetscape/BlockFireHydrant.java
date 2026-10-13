@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.streetscape;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRoadSurfaceAware;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import com.micatechnologies.minecraft.csm.codeutils.RoadSurfaceHeight;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +33,7 @@ import net.minecraft.world.World;
  * @version 2.0
  */
 public class BlockFireHydrant extends AbstractBlockRotatableNSEWUD
-    implements ICsmRoadSurfaceAware {
+    implements ICsmTrafficPoleBystander, ICsmRoadSurfaceAware {
 
   public BlockFireHydrant() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

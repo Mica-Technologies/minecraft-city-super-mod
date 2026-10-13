@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.AxisAlignedBB;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockRebarBundle extends AbstractBlockSiteAxial {
+public class BlockRebarBundle extends AbstractBlockSiteAxial implements ICsmTrafficPoleBystander {
 
   /** The dunnage and the bundle on it, running along x. */
   private static final AxisAlignedBB RUN_BOX = new AxisAlignedBB(0.0, 0.0, 2.0 / 16.0, 1.0,

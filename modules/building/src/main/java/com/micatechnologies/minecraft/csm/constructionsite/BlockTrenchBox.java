@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +33,7 @@ import net.minecraft.world.World;
  * @version 1.0
  * @since 2026.9
  */
-public class BlockTrenchBox extends AbstractBlockSiteAxial {
+public class BlockTrenchBox extends AbstractBlockSiteAxial implements ICsmTrafficPoleBystander {
 
   /** Another box is stacked on this one. Actual state only. */
   public static final PropertyBool UP = PropertyBool.create("up");

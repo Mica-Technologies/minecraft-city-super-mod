@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.furniture.residential;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -28,7 +29,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockResidentialFurniture extends AbstractBlockRotatableNSEW {
+public class BlockResidentialFurniture extends AbstractBlockRotatableNSEW
+    implements ICsmTrafficPoleBystander {
 
   /** Where the seat entity sits, in blocks above the block's floor. */
   private static final double SEAT_Y = 0.1;

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.furniture.market;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
 import com.micatechnologies.minecraft.csm.furniture.residential.SurfaceRest;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
@@ -37,7 +38,8 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.5
  */
-public class BlockVerifoneMx915 extends AbstractBlockRotatableNSEWUD {
+public class BlockVerifoneMx915 extends AbstractBlockRotatableNSEWUD
+    implements ICsmTrafficPoleBystander {
 
   private static final AxisAlignedBB BBOX = new AxisAlignedBB(
       0.3125, 0.0, 0.3125, 0.6875, 0.0625, 0.6875);

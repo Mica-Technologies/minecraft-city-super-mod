@@ -184,8 +184,10 @@ looks. A modpack can ship it in its `csm.cfg`.
 
 Blocks that traffic poles should **not** connect to. A pole draws a mounting arm towards most
 solid blocks beside it. List a block here if it shouldn't, such as another mod's railing, lamp or
-decoration that ends up with an unwanted arm. CSM already ignores its own fixtures, so this list is
-for what it can't know about.
+decoration that ends up with an unwanted arm. CSM already ignores its own fixtures and the things
+that only stand beside a pole: its trees and plants, park amenities, furniture and props, and
+vanilla plants, flower pots, signs, banners, beds, chests and the like. This list is for what it
+can't know about.
 
 ```
 trafficpoles {

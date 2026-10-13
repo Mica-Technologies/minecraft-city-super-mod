@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.tools;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.10
  */
-public class BlockBrushPile extends AbstractBlock {
+public class BlockBrushPile extends AbstractBlock implements ICsmTrafficPoleBystander {
 
   private static final AxisAlignedBB BOX = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.3125, 1.0);
 

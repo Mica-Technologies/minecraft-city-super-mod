@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.transit.fare;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -60,7 +61,8 @@ import net.minecraft.world.World;
  * @author Mica Technologies
  * @since 2026.5
  */
-public class BlockFareGate extends AbstractBlock implements ICsmTileEntityProvider {
+public class BlockFareGate extends AbstractBlock
+    implements ICsmTrafficPoleBystander, ICsmTileEntityProvider {
 
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
   public static final PropertyEnum<GateState> STATE =

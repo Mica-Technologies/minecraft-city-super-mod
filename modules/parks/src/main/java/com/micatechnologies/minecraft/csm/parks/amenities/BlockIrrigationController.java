@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.parks.amenities;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,7 +33,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.9
  */
-public class BlockIrrigationController extends AbstractBlockRotatableNSEW {
+public class BlockIrrigationController extends AbstractBlockRotatableNSEW
+    implements ICsmTrafficPoleBystander {
 
   /** Powering its outputs now. */
   public static final PropertyBool POWERED = PropertyBool.create("powered");
