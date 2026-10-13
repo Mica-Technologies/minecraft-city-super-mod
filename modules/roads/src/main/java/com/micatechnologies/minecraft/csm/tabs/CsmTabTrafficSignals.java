@@ -8,6 +8,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrossw
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAudible;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonAutomated;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonFemale;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonEuro;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonEuroBike;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonMale;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkButtonPsGray;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableCrosswalkTweeter1;
@@ -123,6 +125,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // ControllableCrosswalkButtonFemale
     initTabBlock(BlockControllableCrosswalkButtonMale.class,
         fmlPreInitializationEvent); // ControllableCrosswalkButtonMale
+    initTabBlock(BlockControllableCrosswalkButtonEuro.class, fmlPreInitializationEvent);
+    initTabBlock(BlockControllableCrosswalkButtonEuroBike.class, fmlPreInitializationEvent);
     initTabBlock(BlockControllableCrosswalkTweeter1.class,
         fmlPreInitializationEvent); // ControllableCrosswalkTweeter1
     initTabBlock(BlockControllableCrosswalkTweeter2.class,

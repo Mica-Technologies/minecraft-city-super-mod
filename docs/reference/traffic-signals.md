@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "100 blocks in this tab"
+!!! info "102 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -28,6 +28,8 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Doghouse Signal (Secondary/Left: Yellow Arrow + Green/FYA Bimodal) | `csm:controllabledoghousesignalsecondarybimodalleft` |  |  |  |  |
 | Doghouse Signal (Secondary/Right) | `csm:controllabledoghousesignalsecondaryleft` |  |  |  |  |
 | Doghouse Signal (Secondary/Right: Yellow Arrow + Green/FYA Bimodal) | `csm:controllabledoghousesignalsecondarybimodalright` |  |  |  |  |
+| European Crosswalk Button (Bicycle) | `csm:controllablecrosswalkbuttoneurobike` | 2 | 10 | pickaxe | 1 |
+| European Crosswalk Button (Pedestrian) | `csm:controllablecrosswalkbuttoneuro` | 2 | 10 | pickaxe | 1 |
 | European Pedestrian Signal (100 mm Repeater) | `csm:controllableeuropedsignal4inch` |  |  |  |  |
 | European Pedestrian Signal (200 mm) | `csm:controllableeuropedsignal` |  |  |  |  |
 | European Pedestrian Signal (200 mm, Flashing Green Clearance) | `csm:controllableeuropedsignalflashinggreen` |  |  |  |  |

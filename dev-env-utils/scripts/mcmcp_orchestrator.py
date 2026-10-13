@@ -79,11 +79,12 @@ class Orchestrator:
                 raise OrchestratorError('%s: %s' % (method, msg['error'].get('message')))
             return msg.get('result', {})
 
-    def call(self, name, **arguments):
-        result = self._request('tools/call', {'name': name, 'arguments': arguments})
+    def call(self, tool, /, **arguments):
+        # positional-only, so a tool argument may itself be called 'tool' or 'name'
+        result = self._request('tools/call', {'name': tool, 'arguments': arguments})
         texts = [c.get('text', '') for c in result.get('content', []) if c.get('type') == 'text']
         if result.get('isError'):
-            raise OrchestratorError('%s failed: %s' % (name, ' '.join(texts)[:500]))
+            raise OrchestratorError('%s failed: %s' % (tool, ' '.join(texts)[:500]))
         if result.get('structuredContent') is not None:
             return result['structuredContent']
         text = '\n'.join(texts)
