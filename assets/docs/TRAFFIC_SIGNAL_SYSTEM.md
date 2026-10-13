@@ -658,6 +658,15 @@ the face centre — land at the pole centre; otherwise the corners protrude past
 LEFT_ANGLE / RIGHT_ANGLE tilts. UP / DOWN mounts (horizontal signals) keep the full
 length since their natural diagonal is hidden inside the mounting surface.
 
+**Each end's bracket is sized to, and bolted onto, the section at that end**
+(`mountScaleFor`, `mountAnchorZFor`). The stub, elbow and arm sections and the stub's length
+scale by the end section's size over twelve, and the anchor is the same setback, scaled, from
+that section's own rear: a smaller housing is scaled about its door (z = 11), so its rear is at
+`11 + 5 * size / 12`, not 16. Anchored at the 12-inch depth (as it was until 2026-10-13) the
+bracket of a 100 mm head stood wholly behind the housing, a full-size casting floating beside a
+head a third its size; on 200 mm heads the same, less obviously. A head with a PV section keeps
+`bodyRearAnchorZ`, which follows the PV box. The overhead hanger scales with the top section.
+
 ### Mount-Edge Suppression for Add-on Signals
 
 When two signal heads share a mount edge, only one bracket is drawn:
