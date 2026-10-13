@@ -139,6 +139,12 @@
           "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_forest_green",
           "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_forest_green"
         }
+      },
+      "anthracite": {
+        "textures": {
+          "housing": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_anthracite",
+          "particle": "csm:blocks/trafficsignals/shared_textures/rrfb_housing_anthracite"
+        }
       }
     },
     "doublesided": {

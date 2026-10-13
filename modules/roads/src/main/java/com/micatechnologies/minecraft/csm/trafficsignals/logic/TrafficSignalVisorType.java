@@ -18,7 +18,13 @@ public enum TrafficSignalVisorType implements IStringSerializable {
    * lit from the ground area programmed with the visibility programmer tool. Appended so the
    * ordinals stored in existing worlds keep their meaning.
    */
-  PROGRAMMABLE("programmable", "Programmable Visibility");
+  PROGRAMMABLE("programmable", "Programmable Visibility"),
+  /**
+   * The European hood: closed over the top and down the sides, open underneath, its sides cut
+   * back from full depth at the top to a shallow collar below the lens. Appended so the ordinals
+   * stored in existing worlds keep their meaning.
+   */
+  EURO_HOOD("euro_hood", "European Hood");
 
   // Instance fields
   private final String name;          // The identifier used for serialization

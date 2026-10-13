@@ -19,7 +19,12 @@ public enum TrafficSignalBodyColor implements IStringSerializable {
   CHARCOAL_GRAY("charcoal_gray", "Charcoal Gray", 0.251F, 0.251F, 0.251F),
   OFF_WHITE("off_white", "Off-White", 0.922F, 0.922F, 0.902F),
   MAROON("maroon", "Maroon", 0.392F, 0.110F, 0.149F),
-  FOREST_GREEN("forest_green", "Forest Green", 0.133F, 0.267F, 0.180F);
+  FOREST_GREEN("forest_green", "Forest Green", 0.133F, 0.267F, 0.180F),
+  /**
+   * RAL 7016, the blue-tinged dark grey most European signal heads and poles are finished in.
+   * Appended so the ordinals stored in existing worlds keep their meaning.
+   */
+  ANTHRACITE("anthracite", "Anthracite (RAL 7016)", 0.161F, 0.192F, 0.200F);
 
   // Instance fields
   private final String name;          // The identifier used for serialization
