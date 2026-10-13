@@ -2471,7 +2471,8 @@ public class TrafficSignalControllerTickerUtilities {
     if (world == null) {
       return null;
     }
-    return validateSensorFacings(pos -> signalFacingOrNull(world, pos), circuits);
+    return validateSensorFacings(pos -> signalFacingOrNull(world, pos), world::isBlockLoaded,
+        circuits);
   }
 
   /**
@@ -2495,12 +2496,42 @@ public class TrafficSignalControllerTickerUtilities {
    */
   public static String validateSensorFacings(Function<BlockPos, EnumFacing> facingResolver,
       TrafficSignalControllerCircuits circuits) {
-    if (facingResolver == null || circuits == null) {
+    return validateSensorFacings(facingResolver, pos -> true, circuits);
+  }
+
+  /**
+   * {@link #validateSensorFacings(Function, TrafficSignalControllerCircuits)} that first skips
+   * every circuit with a signal head or sensor whose chunk is not loaded.
+   *
+   * <p>An unloaded head resolves to a {@code null} facing and is left out of the circuit's
+   * signal facings, exactly like a block with no facing. Judged that way, a circuit whose sensor
+   * was loaded and whose matching head was not -- one standing at the edge of the loaded area, or
+   * across a chunk border while the chunks around a player came and went -- faulted with "no
+   * matching signal facing" although it had one, and the fault stayed until cleared by hand. A
+   * circuit is only judged once all of it can be seen.</p>
+   *
+   * @param facingResolver the facing of a block, or {@code null} when it has none
+   * @param isLoaded       whether a position's chunk is loaded
+   * @param circuits       the configured circuits to validate
+   *
+   * @return a fault message for the first mismatch on a fully loaded circuit, or {@code null}
+   *
+   * @since 2026.10
+   */
+  public static String validateSensorFacings(Function<BlockPos, EnumFacing> facingResolver,
+      Predicate<BlockPos> isLoaded, TrafficSignalControllerCircuits circuits) {
+    if (facingResolver == null || isLoaded == null || circuits == null) {
       return null;
     }
     for (int i = 0; i < circuits.getCircuitCount(); i++) {
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(i);
       if (circuit.getSensors().isEmpty()) {
+        continue;
+      }
+      if (!allLoaded(isLoaded, circuit.getSensors(), circuit.getThroughSignals(),
+          circuit.getLeftSignals(), circuit.getRightSignals(), circuit.getFlashingLeftSignals(),
+          circuit.getFlashingRightSignals(), circuit.getProtectedSignals(),
+          circuit.getPedestrianBeaconSignals())) {
         continue;
       }
 
@@ -2566,6 +2597,18 @@ public class TrafficSignalControllerTickerUtilities {
       }
     }
     return null;
+  }
+
+  @SafeVarargs
+  private static boolean allLoaded(Predicate<BlockPos> isLoaded, List<BlockPos>... lists) {
+    for (List<BlockPos> list : lists) {
+      for (BlockPos pos : list) {
+        if (!isLoaded.test(pos)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   private static void addSignalFacingsTo(Function<BlockPos, EnumFacing> facingResolver,
