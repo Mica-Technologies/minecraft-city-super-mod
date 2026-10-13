@@ -45,7 +45,8 @@ public class SignalControllerConfigGui extends GuiScreen {
       "Clear Faults",                 // 15 - right col
       "Min Req. Service",             // 16 - right col
       "Max Req. Service",             // 17 - right col
-      "Red+Amber"                     // 18 - right col - CYCLE_RED_AMBER_TIME
+      "Red+Amber",                    // 18 - right col - CYCLE_RED_AMBER_TIME
+      "Green Flash"                   // 19 - right col - CYCLE_GREEN_FLASH_TIME
   };
 
   // Nine per column. Index order here follows SignalControllerConfigAction's ordinals, so the
@@ -80,6 +81,9 @@ public class SignalControllerConfigGui extends GuiScreen {
   private static final long[] RED_AMBER_OPTIONS =
       SignalControllerConfigPacketHandler.RED_AMBER_OPTIONS;
   private static final String[] RED_AMBER_NAMES = {"Off", "1s", "2s"};
+  private static final long[] GREEN_FLASH_OPTIONS =
+      SignalControllerConfigPacketHandler.GREEN_FLASH_OPTIONS;
+  private static final String[] GREEN_FLASH_NAMES = {"Off", "2s", "3s", "4s"};
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -179,6 +183,9 @@ public class SignalControllerConfigGui extends GuiScreen {
             MAX_REQ_SERVICE_NAMES);
       case CYCLE_RED_AMBER_TIME:
         return ticksToName(controller.getRedAmberTime(), RED_AMBER_OPTIONS, RED_AMBER_NAMES);
+      case CYCLE_GREEN_FLASH_TIME:
+        return ticksToName(controller.getGreenFlashTime(), GREEN_FLASH_OPTIONS,
+            GREEN_FLASH_NAMES);
       default:
         return "N/A";
     }

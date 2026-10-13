@@ -47,7 +47,7 @@ public class TrafficSignalControllerTicker {
         ctx.getMaxRequestableServiceTime(), ctx.getMinGreenTime(), ctx.getMaxGreenTime(),
         ctx.getMinGreenTimeSecondary(), ctx.getMaxGreenTimeSecondary(),
         ctx.getDedicatedPedSignalTime(), ctx.getLeadPedestrianIntervalTime(),
-        ctx.isAllRedFlash(), ctx.getRedAmberTime());
+        ctx.isAllRedFlash(), ctx.getRedAmberTime(), ctx.getGreenFlashTime());
   }
 
   /**
@@ -135,7 +135,8 @@ public class TrafficSignalControllerTicker {
       long dedicatedPedSignalTime,
       long leadPedestrianIntervalTime,
       boolean allRedFlash,
-      long redAmberTime) {
+      long redAmberTime,
+      long greenFlashTime) {
     // Call appropriate tick method based on mode
     switch (operatingMode) {
       case FORCED_FAULT:
@@ -164,7 +165,7 @@ public class TrafficSignalControllerTicker {
             timeSinceLastPhaseChange,
             overlapPedestrianSignals, yellowTime, flashDontWalkTime, allRedTime,
             minGreenTime, maxGreenTime, minGreenTimeSecondary, maxGreenTimeSecondary,
-            dedicatedPedSignalTime, leadPedestrianIntervalTime, redAmberTime);
+            dedicatedPedSignalTime, leadPedestrianIntervalTime, redAmberTime, greenFlashTime);
       case FLASH:
       default:
         return flashModeTick(configuredMode, cachedPhases, alternatingFlash, allRedFlash);
@@ -609,7 +610,8 @@ public class TrafficSignalControllerTicker {
       long maxGreenTimeSecondary,
       long dedicatedPedSignalTime,
       long leadPedestrianIntervalTime,
-      long redAmberTime) {
+      long redAmberTime,
+      long greenFlashTime) {
     // Create variable to store next phase (null phase indicates no change)
     TrafficSignalPhase nextPhase = null;
 
@@ -641,6 +643,13 @@ public class TrafficSignalControllerTicker {
     // phase is never treated as a green: it has no min or max of its own.
     else if (originalPhase.getApplicability() == TrafficSignalPhaseApplicability.RED_AMBER) {
       if (timeSinceLastPhaseChange >= redAmberTime) {
+        nextPhase = originalPhase.getUpcomingPhase();
+      }
+    }
+    // If original phase is the green flash, change to the yellow it leads into once its time is
+    // up. The decision to end the green was made before the flash and is not revisited.
+    else if (originalPhase.getApplicability() == TrafficSignalPhaseApplicability.GREEN_FLASH) {
+      if (timeSinceLastPhaseChange >= greenFlashTime) {
         nextPhase = originalPhase.getUpcomingPhase();
       }
     }
@@ -804,6 +813,15 @@ public class TrafficSignalControllerTicker {
         phaseMaxGreenTimeMs = maxGreenTime;
       }
 
+      // Green flash: the flash is the last part of the green, so the decision to end it comes
+      // that much sooner and a phase that maxes out still turns yellow when it always did. A
+      // dedicated pedestrian phase has no vehicle green to flash.
+      if (greenFlashTime > 0
+          && originalPhase.getApplicability() != TrafficSignalPhaseApplicability.PEDESTRIAN) {
+        phaseMinGreenTimeMs = Math.max(0L, phaseMinGreenTimeMs - greenFlashTime);
+        phaseMaxGreenTimeMs = Math.max(0L, phaseMaxGreenTimeMs - greenFlashTime);
+      }
+
       // If min green time is up, check for phase change
       if (timeSinceLastPhaseChange >= phaseMinGreenTimeMs) {
         // Check if max green time is met
@@ -925,6 +943,11 @@ public class TrafficSignalControllerTicker {
     nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(originalPhase,
         nextPhase, redAmberTime);
 
+    // Green flash: a yellow that takes vehicle heads off green goes in behind a green flash.
+    // Never wraps the release of a green flash, which would hold the yellow off for ever.
+    nextPhase = TrafficSignalControllerTickerUtilities.maybeWrapWithGreenFlash(originalPhase,
+        nextPhase, greenFlashTime);
+
     // Apply overlaps to transition phases so overlap targets get yellow/red clearance
     // matching their source signals (green phases already have overlaps applied)
     if (nextPhase != null && (
@@ -968,6 +991,7 @@ public class TrafficSignalControllerTicker {
         overridden.addRedSignals(nextPhase.getRedSignals());
         overridden.addFyaSignals(nextPhase.getFyaSignals());
         overridden.addRedAmberSignals(nextPhase.getRedAmberSignals());
+        overridden.addFlashingGreenSignals(nextPhase.getFlashingGreenSignals());
         overridden.addWalkSignals(nextPhase.getWalkSignals());
         overridden.addDontWalkSignals(nextPhase.getDontWalkSignals());
         overridden.addFlashDontWalkSignals(nextPhase.getFlashDontWalkSignals());
@@ -1347,6 +1371,8 @@ public class TrafficSignalControllerTicker {
     overridden.addYellowSignals(phase.getYellowSignals());
     overridden.addRedSignals(phase.getRedSignals());
     overridden.addFyaSignals(phase.getFyaSignals());
+    overridden.addRedAmberSignals(phase.getRedAmberSignals());
+    overridden.addFlashingGreenSignals(phase.getFlashingGreenSignals());
     overridden.addWalkSignals(phase.getWalkSignals());
     overridden.addDontWalkSignals(phase.getDontWalkSignals());
     overridden.addFlashDontWalkSignals(phase.getFlashDontWalkSignals());

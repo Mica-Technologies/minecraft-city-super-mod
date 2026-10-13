@@ -1281,6 +1281,53 @@ Not covered: requestable (HAWK and pedestrian) controllers, the flash-exit strai
 green, and vehicle overlaps in ADVANCED (an overlap follows its parent's green, so it goes red to
 green without red+amber).
 
+## Green Flash Before Yellow
+
+The last moments of a green flash before the yellow, as in Mexico (and Austria and its
+neighbours). A per-controller option, **off by default** (`greenFlashTime`, NBT `tcGfT`, written
+only while on). The config GUI cycles it Off / 2 s / 3 s / 4 s (Mexico uses 3 s); the visual
+editor takes any value up to 5 s in its **G Flash** field and draws it as the light green end of
+each green in the cycle bars. Copy/paste carries it, including "off". It is independent of
+red+amber: either, both or neither.
+
+**The flash is part of the green, not time added to it.** Under actuation nobody knows when a
+green will end until the controller decides to end it, so the decision is brought forward by the
+flash time instead: min and max green (and, in ADVANCED, the coordinated yield point and
+force-off) are judged that much sooner, the green then flashes out the flash time and the yellow
+starts when it would have without it. A green that maxes out, or gaps out at its minimum, is
+exactly as long as before. Once the flash starts the decision is final: demand that comes or goes
+during it changes nothing. A gap-out later in the green still ends with the full flash, since a
+gap-out is an extension anyway. Pedestrian clearance runs before the flash, so with the flash on
+the walk ends that much earlier.
+
+**On the head it is a flag, not a colour**, like red+amber: `COLOR=GREEN` plus the tile entity
+flag `gFl`, and every section the head lights for green flashes on the head's own flash pattern.
+Everything that reads the block colour sees green; a head with no tile entity shows a steady green.
+
+**In a phase it is a list and a pseudo-indication.** `TrafficSignalPhase` carries
+`flashingGreenSignals` (NBT `fgS`, only when non-empty) and resolves them as
+`INDICATION_FLASHING_GREEN`, ranked GREEN > FLASHING GREEN > FYA > YELLOW > RED+AMBER > RED > OFF.
+`apply()` writes it through `changeSignalColor(..., greenFlash)`; the shorter overloads clear the
+flag. Both clearance checks count it as green through `TrafficSignalPhase.isGreenIndication`, so
+a flashing green straight to red faults like a green would.
+
+**NORMAL mode: a wrapper phase in front of the yellow.** Whenever the ticker builds a yellow that
+takes a vehicle head off green, `maybeWrapWithGreenFlash` puts a `GREEN_FLASH` phase (appended to
+the applicability enum) in front of it: those heads flash green, a flashing arrow or dark section
+the yellow ends keeps what it showed, and everything else, walks included, already shows what the
+yellow shows. When its time is up the ticker applies the yellow. With pedestrians on the green the
+order is walk, pedestrian clearance (vehicles steady green), green flash, yellow. A dedicated
+pedestrian phase has no vehicle green and is not brought forward.
+
+**ADVANCED mode: a ring stage at the end of the green.** When a ring decides to terminate it sets
+`gfActive` instead of going yellow; the GREEN case then waits out the flash and goes yellow.
+`describe()` reports the movement as GREEN with `flashingGreen` set and `applyServed` lists those
+heads as flashing green. A flashing ring no longer counts as working its barrier, so a held
+companion ring ends with it rather than after it. Preemption clearances do not flash.
+
+Not covered: requestable (HAWK and pedestrian) controllers, the preemption clearance, and vehicle
+overlaps in ADVANCED (an overlap follows its parent's green steadily, then its yellow).
+
 ## Known Considerations
 
 - Sensors detect `EntityPlayer` and `EntityVillager` as vehicle proxies -- there are no

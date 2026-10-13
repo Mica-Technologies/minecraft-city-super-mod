@@ -50,6 +50,14 @@ public class TrafficSignalPhase {
    */
   private static final String NBT_KEY_RED_AMBER_SIGNAL_LIST = "raS";
 
+  /**
+   * The flashing green list. Written only when it has entries, so a phase without a green flash
+   * keeps the tag it always had.
+   *
+   * @since 2026.10
+   */
+  private static final String NBT_KEY_FLASHING_GREEN_SIGNAL_LIST = "fgS";
+
   /** @since 1.0 */
   private static final String NBT_KEY_GREEN_SIGNAL_LIST = "gS";
   private static final String LEGACY_NBT_KEY_GREEN_SIGNAL_LIST = "greenSignalList";
@@ -111,6 +119,15 @@ public class TrafficSignalPhase {
    * @since 2026.10
    */
   private final ArrayList<BlockPos> redAmberSignals = new ArrayList<>();
+
+  /**
+   * The list of {@link BlockPos}es of vehicle signals showing a flashing green during this phase:
+   * the last moments of a green before its yellow, applied as green with the head's green flash
+   * flag set.
+   *
+   * @since 2026.10
+   */
+  private final ArrayList<BlockPos> flashingGreenSignals = new ArrayList<>();
 
   /**
    * The list of {@link BlockPos}es of signals which are in the 'green' state during this phase.
@@ -273,6 +290,8 @@ public class TrafficSignalPhase {
         LEGACY_NBT_KEY_FYA_SIGNAL_LIST));
     phase.redAmberSignals.addAll(readPosList(nbt, NBT_KEY_RED_AMBER_SIGNAL_LIST,
         NBT_KEY_RED_AMBER_SIGNAL_LIST));
+    phase.flashingGreenSignals.addAll(readPosList(nbt, NBT_KEY_FLASHING_GREEN_SIGNAL_LIST,
+        NBT_KEY_FLASHING_GREEN_SIGNAL_LIST));
     phase.greenSignals.addAll(readPosList(nbt, NBT_KEY_GREEN_SIGNAL_LIST,
         LEGACY_NBT_KEY_GREEN_SIGNAL_LIST));
     phase.yellowSignals.addAll(readPosList(nbt, NBT_KEY_YELLOW_SIGNAL_LIST,
@@ -395,6 +414,44 @@ public class TrafficSignalPhase {
    */
   public boolean addRedAmberSignals(List<BlockPos> pos) {
     return redAmberSignals.addAll(pos);
+  }
+
+  /**
+   * Gets the list of {@link BlockPos}es of vehicle signals showing a flashing green during this
+   * phase.
+   *
+   * @return the flashing green signals
+   *
+   * @since 2026.10
+   */
+  public ArrayList<BlockPos> getFlashingGreenSignals() {
+    return this.flashingGreenSignals;
+  }
+
+  /**
+   * Adds a vehicle signal to the flashing green list.
+   *
+   * @param pos the signal position
+   *
+   * @return true if it was added
+   *
+   * @since 2026.10
+   */
+  public boolean addFlashingGreenSignal(BlockPos pos) {
+    return flashingGreenSignals.add(pos);
+  }
+
+  /**
+   * Adds vehicle signals to the flashing green list.
+   *
+   * @param pos the signal positions
+   *
+   * @return true if the list changed
+   *
+   * @since 2026.10
+   */
+  public boolean addFlashingGreenSignals(List<BlockPos> pos) {
+    return flashingGreenSignals.addAll(pos);
   }
 
   /**
@@ -679,6 +736,7 @@ public class TrafficSignalPhase {
     redSignals.removeAll(positions);
     fyaSignals.removeAll(positions);
     redAmberSignals.removeAll(positions);
+    flashingGreenSignals.removeAll(positions);
     walkSignals.removeAll(positions);
     dontWalkSignals.removeAll(positions);
     flashDontWalkSignals.removeAll(positions);
@@ -840,7 +898,7 @@ public class TrafficSignalPhase {
   private boolean moveOverlapSignalTo(BlockPos pos, List<BlockPos> destination) {
     boolean removed = false;
     for (List<BlockPos> list : new List[] {greenSignals, yellowSignals, redSignals, offSignals,
-        fyaSignals, redAmberSignals}) {
+        fyaSignals, redAmberSignals, flashingGreenSignals}) {
       if (list != destination) {
         removed |= list.remove(pos);
       }
@@ -876,7 +934,8 @@ public class TrafficSignalPhase {
       int indication = entry.getValue();
       int color = indicationColor(indication);
       if (!AbstractBlockControllableSignal.changeSignalColor(world, pos, color,
-          indication == INDICATION_FYA, indication == INDICATION_RED_AMBER)
+          indication == INDICATION_FYA, indication == INDICATION_RED_AMBER,
+          indication == INDICATION_FLASHING_GREEN)
           && firstMissing == null) {
         firstMissing = pos;
       }
@@ -897,6 +956,26 @@ public class TrafficSignalPhase {
   public static final int INDICATION_RED_AMBER = 5;
 
   /**
+   * Pseudo-indication for the flashing green before a yellow: applied as green with the head's
+   * green flash flag set, and counted as green by everything that judges clearance.
+   */
+  public static final int INDICATION_FLASHING_GREEN = 6;
+
+  /**
+   * Whether an indication is a green: solid, or the flashing green before a yellow. Everything
+   * that judges clearance must use this rather than compare with green, or a flashing green going
+   * straight to red would pass as clean.
+   *
+   * @param indication a resolved indication
+   *
+   * @return true for green and flashing green
+   */
+  public static boolean isGreenIndication(int indication) {
+    return indication == AbstractBlockControllableSignal.SIGNAL_GREEN
+        || indication == INDICATION_FLASHING_GREEN;
+  }
+
+  /**
    * Whether an indication stops traffic: red, or red+amber, which is red with amber beside it.
    * Everything that judges clearance must use this rather than compare with red, or a green
    * going straight to red+amber would pass as clean.
@@ -912,15 +991,16 @@ public class TrafficSignalPhase {
 
   /**
    * The block colour an indication is written as: FYA is green with the FYA flag, red+amber is
-   * red with the red+amber flag, everything else is its own colour.
+   * red with the red+amber flag, flashing green is green with the green flash flag, everything
+   * else is its own colour.
    *
-   * @param indication a {@code SIGNAL_*} colour, {@link #INDICATION_FYA} or
-   *                   {@link #INDICATION_RED_AMBER}
+   * @param indication a {@code SIGNAL_*} colour, {@link #INDICATION_FYA},
+   *                   {@link #INDICATION_RED_AMBER} or {@link #INDICATION_FLASHING_GREEN}
    *
    * @return the {@code SIGNAL_*} colour to write
    */
   public static int indicationColor(int indication) {
-    if (indication == INDICATION_FYA) {
+    if (indication == INDICATION_FYA || indication == INDICATION_FLASHING_GREEN) {
       return AbstractBlockControllableSignal.SIGNAL_GREEN;
     }
     if (indication == INDICATION_RED_AMBER) {
@@ -931,7 +1011,8 @@ public class TrafficSignalPhase {
 
   /**
    * Priority of each vehicle indication when a position appears in more than one state list.
-   * Higher wins. GREEN > FYA > YELLOW > RED+AMBER > RED > OFF: for a bimodal FYA head the
+   * Higher wins. GREEN > FLASHING GREEN > FYA > YELLOW > RED+AMBER > RED > OFF: for a bimodal
+   * FYA head the
    * flashing-list
    * assignment and the plain-list assignment combine as protected = OFF + GREEN -> GREEN,
    * permissive = FYA + RED -> FYA, clearance = YELLOW + RED -> YELLOW, stopped = RED + RED ->
@@ -940,6 +1021,8 @@ public class TrafficSignalPhase {
   private static int indicationPriority(int indication) {
     switch (indication) {
       case AbstractBlockControllableSignal.SIGNAL_GREEN:
+        return 6;
+      case INDICATION_FLASHING_GREEN:
         return 5;
       case INDICATION_FYA:
         return 4;
@@ -966,6 +1049,7 @@ public class TrafficSignalPhase {
   Map<BlockPos, Integer> resolveVehicleSignalStates() {
     Map<BlockPos, Integer> resolved = new LinkedHashMap<>();
     mergeIndication(resolved, greenSignals, AbstractBlockControllableSignal.SIGNAL_GREEN);
+    mergeIndication(resolved, flashingGreenSignals, INDICATION_FLASHING_GREEN);
     mergeIndication(resolved, fyaSignals, INDICATION_FYA);
     mergeIndication(resolved, yellowSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW);
     mergeIndication(resolved, redAmberSignals, INDICATION_RED_AMBER);
@@ -1042,6 +1126,12 @@ public class TrafficSignalPhase {
           SerializationUtils.getBlockPosNBTArrayFromBlockPosList(redAmberSignals));
     }
 
+    // Serialize flashing green signals, only when there are any
+    if (!flashingGreenSignals.isEmpty()) {
+      compound.setTag(NBT_KEY_FLASHING_GREEN_SIGNAL_LIST,
+          SerializationUtils.getBlockPosNBTArrayFromBlockPosList(flashingGreenSignals));
+    }
+
     // Serialize green signals
     compound.setTag(NBT_KEY_GREEN_SIGNAL_LIST,
         SerializationUtils.getBlockPosNBTArrayFromBlockPosList(greenSignals));
@@ -1090,7 +1180,8 @@ public class TrafficSignalPhase {
    */
   @Override
   public int hashCode() {
-    return Objects.hash(offSignals, greenSignals, fyaSignals, redAmberSignals, yellowSignals,
+    return Objects.hash(offSignals, greenSignals, fyaSignals, redAmberSignals,
+        flashingGreenSignals, yellowSignals,
         redSignals, walkSignals, flashDontWalkSignals,
         dontWalkSignals, circuit, upcomingPhase, applicability);
   }
@@ -1119,6 +1210,7 @@ public class TrafficSignalPhase {
         Objects.equals(offSignals, that.offSignals) &&
         Objects.equals(fyaSignals, that.fyaSignals) &&
         Objects.equals(redAmberSignals, that.redAmberSignals) &&
+        Objects.equals(flashingGreenSignals, that.flashingGreenSignals) &&
         Objects.equals(greenSignals, that.greenSignals) &&
         Objects.equals(yellowSignals, that.yellowSignals) &&
         Objects.equals(redSignals, that.redSignals) &&

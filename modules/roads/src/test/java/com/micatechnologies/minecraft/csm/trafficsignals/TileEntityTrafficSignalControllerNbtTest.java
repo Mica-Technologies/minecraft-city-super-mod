@@ -141,4 +141,20 @@ class TileEntityTrafficSignalControllerNbtTest {
     assertEquals(40L, te.getRedAmberTime());
     assertEquals(40L, te.writeNBT(new NBTTagCompound()).getLong("tcRaT"));
   }
+
+  @Test
+  void greenFlashTimeIsOffByDefaultAndRoundTrips() {
+    // A controller saved before the green flash existed: off, and nothing new written back
+    TileEntityTrafficSignalController te = new TileEntityTrafficSignalController();
+    te.readNBT(new NBTTagCompound());
+    assertEquals(0L, te.getGreenFlashTime());
+    assertFalse(te.writeNBT(new NBTTagCompound()).hasKey("tcGfT"));
+
+    NBTTagCompound input = new NBTTagCompound();
+    input.setLong("tcGfT", 60L);
+    te = new TileEntityTrafficSignalController();
+    te.readNBT(input);
+    assertEquals(60L, te.getGreenFlashTime());
+    assertEquals(60L, te.writeNBT(new NBTTagCompound()).getLong("tcGfT"));
+  }
 }

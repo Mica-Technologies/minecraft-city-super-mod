@@ -774,6 +774,15 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private static final String RED_AMBER_ACTIVE_KEY = "rAm";
   private boolean redAmberActive = false;
 
+  /**
+   * Whether the controller is commanding the green flash, the last moments of a green flashing
+   * before its yellow. The block's {@code COLOR} property stays at green (2) while this is set;
+   * the head flashes the sections it lights for green. Persisted and synced to the client; absent
+   * means not active, so a head that never had it keeps the tag it always had.
+   */
+  private static final String GREEN_FLASH_ACTIVE_KEY = "gFl";
+  private boolean greenFlashActive = false;
+
   // Bulb aging fields (short-form keys; LEGACY_* variants retained for back-compat reads)
   private static final String AGING_ENABLED_KEY = "agE";
   private static final String LEGACY_AGING_ENABLED_KEY = "agingEnabled";
@@ -861,6 +870,10 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // Get the red+amber state; absent means not active
     redAmberActive = compound.hasKey(RED_AMBER_ACTIVE_KEY)
         && compound.getBoolean(RED_AMBER_ACTIVE_KEY);
+
+    // Get the green flash state; absent means not active
+    greenFlashActive = compound.hasKey(GREEN_FLASH_ACTIVE_KEY)
+        && compound.getBoolean(GREEN_FLASH_ACTIVE_KEY);
 
     // Get the horizontal-flip setting
     if (compound.hasKey(HORIZONTAL_FLIP_KEY)) {
@@ -993,6 +1006,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     if (redAmberActive) {
       compound.setBoolean(RED_AMBER_ACTIVE_KEY, true);
     }
+    if (greenFlashActive) {
+      compound.setBoolean(GREEN_FLASH_ACTIVE_KEY, true);
+    }
     compound.setBoolean(HORIZONTAL_FLIP_KEY, horizontalFlip);
     compound.setInteger(MOUNT_TYPE_KEY, mountType.toNBT());
     compound.setInteger(MOUNT_COLOR_KEY, mountColor.toNBT());
@@ -1068,6 +1084,10 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
     // colour mapping is respected rather than assumed.
     boolean redAmber = redAmberActive && currentBulbColor == 0;
 
+    // Green flash — the controller holds the colour at green and sets the flag for the last
+    // moments of the green; every section lit for green flashes on the head's flash pattern.
+    boolean greenFlash = greenFlashActive && currentBulbColor == 2 && !bimodalFya;
+
     // Flash phase — the head's flash pattern decides when a flashing bulb is lit: OFF and B are
     // the two halves of a wig-wag pair, C is the rapid Barlo-style strobe. Uses the wall-clock
     // flash timer so the flash rate stays visually constant through tick lag spikes (decoupled
@@ -1126,6 +1146,10 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       // Pass 3 fused: bulb style enforcement (e.g., bi-modal arrows).
       if (enforcedStyle != null) {
         sectionInfo.setBulbStyle(enforcedStyle);
+      }
+
+      if (greenFlash) {
+        flashing = true;
       }
 
       // Pass 4 fused: flash phase — if the bulb is lit and set to flashing, blink it off
@@ -1651,6 +1675,32 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
       return false;
     }
     this.redAmberActive = redAmberActive;
+    dirty = true;
+    if (world != null) {
+      markDirtySync(world, pos, true);
+    }
+    return true;
+  }
+
+  /**
+   * Returns whether the controller is currently commanding the green flash on this head. Only
+   * meaningful while the block's color state is green (2).
+   */
+  public boolean isGreenFlashActive() {
+    return greenFlashActive;
+  }
+
+  /**
+   * Sets the green flash state. Persists and syncs to the client only when the value actually
+   * changes, so the per-tick controller apply stays cheap.
+   *
+   * @return true if the value changed
+   */
+  public boolean setGreenFlashActive(boolean greenFlashActive) {
+    if (this.greenFlashActive == greenFlashActive) {
+      return false;
+    }
+    this.greenFlashActive = greenFlashActive;
     dirty = true;
     if (world != null) {
       markDirtySync(world, pos, true);
