@@ -149,6 +149,48 @@ class TrafficSignalTextureMapTest {
     assertEquals(ballInfo.getV1(), aheadInfo.getV1(), 0.001f);
   }
 
+  @Test
+  void existingCellsKeepTheirPlaceInTheTallerAtlas() {
+    // Lit red LED ball is cell 33: row 4, column 1. The atlas grew from 8 rows to 16 below the
+    // original ones, so its cells are now a sixteenth tall and still start where they did.
+    var info = TrafficSignalTextureMap.getTextureInfoForBulb(
+        TrafficSignalBulbStyle.LED, TrafficSignalBulbType.BALL, TrafficSignalBulbColor.RED, true);
+    assertEquals(1f / 8f, info.getU1(), 1e-6f);
+    assertEquals(2f / 8f, info.getU2(), 1e-6f);
+    assertEquals(4f / 16f, info.getV1(), 1e-6f);
+    assertEquals(5f / 16f, info.getV2(), 1e-6f);
+  }
+
+  @Test
+  void euroLensesUseTheirOwnCellsInTheNewRows() {
+    java.util.Set<String> seen = new java.util.HashSet<>();
+    for (TrafficSignalBulbType type : new TrafficSignalBulbType[]{
+        TrafficSignalBulbType.BALL, TrafficSignalBulbType.LEFT}) {
+      for (TrafficSignalBulbColor color : TrafficSignalBulbColor.values()) {
+        for (boolean lit : new boolean[]{true, false}) {
+          var info = TrafficSignalTextureMap.getTextureInfoForBulb(
+              TrafficSignalBulbStyle.EURO, type, color, lit);
+          assertTrue(info.getV1() >= 0.5f - 1e-6f,
+              "European lens outside the new rows: " + type + "/" + color + "/" + lit);
+          assertTrue(seen.add(info.getU1() + "," + info.getV1()),
+              "two European lenses share a cell: " + type + "/" + color + "/" + lit);
+        }
+      }
+    }
+    assertEquals(12, seen.size());
+  }
+
+  @Test
+  void euroArrowsTurnLikeEveryOtherArrow() {
+    var left = TrafficSignalTextureMap.getTextureInfoForBulb(
+        TrafficSignalBulbStyle.EURO, TrafficSignalBulbType.LEFT, TrafficSignalBulbColor.GREEN, true);
+    var up = TrafficSignalTextureMap.getTextureInfoForBulb(
+        TrafficSignalBulbStyle.EURO, TrafficSignalBulbType.UP, TrafficSignalBulbColor.GREEN, true);
+    assertEquals(left.getU1(), up.getU1(), 1e-6f);
+    assertEquals(left.getV1(), up.getV1(), 1e-6f);
+    assertEquals(90f, up.getRotation(), 0.001f);
+  }
+
   private void assertValidUV(TrafficSignalTextureMap.TextureInfo info) {
     assertValidUV(info, "");
   }

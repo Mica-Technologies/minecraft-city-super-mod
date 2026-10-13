@@ -7,7 +7,7 @@ atlas is used at runtime by `TrafficSignalTextureMap` for TESR-based signal head
 
 1. Reads individual signal light texture PNGs from
    `textures/blocks/trafficsignals/lights/`
-2. Arranges them in a fixed order into an 8x8 grid (1024x1024 output, 128x128 tiles)
+2. Arranges them in a fixed order into an 8 x 16 grid (1024x2048 output, 128x128 tiles)
 3. Writes the combined atlas to `textures/blocks/trafficsignals/lights/atlas.png`
 
 The tile order in the atlas must match the UV coordinate mappings in
@@ -21,22 +21,37 @@ Constants in the source code (not configurable at runtime):
 | Parameter | Default | Purpose |
 |-----------|---------|---------|
 | `TILE_SIZE` | 128 | Expected width/height of each input texture in pixels |
-| `OUTPUT_SIZE` | 1024 | Width/height of the output atlas in pixels |
-| `INPUT_IMAGE_NAMES` | 55 entries | Ordered list of texture filenames (without `.png`) |
+| `OUTPUT_WIDTH` | 1024 | Width of the output atlas in pixels (eight tiles) |
+| `OUTPUT_HEIGHT` | 2048 | Height of the output atlas in pixels (sixteen tiles) |
+| `INPUT_IMAGE_NAMES` | 76 entries | Ordered list of texture filenames (without `.png`); `EMPTY` (`""`) leaves a cell transparent |
 
 ## Atlas Layout
 
-The atlas is an 8x8 grid with 55 populated tiles and 9 empty (transparent) slots:
+Eight columns by sixteen rows. The first eight rows are the original 8x8 atlas, unchanged when
+it grew, so every cell index below 64 kept its place; the grid was made taller rather than
+re-laid so no existing mapping moved.
 
-| Row | Columns 0-7 |
-|-----|-------------|
-| 0 | biled off (G/Y/R), biled on (G/Y/R), LED arrow off, LED arrow green |
-| 1 | LED arrow (Y/R), inca arrow off (G/Y/R), inca arrow on (G/Y/R) |
-| 2 | inca uturn off (G/Y/R), inca uturn on (G/Y/R), WLED off (G/Y), WLED red line off |
-| 3 | WLED on (G/Y), WLED red line, iLED off (G/Y/R), iLED on (G/Y/R) |
-| 4 | inca off (G/Y/R), inca on (G/Y/R), inca arrow off (G/Y) |
-| 5 | inca arrow (R off/G on/Y on/R on), eLED off, eLED on (G/Y/R) |
-| 6 | GTX off, GTX on (G/Y/R), WLED red X, (3 empty) |
+| Cells | Contents |
+|-------|----------|
+| 0-5 | bike LED off (G/Y/R), on (G/Y/R) |
+| 6-9 | LED dotted arrow off, on (G/Y/R) |
+| 10-15 | LED arrow off (G/Y/R), on (G/Y/R) |
+| 16-21 | U-turn off (G/Y/R), on (G/Y/R) |
+| 22-27 | transit (white LED) off, on |
+| 28-33 | LED ball off (G/Y/R), on (G/Y/R) |
+| 34-45 | incandescent ball and arrow, off and on |
+| 46-49 | LED dotted ball off, on (G/Y/R) |
+| 50-53 | GE GTX off, on (G/Y/R) |
+| 54 | transit red X |
+| 55-58 | GE DR6 off, on (G/Y/R) |
+| 59-63 | empty; 63 is `TrafficSignalTextureMap`'s fallback and must stay empty |
+| 64-69 | European ball off (G/Y/R), on (G/Y/R) |
+| 70-75 | European masked arrow off (G/Y/R), on (G/Y/R) |
+| 76-127 | spare |
+
+The European tiles are drawn by `dev-env-utils/scripts/gen_euro_lenses.py`; run it before this
+tool when they change. After this tool, run `gen_pv_lens_atlas.py`, which derives
+`atlas_pv.png` from the atlas at the same size.
 
 ## Output
 
@@ -58,9 +73,9 @@ mod JAR and used at runtime.
 
 1. **Fixed tile order** — The atlas slot order is hardcoded and must stay synchronized with
    `TrafficSignalTextureMap`. There is no automated validation of this correspondence.
-2. **Fixed grid size** — The 8x8 / 1024x1024 layout supports up to 64 tiles. Adding more
-   requires changing `OUTPUT_SIZE` or `TILE_SIZE` and updating `TrafficSignalTextureMap`'s
-   `UVHelper` grid dimensions.
+2. **Fixed grid size** — The 8 x 16 / 1024x2048 layout holds 128 tiles. Growing it again means
+   changing `OUTPUT_HEIGHT` and `TrafficSignalTextureMap`'s `UVHelper` rows together; add rows
+   at the bottom so no existing cell moves.
 3. **No non-square support** — All input textures are expected to be exactly `TILE_SIZE` x
    `TILE_SIZE`. Mismatched images are used as-is (stretched/cropped by `drawImage`).
 

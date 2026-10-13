@@ -12,7 +12,9 @@ public class TrafficSignalTextureMap {
 
   private static final String TEXTURE_ATLAS_NAME =
       "textures/blocks/trafficsignals/lights/atlas.png";
-  private static final UVHelper uvHelper = new UVHelper(8, 8);
+  // Eight columns by sixteen rows of 128 px cells. Rows 0-7 are the original 8x8 atlas, so every
+  // index below 64 means what it always has; the European lenses start at 64.
+  private static final UVHelper uvHelper = new UVHelper(8, 16);
 
   private static final Map<TextureKey, TextureInfo> textureInfoCache = new ConcurrentHashMap<>();
 
@@ -121,6 +123,9 @@ public class TrafficSignalTextureMap {
         case BIKE:
           return colorIdx; // 0, 1, 2: biled off (G/Y/R)
         case BALL:
+          if (style == TrafficSignalBulbStyle.EURO) {
+            return 64 + colorIdx; // 64-66: euro off (G/Y/R)
+          }
           if (style == TrafficSignalBulbStyle.DR6) {
             return 55; // dr6 off (single untinted off texture)
           }
@@ -148,6 +153,9 @@ public class TrafficSignalTextureMap {
         case UP_LEFT:
         case UP_RIGHT:
         case RIGHT:
+          if (style == TrafficSignalBulbStyle.EURO) {
+            return 70 + colorIdx; // 70-72: euro masked arrow off (G/Y/R)
+          }
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
             return 6; // led arrow off
           }
@@ -165,6 +173,9 @@ public class TrafficSignalTextureMap {
         case BIKE:
           return 3 + colorIdx; // 3-5: biled on (G/Y/R)
         case BALL:
+          if (style == TrafficSignalBulbStyle.EURO) {
+            return 67 + colorIdx; // 67-69: euro on (G/Y/R)
+          }
           if (style == TrafficSignalBulbStyle.DR6) {
             return 56 + colorIdx; // 56-58: dr6 on (G/Y/R)
           }
@@ -192,6 +203,9 @@ public class TrafficSignalTextureMap {
         case UP_LEFT:
         case UP_RIGHT:
         case RIGHT:
+          if (style == TrafficSignalBulbStyle.EURO) {
+            return 73 + colorIdx; // 73-75: euro masked arrow on (G/Y/R)
+          }
           if (style == TrafficSignalBulbStyle.LED_DOTTED) {
             return 7 + colorIdx; // 7-9: led dotted arrow (G/Y/R)
           }

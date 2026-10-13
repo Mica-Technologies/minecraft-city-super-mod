@@ -14,8 +14,9 @@ large-scale luminance edge (a legend boundary, the lens rim) the original pixels
 everywhere else (the LED dot texture, which no longer exists after a small blur) the blurred
 pixels are used. The mask is grown by a couple of pixels so an edge keeps its crisp shoulder.
 
-Each tile is filtered on its own: the atlas is an 8x8 grid of 128 px tiles and a blur across
-tile edges would fringe one lens with its neighbour's colour. Alpha is handled premultiplied.
+Each tile is filtered on its own: the atlas is eight 128 px tiles wide and as many rows tall as
+it needs (sixteen since the European lenses), and a blur across tile edges would fringe one lens
+with its neighbour's colour. Alpha is handled premultiplied.
 
 Usage (from the repository root)::
 
@@ -39,7 +40,8 @@ LIGHTS = REPO / "modules/roads/src/main/resources/assets/csm/textures/blocks/tra
 SOURCE = LIGHTS / "atlas.png"
 TARGET = LIGHTS / "atlas_pv.png"
 
-TILES_PER_SIDE = 8
+# Tiles across the atlas. Tiles are square, so the row count follows from the height.
+TILES_WIDE = 8
 
 # Radius of the smoothing blur, in source pixels. The LED dots in a 128 px tile sit about 6 px
 # apart, so 3 merges them into a continuous glow.
@@ -153,24 +155,23 @@ def smooth_tile(tile: Image.Image) -> Image.Image:
 def build(source: Image.Image) -> Image.Image:
     source = source.convert("RGBA")
     w, h = source.size
-    tw, th = w // TILES_PER_SIDE, h // TILES_PER_SIDE
+    tw = th = w // TILES_WIDE
     out = Image.new("RGBA", source.size, (0, 0, 0, 0))
-    for row in range(TILES_PER_SIDE):
-        for col in range(TILES_PER_SIDE):
+    for row in range(h // th):
+        for col in range(TILES_WIDE):
             box = (col * tw, row * th, (col + 1) * tw, (row + 1) * th)
             out.paste(smooth_tile(source.crop(box)), box)
     return out
 
 
 def tile_box(image: Image.Image, index: int) -> tuple[int, int, int, int]:
-    tw, th = image.size[0] // TILES_PER_SIDE, image.size[1] // TILES_PER_SIDE
-    row, col = divmod(index, TILES_PER_SIDE)
+    tw = th = image.size[0] // TILES_WIDE
+    row, col = divmod(index, TILES_WIDE)
     return col * tw, row * th, (col + 1) * tw, (row + 1) * th
 
 
 def preview(source: Image.Image, result: Image.Image, path: Path) -> None:
-    tw = source.size[0] // TILES_PER_SIDE
-    th = source.size[1] // TILES_PER_SIDE
+    tw = th = source.size[0] // TILES_WIDE
     strip = Image.new("RGBA", (tw * 2 * len(PREVIEW_TILES), th), (40, 40, 40, 255))
     for i, index in enumerate(PREVIEW_TILES):
         box = tile_box(source, index)
