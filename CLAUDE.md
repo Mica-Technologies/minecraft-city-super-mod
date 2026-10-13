@@ -1075,6 +1075,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   are placed with their items (an item given NBT spawns without default parts), each from beside
   its bay so the 90-degree placement points it into the bay, filling from the far end;
   `--only roads|lot|vehicles`
+- `build_euro_signals_demo.py` -- builds the European signals demo world in a flat creative world
+  named "Euro Signals Demo" (refuses any other) in the dev client: a gallery of every European
+  head on a NORMAL controller with red+amber and the green flash both on, a German junction
+  (NORMAL, red+amber, steady red pedestrian clearance), a Mexican one (ADVANCED, US heads, green
+  flash, flashing green pedestrian clearance) and an Austrian one (ADVANCED, both). Every
+  controller is programmed by NBT; it drives the game through the orchestrator
+  (`--instance run-f2eb58`), never a game port
+- `mcmcp_orchestrator.py` -- a minimal MCP client for the MCMCP orchestrator over its stdio shim,
+  for build scripts: every call names its game by instance id, so a script cannot land in another
+  running game (a fixed port such as 25586 belongs to whichever game bound it first, which has
+  been a live server). New scripts should use it rather than `csm_bench.py`'s port client
 - `build_parks_demo.py` -- builds the Parks & Greenery demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street of leaning trees, a
   park with every amenity, an arboretum of every planting preset with signs, and the tree kit on
