@@ -5425,6 +5425,52 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
+    @DisplayName("matching signal head in an unloaded chunk → circuit skipped, no fault")
+    void matchingHeadUnloaded_noFault() {
+      // The live report: the sensor's chunk is loaded, the head it matches is not, and another
+      // head on the circuit facing elsewhere is. Judged on what was loaded, it faulted.
+      BlockPos sigEast = new BlockPos(70, 0, 0);
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(sigEast, net.minecraft.util.EnumFacing.EAST);
+      facings.put(SENSOR_NB, net.minecraft.util.EnumFacing.NORTH);
+      // SIG_NB is unloaded: the World resolver returns null for it.
+
+      TrafficSignalControllerCircuit c = emptyCircuit();
+      c.getThroughSignals().add(SIG_NB);
+      c.getThroughSignals().add(sigEast);
+      c.getSensors().add(SENSOR_NB);
+
+      assertNotNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, circuits(c)), "without the loaded check this is the false fault");
+      assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, pos -> !pos.equals(SIG_NB), circuits(c)),
+          "a circuit with an unloaded head cannot be judged and must not fault");
+    }
+
+    @Test
+    @DisplayName("unloaded circuit skipped, a fully loaded misaligned circuit still faults")
+    void unloadedCircuitSkipped_loadedStillValidated() {
+      BlockPos sigC2 = new BlockPos(80, 0, 0);
+      BlockPos sensorC2 = new BlockPos(81, 0, 0);
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(SENSOR_BAD, net.minecraft.util.EnumFacing.EAST);
+      facings.put(sigC2, net.minecraft.util.EnumFacing.EAST);
+      facings.put(sensorC2, net.minecraft.util.EnumFacing.WEST);
+
+      TrafficSignalControllerCircuit c1 = emptyCircuit();
+      c1.getThroughSignals().add(SIG_NB); // unloaded
+      c1.getSensors().add(SENSOR_BAD);
+      TrafficSignalControllerCircuit c2 = emptyCircuit();
+      c2.getThroughSignals().add(sigC2);
+      c2.getSensors().add(sensorC2);
+
+      String result = TrafficSignalControllerTickerUtilities.validateSensorFacings(
+          facings::get, pos -> !pos.equals(SIG_NB), circuits(c1, c2));
+      assertNotNull(result);
+      assertTrue(result.contains("circuit 2"));
+    }
+
+    @Test
     @DisplayName("null circuits → null result (defensive)")
     void nullCircuits_nullResult() {
       assertNull(TrafficSignalControllerTickerUtilities.validateSensorFacings(
