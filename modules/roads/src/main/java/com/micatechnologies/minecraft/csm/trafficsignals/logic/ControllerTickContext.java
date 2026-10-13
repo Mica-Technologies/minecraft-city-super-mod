@@ -37,6 +37,8 @@ public class ControllerTickContext {
   private final long dedicatedPedSignalTime;
   private final long leadPedestrianIntervalTime;
   private final boolean allRedFlash;
+  /** Red+amber before green, in ticks; 0 = off. NORMAL mode reads it. */
+  private final long redAmberTime;
 
   /**
    * Constructs a new {@link ControllerTickContext} with all required parameters.
@@ -107,6 +109,44 @@ public class ControllerTickContext {
       long dedicatedPedSignalTime,
       long leadPedestrianIntervalTime,
       boolean allRedFlash) {
+    this(world, configuredMode, operatingMode, circuits, overlaps, cachedPhases, originalPhase,
+        timeSinceLastPhaseApplicabilityChange, timeSinceLastPhaseChange, alternatingFlash,
+        overlapPedestrianSignals, yellowTime, flashDontWalkTime, allRedTime,
+        minRequestableServiceTime, maxRequestableServiceTime, minGreenTime, maxGreenTime,
+        minGreenTimeSecondary, maxGreenTimeSecondary, dedicatedPedSignalTime,
+        leadPedestrianIntervalTime, allRedFlash, 0L);
+  }
+
+  /**
+   * As the constructor above, with the red+amber time.
+   *
+   * @param redAmberTime red+amber before green, in ticks; 0 = off
+   */
+  public ControllerTickContext(World world,
+      TrafficSignalControllerMode configuredMode,
+      TrafficSignalControllerMode operatingMode,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      TrafficSignalPhases cachedPhases,
+      TrafficSignalPhase originalPhase,
+      long timeSinceLastPhaseApplicabilityChange,
+      long timeSinceLastPhaseChange,
+      boolean alternatingFlash,
+      boolean overlapPedestrianSignals,
+      long yellowTime,
+      long flashDontWalkTime,
+      long allRedTime,
+      long minRequestableServiceTime,
+      long maxRequestableServiceTime,
+      long minGreenTime,
+      long maxGreenTime,
+      long minGreenTimeSecondary,
+      long maxGreenTimeSecondary,
+      long dedicatedPedSignalTime,
+      long leadPedestrianIntervalTime,
+      boolean allRedFlash,
+      long redAmberTime) {
+    this.redAmberTime = redAmberTime;
     this.world = world;
     this.configuredMode = configuredMode;
     this.operatingMode = operatingMode;
@@ -130,6 +170,10 @@ public class ControllerTickContext {
     this.dedicatedPedSignalTime = dedicatedPedSignalTime;
     this.leadPedestrianIntervalTime = leadPedestrianIntervalTime;
     this.allRedFlash = allRedFlash;
+  }
+
+  public long getRedAmberTime() {
+    return redAmberTime;
   }
 
   public World getWorld() {

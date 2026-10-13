@@ -255,6 +255,116 @@ public class TrafficSignalControllerTickerUtilities {
    *
    * @since 1.0
    */
+  /**
+   * Puts a red+amber interval in front of a green when the controller has red+amber on and the
+   * green turns at least one vehicle head green that was not already green or flashing.
+   *
+   * @param originatingPhase the phase being left
+   * @param nextPhase        the phase the ticker chose, or null for no change
+   * @param redAmberTime     red+amber time in ticks; 0 or less is off
+   *
+   * @return the red+amber phase leading into {@code nextPhase}, or {@code nextPhase} unchanged
+   *
+   * @since 2026.10
+   */
+  public static TrafficSignalPhase maybeWrapWithRedAmber(TrafficSignalPhase originatingPhase,
+      TrafficSignalPhase nextPhase, long redAmberTime) {
+    if (redAmberTime <= 0 || originatingPhase == null || nextPhase == null) {
+      return nextPhase;
+    }
+    // Releasing a red+amber interval, or building any interval that is not itself a green
+    if (originatingPhase.getApplicability() == TrafficSignalPhaseApplicability.RED_AMBER
+        || !isRedAmberEligible(nextPhase.getApplicability())) {
+      return nextPhase;
+    }
+    TrafficSignalPhase wrapped = getRedAmberPhaseForUpcoming(originatingPhase, nextPhase);
+    return wrapped.getRedAmberSignals().isEmpty() ? nextPhase : wrapped;
+  }
+
+  /**
+   * Whether a phase of this applicability may be led into by red+amber: a green. Clearance
+   * intervals, the all-red, the lead pedestrian interval and red+amber itself may not.
+   */
+  private static boolean isRedAmberEligible(TrafficSignalPhaseApplicability applicability) {
+    switch (applicability) {
+      case FLASH_DONT_WALK_TRANSITIONING:
+      case YELLOW_TRANSITIONING:
+      case RED_TRANSITIONING:
+      case LEAD_PEDESTRIAN_INTERVAL:
+      case ALL_RED:
+      case RED_AMBER:
+        return false;
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * Creates the red+amber interval in front of an upcoming green: the European indication that
+   * a red is about to change. Vehicle heads newly turning green show red and amber together;
+   * every head whose indication does not change keeps it (green stays green, a flashing arrow
+   * keeps flashing, off stays off), and a newly permissive flashing arrow is held red, as the
+   * lead pedestrian interval holds it. Walk signals already walking keep walking (a lead
+   * pedestrian interval comes before red+amber); a walk starts with the green, not before it.
+   *
+   * @param originatingPhase   the phase being left
+   * @param upcomingGreenPhase the green that follows the red+amber
+   *
+   * @return the red+amber phase, whose upcoming phase is {@code upcomingGreenPhase}; its red+amber
+   *     list is empty when no head newly turns green
+   *
+   * @since 2026.10
+   */
+  public static TrafficSignalPhase getRedAmberPhaseForUpcoming(TrafficSignalPhase originatingPhase,
+      TrafficSignalPhase upcomingGreenPhase) {
+    TrafficSignalPhase phase = new TrafficSignalPhase(
+        upcomingGreenPhase.getCircuit(), upcomingGreenPhase,
+        TrafficSignalPhaseApplicability.RED_AMBER);
+    List<BlockPos> originGreen = originatingPhase.getGreenSignals();
+    List<BlockPos> originFya = originatingPhase.getFyaSignals();
+    List<BlockPos> originOff = originatingPhase.getOffSignals();
+    List<BlockPos> originWalk = originatingPhase.getWalkSignals();
+
+    for (BlockPos walk : upcomingGreenPhase.getWalkSignals()) {
+      if (originWalk.contains(walk)) {
+        phase.addWalkSignal(walk);
+      } else {
+        phase.addDontWalkSignal(walk);
+      }
+    }
+    phase.addDontWalkSignals(upcomingGreenPhase.getDontWalkSignals());
+    phase.addDontWalkSignals(upcomingGreenPhase.getFlashDontWalkSignals());
+
+    for (BlockPos green : upcomingGreenPhase.getGreenSignals()) {
+      if (originGreen.contains(green)) {
+        phase.addGreenSignal(green);
+      } else if (originFya.contains(green)) {
+        phase.addFyaSignal(green);
+      } else {
+        phase.addRedAmberSignal(green);
+      }
+    }
+    for (BlockPos fya : upcomingGreenPhase.getFyaSignals()) {
+      if (originFya.contains(fya)) {
+        phase.addFyaSignal(fya);
+      } else {
+        phase.addRedSignal(fya);
+      }
+    }
+    for (BlockPos off : upcomingGreenPhase.getOffSignals()) {
+      if (originOff.contains(off)) {
+        phase.addOffSignal(off);
+      } else if (originFya.contains(off)) {
+        phase.addFyaSignal(off);
+      } else {
+        phase.addRedSignal(off);
+      }
+    }
+    phase.addRedSignals(upcomingGreenPhase.getRedSignals());
+    phase.addRedSignals(upcomingGreenPhase.getYellowSignals());
+    return phase;
+  }
+
   public static TrafficSignalPhase maybeWrapWithLpi(TrafficSignalPhase originatingPhase,
       TrafficSignalPhase upcomingGreenPhase,
       boolean overlapPedestrianSignals,
@@ -1205,7 +1315,7 @@ public class TrafficSignalControllerTickerUtilities {
         continue;
       }
       Integer now = after.get(entry.getKey());
-      if (now == null || now != AbstractBlockControllableSignal.SIGNAL_RED) {
+      if (now == null || !TrafficSignalPhase.isRedIndication(now)) {
         continue;
       }
       if (circuits != null && isBeaconPosition(circuits, entry.getKey())) {

@@ -77,6 +77,7 @@ Every time is in ticks, and 20 ticks is a second.
 | Maximum green (secondary) | 1000 (~50s) | Longest green on the side street |
 | Pedestrian walk | 160 (~8s) | Minimum walk indication |
 | Leading pedestrian interval | 0 (off) | Walk starts this far before the parallel vehicle green |
+| Red+amber | 0 (off) | Heads about to turn green show red and amber together this long first, the European sequence; Off, 1s or 2s in the simple view, any value up to 3s in the visual editor's **R+A** field |
 
 ## The conflict monitor
 
@@ -118,10 +119,10 @@ Configuration Tool**, sneak-click to change mode and click a head to apply it:
 
 | Setting | Options |
 |---|---|
-| Body / door / visor colour | The usual highway colours |
-| Visor type | Full, cap, tunnel and so on |
-| Body style | Housing generation |
-| Bulb style and type | Incandescent, LED, dotted LED |
+| Body / door / visor colour | The usual highway colours, plus anthracite (RAL 7016) for European heads |
+| Visor type | Full, cap, tunnel and so on, and the open-bottomed European hood |
+| Body style | Housing generation: standard, bubbled, programmed (PV), or European modular |
+| Bulb style and type | Incandescent, LED, dotted LED, GE GTX and DR6, and European LED (a diffused disc, arrows lit through a black mask) |
 | Body tilt | None, left/right tilt (22.5°), left/right angle (45°) |
 | Mount type | How it attaches to what carries it |
 | Nudge forward/back, left/right | Fine placement, a sixteenth of a block at a time |

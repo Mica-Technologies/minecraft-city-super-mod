@@ -31,6 +31,7 @@ public class SignalControllerVisualGui extends GuiScreen {
   private static final int COLOR_DONT_WALK = 0xFFCC0000;
   private static final int COLOR_ALL_RED = 0xFF880000;
   private static final int COLOR_LPI = 0xFF00DDDD;
+  private static final int COLOR_RED_AMBER = 0xFFDD5500;
   private static final int COLOR_BAR_BG = 0xFF333333;
   private static final int COLOR_LABEL = 0xFFCCCCCC;
   private static final int COLOR_VALUE = 0xFFFFFFFF;
@@ -65,6 +66,7 @@ public class SignalControllerVisualGui extends GuiScreen {
   private GuiTextField fieldPedClear;
   private GuiTextField fieldPedSignal;
   private GuiTextField fieldLPI;
+  private GuiTextField fieldRedAmber;
 
   private GuiTextField focusedField;
 
@@ -110,6 +112,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldY += rowH;
     fieldMinGreen = createField(col1X, fieldY, fieldW, fieldH, controller.getMinGreenTime());
     fieldMaxGreen = createField(col2X, fieldY, fieldW, fieldH, controller.getMaxGreenTime());
+    fieldRedAmber = createField(col3X, fieldY, fieldW, fieldH, controller.getRedAmberTime());
 
     fieldY += rowH;
     fieldMinGreenSec = createField(col1X, fieldY, fieldW, fieldH, controller.getMinGreenTimeSecondary());
@@ -203,8 +206,11 @@ public class SignalControllerVisualGui extends GuiScreen {
     boolean overlapPed = controller.getOverlapPedestrianSignals();
     long effectiveLpi = (overlapPed && lpiTime > 0) ? lpiTime : 0;
 
-    long totalCycle = effectiveLpi + greenTime + yellowTime + allRedTime
-        + greenSec + yellowTime + allRedTime;
+    // Red+amber leads each green, after any LPI; 0 = off
+    long redAmber = controller.getRedAmberTime();
+
+    long totalCycle = effectiveLpi + redAmber + greenTime + yellowTime + allRedTime
+        + redAmber + greenSec + yellowTime + allRedTime;
     if (totalCycle <= 0) totalCycle = 1;
 
     // Circuit count info (right-aligned)
@@ -222,9 +228,11 @@ public class SignalControllerVisualGui extends GuiScreen {
     if (effectiveLpi > 0) {
       x = drawPhaseBar(x, barY, barWidth, barHeight, effectiveLpi, totalCycle, COLOR_LPI, "LPI");
     }
+    x = drawPhaseBar(x, barY, barWidth, barHeight, redAmber, totalCycle, COLOR_RED_AMBER, "R+A");
     x = drawPhaseBar(x, barY, barWidth, barHeight, greenTime, totalCycle, COLOR_GREEN, "Green");
     x = drawPhaseBar(x, barY, barWidth, barHeight, yellowTime, totalCycle, COLOR_YELLOW, "Yel");
     x = drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_ALL_RED, "Red");
+    x = drawPhaseBar(x, barY, barWidth, barHeight, redAmber, totalCycle, COLOR_RED, "");
     x = drawPhaseBar(x, barY, barWidth, barHeight, greenSec, totalCycle, COLOR_RED, "");
     x = drawPhaseBar(x, barY, barWidth, barHeight, yellowTime, totalCycle, COLOR_RED, "");
     drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_RED, "");
@@ -238,9 +246,11 @@ public class SignalControllerVisualGui extends GuiScreen {
     if (effectiveLpi > 0) {
       x = drawPhaseBar(x, barY, barWidth, barHeight, effectiveLpi, totalCycle, COLOR_RED, "");
     }
+    x = drawPhaseBar(x, barY, barWidth, barHeight, redAmber, totalCycle, COLOR_RED, "");
     x = drawPhaseBar(x, barY, barWidth, barHeight, greenTime, totalCycle, COLOR_RED, "");
     x = drawPhaseBar(x, barY, barWidth, barHeight, yellowTime, totalCycle, COLOR_RED, "");
     x = drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_ALL_RED, "Red");
+    x = drawPhaseBar(x, barY, barWidth, barHeight, redAmber, totalCycle, COLOR_RED_AMBER, "R+A");
     x = drawPhaseBar(x, barY, barWidth, barHeight, greenSec, totalCycle, COLOR_GREEN, "Green");
     x = drawPhaseBar(x, barY, barWidth, barHeight, yellowTime, totalCycle, COLOR_YELLOW, "Yel");
     drawPhaseBar(x, barY, barWidth, barHeight, allRedTime, totalCycle, COLOR_ALL_RED, "");
@@ -261,11 +271,14 @@ public class SignalControllerVisualGui extends GuiScreen {
       //   Ped: [==Walk===========] [Flash DW]   [========Don't Walk========]
       //
       // Total walk+flash = LPI + green. Flash = pedClear, Walk = the rest.
-      long lpiPlusGreen = effectiveLpi + greenTime;
+      // A walk started by an LPI keeps walking through red+amber; otherwise it waits for green.
+      long walkWaits = effectiveLpi > 0 ? 0 : redAmber;
+      long lpiPlusGreen = effectiveLpi + (redAmber - walkWaits) + greenTime;
       long flashDraw = Math.min(pedClear, lpiPlusGreen);
       long walkDraw = Math.max(0, lpiPlusGreen - flashDraw);
-      long dontWalkDraw = totalCycle - walkDraw - flashDraw;
+      long dontWalkDraw = totalCycle - walkWaits - walkDraw - flashDraw;
       if (dontWalkDraw < 0) dontWalkDraw = 0;
+      x = drawPhaseBar(x, barY, barWidth, barHeight, walkWaits, totalCycle, COLOR_DONT_WALK, "");
       x = drawPhaseBar(x, barY, barWidth, barHeight, walkDraw, totalCycle, COLOR_WALK, "Walk");
       x = drawPhaseBar(x, barY, barWidth, barHeight, flashDraw, totalCycle, COLOR_FLASH_DW, "Flash");
       drawPhaseBar(x, barY, barWidth, barHeight, dontWalkDraw, totalCycle, COLOR_DONT_WALK, "Don't Walk");
@@ -299,8 +312,10 @@ public class SignalControllerVisualGui extends GuiScreen {
     fieldY += rowH;
     drawString(fontRenderer, "Min Grn:", col1L, fieldY + 2, COLOR_LABEL);
     drawString(fontRenderer, "Max Grn:", col2L, fieldY + 2, COLOR_LABEL);
+    drawString(fontRenderer, "R+A:", col3L, fieldY + 2, COLOR_LABEL);
     fieldMinGreen.drawTextBox();
     fieldMaxGreen.drawTextBox();
+    fieldRedAmber.drawTextBox();
 
     fieldY += rowH;
     drawString(fontRenderer, "C2 Min:", col1L, fieldY + 2, COLOR_LABEL);
@@ -437,7 +452,7 @@ public class SignalControllerVisualGui extends GuiScreen {
   private GuiTextField[] getAllFields() {
     return new GuiTextField[]{
         fieldYellow, fieldAllRed, fieldLPI,
-        fieldMinGreen, fieldMaxGreen,
+        fieldMinGreen, fieldMaxGreen, fieldRedAmber,
         fieldMinGreenSec, fieldMaxGreenSec,
         fieldPedClear, fieldPedSignal
     };
@@ -451,6 +466,7 @@ public class SignalControllerVisualGui extends GuiScreen {
     if (field == fieldYellow) paramKey = "yellowTime";
     else if (field == fieldAllRed) paramKey = "allRedTime";
     else if (field == fieldLPI) paramKey = "lpi";
+    else if (field == fieldRedAmber) paramKey = "redAmber";
     else if (field == fieldMinGreen) paramKey = "minGreenTime";
     else if (field == fieldMaxGreen) paramKey = "maxGreenTime";
     else if (field == fieldMinGreenSec) paramKey = "minGreenSecondary";
@@ -552,6 +568,10 @@ public class SignalControllerVisualGui extends GuiScreen {
         TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME, "pedSignal");
     sendIfPresent(source, TrafficSignalControllerNBTKeys.LEAD_PEDESTRIAN_INTERVAL_TIME,
         TrafficSignalControllerNBTKeys.LEGACY_LEAD_PEDESTRIAN_INTERVAL_TIME, "lpi");
+    // Red+amber is written only while on, so a source without the key has it off: paste that
+    // too, or the target would keep its own red+amber and disagree with the one copied.
+    CsmRoads.NETWORK.sendToServer(new SignalControllerSetValuePacket(blockPos, "redAmber",
+        source.getLong(TrafficSignalControllerNBTKeys.RED_AMBER_TIME)));
     pasteRequestableServiceTimes(source);
 
     // Non-timing settings. These were omitted originally, so a pasted controller kept its own

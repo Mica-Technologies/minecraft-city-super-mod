@@ -102,6 +102,14 @@ timers.
 
 ---
 
+### Red+amber before green
+
+When the controller's red+amber option is on (off by default; see "Red+Amber Before Green" in
+`TRAFFIC_SIGNAL_SYSTEM.md`), each green the ring starts shows red+amber for that long first,
+after any DLY GRN, with the green clocks held exactly as the delay holds them
+(`RingRuntime.raActive`, `RingBarrierState.setRedAmberTicks`). Splits must allow for it:
+`findSplitShortfall` adds it to what a phase needs.
+
 ## 4. PPLT FYA — Protected/Permissive Flashing Yellow Arrow lefts
 
 ### What the ASC/3 does

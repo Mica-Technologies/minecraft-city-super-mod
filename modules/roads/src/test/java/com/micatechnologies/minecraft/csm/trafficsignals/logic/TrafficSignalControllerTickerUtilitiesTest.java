@@ -6408,4 +6408,101 @@ class TrafficSignalControllerTickerUtilitiesTest {
       assertEquals(GREEN, phase.resolveVehicleSignalStates().get(BIMODAL));
     }
   }
+
+  // region: red+amber
+
+  private static TrafficSignalPhase redAmberOrigin(BlockPos stopped, BlockPos running,
+      BlockPos walk) {
+    TrafficSignalPhase origin = new TrafficSignalPhase(2, null,
+        TrafficSignalPhaseApplicability.RED_TRANSITIONING);
+    origin.addRedSignal(stopped);
+    origin.addGreenSignal(running);
+    origin.addDontWalkSignal(walk);
+    return origin;
+  }
+
+  private static TrafficSignalPhase redAmberUpcoming(BlockPos stopped, BlockPos running,
+      BlockPos walk) {
+    TrafficSignalPhase upcoming = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    upcoming.addGreenSignal(stopped);
+    upcoming.addGreenSignal(running);
+    upcoming.addWalkSignal(walk);
+    return upcoming;
+  }
+
+  @Test
+  @DisplayName("red+amber: heads newly turning green show red+amber, the rest hold, walk waits")
+  void redAmberPhaseLeadsTheNewGreens() {
+    BlockPos stopped = new BlockPos(1, 0, 0);
+    BlockPos running = new BlockPos(2, 0, 0);
+    BlockPos walk = new BlockPos(3, 0, 0);
+    TrafficSignalPhase upcoming = redAmberUpcoming(stopped, running, walk);
+    TrafficSignalPhase ra = TrafficSignalControllerTickerUtilities.getRedAmberPhaseForUpcoming(
+        redAmberOrigin(stopped, running, walk), upcoming);
+
+    assertEquals(TrafficSignalPhaseApplicability.RED_AMBER, ra.getApplicability());
+    assertSame(upcoming, ra.getUpcomingPhase());
+    assertEquals(Collections.singletonList(stopped), ra.getRedAmberSignals());
+    assertEquals(Collections.singletonList(running), ra.getGreenSignals());
+    assertTrue(ra.getDontWalkSignals().contains(walk));
+    assertTrue(ra.getWalkSignals().isEmpty());
+  }
+
+  @Test
+  @DisplayName("red+amber: off by default, never wraps its own release or a clearance")
+  void redAmberWrapsOnlyGreensWhenOn() {
+    BlockPos stopped = new BlockPos(1, 0, 0);
+    BlockPos running = new BlockPos(2, 0, 0);
+    BlockPos walk = new BlockPos(3, 0, 0);
+    TrafficSignalPhase origin = redAmberOrigin(stopped, running, walk);
+    TrafficSignalPhase upcoming = redAmberUpcoming(stopped, running, walk);
+
+    assertSame(upcoming,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(origin, upcoming, 0L),
+        "off (0) leaves the green alone");
+
+    TrafficSignalPhase wrapped =
+        TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(origin, upcoming, 20L);
+    assertEquals(TrafficSignalPhaseApplicability.RED_AMBER, wrapped.getApplicability());
+
+    assertSame(upcoming,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(wrapped, upcoming, 20L),
+        "releasing a red+amber interval goes straight to its green");
+
+    TrafficSignalPhase yellow = new TrafficSignalPhase(1, upcoming,
+        TrafficSignalPhaseApplicability.YELLOW_TRANSITIONING);
+    yellow.addGreenSignal(stopped);
+    assertSame(yellow,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(origin, yellow, 20L),
+        "a clearance interval is never led by red+amber");
+
+    TrafficSignalPhase same = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    same.addGreenSignal(running);
+    assertSame(same,
+        TrafficSignalControllerTickerUtilities.maybeWrapWithRedAmber(origin, same, 20L),
+        "no head newly turning green: nothing to lead");
+  }
+
+  @Test
+  @DisplayName("red+amber: a green going straight to red+amber is a skipped clearance")
+  void greenToRedAmberIsSkippedClearance() {
+    BlockPos head = new BlockPos(1, 0, 0);
+    TrafficSignalPhase green = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS);
+    green.addGreenSignal(head);
+    TrafficSignalPhase ra = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.RED_AMBER);
+    ra.addRedAmberSignal(head);
+    assertNotNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(green, ra, null));
+
+    TrafficSignalPhase red = new TrafficSignalPhase(1, null,
+        TrafficSignalPhaseApplicability.ALL_RED);
+    red.addRedSignal(head);
+    assertNull(TrafficSignalControllerTickerUtilities.findSkippedClearance(red, ra, null),
+        "red to red+amber is clean");
+  }
+
+  // endregion
 }

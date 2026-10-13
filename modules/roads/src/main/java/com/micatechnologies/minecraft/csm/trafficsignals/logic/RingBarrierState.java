@@ -65,16 +65,29 @@ public class RingBarrierState {
     /** Whether the phase's queue jump heads are lit: its green held back for a bus. */
     public final boolean queueJump;
 
+    /**
+     * Whether the movement's heads show red+amber: {@link #vehicle} is RED, and the green follows
+     * as soon as the red+amber time is up. Everything that judges clearance or follows a green
+     * sees red.
+     */
+    public final boolean redAmber;
+
     public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian) {
       this(phaseNumber, vehicle, pedestrian, false);
     }
 
     public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian,
         boolean queueJump) {
+      this(phaseNumber, vehicle, pedestrian, queueJump, false);
+    }
+
+    public ServedMovement(int phaseNumber, VehInterval vehicle, PedInterval pedestrian,
+        boolean queueJump, boolean redAmber) {
       this.phaseNumber = phaseNumber;
       this.vehicle = vehicle;
       this.pedestrian = pedestrian;
       this.queueJump = queueJump;
+      this.redAmber = redAmber;
     }
   }
 
@@ -100,6 +113,12 @@ public class RingBarrierState {
     long delayLength = 0L;
     // Whether this green's delay is a queue jump, which lights the circuit's queue jump heads.
     boolean queueJump = false;
+    // Red+amber (the European indication before green): after any delay, the vehicle shows red
+    // and amber for redAmberTicks with the green clocks deferred, as the delay defers them.
+    // raDefersWalk: no leading walk is running, so the walk starts with the green, not before.
+    boolean raActive = false;
+    long raStart = 0L;
+    boolean raDefersWalk = false;
     // Volume-density snapshots captured at green start: the queue length (for added initial) and
     // whether a bike call was present (for bike minimum green).
     long queueAtStart = 0L;
@@ -334,6 +353,22 @@ public class RingBarrierState {
   }
 
   /**
+   * Red+amber before green, in ticks (0 = off): the controller's setting, handed in before each
+   * tick. Each green then shows red+amber for this long after any delayed green, with its green
+   * clocks starting only when the green does. Preemption greens never get it.
+   */
+  private long redAmberTicks = 0L;
+
+  /**
+   * Sets the red+amber time. A change applies from the next green a ring starts.
+   *
+   * @param ticks red+amber time in ticks; 0 or less is off
+   */
+  public void setRedAmberTicks(long ticks) {
+    this.redAmberTicks = Math.max(0L, ticks);
+  }
+
+  /**
    * Advances the controller one tick and returns the phase to apply, or {@code null} if the
    * displayed indication is unchanged since the last applied phase.
    */
@@ -473,7 +508,7 @@ public class RingBarrierState {
 
     // Start a hold for every head about to skip its yellow
     for (Map.Entry<BlockPos, Integer> entry : after.entrySet()) {
-      if (entry.getValue() != AbstractBlockControllableSignal.SIGNAL_RED) {
+      if (!TrafficSignalPhase.isRedIndication(entry.getValue())) {
         continue;
       }
       Integer was = before.get(entry.getKey());
@@ -491,7 +526,7 @@ public class RingBarrierState {
       Map.Entry<BlockPos, Long> hold = it.next();
       BlockPos pos = hold.getKey();
       Integer state = after.get(pos);
-      boolean stillRed = state != null && state == AbstractBlockControllableSignal.SIGNAL_RED;
+      boolean stillRed = state != null && TrafficSignalPhase.isRedIndication(state);
       if (!stillRed || now - hold.getValue() >= yellowTicks) {
         it.remove();
         continue;
@@ -715,11 +750,20 @@ public class RingBarrierState {
       return false;
     }
     if (ring.interval == VehInterval.GREEN) {
-      // the included phase's own delay: its vehicles are still red until delayStart + delayLength.
-      // Not a transit queue jump: that hold is the bus's alone, and an overlap greening into it
-      // would turn across the bus as it pulls away
-      return ring.activePhase == includedPhase && ring.delayActive && !ring.queueJump
-          && (ring.delayStart + ring.delayLength - now) <= leadGreen;
+      // the included phase's own delay: its vehicles are still red until delayStart + delayLength,
+      // and then for the red+amber after it. Not a transit queue jump: that hold is the bus's
+      // alone, and an overlap greening into it would turn across the bus as it pulls away
+      if (ring.activePhase != includedPhase || ring.queueJump) {
+        return false;
+      }
+      if (ring.delayActive) {
+        long redAmber = ring.raActive ? redAmberTicks : 0L;
+        return (ring.delayStart + ring.delayLength + redAmber - now) <= leadGreen;
+      }
+      if (ring.raActive) {
+        return (ring.raStart + redAmberTicks - now) <= leadGreen;
+      }
+      return false;
     }
     if (ring.interval != VehInterval.RED) {
       return false; // lead green is shown only in the red before the phase's vehicle green
@@ -739,7 +783,8 @@ public class RingBarrierState {
     if (next != null && queueJumpTicks > 0L && includedPhase == queueJumpPhase) {
       return false; // it will open with a queue jump, which the overlap does not lead into
     }
-    long vehicleGreen = clearEnd + (next == null ? 0L : startDelay(next, pedServiceAtStart(next)));
+    long vehicleGreen = clearEnd + (next == null ? 0L : startDelay(next, pedServiceAtStart(next)))
+        + redAmberTicks;
     return (vehicleGreen - now) <= leadGreen; // inside the lead window
   }
 
@@ -792,6 +837,7 @@ public class RingBarrierState {
     ring.pedServing = false;
     ring.delayActive = false;
     ring.queueJump = false;
+    ring.raActive = false;
     ring.maxStart = -1L;
     ring.dualEntry = false;
     ring.condServiceUsed = false;
@@ -831,6 +877,21 @@ public class RingBarrierState {
           ring.greenStart = now;
           ring.intervalStart = now;
           ring.lastActuation = now;
+          ring.raStart = now; // red+amber, if on, follows the delay
+        }
+        // Red+amber: hold the green clocks the same way until it is over.
+        if (ring.raActive) {
+          if (now - ring.raStart < redAmberTicks) {
+            ring.lastActuation = now;
+            break;
+          }
+          ring.raActive = false;
+          ring.greenStart = now;
+          ring.intervalStart = now;
+          ring.lastActuation = now;
+          if (ring.raDefersWalk) {
+            ring.pedStart = now; // the walk starts with the green
+          }
         }
         // MAX recall is a constant call that also extends: it holds the green as a vehicle in the
         // zone would, so the phase runs to its max green whenever a conflicting call is waiting
@@ -1233,6 +1294,9 @@ public class RingBarrierState {
     ring.delayLength = delay;
     ring.delayStart = now;
     ring.walkHold = ped ? Math.max(phase.getWalk(), delay) : phase.getWalk();
+    ring.raActive = redAmberTicks > 0L;
+    ring.raStart = now;
+    ring.raDefersWalk = delay <= 0L;
     // Volume-density / bike snapshots at green start.
     ring.queueAtStart = vehicleCount(phase);
     TrafficSignalSensorSummary startSummary = summaryForCircuit(phase.getCircuitIndex());
@@ -1850,10 +1914,11 @@ public class RingBarrierState {
       long green = servesPedEveryCycle
           ? Math.max(p.getMinGreen(), p.getWalk() + p.getPedClear())
           : p.getMinGreen();
-      long needed = green + p.getYellow() + p.getRedClear();
+      long needed = redAmberTicks + green + p.getYellow() + p.getRedClear();
       if (needed > windowLen) {
         return "phase " + n + "'s split is " + windowLen + " ticks but the phase wants up to "
-            + needed + " (green " + green + " + yellow " + p.getYellow() + " + red clear "
+            + needed + " (" + (redAmberTicks > 0L ? "red+amber " + redAmberTicks + " + " : "")
+            + "green " + green + " + yellow " + p.getYellow() + " + red clear "
             + p.getRedClear() + "). The split cannot contain the phase, so the next phase starts "
             + "late every cycle and offset correction cannot recover the difference. Lengthen the "
             + "split or the cycle.";
@@ -2635,7 +2700,11 @@ public class RingBarrierState {
       return null;
     }
     PedInterval ped = PedInterval.NONE;
-    if (ring.pedServing && ring.interval == VehInterval.GREEN) {
+    boolean redAmber = ring.raActive && !ring.delayActive && ring.interval == VehInterval.GREEN;
+    if (redAmber && ring.pedServing && ring.raDefersWalk) {
+      // No leading walk: the walk waits for the green.
+      ped = PedInterval.DONT_WALK;
+    } else if (ring.pedServing && ring.interval == VehInterval.GREEN) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(ring.activePhase);
       if (phase != null) {
         if (ring.resting && phase.isRestInWalk()) {
@@ -2655,8 +2724,10 @@ public class RingBarrierState {
     }
     // During delayed green the vehicle is held red even though the ring interval is internally
     // GREEN; the leading ped walk (computed above as WALK, since walkHold >= the delay) shows.
-    VehInterval veh = ring.delayActive ? VehInterval.RED : ring.interval;
-    return new ServedMovement(ring.activePhase, veh, ped, ring.delayActive && ring.queueJump);
+    // Red+amber is likewise red, flagged so the heads light their amber beside it.
+    VehInterval veh = ring.delayActive || redAmber ? VehInterval.RED : ring.interval;
+    return new ServedMovement(ring.activePhase, veh, ped, ring.delayActive && ring.queueJump,
+        redAmber);
   }
 
   // endregion

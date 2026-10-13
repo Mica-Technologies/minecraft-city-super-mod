@@ -44,12 +44,16 @@ public class SignalControllerConfigGui extends GuiScreen {
       "Ramp Meter Night",             // 14 - right col
       "Clear Faults",                 // 15 - right col
       "Min Req. Service",             // 16 - right col
-      "Max Req. Service"              // 17 - right col
+      "Max Req. Service",             // 17 - right col
+      "Red+Amber"                     // 18 - right col - CYCLE_RED_AMBER_TIME
   };
 
   // Nine per column. Index order here follows SignalControllerConfigAction's ordinals, so the
   // two requestable entries land at the end rather than beside the other timings.
   private static final int LEFT_COL_COUNT = 9;
+
+  // Rows in the taller column, which places the title and the buttons below the columns.
+  private static final int ROW_COUNT = Math.max(LEFT_COL_COUNT, LABELS.length - LEFT_COL_COUNT);
 
   // Display strings for timing values (ticks -> human-readable)
   private static final long[] LPI_OPTIONS = SignalControllerConfigPacketHandler.LPI_OPTIONS;
@@ -73,6 +77,9 @@ public class SignalControllerConfigGui extends GuiScreen {
       SignalControllerConfigPacketHandler.MAX_REQUESTABLE_SERVICE_OPTIONS;
   private static final String[] MAX_REQ_SERVICE_NAMES =
       {"60s", "90s", "120s", "150s", "180s", "240s"};
+  private static final long[] RED_AMBER_OPTIONS =
+      SignalControllerConfigPacketHandler.RED_AMBER_OPTIONS;
+  private static final String[] RED_AMBER_NAMES = {"Off", "1s", "2s"};
 
   private final TileEntityTrafficSignalController controller;
   private final BlockPos blockPos;
@@ -88,7 +95,7 @@ public class SignalControllerConfigGui extends GuiScreen {
     int totalWidth = COL_WIDTH * 2 + COL_GAP;
     int leftX = width / 2 - totalWidth / 2;
     int rightX = leftX + COL_WIDTH + COL_GAP;
-    int topY = height / 2 - (LEFT_COL_COUNT * ROW_SPACING + 20) / 2;
+    int topY = height / 2 - (ROW_COUNT * ROW_SPACING + 20) / 2;
 
     // Left column: indices 0 through LEFT_COL_COUNT-1
     for (int i = 0; i < LEFT_COL_COUNT; i++) {
@@ -104,7 +111,7 @@ public class SignalControllerConfigGui extends GuiScreen {
     }
 
     // Close and visual view buttons below both columns
-    int closeY = topY + LEFT_COL_COUNT * ROW_SPACING + 4;
+    int closeY = topY + ROW_COUNT * ROW_SPACING + 4;
     int halfW = (COL_WIDTH - 4) / 2;
     buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - COL_WIDTH / 2, closeY,
         halfW, BUTTON_HEIGHT, "Close"));
@@ -123,7 +130,7 @@ public class SignalControllerConfigGui extends GuiScreen {
     }
 
     int totalWidth = COL_WIDTH * 2 + COL_GAP;
-    int topY = height / 2 - (LEFT_COL_COUNT * ROW_SPACING + 20) / 2;
+    int topY = height / 2 - (ROW_COUNT * ROW_SPACING + 20) / 2;
     drawCenteredString(fontRenderer, "Signal Controller Configuration",
         width / 2, topY - 12, 0xFFFFFF);
 
@@ -170,6 +177,8 @@ public class SignalControllerConfigGui extends GuiScreen {
       case CYCLE_MAX_REQUESTABLE_SERVICE_TIME:
         return ticksToName(controller.getMaxRequestableServiceTime(), MAX_REQ_SERVICE_OPTIONS,
             MAX_REQ_SERVICE_NAMES);
+      case CYCLE_RED_AMBER_TIME:
+        return ticksToName(controller.getRedAmberTime(), RED_AMBER_OPTIONS, RED_AMBER_NAMES);
       default:
         return "N/A";
     }
