@@ -650,6 +650,16 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   on, in green, amber and red, and the masked standing and walking pedestrian figures) that
   `ImageTilerTool` appends to the lens atlas at cells 64-79, plus the pedestrian heads' opaque
   inventory lenses; `--check` fails on drift, `--sheet` writes a contact sheet
+- `gen_euro_push_button.py` -- the European push buttons (pedestrian and bicycle): the model,
+  drawn at full height and scaled to 75% about the pole face, its front textures (zebra chevron,
+  pointing hand, walker or bicycle, signal mark, drawn at their true aspect and squeezed square),
+  the ribbed sides, caps and the request lamp off and lit, and both blockstates (the lamp is the
+  `requested` actual state); prints the bounding box the block class must match; `--check`
+- `gen_euro_button_sounds.py` -- the European push button's click and walk tick, cleaned from a
+  field recording passed on the command line (high-pass, spectral subtraction against the
+  recording's quiet tail, the click cut out): the click is the locator and the press, the walk is
+  the click every 100 ms (Polara's rate) in a file exactly one 20-tick cycle long, so it loops with
+  no pause. No `--check`: listen, then commit the OGGs
 - `gen_pv_lens_atlas.py` -- the programmable-visibility lens atlas (`lights/atlas_pv.png`) from the
   light atlas: an edge-preserving smoothing that removes the LED dot texture but keeps legends and
   the lens rim crisp and never pushes colour past the disc's alpha; `--check` fails on drift

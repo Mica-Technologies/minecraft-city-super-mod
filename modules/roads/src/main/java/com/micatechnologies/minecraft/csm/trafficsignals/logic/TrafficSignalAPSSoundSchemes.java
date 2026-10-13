@@ -134,4 +134,17 @@ public class TrafficSignalAPSSoundSchemes {
           new TrafficSignalAPSSoundScheme("Polara Meme",
               RoadsSounds.POLARA_TONE1, RoadsSounds.POLARA_WAIT, 20,
               RoadsSounds.POLARA_WAIT, 20, RoadsSounds.CROSSWALK_AWAHH, 60)};
+
+  /**
+   * Sound schemes for the European push button: no voice; the mechanical click once a second as
+   * the locator and once as the press confirmation, and for the walk the same click at 10 Hz with
+   * no pause between loops (a one-second file replayed every 20 ticks), unlike the US rapid
+   * ticks. From {@code gen_euro_button_sounds.py}. The order is saved per button, so append only.
+   *
+   * @since 2026.10
+   */
+  public static final TrafficSignalAPSSoundScheme[] EURO =
+      {new TrafficSignalAPSSoundScheme("European Rapid Tick", RoadsSounds.EURO_BUTTON_CLICK,
+          null, 20, RoadsSounds.EURO_BUTTON_CLICK, 20, RoadsSounds.EURO_BUTTON_RAPID_TICK, 20),
+          new TrafficSignalAPSSoundScheme("Audio Disabled", null, null, 20, null, 20, null, 20)};
 }

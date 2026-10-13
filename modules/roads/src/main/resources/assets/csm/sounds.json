@@ -304,5 +304,23 @@
         "stream": false
       }
     ]
+  },
+  "euro_button_click": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:euro_button_click",
+        "stream": false
+      }
+    ]
+  },
+  "euro_button_rapid_tick": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:euro_button_rapid_tick",
+        "stream": false
+      }
+    ]
   }
 }

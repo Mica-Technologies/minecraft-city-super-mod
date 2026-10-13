@@ -1,0 +1,57 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/euro_push_button",
+    "textures": {
+      "front": "csm:blocks/trafficsignals/shared_textures/euro_button_front_pedestrian",
+      "side": "csm:blocks/trafficsignals/shared_textures/euro_button_side",
+      "cap": "csm:blocks/trafficsignals/shared_textures/euro_button_cap",
+      "back": "csm:blocks/trafficsignals/shared_textures/euro_button_back",
+      "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_off",
+      "particle": "csm:blocks/trafficsignals/shared_textures/euro_button_side"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "textures": {
+          "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_on"
+        }
+      }
+    ],
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      }
+    },
+    "color": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    },
+    "arrowdir": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    },
+    "requested": {
+      "false": {},
+      "true": {
+        "textures": {
+          "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_on"
+        }
+      }
+    }
+  }
+}

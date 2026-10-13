@@ -9,12 +9,14 @@ lays out, west to east along the x axis:
   gallery    every European preset head on a pole with a sign: the 300, 200 and 300/200/200 mm
              heads, the left, right and straight-ahead arrows, the bicycle head, the 100 mm
              repeater, the three pedestrian heads, a 300 mm head painted anthracite, a US head
-             fitted with European lenses only and an anthracite RRFB. All of it runs off one
+             fitted with European lenses only, an anthracite RRFB and the two European push
+             buttons (pedestrian and bicycle). All of it runs off one
              NORMAL controller with red+amber and the green flash both on, so the whole sequence
              cycles in front of you: red, red+amber, green, flashing green, amber
   germany    a crossroads in the German style: NORMAL controller, red+amber for 1 s before every
              green, heads at the stop line on the near right corner with a 100 mm repeater below,
-             pedestrian heads whose clearance is a steady red figure
+             pedestrian heads whose clearance is a steady red figure, a European push button
+             under each (press one: its request lamp lights until the walk comes)
   mexico     the same crossroads with US heads, run by an ADVANCED (ring-barrier) controller with a
              3 s green flash at the end of every green, and pedestrian heads whose clearance is a
              flashing green figure
@@ -156,12 +158,12 @@ def roads(cx):
     flush()
 
 
-def crossroads(cx, head, repeater, ped, ped_in_own_circuit):
+def crossroads(cx, head, repeater, ped, ped_in_own_circuit, button=None):
     """Poles, heads and peds for a crossroads centred at (cx, 0). Returns the circuits as
     {index: {'th': [...], 'pS': [...]}}. `ped_in_own_circuit` is the ADVANCED convention (a
     circuit's pedestrians walk with its own phase); NORMAL lists them under the circuit whose
     street they cross, so they walk while the other one is green."""
-    circuits = {0: {'th': [], 'pS': []}, 1: {'th': [], 'pS': []}}
+    circuits = {0: {'th': [], 'pS': [], 'pA': []}, 1: {'th': [], 'pS': [], 'pA': []}}
     for sx in (-1, 1):
         for sz in (-1, 1):
             for y in range(Y, Y + 5):
@@ -174,6 +176,11 @@ def crossroads(cx, head, repeater, ped, ped_in_own_circuit):
                 put(*pos, ped, facing * 4, head_nbt())
                 circuit = parallel if ped_in_own_circuit else 1 - parallel
                 circuits[circuit]['pS'].append(pos)
+                if button:
+                    # the push button under the head, on the same face of the pole
+                    under = (pos[0], Y, pos[2])
+                    put(*under, button, facing * 4)
+                    circuits[circuit]['pA'].append(under)
     for corner, step, facing, circuit in APPROACHES.values():
         px, pz = cx + corner[0] * P + step[0], corner[1] * P + step[1]
         put(px, Y + 3, pz, head, facing * 4, head_nbt())
@@ -185,7 +192,8 @@ def crossroads(cx, head, repeater, ped, ped_in_own_circuit):
 
 
 def crc_nbt(circuits):
-    return '{%s}' % ','.join('"%d":{th:[L;%s],pS:[L;%s]}' % (i, longs(c['th']), longs(c['pS']))
+    return '{%s}' % ','.join('"%d":{th:[L;%s],pS:[L;%s],pA:[L;%s]}'
+                             % (i, longs(c['th']), longs(c['pS']), longs(c.get('pA', [])))
                              for i, c in sorted(circuits.items()))
 
 
@@ -212,9 +220,9 @@ def advanced_controller(x, z, circuits, extra):
     put(x + 1, Y, z, 'minecraft:redstone_block')
 
 
-def junction(cx, title, head, repeater, ped, advanced, extra, lines):
+def junction(cx, title, head, repeater, ped, advanced, extra, lines, button=None):
     roads(cx)
-    circuits = crossroads(cx, head, repeater, ped, advanced)
+    circuits = crossroads(cx, head, repeater, ped, advanced, button)
     kx, kz = cx + P + 4, P + 4
     (advanced_controller if advanced else normal_controller)(kx, kz, circuits, extra)
     sign(kx, kz + 1, [title] + lines, 0)
@@ -242,6 +250,8 @@ GALLERY = [
     ('controllableeuropedsignalflashinggreen', 'p', None, ['Pedestrian', 'flashing green', 'clearance']),
     ('controllableeuropedsignal4inch', 'p', None, ['Pedestrian', '100 mm', 'repeater']),
     ('controllablerrfb', 'r', None, ['RRFB in', 'anthracite']),
+    ('controllablecrosswalkbuttoneuro', 'b', None, ['Push button', 'pedestrian']),
+    ('controllablecrosswalkbuttoneurobike', 'b', None, ['Push button', 'bicycle']),
 ]
 
 
@@ -249,13 +259,16 @@ def gallery():
     gz = -(ARM_LEN // 2) - 2          # north of the German junction, beside its north road
     x0 = HALF + WALK + 3
     fill(x0 - 2, G, gz - 2, x0 + 3 * len(GALLERY) + 4, G, gz + 4, 'minecraft:concrete', 8)
-    vehicles, peds = [], []
+    vehicles, peds, buttons = [], [], []
     for i, (block, kind, nbt, lines) in enumerate(GALLERY):
         x = x0 + 3 * i
         for y in range(Y, Y + 3):
             put(x, y, gz, 'trafficpolevertical', UP)
         if kind == 'r':
             put(x, Y + 2, gz + 1, block, S * 4, '{hsC:16}')
+        elif kind == 'b':
+            put(x, Y, gz + 1, block, S * 4)       # on the pole at hand height
+            buttons.append((x, Y, gz + 1))
         elif kind == 'p':
             put(x, Y + 1, gz + 1, block, S * 4, head_nbt(nbt))
             peds.append((x, Y + 1, gz + 1))
@@ -270,7 +283,7 @@ def gallery():
     for y in range(Y, Y + 3):
         put(kx, y, gz, 'trafficpolevertical', UP)
     put(*other, 'controllableverticalsolidsignal', S * 4, head_nbt())
-    circuits = {0: {'th': vehicles, 'pS': peds}, 1: {'th': [other], 'pS': []}}
+    circuits = {0: {'th': vehicles, 'pS': peds, 'pA': buttons}, 1: {'th': [other], 'pS': []}}
     normal_controller(kx + 2, gz, circuits, ',tcRaT:20L,tcGfT:60L')
     sign(kx + 2, gz + 1, ['Gallery', 'red+amber 1 s', 'green flash 3 s', 'NORMAL mode'], 0)
     flush()
@@ -282,7 +295,8 @@ PARTS = {
     'germany': lambda: junction(0, 'Germany', 'controllableeurosignal',
                                 'controllableeurosignalrepeater', 'controllableeuropedsignal',
                                 False, ',tcRaT:20L', ['NORMAL mode', 'red+amber 1 s',
-                                                      'steady red peds']),
+                                                      'steady red peds'],
+                                'controllablecrosswalkbuttoneuro'),
     'mexico': lambda: junction(SPACING, 'Mexico', 'controllableverticalsolidsignal', None,
                                'controllableeuropedsignalflashinggreen', True, ',tcGfT:60L',
                                ['ADVANCED mode', 'green flash 3 s', 'flashing peds']),
@@ -290,7 +304,8 @@ PARTS = {
                                 'controllableeurosignalrepeater',
                                 'controllableeuropedsignalflashinggreen', True,
                                 ',tcRaT:20L,tcGfT:80L', ['ADVANCED mode', 'R+A 1s, flash 4s',
-                                                         'flashing peds']),
+                                                         'flashing peds'],
+                                'controllablecrosswalkbuttoneuro'),
 }
 
 for name, build in PARTS.items():

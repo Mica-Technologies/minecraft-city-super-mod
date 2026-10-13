@@ -1337,6 +1337,29 @@ companion ring ends with it rather than after it. Preemption clearances do not f
 Not covered: requestable (HAWK and pedestrian) controllers, the preemption clearance, and vehicle
 overlaps in ADVANCED (an overlap follows its parent's green steadily, then its yellow).
 
+## European Push Button
+
+`controllablecrosswalkbuttoneuro` (pedestrian) and `controllablecrosswalkbuttoneurobike`
+(bicycle), `AbstractBlockTrafficSignalAPSEuro` over the ordinary APS: linked as a pedestrian
+accessory, with the APS's locator, press and walk sounds and the same request count. What it adds
+is the **request lamp**, the yellow LED panel that lights on a press and stays lit until the walk
+("Signal kommt"). The request count is server-side only, so the lamp is its own flag on
+`TileEntityTrafficSignalAPSEuro` (`rqL`, written only while lit): lit while a request is held and
+the button is not on walk (`COLOR` green), updated every tick and on the press itself, synced only
+on change, and drawn through the `requested` actual state picking the lamp texture. The stored
+state always has it off.
+
+Sound scheme `TrafficSignalAPSSoundSchemes.EURO` (append only; the index is saved per button):
+"European Rapid Tick", a mechanical click as the locator (once a second, the global APS beat) and
+as the press confirmation, and for the walk the same click at 10 Hz. Unlike the US rapid ticks
+there is **no pause between loops**: the walk file is exactly one walk cycle (20 ticks, ten clicks
+100 ms apart), so the server's replay at each cycle boundary runs the tick on unbroken. The click
+is cleaned from a field recording by `gen_euro_button_sounds.py`; then "Audio Disabled".
+
+Model and textures from `gen_euro_push_button.py`: a blue ribbed box with navy caps, about 300 mm
+(75% of a block-tall authoring, standing 1.5 px off the ground), the zebra chevron, a pointing
+hand, the walker or bicycle and a signal mark down the front, the lamp under them.
+
 ## European Signals Demo World
 
 `dev-env-utils/scripts/build_euro_signals_demo.py` builds a flat world named "Euro Signals Demo"

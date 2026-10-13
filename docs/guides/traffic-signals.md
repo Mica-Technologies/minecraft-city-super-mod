@@ -99,6 +99,11 @@ signal. Through the pedestrian clearance (when a US signal flashes DON'T WALK) t
 shows its red figure, and the **Flashing Green Clearance** head flashes its green figure instead.
 The **100 mm Repeater** is the small head mounted low on the pole, facing the people waiting.
 
+The **European Crosswalk Button** (pedestrian or bicycle) goes on the pole under them and links
+like any push button, as a pedestrian accessory. Press it and its yellow lamp lights and stays lit
+until the walk comes. It clicks once a second so people can find it, and ticks rapidly, without
+a pause, while the walk is on. Sneak-click it to turn the sound off.
+
 ## The conflict monitor
 
 Real cabinets carry a malfunction management unit that watches the signal outputs and drops the

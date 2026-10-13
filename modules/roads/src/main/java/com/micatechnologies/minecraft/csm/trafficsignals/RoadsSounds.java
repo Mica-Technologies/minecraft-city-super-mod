@@ -50,7 +50,11 @@ public enum RoadsSounds implements ICsmSound {
   CROSSWALK_BEEPBOOP("crosswalk_beepboop"),
   CROSSWALK_AWAHH("crosswalk_awahh"),
   /** One second of the crossing bell's strikes; the flasher plays it once a second while active. */
-  RAILROAD_CROSSING_BELL("railroad_crossing_bell");
+  RAILROAD_CROSSING_BELL("railroad_crossing_bell"),
+  // The European push button's mechanical click and its unbroken 10 Hz walk tick, cleaned from a
+  // field recording by gen_euro_button_sounds.py
+  EURO_BUTTON_CLICK("euro_button_click"),
+  EURO_BUTTON_RAPID_TICK("euro_button_rapid_tick");
 
   /**
    * The name of the sound.
