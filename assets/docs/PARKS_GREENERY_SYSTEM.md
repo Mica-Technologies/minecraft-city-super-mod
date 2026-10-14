@@ -416,6 +416,49 @@ corner: nothing may grow into a wall, no limb may stand against one, a tree by a
 mostly away from it, nothing grows under an awning, another tree's leaves are never entered, and
 every leaf must be near enough a log that felling a neighbouring limb could not strip it.
 
+### Planting from the server: `/csmtree`
+
+Planting a district's street trees by hand meant a player at every spot and, to keep crowns out
+of the road and the walk, barrier blocks filling those clearances first (over a million barrier
+cells for 454 trees, written and removed again). `/csmtree` (`CommandTree`, op level 2) plants
+from the server, many trees to a call, with the clearances as rules (issue #278):
+
+```
+/csmtree plant <preset> <x,y,z[,heading][,seed]>;... [clear=pattern:height,...]
+               [skip=pattern,...] [seed=n] [heading=h] [dry] [cells]
+/csmtree plantjson {"preset":..,"clear":[..],"skip":[..],"seed":..,"trees":[{"x","y","z",
+                    "preset","heading","seed"}, ..]}
+/csmtree presets
+```
+
+- **Clearance** (`TreeClearance`): `clear=somemod:road*:12,somemod:sidewalk*:6` keeps the 12
+  cells above any block whose registry name matches `somemod:road*` clear, and 6 above a walk.
+  A cell is kept clear by looking down its column to the first surface: paint, bumps, petal
+  covers, posts and signs (anything not a full opaque cube) are looked through, a full cube that
+  matches no rule ends the look (a lawn, a planter, a roof), and `skip=` names full cubes to look
+  through too (a kerb). The trunk's own column is never kept clear, so a trunk in a strip between
+  road and walk still grows; only its crown is shaped. It plugs into the `TreeSpace` the tool
+  already used: a kept-clear cell is simply `BLOCKED`, so the generators prune and turn round it
+  exactly as round a wall. `TreeClearanceTest` grows every preset beside a road and walk and fails
+  on any block in a clearance.
+- **Spots** may name the ground block or the cell above it; a spot with nothing solid under its
+  trunk (a wrong y, or another tree's crown) is reported as `noground` rather than planted. Trees are planted **in order**, so a
+  later tree meets an earlier one's leaves as foliage and a row's canopies join; a `dry` run plans
+  the same way without placing anything.
+- **Heading** is a compass point, a Minecraft yaw in degrees, `@x:z` to lean toward a point, or
+  `-`; with none the heading is drawn from the tree's seed. **Seed**: a tree's own, else the
+  call's `seed=` mixed with the trunk's position (so a re-run gives the same crowns in any order),
+  else random. Both are reported, so any tree can be replanted exactly.
+- **Chunks**: a chunk a tree reaches into is loaded for the call and queued to unload after it.
+  One never generated is not generated; it counts as in the way, and a spot in one is reported.
+- **Output**: a human line, then `CSMTREE {json}`: `planted`, `trimmed` (`[x,y,z,cells]`),
+  `noroom`, `skippedUnloaded`, and per tree its base, seed, yaw, result, block count, trimmed
+  count and bounding box (`cells` adds every block). Plain text, not lang keys, for scripts.
+- At most 256 trees a call, so one command cannot stall the server for long.
+
+The tool and the command share `TreePlanter`: what a tree grows through, the world as a
+`TreeSpace`, and placing a plan.
+
 ---
 
 ## Felling
