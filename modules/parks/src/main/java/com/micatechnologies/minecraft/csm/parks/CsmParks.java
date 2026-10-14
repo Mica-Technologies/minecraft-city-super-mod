@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmStumpGrinders;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.parks.planting.CommandTree;
 import com.micatechnologies.minecraft.csm.parks.tools.ParksStumpGrinder;
 import com.micatechnologies.minecraft.csm.parks.tools.TreeToolEvents;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Logger;
@@ -83,6 +85,11 @@ public class CsmParks {
   public void init(FMLInitializationEvent event) {
     proxy.init(event);
     registerOres();
+  }
+
+  @Mod.EventHandler
+  public void serverStarting(FMLServerStartingEvent event) {
+    event.registerServerCommand(new CommandTree());
   }
 
   /**

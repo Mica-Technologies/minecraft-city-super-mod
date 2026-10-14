@@ -1,19 +1,11 @@
 package com.micatechnologies.minecraft.csm.parks.planting;
 
-import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
-import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
-import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
-import com.micatechnologies.minecraft.csm.parks.trees.TreeLogConnections;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
@@ -103,20 +95,11 @@ public class ItemTreePlantingTool extends AbstractItem {
       cycle(stack, player);
       return EnumActionResult.SUCCESS;
     }
-    BlockPos base = replaceable(world, pos) ? pos : pos.offset(facing);
+    BlockPos base = TreePlanter.replaceable(world, pos) ? pos : pos.offset(facing);
     TreePreset preset = getPreset(stack);
-    TreeSpace space = rel -> {
-      BlockPos at = base.add(rel);
-      if (at.getY() < 0 || at.getY() > 255 || !world.isBlockLoaded(at)) {
-        return TreeSpace.Cell.BLOCKED;
-      }
-      if (replaceable(world, at)) {
-        return world.isBlockModifiable(player, at) && player.canPlayerEdit(at, EnumFacing.UP, stack)
-            ? TreeSpace.Cell.FREE : TreeSpace.Cell.BLOCKED;
-      }
-      return TreeLogConnections.isLeaves(world.getBlockState(at).getBlock())
-          ? TreeSpace.Cell.FOLIAGE : TreeSpace.Cell.BLOCKED;
-    };
+    TreeSpace space = TreePlanter.space(world, base, world::isBlockLoaded,
+        at -> world.isBlockModifiable(player, at)
+            && player.canPlayerEdit(at, EnumFacing.UP, stack));
     TreePlan plan = TreeGenerators.grow(preset, TreeGenerators.headingOfYaw(player.rotationYaw),
         new Random(world.rand.nextLong()), space);
     if (plan.hasNoRoom() || plan.parts().isEmpty()) {
@@ -124,51 +107,12 @@ public class ItemTreePlantingTool extends AbstractItem {
           new TextComponentTranslation(preset.getTranslationKey())), true);
       return EnumActionResult.FAIL;
     }
-
-    // Logs first, then leaves, then what hangs from them, so each has what it needs in place.
-    for (TreePlan.Kind kind : TreePlan.Kind.values()) {
-      for (Map.Entry<BlockPos, TreePlan.Part> e : plan.parts().entrySet()) {
-        if (e.getValue().kind == kind) {
-          IBlockState state = resolve(e.getValue());
-          if (state != null) {
-            world.setBlockState(base.add(e.getKey()), state, 3);
-          }
-        }
-      }
-    }
+    TreePlanter.place(world, base, plan);
     if (plan.getTrimmed() > 0) {
       player.sendStatusMessage(new TextComponentTranslation("csm.parks.planting.trimmed",
           new TextComponentTranslation(preset.getTranslationKey()), plan.getTrimmed()), true);
     }
     return EnumActionResult.SUCCESS;
-  }
-
-  /**
-   * Air, plants, snow, and a thin covering on the ground (a mulch or gravel cover, a carpet): a
-   * tree is planted through a ground cover, so its trunk stands on the ground beneath rather than
-   * a block up on top of the cover.
-   */
-  private static boolean replaceable(World world, BlockPos pos) {
-    IBlockState state = world.getBlockState(pos);
-    Material m = state.getMaterial();
-    Block block = state.getBlock();
-    boolean cover = block instanceof BlockParkProp
-        && ((BlockParkProp) block).getKind() == BlockParkProp.Kind.COVER;
-    return block.isReplaceable(world, pos) || m == Material.PLANTS || m == Material.VINE
-        || m == Material.CARPET || cover;
-  }
-
-  @Nullable
-  private static IBlockState resolve(TreePlan.Part part) {
-    Block block = CsmRegistry.getBlock(part.block);
-    if (block == null) {
-      return null;
-    }
-    IBlockState state = block.getDefaultState();
-    if (block instanceof BlockTreeLog && part.axis != null) {
-      state = state.withProperty(BlockTreeLog.AXIS, part.axis);
-    }
-    return state;
   }
 
   @Override
