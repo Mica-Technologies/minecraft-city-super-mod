@@ -402,7 +402,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
     return true;
   }
 
-  private boolean chunkLoaded(long key) {
+  /** Whether the last attach pass ran out of flood budget, leaving due anchors for later. */
+  boolean attachBacklog() {
+    return attachBacklog;
+  }
+
+  boolean chunkLoaded(long key) {
     return world.getChunkProvider().getLoadedChunk((int) key, (int) (key >>> 32)) != null;
   }
 
@@ -439,6 +444,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
   private boolean attach(ThermalAnchor a, long now, boolean floodAllowed) {
     ThermalCellSource cellSource = HvacAirflow.worldSource(world);
     ThermalScanner.Status last = ThermalScanner.Status.NOT_ENCLOSED;
+    long sky = ThermalAnchor.NO_CELL;
     it.unimi.dsi.fastutil.longs.LongArrayList waitOn = null;
     UnloadedFlood flood = null;
     BlockPos p = a.pos;
@@ -457,6 +463,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
         last = ThermalScanner.Status.UNLOADED;
         waitOn = addChunk(waitOn, chunkKey(x >> 4, z >> 4));
         continue;
+      }
+      if (kind == ThermalCellSource.SKY && sky == ThermalAnchor.NO_CELL) {
+        sky = ThermalScanner.pack(x, y, z);
       }
       if (kind != ThermalCellSource.AIR) {
         continue;
@@ -500,6 +509,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       return true;
     }
     a.status = last;
+    a.openAt = last == ThermalScanner.Status.NOT_ENCLOSED ? sky : ThermalAnchor.NO_CELL;
     if (last == ThermalScanner.Status.UNLOADED) {
       a.waitChunks = waitOn.toLongArray();
       a.waitFlood = flood;
@@ -539,6 +549,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
     a.cell = cell;
     a.region = s.regionOfCell(cell);
     a.status = ThermalScanner.Status.OK;
+    a.openAt = ThermalAnchor.NO_CELL;
     a.waitChunks = null;
     a.waitFlood = null;
     s.anchors.add(a);

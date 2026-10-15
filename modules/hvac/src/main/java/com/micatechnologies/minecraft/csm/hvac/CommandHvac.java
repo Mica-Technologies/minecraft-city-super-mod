@@ -42,7 +42,8 @@ public class CommandHvac extends CommandBase {
 
   @Override
   public String getUsage(ICommandSender sender) {
-    return "/csmhvac <info [x y z]|spaces|settemp <F>|ff <seconds>|rescan|perf [reset]>";
+    return "/csmhvac <info [x y z]|why [x y z]|spaces|settemp <F>|ff <seconds>|rescan"
+        + "|perf [reset]>";
   }
 
   @Override
@@ -68,6 +69,12 @@ public class CommandHvac extends CommandBase {
           at = parseBlockPos(sender, args, 1, false);
         }
         info(sender, w, at);
+        break;
+      case "why":
+        if (args.length >= 4) {
+          at = parseBlockPos(sender, args, 1, false);
+        }
+        why(sender, w, at);
         break;
       case "spaces":
         say(sender, w.spaces().size() + " spaces:");
@@ -126,9 +133,14 @@ public class CommandHvac extends CommandBase {
 
   private static void info(ICommandSender sender, HvacThermalWorld w, BlockPos at) {
     ThermalSpace s = w.spaceAt(at);
+    ThermalAnchor a = w.anchor(at);
+    if (s == null && a != null && a.space != null) {
+      // A unit that fills its own cell reads the room through the cell beside it.
+      s = a.space;
+    }
     if (s == null) {
-      say(sender, String.format("%d %d %d: not in a known room; reads %.1fF (outdoors).",
-          at.getX(), at.getY(), at.getZ(), w.temperatureAt(at)));
+      say(sender, String.format("%d %d %d: not in a known room; reads %.1fF. %s",
+          at.getX(), at.getY(), at.getZ(), w.temperatureAt(at), whyNoRoom(w, a, at)));
       return;
     }
     int r = s.regionOfCell(ThermalScanner.pack(at.getX(), at.getY(), at.getZ()));
@@ -150,6 +162,88 @@ public class CommandHvac extends CommandBase {
       max = Math.max(max, t);
     }
     say(sender, String.format("  regions %.1fF .. %.1fF", min, max));
+  }
+
+  /** Why the cell at {@code at} has no room, from the anchor there (#280). */
+  private static String whyNoRoom(HvacThermalWorld w, @Nullable ThermalAnchor a, BlockPos at) {
+    if (a == null) {
+      return "No HVAC device here: a room is found only around a thermostat, vent, unit or a"
+          + " player standing in it (" + kindName(cellKind(w, at)) + " cell).";
+    }
+    long now = w.world.getTotalWorldTime();
+    switch (a.status) {
+      case UNLOADED: {
+        StringBuilder b = new StringBuilder("Waiting for chunks: the room reaches");
+        if (a.waitChunks != null) {
+          for (long key : a.waitChunks) {
+            b.append(String.format(" (%d,%d)%s", (int) key, (int) (key >>> 32),
+                w.chunkLoaded(key) ? " loaded" : " unloaded"));
+          }
+        }
+        return b.append(", so it keeps the temperature it saved.").toString();
+      }
+      case NOT_ENCLOSED:
+        if (a.openAt != ThermalAnchor.NO_CELL) {
+          return String.format("Not enclosed: no room air at it or beside it; open sky at %d %d"
+                  + " %d.", ThermalScanner.unpackX(a.openAt), ThermalScanner.unpackY(a.openAt),
+              ThermalScanner.unpackZ(a.openAt));
+        }
+        return "Not enclosed: it and the six cells beside it are all solid (buried in a wall?).";
+      case TOO_LARGE:
+        return String.format("Too large: the space passes %,d cells (a cave or vast hall); looked"
+            + " at again in %d ticks.", ThermalScanner.MAX_CELLS, Math.max(0, a.retryTick - now));
+      default:
+        if (now < a.retryTick) {
+          return String.format("Not scanned yet: next look in %d ticks.", a.retryTick - now);
+        }
+        return w.attachBacklog()
+            ? "Not scanned yet: waiting its turn behind the per-tick room-finding budget."
+            : "Not scanned yet: due on the next tick.";
+    }
+  }
+
+  /**
+   * {@code /csmhvac why}: {@code info}'s explanation, plus what the room finder sees at the
+   * anchor -- the kind of its cell and the six beside it, where the column's roof is, and the
+   * chunks it waits on.
+   */
+  private static void why(ICommandSender sender, HvacThermalWorld w, BlockPos at) {
+    info(sender, w, at);
+    StringBuilder b = new StringBuilder("  probes: here ").append(kindName(cellKind(w, at)));
+    for (net.minecraft.util.EnumFacing f : net.minecraft.util.EnumFacing.values()) {
+      b.append(", ").append(f.getName()).append(' ')
+          .append(kindName(cellKind(w, at.offset(f))));
+    }
+    say(sender, b.toString());
+    ThermalCellSource src = HvacAirflow.worldSource(w.world);
+    if (src.classify(at.getX(), at.getY(), at.getZ()) == ThermalCellSource.SKY) {
+      say(sender, "  column: open to the sky here (no roof above this cell)");
+    } else {
+      int top = w.world.getHeight();
+      int y = at.getY() + 1;
+      while (y < top && src.classify(at.getX(), y, at.getZ()) != ThermalCellSource.SKY) {
+        y++;
+      }
+      say(sender, y < top ? String.format("  column: roof at y %d", y - 1)
+          : "  column: roofed to the top of the world");
+    }
+  }
+
+  private static byte cellKind(HvacThermalWorld w, BlockPos p) {
+    return HvacAirflow.worldSource(w.world).classify(p.getX(), p.getY(), p.getZ());
+  }
+
+  private static String kindName(byte kind) {
+    switch (kind) {
+      case ThermalCellSource.AIR:
+        return "AIR";
+      case ThermalCellSource.SKY:
+        return "SKY";
+      case ThermalCellSource.WALL:
+        return "WALL";
+      default:
+        return "UNLOADED";
+    }
   }
 
   private static void perf(ICommandSender sender, HvacThermalWorld w, boolean reset) {
@@ -200,7 +294,7 @@ public class CommandHvac extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "info", "spaces", "settemp", "ff",
+      return getListOfStringsMatchingLastWord(args, "info", "why", "spaces", "settemp", "ff",
           "rescan", "perf");
     }
     return Collections.emptyList();

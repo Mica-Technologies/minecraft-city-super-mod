@@ -53,6 +53,26 @@ final class ThermalAnchor {
   /** The flood that stopped at an unloaded chunk, if any: a block change in it ends the wait. */
   HvacThermalWorld.UnloadedFlood waitFlood;
 
+  /** {@link #openAt} when there is no such cell. */
+  static final long NO_CELL = Long.MIN_VALUE;
+
+  /**
+   * After an attach that failed as {@link ThermalScanner.Status#NOT_ENCLOSED} (no enclosed air at
+   * the anchor or beside it): the first of those cells that was open to the sky, packed with
+   * {@link ThermalScanner#pack}, or {@link #NO_CELL} when every one was solid (the device is
+   * buried in a wall). {@code /csmhvac info} names it, so a builder can find the hole.
+   */
+  long openAt = NO_CELL;
+
+  /**
+   * Whether the anchor has no space and no attach has failed: it has not been looked at yet, or
+   * is waiting its turn behind the per-tick flood budget. Its status is still the default
+   * {@link ThermalScanner.Status#OK}, which must not be read as "open to the outdoors".
+   */
+  boolean findingRoom() {
+    return space == null && status == ThermalScanner.Status.OK;
+  }
+
   ThermalAnchor(BlockPos pos, int kind) {
     this.pos = pos.toImmutable();
     this.kind = kind;

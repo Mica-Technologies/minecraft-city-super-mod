@@ -1139,7 +1139,7 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `build_hvac_lab.py` -- builds the HVAC test lab (twelve scenarios from a closet to a replica of a
   real four-zone store) in a Cold Taiga or Desert superflat loaded in the dev client, over MCMCP,
   linked and powered through saved data; refuses any world not named "HVAC Lab". Drive it with
-  `/csmhvac info|settemp|ff|rescan`
+  `/csmhvac info|why|settemp|ff|rescan`
 - `build_life_safety_demo.py` -- builds the Life Safety demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street with a fire station
   (alerting, pole, fire alarm with door holder and annunciator, riser room), a police station, an

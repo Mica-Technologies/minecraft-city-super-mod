@@ -289,8 +289,17 @@ space heater), so switching one system off never stops another from heating a ro
 the biome's outdoors), calling mode (drives the redstone output, 15 when calling), output %
 (primary: equipment; zone: its vents' share), `HvacStatus` flags, and on the primary the capacity
 as a percentage of the served rooms' load at the setpoint. Flags: not enclosed, too large, room
-still loading, no power, at full capacity, no vents, no vent in this room, rooftop units need
-vents, waiting, not linked to a primary. `HvacStatusText` turns them into the screen's lines.
+still loading, finding its room, no power, at full capacity, no vents, no vent in this room,
+rooftop units need vents, waiting, not linked to a primary. `HvacStatusText` turns them into the
+screen's lines.
+
+**Not enclosed is a finding, not a default** (#280). An anchor's `status` stays `OK` until an
+attach fails, so an anchor that has not been looked at yet (or waits behind the per-tick flood
+budget) has no space and an `OK` status. `spaceFlags` reports that as *finding its room*
+(`FLAG_FINDING_ROOM`); only an attach that actually found no enclosed air at the device or beside
+it reports *not enclosed*. Before, every unattached anchor that was not too large or waiting for a
+chunk read as not enclosed, and a finished building whose chunks had only just loaded looked as
+if it leaked: two agents spent an hour hunting a hole that was not there.
 
 ## What the player sees
 
@@ -318,7 +327,8 @@ the new world's clock was behind the old one's (found in the lab: a desert room 
 
 | Command | Does |
 |---|---|
-| `info [x y z]` | the room at your feet: cells, regions, openings, anchors, outdoor/mean/here, capacity, UA, loss, delivered, region range |
+| `info [x y z]` | the room at your feet: cells, regions, openings, anchors, outdoor/mean/here, capacity, UA, loss, delivered, region range. With no room there, why not, from the device's anchor: not scanned yet (next look, or waiting behind the flood budget), waiting for chunks (each named, loaded or not), not enclosed (the open-sky cell beside it, or buried in a wall), too large; or that no device is there to find a room |
+| `why [x y z]` | `info`, plus what the room finder sees there: the kind (AIR, SKY, WALL, UNLOADED) of the cell and the six beside it, and where the column's roof is |
 | `spaces` | every room in the dimension |
 | `settemp <F>` | sets your room's every region (start a test from cold or hot) |
 | `ff <seconds>` | runs that much simulated time now (an hour of the whole lab: ~0.2 s) |
