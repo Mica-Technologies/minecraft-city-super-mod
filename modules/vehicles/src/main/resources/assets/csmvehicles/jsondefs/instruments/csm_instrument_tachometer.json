@@ -25,7 +25,7 @@
           "axis": [
             0.0,
             0.0,
-            0.045
+            0.03375
           ],
           "offset": -135.0
         }
@@ -35,7 +35,7 @@
   "textureName": "instruments.png",
   "general": {
     "name": "CSM Tachometer",
-    "description": "Engine speed, 0 to 6,000 revolutions a minute.",
+    "description": "Engine speed, 0 to 8,000 revolutions a minute.",
     "stackSize": 64,
     "materialLists": [
       [

@@ -25,7 +25,7 @@
           "axis": [
             0.0,
             0.0,
-            5.966
+            4.473872584108805
           ],
           "offset": -120.0
         }
@@ -35,7 +35,7 @@
   "textureName": "instruments.png",
   "general": {
     "name": "CSM Speedometer",
-    "description": "Speed, 0 to 90 miles an hour.",
+    "description": "Speed, 0 to 120 miles an hour.",
     "stackSize": 64,
     "materialLists": [
       [

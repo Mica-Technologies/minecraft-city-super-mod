@@ -529,9 +529,10 @@ park, X view, Shift to get out) on the right. IV draws the HUD's top half by def
 everything lies in y 0 to 70 of the 400 by 140 panel.
 
 **Instruments.** A vehicle without instruments has a blank HUD; packs ship their own. Ours are a
-speedometer (`speed`, metres a second, 5.966 degrees each: 0 to 90 mph over 240 degrees), a
-tachometer (`engine_rpm`, 0 to 6,000 over 270) and a fuel gauge (`fuel`, a fraction, over 90),
-drawn on one 1024 sheet (`textures/instruments.png`, IV's sheet size), with their own items. They
+speedometer (`speed`, metres a second: 0 to 120 mph over 240 degrees, numbered every 20), a
+tachometer (`engine_rpm`, 0 to 8,000 over 270, numbered in thousands) and a fuel gauge (`fuel`,
+a fraction, over 90, marked E, 1/2 and F). The ranges hold the fastest of the fleet (the WRZ
+STX, about 100 mph at up to 7,000 rpm) without pegging a needle. All are drawn on one 1024 sheet (`textures/instruments.png`, IV's sheet size), with their own items. They
 are default instruments, which IV fits only when a vehicle is created: one placed before they
 existed keeps a blank HUD until it is placed again. They are HUD only: placed on the dash they
 never showed, faced either way, so they stay off it until that is understood.
