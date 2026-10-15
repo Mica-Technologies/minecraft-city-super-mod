@@ -2395,21 +2395,28 @@ def trailer_json(name, v):
 INSTRUMENT_SHEET = 1024           # IV's instrument sheets are this size
 DIAL = 128                        # each dial's cell, centred at (64 + 128 i, 64)
 NEEDLE = (8, 128)                 # the needle's cell, centred at (1012, 64)
+MPH = 0.44704                     # metres a second in a mile an hour (IV's 'speed' is m/s)
 INSTRUMENTS = {
-    # name: (label, variable, degrees a unit, offset, ticks: (count, sweep), legend, description)
-    'csm_instrument_speedometer': ('CSM Speedometer', 'speed', 5.966, -120.0, (10, 240), 'MPH',
-                                   'Speed, 0 to 90 miles an hour.'),
-    'csm_instrument_tachometer': ('CSM Tachometer', 'engine_rpm', 0.045, -135.0, (7, 270), 'RPM',
-                                  'Engine speed, 0 to 6,000 revolutions a minute.'),
+    # name: (label, variable, degrees a unit, offset, major ticks: (count, sweep), legend,
+    #        the numbers at the major ticks ('' for none), description)
+    # The speedometer reads to 120 mph and the tachometer to 8,000 rpm, so the fastest of the
+    # fleet (the WRZ STX: about 100 mph, 7,000 rpm) never pegs a needle.
+    'csm_instrument_speedometer': ('CSM Speedometer', 'speed', 240.0 / (120 * MPH), -120.0,
+                                   (7, 240), 'MPH', ['0', '20', '40', '60', '80', '100', '120'],
+                                   'Speed, 0 to 120 miles an hour.'),
+    'csm_instrument_tachometer': ('CSM Tachometer', 'engine_rpm', 270.0 / 8000, -135.0,
+                                  (9, 270), 'RPM', [str(k) for k in range(9)],
+                                  'Engine speed, 0 to 8,000 revolutions a minute.'),
     'csm_instrument_fuel': ('CSM Fuel Gauge', 'fuel', 90.0, -45.0, (5, 90), 'FUEL',
-                            'Fuel left, empty to full.'),
+                            ['E', '', '1/2', '', 'F'], 'Fuel left, empty to full.'),
 }
 
 
 def instrument_sheet():
     img = Image.new('RGBA', (INSTRUMENT_SHEET, INSTRUMENT_SHEET), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    for i, (name, (_, _, _, offset, (count, sweep), legend, _)) in enumerate(INSTRUMENTS.items()):
+    for i, (name, (_, _, _, offset, (count, sweep), legend, numbers, _)) in enumerate(
+            INSTRUMENTS.items()):
         cx, cy, r = 64 + DIAL * i, 64, 60
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(40, 42, 46, 255))
         d.ellipse((cx - r + 4, cy - r + 4, cx + r - 4, cy + r - 4), fill=(16, 16, 18, 255))
@@ -2430,7 +2437,17 @@ def instrument_sheet():
                     cx + math.sin(math.radians(offset)) * (r - 7),
                     cy - math.cos(math.radians(offset)) * (r - 7)),
                    fill=(220, 40, 30, 255), width=4)
-        lc.draw_text_centred(img, legend, cx, cy + 24, (220, 220, 220), 2)
+        # the numbers inside the major ticks, read upright wherever they sit on the dial
+        for k, text in enumerate(numbers):
+            if text:
+                a = math.radians(offset + sweep * k / (count - 1))
+                # a wide number at the side of the dial is drawn further in, clear of its tick
+                rad = r - 27 - lc.text_width(text, 2) / 2 * abs(math.sin(a))
+                lc.draw_text_centred(img, text, round(cx + math.sin(a) * rad),
+                                     round(cy - math.cos(a) * rad) - 5, (235, 235, 235), 2)
+        lc.draw_text_centred(img, legend, cx, cy + 26, (220, 220, 220), 2)
+        if legend == 'RPM':
+            lc.draw_text_centred(img, 'X1000', cx, cy + 40, (170, 170, 170), 1)
     # the needle: pointing up from the centre of its cell, which IV turns about that centre
     nx, ny = 1012, 64
     d.rectangle((nx - 2, ny - 52, nx + 1, ny), fill=(255, 90, 40, 255))
@@ -2477,7 +2494,7 @@ def hud_texture(switches, lit=False):
 
 
 def instrument_json(name):
-    label, variable, factor, offset, _, _, description = INSTRUMENTS[name]
+    label, variable, factor, offset, _, _, _, description = INSTRUMENTS[name]
     i = list(INSTRUMENTS).index(name)
     return {
         'components': [
