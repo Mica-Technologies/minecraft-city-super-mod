@@ -362,6 +362,59 @@ Earlier, also verified:
 - The fire engine with `EMERLTS` on, facing the detector, preempted the test intersection.
 - Driving, the panel and the sounds have not been tried.
 
+### Speed: geared to a ceiling
+
+The fleet's first engines topped out near 40 mph (a fire engine reached about 38 in game). The
+cause was IV's physics:
+
+- **The speed factor.** IV moves a car by the motion its physics computes times the server's
+  `carSpeedFactor` (0.35 by default, in `mtsconfig.json`), and the speedometer shows that world
+  speed (`indicatedSpeed = axialVelocity * speedFactor * 20`).
+- **Drag on the unscaled motion.** Drag (`0.5 * 1.225 * v^2 * crossSectionalArea * dragCoefficient`,
+  the area 5 when a vehicle sets none) acts on the unscaled motion. A car showing 75 mph is
+  running at about 2.9 times that inside the physics, against about eight times the drag.
+- **Power.** An engine's push is
+  `(targetRPM - rpm) / maxRPM * gear * axle * fuelConsumption * 18`. So `fuelConsumption` is the
+  engine's power, and the push fades to nothing at maximum rpm.
+
+So each vehicle is now geared to a ceiling, as a governed truck is:
+
+- `axleRatio` comes from its `ceiling_mph`: the speed at which top gear reaches the engine's
+  maximum rpm.
+- Its engine has the power, and its body the drag (`drag=(cd, area)`, game figures rather than a
+  real truck's), to run up close to that ceiling.
+- The top speed then hardly depends on the drag figures.
+- The engines are four times as strong (diesel 4.0, petrol 2.2) with six-speed automatics, so
+  the tanks are four times as big (`FUEL_CAPACITY`, about twenty minutes at full throttle, as
+  before).
+- The engine slot's `maxValue` is 5.0. IV checks an engine's `fuelConsumption` against the
+  slot's `minValue`/`maxValue` and refuses one outside them, the fleet's own default engine
+  included.
+- The stump grinder keeps its old speed on its own axle ratio (7.0).
+
+`gen_vehicle_fleet.py --speeds` prints what a straight, level, full-throttle model of IV's code
+(`simulate()`: rpm following the wheels, the automatic's shift points, wheelspin, drag) predicts
+at the default speed factor. The model gave 43 mph for the old fire engine, against the 38 seen
+in game:
+
+| Vehicle | Top speed | 0-60 |
+|---|---|---|
+| Fire engine | 75 mph | 25 s |
+| Tow truck | 74 mph | 25 s |
+| Ambulance | 74 mph | 20 s |
+| Dump truck, bucket truck | 73 mph | 24-27 s |
+| Ladder truck | 71 mph | 33 s |
+| Transit bus | 67 mph | 44 s |
+| Police SUV | 82 mph | 13 s |
+
+`--check` fails if a road vehicle's predicted top speed leaves 60-82 mph.
+
+A server with another `carSpeedFactor`, or a `packSpeedFactors` entry for `csmvehicles`, scales
+every one of these speeds in proportion.
+
+Driving can't be scripted yet. IV reads the keyboard through LWJGL itself, and MCMCP's held keys
+don't reach it (MCMCP issue #83). So top speeds in game are checked by hand.
+
 ### Performance: one object for what does not move
 
 Immersive Vehicles makes **every OBJ object its own renderable**, positioned, checked for

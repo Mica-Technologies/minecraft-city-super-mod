@@ -55,11 +55,12 @@
   },
   "motorized": {
     "emptyMass": 2300,
-    "fuelCapacity": 15000,
-    "defaultFuelQty": 15000,
-    "axleRatio": 3.55,
+    "fuelCapacity": 60000,
+    "defaultFuelQty": 60000,
+    "axleRatio": 3.112,
     "brakingFactor": 1.0,
-    "dragCoefficient": 0.5,
+    "dragCoefficient": 0.35,
+    "crossSectionalArea": 1.6,
     "hasHeadlights": true,
     "hasRunningLights": true,
     "hasTurnSignals": true,
@@ -206,7 +207,7 @@
         3.4
       ],
       "minValue": 0.25,
-      "maxValue": 1.0,
+      "maxValue": 5.0,
       "types": [
         "engine_car"
       ],
