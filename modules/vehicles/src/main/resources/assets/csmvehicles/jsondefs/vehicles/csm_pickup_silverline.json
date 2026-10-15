@@ -132,7 +132,7 @@
       "pos": [
         0.42,
         0.35,
-        1.75
+        1.6
       ],
       "types": [
         "seat"
@@ -141,7 +141,7 @@
       "dismountPos": [
         2.02,
         0.0,
-        1.75
+        1.6
       ],
       "isController": true
     },
@@ -149,7 +149,7 @@
       "pos": [
         -0.42,
         0.35,
-        1.75
+        1.6
       ],
       "types": [
         "seat"
@@ -158,14 +158,14 @@
       "dismountPos": [
         -2.02,
         0.0,
-        1.75
+        1.6
       ]
     },
     {
       "pos": [
         0.42,
         0.35,
-        0.9
+        0.85
       ],
       "types": [
         "seat"
@@ -174,14 +174,14 @@
       "dismountPos": [
         2.02,
         0.0,
-        0.9
+        0.85
       ]
     },
     {
       "pos": [
         -0.42,
         0.35,
-        0.9
+        0.85
       ],
       "types": [
         "seat"
@@ -190,13 +190,13 @@
       "dismountPos": [
         -2.02,
         0.0,
-        0.9
+        0.85
       ]
     },
     {
       "pos": [
         0.0,
-        0.9,
+        0.98,
         -0.4
       ],
       "types": [
@@ -293,8 +293,8 @@
         "blendableComponents": [
           {
             "pos": [
-              0.8,
-              0.75,
+              0.805,
+              0.83,
               4.645
             ],
             "axis": [
@@ -307,8 +307,8 @@
           },
           {
             "pos": [
-              -0.8,
-              0.75,
+              -0.805,
+              0.83,
               4.645
             ],
             "axis": [
@@ -318,6 +318,59 @@
             ],
             "flareHeight": 0.6,
             "flareWidth": 0.6
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnFrontL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.885,
+              0.565,
+              4.645
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              0.84,
+              0.53,
+              -1.265
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
           }
         ]
       },
@@ -349,8 +402,8 @@
         "blendableComponents": [
           {
             "pos": [
-              0.825,
-              0.6,
+              0.895,
+              0.77,
               -1.265
             ],
             "axis": [
@@ -363,8 +416,36 @@
           },
           {
             "pos": [
-              -0.825,
-              0.6,
+              0.935,
+              0.56,
+              -1.265
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.895,
+              0.77,
+              -1.265
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.935,
+              0.56,
               -1.265
             ],
             "axis": [
@@ -378,17 +459,11 @@
         ]
       },
       {
-        "objectName": "&TurnL",
+        "objectName": "&ReverseL",
         "emissive": true,
         "isElectric": true,
-        "color": "#FFA000",
+        "color": "#FFFFFF",
         "brightnessAnimations": [
-          {
-            "animationType": "visibility",
-            "variable": "left_turn_signal",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "translation",
             "axis": [
@@ -396,14 +471,14 @@
               1,
               0
             ],
-            "variable": "10_10_0_cycle"
+            "variable": "engine_reversed_1"
           }
         ],
         "blendableComponents": [
           {
             "pos": [
-              0.825,
-              0.78,
+              0.84,
+              0.59,
               -1.265
             ],
             "axis": [
@@ -416,14 +491,14 @@
           },
           {
             "pos": [
-              0.85,
-              0.55,
-              4.645
+              -0.84,
+              0.59,
+              -1.265
             ],
             "axis": [
               0,
               0,
-              1
+              -1
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
@@ -431,7 +506,7 @@
         ]
       },
       {
-        "objectName": "&TurnR",
+        "objectName": "&TurnFrontR",
         "emissive": true,
         "isElectric": true,
         "color": "#FFA000",
@@ -455,22 +530,8 @@
         "blendableComponents": [
           {
             "pos": [
-              -0.825,
-              0.78,
-              -1.265
-            ],
-            "axis": [
-              0,
-              0,
-              -1
-            ],
-            "flareHeight": 0.35,
-            "flareWidth": 0.35
-          },
-          {
-            "pos": [
-              -0.85,
-              0.55,
+              -0.885,
+              0.565,
               4.645
             ],
             "axis": [
@@ -480,30 +541,11 @@
             ],
             "flareHeight": 0.35,
             "flareWidth": 0.35
-          }
-        ]
-      },
-      {
-        "objectName": "&Reverse",
-        "emissive": true,
-        "isElectric": true,
-        "color": "#FFFFFF",
-        "brightnessAnimations": [
-          {
-            "animationType": "translation",
-            "axis": [
-              0,
-              1,
-              0
-            ],
-            "variable": "engine_reversed_1"
-          }
-        ],
-        "blendableComponents": [
+          },
           {
             "pos": [
-              0.0,
-              0.55,
+              -0.84,
+              0.53,
               -1.265
             ],
             "axis": [
@@ -566,7 +608,7 @@
           "pos": [
             0,
             0.1,
-            4.77
+            4.8
           ],
           "distance": 2
         },
@@ -584,7 +626,7 @@
           "pos": [
             0,
             -0.3,
-            4.77
+            4.8
           ],
           "distance": 2
         }

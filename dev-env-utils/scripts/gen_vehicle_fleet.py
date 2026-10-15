@@ -75,6 +75,7 @@ CELLS = {
     'mulch': cell(4, 4),
     # the pickups' cells: bumpers and bars (chrome or black by livery), grille mesh, badge
     'trim': cell(5, 4), 'mesh': cell(6, 4), 'badge': cell(7, 4),
+    'script': cell(0, 5, 4, 1), 'gate': cell(4, 5, 4, 1),
 }
 
 LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4FF',
@@ -852,41 +853,56 @@ def door_animations():
 # ------------------------------------------------------------------------------------------
 
 PICKUP_FRONT, PICKUP_REAR = 4.63, -1.25   # a 5.9 m truck on a 3.68 m wheelbase
-PICKUP_CAB = (0.5, 2.8)                   # the cab's back wall and the windshield's foot
+PICKUP_CAB = (0.5, 3.0)                   # the cab's back wall and the cowl
 PICKUP_BED_FRONT = 0.45                   # a 5.5 ft bed, from here back to the tailgate
 PICKUP_ARCHES = [(-0.48, 0.48), (3.2, 4.16)]   # the wheel openings (axles at 0 and 3.68)
-PICKUP_SEATS = [(0.42, 0.35, 1.75, True), (-0.42, 0.35, 1.75, False),
-                (0.42, 0.35, 0.9, False), (-0.42, 0.35, 0.9, False)]
+PICKUP_SEATS = [(0.42, 0.35, 1.6, True), (-0.42, 0.35, 1.6, False),
+                (0.42, 0.35, 0.85, False), (-0.42, 0.35, 0.85, False)]
 
 
-def pickup(style):
-    """A half-ton crew cab pickup with a 5.5 ft bed. 'h150' is the Halden H-150: a tall square
-    grille crossed by two bars, the headlights beside it. 'silverline' is the Chevrolay
-    Silverline 1500: a two-tier grille split by a bar that runs out across the headlights, and
-    a step under the doors. The `trim` cell (bumpers, bars, handles) is chrome or black by
-    livery, so one model serves a work-truck XL and a chrome XLT."""
-    v = Vehicle()
-    g = -0.4
-    w = 1.0
-    f, r = PICKUP_FRONT, PICKUP_REAR
+def raked_cab(v, w, belt, top, rake, steps=6):
+    """A crew cab whose windshield leans back `rake` from the cowl to the roof, as a real
+    truck's does rather than standing upright like the fleet's cab-overs. The greenhouse behind
+    the windshield is the ordinary hollow cabin; the windshield, the A-pillars and the glass
+    under them are written as `steps` steps."""
     c0, c1 = PICKUP_CAB
-    bf = PICKUP_BED_FRONT
-    arch = 0.55                                # the top of the wheel openings
-    rail = 0.9                                 # the hood's and the bed rails' height
-    v.box((-0.8, -0.12, r + 0.1), (0.8, 0.0, f - 0.2), 'black')                # frame
-    # the front: fenders round the front wheels, the hood over them
-    for a, b in _spans(c1, f, PICKUP_ARCHES[1:]):
-        v.box((-w, 0.0, a), (w, arch, b), 'paint')
-    v.box((-0.6, 0.0, PICKUP_ARCHES[1][0]), (0.6, arch, PICKUP_ARCHES[1][1]), 'black')
-    v.box((-w + 0.01, arch - 0.03, PICKUP_ARCHES[1][0]),
-          (w - 0.01, arch - 0.005, PICKUP_ARCHES[1][1]), 'black')            # wheel well
-    v.box((-w, arch, c1), (w, rail - 0.05, f), 'paint')                       # hood
-    v.box((-0.35, rail - 0.05, c1 + 0.05), (0.35, rail - 0.025, f - 0.1), 'paint')  # dome
-    # the cab
+    t = WALL
+    roof_front = c1 - rake
+    win_top = top - 0.11
     v.box((-w, 0.0, c0), (w, 0.1, c1), 'paint')                               # sill
-    cabin(v, w, 0.1, 0.95, 1.56, c0, c1, windows=[(c0 + 0.15, 1.55), (1.65, c1 - 0.2)],
-          win_top=1.45, rear='window', driver_x=0.42)
-    # the bed: sides cut round the rear wheels, tubs, floor, front wall, tailgate
+    cabin(v, w, 0.1, belt, top, c0, roof_front, windows=[(c0 + 0.15, 1.6), (1.7, roof_front)],
+          win_top=win_top, front='open', rear='window')
+    for sx in (1, -1):
+        xa, xb = sorted((sx * (w - t), sx * w))
+        v.box((xa, 0.1, roof_front), (xb, belt, c1), 'paint')                 # cowl sides
+    v.box((-w + t, 0.1, c1 - t), (w - t, belt, c1), 'paint')                  # firewall
+    v.box((-w + t, win_top, roof_front - t), (w - t, top - 0.05, roof_front), 'paint')
+    for i in range(steps):
+        y0 = belt + (win_top - belt) * i / steps
+        y1 = belt + (win_top - belt) * (i + 1) / steps
+        za, zb = c1 - rake * (i + 1) / steps, c1 - rake * i / steps
+        v.box((-w + t, y0, za), (w - t, y1, zb), 'glass', obj='window')       # windshield
+        for sx in (1, -1):
+            xa, xb = sorted((sx * (w - t), sx * w))
+            v.box((xa, y0, za), (xb, y1, zb), 'paint')                        # A-pillar
+            if za - roof_front > 0.005:
+                ga, gb = sorted((sx * (w - t * 0.7), sx * (w - t * 0.3)))
+                v.box((ga, y0, roof_front), (gb, y1, za), 'glass', obj='window')
+    # the dash, under the windshield, and the steering wheel: a ring, so the road shows through
+    v.box((-w + t, belt - 0.3, roof_front - 0.3), (w - t, belt - 0.02, c1 - t), 'black')
+    dx, wz = 0.42, roof_front - 0.38
+    wx0, wx1, wy0, wy1 = dx - 0.16, dx + 0.16, belt - 0.2, belt + 0.08
+    for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
+                   ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
+                   ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
+                   ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
+        v.box(lo, hi, 'black')
+    return roof_front
+
+
+def pickup_bed(v, w, rail, arch):
+    """The bed: sides cut round the rear wheels, wheel tubs, floor, front wall and tailgate."""
+    r, bf = PICKUP_REAR, PICKUP_BED_FRONT
     for sx in (1, -1):
         xa, xb = sorted((sx * (w - WALL), sx * w))
         for a, b in _spans(r, bf, PICKUP_ARCHES[:1]):
@@ -899,45 +915,169 @@ def pickup(style):
     v.box((-w + WALL, 0.4, r + WALL), (w - WALL, 0.45, bf - WALL), 'black')    # bed floor
     v.box((-w + WALL, 0.45, bf - WALL), (w - WALL, rail, bf), 'paint')         # front wall
     v.box((-w + WALL, 0.15, r), (w - WALL, rail, r + WALL), 'paint')           # tailgate
-    v.box((-0.12, 0.78, r - 0.01), (0.12, 0.83, r), 'trim', faces=('n',))
-    v.box((-w, 0.0, r - 0.15), (w, 0.2, r), 'trim')                            # rear bumper
+    v.box((-0.12, rail - 0.12, r - 0.01), (0.12, rail - 0.07, r), 'trim', faces=('n',))
     v.box((-0.25, 0.02, r - 0.16), (0.25, 0.17, r - 0.15), 'plate', faces=('n',))
-    # the sides: door handles, mirrors, a stripe and the door lettering (both the body's
-    # colour unless the livery has them)
-    for z in (1.3, c1 - 0.55):
-        v.both((w, 0.82, z), (w + 0.012, 0.86, z + 0.14), 'trim', faces=('e', 'w'))
-    v.both((w, 1.0, c1 - 0.3), (w + 0.2, 1.22, c1 - 0.2), 'black')            # mirrors
-    for a, b in _spans(r, f, PICKUP_ARCHES):
-        v.both((w, 0.12, a), (w + 0.008, 0.2, b), 'stripe', faces=('e', 'w'))
-    v.both((w, 0.32, c0 + 0.35), (w + 0.012, 0.72, c0 + 1.75), 'decal', faces=('e', 'w'))
-    # the front end
-    if style == 'h150':
-        v.box((-0.6, 0.32, f), (0.6, 0.82, f + 0.02), 'mesh', faces=('s',))
-        v.box((-0.64, 0.82, f), (0.64, 0.86, f + 0.05), 'trim')                # surround
-        for y0, y1 in ((0.42, 0.47), (0.62, 0.68)):
-            v.box((-0.62, y0, f + 0.02), (0.62, y1, f + 0.05), 'trim')         # bars
-        v.box((-0.11, 0.49, f + 0.05), (0.11, 0.6, f + 0.06), 'badge', faces=('s',))
-        v.box((-w, 0.0, f), (w, 0.3, f + 0.12), 'trim')                        # bumper
-        head_y = 0.6
-    else:
-        v.box((-0.6, 0.645, f), (0.6, 0.83, f + 0.02), 'mesh', faces=('s',))
-        v.box((-0.6, 0.32, f), (0.6, 0.61, f + 0.02), 'mesh', faces=('s',))
-        v.box((-0.97, 0.61, f + 0.02), (0.97, 0.645, f + 0.05), 'trim')        # the bar
-        v.box((-0.62, 0.83, f), (0.62, 0.86, f + 0.04), 'trim')                # surround
-        v.box((-0.13, 0.575, f + 0.05), (0.13, 0.68, f + 0.06), 'badge', faces=('s',))
-        v.box((-w, 0.0, f), (w, 0.32, f + 0.14), 'trim')                       # bumper
-        v.both((w - 0.1, 0.02, c0 + 0.1), (w + 0.06, 0.07, c1 - 0.1), 'trim')  # step
-        head_y = 0.65
-    v.road_lights(f, r, w, head_y, 0.5)
-    return v, g
+
+
+def front_fenders(v, w, arch, top, c1):
+    """The front: fenders round the front wheels, the engine bay between them, the wheel
+    wells' black lining, and the hood box up to `top`."""
+    a0, a1 = PICKUP_ARCHES[1]
+    for a, b in _spans(c1, PICKUP_FRONT, [(a0, a1)]):
+        v.box((-w, 0.0, a), (w, arch, b), 'paint')
+    v.box((-0.6, 0.0, a0), (0.6, arch, a1), 'black')
+    v.box((-w + 0.01, arch - 0.03, a0), (w - 0.01, arch - 0.005, a1), 'black')
+
+
+def pickup_lights(v, f, r, head, turn_front, tails):
+    """Headlights `head` and front turn lamps `turn_front` as (x0, x1, y0, y1) on the left (+x)
+    side, mirrored to the right; `tails` as (kind, (x0, x1, y0, y1)) for kind 'brake', 'turn'
+    or 'reverse', also given for the left side. IV's own variables, as road_lights uses."""
+    front = ('s', 'e', 'w', 'u', 'd')
+    back = ('n', 'e', 'w', 'u', 'd')
+    brake = [{'animationType': 'translation', 'axis': [0, 0.5, 0], 'variable': 'running_light'},
+             {'animationType': 'translation', 'axis': [0, 1, 0], 'variable': 'brake'}]
+    for side, sx in (('L', 1), ('R', -1)):
+        def xs(box):
+            return sorted((sx * box[0], sx * box[1]))
+        hx = xs(head)
+        v.lamp('Headlight' + side, (hx[0], head[2], f), (hx[1], head[3], f + 0.03),
+               'headlight', '#FFF6E0', [vp.visible_on('headlight')], [0, 0, 1], 0.6, faces=front)
+        signal = [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
+                  vp.lit_by('10_10_0_cycle')]
+        tx = xs(turn_front)
+        v.lamp('TurnFront' + side, (tx[0], turn_front[2], f), (tx[1], turn_front[3], f + 0.03),
+               'amber', '#FFA000', signal, [0, 0, 1], faces=front)
+        for k, (kind, box) in enumerate(tails):
+            bx = xs(box)
+            lo, hi = (bx[0], box[2], r - 0.03), (bx[1], box[3], r)
+            if kind == 'brake':
+                v.lamp('Brake' + side, lo, hi, 'tail', '#FF0000', brake, [0, 0, -1], faces=back)
+            elif kind == 'turn':
+                v.lamp('Turn' + side, lo, hi, 'amber', '#FFA000', signal, [0, 0, -1],
+                       faces=back)
+            else:
+                v.lamp('Reverse' + side, lo, hi, 'white', '#FFFFFF',
+                       [vp.lit_by('engine_reversed_1')], [0, 0, -1], faces=back)
 
 
 def pickup_h150():
-    return pickup('h150')
+    """The Halden H-150, after a 2018 F-150 crew cab: a hood that steps down to its nose with
+    two raised ribs along it; a tall grille crossed by two bars, the headlights set in a C of
+    lens trim that runs down beside the grille; round-cornered wheel openings; a crease low
+    along the sides; tall C-shaped tail lamps and the maker's name stamped across the
+    tailgate; the model's badge on the front doors. The `trim` cell (bumpers, bars, handles)
+    is chrome or black by livery, so one model is both a work-truck XL and a chrome XLT."""
+    v = Vehicle()
+    g = -0.4
+    w = 1.0
+    f, r = PICKUP_FRONT, PICKUP_REAR
+    c0, c1 = PICKUP_CAB
+    arch, rail = 0.55, 0.9
+    v.box((-0.8, -0.12, r + 0.1), (0.8, 0.0, f - 0.2), 'black')                # frame
+    front_fenders(v, w, arch, rail, c1)
+    v.box((-w, arch, c1), (w, rail - 0.04, f - 0.35), 'paint')                # hood
+    v.box((-w, arch, f - 0.35), (w, rail - 0.08, f), 'paint')                 # nose, stepped
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.3, sx * 0.36))
+        v.box((xa, rail - 0.04, c1 + 0.05), (xb, rail - 0.025, f - 0.4), 'paint')  # ribs
+    roof_front = raked_cab(v, w, 0.95, 1.56, 0.55)
+    pickup_bed(v, w, rail, arch)
+    # round-cornered wheel openings: the top corners filled in
+    for a0, a1 in PICKUP_ARCHES:
+        for z0, z1 in ((a0, a0 + 0.12), (a1 - 0.12, a1)):
+            v.both((w - WALL, arch - 0.1, z0), (w, arch, z1), 'paint')
+            v.both((w - WALL, arch - 0.16, z0 + (0.06 if z0 == a0 else 0)),
+                   (w, arch - 0.1, z1 - (0.06 if z1 == a1 else 0)), 'paint')
+    # the sides
+    for z in (1.3, c1 - 0.85):
+        v.both((w, 0.8, z), (w + 0.012, 0.84, z + 0.14), 'trim', faces=('e', 'w'))
+    v.both((w, 0.92, roof_front + 0.04), (w + 0.2, 1.14, roof_front + 0.14), 'black')
+    for a, b in _spans(r, f, PICKUP_ARCHES):
+        v.both((w, 0.3, a), (w + 0.01, 0.33, b), 'paint')                     # body crease
+        v.both((w, 0.12, a), (w + 0.008, 0.2, b), 'stripe', faces=('e', 'w'))
+    v.both((w, 0.36, c0 + 0.35), (w + 0.012, 0.74, c0 + 1.75), 'decal', faces=('e', 'w'))
+    v.both((w, 0.6, c1 - 0.48), (w + 0.012, 0.68, c1 - 0.16), 'script', faces=('e', 'w'))
+    # the front end
+    v.box((-0.6, 0.3, f), (0.6, rail - 0.1, f + 0.02), 'mesh', faces=('s',))
+    v.box((-0.64, rail - 0.1, f), (0.64, rail - 0.06, f + 0.05), 'trim')       # surround
+    v.box((-0.64, 0.28, f), (0.64, 0.31, f + 0.05), 'trim')
+    for y0, y1 in ((0.42, 0.48), (0.6, 0.67)):
+        v.box((-0.62, y0, f + 0.02), (0.62, y1, f + 0.05), 'trim')             # bars
+    v.box((-0.11, 0.495, f + 0.05), (0.11, 0.595, f + 0.06), 'badge', faces=('s',))
+    for sx in (1, -1):                                                         # the C trim
+        xa, xb = sorted((sx * 0.62, sx * 0.665))
+        v.box((xa, 0.38, f), (xb, rail - 0.1, f + 0.035), 'chrome')
+        xa, xb = sorted((sx * 0.62, sx * 0.97))
+        v.box((xa, 0.38, f), (xb, 0.43, f + 0.035), 'chrome')
+    v.box((-w, 0.0, f), (w, 0.28, f + 0.12), 'trim')                          # bumper
+    v.box((-0.8, -0.06, f - 0.05), (0.8, 0.0, f + 0.08), 'black')             # air dam
+    pickup_lights(v, f, r, (0.68, 0.97, 0.6, 0.8), (0.68, 0.97, 0.45, 0.57),
+                  [('brake', (0.88, 0.99, 0.45, 0.86)), ('brake', (0.76, 0.88, 0.78, 0.86)),
+                   ('turn', (0.76, 0.88, 0.45, 0.53)), ('reverse', (0.8, 0.88, 0.58, 0.7))])
+    # the tailgate's stamped name
+    v.box((-0.72, 0.5, r - 0.006), (0.72, 0.74, r), 'gate', faces=('n',))
+    return v, g
 
 
 def pickup_silverline():
-    return pickup('silverline')
+    """The Chevrolay Silverline 1500, after a 2015 Silverado crew cab: a taller, flatter front
+    with a power dome down the hood; a two-tier grille split by a heavy chrome bar that runs
+    out through the headlights, which are square and stacked; square wheel openings under
+    flares that stand proud of the body; a shoulder crease the length of the truck; tall
+    mirrors and a step under the doors; stepped tail lamps, a spoiler lip on the tailgate and
+    the badge in its middle; the model's name on the front doors."""
+    v = Vehicle()
+    g = -0.4
+    w = 1.0
+    f, r = PICKUP_FRONT, PICKUP_REAR
+    c0, c1 = PICKUP_CAB
+    arch, rail = 0.58, 0.98
+    v.box((-0.8, -0.12, r + 0.1), (0.8, 0.0, f - 0.2), 'black')                # frame
+    front_fenders(v, w, arch, rail, c1)
+    v.box((-w, arch, c1), (w, rail - 0.01, f), 'paint')                       # hood, flat
+    v.box((-0.42, rail - 0.01, c1 + 0.05), (0.42, rail + 0.015, f - 0.06), 'paint')  # dome
+    roof_front = raked_cab(v, w, 1.0, 1.6, 0.5)
+    pickup_bed(v, w, rail, arch)
+    # square wheel openings under flares that stand proud of the body
+    for a0, a1 in PICKUP_ARCHES:
+        v.both((w, arch, a0 - 0.08), (w + 0.04, arch + 0.08, a1 + 0.08), 'paint')
+        v.both((w, 0.06, a0 - 0.08), (w + 0.04, arch, a0), 'paint')
+        v.both((w, 0.06, a1), (w + 0.04, arch, a1 + 0.08), 'paint')
+    # the sides: the shoulder crease, handles, mirrors, the step
+    for a, b in _spans(r, f, [(a0 - 0.08, a1 + 0.08) for a0, a1 in PICKUP_ARCHES]):
+        v.both((w, 0.7, a), (w + 0.015, 0.74, b), 'paint')
+        v.both((w, 0.12, a), (w + 0.008, 0.2, b), 'stripe', faces=('e', 'w'))
+    for z in (1.3, c1 - 0.85):
+        v.both((w, 0.84, z), (w + 0.012, 0.88, z + 0.14), 'trim', faces=('e', 'w'))
+    v.both((w, 0.98, roof_front + 0.02), (w + 0.26, 1.3, roof_front + 0.14), 'paint')
+    v.both((w - 0.1, 0.02, c0 + 0.1), (w + 0.06, 0.07, c1 - 0.1), 'trim')    # step
+    v.both((w, 0.5, c1 - 0.58), (w + 0.012, 0.58, c1 - 0.26), 'script', faces=('e', 'w'))
+    # the front end: two grille tiers, the bar through the headlights
+    v.box((-0.6, 0.7, f), (0.6, rail - 0.04, f + 0.02), 'mesh', faces=('s',))
+    v.box((-0.6, 0.36, f), (0.6, 0.63, f + 0.02), 'mesh', faces=('s',))
+    v.box((-0.98, 0.63, f + 0.02), (0.98, 0.7, f + 0.06), 'trim')             # the bar
+    v.box((-0.62, rail - 0.04, f), (0.62, rail - 0.01, f + 0.04), 'trim')     # surround
+    v.box((-0.62, 0.33, f), (0.62, 0.36, f + 0.04), 'trim')
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.6, sx * 0.63))
+        v.box((xa, 0.33, f), (xb, rail - 0.01, f + 0.04), 'trim')
+        xa, xb = sorted((sx * 0.64, sx * 0.8))
+        v.box((xa, 0.5, f), (xb, 0.63, f + 0.025), 'headlight', faces=('s',))  # lower lamp
+    v.box((-0.13, 0.6, f + 0.06), (0.13, 0.73, f + 0.07), 'badge', faces=('s',))
+    v.box((-w, 0.0, f), (w, 0.33, f + 0.15), 'trim')                          # bumper
+    v.box((-w + 0.05, 0.12, f + 0.15), (w - 0.05, 0.16, f + 0.17), 'black')   # step pad
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.55, sx * 0.75))
+        v.box((xa, 0.18, f + 0.15), (xb, 0.26, f + 0.155), 'headlight', faces=('s',))  # fogs
+    v.box((-0.85, -0.06, f - 0.05), (0.85, 0.0, f + 0.1), 'black')            # air dam
+    pickup_lights(v, f, r, (0.64, 0.97, 0.72, 0.94), (0.8, 0.97, 0.5, 0.63),
+                  [('brake', (0.8, 0.99, 0.62, 0.92)), ('brake', (0.88, 0.99, 0.5, 0.62)),
+                   ('turn', (0.8, 0.88, 0.5, 0.56)), ('reverse', (0.8, 0.88, 0.56, 0.62))])
+    # the tailgate: a spoiler lip and the badge
+    v.box((-w + WALL, rail - 0.02, r - 0.05), (w - WALL, rail + 0.02, r), 'black')
+    v.box((-0.11, 0.6, r - 0.008), (0.11, 0.72, r), 'badge', faces=('n',))
+    return v, g
 
 
 # The utility cap: a part for the pickups' bed slot, so it goes on any of them, those already
@@ -1262,6 +1402,19 @@ def pickup_cells(img, pickup):
         d.polygon([(cx, y0), (x1, cy), (cx, y1), (x0, cy)], fill=(150, 154, 160, 255))
         d.polygon([(cx, y0 + 2), (x1 - 2, cy), (cx, y1 - 2), (x0 + 2, cy)],
                   fill=(214, 172, 58, 255))
+    # the model's badge (chrome letters on the paint) and the name across the tailgate (the
+    # trim's colour, on the paint a shade darker, as a stamped panel catches less light)
+    paint = rgb(pickup['paint'])
+    x0, y0, x1, y1 = box('script')
+    d.rectangle((x0, y0, x1, y1), fill=paint + (255,))
+    if pickup['script']:
+        lc.draw_text_centred(img, pickup['script'], (x0 + x1 + 1) // 2, y0 + 5,
+                             (214, 218, 224), 1)
+    x0, y0, x1, y1 = box('gate')
+    d.rectangle((x0, y0, x1, y1), fill=shade(paint, 0.86) + (255,))
+    if pickup['gate']:
+        lc.draw_text_centred(img, pickup['gate'], (x0 + x1 + 1) // 2, y0 + 3,
+                             (206, 210, 216) if chrome else (34, 34, 38), 2)
 
 
 def tree_crew_cells(img):
@@ -1670,7 +1823,7 @@ FLEET = {
     # livery cannot change: black steel on the XL, silver alloys on the XLT. `trim` sets each
     # livery's bumpers and bars, chrome unless listed.
     'csm_pickup_h150_xl': dict(
-        cap='slot',
+        cap='slot', script='H-150', gate='HALDEN',
         build=pickup_h150, badge='halden', trim={'_white': 'black'},
         description='A half-ton crew cab pickup in work-truck trim: black grille, bumpers and '
                     'steel wheels.',
@@ -1680,7 +1833,7 @@ FLEET = {
         engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
         box_y=0.55, switches=[]),
     'csm_pickup_h150_xlt': dict(
-        cap='slot',
+        cap='slot', script='H-150', gate='HALDEN',
         build=pickup_h150, badge='halden', model='csm_pickup_h150_xl',
         trim={'_publicworks': 'black'},
         description='A half-ton crew cab pickup with chrome trim and alloy wheels; the public '
@@ -1691,7 +1844,7 @@ FLEET = {
         engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
         box_y=0.55, switches=[]),
     'csm_pickup_silverline': dict(
-        cap='slot',
+        cap='slot', rail=0.98, script='SILVERLINE',
         build=pickup_silverline, badge='chevrolay',
         description='A half-ton crew cab pickup: chrome two-tier grille, chrome bumper and step, '
                     'alloy wheels.',
@@ -1702,6 +1855,7 @@ FLEET = {
         box_y=0.55, switches=[]),
     'csm_pickup_h150_service': dict(
         build=pickup_h150, badge='halden', model='csm_pickup_h150_xl', cap='fitted',
+        script='H-150', gate='HALDEN',
         trim={'_publicworks': 'black', '_white': 'black'},
         description='A work-trim half-ton crew cab that comes with the utility cap: '
                     'compartments, a ladder rack and an amber beacon on BEACONS.',
@@ -1788,7 +1942,8 @@ def vehicle_json(name, v):
             slot['isController'] = True
         parts.append(slot)
     if 'cap' in spec:
-        slot = {'pos': list(PICKUP_CAP_SLOT), 'types': [PICKUP_CAP_TYPE]}
+        x, y, z = PICKUP_CAP_SLOT
+        slot = {'pos': [x, spec.get('rail', y), z], 'types': [PICKUP_CAP_TYPE]}
         if spec['cap'] == 'fitted':
             slot['defaultPart'] = '%s:csm_pickup_cap' % PACK
         parts.append(slot)
@@ -2092,7 +2247,9 @@ def catalogue():
         for livery in LIVERIES[name]:
             spec = FLEET[name]
             trim = {'trim': spec.get('trim', {}).get(livery[0], 'chrome'),
-                    'badge': spec['badge'], 'seal': bool(livery[5])} if 'badge' in spec else None
+                    'badge': spec['badge'], 'seal': bool(livery[5]),
+                    'script': spec.get('script', ''), 'gate': spec.get('gate', ''),
+                    'paint': livery[2]} if 'badge' in spec else None
             texture = vehicle_texture(livery, DECAL_ON[name], spec.get('extras', False), trim)
             put(os.path.join(PACK_DIR, 'textures', 'vehicles', name + livery[0] + '.png'),
                 vp.png_bytes(texture))
