@@ -238,6 +238,10 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 | `csm_tow_truck` (rollback carrier, 10.0 m) | `_white`, `_red`, `_yellow`, `_black` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
 | `csm_transit_bus` (40 ft low floor, 13.2 m) | `_metro`, `_cityline`, `_riverway`, `_verdant`, `_emberline` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` (rear) | 13 |
 | `csm_bucket_truck` (aerial lift, 9.1 m) | `_white`, `_yellow`, `_green` | `csm_wheel_truck`, duals behind | `csm_engine_diesel` | 2 |
+| `csm_pickup_h150_xl` (Halden H-150 XL, crew cab, 5.9 m) | `_white` | `csm_wheel_car` (black steel) | `csm_engine_petrol` | 4 |
+| `csm_pickup_h150_xlt` (Halden H-150 XLT) | `_blue`, `_black`, `_red`, `_publicworks` | `csm_wheel_van` (silver) | `csm_engine_petrol` | 4 |
+| `csm_pickup_h150_service` (H-150 with the utility cap fitted) | `_publicworks`, `_white` | `csm_wheel_van` | `csm_engine_petrol` | 4 |
+| `csm_pickup_silverline` (Chevrolay Silverline 1500, crew cab, 5.9 m) | `_black`, `_blue`, `_white`, `_silver`, `_red` | `csm_wheel_van` | `csm_engine_petrol` | 4 |
 
 **How a vehicle is built.**
 - **Model:** a spec of boxes, each wearing a named cell of a 128 px texture. Liveries are only
@@ -361,6 +365,33 @@ Earlier, also verified:
 - All three spawn on their own wheels, level, with every livery's texture.
 - The fire engine with `EMERLTS` on, facing the detector, preempted the test intersection.
 - Driving, the panel and the sounds have not been tried.
+
+### The pickups and the utility cap
+
+Two civilian half-ton crew cabs with a 5.5 ft bed, one builder (`pickup(style)`) drawing both:
+
+- **Halden H-150** (an invented maker, shaped after a 2018 F-150): a tall square grille crossed
+  by two bars, a plain oval badge with an H.
+- **Chevrolay Silverline 1500** (a parody, shaped after a 2015 Silverado): a two-tier grille
+  split by a bar that runs out across the headlights, a gold diamond badge where the bowtie
+  would be, and a step under the doors.
+
+**Trim by livery, wheels by vehicle.** The pickups' own cells (`trim`, `mesh`, `badge`) are drawn
+only into their textures. `trim` (bumpers, bars, handles) is chrome or black per livery, so one
+model is both a work-truck XL and a chrome XLT. Wheels are default parts, which a livery cannot
+change, so the XL (black steel) and the XLT (silver alloys) are two vehicles. The XLT and the
+service truck share the XL's OBJ through each definition's `modelName` (`model` in the spec).
+
+**The utility cap** (`csm_pickup_cap`) is a part, not a vehicle, so it goes on any pickup, those
+already on the road included. Every pickup has a bed slot of type `generic_csm_pickup_cap` at
+the bed's middle on the rails, and `csm_pickup_h150_service` comes with the cap fitted. The cap
+carries compartment doors, a rear door with a third brake light, a ladder rack and an amber
+beacon on `BEACONS` (the part's own switch, so it shows on the panel only with the cap on; not
+an emergency switch, so it never preempts). It is white only: IV finds a `defaultPart` by its
+plain name, so a cap per colour would need a part per colour.
+
+The public works livery's door lettering is a round seal ringed in the stripe colour beside
+PUBLIC WORKS, after a real highway division truck.
 
 ### Speed: geared to a ceiling
 
