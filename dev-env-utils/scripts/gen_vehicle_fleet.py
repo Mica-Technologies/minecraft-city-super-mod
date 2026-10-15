@@ -868,7 +868,7 @@ def raked_cab(v, w, belt, top, rake, steps=6):
     c0, c1 = PICKUP_CAB
     t = WALL
     roof_front = c1 - rake
-    win_top = top - 0.11
+    win_top = top - 0.08
     v.box((-w, 0.0, c0), (w, 0.1, c1), 'paint')                               # sill
     cabin(v, w, 0.1, belt, top, c0, roof_front, windows=[(c0 + 0.15, 1.6), (1.7, roof_front)],
           win_top=win_top, front='open', rear='window')
@@ -1098,6 +1098,8 @@ def pickup_cap():
     top = 0.72
     v.box((-w, 0.02, r), (w, 0.05, f), 'black')                               # rail seal
     v.box((-w, 0.05, r), (w, top, f), 'paint')                                # shell
+    # a tinted window in the front wall, behind the cab's rear window, as a work cap has
+    v.box((-0.72, 0.12, f), (0.72, top - 0.14, f + 0.006), 'glass', faces=('s',))
     v.both((w, 0.12, r + 0.1), (w + 0.008, top - 0.1, f - 0.23), 'paint2', faces=('e', 'w'))
     v.both((w + 0.008, 0.34, f - 0.38), (w + 0.02, 0.4, f - 0.28), 'chrome')  # T-handles
     v.box((-0.9, 0.1, r - 0.008), (0.9, top - 0.06, r), 'paint2', faces=('n',))  # rear door
@@ -1123,8 +1125,13 @@ def pickup_cap():
 # Cars: the Subaroo hatchback and sedan
 # ------------------------------------------------------------------------------------------
 
-CAR_SEATS = [(0.36, 0.2, 0.75, True), (-0.36, 0.2, 0.75, False),
-             (0.36, 0.2, -0.05, False), (-0.36, 0.2, -0.05, False)]
+# IV puts a seated rider's eyes about 0.92 above the seat's point, so a car's seat sits barely
+# above its floor: at 0.2 the driver's eyes were at the headliner and saw over the roof.
+CAR_SEATS = [(0.36, 0.0, 0.75, True), (-0.36, 0.0, 0.75, False),
+             (0.36, 0.0, -0.05, False), (-0.36, 0.0, -0.05, False)]
+# The cars' seat (csm_vehicle_seat_low) stands on a pedestal this deep, down to the floor's top
+# (-0.04): the trucks' 0.15 would put it through the floor.
+CAR_SEAT_BASE = 0.04
 
 
 def rake(v, w, belt, win_top, z_foot, z_head, steps, side_glass):
@@ -1227,13 +1234,13 @@ def car_sides(v, w, zf_handles, mirror_z, belt, crease_y, body):
         v.both((w, crease_y, a), (w + 0.01, crease_y + 0.025, b), 'paint')
 
 
-IMPRESSA = dict(w=0.89, floor=-0.05, rocker=-0.15, belt=0.63, win_top=1.04, top=1.16,
+IMPRESSA = dict(w=0.89, floor=-0.05, rocker=-0.15, belt=0.63, win_top=1.08, top=1.16,
                 zf=-0.7, zr=-0.3, zfr=1.25, zc=2.1, arch_top=0.38,
                 arches=[(-0.4, 0.4), (2.27, 3.07)], quarter_glass=False,
                 windows=[(-0.15, 0.45), (0.55, 1.25)])
 IMPRESSA_FRONT, IMPRESSA_REAR = 3.59, -0.87
 
-STX = dict(w=0.9, floor=-0.05, rocker=-0.15, belt=0.6, win_top=1.02, top=1.15,
+STX = dict(w=0.9, floor=-0.05, rocker=-0.15, belt=0.6, win_top=1.07, top=1.15,
            zf=-0.45, zr=0.0, zfr=1.25, zc=2.1, arch_top=0.38,
            arches=[(-0.4, 0.4), (2.25, 3.05)], quarter_glass=False,
            windows=[(0.08, 0.5), (0.6, 1.25)])
@@ -1827,11 +1834,13 @@ def wheel_json(name):
     }
 
 
-def seat_obj():
+def seat_obj(base=0.15):
+    """The seat: cushion and back above its point, and a pedestal `base` deep under it. The cars'
+    seat (csm_vehicle_seat_low) has a short one, as their seats stand right on the floor."""
     o = vp.Obj(tex=32)
     o.box('body', (-0.25, 0.0, -0.25), (0.25, 0.12, 0.25), (0, 0, 16, 16))
     o.box('body', (-0.25, 0.12, -0.32), (0.25, 0.75, -0.2), (0, 0, 16, 16))
-    o.box('body', (-0.2, -0.15, -0.2), (0.2, 0.0, 0.2), (16, 0, 32, 16))
+    o.box('body', (-0.2, -base, -0.2), (0.2, 0.0, 0.2), (16, 0, 32, 16))
     return o.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py')
 
 
@@ -1845,9 +1854,9 @@ def seat_texture():
     return img
 
 
-def seat_json():
+def seat_json(label='CSM Vehicle Seat'):
     return {
-        'definitions': [{'name': 'CSM Vehicle Seat', 'subName': '', 'extraMaterialLists': [[]]}],
+        'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[]]}],
         'general': {'description': 'Comes in the CSM fleet\'s vehicles.', 'stackSize': 4,
                     'materialLists': [['minecraft:wool:0:2', 'minecraft:iron_ingot:0:1']]},
         'generic': {'type': 'seat'},
@@ -2138,7 +2147,7 @@ FLEET = {
         description='A five-door compact hatchback with all-wheel drive.',
         mass=1400, wheel='csm_wheel_compact', engine='csm_engine_flat4', horn='horn_car',
         ceiling_mph=88, drag=(0.32, 1.4),
-        wheels=[(0.76, 2.67, True), (0.76, 0.0, False)], seats=CAR_SEATS,
+        wheels=[(0.76, 2.67, True), (0.76, 0.0, False)], seats=CAR_SEATS, seat='csm_vehicle_seat_low',
         engine_pos=(0.0, 0.2, 3.0), boxes=[-0.1, 1.4, 2.8], box_width=1.8, box_height=1.36,
         box_y=0.48, switches=[]),
     'csm_subaroo_wrz_stx': dict(
@@ -2148,7 +2157,7 @@ FLEET = {
                     'rear wing: the fleet\'s fastest, at about 100 mph.',
         mass=1550, wheel='csm_wheel_sport', engine='csm_engine_turbo4', horn='horn_car',
         ceiling_mph=112, drag=(0.3, 1.35),
-        wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS,
+        wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS, seat='csm_vehicle_seat_low',
         engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.36,
         box_y=0.47, switches=[]),
     'csm_subaroo_wrz_stx_gold': dict(
@@ -2157,7 +2166,7 @@ FLEET = {
         description='The WRZ STX in rally blue on gold wheels.',
         mass=1550, wheel='csm_wheel_sport_gold', engine='csm_engine_turbo4', horn='horn_car',
         ceiling_mph=112, drag=(0.3, 1.35),
-        wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS,
+        wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS, seat='csm_vehicle_seat_low',
         engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.36,
         box_y=0.47, switches=[]),
     # The tree crew (#251): a towed chipper, an equipment trailer and a stump grinder. The
@@ -2232,7 +2241,8 @@ def vehicle_json(name, v):
             if spec.get('awd') or not steer:
                 driven.append(len(parts))
     for x, y, z, controller in spec['seats']:
-        slot = {'pos': [x, y, z], 'types': ['seat'], 'defaultPart': '%s:csm_vehicle_seat' % PACK,
+        slot = {'pos': [x, y, z], 'types': ['seat'],
+                'defaultPart': '%s:%s' % (PACK, spec.get('seat', 'csm_vehicle_seat')),
                 'dismountPos': [x + (1.6 if x >= 0 else -1.6), 0.0, z]}
         if controller:
             slot['isController'] = True
@@ -2593,16 +2603,18 @@ def catalogue():
         vp.json_bytes(pickup_cap_json(cap)))
     item('parts', 'csm_pickup_cap', vehicle_icon(cap, 0.0, cap_texture))
 
-    put(os.path.join(PACK_DIR, 'objmodels', 'parts', 'csm_vehicle_seat.obj'),
-        seat_obj().encode('utf-8'))
-    put(os.path.join(PACK_DIR, 'textures', 'parts', 'csm_vehicle_seat.png'),
-        vp.png_bytes(seat_texture()))
-    put(os.path.join(PACK_DIR, 'jsondefs', 'parts', 'csm_vehicle_seat.json'),
-        vp.json_bytes(seat_json()))
-    seat_icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
-    ImageDraw.Draw(seat_icon).rectangle((4, 2, 7, 12), fill=(36, 36, 40, 255))
-    ImageDraw.Draw(seat_icon).rectangle((4, 10, 12, 12), fill=(36, 36, 40, 255))
-    item('parts', 'csm_vehicle_seat', seat_icon)
+    for seat, base, label in (('csm_vehicle_seat', 0.15, 'CSM Vehicle Seat'),
+                              ('csm_vehicle_seat_low', CAR_SEAT_BASE, 'CSM Low Vehicle Seat')):
+        put(os.path.join(PACK_DIR, 'objmodels', 'parts', seat + '.obj'),
+            seat_obj(base).encode('utf-8'))
+        put(os.path.join(PACK_DIR, 'textures', 'parts', seat + '.png'),
+            vp.png_bytes(seat_texture()))
+        put(os.path.join(PACK_DIR, 'jsondefs', 'parts', seat + '.json'),
+            vp.json_bytes(seat_json(label)))
+        seat_icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+        ImageDraw.Draw(seat_icon).rectangle((4, 2, 7, 12), fill=(36, 36, 40, 255))
+        ImageDraw.Draw(seat_icon).rectangle((4, 10, 12, 12), fill=(36, 36, 40, 255))
+        item('parts', seat, seat_icon)
 
     for name in FLEET:
         if FLEET[name].get('trailer'):

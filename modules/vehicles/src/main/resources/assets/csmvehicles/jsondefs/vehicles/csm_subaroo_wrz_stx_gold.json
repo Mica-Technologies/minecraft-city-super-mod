@@ -104,13 +104,13 @@
     {
       "pos": [
         0.36,
-        0.2,
+        0.0,
         0.75
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_vehicle_seat_low",
       "dismountPos": [
         1.96,
         0.0,
@@ -121,13 +121,13 @@
     {
       "pos": [
         -0.36,
-        0.2,
+        0.0,
         0.75
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_vehicle_seat_low",
       "dismountPos": [
         -1.96,
         0.0,
@@ -137,13 +137,13 @@
     {
       "pos": [
         0.36,
-        0.2,
+        0.0,
         -0.05
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_vehicle_seat_low",
       "dismountPos": [
         1.96,
         0.0,
@@ -153,13 +153,13 @@
     {
       "pos": [
         -0.36,
-        0.2,
+        0.0,
         -0.05
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_vehicle_seat_low",
       "dismountPos": [
         -1.96,
         0.0,

@@ -511,6 +511,13 @@ ladder truck's crew cabs, the conventional cab (DPW, bucket, tow), the ambulance
 module (with a pass-through window), the police SUV's greenhouse and the whole bus behind its
 engine bay (with its two door openings) are cabins.
 
+**Seat height.** IV puts a seated rider's eyes about 0.92 above the seat slot's point, so the
+seat's height is what sets the driver's headroom. The Subaroos' seats first stood 0.2 above the
+floor and the driver's eyes were at the headliner, looking out over the roof; a car's seats now
+sit at the floor (`CAR_SEATS`, y 0.0, about 0.19 of headroom), on `csm_vehicle_seat_low`, whose
+pedestal is 0.04 deep and stops on the floor's top where the trucks' 0.15 would go through it.
+Check a new vehicle from its seats in game: forward, up at the roof, out the side and back.
+
 Windows are objects named `window`: IV draws them in its own glass, from inside too when the
 player's config turns on inner windows. An object named `translucent` would take the texture's
 alpha instead.
