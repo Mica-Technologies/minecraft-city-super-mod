@@ -32,6 +32,11 @@ gen_vehicle_sounds.py's. Run from the repo root:
 
     python dev-env-utils/scripts/gen_vehicle_fleet.py           # write
     python dev-env-utils/scripts/gen_vehicle_fleet.py --check   # exit 1 if the tree has drifted
+    python dev-env-utils/scripts/gen_vehicle_fleet.py --speeds  # each vehicle's top speed, 0-60
+
+Speed: IV scales car motion by carSpeedFactor (0.35) but applies drag to the unscaled motion, so
+each vehicle is geared to reach its engine's maximum rpm at a set ceiling (`ceiling_mph`) and
+given the power to get close to it; simulate() models IV's code to tune and check that.
 """
 
 import json
@@ -1206,11 +1211,94 @@ def seat_json():
 ENGINES = {
     # name: (label, fuel type, fuel consumption (the power), max, safe, idle, start, stall rpm,
     #        gear ratios, sound prefix)
-    'csm_engine_diesel': ('CSM Diesel Engine', 'diesel', 0.9, 3500, 3000, 500, 600, 325,
-                          [-2.8, 0.0, 4.69, 2.6, 1.5, 1.0, 0.75], 'diesel'),
-    'csm_engine_petrol': ('CSM V8 Engine', 'gasoline', 0.6, 6500, 5200, 650, 750, 420,
-                          [-2.4, 0.0, 3.0, 1.8, 1.25, 1.0, 0.7], 'petrol'),
+    # fuelConsumption is also IV's measure of an engine's power, so these burn fuel in proportion;
+    # the fleet's tanks (FUEL_CAPACITY) are sized to match. Six-speed automatics, the diesel's
+    # ratios an Allison-style 3.49 to 0.65 overdrive. See SPEED below.
+    'csm_engine_diesel': ('CSM Diesel Engine', 'diesel', 4.0, 3000, 2700, 600, 700, 400,
+                          [-4.0, 0.0, 3.49, 1.86, 1.41, 1.0, 0.75, 0.65], 'diesel'),
+    'csm_engine_petrol': ('CSM V8 Engine', 'gasoline', 2.2, 6000, 5500, 700, 800, 450,
+                          [-3.0, 0.0, 4.0, 2.4, 1.6, 1.15, 0.85, 0.67], 'petrol'),
 }
+
+# A full tank: about twenty minutes at full throttle, as the old, weaker engines gave.
+FUEL_CAPACITY = 60000
+
+# ------------------------------------------------------------------------------------------
+# Speed
+#
+# Immersive Vehicles moves a car by the motion its physics computes, times the server's
+# carSpeedFactor (0.35 unless an operator changes it), and the speedometer shows that world
+# speed. Its drag, though, acts on the unscaled motion, so a car must be built to push through
+# about eight times the drag its world speed suggests. The fleet's first engines met it near
+# 40 mph. Each vehicle is now geared so its engine reaches its maximum rpm in top gear at
+# `ceiling_mph`, and given the power and drag to run up close to that: a governed top speed,
+# much as a real truck's, that does not hinge on the drag figures. simulate() is a straight,
+# level, full-throttle model of IV's code (LDMTS mccore: PartEngine's rpm, automatic shifts and
+# wheel force, EntityVehicleF_Physics' drag), used to tune these numbers and reported by
+# --speeds; --check fails if a road vehicle's top speed leaves SPEED_BAND.
+# ------------------------------------------------------------------------------------------
+
+SPEED_FACTOR = 0.35          # IV's default carSpeedFactor
+SPEED_BAND = (60.0, 82.0)    # mph a road vehicle's simulated top speed must fall in
+TICK_MPH = SPEED_FACTOR * 20 * 2.23694  # internal metres per tick -> world mph
+
+
+def axle_ratio(spec):
+    """The axle ratio that puts the engine at its maximum rpm, in top gear, at the ceiling."""
+    if 'axle' in spec:
+        return spec['axle']
+    _, _, _, mx, _, _, _, _, gears, _ = ENGINES[spec['engine']]
+    diameter = WHEELS[spec['wheel']][1]
+    v = spec['ceiling_mph'] / TICK_MPH
+    return round(mx * math.pi * diameter / (1200 * v * min(g for g in gears if g > 0)), 3)
+
+
+def simulate(spec, seconds=240):
+    """(top speed mph, seconds from rest to 60 mph or None) on level ground at full throttle."""
+    _, _, power, mx, safe, idle, _, stall, gears, _ = ENGINES[spec['engine']]
+    gears = [g for g in gears if g > 0]
+    diameter = WHEELS[spec['wheel']][1]
+    axle = axle_ratio(spec)
+    cd, area = spec.get('drag', (0.5, 0.0))
+    area = area if area > 0 else 5.0  # IV's default frontal area
+    driven = 2 * sum(1 for _, _, steer in spec['wheels'] if not steer)
+    friction = 0.7 * driven  # the wheels' motiveFriction
+    mass = spec['mass']
+    v, rpm, gear, cooldown, top, t60 = 0.0, float(idle), 0, 0, 0.0, None
+    for tick in range(seconds * 20):
+        rpm += (v / (diameter * math.pi) * 1200 * gears[gear] * axle - rpm) / 10.0  # revResistance
+        rpm = max(rpm, idle - (idle - stall) * 0.5)
+        if cooldown:
+            cooldown -= 1
+        elif gear < len(gears) - 1 and rpm > safe * 0.9:  # automatic, full throttle
+            gear, cooldown = gear + 1, 20
+        elif gear > 0 and rpm < safe * 0.45:
+            gear, cooldown = gear - 1, 20
+        force = (mx - rpm) / mx * gears[gear] * axle * power * 18
+        if abs(force / 300.0) > friction:  # wheelspin
+            force *= mass / 100000.0 * friction / abs(force / 300.0)
+        v = max(0.0, v + (force - 0.5 * 1.225 * v * v * area * cd) / mass)
+        mph = v * TICK_MPH
+        top = max(top, mph)
+        if t60 is None and mph >= 60:
+            t60 = tick / 20.0
+    return top, t60
+
+
+def speed_report():
+    """Each motorized vehicle's gearing and simulated performance, and whether it is in band."""
+    lines, bad = [], []
+    for name, spec in FLEET.items():
+        if spec.get('trailer'):
+            continue
+        top, t60 = simulate(spec)
+        road = 'ceiling_mph' in spec
+        lines.append('%-22s axle %5.2f  top %5.1f mph  0-60 %s%s' % (
+            name, axle_ratio(spec), top, '%5.1f s' % t60 if t60 else '   -   ',
+            '' if road else '  (off-road, not banded)'))
+        if road and not SPEED_BAND[0] <= top <= SPEED_BAND[1]:
+            bad.append(name)
+    return lines, bad
 
 
 def engine_json(name):
@@ -1252,6 +1340,7 @@ FLEET = {
                     'intersections with a CSM preempt detector give it the green; siren, yelp '
                     'and hi-lo each have a switch.',
         mass=7500, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=85, drag=(0.5, 2.0),
         wheels=[(1.0, 5.0, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.6, 0.85, 5.7, True), (-0.6, 0.85, 5.7, False),
                (0.6, 0.85, 4.15, False), (-0.6, 0.85, 4.15, False)],
@@ -1264,6 +1353,7 @@ FLEET = {
                     'runs the lights, and intersections with a CSM preempt detector give it '
                     'the green.',
         mass=9500, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=80, drag=(0.55, 2.0),
         wheels=[(1.0, 6.0, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.6, 0.85, 6.7, True), (-0.6, 0.85, 6.7, False),
                (0.6, 0.85, 5.15, False), (-0.6, 0.85, 5.15, False)],
@@ -1276,6 +1366,7 @@ FLEET = {
                     'are not emergency lights, so it does not preempt signals); DUMP tips the '
                     'body.',
         mass=8000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=82, drag=(0.5, 2.0),
         wheels=[(0.95, 4.6, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.45, 0.85, 3.7, True), (-0.45, 0.85, 3.7, False)],
         engine_pos=(0.0, 0.6, 5.4), boxes=[-1.5, 1.0, 3.5, 5.6], box_width=2.5,
@@ -1287,6 +1378,7 @@ FLEET = {
                     'lights, so it does not preempt signals); BOOM raises the boom, swings it to '
                     'the left and runs it out, the bucket staying level.',
         mass=7000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=82, drag=(0.5, 2.0),
         wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False)],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
@@ -1298,6 +1390,7 @@ FLEET = {
                     'connects a vehicle onto the flatbed or onto the wheel lift. BEACONS runs '
                     'its amber lights, which do not preempt signals.',
         mass=7500, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=84, drag=(0.5, 2.0),
         wheels=[(0.95, 4.7, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.45, 0.85, 3.8, True), (-0.45, 0.85, 3.8, False)],
         engine_pos=(0.0, 0.6, 5.5), boxes=[-2.0, 0.5, 3.0, 5.5], box_width=2.5,
@@ -1309,6 +1402,7 @@ FLEET = {
                     'from the start, is its transit priority emitter: signals with preempt '
                     'detectors and transit priority give it a longer green or a queue jump.',
         mass=12000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=76, drag=(0.6, 2.2),
         wheels=[(1.0, 7.2, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.75, 0.45, 8.7, True)] +
               [(sx * 0.75, 0.55, z, False) for z in (6.4, 5.2, 2.0, 0.8, -0.4, -1.6)
@@ -1321,6 +1415,7 @@ FLEET = {
         description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
                     'intersections with a CSM preempt detector give it the green.',
         mass=4200, wheel='csm_wheel_van', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=88, drag=(0.45, 2.0),
         wheels=[(0.82, 3.6, True), (0.78, 0.0, False), (0.52, 0.0, False)],
         seats=[(0.45, 0.65, 3.4, True), (-0.45, 0.65, 3.4, False), (0.0, 0.7, 0.6, False)],
         engine_pos=(0.0, 0.45, 4.4), boxes=[-1.0, 1.3, 3.5], box_width=2.3, box_height=2.8,
@@ -1330,6 +1425,7 @@ FLEET = {
         description='A police utility vehicle. Switch EMERLTS on and it runs its lights, and '
                     'intersections with a CSM preempt detector give it the green.',
         mass=2300, wheel='csm_wheel_car', engine='csm_engine_petrol', horn='horn_car',
+        ceiling_mph=92, drag=(0.35, 1.6),
         wheels=[(0.85, 3.0, True), (0.85, 0.0, False)],
         seats=[(0.42, 0.3, 1.7, True), (-0.42, 0.3, 1.7, False),
                (0.42, 0.3, 0.45, False), (-0.42, 0.3, 0.45, False)],
@@ -1376,6 +1472,7 @@ FLEET = {
                     'same rules as the hand-guided grinder (a stump in the ground, never a '
                     'standing tree or a log on a floor). Carry it on the equipment trailer.',
         mass=700, wheel='csm_wheel_car', engine='csm_engine_petrol', horn='horn_car',
+        axle=7.0,
         wheels=[(0.42, 0.55, True), (0.42, -0.55, False)],
         seats=[(0.0, 0.45, -1.05, True)],
         engine_pos=(0.0, 0.4, -0.2), boxes=[-0.6, 0.6], box_width=1.2, box_height=1.2,
@@ -1411,7 +1508,8 @@ def vehicle_json(name, v):
         if controller:
             slot['isController'] = True
         parts.append(slot)
-    parts.append({'pos': list(spec['engine_pos']), 'minValue': 0.25, 'maxValue': 1.0,
+    # Fuel consumption is an engine's power: the fleet's own run to 4, other packs' below 1.
+    parts.append({'pos': list(spec['engine_pos']), 'minValue': 0.25, 'maxValue': 5.0,
                   'types': ['engine_car'], 'defaultPart': '%s:%s' % (PACK, spec['engine']),
                   'linkedParts': driven})
     switches = spec.get('switches', ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'])
@@ -1424,9 +1522,11 @@ def vehicle_json(name, v):
         'general': {'description': spec['description'],
                     'materialLists': [['minecraft:iron_block:0:6', 'minecraft:glass_pane:0:6',
                                        'minecraft:redstone_block:0:1']]},
-        'motorized': {'emptyMass': spec['mass'], 'fuelCapacity': 15000,
-                      'defaultFuelQty': 15000, 'axleRatio': 3.55, 'brakingFactor': 1.0,
-                      'dragCoefficient': 0.5, 'hasHeadlights': True, 'hasRunningLights': True,
+        'motorized': {'emptyMass': spec['mass'], 'fuelCapacity': FUEL_CAPACITY,
+                      'defaultFuelQty': FUEL_CAPACITY, 'axleRatio': axle_ratio(spec),
+                      'brakingFactor': 1.0, 'dragCoefficient': spec.get('drag', (0.5, 0))[0],
+                      'crossSectionalArea': spec.get('drag', (0.5, 0))[1],
+                      'hasHeadlights': True, 'hasRunningLights': True,
                       'hasTurnSignals': True, 'litVariable': 'headlight',
                       'panel': 'mts:default_car',
                       'hudTexture': '%s:textures/guis/%s_hud.png' % (PACK, name)},
@@ -1759,6 +1859,14 @@ def catalogue():
 
 def main():
     check = '--check' in sys.argv
+    lines, bad = speed_report()
+    if '--speeds' in sys.argv:
+        print('\n'.join(lines))
+        return
+    if bad:
+        print('\n'.join(lines))
+        print('top speed outside %.0f-%.0f mph: %s' % (SPEED_BAND + (', '.join(bad),)))
+        sys.exit(1)
     files = catalogue()
     drift = []
     for path, data in sorted(files.items()):
