@@ -229,8 +229,12 @@ public abstract class AbstractBlockRotatableNSEWUD extends AbstractBlock {
 
     // Rotate the bounding box based on the facing direction if FACING property is present
     if (state.getBlock() instanceof AbstractBlockRotatableNSEWUD) {
-      // Retrieve the actual state
-      IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
+      // Retrieve the actual state. Vanilla also asks a block that has just been replaced (its
+      // path listener wants the old state's collision box after the swap), when the world here
+      // already holds another block: reading that block's state would read our properties off
+      // a state that has none of them, so fall back to the state we were given.
+      IBlockState here = source.getBlockState(pos);
+      IBlockState actualState = here.getBlock() == this ? here.getActualState(source, pos) : state;
 
       // Rotate the bounding box based on the facing direction if FACING property is present
       if (actualState.getPropertyKeys().contains(FACING)) {
