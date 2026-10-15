@@ -2062,7 +2062,7 @@ FLEET = {
               [(sx * 0.75, 0.55, z, False) for z in (6.4, 5.2, 2.0, 0.8, -0.4, -1.6)
                for sx in (1, -1)],
         engine_pos=(0.0, 0.5, -2.8), boxes=[-2.2, 0.3, 2.8, 5.3, 7.8, 9.3], box_width=2.55,
-        box_height=3.1, box_y=1.0, switches=['DOORS', 'TSP'], initially_on=['TSP'],
+        box_height=2.9, box_y=1.1, switches=['DOORS', 'TSP'], initially_on=['TSP'],
         animated=door_animations),
     'csm_ambulance': dict(
         build=ambulance,
@@ -2097,8 +2097,8 @@ FLEET = {
         mass=2200, wheel='csm_wheel_car', engine='csm_engine_petrol', horn='horn_car',
         ceiling_mph=90, drag=(0.4, 1.8),
         wheels=[(0.85, 3.68, True), (0.85, 0.0, False)], seats=PICKUP_SEATS,
-        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
-        box_y=0.55, switches=[]),
+        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.8,
+        box_y=0.7, switches=[]),
     'csm_pickup_h150_xlt': dict(
         cap='slot', script='H-150', gate='HALDEN',
         build=pickup_h150, badge='halden', model='csm_pickup_h150_xl',
@@ -2108,8 +2108,8 @@ FLEET = {
         mass=2200, wheel='csm_wheel_van', engine='csm_engine_petrol', horn='horn_car',
         ceiling_mph=90, drag=(0.4, 1.8),
         wheels=[(0.85, 3.68, True), (0.85, 0.0, False)], seats=PICKUP_SEATS,
-        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
-        box_y=0.55, switches=[]),
+        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.8,
+        box_y=0.7, switches=[]),
     'csm_pickup_silverline': dict(
         cap='slot', rail=0.98, script='SILVERLINE',
         build=pickup_silverline, badge='chevrolay',
@@ -2118,8 +2118,8 @@ FLEET = {
         mass=2300, wheel='csm_wheel_van', engine='csm_engine_petrol', horn='horn_car',
         ceiling_mph=90, drag=(0.4, 1.8),
         wheels=[(0.85, 3.68, True), (0.85, 0.0, False)], seats=PICKUP_SEATS,
-        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
-        box_y=0.55, switches=[]),
+        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.8,
+        box_y=0.7, switches=[]),
     'csm_pickup_h150_service': dict(
         build=pickup_h150, badge='halden', model='csm_pickup_h150_xl', cap='fitted',
         script='H-150', gate='HALDEN',
@@ -2129,8 +2129,8 @@ FLEET = {
         mass=2400, wheel='csm_wheel_van', engine='csm_engine_petrol', horn='horn_car',
         ceiling_mph=90, drag=(0.45, 1.9),
         wheels=[(0.85, 3.68, True), (0.85, 0.0, False)], seats=PICKUP_SEATS,
-        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
-        box_y=0.55, switches=[]),
+        engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.95,
+        box_y=0.775, switches=[]),
     # The Subaroos: a hatchback and a sports sedan, both all-wheel drive. The STX is the
     # fleet's fastest, geared for about 100 mph; its gold-wheeled twin shares its model.
     'csm_subaroo_impressa': dict(
@@ -2139,8 +2139,8 @@ FLEET = {
         mass=1400, wheel='csm_wheel_compact', engine='csm_engine_flat4', horn='horn_car',
         ceiling_mph=88, drag=(0.32, 1.4),
         wheels=[(0.76, 2.67, True), (0.76, 0.0, False)], seats=CAR_SEATS,
-        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.1, 1.4, 2.8], box_width=1.8, box_height=1.5,
-        box_y=0.43, switches=[]),
+        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.1, 1.4, 2.8], box_width=1.8, box_height=1.36,
+        box_y=0.48, switches=[]),
     'csm_subaroo_wrz_stx': dict(
         build=wrz_stx, badge='subaroo', gate='WRZ STX', script='STX', script_colour='#D8202A',
         trim={'*': 'black'}, awd=True, band=(94.0, 104.0),
@@ -2149,8 +2149,8 @@ FLEET = {
         mass=1550, wheel='csm_wheel_sport', engine='csm_engine_turbo4', horn='horn_car',
         ceiling_mph=112, drag=(0.3, 1.35),
         wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS,
-        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.5,
-        box_y=0.42, switches=[]),
+        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.36,
+        box_y=0.47, switches=[]),
     'csm_subaroo_wrz_stx_gold': dict(
         build=wrz_stx, badge='subaroo', gate='WRZ STX', script='STX', script_colour='#D8202A',
         trim={'*': 'black'}, awd=True, band=(94.0, 104.0), model='csm_subaroo_wrz_stx',
@@ -2158,8 +2158,8 @@ FLEET = {
         mass=1550, wheel='csm_wheel_sport_gold', engine='csm_engine_turbo4', horn='horn_car',
         ceiling_mph=112, drag=(0.3, 1.35),
         wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS,
-        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.5,
-        box_y=0.42, switches=[]),
+        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.36,
+        box_y=0.47, switches=[]),
     # The tree crew (#251): a towed chipper, an equipment trailer and a stump grinder. The
     # chipper and the grinder load only with CSM: Parks & Greenery (the pack's treecrew
     # subfolder), since one makes Parks' Mulch and the other grinds by Parks' stump rules.
@@ -2171,8 +2171,8 @@ FLEET = {
                     'come out as Mulch in the hopper. Click the hopper to open it. It takes '
                     'anything dropped behind it, so stop it when you are done.',
         mass=1200, wheel='csm_wheel_van', wheels=[(0.95, -0.55, False)],
-        hookup=(0.05, 3.45), boxes=[-2.4, -0.8, 0.8, 2.4], box_width=1.9, box_height=1.9,
-        box_y=0.6, switches=['CHIPPER'],
+        hookup=(0.05, 3.45), boxes=[-2.4, -0.8, 0.8, 2.4], box_width=1.9, box_height=1.8,
+        box_y=0.65, switches=['CHIPPER'],
         chip_box=(0.0, 0.5, CHIP_BOX_Z),
         clicks=[(CHIPPER_LEVER, 0.35, 0.5, 'CHIPPER', 'toggle')],
         sounds=[('chipper_run', 'CHIPPER')]),
@@ -2204,8 +2204,8 @@ FLEET = {
         axle=7.0,
         wheels=[(0.42, 0.55, True), (0.42, -0.55, False)],
         seats=[(0.0, 0.45, -1.05, True)],
-        engine_pos=(0.0, 0.4, -0.2), boxes=[-0.6, 0.6], box_width=1.2, box_height=1.2,
-        box_y=0.2, switches=['GRIND'], animated=grinder_animations,
+        engine_pos=(0.0, 0.4, -0.2), boxes=[-0.6, 0.6], box_width=1.2, box_height=1.07,
+        box_y=0.265, switches=['GRIND'], animated=grinder_animations,
         sounds=[('csm:stump_grinder_grind', 'GRIND')]),
 }
 
@@ -2614,8 +2614,31 @@ def catalogue():
     return files
 
 
+# How far a vehicle's block collision boxes must stand off the ground. IV stops a vehicle whose
+# box touches a block (AEntityVehicleD_Moving.correctCollidingMovement), so a box down to the
+# wheels' contact patch pins it where it stands: the engine revs and nothing moves. The fleet's
+# oldest drivers stand 0.09 m clear.
+BOX_CLEARANCE = 0.08
+
+
+def grounded_boxes():
+    """The vehicles whose collision boxes reach within BOX_CLEARANCE of the ground."""
+    out = []
+    for name, spec in FLEET.items():
+        ground = -WHEELS[spec['wheel']][1] / 2
+        bottom = spec['box_y'] - spec['box_height'] / 2
+        if bottom - ground < BOX_CLEARANCE:
+            out.append('%s (%.2f m clear)' % (name, bottom - ground))
+    return out
+
+
 def main():
     check = '--check' in sys.argv
+    grounded = grounded_boxes()
+    if grounded:
+        print('collision boxes too near the ground (IV would pin these in place): '
+              + ', '.join(grounded))
+        sys.exit(1)
     lines, bad = speed_report()
     if '--speeds' in sys.argv:
         print('\n'.join(lines))
