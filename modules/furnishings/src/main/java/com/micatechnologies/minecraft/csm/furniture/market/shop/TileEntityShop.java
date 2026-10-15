@@ -540,6 +540,22 @@ public class TileEntityShop extends TileEntityDisplayCase {
     }
   }
 
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityShopRenderer.release(pos);
+    }
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityShopRenderer.release(pos);
+    }
+  }
+
   // --- automation ----------------------------------------------------------------------
 
   @Override

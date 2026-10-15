@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market.shop;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
@@ -13,11 +14,14 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.fml.relauncher.Side;
@@ -33,7 +37,8 @@ import org.lwjgl.opengl.GL11;
  * <p>Items are drawn as an item frame draws them (the {@code FIXED} transform), scaled to the
  * row's size: blocks as small blocks, items as flat cut-outs facing the aisle. The item's model
  * is looked up once per change of template and kept on the tile entity, so a frame costs one
- * model draw per place shown and allocates nothing. Nothing is drawn past the configured item
+ * model draw per place shown and allocates nothing; and a plain item's whole shelf is compiled into
+ * a display list, replayed until the template or the fill changes. Nothing is drawn past the configured item
  * distance ({@link TileEntityShop#getMaxRenderDistanceSquared()}), and the card only within its
  * own, shorter distance.</p>
  *
@@ -47,6 +52,14 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
   /** The price's capital height on the card, in sixteenths. */
   private static final double PRICE_CAP = 1.4;
   private static final float CAP_UNITS = 7.0f;
+  /** An emerald's picture on the card, with its gap, in font units. */
+  private static final int EMERALD_UNITS = 10;
+
+  /**
+   * Each shop's shelf of goods, compiled once per template and fill: re-tessellating every item
+   * every frame cost about 7 microseconds an item (3.6 ms for 64 full shops).
+   */
+  private static final CsmDisplayListCache CACHE = new CsmDisplayListCache("shop goods");
 
   @Override
   public void render(TileEntityShop te, double x, double y, double z, float partialTicks,
@@ -103,6 +116,39 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
         GlStateManager.DestFactor.ZERO);
     RenderHelper.enableStandardItemLighting();
 
+    // A plain item model is one texture and no cached GL state, so the whole shelf of it can be
+    // replayed from a display list; the atlas and lighting above are set outside it every frame
+    // (TRAFFIC_SIGNAL_SYSTEM.md, "Display lists: one texture, no cached state"). A glint or a
+    // built-in renderer (a chest) binds textures and state of its own, so those draw directly.
+    if (!model.isBuiltInRenderer() && !item.hasEffect()) {
+      long key = ((long) System.identityHashCode(item) << 8) ^ shown;
+      int list = CACHE.get(te.getPos(), key);
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = CACHE.allocate(te.getPos(), key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          drawPlaces(renderItem, model, item, display, shown);
+          GL11.glEndList();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        drawPlaces(renderItem, model, item, display, shown);
+      }
+    } else {
+      drawPlaces(renderItem, model, item, display, shown);
+    }
+
+    RenderHelper.disableStandardItemLighting();
+    GlStateManager.disableRescaleNormal();
+    GlStateManager.disableBlend();
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+  }
+
+  /** Draws the item at each of the first {@code shown} places, row by row. */
+  private static void drawPlaces(RenderItem renderItem, IBakedModel model, ItemStack item,
+      ShopDisplay display, int shown) {
     int left = shown;
     for (float[] row : display.getRows()) {
       int count = (int) row[5];
@@ -124,27 +170,28 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
         GlStateManager.popMatrix();
       }
     }
-
-    RenderHelper.disableStandardItemLighting();
-    GlStateManager.disableRescaleNormal();
-    GlStateManager.disableBlend();
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
   }
 
-  /** The price on a small white card, centred on the display's label point. */
+  /** Releases the shop's cached shelf, when its tile entity goes. */
+  public static void release(BlockPos pos) {
+    CACHE.invalidate(pos);
+  }
+
+  /**
+   * The price on a small white card, centred on the display's label point: "$1.50", or a number
+   * and an emerald's picture; "4 / " in front when a sale is more than one item.
+   */
   private void drawPrice(TileEntityShop te, ShopDisplay display) {
     boolean money = te.isMoneyMode();
-    String price = ShopEconomy.format(money, te.getSymbol(), te.getSellPrice(money));
-    if (!money) {
-      price = (long) te.getSellPrice(false) + "E";
-    }
-    String text = te.getSellAmount() > 1 ? te.getSellAmount() + " / " + price : price;
-    if (te.isDecorative()) {
-      text = price;
-    }
-    FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+    String price = money ? ShopEconomy.format(true, te.getSymbol(), te.getSellPrice(true))
+        : String.valueOf((long) te.getSellPrice(false));
+    String text = te.getSellAmount() > 1 && !te.isDecorative()
+        ? te.getSellAmount() + " / " + price : price;
+    Minecraft mc = Minecraft.getMinecraft();
+    FontRenderer font = mc.fontRenderer;
     float[] at = display.getLabel();
-    int width = font.getStringWidth(text);
+    int textWidth = font.getStringWidth(text);
+    int width = money ? textWidth : textWidth + EMERALD_UNITS;
     double scale = PRICE_CAP / CAP_UNITS;
     double halfW = (width * scale) / 2.0 + 0.5;
     double halfH = PRICE_CAP / 2.0 + 0.5;
@@ -169,6 +216,22 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
     GlStateManager.scale(scale / 16.0, -scale / 16.0, scale / 16.0);
     GlStateManager.translate(-width / 2.0, -CAP_UNITS / 2.0, 0);
     font.drawString(text, 0, 0, te.isDecorative() ? 0x606060 : 0xC01010);
+    if (!money) {
+      // The emerald's own item sprite, a glyph wide, after the number.
+      TextureAtlasSprite sprite = mc.getRenderItem().getItemModelMesher()
+          .getParticleIcon(Items.EMERALD);
+      mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+      float x0 = textWidth + 1.0f;
+      float x1 = x0 + 8.0f;
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+      buf.pos(x0, -0.5, 0).tex(sprite.getMinU(), sprite.getMinV()).endVertex();
+      buf.pos(x0, 7.5, 0).tex(sprite.getMinU(), sprite.getMaxV()).endVertex();
+      buf.pos(x1, 7.5, 0).tex(sprite.getMaxU(), sprite.getMaxV()).endVertex();
+      buf.pos(x1, -0.5, 0).tex(sprite.getMaxU(), sprite.getMinV()).endVertex();
+      GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+      GlStateManager.enableAlpha();
+      tess.draw();
+    }
     GlStateManager.depthMask(true);
     GlStateManager.enableLighting();
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);

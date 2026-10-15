@@ -147,9 +147,15 @@ public final class ShopTrade {
     ShopStatusPacket.send(player, shop);
   }
 
-  /** The owner empties the till: emeralds always, money while the economy is there. */
+  /**
+   * The owner empties the till: emeralds always, money while the economy is there. Only the
+   * owner: an admin can manage anyone's shop, but never collects its takings.
+   */
   public static void withdraw(EntityPlayerMP player, TileEntityShop shop) {
-    if (!ShopPermissions.mayManage(player, shop) || shop.isServerShop()) {
+    if (!shop.isOwner(player) || shop.isServerShop()) {
+      if (!shop.isServerShop()) {
+        tell(player, "csm.shop.msg.owner_collects");
+      }
       return;
     }
     boolean any = false;

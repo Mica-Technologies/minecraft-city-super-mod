@@ -55,6 +55,9 @@ public class ShopStatusPacket implements IMessage {
         | (ShopPermissions.canInfinite(player) ? CAN_INFINITE : 0)
         | (ShopPermissions.canServer(player) ? CAN_SERVER : 0);
     CsmFurnishings.NETWORK.sendTo(p, player);
+    // A trade changes the player's inventory while a shop screen is open, and vanilla syncs only
+    // the open container (the counter's has no slots), so send the inventory's own.
+    player.inventoryContainer.detectAndSendChanges();
   }
 
   @Override
