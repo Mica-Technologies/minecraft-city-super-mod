@@ -74,7 +74,8 @@ goods. If the goods can't move after all, the payment goes back.
 6. Draw from the till.
 7. Stock the items.
 
-The owner collects the till in person (**Withdraw**) and can top it up for buy-backs (**+**).
+Only the owner collects the till, in person (**Withdraw**): an admin can manage anyone's shop but
+never takes its takings. Anyone who manages a shop can top the till up for buy-backs (**+**).
 
 SUM only pays and charges players who are online. So nothing is ever paid to an absent owner: the
 till waits for them. Money can't drop as an item, so:
@@ -111,7 +112,9 @@ A permissions mod can grant or refuse each node, since they go through vanilla's
   `removedByPlayer`, and the tall base class clears the other half there. Without that, a refused
   creative break of the upper half still dropped the shop's contents.
 
-**Hoppers:** they can put matching items into stock, but never take anything out. Stock is
+**Hoppers:** they can put matching items into stock, but never take anything out. A two-block
+shop (the cooler, the vending machine) holds its shop in the lower half, so a hopper feeds it
+from beside or below that half; one over the top feeds nothing. Stock is
 reached only through the setup screen; the plain storage screen (GUI 35) refuses a shop's tile
 entity.
 
@@ -144,7 +147,23 @@ it draws the shelves with, so an item stands on a shelf rather than near one.
 - **How items are drawn:** with the `FIXED` transform, as an item frame draws them, scaled to the
   row.
 - **Cost:** the item's model is looked up once per change of template and kept on the tile
-  entity, so a frame costs one model draw per place shown and allocates nothing.
+  entity. A plain item's whole shelf is then compiled into one display list (`CsmDisplayListCache`
+  "shop goods"), keyed by the template stack and how many places are filled, and replayed every
+  frame. The atlas and item lighting are set outside the list, under the rules in
+  `TRAFFIC_SIGNAL_SYSTEM.md` ("Display lists: one texture, no cached state").
+- **What can't be cached:** an enchanted item (its glint binds another texture and cached state)
+  and a built-in renderer (a chest, a shield) are drawn item by item. Their cost is the same as
+  vanilla item frames holding them.
+- **Measured** (dev client, 64 full shop gondolas, 512 items in view, render work per frame):
+
+  | Setup | Render work |
+  |---|---|
+  | Items off | 0.97 ms |
+  | Every item drawn each frame (before the cache) | 4.56 ms |
+  | Cached shelves | 1.78 ms, about 13 µs a shop |
+
+  - Each price card in range costs about 37 µs (glyphs are drawn every frame).
+  - Each shop of chests or enchanted items costs about 60 µs.
 - **Distances:** items draw within `shops.itemRenderDistance` (default 32 blocks) and the price
   card within `shops.priceLabelDistance` (8).
 - **Syncing:** the shop syncs only when the stock changes how full the shelf looks, or whether a
@@ -170,6 +189,10 @@ csm_furnishings=wallet_read,wallet_write
 
 Reading a balance (the counter screen) needs `wallet_read`. Without it, or without SUM, shops
 take emeralds (`CsmEmeralds`), and one log line says why.
+
+While SUM refuses, the bridge asks again at most every 30 seconds, whenever a shop or meter checks
+which currency is in force. So an operator who allows the integration and runs
+`/sum econ api reload` sees it take effect within half a minute, with no restart.
 
 ## Config (`shops` category)
 

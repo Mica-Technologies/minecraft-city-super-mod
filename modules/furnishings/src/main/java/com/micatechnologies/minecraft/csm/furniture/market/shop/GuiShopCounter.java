@@ -59,9 +59,9 @@ public class GuiShopCounter extends GuiContainer {
     left = guiLeft;
     top = guiTop;
     buttonList.clear();
-    buy = new GuiButton(BTN_BUY, left + W - 66, top + 52, 58, 16,
+    buy = new GuiButton(BTN_BUY, left + W - 66, top + 56, 58, 16,
         I18n.format("csm.shop.gui.buy_button"));
-    sell = new GuiButton(BTN_SELL, left + W - 66, top + 74, 58, 16,
+    sell = new GuiButton(BTN_SELL, left + W - 66, top + 76, 58, 16,
         I18n.format("csm.shop.gui.sell_button"));
     setup = new GuiButton(BTN_SETUP, left + W - 66, top + H - 22, 58, 14,
         I18n.format("csm.shop.gui.setup_button"));
@@ -142,21 +142,21 @@ public class GuiShopCounter extends GuiContainer {
           W - 16, 0x404040);
     } else {
       GlStateManager.pushMatrix();
-      GlStateManager.translate(left + 10, top + 34, 0);
-      GlStateManager.scale(2.0F, 2.0F, 1.0F);
+      GlStateManager.translate(left + 8, top + 30, 0);
+      GlStateManager.scale(1.5F, 1.5F, 1.0F);
       RenderHelper.enableGUIStandardItemLighting();
       itemRender.renderItemAndEffectIntoGUI(item, 0, 0);
       RenderHelper.disableStandardItemLighting();
       GlStateManager.popMatrix();
-      fontRenderer.drawString(fontRenderer.trimStringToWidth(item.getDisplayName(), W - 56),
-          left + 48, top + 38, 0x202020);
+      fontRenderer.drawString(fontRenderer.trimStringToWidth(item.getDisplayName(), W - 44),
+          left + 36, top + 38, 0x202020);
       String sale = I18n.format("csm.shop.gui.sale", shop.getSellAmount(),
           ShopEconomy.format(money, symbol, shop.getSellPrice(money)));
-      fontRenderer.drawString(sale, left + 8, top + 56, 0x404040);
+      fontRenderer.drawString(sale, left + 8, top + 60, 0x404040);
       if (shop.buysBack(money)) {
         String back = I18n.format("csm.shop.gui.buyback", shop.getBuyAmount(),
             ShopEconomy.format(money, symbol, shop.getBuyPrice(money)));
-        fontRenderer.drawString(back, left + 8, top + 78, 0x404040);
+        fontRenderer.drawString(back, left + 8, top + 80, 0x404040);
       }
     }
 
@@ -164,7 +164,7 @@ public class GuiShopCounter extends GuiContainer {
     String stock = shop.isInfinite() ? I18n.format("csm.shop.gui.always_in_stock")
         : I18n.format("csm.shop.gui.in_stock", status != null ? status.getStock()
             : shop.getShownStock());
-    fontRenderer.drawString(stock, left + 8, top + 98, 0x404040);
+    fontRenderer.drawString(stock, left + 8, top + 99, 0x404040);
     String balance;
     if (status == null) {
       balance = "";

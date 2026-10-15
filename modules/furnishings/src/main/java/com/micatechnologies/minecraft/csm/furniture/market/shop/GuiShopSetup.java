@@ -32,7 +32,7 @@ public class GuiShopSetup extends GuiContainer {
   private static final ResourceLocation CHEST =
       new ResourceLocation("textures/gui/container/generic_54.png");
 
-  private static final int PANEL_W = 132;
+  private static final int PANEL_W = 160;
   private static final int BTN_APPLY = 0;
   private static final int BTN_WITHDRAW = 1;
   private static final int BTN_DEPOSIT = 2;
@@ -54,6 +54,7 @@ public class GuiShopSetup extends GuiContainer {
   private GuiButton decorativeButton;
   private GuiButton infiniteButton;
   private GuiButton serverButton;
+  private int ticksOpen;
 
   /**
    * Constructs the screen.
@@ -79,20 +80,20 @@ public class GuiShopSetup extends GuiContainer {
     int px = guiLeft + ContainerShopSetup.PANEL_X;
     boolean money = shop.isMoneyMode();
     sellAmount = field(0, px + 30, guiTop + 40, 22, String.valueOf(shop.getSellAmount()));
-    sellPrice = field(1, px + 72, guiTop + 40, 52, price(shop.getSellPrice(money), money));
+    sellPrice = field(1, px + 72, guiTop + 40, 80, price(shop.getSellPrice(money), money));
     buyAmount = field(2, px + 30, guiTop + 58, 22, String.valueOf(shop.getBuyAmount()));
-    buyPrice = field(3, px + 72, guiTop + 58, 52, price(shop.getBuyPrice(money), money));
-    deposit = field(4, px + 64, guiTop + 113, 34, "");
+    buyPrice = field(3, px + 72, guiTop + 58, 80, price(shop.getBuyPrice(money), money));
+    deposit = field(4, px + 64, guiTop + 113, 62, "");
     buttonList.clear();
     buttonList.add(new GuiButton(BTN_APPLY, px + 6, guiTop + 74, PANEL_W - 12, 14,
         I18n.format("csm.shop.gui.apply")));
     withdrawButton = new GuiButton(BTN_WITHDRAW, px + 6, guiTop + 112, 56, 14,
         I18n.format("csm.shop.gui.withdraw"));
-    depositButton = new GuiButton(BTN_DEPOSIT, px + 100, guiTop + 112, 26, 14,
+    depositButton = new GuiButton(BTN_DEPOSIT, px + 128, guiTop + 112, 26, 14,
         I18n.format("csm.shop.gui.deposit"));
     decorativeButton = new GuiButton(BTN_DECORATIVE, px + 6, guiTop + 130, PANEL_W - 12, 14, "");
-    infiniteButton = new GuiButton(BTN_INFINITE, px + 6, guiTop + 147, 58, 14, "");
-    serverButton = new GuiButton(BTN_SERVER, px + 66, guiTop + 147, 60, 14, "");
+    infiniteButton = new GuiButton(BTN_INFINITE, px + 6, guiTop + 147, 73, 14, "");
+    serverButton = new GuiButton(BTN_SERVER, px + 81, guiTop + 147, 73, 14, "");
     buttonList.add(withdrawButton);
     buttonList.add(depositButton);
     buttonList.add(decorativeButton);
@@ -124,7 +125,7 @@ public class GuiShopSetup extends GuiContainer {
     super.updateScreen();
     ShopStatusPacket status = ShopClientStatus.get(shop.getPos());
     boolean server = shop.isServerShop();
-    withdrawButton.enabled = !server;
+    withdrawButton.enabled = !server && shop.isOwner(mc.player);
     depositButton.enabled = !server;
     deposit.setEnabled(!server);
     decorativeButton.displayString = I18n.format(shop.isDecorativeSelf()
@@ -137,6 +138,10 @@ public class GuiShopSetup extends GuiContainer {
     serverButton.visible = status != null && status.canServer();
     for (GuiTextField f : fields()) {
       f.updateCursorCounter();
+    }
+    // The stock changes as the owner moves items in and out; ask again once a second.
+    if (++ticksOpen % 20 == 0) {
+      send(ShopActionPacket.REFRESH, 0, 0);
     }
   }
 
@@ -251,7 +256,10 @@ public class GuiShopSetup extends GuiContainer {
   @Override
   protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
     int px = ContainerShopSetup.PANEL_X;
-    fontRenderer.drawString(title, 8, 6, 0x404040);
+    ShopStatusPacket shown = ShopClientStatus.get(shop.getPos());
+    int stockRoom = shown != null && !shop.isInfinite() ? fontRenderer.getStringWidth(
+        I18n.format("csm.shop.gui.in_stock", shown.getStock())) + 6 : 0;
+    fontRenderer.drawString(fit(title, 162 - stockRoom), 8, 6, 0x404040);
     fontRenderer.drawString(playerInventory.getDisplayName().getUnformattedText(), 8,
         ySize - 96 + 2, 0x404040);
     boolean money = shop.isMoneyMode();
