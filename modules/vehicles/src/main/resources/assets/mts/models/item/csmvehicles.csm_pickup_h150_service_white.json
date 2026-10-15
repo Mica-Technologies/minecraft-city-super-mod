@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "csmvehicles:items/vehicles/csm_pickup_h150_service_white"
+  }
+}
