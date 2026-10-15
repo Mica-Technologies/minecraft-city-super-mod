@@ -1,9 +1,8 @@
 package com.micatechnologies.minecraft.csm.streetscape;
 
+import com.micatechnologies.minecraft.csm.codeutils.economy.CsmEmeralds;
 import java.util.Locale;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -61,7 +60,7 @@ public final class ParkingPayments {
       return;
     }
     int perBlock = meter.getEmeraldsPerBlock();
-    int held = countEmeralds(player);
+    int held = CsmEmeralds.count(player);
     int affordable = player.capabilities.isCreativeMode ? wanted : Math.min(wanted,
         held / perBlock);
     if (affordable <= 0) {
@@ -72,7 +71,7 @@ public final class ParkingPayments {
     int bought = meter.extend(space, affordable, now);
     int cost = bought * perBlock;
     if (!player.capabilities.isCreativeMode) {
-      removeEmeralds(player, cost);
+      CsmEmeralds.take(player, cost);
     }
     if (meter.isCollect()) {
       meter.addTakings(cost, 0);
@@ -97,7 +96,7 @@ public final class ParkingPayments {
     StringBuilder said = new StringBuilder();
     long emeralds = meter.getStoredEmeralds();
     if (emeralds > 0) {
-      giveEmeralds(player, emeralds);
+      CsmEmeralds.give(player, emeralds);
       meter.clearEmeralds();
       said.append("Collected ").append(emeralds(emeralds));
     }
@@ -180,46 +179,5 @@ public final class ParkingPayments {
 
   public static String emeralds(long count) {
     return count + (count == 1 ? " emerald" : " emeralds");
-  }
-
-  // ----------------------------------------------------------------------------------------
-  // Emeralds
-  // ----------------------------------------------------------------------------------------
-
-  private static int countEmeralds(EntityPlayer player) {
-    int count = 0;
-    for (ItemStack stack : player.inventory.mainInventory) {
-      if (stack.getItem() == Items.EMERALD) {
-        count += stack.getCount();
-      }
-    }
-    return count;
-  }
-
-  private static void removeEmeralds(EntityPlayer player, int count) {
-    int left = count;
-    for (ItemStack stack : player.inventory.mainInventory) {
-      if (left <= 0) {
-        break;
-      }
-      if (stack.getItem() == Items.EMERALD) {
-        int take = Math.min(left, stack.getCount());
-        stack.shrink(take);
-        left -= take;
-      }
-    }
-    player.inventory.markDirty();
-  }
-
-  private static void giveEmeralds(EntityPlayer player, long count) {
-    long left = count;
-    while (left > 0) {
-      int n = (int) Math.min(64, left);
-      ItemStack stack = new ItemStack(Items.EMERALD, n);
-      if (!player.inventory.addItemStackToInventory(stack)) {
-        player.dropItem(stack, false);
-      }
-      left -= n;
-    }
   }
 }
