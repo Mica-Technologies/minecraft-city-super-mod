@@ -61,12 +61,15 @@ public class TileEntityTattleTaleBeacon extends TileEntity {
     return super.writeToNBT(p_writeToNBT_1_);
   }
 
+  /**
+   * Kept while the beacon only changes its own state (the colour it shows), and dropped when
+   * another block replaces it: returning false always left this tile entity, with its renderer,
+   * behind on whatever block took the beacon's place.
+   */
   @Override
-  public boolean shouldRefresh(World p_shouldRefresh_1_,
-      BlockPos p_shouldRefresh_2_,
-      IBlockState p_shouldRefresh_3_,
-      IBlockState p_shouldRefresh_4_) {
-    return false;
+  public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState,
+      IBlockState newState) {
+    return oldState.getBlock() != newState.getBlock();
   }
 
   public AbstractBlockControllableSignal.SIGNAL_SIDE getSignalSide() {
