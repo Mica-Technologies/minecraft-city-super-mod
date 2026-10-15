@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopGondola;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBookcase;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyEnum;
@@ -22,9 +23,10 @@ import net.minecraft.world.World;
  * -- end uprights only where a run stops ({@link #LEFT}, {@link #RIGHT}), the base deck only at
  * the bottom of a stack and the top cap only at its head ({@link #UP}, {@link #DOWN}) -- but
  * with any gondola, whatever it is stocked with, so tins beside cereal over snacks read as one
- * run of shelving. Two runs set back to back make an island gondola, stocked on both sides. The
- * end caps are gondolas too, drawn deeper with a header over them, so an end cap joins and stacks
- * with the end caps beside it (and closes a run turned the other way).
+ * run of shelving (shop gondolas, {@link BlockShopGondola}, included). Two runs set back to back
+ * make an island gondola, stocked on both sides. The end caps are gondolas too, drawn deeper with
+ * a header over them, so an end cap joins and stacks with the end caps beside it (and closes a
+ * run turned the other way).
  *
  * <p>A click with an empty hand hangs sale tags on its shelf edges, a second adds a shelf
  * talker, a third takes both off again ({@link #TAGS}, stored in the two bits above the facing);
@@ -73,7 +75,8 @@ public class BlockGondola extends BlockBookcase {
   protected boolean continues(IBlockAccess world, BlockPos pos, EnumFacing facing,
       EnumFacing side) {
     IBlockState other = world.getBlockState(pos.offset(side));
-    return other.getBlock() instanceof BlockGondola && other.getValue(FACING) == facing;
+    return (other.getBlock() instanceof BlockGondola
+        || other.getBlock() instanceof BlockShopGondola) && other.getValue(FACING) == facing;
   }
 
   @Override

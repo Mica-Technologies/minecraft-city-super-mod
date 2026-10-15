@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/market/base/shop_vending_machine_item",
+  "textures": {
+    "shell": "csm:blocks/furniture/market/plastic_purple",
+    "header": "csm:blocks/furniture/market/header_vend",
+    "accent": "csm:blocks/furniture/market/plastic_yellow",
+    "coil": "csm:blocks/furniture/market/vend_coil"
+  }
+}

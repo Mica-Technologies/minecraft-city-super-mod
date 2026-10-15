@@ -738,6 +738,11 @@ in the `furniture.market` package and on the Residential classes. The produce cr
 from the Furniture tab, and the Verifone MX915 from the Technology module (below); both kept their
 classes' registry names, so placed ones load as they were.
 
+The tab's working shops (shop gondola and end cap, wall shelf, display case, cooler, vending
+machine; the `Shops` group of the generator, package `furniture.market.shop`) sell the real item
+put in them, so their shelves are drawn bare and a renderer stands the goods on them. Everything
+about them is in `SHOP_SYSTEM.md`.
+
 - **Stock is art, not contents.** What is on a shelf or behind glass is part of the model: each
   kind of stock is a 32 px sheet of four product columns (cans in tiers, bottles, cereal boxes,
   crisp bags, jugs, spray bottles, kitchen roll, cartons, shampoo, ice cream tubs, frozen meals,

@@ -133,6 +133,17 @@ public class CsmConfig {
   private static final int FIELD_DEFAULT_PARKING_CAP_EMERALDS = 64;
   private static final double FIELD_DEFAULT_PARKING_CAP_MONEY = 100.0;
 
+  private static final String CATEGORY_SHOPS = "shops";
+  private static final String CATEGORY_SHOPS_DESCRIPTION =
+      "The Market & Store tab's shop shelves, cases, coolers and vending machines. A shop sells "
+          + "one item (and may buy it back). Prices are money when the optional economy mod is "
+          + "installed and allows the csm_furnishings integration, emeralds otherwise.";
+  private static final boolean FIELD_DEFAULT_SHOPS_DECORATIVE_ONLY = false;
+  private static final double FIELD_DEFAULT_SHOPS_MAX_MONEY_PRICE = 1000000.0;
+  private static final int FIELD_DEFAULT_SHOPS_MAX_EMERALD_PRICE = 576;
+  private static final int FIELD_DEFAULT_SHOPS_RENDER_DISTANCE = 32;
+  private static final int FIELD_DEFAULT_SHOPS_LABEL_DISTANCE = 8;
+
   private static final String CATEGORY_PARKS = "parks";
   private static final String CATEGORY_PARKS_DESCRIPTION =
       "Parks & Greenery (csm_parks): the tree tools.";
@@ -191,6 +202,12 @@ public class CsmConfig {
   private static int parkingCapMinutes = FIELD_DEFAULT_PARKING_CAP_MINUTES;
   private static int parkingCapEmeralds = FIELD_DEFAULT_PARKING_CAP_EMERALDS;
   private static double parkingCapMoney = FIELD_DEFAULT_PARKING_CAP_MONEY;
+
+  private static boolean shopsDecorativeOnly = FIELD_DEFAULT_SHOPS_DECORATIVE_ONLY;
+  private static double shopsMaxMoneyPrice = FIELD_DEFAULT_SHOPS_MAX_MONEY_PRICE;
+  private static int shopsMaxEmeraldPrice = FIELD_DEFAULT_SHOPS_MAX_EMERALD_PRICE;
+  private static int shopsRenderDistance = FIELD_DEFAULT_SHOPS_RENDER_DISTANCE;
+  private static int shopsLabelDistance = FIELD_DEFAULT_SHOPS_LABEL_DISTANCE;
 
   /**
    * The configuration field value for the enableUpdateCheck option.
@@ -362,6 +379,24 @@ public class CsmConfig {
         FIELD_DEFAULT_PARKING_MONEY_PER_BLOCK,
         "Money a new meter charges per block of time, in the economy's currency.", 0.01,
         1000000.0).getDouble();
+    config.setCategoryComment(CATEGORY_SHOPS, CATEGORY_SHOPS_DESCRIPTION);
+    shopsDecorativeOnly = config.getBoolean("decorativeOnly", CATEGORY_SHOPS,
+        FIELD_DEFAULT_SHOPS_DECORATIVE_ONLY,
+        "Make every shop decorative: shops still show their item and price, but nothing can be "
+            + "bought or sold. Owners can also make a single shop decorative.");
+    shopsMaxMoneyPrice = config.get(CATEGORY_SHOPS, "maxMoneyPrice",
+        FIELD_DEFAULT_SHOPS_MAX_MONEY_PRICE,
+        "The most money a shop may ask or pay per trade, in the economy's currency.", 0.01,
+        1000000000.0).getDouble();
+    shopsMaxEmeraldPrice = config.getInt("maxEmeraldPrice", CATEGORY_SHOPS,
+        FIELD_DEFAULT_SHOPS_MAX_EMERALD_PRICE, 1, 2304,
+        "The most emeralds a shop may ask or pay per trade (the buyer must carry them).");
+    shopsRenderDistance = config.getInt("itemRenderDistance", CATEGORY_SHOPS,
+        FIELD_DEFAULT_SHOPS_RENDER_DISTANCE, 0, 128,
+        "Client: how far away, in blocks, a shop's items are drawn on its shelves. 0 draws none.");
+    shopsLabelDistance = config.getInt("priceLabelDistance", CATEGORY_SHOPS,
+        FIELD_DEFAULT_SHOPS_LABEL_DISTANCE, 0, 32,
+        "Client: how far away, in blocks, a shop's price label is drawn. 0 draws none.");
     config.setCategoryComment(CATEGORY_PARKS, CATEGORY_PARKS_DESCRIPTION);
     chainsawBrushPiles = config.getString(FIELD_KEY_CHAINSAW_BRUSH_PILES, CATEGORY_PARKS,
         FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
@@ -663,6 +698,31 @@ public class CsmConfig {
   /** The most money any parking meter may charge per block. */
   public static double getParkingCapMoney() {
     return parkingCapMoney;
+  }
+
+  /** Whether every shop is decorative (shows its item, trades nothing). */
+  public static boolean isShopsDecorativeOnly() {
+    return shopsDecorativeOnly;
+  }
+
+  /** The most money a shop may ask or pay per trade. */
+  public static double getShopsMaxMoneyPrice() {
+    return shopsMaxMoneyPrice;
+  }
+
+  /** The most emeralds a shop may ask or pay per trade. */
+  public static int getShopsMaxEmeraldPrice() {
+    return shopsMaxEmeraldPrice;
+  }
+
+  /** How far away, in blocks, a shop's items are drawn. */
+  public static int getShopsRenderDistance() {
+    return shopsRenderDistance;
+  }
+
+  /** How far away, in blocks, a shop's price label is drawn. */
+  public static int getShopsLabelDistance() {
+    return shopsLabelDistance;
   }
 
   /**

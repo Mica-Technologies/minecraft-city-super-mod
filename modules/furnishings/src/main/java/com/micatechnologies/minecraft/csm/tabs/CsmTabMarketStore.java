@@ -28,6 +28,12 @@ import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketRun;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketTall;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockVerifoneMx915;
 import com.micatechnologies.minecraft.csm.furniture.market.StoreAppliances;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopCooler;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopDisplayCase;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopGondola;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopVendingMachine;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopWallShelf;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopDisplay;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockBathroomFixture;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterAppliance;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockCounterPiece;
@@ -60,7 +66,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * the door (ice, propane exchange, firewood); and the merchandising: end caps that close the
  * gondola runs, shelf tags and talkers, pallet stacks, bargain bins, seasonal tables, the
  * checkout's candy strip, hanging department signs and standing sale signs, and an apparel corner
- * of clothes rails and racks, folded clothes tables, mannequins and fitting rooms.
+ * of clothes rails and racks, folded clothes tables, mannequins and fitting rooms. The shops
+ * follow the shelving: a gondola, end cap, wall shelf, display case, cooler and vending machine
+ * that sell the real item a player stocks them with, drawn on their bare shelves.
  *
  * <p>The produce crates came here from the Furniture tab and the Verifone from the Technology
  * module, their classes and registry names unchanged, so placed ones load as they were. The
@@ -136,6 +144,25 @@ public class CsmTabMarketStore extends CsmTab {
     initTabBlock(new BlockGondola("end_cap_drinks", new int[]{0, 0, 2, 16, 16, 16}));
     initTabBlock(new BlockGondola("end_cap_household", new int[]{0, 0, 2, 16, 16, 16}));
     initTabBlock(new BlockGondola("end_cap_health", new int[]{0, 0, 2, 16, 16, 16}));
+
+    // ---- Shops ----
+    // Shop Gondola Shelf
+    initTabBlock(new BlockShopGondola("shop_gondola_shelf", new int[]{0, 0, 6, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 8F, 11F, 4F, 4F}, {0F, 16F, 2.5F, 10.875F, 4F, 4F}}, new float[]{8F, 2F, 6.2F})));
+
+    // Shop End Cap Display
+    initTabBlock(new BlockShopGondola("shop_end_cap", new int[]{0, 0, 2, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 8F, 8.875F, 4F, 4F}, {0F, 16F, 2.5F, 8.75F, 4F, 4F}}, new float[]{8F, 2F, 2.2F})));
+
+    // Shop Wall Shelf
+    initTabBlock(new BlockShopWallShelf("shop_wall_shelf", new int[]{0, 0, 8, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 2.5F, 12.125F, 4F, 4F}, {0F, 16F, 7.75F, 12.125F, 4F, 4F}, {0F, 16F, 13F, 12.125F, 4F, 4F}}, new float[]{8F, 2F, 8.45F})));
+
+    // Shop Display Case
+    initTabBlock(new BlockShopDisplayCase("shop_display_case", new int[]{0, 0, 2, 16, 19, 16}, "service_case", new ShopDisplay(new float[][]{{0F, 16F, 8.4F, 7.6F, 3.5F, 4F}, {0F, 16F, 13F, 9.25F, 3F, 4F}}, new float[]{8F, 7.875F, 2.2F})));
+
+    // Shop Cooler
+    initTabBlock(new BlockShopCooler("shop_cooler", new int[]{0, 0, 2, 16, 32, 16}, new ShopDisplay(new float[][]{{0.75F, 15.25F, 3F, 9.325F, 3.5F, 4F}, {0.75F, 15.25F, 9.5F, 9.325F, 3.5F, 4F}, {0.75F, 15.25F, 16F, 9.325F, 3.5F, 4F}, {0.75F, 15.25F, 22.5F, 9.325F, 3.5F, 4F}}, new float[]{8F, 2.125F, 1.95F})));
+
+    // Vending Machine
+    initTabBlock(new BlockShopVendingMachine("shop_vending_machine", new int[]{0, 0, 0, 16, 30, 16}, new ShopDisplay(new float[][]{{1.25F, 12.25F, 8.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 12.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 16.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 20.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 24.5F, 4.5F, 2.75F, 4F}}, new float[]{6.75F, 7.5F, 1.2F})));
 
     // ---- Merchandising ----
     // Pallet Stack

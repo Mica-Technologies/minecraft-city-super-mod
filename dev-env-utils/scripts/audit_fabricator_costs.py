@@ -991,6 +991,17 @@ def cost_for(registry, info, ancestors):
             return ("planks x2", "FASTENER_KIT")
         if registry == "vf915":
             return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+        # The shops: the piece each is made from, and a chest for its stock.
+        if registry in ("shop_gondola_shelf", "shop_wall_shelf"):
+            return ("SHEET_METAL x2", "FASTENER_KIT", "chest")
+        if registry == "shop_end_cap":
+            return ("SHEET_METAL x2", "FASTENER_KIT", "SIGN_BLANK", "chest")
+        if registry == "shop_display_case":
+            return ("SHEET_METAL x2", "glass_pane x3", "CONTROL_BOARD", "chest")
+        if registry == "shop_cooler":
+            return ("SHEET_METAL x3", "glass_pane x3", "CONTROL_BOARD", "LED_MODULE", "chest")
+        if registry == "shop_vending_machine":
+            return ("SHEET_METAL x3", "glass_pane x2", "CONTROL_BOARD", "LED_MODULE", "chest")
         if registry.startswith(("reach_in_cooler_", "reach_in_freezer_")):
             return ("SHEET_METAL x3", "glass_pane x3", "CONTROL_BOARD", "LED_MODULE")
         if registry.startswith("dairy_case_"):
