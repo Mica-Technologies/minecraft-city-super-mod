@@ -1,0 +1,102 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Turbo Flat-Four Engine",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "Comes in the CSM fleet's vehicles.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:2",
+        "minecraft:piston:0:4",
+        "minecraft:redstone:0:8"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "engine_car",
+    "width": 0.8,
+    "height": 0.8,
+    "forwardsDamageMultiplier": 1.0
+  },
+  "engine": {
+    "type": "normal",
+    "isAutomatic": true,
+    "starterPower": 40,
+    "maxRPM": 7000,
+    "maxSafeRPM": 6700,
+    "idleRPM": 850,
+    "startRPM": 950,
+    "stallRPM": 500,
+    "fuelConsumption": 3.2,
+    "gearRatios": [
+      -3.5,
+      0.0,
+      3.64,
+      2.24,
+      1.52,
+      1.13,
+      0.97,
+      0.76
+    ],
+    "fuelType": "gasoline"
+  },
+  "rendering": {
+    "modelType": "none",
+    "sounds": [
+      {
+        "name": "csmvehicles:petrol_idle",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_powered",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "pitchAnimations": [
+          {
+            "animationType": "translation",
+            "variable": "engine_rpm_percent_safe",
+            "axis": [
+              0,
+              1.2,
+              0
+            ],
+            "offset": 0.6
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:petrol_start",
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_running",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      },
+      {
+        "name": "csmvehicles:petrol_crank",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engine_starter",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ]
+  }
+}

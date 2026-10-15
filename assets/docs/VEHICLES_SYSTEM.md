@@ -242,6 +242,9 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 | `csm_pickup_h150_xlt` (Halden H-150 XLT) | `_blue`, `_black`, `_red`, `_publicworks` | `csm_wheel_van` (silver) | `csm_engine_petrol` | 4 |
 | `csm_pickup_h150_service` (H-150 with the utility cap fitted) | `_publicworks`, `_white` | `csm_wheel_van` | `csm_engine_petrol` | 4 |
 | `csm_pickup_silverline` (Chevrolay Silverline 1500, crew cab, 5.9 m) | `_black`, `_blue`, `_white`, `_silver`, `_red` | `csm_wheel_van` | `csm_engine_petrol` | 4 |
+| `csm_subaroo_impressa` (Subaroo Impressa 5-door, 4.5 m, AWD) | `_black`, `_blue`, `_red`, `_white`, `_silver` | `csm_wheel_compact` (0.64 m) | `csm_engine_flat4` | 4 |
+| `csm_subaroo_wrz_stx` (Subaroo WRZ STX sedan, 4.6 m, AWD) | `_blue`, `_gray`, `_red`, `_white`, `_black` | `csm_wheel_sport` (0.66 m, dark grey) | `csm_engine_turbo4` | 4 |
+| `csm_subaroo_wrz_stx_gold` (the STX on gold wheels) | `_blue` | `csm_wheel_sport_gold` | `csm_engine_turbo4` | 4 |
 
 **How a vehicle is built.**
 - **Model:** a spec of boxes, each wearing a named cell of a 128 px texture. Liveries are only
@@ -368,13 +371,19 @@ Earlier, also verified:
 
 ### The pickups and the utility cap
 
-Two civilian half-ton crew cabs with a 5.5 ft bed, one builder (`pickup(style)`) drawing both:
+Two civilian half-ton crew cabs with a 5.5 ft bed. Each has a builder of its own, after its
+real truck's signature features, so the two are told apart by shape and not only by grille;
+they share only the crew cab (`raked_cab`, whose windshield leans back in steps rather than
+standing upright like the cab-overs'), the bed and the lights (`pickup_lights`):
 
-- **Halden H-150** (an invented maker, shaped after a 2018 F-150): a tall square grille crossed
-  by two bars, a plain oval badge with an H.
-- **Chevrolay Silverline 1500** (a parody, shaped after a 2015 Silverado): a two-tier grille
-  split by a bar that runs out across the headlights, a gold diamond badge where the bowtie
-  would be, and a step under the doors.
+- **Halden H-150** (an invented maker, shaped after a 2018 F-150): a hood stepping down to its
+  nose with two ribs, a two-bar grille with the headlights in a C of lens trim, round-cornered
+  wheel openings, a low body crease, C-shaped tail lamps and HALDEN across the tailgate.
+- **Chevrolay Silverline 1500** (a parody, shaped after a 2015 Silverado): a taller, flat front
+  with a power dome, a two-tier grille split by a bar that runs out through square stacked
+  headlights, square wheel openings under flares proud of the body, a shoulder crease, tall
+  mirrors, a step under the doors, stepped tail lamps, a spoiler lip on the tailgate and a gold
+  diamond badge where the bowtie would be.
 
 **Trim by livery, wheels by vehicle.** The pickups' own cells (`trim`, `mesh`, `badge`) are drawn
 only into their textures. `trim` (bumpers, bars, handles) is chrome or black per livery, so one
@@ -392,6 +401,24 @@ plain name, so a cap per colour would need a part per colour.
 
 The public works livery's door lettering is a round seal ringed in the stripe colour beside
 PUBLIC WORKS, after a real highway division truck.
+
+### The Subaroos
+
+Two parody cars (Subaroo, after Subaru), both all-wheel drive (`awd`: the engine's
+`linkedParts` take every wheel, and the speed model counts four driven wheels):
+
+- **Impressa 5-Door** (after a 2019 Impreza hatchback): a sloped hood, a hexagonal grille
+  crossed by a chrome wing out to swept headlights, fog lamps in chrome-edged pods, roof rails,
+  a steep hatch under a roof spoiler, wraparound tail lamps.
+- **WRZ STX** (after a 2019 WRX STI): a hood scoop, a red pinstripe in the grille, big bumper
+  intakes over a splitter, flared arches and side skirts, a tall wing on the trunk, four
+  exhaust tips and the STX badge in red. It is the fleet's fastest, geared and powered for
+  about 100 mph (its spec carries its own speed band, `band`, past the road vehicles' 82). The
+  gold-wheeled WR Blue car is its own vehicle sharing the STX's model, as wheels are per vehicle.
+
+A car is `car_cabin` (a hollow cabin from the foot of the rear glass to the cowl, wheel openings
+cut from its sills and walls, wheel tubs inside, both ends' glass raked by `rake`) between two
+`solid_section`s, the nose under a `sloped_hood` and the tail.
 
 ### Speed: geared to a ceiling
 

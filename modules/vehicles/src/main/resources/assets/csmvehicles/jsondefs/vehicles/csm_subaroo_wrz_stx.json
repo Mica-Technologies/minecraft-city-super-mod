@@ -1,0 +1,628 @@
+{
+  "definitions": [
+    {
+      "name": "Subaroo WRZ STX (WR Blue)",
+      "subName": "_blue",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Subaroo WRZ STX (Magnetite Gray)",
+      "subName": "_gray",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Subaroo WRZ STX (Pure Red)",
+      "subName": "_red",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Subaroo WRZ STX (Crystal White)",
+      "subName": "_white",
+      "extraMaterialLists": [
+        []
+      ]
+    },
+    {
+      "name": "Subaroo WRZ STX (Crystal Black)",
+      "subName": "_black",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A turbocharged all-wheel-drive sports sedan with a hood scoop and a tall rear wing: the fleet's fastest, at about 100 mph.",
+    "materialLists": [
+      [
+        "minecraft:iron_block:0:6",
+        "minecraft:glass_pane:0:6",
+        "minecraft:redstone_block:0:1"
+      ]
+    ]
+  },
+  "motorized": {
+    "emptyMass": 1550,
+    "fuelCapacity": 60000,
+    "defaultFuelQty": 60000,
+    "axleRatio": 2.225,
+    "brakingFactor": 1.0,
+    "dragCoefficient": 0.3,
+    "crossSectionalArea": 1.35,
+    "hasHeadlights": true,
+    "hasRunningLights": true,
+    "hasTurnSignals": true,
+    "litVariable": "headlight",
+    "panel": "mts:default_car",
+    "hudTexture": "csmvehicles:textures/guis/csm_subaroo_wrz_stx_hud.png"
+  },
+  "parts": [
+    {
+      "pos": [
+        0.77,
+        0.0,
+        2.65
+      ],
+      "minValue": 0.396,
+      "maxValue": 0.792,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_sport",
+      "turnsWithSteer": true
+    },
+    {
+      "pos": [
+        -0.77,
+        0.0,
+        2.65
+      ],
+      "minValue": 0.396,
+      "maxValue": 0.792,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_sport",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true,
+      "turnsWithSteer": true
+    },
+    {
+      "pos": [
+        0.77,
+        0.0,
+        0.0
+      ],
+      "minValue": 0.396,
+      "maxValue": 0.792,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_sport"
+    },
+    {
+      "pos": [
+        -0.77,
+        0.0,
+        0.0
+      ],
+      "minValue": 0.396,
+      "maxValue": 0.792,
+      "types": [
+        "ground_wheel"
+      ],
+      "defaultPart": "csmvehicles:csm_wheel_sport",
+      "rot": [
+        0,
+        180,
+        0
+      ],
+      "isMirrored": true
+    },
+    {
+      "pos": [
+        0.36,
+        0.2,
+        0.75
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        1.96,
+        0.0,
+        0.75
+      ],
+      "isController": true
+    },
+    {
+      "pos": [
+        -0.36,
+        0.2,
+        0.75
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        -1.96,
+        0.0,
+        0.75
+      ]
+    },
+    {
+      "pos": [
+        0.36,
+        0.2,
+        -0.05
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        1.96,
+        0.0,
+        -0.05
+      ]
+    },
+    {
+      "pos": [
+        -0.36,
+        0.2,
+        -0.05
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        -1.96,
+        0.0,
+        -0.05
+      ]
+    },
+    {
+      "pos": [
+        0.0,
+        0.2,
+        3.0
+      ],
+      "minValue": 0.25,
+      "maxValue": 5.0,
+      "types": [
+        "engine_car"
+      ],
+      "defaultPart": "csmvehicles:csm_engine_turbo4",
+      "linkedParts": [
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  ],
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "block",
+        "entity",
+        "attack"
+      ],
+      "collisions": [
+        {
+          "pos": [
+            0,
+            0.42,
+            -0.2
+          ],
+          "width": 1.8,
+          "height": 1.5
+        },
+        {
+          "pos": [
+            0,
+            0.42,
+            1.4
+          ],
+          "width": 1.8,
+          "height": 1.5
+        },
+        {
+          "pos": [
+            0,
+            0.42,
+            2.8
+          ],
+          "width": 1.8,
+          "height": 1.5
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "obj",
+    "customVariables": [],
+    "sounds": [
+      {
+        "name": "csmvehicles:horn_car",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "horn",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ],
+    "lightObjects": [
+      {
+        "objectName": "&HeadlightL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFF6E0",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "headlight",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.64,
+              0.37,
+              3.615
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.6,
+            "flareWidth": 0.6
+          },
+          {
+            "pos": [
+              -0.64,
+              0.37,
+              3.615
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.6,
+            "flareWidth": 0.6
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnFrontL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "left_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.78,
+              0.28,
+              3.615
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              0.81,
+              0.415,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&BrakeL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FF0000",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.5,
+              0
+            ],
+            "variable": "running_light"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "brake"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.73,
+              0.495,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              0.54,
+              0.525,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.73,
+              0.495,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.54,
+              0.525,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&ReverseL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFFFFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "engine_reversed_1"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.54,
+              0.465,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.54,
+              0.465,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      },
+      {
+        "objectName": "&TurnFrontR",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFA000",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "right_turn_signal",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "10_10_0_cycle"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              -0.78,
+              0.28,
+              3.615
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.81,
+              0.415,
+              -0.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          }
+        ]
+      }
+    ]
+  },
+  "instruments": [
+    {
+      "hudX": 140,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_speedometer",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    },
+    {
+      "hudX": 200,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_tachometer",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    },
+    {
+      "hudX": 260,
+      "hudY": 38,
+      "hudScale": 0.4,
+      "defaultInstrument": "csmvehicles:csm_instrument_fuel",
+      "pos": [
+        0,
+        0,
+        0
+      ],
+      "scale": 0.0
+    }
+  ],
+  "connectionGroups": [
+    {
+      "groupName": "Towing",
+      "isHookup": true,
+      "connections": [
+        {
+          "type": "tow_bumper",
+          "pos": [
+            0,
+            0.17,
+            3.69
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_wheel",
+          "pos": [
+            0,
+            -0.18,
+            2.65
+          ],
+          "distance": 2
+        },
+        {
+          "type": "tow_flatbed",
+          "pos": [
+            0,
+            -0.23,
+            3.69
+          ],
+          "distance": 2
+        }
+      ]
+    }
+  ]
+}
