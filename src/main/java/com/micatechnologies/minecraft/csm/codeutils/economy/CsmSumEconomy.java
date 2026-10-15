@@ -66,6 +66,13 @@ public final class CsmSumEconomy {
   @Nullable
   private Method statusSymbol;
   private boolean deniedLogged;
+  /** Between server start and stop: whether a handle is wanted at all. */
+  private volatile boolean wanted;
+  /** When the handle was last asked for, to ask again after an operator allows it. */
+  private volatile long lastAskMillis;
+
+  /** How often to ask SUM again while it refuses, so '/sum econ api reload' takes effect. */
+  private static final long ASK_AGAIN_MILLIS = 30_000L;
 
   /**
    * Makes a link that asks under {@code integrationId}.
@@ -89,7 +96,14 @@ public final class CsmSumEconomy {
    */
   public synchronized void acquire() {
     release();
-    if (!Loader.isModLoaded(SUM_MOD_ID)) {
+    wanted = true;
+    ask();
+  }
+
+  /** Asks SUM for a handle, logging a refusal once per server run. */
+  private synchronized void ask() {
+    lastAskMillis = System.currentTimeMillis();
+    if (handle != null || !Loader.isModLoaded(SUM_MOD_ID)) {
       return;
     }
     try {
@@ -134,6 +148,7 @@ public final class CsmSumEconomy {
   /** Drops the handle, so the next server start asks (and logs) afresh. */
   public synchronized void release() {
     handle = null;
+    wanted = false;
     deniedLogged = false;
     walletSpend = null;
     walletCredit = null;
@@ -144,8 +159,16 @@ public final class CsmSumEconomy {
     statusSymbol = null;
   }
 
-  /** Whether money should move through SUM right now. */
+  /**
+   * Whether money should move through SUM right now. While SUM refuses, it is asked again every
+   * half minute, so an operator who allows the integration and runs {@code /sum econ api reload}
+   * does not need to restart the server.
+   */
   public boolean isAvailable() {
+    if (handle == null && wanted
+        && System.currentTimeMillis() - lastAskMillis >= ASK_AGAIN_MILLIS) {
+      ask();
+    }
     return handle != null;
   }
 
