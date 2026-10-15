@@ -70,8 +70,9 @@ carries `external: true`, which puts the configuration named after it (`vehicles
 `dependencies.gradle`: Immersive Vehicles 24.0.0 from Modrinth's Maven, deobfuscated) on the
 module's compile, test and reobfuscation classpaths, and on the dev run classpath only when the
 module itself runs. Nothing of that mod is shipped in the module jar. A module like this is for a
-mod the module cannot work without; an optional integration (the SUM economy in Roads) stays a
-reflective call, never a build dependency. See `VEHICLES_SYSTEM.md`.
+mod the module cannot work without; an optional integration (the SUM economy, used by Roads'
+parking meters and Furnishings' shops) stays a reflective call, never a build dependency: Core's
+`codeutils/economy/CsmSumEconomy`, one instance per module under its own mod id. See `VEHICLES_SYSTEM.md`.
 
 Each is declared in three places that must agree: the `@Mod` `dependencies` string, the
 `mcmod.info` `dependencies` / `requiredMods` lists, and the `deps:` of the module's entry in

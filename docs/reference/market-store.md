@@ -2,7 +2,7 @@
 
 Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures.
 
-!!! info "136 blocks in this tab"
+!!! info "142 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -137,6 +137,11 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Self-Serve Coffee Bar (Walnut) | `csm:coffee_bar_walnut` | 1.5 | 3.0 | axe | 0 |
 | Self-Serve Pastry Case (Walnut) | `csm:pastry_case_walnut` | 1.5 | 3.0 | axe | 0 |
 | Self-Serve Pastry Case (White) | `csm:pastry_case_white` | 1.5 | 3.0 | axe | 0 |
+| Shop Cooler | `csm:shop_cooler` | 1.5 | 3.0 | axe | 0 |
+| Shop Display Case | `csm:shop_display_case` | 1.5 | 3.0 | axe | 0 |
+| Shop End Cap Display | `csm:shop_end_cap` | 1.5 | 3.0 | axe | 0 |
+| Shop Gondola Shelf | `csm:shop_gondola_shelf` | 1.5 | 3.0 | axe | 0 |
+| Shop Wall Shelf | `csm:shop_wall_shelf` | 1.5 | 3.0 | axe | 0 |
 | Shopping Basket Stack (Green) | `csm:basket_stack_green` | 1.5 | 3.0 | axe | 0 |
 | Shopping Basket Stack (Red) | `csm:basket_stack_red` | 1.5 | 3.0 | axe | 0 |
 | Shopping Cart (Blue) | `csm:shopping_cart_blue` | 1.5 | 3.0 | axe | 0 |
@@ -145,6 +150,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Tobacco Case (Black) | `csm:tobacco_case_black` | 1.5 | 3.0 | axe | 0 |
 | Tobacco Case (Walnut) | `csm:tobacco_case_walnut` | 1.5 | 3.0 | axe | 0 |
 | Tomato Crate | `csm:tomatoecrate` | 2 | 10 | pickaxe | 1 |
+| Vending Machine (Shop) | `csm:shop_vending_machine` | 1.5 | 3.0 | axe | 0 |
 | Verifone MX915 | `csm:vf915` | 2 | 10 | pickaxe | 1 |
 | Vintage Cash Register (Brass) | `csm:cash_register_brass` | 1.5 | 3.0 | axe | 0 |
 

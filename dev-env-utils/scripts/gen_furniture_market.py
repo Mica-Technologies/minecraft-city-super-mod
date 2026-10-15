@@ -17,7 +17,10 @@ merchandising: end caps closing the gondola runs, the sale tags and shelf talker
 on its shelf edges, pallet stacks, bargain and cardboard dump bins, seasonal display tables, the
 checkout's candy strip, the hanging department sign and the standing sale signs, and the apparel
 corner (clothes rails and round racks, folded clothes tables, mannequins, dress forms and fitting
-rooms).
+rooms). The shops (furniture.market.shop) follow the shelving: a gondola, an end cap, a wall
+shelf, a display case and a cooler with their stock taken out, and a vending machine, each
+selling the real item a player stocks it with (drawn on its bare shelves by the shop's renderer,
+at the places the tab line's ShopDisplay gives, which are printed from the shelves' own numbers).
 
 It also writes the Verifone MX915's blockstate and its models standing on a counter: the
 terminal moved to this tab from the Technology module (its hand-made model and texture keep
@@ -2328,6 +2331,24 @@ def garments(size=32):
     return img
 
 
+def vend_coil(size=16):
+    """A vending tray's coil seen from the side, cut out: each turn a bright stroke leaning one
+    way at the front and a darker one leaning back behind it, six turns along the tray."""
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    px = img.load()
+    for k in range(6):
+        u0 = 0.4 + k * size / 6.0
+        for v in range(size):
+            t = v / (size - 1.0)
+            front = int(u0 + 1.4 * (1 - t))
+            back = int(u0 + 1.4 * t)
+            if 0 <= back < size and px[back, v][3] == 0:
+                px[back, v] = (120, 124, 130, 255)
+            if 0 <= front < size:
+                px[front, v] = (214, 218, 224, 255)
+    return img
+
+
 TEXTURES = {
     "glass_clear": lambda: glass(),
     "glass_frost": lambda: glass(96, (226, 238, 246), frost=True),
@@ -2446,6 +2467,9 @@ TEXTURES.update({
     "jumble": jumble,
     "kraft": kraft,
     "garments": garments,
+    # shops
+    "header_vend": lambda: header("SNACKS & DRINKS", (230, 120, 30), True),
+    "vend_coil": vend_coil,
 })
 for _sheet, _bands in SIGNS.items():
     TEXTURES[_sheet] = (lambda b=_bands: sign_sheet(b))
@@ -2647,14 +2671,17 @@ def strip_el(x0, x1, y0, y1, z0, z1):
               uv={"north": [0, 4, 16, 8]})
 
 
+# The reach-in's shelf heights: the floor of its liner, then three shelves.
+REACH_IN_LEVELS = (3.0, 9.5, 16.0, 22.5)
+
+
 def reach_in(stock_a, stock_b):
     """A glass-door reach-in cooler or freezer, 2 m tall: a door of glass in a black frame over
     four shelves of stock, lit by LED strips on the mullions, a lit header sign above the door
     and a kick grille below. The mullion is shared: each block draws half of it at either side,
     so a line of doors has one between each pair."""
     body = reach_in_frame()
-    levels = [3.0, 9.5, 16.0, 22.5]
-    for i, y in enumerate(levels):
+    for i, y in enumerate(REACH_IN_LEVELS):
         if i:
             body += [el([0.5, y - 0.4, 3.4], [15.5, y, 15.25], "shelf", ("up", "down")),
                      strip_el(0.5, 15.5, y - 0.9, y, 3.1, 3.4)]
@@ -4043,6 +4070,7 @@ def big(specs):
 #   counter: rests on what is under it
 #   service: the office's reception desk parts in a store's colours
 #   sign: the aisle sign, its face picked by number
+#   parts: named parts (spec["parts"]) picked by a multipart's rules (spec["rules"])
 PIECES = []
 
 
@@ -4523,6 +4551,228 @@ add("end_cap", "endcap",
     "Shelving",
     "Closes the end of a gondola run: deeper shelves under a WEEKLY SPECIAL header; joins and "
     "stacks like a gondola; a click with an empty hand hangs price tags, then a shelf talker")
+
+# --- shops (furniture.market.shop) ---------------------------------------------------------
+# A shop sells the real item a player puts in it: TileEntityShopRenderer draws that item on the
+# shelves and its price on a card, so each shop is a piece of this tab with its stock taken out
+# (bare shelves) and nothing else changed, and blends into the store. Where the renderer draws
+# (the Java ShopDisplay: rows of {x0, x1, y, z, size, count} and the label's {x, y, z}, facing
+# north in sixteenths) is worked out here from the very elements the shelves are drawn with and
+# printed into the tab line, so an item stands on a shelf rather than near one. Items in a row
+# are spaced a size apart or more: two flat items overlapping at one depth would fight.
+SHOP_ITEM = 4.0  # an item's height on a shelf, px: four to a block-wide shelf
+DEFAULT_TEX["coil"] = MT("vend_coil")
+
+
+def jf(v):
+    return R._num(round(v, 3)) + "F"
+
+
+def shop_display(rows, label):
+    """The tab line's ShopDisplay for rows of (x0, x1, y, z, size, count) and a label (x, y, z)."""
+    return "new ShopDisplay(new float[][]{%s}, new float[]{%s})" % (
+        ", ".join("{%s}" % ", ".join(jf(v) for v in row) for row in rows),
+        ", ".join(jf(v) for v in label))
+
+
+def _mid_z(e):
+    return (e["from"][2] + e["to"][2]) / 2.0
+
+
+def _strip_label(strip, x=8.0):
+    """A price label centred on a price strip's face, a hair proud of it."""
+    return (x, (strip["from"][1] + strip["to"][1]) / 2.0, strip["from"][2] - 0.05)
+
+
+def shop_shelving(peg, shelf, deck, top, end):
+    """A gondola's or an end cap's parts with no stock, and its display. Stacked on another, a
+    shop keeps its base deck where it is at the bottom of a stack (less the kick plate), so its
+    lower row stands on a shelf whichever it is."""
+    d, _kick, d_strip = deck
+    stacked = [dict(d, faces=("up", "down")), d_strip]
+    parts = {"body": peg + shelf, "plinth": list(deck), "stacked": stacked, "top": top,
+             "left": end, "right": mirror_x(end)}
+    s = shelf[0]
+    rows = [(0, 16, s["to"][1], _mid_z(s), SHOP_ITEM, 4),
+            (0, 16, d["to"][1], _mid_z(d), SHOP_ITEM, 4)]
+    return parts, shop_display(rows, _strip_label(d_strip))
+
+
+SHOP_GONDOLA, SHOP_GONDOLA_DISPLAY = shop_shelving(GONDOLA_PEG, GONDOLA_SHELF, GONDOLA_DECK,
+                                                   GONDOLA_TOP, GONDOLA_END)
+SHOP_ENDCAP, SHOP_ENDCAP_DISPLAY = shop_shelving(ENDCAP_PEG, ENDCAP_SHELF, ENDCAP_DECK,
+                                                 ENDCAP_TOP, ENDCAP_END)
+
+# The wall shelf: the gondola's steel and pegboard hung on a wall (behind it at +Z), three
+# shallower shelves with their price strips, a kick under the bottom one and a cap on top;
+# uprights and shelf brackets only at the ends of a run.
+WALL_SHELF_TOPS = (2.5, 7.75, 13.0)
+WALL_SHELF_Z = (9.0, 15.25)
+
+
+def wall_shelf():
+    z0, z1 = WALL_SHELF_Z
+    t0 = WALL_SHELF_TOPS[0]
+    shelves = [el([0, t0 - 0.5, z0], [16, t0, z1], "shelf", ("up",))]
+    strips = [strip_el(0, 16, t0 - 1, t0, z0 - 0.5, z0 - 0.25)]
+    for t in WALL_SHELF_TOPS[1:]:
+        shelves.append(el([0, t - 0.5, z0], [16, t, z1], "shelf", ("up", "down")))
+        strips.append(strip_el(0, 16, t - 1, t, z0 - 0.25, z0))
+    body = ([el([0, 0, z1], [16, 15.5, 16], "peg", ("north", "south"), {"south": "shelf"}),
+             el([0, 0, z0 - 0.25], [16, t0, z0], "kick", ("north",)),
+             el([0, 15.5, 14.5], [16, 16, 16], "shelf", ("north", "up", "south", "down"))]
+            + shelves + strips)
+    end = ([el([0, 0, 14.75], [1, 16, 16], "kick", ("west", "north", "south")),
+            el([0, 0, z0 - 0.25], [0.5, t0 - 0.5, 14.75], "kick", ("west", "east", "north"))]
+           + [el([0, t - 3, z0 + 0.5], [0.5, t - 0.5, 14.75], "shelf", ("west", "east", "north"))
+              for t in WALL_SHELF_TOPS[1:]])
+    rows = [(0, 16, e["to"][1], _mid_z(e), SHOP_ITEM, 4) for e in shelves]
+    return body, end, shop_display(rows, _strip_label(strips[0]))
+
+
+SHOP_WALL_SHELF, SHOP_WALL_SHELF_END, SHOP_WALL_SHELF_DISPLAY = wall_shelf()
+
+# The display case: the deli case's section (so it joins the service counter as one more case)
+# with a bare deck and its glass shelf, and a price rail along the base under the glass.
+SHOP_CASE_DECK = 8.4
+SHOP_CASE_GLASS_SHELF = el([0, 12.8, 6.5], [16, 13, 12], "glass", ("up", "down"))
+SHOP_CASE_RAIL = strip_el(0, 16, 7.25, 8.5, 2.25, 2.5)
+SHOP_CASE_INSIDE = [SHOP_CASE_GLASS_SHELF,
+                    el([0, 12, 12.5], [16, 12.5, 16], "steel", ("up", "north", "south", "down")),
+                    SHOP_CASE_RAIL]
+SHOP_CASE, SHOP_CASE_END, _ = service_case(9, SERVICE_SEGS, 11, SHOP_CASE_INSIDE, 11,
+                                           SHOP_CASE_DECK)
+# the deck's items stand in front of the glass shelf's back edge, under it
+SHOP_CASE_DISPLAY = shop_display(
+    [(0, 16, SHOP_CASE_DECK, (3.2 + SHOP_CASE_GLASS_SHELF["to"][2]) / 2.0, 3.5, 4),
+     (0, 16, SHOP_CASE_GLASS_SHELF["to"][1], _mid_z(SHOP_CASE_GLASS_SHELF), 3.0, 4)],
+    _strip_label(SHOP_CASE_RAIL))
+
+
+def shop_cooler():
+    """The reach-in cooler with bare shelves, and a price rail across its kick grille."""
+    body = reach_in_frame()
+    shelves = []
+    for i, y in enumerate(REACH_IN_LEVELS):
+        if i:
+            body += [el([0.5, y - 0.4, 3.4], [15.5, y, 15.25], "shelf", ("up", "down")),
+                     strip_el(0.5, 15.5, y - 0.9, y, 3.1, 3.4)]
+    rail = strip_el(0.5, 15.5, 1.5, 2.75, 2.0, 2.25)
+    body.append(rail)
+    # the lowest row stands on the liner's floor; items as the stocked cooler's, front to back
+    rows = [(0.75, 15.25, y, (3.4 + 15.25) / 2.0, 3.5, 4) for y in REACH_IN_LEVELS]
+    return body, shop_display(rows, _strip_label(rail))
+
+
+SHOP_COOLER, SHOP_COOLER_DISPLAY = shop_cooler()
+
+# The vending machine: 1.9 m of invented purple livery (no brand: SNACKS & DRINKS on an orange
+# header), a lit glass window over five trays with their coils and price strips, the keypad
+# column at the right (the card terminal's screen and keys, a bill acceptor, a coin slot and the
+# coin return), the delivery bin under the window, and a price rail between the two. Its glass
+# is the only translucent texture; every other is opaque or fully clear (the coils).
+VEND_WINDOW = (1.25, 12.25, 8.0, 27.5)
+VEND_TRAYS = (8.5, 12.5, 16.5, 20.5, 24.5)
+VEND_COLUMNS = 4
+VEND_ITEM = 2.75
+VEND_ITEM_Z = 4.5
+
+
+def vending_machine():
+    x0, x1, y0, y1 = VEND_WINDOW
+    out = [el([0.75, 0, 2], [15.25, 0.75, 15.5], "kick", SIDES),
+           el([0.5, 0.75, 1.5], [x0, 28.5, 16], "shell", ("west", "north", "south", "east"),
+              {"east": "liner"}),
+           el([x1, 0.75, 1.5], [15.5, 28.5, 16], "shell", ("north", "east", "south", "west"),
+              {"west": "liner"}),
+           el([0.5, 28.5, 1.5], [15.5, 30, 16], "shell", ALL, {"down": "liner"}),
+           el([x0, 0.75, 14], [x1, 28.5, 16], "shell", ("north", "south"), {"north": "liner"}),
+           el([x0, 0.75, 1.5], [x1, y0, 14], "shell", ("north", "up"), {"up": "liner"}),
+           el([x0, y1, 1.5], [x1, 28.5, 2.5], "shell", ("north", "down")),
+           header_el(0.75, 15.25, 28.75, 29.75, 1.5),
+           el([x0, y0, 1.9], [x1, y1, 2.0], "glass", ("north",)),
+           el([x0 + 0.5, y1 - 0.5, 2.5], [x1 - 0.5, y1, 3.25], "glow", ("north", "down")),
+           # the livery's stripe down the keypad column
+           el([x1, 0.75, 1.45], [x1 + 0.5, 28.5, 1.5], "accent", ("north",)),
+           # keypad and its display
+           el([13, 16, 1.2], [15, 21.5, 1.5], "case", NO_BACK, {"north": "terminal"},
+              uv={"north": [0, 0, 16, 16]}),
+           # coin slot
+           el([13.5, 14.75, 1.3], [14.5, 15.75, 1.5], "chrome", NO_BACK),
+           el([13.9, 14.95, 1.25], [14.1, 15.55, 1.3], "rubber", ("north",)),
+           # bill acceptor
+           el([13, 12.25, 1.25], [15, 14.25, 1.5], "case", NO_BACK),
+           el([13.4, 13.1, 1.2], [14.6, 13.4, 1.25], "rubber", ("north",)),
+           # coin return
+           el([13.25, 4, 1.0], [14.75, 6, 1.5], "chrome", NO_BACK),
+           el([13.5, 4.25, 0.95], [14.5, 5.5, 1.0], "bumper", ("north",)),
+           # the delivery bin: its push flap under a lip
+           el([2, 2, 1.45], [11.5, 6, 1.5], "bumper", ("north",)),
+           el([2, 6, 1.2], [11.5, 6.5, 1.5], "chrome", NO_BACK)]
+    rail = strip_el(x0, x1, 7.0, y0, 1.25, 1.5)
+    out.append(rail)
+    pitch = (x1 - x0) / VEND_COLUMNS
+    for t in VEND_TRAYS:
+        out += [el([x0, t - 0.25, 2.5], [x1, t, 13.5], "kick", ("up", "down")),
+                strip_el(x0, x1, t - 0.75, t, 2.25, 2.5)]
+        # each column's coil, a cut-out side view on a plane along the tray
+        for c in range(VEND_COLUMNS):
+            cx = x0 + pitch * (c + 0.5)
+            out.append(el([cx, t, 3], [cx, t + 2.5, 13.25], "coil", ("east", "west"),
+                          uv={"east": [0, 0, 16, 16], "west": [0, 0, 16, 16]}))
+    rows = [(x0, x1, t, VEND_ITEM_Z, VEND_ITEM, VEND_COLUMNS) for t in VEND_TRAYS]
+    return out, shop_display(rows, _strip_label(rail, (x0 + x1) / 2.0))
+
+
+VENDING, VENDING_DISPLAY = vending_machine()
+VEND_TEX = {"shell": MT("plastic_purple"), "header": MT("header_vend"),
+            "accent": MT("plastic_yellow"), "coil": MT("vend_coil")}
+
+add("shop_gondola_shelf", "parts", [fin(None, {})],
+    ("Shop Gondola Shelf", "Verkaufs-Gondelregal", "Góndola de tienda", "Butiksgondolhylla"),
+    {"particle": "shelf", "parts": SHOP_GONDOLA, "rules": GONDOLA_RULES,
+     "java": 'new BlockShopGondola("%s", new int[]{0, 0, 6, 16, 16, 16}, '
+             + SHOP_GONDOLA_DISPLAY + ")"},
+    "Shops",
+    "A shop: the gondola with bare shelves, selling the item put in it (drawn on its shelves, "
+    "its price on the deck's strip); joins and stacks with any gondola or end cap")
+add("shop_end_cap", "parts", [fin(None, {})],
+    ("Shop End Cap Display", "Verkaufs-Stirnregal", "Cabecera de góndola de tienda",
+     "Butiksgavelhylla"),
+    {"particle": "shelf", "parts": SHOP_ENDCAP, "rules": GONDOLA_RULES,
+     "java": 'new BlockShopGondola("%s", new int[]{0, 0, 2, 16, 16, 16}, '
+             + SHOP_ENDCAP_DISPLAY + ")"},
+    "Shops", "A shop: the end cap with bare shelves under its header; joins and stacks with any "
+             "gondola or end cap")
+add("shop_wall_shelf", "run", [fin(None, {})],
+    ("Shop Wall Shelf", "Verkaufs-Wandregal", "Estantería de pared de tienda",
+     "Butiksvägghylla"),
+    {"body": SHOP_WALL_SHELF, "end": SHOP_WALL_SHELF_END, "particle": "shelf",
+     "java": 'new BlockShopWallShelf("%s", new int[]{'
+             + jbox(box_of(SHOP_WALL_SHELF + SHOP_WALL_SHELF_END)) + "}, "
+             + SHOP_WALL_SHELF_DISPLAY + ")"},
+    "Shops", "A shop: three shelves of the gondola's steel hung on a wall; joins into a run "
+             "(uprights and brackets only at its ends)")
+add("shop_display_case", "run", [fin(None, CASE_BLACK)],
+    ("Shop Display Case", "Verkaufsvitrine", "Vitrina de tienda", "Butiksmonter"),
+    {"body": SHOP_CASE, "end": SHOP_CASE_END, "glow": GLOW_ONLY, "particle": "shell",
+     "java": 'new BlockShopDisplayCase("%s", new int[]{' + jbox(box_of(SHOP_CASE))
+             + '}, "service_case", ' + SHOP_CASE_DISPLAY + ")"},
+    "Shops", "A shop: the deli case's section with a bare deck and glass shelf; joins the deli, "
+             "butcher and seafood cases as one counter; lit, redstone switches it")
+add("shop_cooler", "tall_run", [fin(None, dict(CASE_BLACK, glass=MT("glass_clear")))],
+    ("Shop Cooler", "Verkaufskühlschrank", "Nevera de tienda", "Butikskyl"),
+    {"body": SHOP_COOLER, "end": REACH_IN_END, "glow": GLOW_COLD, "particle": "shell",
+     "java": 'new BlockShopCooler("%s", new int[]{' + jbox(COOLER_BOX) + "}, "
+             + SHOP_COOLER_DISPLAY + ")"},
+    "Shops", "A shop: the reach-in cooler with bare shelves, 2 blocks tall; joins into a line of "
+             "doors; lit, redstone switches it")
+add("shop_vending_machine", "tall", [fin(None, VEND_TEX)],
+    ("Vending Machine (Shop)", "Verkaufsautomat", "Máquina expendedora", "Varuautomat"),
+    {"geo": VENDING, "particle": "shell",
+     "java": 'new BlockShopVendingMachine("%s", new int[]{'
+             + jbox(box_of(VENDING, tall=True)) + "}, " + VENDING_DISPLAY + ")"},
+    "Shops", "A shop: 2 blocks tall, five trays of the item behind a lit glass front; light 9")
 add("pallet_stack", "single",
     [fin("drinks", {"load": MT("load_drinks"), "load_top": MT("load_drinks_top")},
          "Drinks", "Getränke", "bebidas", "drycker"),
@@ -4657,12 +4907,13 @@ def entries():
     out = []
     for piece, kind, finishes, names, spec, _g, _b in PIECES:
         for fid, ftex, *fnames in finishes:
-            reg = "%s_%s" % (piece, fid)
+            reg = piece if fid is None else "%s_%s" % (piece, fid)
             tex = dict(spec.get("tex", {}))
             if kind == "appliance":
                 tex["glow"] = spec["glow"][0]
             tex.update(ftex)
-            out.append((reg, piece, kind, tex, names_with(names, fnames), java_for(piece, reg)))
+            shown = list(names) if fid is None else names_with(names, fnames)
+            out.append((reg, piece, kind, tex, shown, java_for(piece, reg)))
     return out
 
 
@@ -4720,6 +4971,14 @@ def base_models():
                 item = (parts["body"] + parts["plinth"] + parts["top"] + parts["left"]
                         + parts["right"])
                 out.append(("end_cap_%s_item" % v, geometry(item, p, display=big(item))))
+        elif kind == "parts":
+            for part, geo in spec["parts"].items():
+                out.append(("%s_%s" % (piece, part), geometry(geo, p)))
+            item = [s for part in ("body", "plinth", "top", "left", "right")
+                    for s in spec["parts"][part]]
+            lo, hi = B.extent(item)
+            out.append(("%s_item" % piece, geometry(item, p,
+                                                    display=big(item) if hi[1] > 18 else None)))
         elif kind == "department":
             for band in sorted({b for _d, _s, b in DEPARTMENTS}):
                 geo = department_sign(band)
@@ -4967,6 +5226,11 @@ def generate(assets):
                 copy_model(blk % part, "end_cap_%s" % part, ftex)
             copy_model(item, "end_cap_%s_item" % v, ftex)
             state = multipart_state(reg, GONDOLA_RULES + R.faced(TAG_RULES))
+        elif kind == "parts":
+            for part in spec["parts"]:
+                copy_model(blk % part, "%s_%s" % (piece, part), ftex)
+            copy_model(item, "%s_item" % piece, ftex)
+            state = multipart_state(reg, spec["rules"])
         elif kind == "department":
             # the department picks the band's model and the sheet it is on
             state = {"forge_marker": 1,
@@ -5100,7 +5364,7 @@ MOVED_NAMES = {"BlockAppleCrate": "Apple Crate", "BlockBananaCrate": "Banana Cra
                "BlockOnionCrate": "Onion Crate", "BlockOrangeCrate": "Orange Crate",
                "BlockPearCrate": "Pear Crate", "BlockPotatoeCrate": "Potato Crate",
                "BlockTomatoeCrate": "Tomato Crate", "BlockVerifoneMx915": "Verifone MX915"}
-GROUP_ORDER = ["Refrigerated", "Shelving", "Merchandising", "Produce", "Butcher & Seafood",
+GROUP_ORDER = ["Refrigerated", "Shelving", "Shops", "Merchandising", "Produce", "Butcher & Seafood",
                "Bakery & Hot Food", "Floral", "Coffee & Drinks", "Checkout", "Tobacco & Lottery",
                "Pharmacy", "Store", "Signs & Tags", "Apparel", "Kiosks", "Outdoor"]
 

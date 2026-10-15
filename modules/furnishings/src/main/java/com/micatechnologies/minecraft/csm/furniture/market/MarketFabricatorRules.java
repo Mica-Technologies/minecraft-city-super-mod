@@ -28,7 +28,10 @@ import net.minecraft.block.Block;
  * board, seasonal tables as timber and cloth with a sign, the candy strip as the belt counter
  * less its motor, department signs as two sign blanks, the standing signs as one on a pole, the
  * clothes rails, racks and tables as iron or timber and cloth, mannequins and dress forms as
- * their shells and cloth, and fitting rooms as timber, cloth and a mirror.
+ * their shells and cloth, and fitting rooms as timber, cloth and a mirror. A shop costs the
+ * piece it is made from (the gondola, the end cap, the deli case, the reach-in cooler; the wall
+ * shelf as the gondola, the vending machine as a kiosk with its glass) and a chest for the
+ * stock it holds.
  *
  * <p>The blocks that moved in keep what they cost before: the produce crates as the Furniture
  * tab's woodwork, the Verifone as the Technology tab's electronics. Priced by registry name,
@@ -51,6 +54,7 @@ public final class MarketFabricatorRules {
   private static final String MC_FLOWER = "minecraft:red_flower";
   private static final String MC_LOG = "minecraft:log";
   private static final String MC_WOOL = "minecraft:wool";
+  private static final String MC_CHEST = "minecraft:chest";
 
   /** The produce crates that moved in from the Furniture tab. */
   private static final Set<String> MOVED_CRATES = new HashSet<>(Arrays.asList(
@@ -59,6 +63,48 @@ public final class MarketFabricatorRules {
       "orangecrate", "pearcrate", "potatoecrate", "tomatoecrate"));
 
   private MarketFabricatorRules() {
+  }
+
+  /**
+   * The shops: each the piece it is made from, and a chest for the stock it holds.
+   *
+   * @param registryName its registry name
+   *
+   * @return the cost, or null for a block that is not a shop
+   */
+  @Nullable
+  private static List<FabricatorIngredient> shop(String registryName) {
+    switch (registryName) {
+      case "shop_gondola_shelf":
+      case "shop_wall_shelf":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+            FabricatorIngredient.any(MC_CHEST, 1));
+      case "shop_end_cap":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+            FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+            FabricatorIngredient.any(MC_CHEST, 1));
+      case "shop_display_case":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.any(MC_GLASS_PANE, 3),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.any(MC_CHEST, 1));
+      case "shop_cooler":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+            FabricatorIngredient.any(MC_GLASS_PANE, 3),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.any(MC_CHEST, 1));
+      case "shop_vending_machine":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+            FabricatorIngredient.any(MC_GLASS_PANE, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.any(MC_CHEST, 1));
+      default:
+        return null;
+    }
   }
 
   /**
@@ -79,6 +125,10 @@ public final class MarketFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
           FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    List<FabricatorIngredient> shop = shop(registryName);
+    if (shop != null) {
+      return shop;
     }
     if (registryName.startsWith("reach_in_cooler_")
         || registryName.startsWith("reach_in_freezer_")) {

@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.furniture.appliance.ContainerAppliance
 import com.micatechnologies.minecraft.csm.furniture.appliance.GuiAppliance;
 import com.micatechnologies.minecraft.csm.furniture.appliance.IAppliance;
 import com.micatechnologies.minecraft.csm.furniture.appliance.TileEntityAppliance;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.TileEntityShop;
 import com.micatechnologies.minecraft.csm.furniture.office.BlockCubiclePanelNamed;
 import com.micatechnologies.minecraft.csm.furniture.office.CubicleNamePlateGui;
 import com.micatechnologies.minecraft.csm.furniture.office.TileEntityCubicleNamePlate;
@@ -101,7 +102,8 @@ public class NoveltiesGuiProvider implements ICsmGuiProvider {
       BlockPos pos, boolean server) {
     TileEntity te = world.getTileEntity(pos);
     Block block = world.getBlockState(pos).getBlock();
-    if (!(te instanceof TileEntityResidentialStorage)
+    // A shop's stock is reached only through its own setup screen, by those who manage it.
+    if (!(te instanceof TileEntityResidentialStorage) || te instanceof TileEntityShop
         || !(block instanceof IResidentialStorage)) {
       return null;
     }

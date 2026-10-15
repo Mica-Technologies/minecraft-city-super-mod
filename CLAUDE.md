@@ -95,7 +95,7 @@ container per jar.
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; the gas yard: a regulator station built from a skid, gas pipe, ball valves, a regulator, a turbine meter, a line heater and a vent stack, the odorant tank, and warning signs that hang on a wall or a chain-link fence; telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna arrays, and a small cell's canister antenna and radio for the street poles); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology`; also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`) |
-| `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology) |
+| `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology, and the working shops, `furniture.market.shop`, which take SUM's money or emeralds; see `assets/docs/SHOP_SYSTEM.md`) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
@@ -387,6 +387,14 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   bollards, hydrants and news racks, parking meters (real-time expiry, the clock skew, the
   scheduled redstone, SUM by reflection and why at server started), mailboxes (doors picked by
   ray trace, the mode in the GUI id, contents never synced, insert-only automation), and the traps
+- `assets/docs/SHOP_SYSTEM.md` -- The Market & Store shops: shop shelving, wall shelf, display
+  case, cooler and vending machine that sell the real item put in them and may buy it back; why
+  they are new blocks rather than a mode of the decorative ones, prices and tills kept per
+  currency, the trade order and its refunds, server shops and unlimited stock, who may click and
+  break what (and why the tall shops check in `onBlockHarvested`), the counter's empty container,
+  the item renderer and its `ShopDisplay` rows from the generator, and the optional SUM economy
+  through Core's `codeutils/economy/CsmSumEconomy` (one instance per module, `csm_furnishings`
+  for shops, `csm_roads` for meters; emeralds without it)
 - `assets/docs/STATION_ALERTING_SYSTEM.md` -- A fire station's alerting: the controller, its
   linked speakers, alert lights, relays and bay clearance lights, the dispatch sequence, and why
   the relay's redstone is how it opens bay doors, strikes the gong and preempts traffic signals

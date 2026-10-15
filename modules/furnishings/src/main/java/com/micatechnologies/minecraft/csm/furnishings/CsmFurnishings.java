@@ -6,6 +6,10 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.market.MarketFabricatorRules;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopActionPacket;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopEconomy;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopGuiProvider;
+import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopStatusPacket;
 import com.micatechnologies.minecraft.csm.furniture.office.CubicleNamePlatePacket;
 import com.micatechnologies.minecraft.csm.furniture.office.CubicleNamePlatePacketHandler;
 import com.micatechnologies.minecraft.csm.furniture.office.OfficeFabricatorRules;
@@ -23,6 +27,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -80,6 +86,7 @@ public class CsmFurnishings {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
 
     CsmGuiRegistry.register(new NoveltiesGuiProvider());
+    CsmGuiRegistry.register(new ShopGuiProvider());
 
     // The Residential tab is this module's own, so Core prices it through the rule it is given.
     CsmFabricatorCosts.registerRule(ResidentialFabricatorRules.TAB_ID,
@@ -117,12 +124,43 @@ public class CsmFurnishings {
         CubicleNamePlatePacketHandler.class,
         CubicleNamePlatePacket.class,
         Side.SERVER);
+    // A shop: a button on its counter or setup screen, and the status the server sends back.
+    NETWORK.registerMessage(
+        ShopActionPacket.Handler.class,
+        ShopActionPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        ShopStatusPacket.Handler.class,
+        ShopStatusPacket.class,
+        Side.CLIENT);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     FurnishingsSounds.registerSounds();
     proxy.preInit(event);
+  }
+
+  /**
+   * Asks SUM's economy for the shops' handle, if SUM is there and allows {@code csm_furnishings}.
+   * Server started, not starting: SUM attaches its economy in its own starting handler and loads
+   * after CSM.
+   *
+   * @since 2026.10
+   */
+  @Mod.EventHandler
+  public void serverStarted(FMLServerStartedEvent event) {
+    ShopEconomy.SUM.acquire();
+  }
+
+  /**
+   * Drops the shops' economy handle.
+   *
+   * @since 2026.10
+   */
+  @Mod.EventHandler
+  public void serverStopping(FMLServerStoppingEvent event) {
+    ShopEconomy.SUM.release();
   }
 
   @Mod.EventHandler

@@ -98,10 +98,12 @@ layout and writes it into the tab line, and places the stickers' decals 0.2 px p
   at the next expiry, capped at 400 ticks, because the world keeps one pending update per block.
 - **Owner settings** (rate, minutes per block, maximum, collect or sink, a station's spaces) are
   per meter, clamped to the caps in Core's `CsmConfig` `parking` category.
-- **SUM.** `ParkingPaymentSum` reaches SUM's economy by **reflection**. CSM never depends on SUM
-  and must not. The handle is acquired in `FMLServerStartedEvent`, not `FMLServerStartingEvent`:
-  SUM loads after CSM and installs its provider in its own starting handler. The server needs
-  `csm_roads=wallet_write` in SUM's `economy_integration.allowedMods`.
+- **SUM.** `ParkingPaymentSum` reaches SUM's economy by **reflection**, through Core's shared
+  bridge `codeutils/economy/CsmSumEconomy` (the shops use the same one; see `SHOP_SYSTEM.md`).
+  CSM never depends on SUM and must not. The handle is acquired in `FMLServerStartedEvent`, not
+  `FMLServerStartingEvent`: SUM loads after CSM and installs its provider in its own starting
+  handler. The server needs `csm_roads=wallet_read,wallet_write` in SUM's
+  `economy_integration.allowedMods`.
   Without SUM, or when refused, meters take emeralds, which drop when a meter is broken.
 
 ## Mailboxes
