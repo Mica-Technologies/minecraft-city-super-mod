@@ -47,6 +47,12 @@ public final class HvacStatus {
   public static final int FLAG_WAITING_FOR_CHUNKS = 1 << 9;
   /** A zone whose primary thermostat is switched off, so its system is off. */
   public static final int FLAG_SYSTEM_OFF = 1 << 10;
+  /**
+   * The thermostat's room has not been found yet: it has not been looked at since the chunk
+   * loaded, or waits its turn behind the per-tick flood budget. Not a fault, and not the same as
+   * {@link #FLAG_NOT_ENCLOSED}, which it was reported as before.
+   */
+  public static final int FLAG_FINDING_ROOM = 1 << 11;
 
   /** Whether a switch position lets its thermostat heat. */
   public static boolean switchHeats(int switchMode) {

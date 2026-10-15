@@ -710,7 +710,12 @@ final class HvacSystemControl {
     }
   }
 
-  /** Flags describing why a thermostat has no room reading, if it has none. */
+  /**
+   * Flags describing why a thermostat has no room reading, if it has none. An anchor no attach
+   * has failed for yet is still finding its room, not open to the outdoors: every unattached
+   * anchor used to read as NOT_ENCLOSED, so a building whose rooms were merely not scanned yet
+   * looked as if it leaked (#280).
+   */
   static int spaceFlags(ThermalAnchor a) {
     if (a == null || a.space != null) {
       return 0;
@@ -720,8 +725,10 @@ final class HvacSystemControl {
         return HvacStatus.FLAG_TOO_LARGE;
       case UNLOADED:
         return HvacStatus.FLAG_WAITING_FOR_CHUNKS;
-      default:
+      case NOT_ENCLOSED:
         return HvacStatus.FLAG_NOT_ENCLOSED;
+      default:
+        return HvacStatus.FLAG_FINDING_ROOM;
     }
   }
 

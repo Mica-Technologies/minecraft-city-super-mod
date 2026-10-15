@@ -86,6 +86,9 @@ final class HvacStatusText {
     if ((flags & HvacStatus.FLAG_WAITING_FOR_CHUNKS) != 0) {
       out.add(new Line("Room still loading", COLOR_INFO));
     }
+    if ((flags & HvacStatus.FLAG_FINDING_ROOM) != 0) {
+      out.add(new Line("Finding its room...", COLOR_INFO));
+    }
     if ((flags & HvacStatus.FLAG_NO_POWER) != 0) {
       out.add(new Line("⚠ No power to the units", COLOR_BAD));
     }
