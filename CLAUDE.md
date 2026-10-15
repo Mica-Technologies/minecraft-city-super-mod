@@ -1007,8 +1007,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   truck's flatbed and wheel lift are real IV hitches), the Metro transit bus (plus the four
   Transit agencies' liveries; DOORS; a TSP emitter switch that starts on, through
   `rendering.initialVariables`, which ADVANCED mode's transit signal priority answers), the civilian pickups (the Halden H-150 XL, XLT and service truck, and the Chevrolay
-  Silverline 1500, parody brands, one builder; trim chrome or black by livery) and the utility
-  cap, a part for every pickup's bed slot with a ladder rack and a BEACONS beacon,
+  Silverline 1500, parody brands, each its own builder after its real truck; trim chrome or
+  black by livery) and the utility cap, a part for every pickup's bed slot with a ladder rack
+  and a BEACONS beacon, the Subaroo cars (the Impressa hatchback and the WRZ STX, all-wheel
+  drive, the STX the fleet's fastest at about 100 mph),
   towing hookups on every vehicle, each vehicle geared to a top-speed ceiling (`ceiling_mph`; `--speeds` prints a model of IV's physics, about 75 mph at the default carSpeedFactor), 35 liveries (OBJ built
   from boxes on named cells of a 128 px texture, one PNG per livery, lettering in the Life Safety
   pixel font, `lightObjects` written from the same spec as the lamps, item icons projected off

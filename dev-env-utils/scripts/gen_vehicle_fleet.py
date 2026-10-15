@@ -1119,6 +1119,225 @@ def pickup_cap():
     return v
 
 
+# ------------------------------------------------------------------------------------------
+# Cars: the Subaroo hatchback and sedan
+# ------------------------------------------------------------------------------------------
+
+CAR_SEATS = [(0.36, 0.2, 0.75, True), (-0.36, 0.2, 0.75, False),
+             (0.36, 0.2, -0.05, False), (-0.36, 0.2, -0.05, False)]
+
+
+def rake(v, w, belt, win_top, z_foot, z_head, steps, side_glass):
+    """A raked window from its foot (the belt line at z_foot) to its head (the window top at
+    z_head), as steps: the glass across, a pillar each side, and under the pillar, back to
+    z_head, side glass or (with `side_glass` false) body."""
+    t = WALL
+    for i in range(steps):
+        y0 = belt + (win_top - belt) * i / steps
+        y1 = belt + (win_top - belt) * (i + 1) / steps
+        za = z_foot + (z_head - z_foot) * i / steps
+        zb = z_foot + (z_head - z_foot) * (i + 1) / steps
+        lo, hi = sorted((za, zb))
+        v.box((-w + t, y0, lo), (w - t, y1, hi), 'glass', obj='window')
+        for sx in (1, -1):
+            xa, xb = sorted((sx * (w - t), sx * w))
+            v.box((xa, y0, lo), (xb, y1, hi), 'paint')
+            fa, fb = sorted((zb, z_head))
+            if fb - fa > 0.005:
+                if side_glass:
+                    ga, gb = sorted((sx * (w - t * 0.7), sx * (w - t * 0.3)))
+                    v.box((ga, y0, fa), (gb, y1, fb), 'glass', obj='window')
+                else:
+                    v.box((xa, y0, fa), (xb, y1, fb), 'paint')
+
+
+def solid_section(v, w, z0, z1, bottom, top, arches, arch_top):
+    """A closed piece of body from z0 to z1 (the nose, the tail): the wheel openings cut from
+    it below arch_top, the wheel well between them in black."""
+    for a, b in _spans(z0, z1, arches):
+        v.box((-w, bottom, a), (w, arch_top, b), 'paint')
+    for a, b in _clip(arches, z0, z1):
+        v.box((-0.55, bottom, a), (0.55, arch_top, b), 'black')
+        v.box((-w + 0.01, arch_top - 0.03, a), (w - 0.01, arch_top - 0.005, b), 'black')
+    if top > arch_top:
+        v.box((-w, arch_top, z0), (w, top, z1), 'paint')
+
+
+def car_cabin(v, c):
+    """A car's hollow cabin from the foot of its rear glass (zf) to the cowl (zc): the floor and
+    sills cut round the wheels, wheel tubs inside, the sides, the side windows between the roof's
+    ends (zr, zfr), the roof, the windshield and rear glass raked, the dash and a wheel."""
+    w, t = c['w'], WALL
+    floor, belt, win_top, top = c['floor'], c['belt'], c['win_top'], c['top']
+    zf, zr, zfr, zc = c['zf'], c['zr'], c['zfr'], c['zc']
+    arches, arch_top = c['arches'], c['arch_top']
+    cut = _clip(arches, zf, zc)
+    v.box((-0.55, c['rocker'], zf), (0.55, floor, zc), 'black')               # underbody
+    for a, b in _spans(zf, zc, cut):
+        v.box((-w, c['rocker'], a), (w, floor, b), 'paint')                   # sills
+        v.box((-w + t, floor - 0.04, a), (w - t, floor + 0.01, b), 'black')   # floor
+    v.box((-0.55, floor - 0.04, zf), (0.55, floor + 0.01, zc), 'black')
+    for a, b in cut:
+        for sx in (1, -1):
+            ta, tb = sorted((sx * 0.55, sx * (w - t)))
+            v.box((ta, c['rocker'], a), (tb, arch_top, b), 'black')           # wheel tub
+    for sx in (1, -1):
+        xa, xb = sorted((sx * (w - t), sx * w))
+        for a, b in _spans(zf, zc, cut):
+            v.box((xa, floor, a), (xb, arch_top, b), 'paint')
+        v.box((xa, arch_top, zf), (xb, belt, zc), 'paint')
+        for a, b in c['windows']:
+            ga, gb = sorted((sx * (w - t * 0.7), sx * (w - t * 0.3)))
+            v.box((ga, belt, a), (gb, win_top, b), 'glass', obj='window')
+        for a, b in _spans(zr, zfr, c['windows']):
+            v.box((xa, belt, a), (xb, win_top, b), 'paint')                   # pillars
+        v.box((xa, win_top, zr), (xb, top - 0.05, zfr), 'paint')              # header
+    v.box((-w, top - 0.05, zr), (w, top, zfr), 'paint')                       # roof
+    v.box((-w + t, win_top, zfr - t), (w - t, top - 0.05, zfr), 'paint')
+    v.box((-w + t, win_top, zr), (w - t, top - 0.05, zr + t), 'paint')
+    rake(v, w, belt, win_top, zc, zfr, c.get('steps', 5), True)
+    rake(v, w, belt, win_top, zf, zr, c.get('steps', 5), c['quarter_glass'])
+    # the dash under the windshield and the steering wheel, a ring
+    v.box((-w + t, belt - 0.25, zfr - 0.02), (w - t, belt - 0.02, zc), 'black')
+    dx, wz = 0.36, zfr - 0.1
+    wx0, wx1, wy0, wy1 = dx - 0.15, dx + 0.15, belt - 0.22, belt + 0.05
+    for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
+                   ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
+                   ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
+                   ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
+        v.box(lo, hi, 'black')
+
+
+def sloped_hood(v, w, arch_top, z0, z1, h0, h1, steps=4):
+    """A hood falling from h0 at the cowl (z0) to h1 at the nose (z1), in steps."""
+    for i in range(steps):
+        a = z0 + (z1 - z0) * i / steps
+        b = z0 + (z1 - z0) * (i + 1) / steps
+        h = h0 + (h1 - h0) * i / (steps - 1)
+        v.box((-w, arch_top, a), (w, h, b), 'paint')
+
+
+def car_sides(v, w, zf_handles, mirror_z, belt, crease_y, body):
+    """Door handles, mirrors and a crease line along the body (z spans `body`)."""
+    for z in zf_handles:
+        v.both((w, belt - 0.12, z), (w + 0.012, belt - 0.09, z + 0.12), 'chrome',
+               faces=('e', 'w'))
+    v.both((w, belt, mirror_z), (w + 0.16, belt + 0.13, mirror_z + 0.12), 'paint')
+    for a, b in body:
+        v.both((w, crease_y, a), (w + 0.01, crease_y + 0.025, b), 'paint')
+
+
+IMPRESSA = dict(w=0.89, floor=-0.05, rocker=-0.15, belt=0.63, win_top=1.04, top=1.16,
+                zf=-0.7, zr=-0.3, zfr=1.25, zc=2.1, arch_top=0.38,
+                arches=[(-0.4, 0.4), (2.27, 3.07)], quarter_glass=False,
+                windows=[(-0.15, 0.45), (0.55, 1.25)])
+IMPRESSA_FRONT, IMPRESSA_REAR = 3.59, -0.87
+
+STX = dict(w=0.9, floor=-0.05, rocker=-0.15, belt=0.6, win_top=1.02, top=1.15,
+           zf=-0.45, zr=0.0, zfr=1.25, zc=2.1, arch_top=0.38,
+           arches=[(-0.4, 0.4), (2.25, 3.05)], quarter_glass=False,
+           windows=[(0.08, 0.5), (0.6, 1.25)])
+STX_FRONT, STX_REAR = 3.6, -0.95
+
+
+def impressa():
+    """The Subaroo Impressa 5-door, after a 2019 Impreza hatchback: a long sloped hood, a
+    hexagonal grille crossed by a chrome wing that runs out to swept headlights, fog lamps in
+    chrome-edged pods, a steep hatch under a roof spoiler, roof rails, and tail lamps that
+    wrap the corners."""
+    v = Vehicle()
+    g = -0.32
+    c = IMPRESSA
+    w, f, r = c['w'], IMPRESSA_FRONT, IMPRESSA_REAR
+    car_cabin(v, c)
+    solid_section(v, w, c['zc'], f, c['rocker'], c['arch_top'], c['arches'], c['arch_top'])
+    sloped_hood(v, w, c['arch_top'], c['zc'], f, c['belt'] - 0.03, 0.42)
+    solid_section(v, w, r, c['zf'], c['rocker'], c['belt'], c['arches'], c['arch_top'])
+    # the hatch: a roof spoiler over the glass, the plate, the name
+    v.box((-0.78, c['top'] - 0.05, c['zr'] - 0.16), (0.78, c['top'], c['zr']), 'paint')
+    v.box((-0.25, 0.15, r - 0.01), (0.25, 0.28, r), 'plate', faces=('n',))
+    v.box((-0.3, 0.3, r - 0.005), (0.3, 0.45, r), 'gate', faces=('n',))
+    v.box((-0.85, -0.17, r - 0.03), (0.85, -0.04, r + 0.06), 'black')         # diffuser
+    for sx in (1, -1):                                                         # roof rails
+        xa, xb = sorted((sx * 0.62, sx * 0.68))
+        v.box((xa, c['top'], c['zr'] + 0.05), (xb, c['top'] + 0.04, c['zfr'] - 0.05), 'chrome')
+    car_sides(v, w, (0.2, 1.05), c['zfr'] + 0.05, c['belt'], 0.42,
+              _spans(r, f, c['arches']))
+    v.both((w - 0.01, -0.15, 0.45), (w + 0.015, -0.09, 2.22), 'black')         # skirts
+    # the front: grille, the chrome wing, headlights, the lower intake and fog lamp pods
+    v.box((-0.3, 0.18, f), (0.3, 0.39, f + 0.015), 'mesh', faces=('s',))
+    v.box((-0.44, 0.285, f + 0.015), (0.44, 0.315, f + 0.03), 'trim')
+    v.box((-0.075, 0.26, f + 0.03), (0.075, 0.34, f + 0.036), 'badge', faces=('s',))
+    v.box((-0.45, -0.09, f), (0.45, 0.1, f + 0.01), 'mesh', faces=('s',))
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.55, sx * 0.74))
+        v.box((xa, -0.04, f), (xb, 0.06, f + 0.01), 'black', faces=('s',))
+        v.box((xa, 0.06, f), (xb, 0.085, f + 0.02), 'chrome')
+    v.box((-0.82, -0.18, f - 0.05), (0.82, -0.14, f + 0.03), 'black')         # lip
+    pickup_lights(v, f, r, (0.44, 0.86, 0.32, 0.41), (0.7, 0.86, 0.25, 0.31),
+                  [('brake', (0.55, 0.88, 0.4, 0.5)), ('brake', (0.8, 0.88, 0.5, 0.56)),
+                   ('turn', (0.7, 0.88, 0.33, 0.39)), ('reverse', (0.55, 0.68, 0.33, 0.39))])
+    return v, g
+
+
+def wrz_stx():
+    """The Subaroo WRZ STX, after a 2019 WRX STI sedan: a hood scoop, a hexagonal grille with a
+    red pinstripe, big intakes either side of the bumper over a black splitter, flared wheel
+    arches and side skirts, a trunk carrying a tall rear wing on its uprights, a black
+    diffuser with four exhaust tips, and the STX badge in red on the front doors."""
+    v = Vehicle()
+    g = -0.33
+    c = STX
+    w, f, r = c['w'], STX_FRONT, STX_REAR
+    car_cabin(v, c)
+    solid_section(v, w, c['zc'], f, c['rocker'], c['arch_top'], c['arches'], c['arch_top'])
+    sloped_hood(v, w, c['arch_top'], c['zc'], f, c['belt'] - 0.03, 0.42)
+    deck = c['belt'] + 0.02
+    solid_section(v, w, r, c['zf'], c['rocker'], deck, c['arches'], c['arch_top'])
+    # the hood scoop, on the hood's second step
+    hy = c['belt'] - 0.03 + (0.42 - c['belt'] + 0.03) / 3
+    v.box((-0.27, hy, 2.42), (0.27, hy + 0.07, 2.95), 'paint')
+    v.box((-0.23, hy + 0.01, 2.95), (0.23, hy + 0.06, 2.955), 'black', faces=('s',))
+    # flares round both wheels, side skirts
+    for a0, a1 in c['arches']:
+        v.both((w, c['arch_top'], a0 - 0.06), (w + 0.03, c['arch_top'] + 0.06, a1 + 0.06),
+               'paint')
+        v.both((w, -0.1, a0 - 0.06), (w + 0.03, c['arch_top'], a0), 'paint')
+        v.both((w, -0.1, a1), (w + 0.03, c['arch_top'], a1 + 0.06), 'paint')
+    v.both((w - 0.01, -0.16, 0.46), (w + 0.03, -0.08, 2.19), 'black')
+    car_sides(v, w, (0.3, 1.05), c['zfr'] + 0.05, c['belt'], 0.4,
+              _spans(r, f, [(a0 - 0.06, a1 + 0.06) for a0, a1 in c['arches']]))
+    v.both((w, 0.42, 1.72), (w + 0.012, 0.495, 2.02), 'script', faces=('e', 'w'))
+    # the rear wing on its uprights, the trunk's name, plate, diffuser and exhausts
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.56, sx * 0.62))
+        v.box((xa, deck, r + 0.12), (xb, deck + 0.22, r + 0.24), 'black')
+        xa, xb = sorted((sx * 0.84, sx * 0.86))
+        v.box((xa, deck + 0.14, r + 0.02), (xb, deck + 0.3, r + 0.3), 'paint')
+    v.box((-0.84, deck + 0.22, r + 0.02), (0.84, deck + 0.26, r + 0.3), 'paint')
+    v.box((-0.25, 0.22, r - 0.01), (0.25, 0.35, r), 'plate', faces=('n',))
+    v.box((-0.3, 0.38, r - 0.005), (0.3, 0.53, r), 'gate', faces=('n',))
+    v.box((-0.8, -0.18, r - 0.04), (0.8, -0.04, r + 0.04), 'black')
+    for x in (0.4, 0.56):
+        for sx in (1, -1):
+            xa, xb = sorted((sx * (x - 0.055), sx * (x + 0.055)))
+            v.box((xa, -0.14, r - 0.08), (xb, -0.05, r - 0.04), 'chrome')
+    # the front: grille and pinstripe, big intakes, splitter
+    v.box((-0.32, 0.18, f), (0.32, 0.39, f + 0.015), 'mesh', faces=('s',))
+    v.box((-0.3, 0.205, f + 0.015), (0.3, 0.22, f + 0.02), 'tail')
+    v.box((-0.075, 0.27, f + 0.015), (0.075, 0.35, f + 0.021), 'badge', faces=('s',))
+    v.box((-0.38, -0.1, f), (0.38, 0.1, f + 0.01), 'mesh', faces=('s',))
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.5, sx * 0.82))
+        v.box((xa, -0.1, f), (xb, 0.16, f + 0.01), 'mesh', faces=('s',))
+        v.box((xa, 0.16, f), (xb, 0.19, f + 0.03), 'black')
+    v.box((-0.86, -0.19, f - 0.06), (0.86, -0.15, f + 0.09), 'black')         # splitter
+    pickup_lights(v, f, r, (0.42, 0.86, 0.32, 0.42), (0.7, 0.86, 0.25, 0.31),
+                  [('brake', (0.58, 0.88, 0.44, 0.55)), ('brake', (0.5, 0.58, 0.5, 0.55)),
+                   ('turn', (0.74, 0.88, 0.39, 0.44)), ('reverse', (0.5, 0.58, 0.44, 0.49))])
+    return v, g
+
+
 def pickup_cap_json(v):
     return {
         'definitions': [{'name': 'CSM Pickup Utility Cap', 'subName': '',
@@ -1280,6 +1499,36 @@ LIVERIES.update({
     ],
 })
 
+# The Subaroos.
+LIVERIES.update({
+    'csm_subaroo_impressa': [
+        ('_black', 'Subaroo Impressa 5-Door (Crystal Black)', '#141518', '#141518', '#141518',
+         '', '#141518'),
+        ('_blue', 'Subaroo Impressa 5-Door (Lapis Blue)', '#22407E', '#22407E', '#22407E', '',
+         '#22407E'),
+        ('_red', 'Subaroo Impressa 5-Door (Pure Red)', '#B0151C', '#B0151C', '#B0151C', '',
+         '#B0151C'),
+        ('_white', 'Subaroo Impressa 5-Door (Crystal White)', '#EEEEEA', '#EEEEEA', '#EEEEEA',
+         '', '#EEEEEA'),
+        ('_silver', 'Subaroo Impressa 5-Door (Ice Silver)', '#B8BCC2', '#B8BCC2', '#B8BCC2', '',
+         '#B8BCC2'),
+    ],
+    'csm_subaroo_wrz_stx': [
+        ('_blue', 'Subaroo WRZ STX (WR Blue)', '#1F4FA8', '#1F4FA8', '#1F4FA8', '', '#1F4FA8'),
+        ('_gray', 'Subaroo WRZ STX (Magnetite Gray)', '#3C4148', '#3C4148', '#3C4148', '',
+         '#3C4148'),
+        ('_red', 'Subaroo WRZ STX (Pure Red)', '#B0151C', '#B0151C', '#B0151C', '', '#B0151C'),
+        ('_white', 'Subaroo WRZ STX (Crystal White)', '#EEEEEA', '#EEEEEA', '#EEEEEA', '',
+         '#EEEEEA'),
+        ('_black', 'Subaroo WRZ STX (Crystal Black)', '#141518', '#141518', '#141518', '',
+         '#141518'),
+    ],
+    'csm_subaroo_wrz_stx_gold': [
+        ('_blue', 'Subaroo WRZ STX (WR Blue, Gold Wheels)', '#1F4FA8', '#1F4FA8', '#1F4FA8', '',
+         '#1F4FA8'),
+    ],
+})
+
 # Where each vehicle's door lettering sits: on the main paint, or on the second colour.
 DECAL_ON = {'csm_chipper_trailer': 'paint', 'csm_equipment_trailer': 'paint',
             'csm_stump_grinder': 'paint',
@@ -1287,7 +1536,9 @@ DECAL_ON = {'csm_chipper_trailer': 'paint', 'csm_equipment_trailer': 'paint',
             'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint',
             'csm_tow_truck': 'paint', 'csm_transit_bus': 'paint2',
             'csm_pickup_h150_xl': 'paint', 'csm_pickup_h150_xlt': 'paint',
-            'csm_pickup_silverline': 'paint', 'csm_pickup_h150_service': 'paint'}
+            'csm_pickup_silverline': 'paint', 'csm_pickup_h150_service': 'paint',
+            'csm_subaroo_impressa': 'paint', 'csm_subaroo_wrz_stx': 'paint',
+            'csm_subaroo_wrz_stx_gold': 'paint'}
 
 
 def shade(c, k):
@@ -1391,7 +1642,13 @@ def pickup_cells(img, pickup):
     x0, y0, x1, y1 = box('badge')
     corner = (196, 200, 206, 255) if pickup['badge'] == 'chevrolay' else (18, 18, 20, 255)
     d.rectangle((x0, y0, x1, y1), fill=corner)
-    if pickup['badge'] == 'halden':
+    if pickup['badge'] == 'subaroo':
+        d.rectangle((x0, y0, x1, y1), fill=(18, 18, 20, 255))
+        d.ellipse((x0, y0 + 2, x1, y1 - 2), fill=(200, 204, 210, 255))
+        d.ellipse((x0 + 1, y0 + 3, x1 - 1, y1 - 3), fill=(26, 58, 140, 255))
+        for px, py in ((7, 5), (10, 6), (10, 9), (7, 10), (4, 9), (4, 6)):
+            d.point((x0 + px, y0 + py), fill=(240, 242, 246, 255))
+    elif pickup['badge'] == 'halden':
         d.ellipse((x0, y0 + 2, x1, y1 - 2), fill=(206, 210, 216, 255))
         d.ellipse((x0 + 2, y0 + 4, x1 - 2, y1 - 4), fill=(28, 30, 34, 255))
         d.rectangle((x0 + 5, y0 + 6, x0 + 5, y0 + 9), fill=(220, 224, 230, 255))
@@ -1409,12 +1666,13 @@ def pickup_cells(img, pickup):
     d.rectangle((x0, y0, x1, y1), fill=paint + (255,))
     if pickup['script']:
         lc.draw_text_centred(img, pickup['script'], (x0 + x1 + 1) // 2, y0 + 5,
-                             (214, 218, 224), 1)
+                             rgb(pickup['script_colour']), 1)
     x0, y0, x1, y1 = box('gate')
     d.rectangle((x0, y0, x1, y1), fill=shade(paint, 0.86) + (255,))
     if pickup['gate']:
-        lc.draw_text_centred(img, pickup['gate'], (x0 + x1 + 1) // 2, y0 + 3,
-                             (206, 210, 216) if chrome else (34, 34, 38), 2)
+        scale = 2 if lc.text_width(pickup['gate'], 2) <= 62 else 1
+        lc.draw_text_centred(img, pickup['gate'], (x0 + x1 + 1) // 2, y0 + (16 - 5 * scale) // 2,
+                             (206, 210, 216) if chrome else (34, 34, 38), scale)
 
 
 def tree_crew_cells(img):
@@ -1490,6 +1748,9 @@ WHEELS = {
     'csm_wheel_truck': ('CSM Truck Wheel', 1.1, 0.34, (196, 200, 206)),
     'csm_wheel_van': ('CSM Van Wheel', 0.8, 0.26, (196, 200, 206)),
     'csm_wheel_car': ('CSM Car Wheel', 0.78, 0.26, (40, 40, 44)),
+    'csm_wheel_compact': ('CSM Compact Alloy Wheel', 0.64, 0.22, (196, 200, 206)),
+    'csm_wheel_sport': ('CSM Sport Wheel', 0.66, 0.25, (64, 66, 70)),
+    'csm_wheel_sport_gold': ('CSM Sport Wheel (Gold)', 0.66, 0.25, (200, 164, 72)),
 }
 WT = 32  # wheel textures
 
@@ -1605,6 +1866,11 @@ ENGINES = {
                           [-4.0, 0.0, 3.49, 1.86, 1.41, 1.0, 0.75, 0.65], 'diesel'),
     'csm_engine_petrol': ('CSM V8 Engine', 'gasoline', 2.2, 6000, 5500, 700, 800, 450,
                           [-3.0, 0.0, 4.0, 2.4, 1.6, 1.15, 0.85, 0.67], 'petrol'),
+    # the Subaroos': a small flat-four, and a turbocharged one with a close six-speed
+    'csm_engine_flat4': ('CSM Flat-Four Engine', 'gasoline', 1.4, 6500, 6000, 750, 850, 450,
+                         [-3.3, 0.0, 3.5, 2.1, 1.45, 1.1, 0.85, 0.68], 'petrol'),
+    'csm_engine_turbo4': ('CSM Turbo Flat-Four Engine', 'gasoline', 3.2, 7000, 6700, 850, 950,
+                          500, [-3.5, 0.0, 3.64, 2.24, 1.52, 1.13, 0.97, 0.76], 'petrol'),
 }
 
 # A full tank: about twenty minutes at full throttle, as the old, weaker engines gave.
@@ -1648,7 +1914,7 @@ def simulate(spec, seconds=240):
     axle = axle_ratio(spec)
     cd, area = spec.get('drag', (0.5, 0.0))
     area = area if area > 0 else 5.0  # IV's default frontal area
-    driven = 2 * sum(1 for _, _, steer in spec['wheels'] if not steer)
+    driven = 2 * sum(1 for _, _, steer in spec['wheels'] if spec.get('awd') or not steer)
     friction = 0.7 * driven  # the wheels' motiveFriction
     mass = spec['mass']
     v, rpm, gear, cooldown, top, t60 = 0.0, float(idle), 0, 0, 0.0, None
@@ -1683,7 +1949,8 @@ def speed_report():
         lines.append('%-22s axle %5.2f  top %5.1f mph  0-60 %s%s' % (
             name, axle_ratio(spec), top, '%5.1f s' % t60 if t60 else '   -   ',
             '' if road else '  (off-road, not banded)'))
-        if road and not SPEED_BAND[0] <= top <= SPEED_BAND[1]:
+        band = spec.get('band', SPEED_BAND)
+        if road and not band[0] <= top <= band[1]:
             bad.append(name)
     return lines, bad
 
@@ -1864,6 +2131,35 @@ FLEET = {
         wheels=[(0.85, 3.68, True), (0.85, 0.0, False)], seats=PICKUP_SEATS,
         engine_pos=(0.0, 0.45, 3.7), boxes=[-0.3, 1.6, 3.6], box_width=2.0, box_height=1.9,
         box_y=0.55, switches=[]),
+    # The Subaroos: a hatchback and a sports sedan, both all-wheel drive. The STX is the
+    # fleet's fastest, geared for about 100 mph; its gold-wheeled twin shares its model.
+    'csm_subaroo_impressa': dict(
+        build=impressa, badge='subaroo', gate='IMPRESSA', awd=True,
+        description='A five-door compact hatchback with all-wheel drive.',
+        mass=1400, wheel='csm_wheel_compact', engine='csm_engine_flat4', horn='horn_car',
+        ceiling_mph=88, drag=(0.32, 1.4),
+        wheels=[(0.76, 2.67, True), (0.76, 0.0, False)], seats=CAR_SEATS,
+        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.1, 1.4, 2.8], box_width=1.8, box_height=1.5,
+        box_y=0.43, switches=[]),
+    'csm_subaroo_wrz_stx': dict(
+        build=wrz_stx, badge='subaroo', gate='WRZ STX', script='STX', script_colour='#D8202A',
+        trim={'*': 'black'}, awd=True, band=(94.0, 104.0),
+        description='A turbocharged all-wheel-drive sports sedan with a hood scoop and a tall '
+                    'rear wing: the fleet\'s fastest, at about 100 mph.',
+        mass=1550, wheel='csm_wheel_sport', engine='csm_engine_turbo4', horn='horn_car',
+        ceiling_mph=112, drag=(0.3, 1.35),
+        wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS,
+        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.5,
+        box_y=0.42, switches=[]),
+    'csm_subaroo_wrz_stx_gold': dict(
+        build=wrz_stx, badge='subaroo', gate='WRZ STX', script='STX', script_colour='#D8202A',
+        trim={'*': 'black'}, awd=True, band=(94.0, 104.0), model='csm_subaroo_wrz_stx',
+        description='The WRZ STX in rally blue on gold wheels.',
+        mass=1550, wheel='csm_wheel_sport_gold', engine='csm_engine_turbo4', horn='horn_car',
+        ceiling_mph=112, drag=(0.3, 1.35),
+        wheels=[(0.77, 2.65, True), (0.77, 0.0, False)], seats=CAR_SEATS,
+        engine_pos=(0.0, 0.2, 3.0), boxes=[-0.2, 1.4, 2.8], box_width=1.8, box_height=1.5,
+        box_y=0.42, switches=[]),
     # The tree crew (#251): a towed chipper, an equipment trailer and a stump grinder. The
     # chipper and the grinder load only with CSM: Parks & Greenery (the pack's treecrew
     # subfolder), since one makes Parks' Mulch and the other grinds by Parks' stump rules.
@@ -1933,7 +2229,7 @@ def vehicle_json(name, v):
             if steer:
                 slot['turnsWithSteer'] = True
             parts.append(slot)
-            if not steer:
+            if spec.get('awd') or not steer:
                 driven.append(len(parts))
     for x, y, z, controller in spec['seats']:
         slot = {'pos': [x, y, z], 'types': ['seat'], 'defaultPart': '%s:csm_vehicle_seat' % PACK,
@@ -2246,7 +2542,9 @@ def catalogue():
             vp.json_bytes(vehicle_json(name, v)))
         for livery in LIVERIES[name]:
             spec = FLEET[name]
-            trim = {'trim': spec.get('trim', {}).get(livery[0], 'chrome'),
+            trims = spec.get('trim', {})
+            trim = {'trim': trims.get(livery[0], trims.get('*', 'chrome')),
+                    'script_colour': spec.get('script_colour', '#D6DAE0'),
                     'badge': spec['badge'], 'seal': bool(livery[5]),
                     'script': spec.get('script', ''), 'gate': spec.get('gate', ''),
                     'paint': livery[2]} if 'badge' in spec else None
@@ -2324,7 +2622,8 @@ def main():
         return
     if bad:
         print('\n'.join(lines))
-        print('top speed outside %.0f-%.0f mph: %s' % (SPEED_BAND + (', '.join(bad),)))
+        print('top speed outside its band (%.0f-%.0f mph unless the spec sets one): %s'
+              % (SPEED_BAND + (', '.join(bad),)))
         sys.exit(1)
     files = catalogue()
     drift = []
