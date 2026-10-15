@@ -110,7 +110,10 @@ public abstract class AbstractBlockPoweredComputer extends AbstractBlock
   @Override
   @Nonnull
   public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    IBlockState actualState = source.getBlockState(pos).getActualState(source, pos);
+    // The world's state only while it is still this block: vanilla also asks a block that has
+    // just been replaced, and the new block's state has none of our properties.
+    IBlockState here = source.getBlockState(pos);
+    IBlockState actualState = here.getBlock() == this ? here.getActualState(source, pos) : state;
     if (actualState.getPropertyKeys().contains(FACING)) {
       return RotationUtils.rotateBoundingBoxByFacing(
           getBlockBoundingBox(actualState, source, pos),
