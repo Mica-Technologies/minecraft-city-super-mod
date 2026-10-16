@@ -208,6 +208,11 @@ public class TrafficSignalPriorityPlan {
     return currentCycle - lastGrantCycle >= minCyclesBetweenGrants;
   }
 
+  /** @return whether every setting is still its default, i.e. nobody has set this plan up */
+  public boolean isDefault() {
+    return toNBT().equals(new TrafficSignalPriorityPlan().toNBT());
+  }
+
   private static int clamp(int value, int min, int max) {
     return value < min ? min : (value > max ? max : value);
   }

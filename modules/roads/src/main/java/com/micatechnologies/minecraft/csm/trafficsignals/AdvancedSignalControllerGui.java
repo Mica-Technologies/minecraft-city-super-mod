@@ -223,6 +223,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private final BlockPos blockPos;
 
   private Screen screen = Screen.STATUS;
+  /** Which transit priority plan the TSP screen shows and edits (0-based). */
+  private int editingPriority = 0;
   /** First visible line on the HELP screen (scroll offset). */
   private int helpScroll = 0;
   private final List<Cell> cells = new ArrayList<>();
@@ -1595,8 +1597,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
    * looks for it — and because the contrast with the preempt above is the point: this one does
    * not take the intersection, it nudges the cycle. */
   private void drawPriorityBlock(int y) {
-    TrafficSignalPriorityPlan pri = plan().getPriority();
+    TrafficSignalPriorityPlan pri = pri();
     fontRenderer.drawString("TRANSIT PRIORITY", lcdX, y, COLOR_AMBER_HEAD);
+    fontRenderer.drawString("of " + priorityPlanCount(), lcdX + 152, y, COLOR_AMBER_DIM);
     fontRenderer.drawString("Enabled:", lcdX, y + 12, COLOR_AMBER_DIM);
     fontRenderer.drawString("Circuit / move:", lcdX, y + 24, COLOR_AMBER_DIM);
     fontRenderer.drawString("Transit phase:", lcdX, y + 36, COLOR_AMBER_DIM);
@@ -1614,62 +1617,86 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "corridor open permanently. DET: the circuit's preempt detectors",
         "call it when they see a bus's transit emitter. Jump: with queue",
         "jump heads on the transit phase's circuit, a granted call starts",
-        "its green with the bus bar lit and the other heads held red.");
+        "its green with the bus bar lit and the other heads held red.",
+        "PLAN: up to four, one per bus movement (each direction on a",
+        "corridor with buses both ways), each with its own trigger and",
+        "transit phase. Click PLAN to page through them.");
     if (pri.isEnabled() && !pri.isRunnable()) {
-      fontRenderer.drawString("(needs a circuit and a transit phase)", lcdX + 150, y,
+      fontRenderer.drawString("(needs a circuit and a transit phase)", lcdX + 150, y + 12,
           COLOR_AMBER_DIM);
     }
   }
 
   private void buildPriorityCells(int y) {
+    cells.add(new Cell(lcdX + 100, y, 48,
+        () -> "PLAN " + (editingPriority + 1),
+        dir -> editingPriority = cyc(editingPriority, dir,
+            TrafficSignalProgrammedPhasePlan.MAX_PRIORITY_PLANS), null));
     cells.add(new Cell(lcdX + 100, y + 12, 40,
-        () -> plan().getPriority().isEnabled() ? "ON" : "OFF",
-        dir -> send("pri.enabled", 0, plan().getPriority().isEnabled() ? 0L : 1L), null));
+        () -> pri().isEnabled() ? "ON" : "OFF",
+        dir -> send("pri.enabled", editingPriority, pri().isEnabled() ? 0L : 1L), null));
     cells.add(new Cell(lcdX + 100, y + 24, 40,
         () -> {
-          int c = plan().getPriority().getTriggerCircuitIndex();
+          int c = pri().getTriggerCircuitIndex();
           return c < 0 ? "-" : String.valueOf(c);
         },
-        dir -> send("pri.circuit", 0, plan().getPriority().getTriggerCircuitIndex() + dir),
+        dir -> send("pri.circuit", editingPriority, pri().getTriggerCircuitIndex() + dir),
         null));
     // The movements, then DET: the trigger circuit's preempt detectors seeing a transit emitter.
     cells.add(new Cell(lcdX + 145, y + 24, 70,
-        () -> plan().getPriority().isTriggerOnDetectors() ? "DET"
-            : plan().getPriority().getTriggerMovement().name(),
+        () -> pri().isTriggerOnDetectors() ? "DET"
+            : pri().getTriggerMovement().name(),
         dir -> {
           int detectors = TrafficSignalPhaseMovement.values().length;
-          int current = plan().getPriority().isTriggerOnDetectors() ? detectors
-              : plan().getPriority().getTriggerMovement().ordinal();
+          int current = pri().isTriggerOnDetectors() ? detectors
+              : pri().getTriggerMovement().ordinal();
           int next = cyc(current, dir, detectors + 1);
           if (next == detectors) {
-            send("pri.detectors", 0, 1L);
+            send("pri.detectors", editingPriority, 1L);
           } else {
-            send("pri.movement", 0, next);
+            send("pri.movement", editingPriority, next);
           }
         }, null));
     cells.add(new Cell(lcdX + 100, y + 36, 40,
         () -> {
-          int n = plan().getPriority().getTransitPhase();
+          int n = pri().getTransitPhase();
           return n <= 0 ? "-" : "\u03c6" + n;
         },
-        dir -> send("pri.phase", 0, plan().getPriority().getTransitPhase() + dir), null));
+        dir -> send("pri.phase", editingPriority, pri().getTransitPhase() + dir), null));
     cells.add(new Cell(lcdX + 100, y + 48, 45,
-        () -> secs(plan().getPriority().getMaxExtension()),
-        dir -> send("pri.extension", 0, plan().getPriority().getMaxExtension() + dir * 20L),
-        sec -> send("pri.extension", 0, Math.round(sec * 20))));
+        () -> secs(pri().getMaxExtension()),
+        dir -> send("pri.extension", editingPriority, pri().getMaxExtension() + dir * 20L),
+        sec -> send("pri.extension", editingPriority, Math.round(sec * 20))));
     cells.add(new Cell(lcdX + 150, y + 48, 45,
-        () -> secs(plan().getPriority().getMaxEarlyReturn()),
+        () -> secs(pri().getMaxEarlyReturn()),
         dir -> send("pri.earlyReturn", 0,
-            plan().getPriority().getMaxEarlyReturn() + dir * 20L),
-        sec -> send("pri.earlyReturn", 0, Math.round(sec * 20))));
+            pri().getMaxEarlyReturn() + dir * 20L),
+        sec -> send("pri.earlyReturn", editingPriority, Math.round(sec * 20))));
     cells.add(new Cell(lcdX + 100, y + 60, 40,
-        () -> String.valueOf(plan().getPriority().getMinCyclesBetweenGrants()),
+        () -> String.valueOf(pri().getMinCyclesBetweenGrants()),
         dir -> send("pri.minCycles", 0,
-            Math.max(0, plan().getPriority().getMinCyclesBetweenGrants() + dir)), null));
+            Math.max(0, pri().getMinCyclesBetweenGrants() + dir)), null));
     cells.add(new Cell(lcdX + 150, y + 60, 45,
-        () -> secs(plan().getPriority().getQueueJump()),
-        dir -> send("pri.queueJump", 0, plan().getPriority().getQueueJump() + dir * 20L),
-        sec -> send("pri.queueJump", 0, Math.round(sec * 20))));
+        () -> secs(pri().getQueueJump()),
+        dir -> send("pri.queueJump", editingPriority, pri().getQueueJump() + dir * 20L),
+        sec -> send("pri.queueJump", editingPriority, Math.round(sec * 20))));
+  }
+
+  /** The transit priority plan the TSP screen is editing. */
+  private TrafficSignalPriorityPlan pri() {
+    return plan().getPriority(editingPriority);
+  }
+
+  /** How many priority plans are set up, for the TSP header: at least one. */
+  private int priorityPlanCount() {
+    int count = 1;
+    List<TrafficSignalPriorityPlan> plans = plan().getPriorities();
+    for (int i = 1; i < plans.size(); i++) {
+      if (!plans.get(i).isDefault()) {
+        count = i + 1;
+      }
+    }
+    return Math.max(count, editingPriority + 1);
   }
 
   private void drawPreempt() {
