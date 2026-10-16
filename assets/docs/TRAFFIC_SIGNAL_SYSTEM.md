@@ -478,7 +478,8 @@ What does bound a large junction is **chunk loading**, not linking:
 - A **sensor** whose chunk is unloaded reports nothing (`getSensorsWaitingSummary` skips it rather
   than load the chunk), so an approach whose detection is out of range is simply not called.
 - A **head** whose chunk is unloaded misses phase changes; since #288 the controller writes the
-  current phase to it as soon as its chunk loads (see "Heads in unloaded chunks" below).
+  current phase to it as soon as its chunk loads (see "Heads in unloaded chunks" below). The
+  controller itself no longer loads a head's chunk to build a phase, in any mode.
 
 ## Signal Color Changes
 
@@ -506,6 +507,16 @@ it applies its saved phase once, which is a no-op for every head already showing
 the unloaded ones. The preemption beacons are handled the same way: a beacon skipped as unloaded
 keeps the beacons being rewritten each tick until it has loaded (`staleIndicators`). The cost when
 nothing is stale is one `isEmpty()` a tick.
+
+Building a phase also reads static facts about the heads: their facing
+(`areSignalsFacingSameDirection`, which NORMAL calls for its active circuit every controller tick
+while it holds a green), their block type (the flash filter, the pedestrian beacon split) and a
+blankout box's legend. Those go through `LinkedDeviceStateCache`: a fresh read while the chunk is
+loaded, the remembered answer while it is not, and one read (chunk load included) for a position
+never seen since the world loaded, so a phase never depends on which chunks happen to be loaded.
+Before that, every one of these reads was a plain `getBlockState` / `getTileEntity`, which on the
+server loads the chunk; a NORMAL controller therefore kept its active circuit's head chunks loaded
+for as long as it ran, which is also why the stale heads above were only ever seen in ADVANCED.
 
 ## Phase Transition Flow (Normal Mode)
 

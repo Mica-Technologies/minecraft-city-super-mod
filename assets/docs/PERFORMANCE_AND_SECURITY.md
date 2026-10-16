@@ -71,6 +71,7 @@ x = 200 the edge of view cuts the fifth tower.
 | HVAC, rooms over 5 minutes old (one safety-net rescan a second) | 17.5 ms a step, 0.88 ms a tick | 4.2 ms a step, 0.21 ms a tick |
 | HVAC, steady with no rescans due | 2.8 ms a step, 0.14 ms a tick | 1.6 ms a step, 0.08 ms a tick |
 | Signal controller, sensors outside every player's view | both sensor chunks kept loaded indefinitely | stay unloaded |
+| NORMAL signal controller, heads outside every player's view (2026-10) | the active circuit's head chunks kept loaded, or reloaded every tick | stay unloaded |
 | Fire alarm panel, idle | 3 microseconds a tick; pull stations, detectors and sprinklers' scheduled ticks 0.05 ms a tick | unchanged |
 | Fire alarm panel, in alarm (player inside, 192 appliances sounding) | 3.4-4.5 microseconds a tick | unchanged |
 | 400 APS buttons (player more than 16 blocks away / among them) | 45-52 / 51-63 microseconds a tick | unchanged |
@@ -693,6 +694,13 @@ a single quad, both visual trade-offs to cost against measured numbers before pr
   `getTileEntity` load the chunk from disk to answer, and a chunk loaded that way with no player
   near it stays loaded, ticking. A signal controller polling a sensor 20 chunks from anyone kept
   that chunk loaded for as long as it ran. Treat an unloaded position as having nothing to report.
+  The exception is a static fact about a linked device that phases are built from (a head's facing,
+  its block type, a blankout box's legend): there, answering "nothing" would make a phase depend
+  on which chunks are loaded, so read it through `LinkedDeviceStateCache`, which reads fresh while
+  the chunk is loaded and remembers the answer while it is not (nothing in an unloaded chunk can
+  change). NORMAL mode rebuilds its active circuit's phase every controller tick, and until
+  2026-10 those reads went straight to `getBlockState`, which kept every chunk a NORMAL
+  junction's active heads stood in loaded.
 - **A result that cannot change until a chunk loads should wait for that chunk, not a timer.** HVAC
   retried rooms that reached an unloaded chunk every 2 s, every device separately, forever; at the
   edge of a player's view that was thousands of floods a minute. Remember what stopped it, check
