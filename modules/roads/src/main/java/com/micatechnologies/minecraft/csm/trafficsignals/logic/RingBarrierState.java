@@ -171,6 +171,11 @@ public class RingBarrierState {
     // yet, so terminating would only turn the ring dark. The flag is what the other ring reads to
     // see that this one is ready, so two rings that have both gapped out cannot hold each other.
     boolean barrierWaiting = false;
+    // Idle only because the next called phase in this ring's sequence is excluded from timing
+    // alongside the phase the other ring is serving (a phase exclusion). The ring waits at that
+    // slot rather than skipping past it, and dual entry leaves it alone, so the excluded phase is
+    // served as soon as the other ring's phase has cleared.
+    boolean exclusionWait = false;
   }
 
   private int currentBarrier = 0;
@@ -500,6 +505,7 @@ public class RingBarrierState {
     ServedMovement m2 = describe(ring2, plan, now);
     this.lastServed1 = m1;
     this.lastServed2 = m2;
+    checkExclusions(plan);
     List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now, called);
     java.util.Set<Integer> fyaHoldFlash = computeFyaHoldFlash(plan, called);
     return changedOrNull(enforceOutputClearance(AdvancedPhaseBuilder.build(
@@ -879,6 +885,7 @@ public class RingBarrierState {
     ring.coordYieldFor = 0;
     ring.yieldedFor = 0;
     ring.barrierWaiting = false;
+    ring.exclusionWait = false;
   }
 
   // region: Ring stepping
@@ -1209,10 +1216,19 @@ public class RingBarrierState {
     if (ring.activePhase != 0) {
       return;
     }
+    ring.exclusionWait = false;
     int[] seq = plan.getRingSequence(ringNum);
     for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
       int phaseNumber = seq[idx];
       TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
+      if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
+          && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
+          && excludedByOtherRing(ring, phaseNumber, plan)) {
+        // Called, but excluded from timing beside the other ring's phase: wait at this slot
+        // (sequencePos stays before it) until that phase has cleared, rather than skip it.
+        ring.exclusionWait = true;
+        return;
+      }
       ring.sequencePos = idx;
       // Skip unusable phases and phases on another barrier. The shared currentBarrier — not a
       // sequence break — keeps both rings on the same barrier, so a ring advances past phases that
@@ -1236,7 +1252,8 @@ public class RingBarrierState {
         TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
         if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
             && phase.isConditionalService()
-            && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]) {
+            && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
+            && !excludedByOtherRing(ring, phaseNumber, plan)) {
           startGreen(ring, phase, now);
           ring.condServiceUsed = true;
           return;
@@ -1254,7 +1271,8 @@ public class RingBarrierState {
         TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
         if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
             && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
-            && phaseNumber != ring1.activePhase && phaseNumber != ring2.activePhase) {
+            && phaseNumber != ring1.activePhase && phaseNumber != ring2.activePhase
+            && !excludedByOtherRing(ring, phaseNumber, plan)) {
           startGreen(ring, phase, now);
           ring.sequencePos = idx;
           return;
@@ -1277,7 +1295,8 @@ public class RingBarrierState {
         TrafficSignalProgrammedPhase phase = plan.getPhase(seq[idx]);
         if (seq[idx] == target && phase != null && phase.isActive()
             && phase.getBarrier() == currentBarrier && target < called.length && called[target]
-            && target != ring1.activePhase && target != ring2.activePhase) {
+            && target != ring1.activePhase && target != ring2.activePhase
+            && !excludedByOtherRing(ring, target, plan)) {
           startGreen(ring, phase, now);
           ring.sequencePos = idx;
           return;
@@ -1301,7 +1320,7 @@ public class RingBarrierState {
   private void fillDualEntry(RingRuntime idle, RingRuntime other,
       TrafficSignalProgrammedPhasePlan plan, int idleRingNum, long now, boolean[] called) {
     if (idle.activePhase != 0 || other.activePhase == 0 || other.dualEntry
-        || other.serviceSeq == idle.clearedAlongside) {
+        || idle.exclusionWait || other.serviceSeq == idle.clearedAlongside) {
       return; // (last case: this ring already served and cleared beside that same green)
     }
     TrafficSignalProgrammedPhase otherPhase = plan.getPhase(other.activePhase);
@@ -1313,7 +1332,8 @@ public class RingBarrierState {
     for (int idx = 0; idx < seq.length; idx++) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(seq[idx]);
       if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
-          && phase.isDualEntry() && !withinBarrierConflict(phase, idleRingNum, plan, called)) {
+          && phase.isDualEntry() && !withinBarrierConflict(phase, idleRingNum, plan, called)
+          && !excludedByOtherRing(idle, seq[idx], plan)) {
         startGreen(idle, phase, now);
         idle.dualEntry = true;
         idle.sequencePos = idx;
@@ -1456,7 +1476,7 @@ public class RingBarrierState {
       TrafficSignalProgrammedPhase p1 = plan.getPhase(rest1);
       barrier = p1 == null ? -1 : p1.getBarrier();
     }
-    int rest2 = restPhaseForRing(plan, 2, barrier);
+    int rest2 = restPhaseForRing(plan, 2, barrier, rest1);
     restRing(ring1, plan, 1, rest1, now);
     restRing(ring2, plan, 2, rest2, now);
   }
@@ -1494,11 +1514,21 @@ public class RingBarrierState {
    * else its first active phase — restricted to {@code barrier} unless that is {@code -1}.
    */
   private int restPhaseForRing(TrafficSignalProgrammedPhasePlan plan, int ringNum, int barrier) {
+    return restPhaseForRing(plan, ringNum, barrier, 0);
+  }
+
+  /**
+   * {@link #restPhaseForRing(TrafficSignalProgrammedPhasePlan, int, int)}, passing over any phase
+   * excluded from timing beside {@code beside} (the other ring's rest phase, or 0).
+   */
+  private int restPhaseForRing(TrafficSignalProgrammedPhasePlan plan, int ringNum, int barrier,
+      int beside) {
     int[] seq = plan.getRingSequence(ringNum);
     // Prefer a coordinated phase in this ring.
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
       if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)
+          && !plan.excludes(n, beside)
           && plan.getCoordination().isCoordinatedPhase(n)) {
         return n;
       }
@@ -1507,6 +1537,7 @@ public class RingBarrierState {
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
       if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)
+          && !plan.excludes(n, beside)
           && phase.getRecallMode() == TrafficSignalRecallMode.SOFT) {
         return n;
       }
@@ -1514,7 +1545,8 @@ public class RingBarrierState {
     // Otherwise the first active phase in the ring.
     for (int n : seq) {
       TrafficSignalProgrammedPhase phase = plan.getPhase(n);
-      if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)) {
+      if (phase != null && phase.isActive() && (barrier < 0 || phase.getBarrier() == barrier)
+          && !plan.excludes(n, beside)) {
         return n;
       }
     }
@@ -2404,6 +2436,9 @@ public class RingBarrierState {
     if (active == null) {
       return true;
     }
+    if (plan.excludes(active.getPhaseNumber(), n)) {
+      return true; // barred from timing together, whatever the rings say
+    }
     TrafficSignalProgrammedPhase other = plan.getPhase(n);
     if (other == null || other.getBarrier() != active.getBarrier()) {
       return true;
@@ -2443,6 +2478,32 @@ public class RingBarrierState {
       }
     }
     return false;
+  }
+
+  /**
+   * Whether {@code phaseNumber} may not start in {@code ring} because the other ring is serving
+   * (in any interval, its clearance included) a phase it is excluded from timing beside.
+   */
+  private boolean excludedByOtherRing(RingRuntime ring, int phaseNumber,
+      TrafficSignalProgrammedPhasePlan plan) {
+    RingRuntime other = ring == ring1 ? ring2 : ring1;
+    return other.activePhase != 0 && plan.excludes(phaseNumber, other.activePhase);
+  }
+
+  /**
+   * The conflict monitor's check on phase exclusions: two excluded phases must never show green
+   * or yellow at the same time. The selection above never starts one beside the other, so a hit
+   * is an engine bug; it throws, and the controller faults into flash with the message, as a
+   * real MMU does on a conflict.
+   */
+  private void checkExclusions(TrafficSignalProgrammedPhasePlan plan) {
+    if (ring1.activePhase == 0 || ring2.activePhase == 0
+        || ring1.interval == VehInterval.RED || ring2.interval == VehInterval.RED
+        || !plan.excludes(ring1.activePhase, ring2.activePhase)) {
+      return;
+    }
+    throw new IllegalStateException("Conflict monitor: phases " + ring1.activePhase + " and "
+        + ring2.activePhase + " are excluded from timing together but were both up.");
   }
 
   /** The ring (1 or 2) whose sequence contains {@code phaseNumber}, or 0 if in neither. */

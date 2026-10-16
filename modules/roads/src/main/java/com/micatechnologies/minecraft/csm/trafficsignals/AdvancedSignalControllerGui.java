@@ -107,9 +107,9 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   // MAP screen columns, in visual (and arrow-key) order. Offsets are from the LCD's left edge and
   // are shared by the cells, the header row and the hover-help regions so they cannot drift apart.
   private static final String[] MAP_HEADERS =
-      {"EN", "CKT", "MOVE", "RCL", "PED", "FYA", "OPT", "LOCK", "FLSH"};
-  private static final int[] MAP_COL_DX = {22, 56, 96, 140, 182, 214, 244, 274, 308};
-  private static final int[] MAP_COL_W = {30, 36, 40, 38, 28, 26, 26, 30, 30};
+      {"EN", "CKT", "MOVE", "RCL", "PED", "FYA", "OPT", "LOCK", "FLSH", "EXC"};
+  private static final int[] MAP_COL_DX = {22, 56, 96, 140, 182, 214, 244, 274, 308, 338};
+  private static final int[] MAP_COL_W = {30, 36, 40, 38, 28, 26, 26, 30, 30, 22};
   private static final String[] TIMING_HEADERS =
       {"MnG", "Pas", "MxG", "Yel", "Red", "Wlk", "PCl", "DGn"};
   private static final String[] TIMING_ACTIONS = {"ph.minGreen", "ph.passage", "ph.maxGreen",
@@ -622,7 +622,49 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             send("ph.flash", n, cyc(plan().getPhase(n).getFlashOverride().ordinal(), dir,
                 TrafficSignalFlashOverride.values().length));
           }, null));
+      // Exclusion: a phase this one must never time beside, though the rings would allow it.
+      cells.add(new Cell(lcdX + MAP_COL_DX[9], y, MAP_COL_W[9],
+          () -> exclusionLabel(n),
+          dir -> {
+            int max = TrafficSignalProgrammedPhasePlan.PHASE_COUNT;
+            int x = firstExclusion(n) + dir;
+            if (x == n) {
+              x += dir;
+            }
+            if (x < 0) {
+              x = max;
+            }
+            if (x > max) {
+              x = 0;
+            }
+            if (x == n) {
+              x = 0;
+            }
+            send("ph.exclusion", n, x);
+          }, null));
     }
+  }
+
+  /** The first phase {@code n} is barred from timing beside (either way round), or 0. */
+  private int firstExclusion(int n) {
+    for (int m = 1; m <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; m++) {
+      if (plan().excludes(n, m)) {
+        return m;
+      }
+    }
+    return 0;
+  }
+
+  /** MAP "EXC" label: "--", "x5", or "x5+" when the NBT lists more than one. */
+  private String exclusionLabel(int n) {
+    int count = 0;
+    for (int m = 1; m <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; m++) {
+      if (plan().excludes(n, m)) {
+        count++;
+      }
+    }
+    int first = firstExclusion(n);
+    return first == 0 ? "--" : ("x" + first + (count > 1 ? "+" : ""));
   }
 
   /** @return whether the phase drives vehicle heads, i.e. whether FLSH means anything for it. */
@@ -1460,6 +1502,12 @@ public class AdvancedSignalControllerGui extends GuiScreen {
             "beat, φ3/φ4/φ7/φ8 on the other — and anything you don't",
             "program flashes red. 'n/a' = a PED phase, which has no",
             "vehicle movement (ped heads are dark in flash)."},
+        {"Exclusion (EXC)", "A phase this one must never time beside. The rings",
+            "treat phases on one barrier in different rings as safe",
+            "together; on a very wide junction two of them can cross",
+            "(the two lefts of a boulevard). xN bars this phase and",
+            "N: whichever comes up first runs, and the other waits",
+            "until it has cleared. Applies both ways. '--' = none."},
     };
     for (int i = 0; i < MAP_COL_DX.length; i++) {
       addHelp(lcdX + MAP_COL_DX[i], lcdY + 12, MAP_COL_W[i], colHelpH, colHelp[i]);
