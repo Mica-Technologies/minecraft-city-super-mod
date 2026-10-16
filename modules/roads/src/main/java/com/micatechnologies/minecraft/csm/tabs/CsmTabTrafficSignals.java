@@ -179,6 +179,7 @@ public class CsmTabTrafficSignals extends CsmTab {
     initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_SIGNAL_LED);
     initTabBlock(TrafficSignalBlocks.VERTICAL_LEFT_SIGNAL_SOLID_RED);
     initTabBlock(TrafficSignalBlocks.VERTICAL_RAIL_SIGNAL);
+    initTabBlock(TrafficSignalBlocks.VERTICAL_TRANSIT_THROUGH_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT2_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_ADD_ON_FYA_SIGNAL);
     initTabBlock(TrafficSignalBlocks.VERTICAL_RIGHT_ADD_ON_SIGNAL);

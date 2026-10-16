@@ -744,6 +744,22 @@ running has nothing to jump. Without queue jump heads on the circuit nothing is 
 would hold the general heads red with nothing shown to the bus. The heads are dark in every other
 mode; standard mode has no transit priority at all.
 
+### The transit signal head (centre-running bus lanes)
+
+A bus lane with faces of its own wants heads that show the transit bar and follow the lane's
+**through** movement. The only bar-faced three-section head used to be the rail signal
+(`controllableverticalrailsignal`, "Rail, Protected"), which links as `SIGNAL_SIDE.PROTECTED` into
+the circuit's protected list and so lights only through a LEFT / PROTECTED_LEFT phase: a
+through-running bus needed its own circuit and an overlap at every junction (issue #285).
+
+**Vertical Traffic Signal (Transit, Through)** (`controllableverticaltransitsignal`,
+`TrafficSignalBlocks.VERTICAL_TRANSIT_THROUGH_SIGNAL`) has the same three transit-bar sections and
+links as `SIGNAL_SIDE.THROUGH`. It is an ordinary through head in every respect, in every mode:
+link it to the bus lane's circuit and it greens, clears and flashes with that circuit's THROUGH
+movement. For a bus lane timed apart from the general lanes, give it a circuit of its own and map
+a phase to that circuit's THROUGH; that phase can be a transit priority plan's transit phase, so
+early green and extension apply to it directly. No new circuit list or engine path was needed.
+
 ### Why this is safe to bolt onto the ring engine
 
 **Only the maximum green ever moves.** The engine will not terminate a phase until `minMet` and

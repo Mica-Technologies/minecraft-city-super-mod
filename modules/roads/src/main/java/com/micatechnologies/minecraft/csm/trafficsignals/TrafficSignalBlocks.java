@@ -1885,6 +1885,31 @@ public final class TrafficSignalBlocks {
           .retiring("controllableverticalrailsignal")
           .build();
 
+  /**
+   * A transit signal for a bus lane: the transit bar in all three sections, linked as a THROUGH
+   * head, so it follows its circuit's through movement (a centre-running bus lane beside the
+   * general lanes) rather than a protected left, which is what the rail signal follows.
+   */
+  public static final BlockControllableSignal VERTICAL_TRANSIT_THROUGH_SIGNAL =
+      new BlockControllableSignal.Builder(
+          "controllableverticaltransitsignal",
+          SIGNAL_SIDE.THROUGH,
+          true,
+          () -> {
+            return new TrafficSignalSectionInfo[] {
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalBulbColor.RED, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalBulbColor.YELLOW, false),
+            new TrafficSignalSectionInfo(TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK, TrafficSignalBodyColor.FLAT_BLACK,
+            TrafficSignalVisorType.CIRCLE, TrafficSignalBulbStyle.LED, TrafficSignalBulbType.TRANSIT,
+            TrafficSignalBulbColor.GREEN, false)
+            };
+          })
+          .build();
+
   public static final BlockControllableSignal VERTICAL_RIGHT2_SIGNAL =
       new BlockControllableSignal.Builder(
           "controllableverticalright2signal",

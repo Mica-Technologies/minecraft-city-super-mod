@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "102 blocks in this tab"
+!!! info "103 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -108,6 +108,7 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Vertical Traffic Signal (Solid, Flashing Red for Green) | `csm:controllableverticalsolidflashredsignal` |  |  |  |  |
 | Vertical Traffic Signal (Solid, Flashing Yellow for Green) | `csm:controllableverticalsolidflashyellowsignal` |  |  |  |  |
 | Vertical Traffic Signal (Solid, Reversed) | `csm:controllableverticalsolidsignalreversed` |  |  |  |  |
+| Vertical Traffic Signal (Transit, Through) | `csm:controllableverticaltransitsignal` |  |  |  |  |
 | Vertical Traffic Signal (U-Turn Arrow) | `csm:controllableverticaluturnsignal` |  |  |  |  |
 | Vertical Traffic Signal (Up Left Arrow) | `csm:controllableverticalupleftsignal` |  |  |  |  |
 | Vertical Traffic Signal Add-On (Left w/ Flashing Yellow) | `csm:controllableverticalhybridleftaddonsignal` |  |  |  |  |
