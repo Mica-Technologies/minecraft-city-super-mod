@@ -2208,6 +2208,30 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
               Math.min(TrafficSignalProgrammedPhasePlan.PHASE_COUNT, pp)));
         }
         break;
+      case "ph.exclusion":
+        if (phase != null) {
+          // One partner per phase from the panel (0 = none), kept both ways round so either
+          // phase's row shows the pair; a hand-written list in NBT may still hold several.
+          int partner = (int) Math.max(0,
+              Math.min(TrafficSignalProgrammedPhasePlan.PHASE_COUNT, value));
+          int self = phase.getPhaseNumber();
+          for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+            TrafficSignalProgrammedPhase other = plan.getPhase(n);
+            if (other != null && other != phase && phase.excludes(n)) {
+              other.setExclusionMask(other.getExclusionMask() & ~(1 << self));
+            }
+          }
+          if (partner == 0 || partner == self) {
+            phase.setExclusionMask(0);
+          } else {
+            phase.setExclusionMask(1 << partner);
+            TrafficSignalProgrammedPhase other = plan.getPhase(partner);
+            if (other != null) {
+              other.setExclusionMask(other.getExclusionMask() | (1 << self));
+            }
+          }
+        }
+        break;
       case "ph.max2":
         if (phase != null) {
           phase.setMax2(clampTicks(value));

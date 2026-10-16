@@ -65,6 +65,7 @@ roadmap parameters, with their real ASC/3 names:
 | **Conditional Service** | **Re-serve a lagging phase** | **implemented — see §5** |
 | **VEH CALL MEMORY (LOCK)** | **Locking detector memory** | **implemented — see §5** |
 | **Flash program (FLSH)** | **Per-phase yellow/red flash assignment** | **implemented — see §5a** |
+| **Phase concurrency** | **Bar two compatible phases from timing together** | **implemented (EXC) — see §5** |
 
 ---
 
@@ -290,6 +291,43 @@ green-interval logic:
 
 The engine snapshots `queueAtStart` and `bikeCall` on the `RingRuntime` at green start. All four
 parameters are edited on the **ACT** GUI screen (Mx2 / BkG / AdI / MxI / Gap / TB4 / TTR).
+
+### Phase exclusions (EXC)
+
+The ring-and-barrier model takes any two phases on the same barrier in different rings as
+compatible, and runs them together. On a very wide junction two of those movements can cross: a
+boulevard's two lefts (phases 1 and 5) sweep paths that meet inside a box a hundred blocks long.
+A phase's **exclusions** (`TrafficSignalProgrammedPhase.getExclusionMask()`, NBT `ex`, an int
+array of phase numbers; a hand-typed list `ex:[5]` reads too) bar such a pair from ever timing
+together, and either phase listing the other is enough (`TrafficSignalProgrammedPhasePlan.excludes`).
+The MAP screen's **EXC** column sets one partner per phase and keeps the pair written both ways
+round; a list of several survives from NBT and shows as `x5+`. (ASC/3 programs the same idea as
+its phase concurrency table.)
+
+The engine honours an exclusion in three places:
+
+- **Selection.** A ring never starts a phase excluded by the phase the other ring is serving, in
+  any interval including its red clearance (`excludedByOtherRing`, checked by the forward
+  sequence, conditional service, the within-barrier wrap, the coordinated yield's re-serve, dual
+  entry and the rest phases). In the forward sequence the ring **waits** at that slot
+  (`RingRuntime.exclusionWait`, sequence position left before it) instead of skipping past: a
+  skipped phase would wait for the next cycle every time both lefts were called, and the ring
+  serves it the moment the other phase has cleared. Dual entry leaves a waiting ring alone, or it
+  would companion past the waiting phase.
+- **Termination.** `conflicts()` counts an excluded phase as conflicting demand, so a call on
+  phase 5 gaps phase 1 out, runs its max-green timer and is never held at the barrier.
+- **The conflict monitor.** `checkExclusions` throws if both rings show an excluded pair green
+  or yellow, and the controller faults into flash with the message, as on a skipped yellow.
+  Selection never produces it, so a hit is an engine bug. `validate` refuses a preempt whose
+  track-clear, dwell or exit set holds an excluded pair, since a preempt serves its sets outside
+  the rings.
+
+With `r1:[1,2,..]` and `r2:[5,6,..]` and both lefts called, the result is `1` then `2+5` then
+`2+6`: the left that comes up first runs while the other ring waits. A lead-lag order
+(`r2:[6,5,..]`) gives `1+6` then `2+5`, which serves both lefts with no dark ring, and is the
+better program where the volumes allow it; the exclusion is what makes it safe however the
+timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
+`PhaseExclusionTest` drives both orders.
 
 ### Phase options: Soft Recall & Rest in Walk
 

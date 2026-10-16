@@ -84,6 +84,7 @@ public class TrafficSignalProgrammedPhase {
   private static final String K_TIME_B4_REDUCE = "t4";
   private static final String K_TIME_TO_REDUCE = "tr";
   private static final String K_FLASH_OVERRIDE = "fo";
+  private static final String K_EXCLUSIONS = "ex";
 
   // endregion
 
@@ -146,6 +147,14 @@ public class TrafficSignalProgrammedPhase {
    * (left) phase show a flashing yellow arrow. 0 = protected-only (no FYA).
    */
   private int permissivePhase = 0;
+  /**
+   * The phases this one must never time alongside, as a bit mask (bit {@code n} for phase
+   * {@code n}). The ring-and-barrier model takes every pair of phases on the same barrier in
+   * different rings as compatible; an exclusion bars one such pair, for a junction so wide that
+   * two of those movements cross (the two lefts of a boulevard, say). The engine reads it both
+   * ways: phase 1 excluding 5 keeps 5 off while 1 is up as well. 0 = none.
+   */
+  private int exclusionMask = 0;
 
   // endregion
 
@@ -286,6 +295,23 @@ public class TrafficSignalProgrammedPhase {
     this.permissivePhase = permissivePhase;
   }
 
+  /** @return the phases this one excludes, bit {@code n} for phase {@code n} */
+  public int getExclusionMask() {
+    return exclusionMask;
+  }
+
+  public void setExclusionMask(int exclusionMask) {
+    // Bits 1..PHASE_COUNT only, and never the phase itself.
+    int all = ((1 << (TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1)) - 1) & ~1;
+    this.exclusionMask = exclusionMask & all & ~(1 << phaseNumber);
+  }
+
+  /** @return whether this phase lists {@code otherPhase} as one it must not time alongside */
+  public boolean excludes(int otherPhase) {
+    return otherPhase >= 1 && otherPhase <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT
+        && (exclusionMask & (1 << otherPhase)) != 0;
+  }
+
   public long getMax2() {
     return max2;
   }
@@ -418,6 +444,19 @@ public class TrafficSignalProgrammedPhase {
     c.setBoolean(K_COND_SERVICE, conditionalService);
     c.setBoolean(K_LOCK_CALL, lockCall);
     c.setInteger(K_PERM_PHASE, permissivePhase);
+    if (exclusionMask != 0) {
+      java.util.List<Integer> excluded = new java.util.ArrayList<>();
+      for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+        if (excludes(n)) {
+          excluded.add(n);
+        }
+      }
+      int[] list = new int[excluded.size()];
+      for (int i = 0; i < list.length; i++) {
+        list[i] = excluded.get(i);
+      }
+      c.setIntArray(K_EXCLUSIONS, list);
+    }
     c.setLong(K_MAX2, max2);
     c.setLong(K_BIKE_MIN_GREEN, bikeMinGreen);
     c.setLong(K_ADDED_INITIAL, addedInitial);
@@ -450,6 +489,7 @@ public class TrafficSignalProgrammedPhase {
     p.conditionalService = c.getBoolean(K_COND_SERVICE);
     p.lockCall = c.getBoolean(K_LOCK_CALL);
     p.permissivePhase = c.hasKey(K_PERM_PHASE) ? c.getInteger(K_PERM_PHASE) : 0;
+    p.setExclusionMask(readExclusions(c));
     p.max2 = c.hasKey(K_MAX2) ? c.getLong(K_MAX2) : DEFAULT_MAX2;
     p.bikeMinGreen = c.hasKey(K_BIKE_MIN_GREEN) ? c.getLong(K_BIKE_MIN_GREEN) : DEFAULT_BIKE_MIN_GREEN;
     p.addedInitial = c.hasKey(K_ADDED_INITIAL) ? c.getLong(K_ADDED_INITIAL) : DEFAULT_ADDED_INITIAL;
@@ -459,6 +499,27 @@ public class TrafficSignalProgrammedPhase {
         c.hasKey(K_TIME_B4_REDUCE) ? c.getLong(K_TIME_B4_REDUCE) : DEFAULT_TIME_B4_REDUCE;
     p.timeToReduce = c.hasKey(K_TIME_TO_REDUCE) ? c.getLong(K_TIME_TO_REDUCE) : DEFAULT_TIME_TO_REDUCE;
     return p;
+  }
+
+  /**
+   * Reads the exclusion list as phase numbers: an int array as written, or a list of ints, which
+   * is what a hand-typed {@code ex:[5]} in a command parses to.
+   */
+  private static int readExclusions(NBTTagCompound c) {
+    int mask = 0;
+    if (c.hasKey(K_EXCLUSIONS, net.minecraftforge.common.util.Constants.NBT.TAG_INT_ARRAY)) {
+      for (int n : c.getIntArray(K_EXCLUSIONS)) {
+        mask |= n >= 1 && n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT ? 1 << n : 0;
+      }
+    } else if (c.hasKey(K_EXCLUSIONS, net.minecraftforge.common.util.Constants.NBT.TAG_LIST)) {
+      net.minecraft.nbt.NBTTagList list =
+          c.getTagList(K_EXCLUSIONS, net.minecraftforge.common.util.Constants.NBT.TAG_INT);
+      for (int i = 0; i < list.tagCount(); i++) {
+        int n = list.getIntAt(i);
+        mask |= n >= 1 && n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT ? 1 << n : 0;
+      }
+    }
+    return mask;
   }
 
   // endregion

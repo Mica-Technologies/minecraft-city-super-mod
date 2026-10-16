@@ -180,6 +180,40 @@ public class TrafficSignalProgrammedPhasePlan {
     return patterns[slot >= patterns.length ? patterns.length - 1 : slot];
   }
 
+  /**
+   * Whether phases {@code a} and {@code b} must never time together: either lists the other in
+   * its exclusions ({@link TrafficSignalProgrammedPhase#getExclusionMask()}), so one entry is
+   * enough to bar the pair.
+   *
+   * @param a a phase number
+   * @param b another phase number
+   *
+   * @return true if the pair is barred
+   */
+  public boolean excludes(int a, int b) {
+    if (a == b) {
+      return false;
+    }
+    TrafficSignalProgrammedPhase pa = getPhase(a);
+    TrafficSignalProgrammedPhase pb = getPhase(b);
+    return (pa != null && pa.excludes(b)) || (pb != null && pb.excludes(a));
+  }
+
+  /** The first barred pair in {@code phaseNumbers} as "a and b", or null if there is none. */
+  private String excludedPairIn(int[] phaseNumbers) {
+    if (phaseNumbers == null) {
+      return null;
+    }
+    for (int i = 0; i < phaseNumbers.length; i++) {
+      for (int j = i + 1; j < phaseNumbers.length; j++) {
+        if (excludes(phaseNumbers[i], phaseNumbers[j])) {
+          return phaseNumbers[i] + " and " + phaseNumbers[j];
+        }
+      }
+    }
+    return null;
+  }
+
   /** Transit signal priority: green extension and early return, distinct from a preempt. */
   public TrafficSignalPriorityPlan getPriority() {
     return priority;
@@ -446,6 +480,19 @@ public class TrafficSignalProgrammedPhasePlan {
       if (pe.getTriggerMovement() == TrafficSignalPhaseMovement.PED) {
         return "Preempt " + (i + 1) + " cannot trigger on the pedestrian movement."
             + " Use a vehicle movement.";
+      }
+      // A preempt serves its phase sets together, outside the rings, so it would show an
+      // excluded pair green side by side if one of its sets held both.
+      String pair = excludedPairIn(pe.getTrackClearPhases());
+      if (pair == null) {
+        pair = excludedPairIn(pe.getDwellPhases());
+      }
+      if (pair == null) {
+        pair = excludedPairIn(pe.getExitPhases());
+      }
+      if (pair != null) {
+        return "Preempt " + (i + 1) + " serves phases " + pair
+            + " together, but they are excluded from timing together.";
       }
     }
     for (int i = 0; i < vehicleOverlaps.size(); i++) {
