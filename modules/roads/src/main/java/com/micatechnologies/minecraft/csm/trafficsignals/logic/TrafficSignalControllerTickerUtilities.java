@@ -2095,7 +2095,7 @@ public class TrafficSignalControllerTickerUtilities {
     Predicate<BlockPos> flashEnabledPredicate = signalPos -> {
       boolean shouldFlash = false;
       if (world != null) {
-        IBlockState blockState = world.getBlockState(signalPos);
+        IBlockState blockState = LinkedDeviceStateCache.blockState(world, signalPos);
         if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
           shouldFlash = ((AbstractBlockControllableSignal) blockState.getBlock()).doesFlash();
         }
@@ -2452,11 +2452,11 @@ public class TrafficSignalControllerTickerUtilities {
       return;
     }
     Function<BlockPos, EnumFacing> facingResolver = pos -> signalFacingOrNull(world, pos);
-    Function<BlockPos, BlankoutBoxType> typeResolver = pos -> {
-      TileEntity te = world.getTileEntity(pos);
-      return te instanceof TileEntityBlankoutBox
-          ? ((TileEntityBlankoutBox) te).getBlankoutType() : null;
-    };
+    // Cached: a plain getTileEntity loads the box's chunk, and phases are rebuilt every tick.
+    Function<BlockPos, BlankoutBoxType> typeResolver = pos ->
+        LinkedDeviceStateCache.tileValue(world, pos, "blankoutType",
+            te -> te instanceof TileEntityBlankoutBox
+                ? ((TileEntityBlankoutBox) te).getBlankoutType() : null);
     addBlankoutSignalsToPhase(facingResolver, typeResolver, circuit, phase, preemptSignsLit);
   }
 

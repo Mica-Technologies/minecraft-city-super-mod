@@ -453,7 +453,8 @@ public class TrafficSignalControllerCircuit {
     for (BlockPos pos : pedestrianBeaconSignals) {
       boolean isFlashOnCall = false;
       if (world != null) {
-        Block block = world.getBlockState(pos).getBlock();
+        // Cached: NORMAL rebuilds phases every tick, and a plain read loads the chunk.
+        Block block = LinkedDeviceStateCache.blockState(world, pos).getBlock();
         isFlashOnCall = block instanceof AbstractBlockControllableSignal
             && ((AbstractBlockControllableSignal) block).isFlashOnCallBeacon();
       }
@@ -1176,8 +1177,10 @@ public class TrafficSignalControllerCircuit {
    * @since 1.0
    */
   public boolean areSignalsFacingSameDirection(World world) {
+    // Cached rather than read: NORMAL calls this for its active circuit every tick, and a plain
+    // read loads the chunk of every head that is out of range (LinkedDeviceStateCache).
     return areSignalsFacingSameDirection(pos -> {
-      IBlockState blockState = world.getBlockState(pos);
+      IBlockState blockState = LinkedDeviceStateCache.blockState(world, pos);
       if (blockState.getBlock() instanceof AbstractBlockControllableSignal) {
         return blockState.getValue(BlockHorizontal.FACING);
       }
