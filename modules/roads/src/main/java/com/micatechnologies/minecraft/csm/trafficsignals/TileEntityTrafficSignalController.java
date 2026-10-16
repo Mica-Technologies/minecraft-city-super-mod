@@ -153,6 +153,25 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private transient boolean litPreemptEmergency = false;
 
   /**
+   * Signals the current phase could not be written to because their chunk was unloaded. A head
+   * in an unloaded chunk misses the phase change and, once its chunk loads, would keep showing
+   * whatever it showed when it was unloaded (possibly a green that conflicts with what the
+   * controller now runs) until the next change reached it (issue #288). Each tick the ones that
+   * have loaded since are written with the current phase and dropped from the set.
+   */
+  private final transient java.util.Set<BlockPos> staleSignals = new java.util.HashSet<>();
+
+  /** Preemption beacons skipped as unloaded the last time the beacons were written. */
+  private transient boolean staleIndicators = false;
+
+  /**
+   * Whether {@link #staleSignals} has been filled since this tile entity was loaded. The set is
+   * not saved, so on the first tick after a load the persisted phase is written once to every
+   * loaded head (a no-op for one already showing it) and the unloaded ones are recorded.
+   */
+  private transient boolean staleSignalsSeeded = false;
+
+  /**
    * The list of cached phases for the traffic signal controller.
    *
    * @since 2.0
@@ -894,7 +913,8 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         // Change to the indicated phase (if valid), fault if a signal is missing
         // (but don't re-fault when already in fault mode — let fault flash work).
         // Note: apply() skips signals in unloaded chunks (they are not considered missing).
-        BlockPos missingSignal = currentPhase.apply(getWorld());
+        staleSignals.clear();
+        BlockPos missingSignal = currentPhase.apply(getWorld(), staleSignals);
         if (missingSignal != null && !isInFaultState()) {
           enterFaultState("Linked signal missing at " + missingSignal);
         }
@@ -907,7 +927,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             mode.getName() +
             " on controller at " +
             getPos());
+      } else if (!staleSignalsSeeded) {
+        // First tick since this tile entity loaded: the set of skipped heads was not saved.
+        currentPhase.apply(getWorld(), staleSignals);
+      } else if (!staleSignals.isEmpty()) {
+        refreshStaleSignals();
       }
+      staleSignalsSeeded = true;
     }
     // If an exception is caught, enter fault state
     catch (Exception e) {
@@ -2725,6 +2751,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     invalidateConfigValidation();
     lastPhaseChangeTime = -1;
     currentPhase = null;
+    staleSignals.clear();
     resumeOnPrimaryGreen = false;
     // Clear transient tracking state on reset (mode change, device link/unlink, etc.)
     wwvdsEntityDistances.clear();
@@ -3044,17 +3071,45 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @param emergency whether the running preempt is an emergency vehicle's
    */
   private void showPreemptIndicators(int circuit, boolean emergency) {
-    if ((circuit == litPreemptCircuit && emergency == litPreemptEmergency)
+    if ((circuit == litPreemptCircuit && emergency == litPreemptEmergency && !staleIndicators)
         || getWorld() == null || circuits == null) {
       return;
     }
     litPreemptCircuit = circuit;
     litPreemptEmergency = emergency;
+    // A beacon skipped as unloaded is written again on every tick until its chunk has loaded;
+    // the loaded ones cost nothing, since setControllerLit ignores an unchanged call.
+    staleIndicators = false;
     for (int i = 0; i < circuits.getCircuitCount(); i++) {
       for (BlockPos pos : circuits.getCircuit(i).getPreemptIndicators()) {
+        if (!getWorld().isBlockLoaded(pos)) {
+          staleIndicators = true;
+          continue;
+        }
         setIndicator(pos, i == circuit || (emergency && isLitForAnyEmergencyPreempt(pos)));
       }
     }
+  }
+
+  /**
+   * Writes the current phase to the signals it skipped as unloaded whose chunks have loaded
+   * since, so a head never shows an indication the controller is not running.
+   */
+  private void refreshStaleSignals() {
+    java.util.Set<BlockPos> loaded = null;
+    for (BlockPos pos : staleSignals) {
+      if (getWorld().isBlockLoaded(pos)) {
+        if (loaded == null) {
+          loaded = new java.util.HashSet<>();
+        }
+        loaded.add(pos);
+      }
+    }
+    if (loaded == null) {
+      return;
+    }
+    staleSignals.removeAll(loaded);
+    currentPhase.applyTo(getWorld(), loaded, null);
   }
 
   /** Whether the beacon at {@code pos} is a red, every-circuit one; false if unloaded. */

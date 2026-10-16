@@ -921,6 +921,45 @@ public class TrafficSignalPhase {
    * @since 1.0
    */
   public BlockPos apply(World world) {
+    return apply(world, null, null);
+  }
+
+  /**
+   * Applies this phase to the signals at the given positions only, skipping any that are not
+   * linked into this phase. Used to bring a head up to date when its chunk loads after the
+   * controller changed phase while it was unloaded.
+   *
+   * @param world     the world to apply the phase in
+   * @param positions the positions to write; every other signal is left alone
+   * @param skipped   receives each of {@code positions} that is still unloaded, or null
+   *
+   * @return the position of the first missing signal, or null
+   *
+   * @since 2026.10
+   */
+  public BlockPos applyTo(World world, java.util.Set<BlockPos> positions,
+      java.util.Collection<BlockPos> skipped) {
+    return apply(world, positions, skipped);
+  }
+
+  /**
+   * Applies this phase and records each signal it had to skip because its chunk is unloaded, so
+   * the controller can write that signal once its chunk loads rather than leave it showing
+   * whatever it showed when it was unloaded.
+   *
+   * @param world   the world to apply the phase in
+   * @param skipped receives every signal position skipped as unloaded
+   *
+   * @return the position of the first missing signal, or null
+   *
+   * @since 2026.10
+   */
+  public BlockPos apply(World world, java.util.Collection<BlockPos> skipped) {
+    return apply(world, null, skipped);
+  }
+
+  private BlockPos apply(World world, java.util.Set<BlockPos> only,
+      java.util.Collection<BlockPos> skipped) {
     BlockPos firstMissing = null;
     // Vehicle signals: a position may be in more than one list (bimodal FYA heads are linked
     // as both a flashing and a plain turn signal, so a phase hands them e.g. OFF + GREEN).
@@ -928,7 +967,13 @@ public class TrafficSignalPhase {
     Map<BlockPos, Integer> resolved = resolveVehicleSignalStates();
     for (Map.Entry<BlockPos, Integer> entry : resolved.entrySet()) {
       BlockPos pos = entry.getKey();
+      if (only != null && !only.contains(pos)) {
+        continue;
+      }
       if (!world.isBlockLoaded(pos)) {
+        if (skipped != null) {
+          skipped.add(pos);
+        }
         continue;
       }
       int indication = entry.getValue();
@@ -940,9 +985,9 @@ public class TrafficSignalPhase {
         firstMissing = pos;
       }
     }
-    firstMissing = applyColorToSignals(world, walkSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing);
-    firstMissing = applyColorToSignals(world, flashDontWalkSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW, firstMissing);
-    firstMissing = applyColorToSignals(world, dontWalkSignals, AbstractBlockControllableSignal.SIGNAL_RED, firstMissing);
+    firstMissing = applyColorToSignals(world, walkSignals, AbstractBlockControllableSignal.SIGNAL_GREEN, firstMissing, only, skipped);
+    firstMissing = applyColorToSignals(world, flashDontWalkSignals, AbstractBlockControllableSignal.SIGNAL_YELLOW, firstMissing, only, skipped);
+    firstMissing = applyColorToSignals(world, dontWalkSignals, AbstractBlockControllableSignal.SIGNAL_RED, firstMissing, only, skipped);
     return firstMissing;
   }
 
@@ -1083,9 +1128,16 @@ public class TrafficSignalPhase {
    * @since 1.0
    */
   private static BlockPos applyColorToSignals(World world, List<BlockPos> signals, int color,
-      BlockPos firstMissing) {
+      BlockPos firstMissing, java.util.Set<BlockPos> only,
+      java.util.Collection<BlockPos> skipped) {
     for (BlockPos pos : signals) {
+      if (only != null && !only.contains(pos)) {
+        continue;
+      }
       if (!world.isBlockLoaded(pos)) {
+        if (skipped != null) {
+          skipped.add(pos);
+        }
         continue;
       }
       if (!AbstractBlockControllableSignal.changeSignalColor(world, pos, color)
