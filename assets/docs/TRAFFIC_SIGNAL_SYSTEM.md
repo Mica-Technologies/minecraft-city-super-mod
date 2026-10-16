@@ -462,6 +462,23 @@ AbstractBlockControllableSignal.changeSignalColor(World, BlockPos, int color)
 
 This is synchronized to all clients automatically by Minecraft's block state system.
 
+### Heads in unloaded chunks
+
+A phase is written to the world only when it changes, and `TrafficSignalPhase.apply` skips every
+head whose chunk is not loaded (not a fault: it is out of range). A junction wider than a chunk or
+two, with the player at one corner, therefore has heads that miss a change. Before issue #288
+they kept whatever they showed when their chunk unloaded until the next change reached them,
+which after a reload could be a green the controller was no longer running.
+
+The controller now records the heads it skipped (`staleSignals`, filled by
+`apply(World, Collection)`) and, on every tick with no phase change, writes the current phase to
+the ones whose chunk has loaded since (`refreshStaleSignals`, through `applyTo`, which writes those
+positions only). The set is not saved, so on the first tick after the controller's own chunk loads
+it applies its saved phase once, which is a no-op for every head already showing it and records
+the unloaded ones. The preemption beacons are handled the same way: a beacon skipped as unloaded
+keeps the beacons being rewritten each tick until it has loaded (`staleIndicators`). The cost when
+nothing is stale is one `isEmpty()` a tick.
+
 ## Phase Transition Flow (Normal Mode)
 
 1. **Green Phase**: Vehicle signals green, pedestrian walk (if overlapped). Timer counts up.
