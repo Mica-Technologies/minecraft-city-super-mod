@@ -4556,10 +4556,13 @@ add("end_cap", "endcap",
 # A shop sells the real item a player puts in it: TileEntityShopRenderer draws that item on the
 # shelves and its price on a card, so each shop is a piece of this tab with its stock taken out
 # (bare shelves) and nothing else changed, and blends into the store. Where the renderer draws
-# (the Java ShopDisplay: rows of {x0, x1, y, z, size, count} and the label's {x, y, z}, facing
-# north in sixteenths) is worked out here from the very elements the shelves are drawn with and
-# printed into the tab line, so an item stands on a shelf rather than near one. Items in a row
-# are spaced a size apart or more: two flat items overlapping at one depth would fight.
+# (the Java ShopDisplay: rows of {x0, x1, y, z0, z1, size, count} and the label's {x, y, z},
+# facing north in sixteenths) is worked out here from the very elements the shelves are drawn
+# with and printed into the tab line, so an item stands on a shelf rather than near one. A row's
+# places split x0..x1 evenly; each place is a box, its place's width, z0..z1 deep (the shelf from
+# its front edge to the back, clear of the glass) and size tall, and the renderer fits whatever
+# item it draws inside that box by the item's own measured extent, so no item crosses a shelf,
+# the glass or the next item's place.
 SHOP_ITEM = 4.0  # an item's height on a shelf, px: four to a block-wide shelf
 DEFAULT_TEX["coil"] = MT("vend_coil")
 
@@ -4569,14 +4572,16 @@ def jf(v):
 
 
 def shop_display(rows, label):
-    """The tab line's ShopDisplay for rows of (x0, x1, y, z, size, count) and a label (x, y, z)."""
+    """The tab line's ShopDisplay for rows of (x0, x1, y, z0, z1, size, count) and a label
+    (x, y, z)."""
     return "new ShopDisplay(new float[][]{%s}, new float[]{%s})" % (
         ", ".join("{%s}" % ", ".join(jf(v) for v in row) for row in rows),
         ", ".join(jf(v) for v in label))
 
 
-def _mid_z(e):
-    return (e["from"][2] + e["to"][2]) / 2.0
+def _z_span(e):
+    """An element's depth, front to back: the room a shelf gives the items on it."""
+    return e["from"][2], e["to"][2]
 
 
 def _strip_label(strip, x=8.0):
@@ -4593,8 +4598,8 @@ def shop_shelving(peg, shelf, deck, top, end):
     parts = {"body": peg + shelf, "plinth": list(deck), "stacked": stacked, "top": top,
              "left": end, "right": mirror_x(end)}
     s = shelf[0]
-    rows = [(0, 16, s["to"][1], _mid_z(s), SHOP_ITEM, 4),
-            (0, 16, d["to"][1], _mid_z(d), SHOP_ITEM, 4)]
+    rows = [(0, 16, s["to"][1]) + _z_span(s) + (SHOP_ITEM, 4),
+            (0, 16, d["to"][1]) + _z_span(d) + (SHOP_ITEM, 4)]
     return parts, shop_display(rows, _strip_label(d_strip))
 
 
@@ -4626,7 +4631,10 @@ def wall_shelf():
             el([0, 0, z0 - 0.25], [0.5, t0 - 0.5, 14.75], "kick", ("west", "east", "north"))]
            + [el([0, t - 3, z0 + 0.5], [0.5, t - 0.5, 14.75], "shelf", ("west", "east", "north"))
               for t in WALL_SHELF_TOPS[1:]])
-    rows = [(0, 16, e["to"][1], _mid_z(e), SHOP_ITEM, 4) for e in shelves]
+    cap = body[2]
+    rows = [(0, 16, e["to"][1]) + _z_span(e) + (SHOP_ITEM, 4) for e in shelves]
+    # the top shelf's items stand up past the cap's underside: keep them in front of it
+    rows[-1] = rows[-1][:4] + (min(rows[-1][4], cap["from"][2]),) + rows[-1][5:]
     return body, end, shop_display(rows, _strip_label(strips[0]))
 
 
@@ -4644,8 +4652,8 @@ SHOP_CASE, SHOP_CASE_END, _ = service_case(9, SERVICE_SEGS, 11, SHOP_CASE_INSIDE
                                            SHOP_CASE_DECK)
 # the deck's items stand in front of the glass shelf's back edge, under it
 SHOP_CASE_DISPLAY = shop_display(
-    [(0, 16, SHOP_CASE_DECK, (3.2 + SHOP_CASE_GLASS_SHELF["to"][2]) / 2.0, 3.5, 4),
-     (0, 16, SHOP_CASE_GLASS_SHELF["to"][1], _mid_z(SHOP_CASE_GLASS_SHELF), 3.0, 4)],
+    [(0, 16, SHOP_CASE_DECK, 3.2, SHOP_CASE_GLASS_SHELF["to"][2], 3.5, 4),
+     (0, 16, SHOP_CASE_GLASS_SHELF["to"][1]) + _z_span(SHOP_CASE_GLASS_SHELF) + (3.0, 4)],
     _strip_label(SHOP_CASE_RAIL))
 
 
@@ -4660,7 +4668,7 @@ def shop_cooler():
     rail = strip_el(0.5, 15.5, 1.5, 2.75, 2.0, 2.25)
     body.append(rail)
     # the lowest row stands on the liner's floor; items as the stocked cooler's, front to back
-    rows = [(0.75, 15.25, y, (3.4 + 15.25) / 2.0, 3.5, 4) for y in REACH_IN_LEVELS]
+    rows = [(0.75, 15.25, y, 3.4, 15.25, 3.5, 4) for y in REACH_IN_LEVELS]
     return body, shop_display(rows, _strip_label(rail))
 
 
@@ -4675,7 +4683,7 @@ VEND_WINDOW = (1.25, 12.25, 8.0, 27.5)
 VEND_TRAYS = (8.5, 12.5, 16.5, 20.5, 24.5)
 VEND_COLUMNS = 4
 VEND_ITEM = 2.75
-VEND_ITEM_Z = 4.5
+VEND_ITEM_Z = (2.5, 6.5)  # the front of each tray behind the glass, round the coil's first turns
 
 
 def vending_machine():
@@ -4720,7 +4728,7 @@ def vending_machine():
             cx = x0 + pitch * (c + 0.5)
             out.append(el([cx, t, 3], [cx, t + 2.5, 13.25], "coil", ("east", "west"),
                           uv={"east": [0, 0, 16, 16], "west": [0, 0, 16, 16]}))
-    rows = [(x0, x1, t, VEND_ITEM_Z, VEND_ITEM, VEND_COLUMNS) for t in VEND_TRAYS]
+    rows = [(x0, x1, t) + VEND_ITEM_Z + (VEND_ITEM, VEND_COLUMNS) for t in VEND_TRAYS]
     return out, shop_display(rows, _strip_label(rail, (x0 + x1) / 2.0))
 
 

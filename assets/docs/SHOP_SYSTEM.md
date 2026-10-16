@@ -138,14 +138,25 @@ entity.
 ## The goods on the shelves (`TileEntityShopRenderer`)
 
 CSM's first in-world item renderer. Each block's `ShopDisplay` holds rows of places on its
-shelves (`{x0, x1, y, z, size, count}`, in sixteenths, model space facing north) and the price
-card's point. The numbers are printed into the tab line by the generator, from the same variables
-it draws the shelves with, so an item stands on a shelf rather than near one.
+shelves (`{x0, x1, y, z0, z1, size, count}`, in sixteenths, model space facing north) and the
+price card's point. The numbers are printed into the tab line by the generator, from the same
+variables it draws the shelves with, so an item stands on a shelf rather than near one. Each place
+is a box: its share of `x0..x1`, `z0..z1` deep (the shelf from its front edge to its back, clear
+of the glass) and `size` tall.
 
 - **How many places are filled:** one for every quarter stack held. Every place is filled when
   the stock is unlimited or the shop is decorative.
-- **How items are drawn:** with the `FIXED` transform, as an item frame draws them, scaled to the
-  row.
+- **How items are drawn:** with the `FIXED` transform, as an item frame draws them, each fitted
+  inside its place's box: one scale on every axis, the largest that keeps the item 0.15 px clear
+  of the box's sides, stood 0.1 px above the shelf and centred across and front to back. The fit
+  is by the box the item's own model fills under `FIXED` (`TileEntityShopRenderer.measure`, from
+  its quads; a built-in renderer such as a chest is taken as its block), measured once per change
+  of template and kept with the model on the tile entity.
+  - Why measure: `FIXED` draws a flat item a whole block tall, a block half a block, and a model
+    with display transforms of its own at any size. Scaling every item as if it were a block drew
+    flat items twice the size of their place, so neighbours overlapped one another, the shelves
+    and the cooler's glass, and the overlapping copies fought (issue #282).
+  - The gap matters as much as the fit: two items touching at one plane fight too.
 - **Cost:** the item's model is looked up once per change of template and kept on the tile
   entity. A plain item's whole shelf is then compiled into one display list (`CsmDisplayListCache`
   "shop goods"), keyed by the template stack and how many places are filled, and replayed every

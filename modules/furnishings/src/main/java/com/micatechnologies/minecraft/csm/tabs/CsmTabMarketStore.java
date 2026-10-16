@@ -147,22 +147,22 @@ public class CsmTabMarketStore extends CsmTab {
 
     // ---- Shops ----
     // Shop Gondola Shelf
-    initTabBlock(new BlockShopGondola("shop_gondola_shelf", new int[]{0, 0, 6, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 8F, 11F, 4F, 4F}, {0F, 16F, 2.5F, 10.875F, 4F, 4F}}, new float[]{8F, 2F, 6.2F})));
+    initTabBlock(new BlockShopGondola("shop_gondola_shelf", new int[]{0, 0, 6, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 8F, 7F, 15F, 4F, 4F}, {0F, 16F, 2.5F, 6.75F, 15F, 4F, 4F}}, new float[]{8F, 2F, 6.2F})));
 
     // Shop End Cap Display
-    initTabBlock(new BlockShopGondola("shop_end_cap", new int[]{0, 0, 2, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 8F, 8.875F, 4F, 4F}, {0F, 16F, 2.5F, 8.75F, 4F, 4F}}, new float[]{8F, 2F, 2.2F})));
+    initTabBlock(new BlockShopGondola("shop_end_cap", new int[]{0, 0, 2, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 8F, 3F, 14.75F, 4F, 4F}, {0F, 16F, 2.5F, 2.75F, 14.75F, 4F, 4F}}, new float[]{8F, 2F, 2.2F})));
 
     // Shop Wall Shelf
-    initTabBlock(new BlockShopWallShelf("shop_wall_shelf", new int[]{0, 0, 8, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 2.5F, 12.125F, 4F, 4F}, {0F, 16F, 7.75F, 12.125F, 4F, 4F}, {0F, 16F, 13F, 12.125F, 4F, 4F}}, new float[]{8F, 2F, 8.45F})));
+    initTabBlock(new BlockShopWallShelf("shop_wall_shelf", new int[]{0, 0, 8, 16, 16, 16}, new ShopDisplay(new float[][]{{0F, 16F, 2.5F, 9F, 15.25F, 4F, 4F}, {0F, 16F, 7.75F, 9F, 15.25F, 4F, 4F}, {0F, 16F, 13F, 9F, 14.5F, 4F, 4F}}, new float[]{8F, 2F, 8.45F})));
 
     // Shop Display Case
-    initTabBlock(new BlockShopDisplayCase("shop_display_case", new int[]{0, 0, 2, 16, 19, 16}, "service_case", new ShopDisplay(new float[][]{{0F, 16F, 8.4F, 7.6F, 3.5F, 4F}, {0F, 16F, 13F, 9.25F, 3F, 4F}}, new float[]{8F, 7.875F, 2.2F})));
+    initTabBlock(new BlockShopDisplayCase("shop_display_case", new int[]{0, 0, 2, 16, 19, 16}, "service_case", new ShopDisplay(new float[][]{{0F, 16F, 8.4F, 3.2F, 12F, 3.5F, 4F}, {0F, 16F, 13F, 6.5F, 12F, 3F, 4F}}, new float[]{8F, 7.875F, 2.2F})));
 
     // Shop Cooler
-    initTabBlock(new BlockShopCooler("shop_cooler", new int[]{0, 0, 2, 16, 32, 16}, new ShopDisplay(new float[][]{{0.75F, 15.25F, 3F, 9.325F, 3.5F, 4F}, {0.75F, 15.25F, 9.5F, 9.325F, 3.5F, 4F}, {0.75F, 15.25F, 16F, 9.325F, 3.5F, 4F}, {0.75F, 15.25F, 22.5F, 9.325F, 3.5F, 4F}}, new float[]{8F, 2.125F, 1.95F})));
+    initTabBlock(new BlockShopCooler("shop_cooler", new int[]{0, 0, 2, 16, 32, 16}, new ShopDisplay(new float[][]{{0.75F, 15.25F, 3F, 3.4F, 15.25F, 3.5F, 4F}, {0.75F, 15.25F, 9.5F, 3.4F, 15.25F, 3.5F, 4F}, {0.75F, 15.25F, 16F, 3.4F, 15.25F, 3.5F, 4F}, {0.75F, 15.25F, 22.5F, 3.4F, 15.25F, 3.5F, 4F}}, new float[]{8F, 2.125F, 1.95F})));
 
     // Vending Machine
-    initTabBlock(new BlockShopVendingMachine("shop_vending_machine", new int[]{0, 0, 0, 16, 30, 16}, new ShopDisplay(new float[][]{{1.25F, 12.25F, 8.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 12.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 16.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 20.5F, 4.5F, 2.75F, 4F}, {1.25F, 12.25F, 24.5F, 4.5F, 2.75F, 4F}}, new float[]{6.75F, 7.5F, 1.2F})));
+    initTabBlock(new BlockShopVendingMachine("shop_vending_machine", new int[]{0, 0, 0, 16, 30, 16}, new ShopDisplay(new float[][]{{1.25F, 12.25F, 8.5F, 2.5F, 6.5F, 2.75F, 4F}, {1.25F, 12.25F, 12.5F, 2.5F, 6.5F, 2.75F, 4F}, {1.25F, 12.25F, 16.5F, 2.5F, 6.5F, 2.75F, 4F}, {1.25F, 12.25F, 20.5F, 2.5F, 6.5F, 2.75F, 4F}, {1.25F, 12.25F, 24.5F, 2.5F, 6.5F, 2.75F, 4F}}, new float[]{6.75F, 7.5F, 1.2F})));
 
     // ---- Merchandising ----
     // Pallet Stack
