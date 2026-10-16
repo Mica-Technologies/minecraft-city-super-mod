@@ -106,12 +106,15 @@ public class TileEntityShop extends TileEntityDisplayCase {
 
   /**
    * The renderer's cache: the template's item model (an {@code IBakedModel}, typed loosely so
-   * the server never names a client class) and the stack it was looked up for.
+   * the server never names a client class), the stack it was looked up for, and the box the
+   * model fills once it is placed as an item frame places it ({min x, y, z, max x, y, z}, blocks).
    */
   @Nullable
   transient Object clientModel;
   @Nullable
   transient ItemStack clientModelFor;
+  @Nullable
+  transient float[] clientModelExtent;
 
   /** Set while loading, when a change of template is not news to anyone. */
   private transient boolean reading;
