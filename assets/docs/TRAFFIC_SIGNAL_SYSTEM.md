@@ -23,7 +23,7 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
           │              │                          │
     ┌─────┴─────┐  ┌────┴─────┐             ┌─────┴──────┐
     │  Circuits  │  │  Phases  │             │  Overlaps  │
-    │  (1-16)   │  │  (cached)│             │            │
+    │  (1..n)   │  │  (cached)│             │            │
     └─────┬─────┘  └──────────┘             └────────────┘
           │
     ┌─────┴──────────────────────────────────────┐
@@ -58,11 +58,12 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 ### Circuits and Phases
 
 - **`TrafficSignalControllerCircuit`** -- Groups linked devices for one direction/movement.
-  Up to 16 circuits per controller. Maintains separate device lists: `throughSignals`,
+  As many circuits per controller as are linked (no fixed cap; see "How Large a Junction
+  Can Be"). Maintains separate device lists: `throughSignals`,
   `leftSignals`, `rightSignals`, `protectedSignals`, `flashingLeftSignals`,
   `flashingRightSignals`, `pedestrianSignals`, `pedestrianBeaconSignals`,
   `pedestrianAccessorySignals`, `sensorList`.
-- **`TrafficSignalControllerCircuits`** -- Container for all 16 circuits.
+- **`TrafficSignalControllerCircuits`** -- Container for all of a controller's circuits.
 - **`TrafficSignalPhase`** -- Immutable phase definition with 8 signal state lists: `offSignals`,
   `fyaSignals` (flashing yellow arrow), `greenSignals`, `yellowSignals`, `redSignals`,
   `walkSignals`, `flashDontWalkSignals`, `dontWalkSignals`. Has `apply(World)` to set all
@@ -451,6 +452,33 @@ it puts in a phase.
 - `AbstractBlockControllableSignal.getSignalSide(World, BlockPos)` determines which list
   the device belongs to based on the block type
 - `unlinkDevice(BlockPos)` removes from all circuits
+
+### How large a junction can be
+
+There is **no link range and no device limit**, at any level (issue #286):
+
+- **Distance.** The Signal Link Tool remembers the controller's position per player and looks
+  its tile entity up wherever the player is; nothing compares the device's distance to the
+  controller. A controller in one corner of a 109 x 40 junction links its farthest head, about
+  105 blocks away, exactly like its nearest.
+- **Count.** A circuit's device lists are plain lists, a controller's circuits are a plain list
+  (the link tool's sneak-click on the controller steps to circuit *n* + 1 and creates it on the
+  first link), and nothing caps either. ADVANCED mode still has eight NEMA phases, each mapped to
+  one circuit and movement, plus overlaps; more circuits than phases are useful for heads that
+  only follow an overlap or for detection.
+- **Saved size.** A circuit's NBT (`tcCrc`) grows by one position per device. Three to four
+  thousand characters for ~90 devices is far inside what a tile entity or its update packet
+  carries, so a relay or sub-panel block is not needed.
+
+What does bound a large junction is **chunk loading**, not linking:
+
+- The controller runs only while its own chunk is loaded and ticking (a player within simulation
+  distance, or spawn chunks). Put it where the junction's users are, not off at a far corner
+  beyond them.
+- A **sensor** whose chunk is unloaded reports nothing (`getSensorsWaitingSummary` skips it rather
+  than load the chunk), so an approach whose detection is out of range is simply not called.
+- A **head** whose chunk is unloaded misses phase changes; since #288 the controller writes the
+  current phase to it as soon as its chunk loads (see "Heads in unloaded chunks" below).
 
 ## Signal Color Changes
 
