@@ -2284,37 +2284,37 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
             toggleInArray(plan.getCoordination(slot).getCoordinatedPhases(), (int) value));
         break;
       case "pri.enabled":
-        plan.getPriority().setEnabled(value != 0);
+        plan.getPriority(index).setEnabled(value != 0);
         break;
       case "pri.circuit":
-        plan.getPriority().setTriggerCircuitIndex((int) value);
+        plan.getPriority(index).setTriggerCircuitIndex((int) value);
         break;
       case "pri.movement": {
         TrafficSignalPhaseMovement[] movements = TrafficSignalPhaseMovement.values();
         int ordinal = (int) value;
-        plan.getPriority().setTriggerMovement(
+        plan.getPriority(index).setTriggerMovement(
             ordinal >= 0 && ordinal < movements.length ? movements[ordinal] : null);
-        plan.getPriority().setTriggerOnDetectors(false);
+        plan.getPriority(index).setTriggerOnDetectors(false);
         break;
       }
       case "pri.phase":
-        plan.getPriority().setTransitPhase((int) value);
+        plan.getPriority(index).setTransitPhase((int) value);
         break;
       case "pri.extension":
-        plan.getPriority().setMaxExtension(clampTicks(value));
+        plan.getPriority(index).setMaxExtension(clampTicks(value));
         break;
       case "pri.earlyReturn":
-        plan.getPriority().setMaxEarlyReturn(clampTicks(value));
+        plan.getPriority(index).setMaxEarlyReturn(clampTicks(value));
         break;
       case "pri.minCycles":
-        plan.getPriority().setMinCyclesBetweenGrants((int) value);
+        plan.getPriority(index).setMinCyclesBetweenGrants((int) value);
         break;
       case "pri.detectors":
         // The trigger circuit's preempt detectors, seeing a bus, call priority instead of its zone.
-        plan.getPriority().setTriggerOnDetectors(value != 0);
+        plan.getPriority(index).setTriggerOnDetectors(value != 0);
         break;
       case "pri.queueJump":
-        plan.getPriority().setQueueJump(value);
+        plan.getPriority(index).setQueueJump(value);
         break;
       case "co.todEnabled":
         plan.setTimeOfDayPatterns(value != 0);

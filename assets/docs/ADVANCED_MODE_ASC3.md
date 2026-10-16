@@ -686,6 +686,28 @@ any phase is timed. `applyPriorityToMaxGreen` then adjusts one phase's ceiling, 
 - a phase that conflicts with nothing is left alone — shortening it would rob a movement that was
   never in the way.
 
+### More than one plan
+
+A controller holds up to four priority plans (`TrafficSignalProgrammedPhasePlan.getPriorities()`,
+`MAX_PRIORITY_PLANS`), one per bus movement: on a corridor with buses both ways, the southbound
+bus following phase 2 and the northbound following phase 6 each get their own trigger, transit
+phase, bounds and rate limit (issue #287). Before this one plan meant one transit phase, so both
+directions' detectors had to share a circuit and both buses called the same phase, which worked
+only where the two bus phases happened to run together.
+
+The engine keeps each plan's call, grant, extension budget and last grant cycle in arrays indexed
+by plan. Where grants overlap, a phase any grant is extending stays extended; a phase no grant
+extends is shortened toward its minimum by the largest early return of the grants it conflicts
+with; a phase that two grants want to queue jump takes the longer jump.
+
+NBT: one plan is still written as the single `pri` compound, so a world saved with one plan reads
+in an older version unchanged; several are a list of those compounds under the same key, which
+is also what a hand-written `pri:[{tc:7,ph:2,...},{tc:8,ph:6,...}]` gives. Trailing plans left at
+their defaults (the panel creates one when it pages to it) are not written. The TSP screen's
+**PLAN** cell pages through the four, and every `pri.*` action's index is the plan's.
+`MultiplePriorityPlansTest` serves two buses on phases on different barriers, which one plan
+cannot.
+
 ### Detector calls (DET)
 
 The preempt detector (`TRAFFIC_SIGNAL_SYSTEM.md`, "The preempt detector") tells an emergency
@@ -758,9 +780,9 @@ precedence mechanism was invented for it.
 ### GUI
 
 Its own **TSP** screen, not a block on the PREEMPT page: the preempt table already fills the LCD
-and a block hanging off the bottom of it ran into the keypad. Seven cells — enable, trigger circuit
-and movement (the movements, then DET), transit phase, extension and early return, minimum cycles
-and the queue jump.
+and a block hanging off the bottom of it ran into the keypad. The PLAN selector, then seven cells
+for the selected plan — enable, trigger circuit and movement (the movements, then DET), transit
+phase, extension and early return, minimum cycles and the queue jump.
 
 ### Tests
 

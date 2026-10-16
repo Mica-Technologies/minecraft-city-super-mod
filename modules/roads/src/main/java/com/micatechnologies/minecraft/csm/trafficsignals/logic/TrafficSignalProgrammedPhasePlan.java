@@ -65,7 +65,11 @@ public class TrafficSignalProgrammedPhasePlan {
       new TrafficSignalCoordinationPlan[TrafficTimeOfDaySchedule.SLOT_COUNT];
   private final TrafficTimeOfDaySchedule coordinationSchedule = new TrafficTimeOfDaySchedule();
   private boolean timeOfDayPatterns = false;
-  private TrafficSignalPriorityPlan priority = new TrafficSignalPriorityPlan();
+  /**
+   * The transit priority plans, one per bus movement served (one per direction on a corridor
+   * with buses both ways). Never empty: entry 0 is the plan a controller has always had.
+   */
+  private final List<TrafficSignalPriorityPlan> priorities = new ArrayList<>();
   private final List<TrafficSignalPreempt> preempts;
   private final List<TrafficSignalProgrammedOverlap> vehicleOverlaps;
 
@@ -214,9 +218,37 @@ public class TrafficSignalProgrammedPhasePlan {
     return null;
   }
 
-  /** Transit signal priority: green extension and early return, distinct from a preempt. */
+  /** The most transit priority plans a controller holds. */
+  public static final int MAX_PRIORITY_PLANS = 4;
+
+  /**
+   * Transit signal priority: green extension and early return, distinct from a preempt. The
+   * first plan; see {@link #getPriority(int)} for the others.
+   */
   public TrafficSignalPriorityPlan getPriority() {
-    return priority;
+    return getPriority(0);
+  }
+
+  /**
+   * One transit priority plan, created (disabled) if it does not exist yet.
+   *
+   * @param index the plan, clamped to 0..{@link #MAX_PRIORITY_PLANS} - 1, because it arrives from
+   *              configuration packets
+   *
+   * @return that plan
+   */
+  public TrafficSignalPriorityPlan getPriority(int index) {
+    int i = Math.max(0, Math.min(MAX_PRIORITY_PLANS - 1, index));
+    while (priorities.size() <= i) {
+      priorities.add(new TrafficSignalPriorityPlan());
+    }
+    return priorities.get(i);
+  }
+
+  /** Every transit priority plan, in order; at least one. */
+  public List<TrafficSignalPriorityPlan> getPriorities() {
+    getPriority(0);
+    return priorities;
   }
 
   /** The time-of-day table that chooses between the patterns. */
@@ -541,7 +573,22 @@ public class TrafficSignalProgrammedPhasePlan {
     c.setTag(K_PATTERNS, patternList);
     c.setTag(K_SCHEDULE, coordinationSchedule.writeNBT(new NBTTagCompound()));
     c.setBoolean(K_PATTERNS_ENABLED, timeOfDayPatterns);
-    c.setTag(K_PRIORITY, priority.toNBT());
+    // One plan is written as the single compound it always was, so a world saved here still
+    // reads in an older version; several are a list under the same key.
+    List<TrafficSignalPriorityPlan> plans = getPriorities();
+    int last = plans.size() - 1;
+    while (last > 0 && plans.get(last).isDefault()) {
+      last--;   // trailing plans the panel created but nobody set up
+    }
+    if (last == 0) {
+      c.setTag(K_PRIORITY, plans.get(0).toNBT());
+    } else {
+      NBTTagList priorityList = new NBTTagList();
+      for (int i = 0; i <= last; i++) {
+        priorityList.appendTag(plans.get(i).toNBT());
+      }
+      c.setTag(K_PRIORITY, priorityList);
+    }
     return c;
   }
 
@@ -589,8 +636,13 @@ public class TrafficSignalProgrammedPhasePlan {
       plan.coordinationSchedule.readNBT(c.getCompoundTag(K_SCHEDULE));
     }
     plan.timeOfDayPatterns = c.getBoolean(K_PATTERNS_ENABLED);
-    if (c.hasKey(K_PRIORITY)) {
-      plan.priority = TrafficSignalPriorityPlan.fromNBT(c.getCompoundTag(K_PRIORITY));
+    if (c.hasKey(K_PRIORITY, 10)) {
+      plan.priorities.add(TrafficSignalPriorityPlan.fromNBT(c.getCompoundTag(K_PRIORITY)));
+    } else if (c.hasKey(K_PRIORITY, 9)) {
+      NBTTagList priorityList = c.getTagList(K_PRIORITY, 10);
+      for (int i = 0; i < priorityList.tagCount() && i < MAX_PRIORITY_PLANS; i++) {
+        plan.priorities.add(TrafficSignalPriorityPlan.fromNBT(priorityList.getCompoundTagAt(i)));
+      }
     }
     return plan;
   }

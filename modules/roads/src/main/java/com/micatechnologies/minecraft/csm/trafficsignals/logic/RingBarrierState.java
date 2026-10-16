@@ -186,11 +186,12 @@ public class RingBarrierState {
   private boolean startOnRestPhases = false;
   private TrafficSignalPhase lastApplied = null;
 
-  /** The phase a granted transit call would queue jump this tick, or 0 for none. */
-  private int queueJumpPhase = 0;
-
-  /** How long that queue jump runs, in ticks. */
-  private long queueJumpTicks = 0L;
+  /**
+   * How long a granted transit call would queue jump each phase this tick, in ticks (0: none),
+   * indexed by phase number. More than one priority plan can hold a grant at once.
+   */
+  private final long[] queueJumpTicksByPhase =
+      new long[TrafficSignalProgrammedPhasePlan.PHASE_COUNT + 1];
 
   /**
    * Output-stage clearance holds: heads the enforcer is currently holding in solid yellow, keyed
@@ -313,14 +314,26 @@ public class RingBarrierState {
 
   // Transit signal priority. Transient like the rest: a grant is a live thing, and a controller
   // that came back from a reload still holding one would be favouring a bus that has long gone.
-  /** Whether a transit call is being honoured this tick. */
-  private boolean priorityGranted = false;
-  /** How much of the extension budget is left in the current grant. */
-  private long priorityExtensionLeft = 0L;
-  /** The cycle a grant was last made in, so the rate limit has something to count from. */
-  private long priorityLastGrantCycle = -1L;
-  /** Whether a transit call was standing last tick, so one call is one grant. */
-  private boolean priorityCallWasActive = false;
+  // One entry per priority plan (TrafficSignalProgrammedPhasePlan.getPriorities()), so each bus
+  // movement has its own call, grant, budget and rate limit.
+  /** Whether each plan's transit call is being honoured this tick. */
+  private final boolean[] priorityGranted =
+      new boolean[TrafficSignalProgrammedPhasePlan.MAX_PRIORITY_PLANS];
+  /** How much of each plan's extension budget is left in its current grant. */
+  private final long[] priorityExtensionLeft =
+      new long[TrafficSignalProgrammedPhasePlan.MAX_PRIORITY_PLANS];
+  /** The cycle each plan last granted in, so the rate limit has something to count from. */
+  private final long[] priorityLastGrantCycle =
+      filled(TrafficSignalProgrammedPhasePlan.MAX_PRIORITY_PLANS, -1L);
+  /** Whether each plan's transit call was standing last tick, so one call is one grant. */
+  private final boolean[] priorityCallWasActive =
+      new boolean[TrafficSignalProgrammedPhasePlan.MAX_PRIORITY_PLANS];
+
+  private static long[] filled(int length, long value) {
+    long[] a = new long[length];
+    java.util.Arrays.fill(a, value);
+    return a;
+  }
 
   /**
    * Source of per-tick detector and pedestrian demand. Production wraps the world; unit tests
@@ -819,7 +832,7 @@ public class RingBarrierState {
       return false;
     }
     TrafficSignalProgrammedPhase next = plan.getPhase(includedPhase);
-    if (next != null && queueJumpTicks > 0L && includedPhase == queueJumpPhase) {
+    if (next != null && queueJumpFor(includedPhase) > 0L) {
       return false; // it will open with a queue jump, which the overlap does not lead into
     }
     long vehicleGreen = clearEnd + (next == null ? 0L : startDelay(next, pedServiceAtStart(next)))
@@ -1363,7 +1376,7 @@ public class RingBarrierState {
     ring.pedServing = ped;
     ring.pedStart = now;
     long delay = startDelay(phase, ped);
-    ring.queueJump = queueJumpTicks > 0L && phase.getPhaseNumber() == queueJumpPhase;
+    ring.queueJump = queueJumpFor(phase.getPhaseNumber()) > 0L;
     ring.delayActive = delay > 0L;
     ring.delayLength = delay;
     ring.delayStart = now;
@@ -1722,12 +1735,19 @@ public class RingBarrierState {
    * anything to a coordinated corridor.</p>
    */
   private void computePriority(TrafficSignalProgrammedPhasePlan plan, long now) {
-    TrafficSignalPriorityPlan priority = plan.getPriority();
-    queueJumpPhase = 0;
-    queueJumpTicks = 0L;
-    if (!priority.isRunnable()) {
-      priorityGranted = false;
-      priorityCallWasActive = false;
+    java.util.Arrays.fill(queueJumpTicksByPhase, 0L);
+    List<TrafficSignalPriorityPlan> plans = plan.getPriorities();
+    for (int i = 0; i < priorityGranted.length; i++) {
+      computePriority(i, i < plans.size() ? plans.get(i) : null, plan, now);
+    }
+  }
+
+  /** {@link #computePriority(TrafficSignalProgrammedPhasePlan, long)} for one plan. */
+  private void computePriority(int i, TrafficSignalPriorityPlan priority,
+      TrafficSignalProgrammedPhasePlan plan, long now) {
+    if (priority == null || !priority.isRunnable()) {
+      priorityGranted[i] = false;
+      priorityCallWasActive[i] = false;
       return;
     }
     boolean call;
@@ -1742,31 +1762,38 @@ public class RingBarrierState {
     if (!call) {
       // The call dropping is what ends a grant and refills the budget: without that a route
       // with continuous demand would be granted priority forever on one call.
-      priorityGranted = false;
-      priorityCallWasActive = false;
+      priorityGranted[i] = false;
+      priorityCallWasActive[i] = false;
       return;
     }
-    if (!priorityCallWasActive) {
+    if (!priorityCallWasActive[i]) {
       // A fresh call. Grant it only if the rate limit allows, and start a new budget.
-      priorityCallWasActive = true;
-      if (priority.mayGrant(cycle, priorityLastGrantCycle)) {
-        priorityGranted = true;
-        priorityExtensionLeft = priority.getMaxExtension();
-        priorityLastGrantCycle = cycle;
+      priorityCallWasActive[i] = true;
+      if (priority.mayGrant(cycle, priorityLastGrantCycle[i])) {
+        priorityGranted[i] = true;
+        priorityExtensionLeft[i] = priority.getMaxExtension();
+        priorityLastGrantCycle[i] = cycle;
       } else {
-        priorityGranted = false;
+        priorityGranted[i] = false;
       }
     }
-    if (priorityGranted && priorityExtensionLeft > 0L) {
-      priorityExtensionLeft--;
+    if (priorityGranted[i] && priorityExtensionLeft[i] > 0L) {
+      priorityExtensionLeft[i]--;
     }
-    if (priorityGranted && priority.getQueueJump() > 0L
-        && hasQueueJumpHeads(plan.getPhase(priority.getTransitPhase()))) {
+    int transit = priority.getTransitPhase();
+    if (priorityGranted[i] && priority.getQueueJump() > 0L
+        && hasQueueJumpHeads(plan.getPhase(transit))) {
       // Only a phase that starts its green while this holds runs the jump (startGreen): a bus
       // arriving on a green already running has nothing to jump.
-      queueJumpPhase = priority.getTransitPhase();
-      queueJumpTicks = priority.getQueueJump();
+      queueJumpTicksByPhase[transit] =
+          Math.max(queueJumpTicksByPhase[transit], priority.getQueueJump());
     }
+  }
+
+  /** How long a granted transit call queue jumps {@code phaseNumber} this tick, or 0. */
+  private long queueJumpFor(int phaseNumber) {
+    return phaseNumber >= 1 && phaseNumber < queueJumpTicksByPhase.length
+        ? queueJumpTicksByPhase[phaseNumber] : 0L;
   }
 
   /**
@@ -1779,7 +1806,13 @@ public class RingBarrierState {
    */
   private boolean transitCall(TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalProgrammedPhase phase) {
-    return priorityCallWasActive && phase.getPhaseNumber() == plan.getPriority().getTransitPhase();
+    List<TrafficSignalPriorityPlan> plans = plan.getPriorities();
+    for (int i = 0; i < plans.size() && i < priorityCallWasActive.length; i++) {
+      if (priorityCallWasActive[i] && phase.getPhaseNumber() == plans.get(i).getTransitPhase()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /** Whether the circuit {@code phase} drives has queue jump heads to light. Without them a
@@ -1802,16 +1835,32 @@ public class RingBarrierState {
    */
   private long applyPriorityToMaxGreen(TrafficSignalProgrammedPhasePlan plan, int phaseNum,
       TrafficSignalProgrammedPhase phase, int ringNum, long effMaxGreen, long effMinGreen) {
-    if (!priorityGranted) {
-      return effMaxGreen;
+    // With several grants at once a phase that one of them is extending stays extended; only a
+    // phase no grant is extending is shortened, by the most any grant it conflicts with allows.
+    List<TrafficSignalPriorityPlan> plans = plan.getPriorities();
+    long extended = -1L;
+    long returned = -1L;
+    for (int i = 0; i < plans.size() && i < priorityGranted.length; i++) {
+      if (!priorityGranted[i]) {
+        continue;
+      }
+      TrafficSignalPriorityPlan priority = plans.get(i);
+      int transit = priority.getTransitPhase();
+      if (phaseNum == transit) {
+        extended = Math.max(extended, priority.adjustMaxGreen(effMaxGreen, effMinGreen, true,
+            false, priorityExtensionLeft[i]));
+      } else if (conflicts(phase, ringNum, plan, transit)) {
+        long r = priority.adjustMaxGreen(effMaxGreen, effMinGreen, false, true,
+            priorityExtensionLeft[i]);
+        returned = returned < 0L ? r : Math.min(returned, r);
+      }
     }
-    TrafficSignalPriorityPlan priority = plan.getPriority();
-    int transit = priority.getTransitPhase();
-    boolean isTransit = phaseNum == transit;
-    boolean conflictsWithTransit = !isTransit && conflicts(phase, ringNum, plan, transit);
-    return priority.adjustMaxGreen(effMaxGreen, effMinGreen, isTransit, conflictsWithTransit,
-        priorityExtensionLeft);
+    if (extended >= 0L) {
+      return extended;
+    }
+    return returned >= 0L ? returned : effMaxGreen;
   }
+
 
   /**
    * Decides which coordination pattern runs next.
@@ -2557,8 +2606,8 @@ public class RingBarrierState {
    */
   private long startDelay(TrafficSignalProgrammedPhase phase, boolean ped) {
     long delay = ped ? phase.getDelayedGreen() : 0L;
-    if (queueJumpTicks > 0L && phase.getPhaseNumber() == queueJumpPhase) {
-      delay = Math.max(delay, queueJumpTicks);
+    if (queueJumpFor(phase.getPhaseNumber()) > 0L) {
+      delay = Math.max(delay, queueJumpFor(phase.getPhaseNumber()));
     }
     return delay;
   }
