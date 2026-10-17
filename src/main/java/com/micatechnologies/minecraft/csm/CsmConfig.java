@@ -155,6 +155,27 @@ public class CsmConfig {
   private static final String FIELD_DEFAULT_CHAINSAW_BRUSH_PILES = "FEW";
   private static final String[] FIELD_VALUES_CHAINSAW_BRUSH_PILES = {"NONE", "FEW", "MANY"};
 
+  private static final String CATEGORY_HVAC = "hvac";
+  private static final String CATEGORY_HVAC_DESCRIPTION =
+      "The HVAC module's thermal simulation (csm_hvac), on the server. The full simulation finds "
+          + "every room an HVAC device is in and moves its temperature once a second, which on a "
+          + "large server with thousands of devices costs several milliseconds a tick. "
+          + "Lightweight mode simulates nothing: a thermostat, and the HUD of a player indoors "
+          + "near HVAC, read the thermostat's setpoint, and linked units run at a steady part "
+          + "load.";
+  private static final String FIELD_KEY_HVAC_LIGHTWEIGHT_MODE = "lightweightMode";
+  private static final String FIELD_DESCRIPTION_HVAC_LIGHTWEIGHT_MODE =
+      "OFF (always the full simulation), ON (always lightweight), or AUTO (lightweight while "
+          + "more HVAC devices are loaded than lightweightAutoDevices, the full simulation again "
+          + "once fewer than three quarters of that number have been loaded for five minutes). "
+          + "Applies on /csm reloadconfig without a restart.";
+  private static final String FIELD_DEFAULT_HVAC_LIGHTWEIGHT_MODE = "AUTO";
+  private static final String[] FIELD_VALUES_HVAC_LIGHTWEIGHT_MODE = {"OFF", "ON", "AUTO"};
+  private static final int FIELD_DEFAULT_HVAC_LIGHTWEIGHT_AUTO_DEVICES = 2000;
+
+  private static String hvacLightweightMode = FIELD_DEFAULT_HVAC_LIGHTWEIGHT_MODE;
+  private static int hvacLightweightAutoDevices = FIELD_DEFAULT_HVAC_LIGHTWEIGHT_AUTO_DEVICES;
+
   private static final String CATEGORY_PERFORMANCE = "performance";
   private static final String CATEGORY_PERFORMANCE_DESCRIPTION =
       "Client memory. Minecraft builds chunk meshes with a pool of builders in direct (off-heap) "
@@ -401,6 +422,16 @@ public class CsmConfig {
     chainsawBrushPiles = config.getString(FIELD_KEY_CHAINSAW_BRUSH_PILES, CATEGORY_PARKS,
         FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
         FIELD_VALUES_CHAINSAW_BRUSH_PILES);
+    config.setCategoryComment(CATEGORY_HVAC, CATEGORY_HVAC_DESCRIPTION);
+    hvacLightweightMode = config.getString(FIELD_KEY_HVAC_LIGHTWEIGHT_MODE, CATEGORY_HVAC,
+        FIELD_DEFAULT_HVAC_LIGHTWEIGHT_MODE, FIELD_DESCRIPTION_HVAC_LIGHTWEIGHT_MODE,
+        FIELD_VALUES_HVAC_LIGHTWEIGHT_MODE);
+    hvacLightweightAutoDevices = config.getInt("lightweightAutoDevices", CATEGORY_HVAC,
+        FIELD_DEFAULT_HVAC_LIGHTWEIGHT_AUTO_DEVICES, 1, 1000000,
+        "With lightweightMode AUTO: how many loaded HVAC devices (thermostats, heaters, coolers "
+            + "and linked vents, in one dimension) switch the simulation to lightweight. A "
+            + "289-room test city of 1,900 devices cost about 0.2 ms a tick in full; a server "
+            + "district of 11,000 devices cost 2-15 ms a tick.");
     config.setCategoryComment(CATEGORY_PERFORMANCE, CATEGORY_PERFORMANCE_DESCRIPTION);
     performanceMode = config.getString(FIELD_KEY_PERFORMANCE_MODE, CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_PERFORMANCE_MODE, FIELD_DESCRIPTION_PERFORMANCE_MODE,
@@ -533,6 +564,34 @@ public class CsmConfig {
       }
     }
     return FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
+  }
+
+  /**
+   * The HVAC lightweight mode: {@code OFF}, {@code ON} or {@code AUTO}, upper case. Read by the
+   * HVAC module's simulation once a second.
+   *
+   * @return the setting, {@code AUTO} if it is not one of the three
+   *
+   * @since 2026.10
+   */
+  public static String getHvacLightweightMode() {
+    String v = hvacLightweightMode == null ? "" : hvacLightweightMode.trim().toUpperCase();
+    for (String allowed : FIELD_VALUES_HVAC_LIGHTWEIGHT_MODE) {
+      if (allowed.equals(v)) {
+        return v;
+      }
+    }
+    return FIELD_DEFAULT_HVAC_LIGHTWEIGHT_MODE;
+  }
+
+  /**
+   * With the HVAC lightweight mode on {@code AUTO}, the number of loaded HVAC devices in a
+   * dimension at which its simulation becomes lightweight.
+   *
+   * @since 2026.10
+   */
+  public static int getHvacLightweightAutoDevices() {
+    return hvacLightweightAutoDevices;
   }
 
   /**

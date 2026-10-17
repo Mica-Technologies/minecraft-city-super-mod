@@ -58,6 +58,46 @@ that is gone; see git history before 2026-09-23 for the old design.
 No tile entity ticks. All control and physics runs in `HvacThermalWorld.tick()`, from the world
 tick, once every 20 ticks.
 
+## Lightweight mode
+
+A server can run HVAC without simulating any room (`hvac` category of `csm.cfg`):
+
+| Key | Values | Default |
+|---|---|---|
+| `lightweightMode` | `OFF` (always simulate), `ON` (never), `AUTO` | `AUTO` |
+| `lightweightAutoDevices` | loaded devices in a dimension at which `AUTO` goes lightweight | 2000 |
+
+While lightweight, nothing is flooded, stepped or coupled, and the block listener returns at once.
+Anchors stay registered, a map entry each, so the devices are still read and controlled once a
+second by `HvacSystemControl.runLightweight`:
+
+- A thermostat reads what it is set to hold: the middle of its range on Auto, the low setpoint on
+  Heat, the high on Cool, the outdoor temperature when it or its primary is off. Its flags carry
+  `FLAG_LIGHTWEIGHT`, and the screen says "Holding setpoint" and "Simplified HVAC (server
+  setting)".
+- A system's powered units of the kind the outdoor temperature calls for (heaters below the
+  primary's heat target, coolers above its cool target) run at a steady 30%. Standalone units do
+  the same against their 70°F / 74°F. Nothing calls, so the redstone output never changes.
+- The HUD and `CsmEnvironment` read, at a position under a roof within `HUD_RANGE` of a device, the
+  nearest thermostat (a floor up or down counting as three blocks), else a standalone unit's
+  target, else the biome.
+
+The mode is read once a second, so `/csm reloadconfig` applies it without a restart. Going
+lightweight drops every room; going back sets each thermostat's anchor to the temperature it was
+showing, so its room starts at its setpoint, and every device finds its room again under the flood
+budget. `AUTO` goes lightweight as soon as the count reaches the threshold and back only after five
+minutes below three quarters of it, since going back floods every room again. `/csmhvac perf`
+names the mode; `info`, `why` and `spaces` say there are no rooms; `settemp`, `rescan` and `ff`
+refuse.
+
+Why it exists (2026-10, the Alto server, 3 players, 11,195 devices in 5,072 rooms): the full
+simulation cost 2.8 ms of a 20.8 ms mean tick when steady, all of it on two ticks a second (31 ms
+of control and physics on tick 10, 20 ms of couplings on tick 5), which set the server's 95th
+percentile tick of 45 ms. A player flying into a dense district flooded 2,700 rooms in 41 s at
+15 ms a tick, with single ticks of 220 ms. Over 33 hours it had flooded 1.99 million rooms. The
+same world in lightweight mode does one pass over the devices a second. In a dev world it cost
+0.03 ms a tick against 1.0 ms simulated.
+
 ## Spaces
 
 ### Which blocks air passes through (`HvacAirflow.passesAir`)

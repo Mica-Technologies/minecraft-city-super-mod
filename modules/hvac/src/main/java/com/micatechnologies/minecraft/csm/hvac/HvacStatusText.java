@@ -58,6 +58,9 @@ final class HvacStatusText {
       out.add(new Line("⚠ Not linked to a primary thermostat", COLOR_BAD));
     } else if (units == 0) {
       out.add(new Line("⚠ No heaters or coolers linked", COLOR_WARN));
+    } else if ((flags & HvacStatus.FLAG_LIGHTWEIGHT) != 0) {
+      out.add(new Line(output > 0 ? "● Holding setpoint, output " + output + "%"
+          : "● Holding setpoint", COLOR_OK));
     } else if (mode == HvacStatus.MODE_HEATING) {
       out.add(new Line("● Heating, output " + output + "%", COLOR_HEAT));
     } else if (mode == HvacStatus.MODE_COOLING) {
@@ -103,6 +106,10 @@ final class HvacStatusText {
     }
     if ((flags & HvacStatus.FLAG_UNITS_UNCONNECTED) != 0) {
       out.add(new Line("⚠ Rooftop units need vents", COLOR_WARN));
+    }
+
+    if ((flags & HvacStatus.FLAG_LIGHTWEIGHT) != 0) {
+      out.add(new Line("Simplified HVAC (server setting)", COLOR_INFO));
     }
 
     // Sizing and inventory.
