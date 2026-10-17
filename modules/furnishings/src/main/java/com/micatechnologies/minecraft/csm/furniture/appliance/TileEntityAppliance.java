@@ -106,7 +106,17 @@ public class TileEntityAppliance extends AbstractTileEntity implements ITickable
   private transient int total;
 
   /**
-   * The appliance's spec, from its block, or null if the block is not (or no longer) one.
+   * What {@link #setRunning} last left the block's {@link IAppliance#RUNNING} at, or null before
+   * it has looked. An idle appliance asks every tick, and reading the block state each time to
+   * find nothing to change was most of what it cost.
+   */
+  @Nullable
+  private transient Boolean shownRunning;
+
+  /**
+   * The appliance's spec, from its block, or null if the block is not (or no longer) one. The
+   * block comes from {@link #getBlockType()}, which the tile entity caches, rather than a block
+   * state read every tick.
    *
    * @return the spec
    */
@@ -115,7 +125,7 @@ public class TileEntityAppliance extends AbstractTileEntity implements ITickable
     if (world == null) {
       return null;
     }
-    Block block = world.getBlockState(pos).getBlock();
+    Block block = getBlockType();
     return block instanceof IAppliance ? ((IAppliance) block).getApplianceSpec() : null;
   }
 
@@ -301,11 +311,15 @@ public class TileEntityAppliance extends AbstractTileEntity implements ITickable
 
   /** Sets the block's {@link IAppliance#RUNNING}, if it has one and it differs. */
   private void setRunning(boolean running) {
+    if (shownRunning != null && shownRunning == running) {
+      return;
+    }
     IBlockState state = world.getBlockState(pos);
     if (state.getPropertyKeys().contains(IAppliance.RUNNING)
         && state.getValue(IAppliance.RUNNING) != running) {
       world.setBlockState(pos, state.withProperty(IAppliance.RUNNING, running), 3);
     }
+    shownRunning = running;
   }
 
   /**
