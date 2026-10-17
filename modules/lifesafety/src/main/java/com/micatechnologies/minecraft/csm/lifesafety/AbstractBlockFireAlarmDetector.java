@@ -87,6 +87,11 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
    * {@code provideChunk}, which loads from disk and generates terrain for an absent chunk, so
    * scanning used to pull in neighbouring chunks every 25 seconds. Nothing is lost by skipping
    * them, as fire does not burn in a chunk that is not ticking.
+   * <p>
+   * A chunk none of whose sections in the covered height holds fire, by {@link FireCensus}, is
+   * not read at all. That is nearly every chunk nearly all the time, and it is what keeps a city
+   * full of detectors from re-reading the same empty rooms every 25 seconds (3% of the Alto
+   * server's tick before the census).
    *
    * @param world  the world to search
    * @param center this detector's position
@@ -108,6 +113,7 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
 
     // One column flag per position in a chunk, reused for each chunk rather than reallocated.
     final boolean[] floored = new boolean[256];
+    final FireCensus census = FireCensus.get(world);
 
     for (int chunkX = minX >> 4; chunkX <= (maxX >> 4); chunkX++) {
       for (int chunkZ = minZ >> 4; chunkZ <= (maxZ >> 4); chunkZ++) {
@@ -116,6 +122,9 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
           continue;
         }
         final Chunk chunk = world.getChunk(chunkX, chunkZ);
+        if (!census.mayHoldFire(chunk, minY >> 4, maxY >> 4)) {
+          continue;
+        }
         // Clip the covered area to this chunk's columns. Columns in one chunk never affect
         // another's, so each chunk carries its own flags and its own early exit.
         final int fromX = Math.max(minX, chunkX << 4);

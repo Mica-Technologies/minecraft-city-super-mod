@@ -71,6 +71,8 @@ public class CsmLifeSafety {
     CsmGuiRegistry.register(new LifeSafetyGuiProvider());
     // The fire pole's slide cancels the fall at the bottom (see BlockFirePole.FallHandler).
     MinecraftForge.EVENT_BUS.register(new BlockFirePole.FallHandler());
+    // The detectors' fire census drops its counts with their chunk (see FireCensus).
+    MinecraftForge.EVENT_BUS.register(new FireCensus.Events());
 
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
