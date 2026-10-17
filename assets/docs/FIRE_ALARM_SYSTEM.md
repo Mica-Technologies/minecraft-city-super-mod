@@ -179,6 +179,16 @@ chunk through `provideChunk`, which loads from disk and generates terrain for an
 scanning used to pull in neighbouring chunks every 25 seconds. Nothing is lost by skipping them --
 fire does not burn in a chunk that is not ticking.
 
+**The fire census skips chunks with no fire** (`FireCensus`, 2026-10). Every section a detector's
+height reaches is counted once (its 4,096 blocks; an all-air section is 0 unread), and the count
+is then kept by a world listener that hears every block change sent to clients: fire placed,
+spreading and burning out. A chunk whose sections in range all hold no fire is not read at all,
+and a detector in a building that is not burning costs a few map lookups. Before it, thousands of
+detectors re-read their overlapping 31 x 31 areas every 25 s, and on the Alto server that was 3%
+of the tick. A change made without telling clients (direct chunk writes, `setBlockState` without
+flag 2) is not heard, so a count is trusted for five minutes at most and then taken again. Counts
+go with their chunk.
+
 Traversal *order* differs from the old `BlockPos.getAllInBox` walk, so with several fires in range
 the one reported may differ. Any fire in range is an equally correct answer and only the first is
 used.
