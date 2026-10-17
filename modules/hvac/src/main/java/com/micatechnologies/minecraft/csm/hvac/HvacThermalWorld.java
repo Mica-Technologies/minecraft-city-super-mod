@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -16,6 +17,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -117,7 +119,24 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   private static final long PLAYER_SCAN_INTERVAL_TICKS = 100L;
 
+  /**
+   * With the lightweight mode on AUTO, how long the device count must stay below three quarters
+   * of the threshold before the full simulation comes back: going back floods every room again,
+   * so a count hovering at the threshold must not switch back and forth.
+   */
+  private static final long AUTO_LEAVE_TICKS = 6000L;
+
   final World world;
+
+  /**
+   * Whether this world runs lightweight: no rooms, no physics, every thermostat showing its
+   * setpoint (see {@link HvacSystemControl#runLightweight}). Chosen once a second from the
+   * {@code hvac} config category, so a {@code /csm reloadconfig} applies without a restart.
+   */
+  private boolean lightweight;
+
+  /** With AUTO, the tick the device count fell below the way back, or -1. */
+  private long belowAutoSince = -1;
 
   private final Long2ObjectOpenHashMap<ThermalSpace> cellToSpace = new Long2ObjectOpenHashMap<>();
   private final List<ThermalSpace> spaces = new ArrayList<>();
@@ -1014,6 +1033,22 @@ public final class HvacThermalWorld implements IWorldEventListener {
     int phase = (int) (now % STEP_TICKS);
     long start = System.nanoTime();
     long t0 = start;
+    if (phase == PHASE_STEP) {
+      updateMode(now);
+    }
+    if (lightweight) {
+      if (phase == PHASE_STEP) {
+        stepId++;
+        HvacSystemControl.runLightweight(this);
+        perf.steps++;
+        t0 = clock(t0, Part.STEP);
+      } else if (phase == PHASE_PLAYERS) {
+        updatePlayersLightweight();
+        clock(t0, Part.PLAYERS);
+      }
+      perf.maxTickNanos = Math.max(perf.maxTickNanos, System.nanoTime() - start);
+      return;
+    }
     switch (phase) {
       case PHASE_RESCAN:
         rescanDue(now);
@@ -1056,6 +1091,192 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   private enum Part { RESCAN, ATTACH, COUPLINGS, STEP, PLAYERS }
 
+  // region Lightweight mode
+
+  /** Whether this world is running lightweight; see {@link #lightweight}. */
+  boolean isLightweight() {
+    return lightweight;
+  }
+
+  /**
+   * Reads the configured mode and switches if it asks for the other one. AUTO goes lightweight as
+   * soon as the device count reaches the threshold, and back only after it has stayed under three
+   * quarters of it for {@link #AUTO_LEAVE_TICKS}.
+   */
+  private void updateMode(long now) {
+    String mode = CsmConfig.getHvacLightweightMode();
+    boolean want;
+    if ("ON".equals(mode)) {
+      want = true;
+    } else if ("OFF".equals(mode)) {
+      want = false;
+    } else {
+      int limit = CsmConfig.getHvacLightweightAutoDevices();
+      int devices = anchors.size();
+      if (devices >= limit) {
+        want = true;
+        belowAutoSince = -1;
+      } else if (!lightweight || devices >= limit * 3 / 4) {
+        want = lightweight;
+        belowAutoSince = -1;
+      } else {
+        if (belowAutoSince < 0) {
+          belowAutoSince = now;
+        }
+        want = now - belowAutoSince < AUTO_LEAVE_TICKS;
+      }
+    }
+    if (want == lightweight) {
+      return;
+    }
+    if (want) {
+      enterLightweight();
+    } else {
+      leaveLightweight();
+    }
+    CsmHvac.getLogger().info("HVAC in dimension {} is now {} ({} devices loaded, mode {})",
+        world.provider.getDimension(), want ? "lightweight" : "fully simulated", anchors.size(),
+        mode);
+  }
+
+  /**
+   * Drops every room. The anchors stay registered (a map entry each), so the devices can be read
+   * and controlled, but nothing floods, steps or listens to block changes until the full
+   * simulation comes back.
+   */
+  private void enterLightweight() {
+    lightweight = true;
+    for (ThermalAnchor a : anchors.values()) {
+      forgetRoom(a);
+    }
+    for (ThermalAnchor a : playerAnchors.values()) {
+      forgetRoom(a);
+    }
+    playerAnchors.clear();
+    playerNextScan.clear();
+    spaces.clear();
+    cellToSpace.clear();
+    cellToSpace.trim();
+    tooLarge.clear();
+    unloadedFloods.clear();
+    detached.clear();
+    sectionStamp.clear();
+    idleCandidates.clear();
+    attachBacklog = false;
+    newSpaces = false;
+  }
+
+  /**
+   * Brings the full simulation back. Every device looks for its room again under the per-tick
+   * flood budget; a thermostat's room starts from what it was showing (its setpoint), the rest
+   * from their equilibrium.
+   */
+  private void leaveLightweight() {
+    lightweight = false;
+    belowAutoSince = -1;
+    for (ThermalAnchor a : anchors.values()) {
+      a.savedTemp = Float.NaN;
+      if (a.kind == ThermalAnchor.THERMOSTAT || a.kind == ThermalAnchor.ZONE) {
+        TileEntity te = world.getTileEntity(a.pos);
+        if (te instanceof TileEntityHvacThermostatBase) {
+          a.savedTemp = ((TileEntityHvacThermostatBase) te).getCurrentTemperature();
+        }
+      }
+    }
+    attachBacklog = true;
+  }
+
+  private static void forgetRoom(ThermalAnchor a) {
+    a.space = null;
+    a.region = -1;
+    a.status = ThermalScanner.Status.OK;
+    a.openAt = ThermalAnchor.NO_CELL;
+    a.waitChunks = null;
+    a.waitFlood = null;
+    a.retryTick = 0;
+  }
+
+  /**
+   * The lightweight HUD: a player within {@link #HUD_RANGE} of a device and under a roof reads
+   * the nearest thermostat's setpoint, outdoors the biome's temperature.
+   */
+  private void updatePlayersLightweight() {
+    ThermalCellSource cellSource = null;
+    for (EntityPlayer player : new ArrayList<>(world.playerEntities)) {
+      BlockPos pos = new BlockPos(MathHelper.floor(player.posX),
+          MathHelper.floor(player.posY + 0.1), MathHelper.floor(player.posZ));
+      if (!nearDevice(pos)) {
+        HvacHudPacket.send(player, false, 0f, false);
+        continue;
+      }
+      if (cellSource == null) {
+        cellSource = HvacAirflow.worldSource(world);
+      }
+      boolean indoors = cellSource.classify(pos.getX(), pos.getY(), pos.getZ())
+          == ThermalCellSource.AIR;
+      HvacHudPacket.send(player, true, indoors ? lightweightTemperatureAt(pos)
+          : CsmEnvironment.getBaselineTemperatureAt(world, pos), indoors);
+    }
+  }
+
+  /**
+   * What lightweight mode reads indoors at a position: the display of the nearest thermostat
+   * within {@link #HUD_RANGE} (a floor counting as three blocks, so the flat above does not win
+   * over the one you are in), else the target of the nearest powered standalone unit, else the
+   * biome's.
+   */
+  private float lightweightTemperatureAt(BlockPos pos) {
+    int r = HUD_RANGE;
+    double best = (double) r * r;
+    TileEntityHvacThermostatBase tstat = null;
+    TileEntityHvacHeater unit = null;
+    double bestUnit = best;
+    for (int cx = (pos.getX() - r) >> 4; cx <= (pos.getX() + r) >> 4; cx++) {
+      for (int cz = (pos.getZ() - r) >> 4; cz <= (pos.getZ() + r) >> 4; cz++) {
+        List<ThermalAnchor> list = anchorsByChunk.get(chunkKey(cx, cz));
+        if (list == null) {
+          continue;
+        }
+        for (ThermalAnchor a : list) {
+          if (a.kind != ThermalAnchor.THERMOSTAT && a.kind != ThermalAnchor.ZONE
+              && a.kind != ThermalAnchor.UNIT) {
+            continue;
+          }
+          double dx = a.pos.getX() - pos.getX();
+          double dy = 3.0 * (a.pos.getY() - pos.getY());
+          double dz = a.pos.getZ() - pos.getZ();
+          double d = dx * dx + dy * dy + dz * dz;
+          if (a.kind == ThermalAnchor.UNIT) {
+            if (d < bestUnit && tstat == null) {
+              TileEntity te = world.getTileEntity(a.pos);
+              if (te instanceof TileEntityHvacHeater
+                  && ((TileEntityHvacHeater) te).claimStep != stepId) {
+                unit = (TileEntityHvacHeater) te;
+                bestUnit = d;
+              }
+            }
+          } else if (d < best) {
+            TileEntity te = world.getTileEntity(a.pos);
+            if (te instanceof TileEntityHvacThermostatBase) {
+              tstat = (TileEntityHvacThermostatBase) te;
+              best = d;
+            }
+          }
+        }
+      }
+    }
+    if (tstat != null) {
+      return tstat.getCurrentTemperature();
+    }
+    if (unit != null && unit.hasPower() && !unit.isDuctedOnly()) {
+      return unit.isCoolingUnit() ? HvacSystemControl.STANDALONE_COOL_TARGET
+          : HvacSystemControl.STANDALONE_HEAT_TARGET;
+    }
+    return CsmEnvironment.getBaselineTemperatureAt(world, pos);
+  }
+
+  // endregion
+
   /** Charges the time since {@code since} to a part of the work, and returns now. */
   private long clock(long since, Part part) {
     long now = System.nanoTime();
@@ -1091,6 +1312,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * @param attachBudgetNanos how long new rooms may be flooded for; the rest wait a tick
    */
   void maintain(long now, long attachBudgetNanos) {
+    if (lightweight) {
+      return;
+    }
     long t0 = System.nanoTime();
     rescanDue(now);
     long t1 = System.nanoTime();
@@ -1136,6 +1360,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * now, then the controllers and physics are stepped as fast as they will go.
    */
   void fastForward(int seconds) {
+    if (lightweight) {
+      return;
+    }
     long now = world.getTotalWorldTime();
     maintain(now, Long.MAX_VALUE);
     for (int i = 0; i < seconds; i++) {
@@ -1168,6 +1395,11 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   /** The temperature at a position: its region's if it is in a space, else the biome's. */
   float temperatureAt(BlockPos pos) {
+    if (lightweight) {
+      return HvacAirflow.worldSource(world).classify(pos.getX(), pos.getY(), pos.getZ())
+          == ThermalCellSource.AIR ? lightweightTemperatureAt(pos)
+          : CsmEnvironment.getBaselineTemperatureAt(world, pos);
+    }
     long key = ThermalScanner.pack(pos.getX(), pos.getY(), pos.getZ());
     ThermalSpace s = cellToSpace.get(key);
     if (s != null) {
@@ -1274,8 +1506,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
   @Override
   public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState,
       IBlockState newState, int flags) {
-    if (oldState == newState) {
-      return; // a tile entity sync, not a change of shape
+    if (oldState == newState || lightweight) {
+      return; // a tile entity sync, not a change of shape; or no rooms to change
     }
     perf.blockUpdates++;
     long key = ThermalScanner.pack(pos.getX(), pos.getY(), pos.getZ());

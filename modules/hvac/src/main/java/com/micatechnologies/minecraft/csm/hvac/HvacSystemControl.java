@@ -677,6 +677,156 @@ final class HvacSystemControl {
 
   // endregion
 
+  // region Lightweight mode
+
+  /** The part load units run at in lightweight mode, when the weather calls for them. */
+  static final float LIGHTWEIGHT_OUTPUT = 0.3f;
+
+  /**
+   * Lightweight mode's step: no rooms and no physics. Every thermostat reads what it is set to
+   * hold ({@link #lightweightTemperature}), and a system's units of the kind the outdoor
+   * temperature calls for run at {@link #LIGHTWEIGHT_OUTPUT}, as equipment holding a room at its
+   * setpoint would. Nothing calls, so no redstone output changes. A pass over the devices and a
+   * tile entity lookup each, against the flood, coupling and physics work it replaces.
+   */
+  static void runLightweight(HvacThermalWorld w) {
+    World world = w.world;
+    List<ThermalAnchor> list = new ArrayList<>(w.anchors());
+    for (ThermalAnchor a : list) {
+      if (a.kind == ThermalAnchor.THERMOSTAT) {
+        TileEntity te = world.getTileEntity(a.pos);
+        if (te instanceof TileEntityHvacThermostat) {
+          runLightweightSystem(w, (TileEntityHvacThermostat) te);
+        }
+      }
+    }
+    for (ThermalAnchor a : list) {
+      if (a.kind == ThermalAnchor.UNIT) {
+        TileEntity te = world.getTileEntity(a.pos);
+        if (te instanceof TileEntityHvacHeater
+            && ((TileEntityHvacHeater) te).claimStep != w.stepId) {
+          TileEntityHvacHeater unit = (TileEntityHvacHeater) te;
+          float outdoor = CsmEnvironment.getBaselineTemperatureAt(world, a.pos);
+          boolean wanted = unit.isCoolingUnit() ? outdoor > STANDALONE_COOL_TARGET
+              : outdoor < STANDALONE_HEAT_TARGET;
+          unit.applyOutput(wanted && unit.hasPower() && !unit.isDuctedOnly()
+              ? LIGHTWEIGHT_OUTPUT : 0.0f);
+        }
+      } else if (a.kind == ThermalAnchor.ZONE) {
+        TileEntity te = world.getTileEntity(a.pos);
+        if (te instanceof TileEntityHvacZoneThermostat
+            && ((TileEntityHvacZoneThermostat) te).lastRunStep != w.stepId) {
+          TileEntityHvacZoneThermostat z = (TileEntityHvacZoneThermostat) te;
+          BlockPos pp = z.getLinkedPrimaryPos();
+          boolean primaryUnloaded = pp != null && !world.isBlockLoaded(pp);
+          float outdoor = CsmEnvironment.getBaselineTemperatureAt(world, a.pos);
+          z.applyControl(lightweightTemperature(z, false, outdoor), HvacStatus.MODE_IDLE,
+              HvacStatus.MODE_IDLE, 0, HvacStatus.FLAG_LIGHTWEIGHT
+                  | (primaryUnloaded ? HvacStatus.FLAG_WAITING_FOR_CHUNKS
+                  : HvacStatus.FLAG_NO_PRIMARY), -1, 0, 0);
+        }
+      }
+    }
+  }
+
+  private static void runLightweightSystem(HvacThermalWorld w,
+      TileEntityHvacThermostat primary) {
+    World world = w.world;
+    primary.lastRunStep = w.stepId;
+    List<TileEntityHvacThermostatBase> zones = new ArrayList<>();
+    zones.add(primary);
+    for (Iterator<BlockPos> it = primary.getLinkedZones().iterator(); it.hasNext(); ) {
+      BlockPos zp = it.next();
+      if (!world.isBlockLoaded(zp)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(zp);
+      if (!(te instanceof TileEntityHvacZoneThermostat)) {
+        it.remove();
+        continue;
+      }
+      TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
+      zone.lastRunStep = w.stepId;
+      if (!primary.getPos().equals(zone.getLinkedPrimaryPos())) {
+        zone.setLinkedPrimaryPos(primary.getPos());
+      }
+      zones.add(zone);
+    }
+    List<TileEntityHvacHeater> units = new ArrayList<>();
+    for (Iterator<BlockPos> it = primary.getLinkedUnits().iterator(); it.hasNext(); ) {
+      BlockPos up = it.next();
+      if (!world.isBlockLoaded(up)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(up);
+      if (!(te instanceof TileEntityHvacHeater)) {
+        it.remove();
+        continue;
+      }
+      TileEntityHvacHeater unit = (TileEntityHvacHeater) te;
+      unit.claimStep = w.stepId;
+      units.add(unit);
+    }
+
+    float outdoor = CsmEnvironment.getBaselineTemperatureAt(world, primary.getPos());
+    int sp = primary.getSwitchMode();
+    boolean off = sp == HvacStatus.SWITCH_OFF;
+    // What the weather calls for, against the primary's range.
+    boolean heat = !off && HvacStatus.switchHeats(sp) && outdoor < heatTarget(primary);
+    boolean cool = !off && !heat && HvacStatus.switchCools(sp) && outdoor > coolTarget(primary);
+    int powered = 0;
+    boolean ran = false;
+    boolean wantedUnpowered = false;
+    for (TileEntityHvacHeater u : units) {
+      boolean p = u.hasPower();
+      powered += p ? 1 : 0;
+      boolean wanted = u.isCoolingUnit() ? cool : heat;
+      u.applyOutput(wanted && p ? LIGHTWEIGHT_OUTPUT : 0.0f);
+      ran |= wanted && p;
+      wantedUnpowered |= wanted && !p;
+    }
+    int output = ran ? Math.round(100.0f * LIGHTWEIGHT_OUTPUT) : 0;
+    for (int zi = 0; zi < zones.size(); zi++) {
+      TileEntityHvacThermostatBase z = zones.get(zi);
+      int flags = HvacStatus.FLAG_LIGHTWEIGHT;
+      if (zi > 0 && off) {
+        flags |= HvacStatus.FLAG_SYSTEM_OFF;
+      }
+      if (wantedUnpowered && !ran) {
+        flags |= HvacStatus.FLAG_NO_POWER;
+      }
+      boolean zoneOff = off || z.getSwitchMode() == HvacStatus.SWITCH_OFF;
+      z.applyControl(lightweightTemperature(z, off, outdoor),
+          HvacStatus.MODE_IDLE, HvacStatus.MODE_IDLE, zoneOff ? 0 : output, flags, -1, powered,
+          units.size());
+    }
+  }
+
+  /**
+   * What a thermostat reads in lightweight mode: the middle of its range on Auto, the low setpoint
+   * on Heat, the high on Cool, and the outdoor temperature when it (or its system) is off.
+   *
+   * @param systemOff whether the primary thermostat of its system is switched off
+   */
+  static float lightweightTemperature(TileEntityHvacThermostatBase t, boolean systemOff,
+      float outdoor) {
+    if (systemOff) {
+      return outdoor;
+    }
+    switch (t.getSwitchMode()) {
+      case HvacStatus.SWITCH_HEAT:
+        return t.getTargetTempLow();
+      case HvacStatus.SWITCH_COOL:
+        return t.getTargetTempHigh();
+      case HvacStatus.SWITCH_OFF:
+        return outdoor;
+      default:
+        return (t.getTargetTempLow() + t.getTargetTempHigh()) * 0.5f;
+    }
+  }
+
+  // endregion
+
   // region Helpers
 
   static float heatTarget(TileEntityHvacThermostatBase t) {

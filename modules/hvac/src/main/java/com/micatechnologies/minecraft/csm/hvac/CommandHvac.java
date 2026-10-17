@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -63,6 +64,14 @@ public class CommandHvac extends CommandBase {
       throw new CommandException("No thermal simulation in this world.");
     }
     BlockPos at = sender.getPosition();
+    if (w.isLightweight() && !"perf".equals(args[0])) {
+      if (!"info".equals(args[0]) && !"why".equals(args[0]) && !"spaces".equals(args[0])) {
+        throw new CommandException("HVAC is running lightweight here: there are no rooms to "
+            + "change. See lightweightMode in the hvac section of csm.cfg.");
+      }
+      say(sender, "HVAC is running lightweight here: no rooms are simulated, thermostats read"
+          + " their setpoint.");
+    }
     switch (args[0]) {
       case "info":
         if (args.length >= 4) {
@@ -260,6 +269,9 @@ public class CommandHvac extends CommandBase {
         + p.playerNanos) / 1e6;
     say(sender, String.format("HVAC over %.0f s (%d steps): %d spaces, %d anchors", seconds,
         p.steps, w.spaces().size(), w.anchors().size()));
+    say(sender, String.format("  mode: %s (lightweightMode %s, auto at %d devices)",
+        w.isLightweight() ? "lightweight" : "full simulation",
+        CsmConfig.getHvacLightweightMode(), CsmConfig.getHvacLightweightAutoDevices()));
     say(sender, String.format("  %.2f ms a second on average, worst tick %.1f ms; %.3f ms a tick",
         total / steps, p.maxTickNanos / 1e6, total / (seconds * 20)));
     say(sender, String.format("  per step: rescan %.2f  attach %.2f  couplings %.2f"

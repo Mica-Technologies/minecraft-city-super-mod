@@ -53,6 +53,11 @@ public final class HvacStatus {
    * {@link #FLAG_NOT_ENCLOSED}, which it was reported as before.
    */
   public static final int FLAG_FINDING_ROOM = 1 << 11;
+  /**
+   * The server runs HVAC lightweight: no room is simulated, the reading is the setpoint and the
+   * units run at a steady part load.
+   */
+  public static final int FLAG_LIGHTWEIGHT = 1 << 12;
 
   /** Whether a switch position lets its thermostat heat. */
   public static boolean switchHeats(int switchMode) {

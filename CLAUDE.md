@@ -486,7 +486,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
-  server-sent HUD, `/csmhvac` and the test lab, and why the old offset engine was replaced
+  server-sent HUD, `/csmhvac` and the test lab, why the old offset engine was replaced, and the
+  lightweight mode (`hvac.lightweightMode`, AUTO by default past 2,000 loaded devices: no rooms,
+  thermostats read their setpoint, units run a steady 30%), with what the full simulation cost on
+  the live server
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
   most of it; the server tick is small except for work that scales with a city -- HVAC rooms at the
