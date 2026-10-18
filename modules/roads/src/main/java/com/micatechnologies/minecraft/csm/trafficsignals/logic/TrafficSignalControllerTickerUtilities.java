@@ -1566,6 +1566,16 @@ public class TrafficSignalControllerTickerUtilities {
           highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS
               || isDirectionalPhase(highestPriorityPhaseApplicability);
 
+      // A circuit of solid left arrows alone has no through phase worth calling: its through
+      // phase turns no vehicle head green (a solid arrow runs only under ALL_LEFTS or a
+      // directional phase), it only walks the other circuits' pedestrians. Two cars in its bays
+      // made the throughs out-count either direction's one, and the junction sat in that phase
+      // for as long as they waited, every vehicle head red (#289). Its demand is served by the
+      // left-turn and directional candidates above.
+      if (!throughPhaseServesVehicles(circuit)) {
+        continue;
+      }
+
       // Check circuit through/protecteds detection count for highest priority.
       // Raw turn-lane counts are used here (not FYA-adjusted) because the through phase
       // serves left turns (via FYA permissive or the protected green arrow when
@@ -2148,6 +2158,25 @@ public class TrafficSignalControllerTickerUtilities {
     return applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS ||
         applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTED_RIGHTS ||
         applicability == TrafficSignalPhaseApplicability.ALL_THROUGHS_PROTECTEDS;
+  }
+
+  /**
+   * Whether a circuit's through-type phases (ALL_THROUGHS_*) can give any vehicle head a green or
+   * a flashing arrow: it has throughs, rights, flashing arrows or protected (transit/bike) heads.
+   * A circuit of solid left arrows alone has none of these, so its through phase serves no vehicle
+   * and is never chosen from demand (#289).
+   *
+   * @param circuit the circuit
+   *
+   * @return whether a through phase on the circuit serves a vehicle movement
+   *
+   * @since 2026.10
+   */
+  static boolean throughPhaseServesVehicles(TrafficSignalControllerCircuit circuit) {
+    return !circuit.getThroughSignals().isEmpty() || !circuit.getRightSignals().isEmpty()
+        || !circuit.getFlashingRightSignals().isEmpty()
+        || !circuit.getFlashingLeftSignals().isEmpty()
+        || !circuit.getProtectedSignals().isEmpty();
   }
 
   public static boolean isDirectionalPhase(TrafficSignalPhaseApplicability applicability) {
