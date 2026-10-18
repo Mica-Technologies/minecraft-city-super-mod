@@ -697,7 +697,11 @@ public class TrafficSignalControllerTicker {
             TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
                 circuits, overlaps, activeCircuit > 0 ? activeCircuit : 1,
                 overlapPedestrianSignals, world);
-        if (!TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(
+        if (!servesAnyVehicle(rebuiltPhase)) {
+          // A circuit of left heads alone has a default that turns no vehicle head green: no
+          // phase to recycle to. Carry on to the phase this clearance was started for (#289).
+          recycleToGreen = false;
+        } else if (!TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(
             originalPhase, rebuiltPhase)) {
           nextPhase = rebuiltPhase;
         } else {
@@ -749,10 +753,16 @@ public class TrafficSignalControllerTicker {
                 circuits, overlapPedestrianSignals);
 
         if (currentDemand == null) {
-          // No demand anywhere — go back to the original circuit's default phase
-          upcomingGreenPhase = TrafficSignalControllerTickerUtilities
+          // No demand anywhere — go back to the original circuit's default phase, unless that
+          // phase turns no vehicle head green (a circuit of left heads alone), which would rest
+          // the junction on red for every vehicle; then keep the phase the clearance was built
+          // for (#289)
+          TrafficSignalPhase originalDefault = TrafficSignalControllerTickerUtilities
               .getDefaultPhaseForCircuitNumber(circuits, overlaps,
                   activeCircuit > 0 ? activeCircuit : 1, overlapPedestrianSignals, world);
+          if (servesAnyVehicle(originalDefault)) {
+            upcomingGreenPhase = originalDefault;
+          }
         } else if (activeCircuit > 0 && currentDemand.getFirst() == activeCircuit) {
           // Demand is for the original circuit — only redirect to default if it's
           // omnidirectional through-type demand. Directional demand (ALL_EAST etc.)
@@ -848,8 +858,30 @@ public class TrafficSignalControllerTicker {
         boolean allSensored =
             TrafficSignalControllerTickerUtilities.allCircuitsHaveSensors(circuits);
         boolean phaseRecall = false;
+        // Whether the running green serves one movement (protected lefts, or one direction) rather
+        // than the circuit's throughs. Such a phase is held only while its own demand lasts.
+        boolean turnSpecific = originalPhase.getApplicability()
+            == TrafficSignalPhaseApplicability.ALL_LEFTS
+            || TrafficSignalControllerTickerUtilities.isDirectionalPhase(
+            originalPhase.getApplicability());
+        // Create variable to store upcoming phase
+        TrafficSignalPhase upcomingPhase = null;
         if (allSensored) {
-          if (upcomingPhasePriorityIndicator == null) {
+          if (upcomingPhasePriorityIndicator == null && originalPhase.getCircuit() > 0
+              && (turnSpecific || !servesAnyVehicle(originalPhase))) {
+            // No demand anywhere, and the movement this phase served has gone (or it serves
+            // none, as a circuit of left heads alone has for a default): rest on the primary
+            // circuit's throughs rather than hold a turn arrow, or all red, for no one (#289).
+            TrafficSignalPhase rest =
+                TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+                    circuits, overlaps, 1, overlapPedestrianSignals, world);
+            if (servesAnyVehicle(rest)
+                && !rest.getGreenSignals().equals(originalPhase.getGreenSignals())) {
+              upcomingPhase = rest;
+            } else {
+              phaseRecall = true; // circuit 1 has nothing better to rest on
+            }
+          } else if (upcomingPhasePriorityIndicator == null) {
             // No demand anywhere — hold green (max recall)
             phaseRecall = true;
           } else if (originalPhase.getCircuit() > 0 &&
@@ -861,19 +893,32 @@ public class TrafficSignalControllerTicker {
             phaseRecall = TrafficSignalControllerTickerUtilities.isSamePhaseCategory(
                 upcomingPhasePriorityIndicator.getSecond(),
                 originalPhase.getApplicability());
+            // Once max green is up, a car waiting on another circuit ends the
+            // recall even when this circuit's demand ranks first. Demand ties go to the circuit
+            // already running, so a car standing in a left bay held its arrow for as long as it
+            // stood there while the side street waited behind it (#289).
+            if (phaseRecall && maxGreenTimeMet
+                && otherCircuitHasDemand(world, circuits, originalPhase.getCircuit())) {
+              phaseRecall = false;
+            }
           }
         }
 
-        // Create variable to store upcoming phase
-        TrafficSignalPhase upcomingPhase = null;
-
         // Phase recall is active — same circuit, same category. But the signal
         // arrangement might have changed (e.g., greenRightTurn flipped because
-        // vehicles entered/left the right turn detection zone). Rebuild the default
-        // phase and check for vehicle signal differences.
+        // vehicles entered/left the right turn detection zone). Rebuild the phase being
+        // held and check for vehicle signal differences. A turn or directional phase is
+        // rebuilt as itself: rebuilding the circuit's default (its throughs) turned a held
+        // left arrow into the through phase, which on a circuit of left heads alone shows
+        // no vehicle green at all, and the demand then called the arrow back, alternating
+        // the two for as long as a car sat in the bay and serving nothing else (#289).
         if (phaseRecall && originalPhase.getCircuit() > 0) {
-          TrafficSignalPhase rebuiltPhase =
-              TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
+          TrafficSignalPhase rebuiltPhase = turnSpecific
+              ? TrafficSignalControllerTickerUtilities.getUpcomingPhaseForPriorityIndicator(
+                  world, circuits, overlaps,
+                  new Tuple<>(originalPhase.getCircuit(), originalPhase.getApplicability()),
+                  overlapPedestrianSignals)
+              : TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
                   circuits, overlaps, originalPhase.getCircuit(),
                   overlapPedestrianSignals, world);
           if (TrafficSignalControllerTickerUtilities.hasVehicleSignalConflict(
@@ -886,8 +931,9 @@ public class TrafficSignalControllerTicker {
           }
         }
 
-        // If phase recall is not active, check for phase change
-        if (!phaseRecall) {
+        // If phase recall is not active (and no rest phase was chosen above), check for phase
+        // change
+        if (!phaseRecall && upcomingPhase == null) {
           // If the current phase priority indicator is different than the upcoming phase priority
           // indicator, then we need to change phases
           if (upcomingPhasePriorityIndicator != null &&
@@ -1017,6 +1063,37 @@ public class TrafficSignalControllerTicker {
 
     // Return next phase (null phase indicates no change)
     return nextPhase;
+  }
+
+  /**
+   * Whether any circuit other than {@code circuitNumber} (1-based) has a vehicle on one of its
+   * sensors. Pedestrian requests are left out: they already rank as demand of their own, and a
+   * button pressed while its walk shows keeps its count, which would end recalls for nothing.
+   */
+  private static boolean otherCircuitHasDemand(World world,
+      TrafficSignalControllerCircuits circuits, int circuitNumber) {
+    for (int i = 1; i <= circuits.getCircuitCount(); i++) {
+      if (i == circuitNumber) {
+        continue;
+      }
+      TrafficSignalControllerCircuit circuit = circuits.getCircuit(i - 1);
+      TrafficSignalSensorSummary summary = circuit.getSensorsWaitingSummary(world);
+      if (summary.getStandardTotal() + summary.getLeftTotal() + summary.getRightTotal()
+          + summary.getProtectedTotal() > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Whether a phase gives any vehicle head a green, a flashing yellow arrow or a flashing green.
+   * A circuit of left heads alone has a default (through) phase that does none of these; NORMAL
+   * never rests on or recycles to such a phase (#289).
+   */
+  private static boolean servesAnyVehicle(TrafficSignalPhase phase) {
+    return phase != null && (!phase.getGreenSignals().isEmpty()
+        || !phase.getFyaSignals().isEmpty() || !phase.getFlashingGreenSignals().isEmpty());
   }
 
   /**

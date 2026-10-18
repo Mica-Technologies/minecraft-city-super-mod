@@ -1230,6 +1230,21 @@ Rules the phase builders follow so the monitor never trips:
   to a different green phase than the one the transitions were built against, the redirect is
   only taken if it passes `findSkippedClearance`; otherwise the stored upcoming phase is used.
 - **Direct rebuild/recall applications** are guarded by `hasVehicleSignalConflict`.
+- **A circuit of solid left arrows alone (#289).** Its through phase turns no vehicle head green,
+  only walking the other circuits' pedestrians, and NORMAL used to land in it three ways, each a
+  junction frozen for as long as a car sat in a left bay: two cars (one each way) out-counted
+  either direction as through demand; recall rebuilt a held arrow as the circuit's default, so
+  the arrow and the empty phase alternated; and the no-demand redirects at the end of a
+  clearance went back to that default. Now `throughPhaseServesVehicles` keeps a circuit with no
+  through, right, flashing or protected head out of the through candidates, recall rebuilds a
+  held turn or directional phase (`ALL_LEFTS`, `ALL_EAST`...) as itself, a redirect never goes to
+  a phase that greens no vehicle (`servesAnyVehicle`), and a turn or directional phase with no
+  demand anywhere clears to circuit 1's throughs (or, if the redirect at the end of the clearance
+  finds its own circuit's throughs serve someone, rests there) instead of holding the arrow.
+- **Recall yields at max green to a waiting car on another circuit.** Demand ties go to the circuit
+  already running, so a car standing on a left bay's sensor held its arrow while the side street
+  waited behind it; once max green is up, any vehicle on another circuit's sensors now ends the
+  recall. Pedestrian requests are left out (they rank as demand of their own).
 - **ADVANCED**: `RingBarrierState.enforceOutputClearance` is an output-stage clearance for the
   statelessly-computed layers (programmed overlaps' trailing green, `-GRN/YEL` modifiers, FYA
   overlays, preempt entry). Any head that was GREEN/FYA in the last applied phase and would be RED
