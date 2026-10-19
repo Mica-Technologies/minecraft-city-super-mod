@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "front": "csm:blocks/healthcare/clinical/station_front",
+    "top": "csm:blocks/healthcare/clinical/solid_surface",
+    "carcass": "csm:blocks/healthcare/clinical/carcass",
+    "drawers": "csm:blocks/healthcare/clinical/drawer_bank",
+    "body": "csm:blocks/healthcare/wards/monitor_body",
+    "chart": "csm:blocks/healthcare/clinical/chart_screen",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/clinical/carcass",
+    "kbd": "csm:blocks/healthcare/clinical/keyboard",
+    "call": "csm:blocks/healthcare/clinical/station_call",
+    "lit": "csm:blocks/healthcare/clinical/station_call_lit"
+  },
+  "elements": [
+    {
+      "from": [
+        9.062,
+        13.6,
+        10.7
+      ],
+      "to": [
+        10.525,
+        15.2,
+        11.0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#lit",
+          "uv": [
+            0.5,
+            11.5,
+            5.0,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

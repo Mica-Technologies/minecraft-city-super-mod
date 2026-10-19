@@ -1690,6 +1690,23 @@ for key, names in (
                                   "[Llamada] Primero agáchate y haz clic en un panel o una luz.",
                                   "[Sköterskeanrop] Smyg och klicka först på en centralpanel"
                                   " eller korridorlampa.")),
+        ("nursecall.pick_panel_first", ("[Nurse call] Sneak-click a master panel first, then"
+                                        " this monitor.",
+                                        "[Schwesternruf] Zuerst eine Zentrale mit Schleichen"
+                                        " und Klicken wählen, dann diesen Monitor.",
+                                        "[Llamada] Primero agáchate y haz clic en un panel,"
+                                        " luego en este monitor.",
+                                        "[Sköterskeanrop] Smyg och klicka först på en"
+                                        " centralpanel, sedan på den här skärmen.")),
+        ("nursecall.monitor_unlinked", ("[Nurse call] Not linked to a master panel: sneak-click"
+                                        " a panel, then these monitors.",
+                                        "[Schwesternruf] Mit keiner Zentrale verbunden: eine"
+                                        " Zentrale, dann diese Monitore mit Schleichen und"
+                                        " Klicken wählen.",
+                                        "[Llamada] Sin panel vinculado: agáchate y haz clic en"
+                                        " un panel y luego en estos monitores.",
+                                        "[Sköterskeanrop] Inte kopplad till en centralpanel:"
+                                        " smyg och klicka på en panel, sedan på skärmarna.")),
         ("nursecall.cancelled", ("[Nurse call] %s call(s) cancelled.",
                                  "[Schwesternruf] %s Ruf(e) abgestellt.",
                                  "[Llamada] %s llamada(s) cancelada(s).",

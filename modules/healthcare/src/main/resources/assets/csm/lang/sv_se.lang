@@ -170,3 +170,5 @@ tile.hospital_outlet_normal.name=Eluttag (normalnät)
 tile.hospital_outlet_emergency.name=Eluttag (reservkraft, rött)
 tile.hospital_outlet_pair.name=Eluttag (normal- och reservkraft)
 tile.infant_security_panel.name=Spädbarnslarm, dörrpanel
+csm.healthcare.nursecall.pick_panel_first=[Sköterskeanrop] Smyg och klicka först på en centralpanel, sedan på den här skärmen.
+csm.healthcare.nursecall.monitor_unlinked=[Sköterskeanrop] Inte kopplad till en centralpanel: smyg och klicka på en panel, sedan på skärmarna.

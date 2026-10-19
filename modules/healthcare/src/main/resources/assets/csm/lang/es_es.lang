@@ -170,3 +170,5 @@ tile.hospital_outlet_normal.name=Toma de corriente (red normal)
 tile.hospital_outlet_emergency.name=Toma de corriente (red de emergencia, roja)
 tile.hospital_outlet_pair.name=Tomas de corriente (normal y de emergencia)
 tile.infant_security_panel.name=Panel de seguridad infantil de puerta
+csm.healthcare.nursecall.pick_panel_first=[Llamada] Primero agáchate y haz clic en un panel, luego en este monitor.
+csm.healthcare.nursecall.monitor_unlinked=[Llamada] Sin panel vinculado: agáchate y haz clic en un panel y luego en estos monitores.

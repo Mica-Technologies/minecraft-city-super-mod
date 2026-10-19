@@ -28,10 +28,11 @@ import net.minecraft.world.World;
  *
  * <ul>
  *   <li>{@code nursecall link <parent x y z> <device x y z>} -- links a dome light or a call
- *   device to a master panel, or a call device to a dome light (its room).</li>
+ *   device to a master panel, a call device to a dome light (its room), or a nurses' station
+ *   counter with monitors to a master panel, whose calls it then shows.</li>
  *   <li>{@code nursecall unlink <parent x y z> <device x y z>} -- undoes one link.</li>
- *   <li>{@code nursecall status <x y z>} -- what a panel, dome light or device is linked to, and
- *   which of them are calling.</li>
+ *   <li>{@code nursecall status <x y z>} -- what a panel, dome light, device or station monitor
+ *   is linked to, and which of them are calling.</li>
  *   <li>{@code nursecall prune} -- drops every link to a block that is no longer there (loaded
  *   chunks only).</li>
  *   <li>{@code curtain fill <track x y z> [drop|auto] [pattern]} -- hangs the curtain under the
@@ -371,6 +372,29 @@ public class CommandHealthcare extends CommandBase {
     }
     say(sender, "Nurse call " + kind.name().toLowerCase() + " at "
         + NurseCallNetwork.describe(pos) + ":");
+    if (kind == NurseCallNetwork.Kind.MONITOR) {
+      BlockPos panel = net.panelOfMonitor(pos);
+      if (panel == null) {
+        say(sender, "  not linked to a master panel");
+        return;
+      }
+      int mask = net.panelMask(panel.toLong());
+      StringBuilder rooms = new StringBuilder();
+      for (int i = 0; i < 6; i++) {
+        if ((mask >> i & 1) != 0) {
+          rooms.append(rooms.length() == 0 ? "" : ", ").append(i + 1);
+        }
+      }
+      say(sender, "  shows the panel at " + NurseCallNetwork.describe(panel)
+          + (rooms.length() == 0 ? ", no calls" : ", calling: room " + rooms));
+      return;
+    }
+    if (kind == NurseCallNetwork.Kind.PANEL) {
+      for (long m : net.monitorsOf(pos.toLong())) {
+        say(sender, "  shown on the station monitors at "
+            + NurseCallNetwork.describe(BlockPos.fromLong(m)));
+      }
+    }
     BlockPos parent = net.parentOf(pos);
     if (parent != null) {
       say(sender, "  linked to " + NurseCallNetwork.describe(parent));
