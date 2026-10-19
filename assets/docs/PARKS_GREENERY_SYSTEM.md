@@ -759,7 +759,7 @@ pumpkins or scarecrow.
 
 | Group | Pieces |
 |---|---|
-| Planters (`BlockParkProp`, `PLANTER`) | small and large terracotta pots, a glazed ceramic urn, a concrete bowl of bedding flowers, a half barrel |
+| Planters (`BlockPlanter`, a `PLANTER` prop; plantable, see below) | small and large terracotta pots, a glazed ceramic urn, a concrete bowl of bedding flowers, a half barrel |
 | Nursery | a window box of trailing flowers (`BlockParkFacing`, hung against the wall behind it), the nursery growing bench (`BlockParkJoining.Kind.TABLE`), a potting bench, stacked empty nursery pots, seedling flats |
 | Farm | a slatted compost bin, a wheelbarrow of soil, lettuce and staked tomato rows (`BlockParkCrop`), a trellis with a clematis, then pole lima bean, pumpkin, watermelon and boysenberry rows |
 
@@ -775,6 +775,125 @@ pumpkins or scarecrow.
 - **The wheelbarrow's wheel is an exact octagon**, a cross of two rectangles and the same cross
   turned 45 degrees, in one flat colour so the four sides on one plane show the same pixels.
 
+### Planting in planters
+
+Every planter with soil in its model takes a plant (asked for by the Alto hospital city's
+builder, for medians and plazas). Right-click one with a plantable item and the plant grows out
+of its soil; right-click with an empty hand, or sneak-click, and it comes out into the hand.
+
+| Blocks | Class | Soil (px) | Plant scale |
+|---|---|---|---|
+| `planter_concrete`, `planter_wood`, `planter_corten` | `BlockPlanter` | 14 | 1.0 |
+| `planter_terracotta_small` | `BlockPlanter` | 8 | 0.45 |
+| `planter_terracotta_large` | `BlockPlanter` | 13 | 0.7 |
+| `planter_glazed_urn` | `BlockPlanter` | 14 | 0.55 |
+| `planter_concrete_bowl` | `BlockPlanter` | 8 | 0.8, its bedding flowers left out while planted |
+| `planter_half_barrel` | `BlockPlanter` | 10 | 0.85 |
+| `raised_bed_concrete`, `_wood`, `_corten` | `BlockPlanterBed` | 10 | 1.0, one plant a cell |
+| `planter_trough_concrete`, `_corten` | `BlockPlanterTrough` | 9 | 0.7, one plant a cell |
+| `largeflowerpot`, `roundflowerpot` | `AbstractBlockPlanterFacing` | 14 | 1.0, upright only |
+
+The soil is the top of the model's soil (or rim) element, measured by `gen_park_plantings.py`,
+which writes it and the scale into each tab line; `PlanterSoilTest` holds every tab line's soil to
+a drawn top in that block's model. The plant stands on it, neither floating nor sunk below the
+rim. The scale is cut further where the plant would reach past the top of the block above
+(`PlanterSoil.MAX_TOP`, 32 px): a sunflower in a concrete planter is drawn at 0.64. A flower pot
+lying on its side (facing `up` or `down`) takes nothing.
+
+**What is plantable** (`PlanterPlants`):
+
+- CSM's plantings: every `BlockParkProp` of kind `SHRUB`, `PLANT` or `CACTUS` (shrubs, flowers,
+  grasses, flower beds, the regional plants, herbs, cacti and succulents, the young saguaro);
+- a nursery-potted plant (`potted_*`): the plant in it is planted, and a survival player keeps the
+  pot as a vanilla flower pot (what the Fabricator charges for it);
+- vanilla's cactus and any `BlockBush`: flowers, saplings, tall grass and fern, the dead bush,
+  mushrooms, and other mods' bushes. Not the two-block plants (`BlockDoublePlant`), the lily pad
+  or the melon and pumpkin stems.
+
+Planting over a plant swaps them (a survival player gets the old one back). Breaking a planter
+drops its plant, except in creative.
+
+#### NBT and metadata
+
+The planter's tile entity (`TileEntityPlanter`, `csm:tileentityparkplanter`) holds the plant and
+nothing else. It is data only: no renderer, no ticking. `/blockdata` sets it and the client
+redraws (a sync rebuilds the chunk section only when the plant changed):
+
+```
+/blockdata 100 64 200 {plant:"csm:shrub_lavender",variant:0}
+/blockdata 100 64 200 {plant:"minecraft:red_flower",variant:3}
+/blockdata 100 64 200 {plant:""}
+```
+
+| Key | Type | Meaning |
+|---|---|---|
+| `plant` | string | The plant block's registry name. A bare name is CSM's (`shrub_lavender`); a `potted_*` name stands for the plant in it; `""` empties the planter. A `:n` suffix (`minecraft:sapling:2`) sets the variant when `variant` is not given. An empty planter writes neither key |
+| `variant` | int | The plant block's metadata, 0 to 15. `/blockdata` merges, so give it with `plant` when the old plant had another |
+
+A name that is not a plantable block is kept but drawn as nothing.
+
+| Plant | `plant` | `variant` |
+|---|---|---|
+| Any CSM planting | `csm:<registry name>` | 0 |
+| Poppy, blue orchid, allium, azure bluet, red, orange, white and pink tulip, oxeye daisy | `minecraft:red_flower` | 0 to 8, in that order |
+| Dandelion | `minecraft:yellow_flower` | 0 |
+| Oak, spruce, birch, jungle, acacia and dark oak sapling | `minecraft:sapling` | 0 to 5 |
+| Dead shrub, grass, fern | `minecraft:tallgrass` | 0, 1, 2 |
+| Dead bush, cactus, brown and red mushroom | `minecraft:deadbush`, `minecraft:cactus`, `minecraft:brown_mushroom`, `minecraft:red_mushroom` | 0 |
+| Wheat, carrots, potatoes, beetroot, nether wart (by command only) | `minecraft:wheat`, `carrots`, `potatoes`, `beetroots`, `nether_wart` | the crop's age |
+
+The planters' own metadata is unchanged: `BlockPlanter` and the beds store none; a trough stores
+its axis (0 = runs east-west, 1 = north-south); the flower pots store their facing (2 to 5 upright).
+
+#### `/csmparks planter`
+
+```
+/csmparks planter fill <x1> <y1> <z1> <x2> <y2> <z2> <plant|mix> [seed]
+/csmparks planter clear <x1> <y1> <z1> <x2> <y2> <z2>
+```
+
+`CommandParks`, op level 2, for generators. `fill` plants every planter in the box, a cell at a
+time (so every cell of a trough or raised bed), replacing what was there without dropping it.
+The plant is written as for `plant` (`csm:shrub_lavender`, `minecraft:red_flower:3`), or `mix`
+for a mixed bed: one of `PlanterMix.PLANTS` (lavender, boxwood, blue fescue, fountain grass,
+marigolds, zinnias, rosemary, coreopsis, pink muhly, hydrangea, tulips, star jasmine, marguerite,
+Japanese forest grass) picked by a hash of the planter's position and the seed (default 0). It is
+a hash rather than a random draw, so the same box and seed give the same bed every time, in any
+order (`PlanterMixTest`). `clear` empties them, dropping nothing. At most 262,144 cells (64 cubed)
+a call; cells in unloaded chunks are skipped and counted in the reply.
+
+#### How a plant is drawn
+
+No TESR. `PlanterBakedModel` wraps each planter's baked model variant (through
+`CsmBakedModelWrappers`, so VintageFix's dynamic bakes get it too) and adds the plant block's own
+baked quads, every side's, copied with their positions scaled about the block's middle and foot
+and lifted onto the soil. The plant travels in the unlisted property `Planters.PLANT` of a
+`CsmExtendedBlockState`, the way a log's connections reach its baked model, so a planter has
+exactly the states it had before (one for a planter, sixteen for a bed, eight for a trough).
+
+- **Two passes.** A planter draws in the cutout and cutout-mipped passes: its own faces in its own
+  pass, as before, and the plant's in the pass its block draws in (leaves are mipped, a planter is
+  not). An empty planter returns its model's quads unchanged in its own pass and nothing in the
+  other, so it looks exactly as it did.
+- **Cached** per (planter model variant, plant state, pass), bounded at 256 lists a variant. The
+  side lists are the planter's own and are passed through.
+- **Tint.** A plant's quads keep their tint index, and the planters' block colour is the plant's
+  (`PlanterModels.registerColours`), so planted grass and fern take the biome's green.
+- **Cull faces.** A plant's cull-face quads join the general list: moved off the block's faces,
+  a neighbour must not cull them.
+- **The tile entity is never created to draw.** A chunk builder looks it up without creating it,
+  so a planter never planted costs a map lookup.
+
+#### The troughs
+
+`planter_trough_concrete` and `planter_trough_corten` (`BlockPlanterTrough`) are a long planter for
+a median or a plaza: two side walls 11 px high and soil at 9 px between them. The axis is stored,
+placed along the way the player faces; whether each end continues into a trough of the same block
+and axis is actual state (`neg`, `pos`). The multipart blockstate draws the middle always and, at
+each end, a cap across the trough where the run stops or the walls and soil carried on to the block
+line where it goes on, so a run is one trough capped only at its two ends. The middle's walls
+draw no end faces, and the end pieces meet them at 2 px, so nothing overlaps.
+
 ---
 
 ## Park amenities (Parks tab)
@@ -786,7 +905,8 @@ The two swing sets, the teeter totter, the slatted trash can and the bird bath a
 the two blocks a JSON model can reach); everything else there is written by
 `gen_park_amenities.py`. The two flower pots keep their own classes (a six-way facing, which
 saved worlds store) but draw the Trees & Plants tab's `planter_concrete` and
-`planter_corten` models, with their box.
+`planter_corten` models, with their box, and are plantable like them while they stand upright
+(`AbstractBlockPlanterFacing`; see "Planting in planters").
 
 - **Benches and picnic tables** (`BlockParkBench`) are one block of seat each, placed side by side
   into a run. `LEFT` and `RIGHT` (the sitter's, actual state) say whether the same block, facing the
@@ -861,7 +981,7 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | Script | Writes |
 |---|---|
 | `gen_trees.py` | Bark and leaf-cluster textures; the palm crown sheets and icons; moss; the log and leaves placeholder models and blockstates; the lang for woods, leaves and presets; the tool's icon, model and messages. `--fragments` prints the tab lines |
-| `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces: textures, element models, blockstates, item models and lang. `--fragments` |
+| `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces, and the troughs: textures, element models, blockstates, item models and lang. The planters' tab lines carry their soil height and plant scale. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
 | `gen_parks_tools.py` | The tree tools' item sprites and models (the chainsaw's and the stump grinder's running sprites by their `csm:running` override) and the brush pile's textures, model and blockstate. `--check` (text compared with line endings ignored). The tools' lang and tab lines are hand-written |
@@ -925,7 +1045,9 @@ Off the render thread: a log's collision boxes are cached per width and connecti
 (`TreeLogGeometry.boxes`), since every entity near a tree asks for them every tick. The sprinkler's
 spray is client-only particles, which the game already drops beyond 32 blocks, and the irrigation
 controller is one scheduled tick every two seconds. Nothing in the module has a tile entity
-renderer.
+renderer. A planted planter is chunk geometry too: its plant's own quads (a few to a few dozen)
+merged into the planter's baked model, and a planter's tile entity holds two values and never
+ticks.
 
 ## Decisions
 

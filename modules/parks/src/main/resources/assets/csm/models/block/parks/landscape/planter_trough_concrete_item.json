@@ -1,0 +1,297 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "wall": "csm:blocks/parks/landscape/planter_concrete",
+    "soil": "csm:blocks/parks/landscape/soil",
+    "particle": "csm:blocks/parks/landscape/planter_concrete"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        2
+      ],
+      "to": [
+        3,
+        11,
+        14
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wall",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wall",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            2,
+            3,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            2,
+            3,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13,
+        0,
+        2
+      ],
+      "to": [
+        15,
+        11,
+        14
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wall",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wall",
+          "uv": [
+            2,
+            5,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wall",
+          "uv": [
+            13,
+            2,
+            15,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#wall",
+          "uv": [
+            13,
+            2,
+            15,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        0,
+        2
+      ],
+      "to": [
+        13,
+        9,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#soil",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#soil",
+          "uv": [
+            3,
+            2,
+            13,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        0,
+        0
+      ],
+      "to": [
+        15,
+        11,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            5,
+            15,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            5,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wall",
+          "uv": [
+            14,
+            5,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wall",
+          "uv": [
+            0,
+            5,
+            2,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            0,
+            15,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        0,
+        14
+      ],
+      "to": [
+        15,
+        11,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            5,
+            15,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            5,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wall",
+          "uv": [
+            0,
+            5,
+            2,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wall",
+          "uv": [
+            14,
+            5,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            14,
+            15,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            0,
+            15,
+            2
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.625,
+        0.625,
+        0.625
+      ]
+    }
+  }
+}

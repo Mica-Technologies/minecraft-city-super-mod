@@ -612,3 +612,5 @@ csm.parks.preset.cherryyoshino=Yoshino-körsbär
 csm.parks.preset.cherrykanzan=Kanzan-körsbär
 csm.parks.preset.cherryweeping=Hängkörsbär
 tile.ground_cherry_petals.name=Fallna körsbärsblad
+tile.planter_trough_concrete.name=Planteringsränna av betong
+tile.planter_trough_corten.name=Planteringsränna av cortenstål

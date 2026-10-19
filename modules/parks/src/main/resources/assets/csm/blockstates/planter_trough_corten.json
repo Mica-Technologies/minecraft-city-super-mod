@@ -1,0 +1,106 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_middle"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_cap"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "neg": "true"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_open"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_cap",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "pos": "true"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_open",
+        "y": 180,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_middle",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_cap",
+        "y": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "neg": "true"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_open",
+        "y": 270,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_cap",
+        "y": 90,
+        "uvlock": false
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "pos": "true"
+      },
+      "apply": {
+        "model": "csm:parks/landscape/planter_trough_corten_open",
+        "y": 90,
+        "uvlock": false
+      }
+    }
+  ]
+}

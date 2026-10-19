@@ -1,0 +1,142 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "wall": "csm:blocks/parks/landscape/planter_concrete",
+    "soil": "csm:blocks/parks/landscape/soil",
+    "particle": "csm:blocks/parks/landscape/planter_concrete"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        0
+      ],
+      "to": [
+        3,
+        11,
+        2
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wall",
+          "uv": [
+            0,
+            5,
+            2,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wall",
+          "uv": [
+            14,
+            5,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            0,
+            3,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#wall",
+          "uv": [
+            1,
+            14,
+            3,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13,
+        0,
+        0
+      ],
+      "to": [
+        15,
+        11,
+        2
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wall",
+          "uv": [
+            0,
+            5,
+            2,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wall",
+          "uv": [
+            14,
+            5,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wall",
+          "uv": [
+            13,
+            0,
+            15,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#wall",
+          "uv": [
+            13,
+            14,
+            15,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        0,
+        0
+      ],
+      "to": [
+        13,
+        9,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#soil",
+          "uv": [
+            3,
+            0,
+            13,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#soil",
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmStumpGrinders;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.parks.planters.CommandParks;
 import com.micatechnologies.minecraft.csm.parks.planting.CommandTree;
 import com.micatechnologies.minecraft.csm.parks.tools.ParksStumpGrinder;
 import com.micatechnologies.minecraft.csm.parks.tools.TreeToolEvents;
@@ -90,6 +91,7 @@ public class CsmParks {
   @Mod.EventHandler
   public void serverStarting(FMLServerStartingEvent event) {
     event.registerServerCommand(new CommandTree());
+    event.registerServerCommand(new CommandParks());
   }
 
   /**
