@@ -1,0 +1,285 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "board": "csm:blocks/healthcare/wards/white",
+    "left": "csm:blocks/healthcare/clinical/status_board_left",
+    "right": "csm:blocks/healthcare/clinical/status_board_right",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        8,
+        0,
+        15
+      ],
+      "to": [
+        24,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#left",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#board",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -8,
+        0,
+        15
+      ],
+      "to": [
+        8,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#right",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#board",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#board",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -4,
+        0.5,
+        13.5
+      ],
+      "to": [
+        20,
+        1.2,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            -8,
+            14.8,
+            16,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#grey",
+          "uv": [
+            -8,
+            14.8,
+            16,
+            15.5
+          ]
+        },
+        "east": {
+          "texture": "#grey",
+          "uv": [
+            1,
+            14.8,
+            2.5,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            13.5,
+            14.8,
+            15,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            -8,
+            13.5,
+            16,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#grey",
+          "uv": [
+            -8,
+            1,
+            16,
+            2.5
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    }
+  }
+}

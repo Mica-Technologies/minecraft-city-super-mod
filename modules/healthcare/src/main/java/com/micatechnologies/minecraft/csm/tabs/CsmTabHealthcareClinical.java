@@ -3,16 +3,22 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
+import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcarePair;
+import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareScreen;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
+import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockCeilingHead;
+import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockCeilingHeadLight;
+import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockEdTrackingBoard;
+import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockNurseStation;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseCallMasterPanel;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * The Healthcare module's clinical tab: nursing (the nurse call master panel, infection control,
- * linen), and later the emergency department, surgery support, imaging, the lab, pharmacy, the
- * morgue and the building systems.
+ * The Healthcare module's clinical tab: nursing (the nurse call master panel, the nurses'
+ * station, medication, infection control, linen), the ICU, the emergency department and surgery
+ * support, and later imaging, the lab, pharmacy, the morgue and the building systems.
  *
  * @version 1.0
  * @since 2026.10
@@ -54,5 +60,29 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockHealthcare("clean_linen_cart", new int[]{1, 0, 3, 15, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcare("medical_gas_outlet_o2", new int[]{5, 5, 14, 11, 11, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.WALL, false));
     initTabBlock(new BlockHealthcare("medical_gas_zone_sign", new int[]{1, 4, 15, 15, 12, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
+    // --- gen_healthcare_clinical.py --fragments ---
+    initTabBlock(new BlockHealthcareScreen("icu_ventilator", new int[]{3, 0, 3, 13, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockCeilingHead("icu_pendant", new int[]{2, 0, 1, 14, 16, 14}, 1));
+    initTabBlock(new BlockCeilingHead("surgical_equipment_boom", new int[]{2, 0, 2, 14, 16, 14}, 1));
+    initTabBlock(new BlockCeilingHeadLight("trauma_exam_light", new int[]{2, 2, 2, 14, 16, 14}, 15, 2));
+    initTabBlock(new BlockHealthcareScreen("crash_cart", new int[]{1, 0, 3, 15, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcareScreen("defibrillator", new int[]{3, 0, 3, 13, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockNurseStation("nurse_station_counter", new int[]{0, 0, 0, 16, 16, 16}, false));
+    initTabBlock(new BlockNurseStation("nurse_station_counter_monitors", new int[]{0, 0, 0, 16, 16, 16}, false));
+    initTabBlock(new BlockNurseStation("nurse_station_corner", new int[]{0, 0, 0, 16, 16, 16}, true));
+    initTabBlock(new BlockHealthcarePair("patient_status_board", new int[]{0, 0, 13, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE, false));
+    initTabBlock(new BlockHealthcareScreen("workstation_on_wheels", new int[]{2, 0, 2, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcarePair("medication_dispensing_cabinet", new int[]{0, 0, 2, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcare("medication_cart", new int[]{1, 0, 2, 15, 16, 14}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("medication_fridge", new int[]{1, 0, 2, 15, 15, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcareScreen("triage_desk", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcarePair("decontamination_shower", new int[]{2, 0, 3, 14, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.TALL, false));
+    initTabBlock(new BlockEdTrackingBoard());
+    initTabBlock(new BlockHealthcarePair("ambulance_only_marking", new int[]{0, 0, 0, 16, 1, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE, false));
+    initTabBlock(new BlockHealthcare("ambulance_only_sign", new int[]{2, 2, 15, 14, 14, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.WALL, false));
+    initTabBlock(new BlockHealthcarePair("blanket_warming_cabinet", new int[]{1, 0, 1, 15, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcareScreen("autoclave", new int[]{1, 0, 1, 15, 15, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("case_cart", new int[]{1, 0, 2, 15, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcarePair("scrub_attire_dispenser", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
   }
 }

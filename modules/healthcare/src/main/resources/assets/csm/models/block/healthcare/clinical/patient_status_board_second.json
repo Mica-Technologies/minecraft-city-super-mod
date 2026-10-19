@@ -1,0 +1,130 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "board": "csm:blocks/healthcare/wards/white",
+    "left": "csm:blocks/healthcare/clinical/status_board_left",
+    "right": "csm:blocks/healthcare/clinical/status_board_right",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        15
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#right",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#board",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#board",
+          "uv": [
+            0,
+            15,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#board",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        0.5,
+        13.5
+      ],
+      "to": [
+        16,
+        1.2,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            0,
+            14.8,
+            12,
+            15.5
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            13.5,
+            14.8,
+            15,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            4,
+            13.5,
+            16,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#grey",
+          "uv": [
+            4,
+            1,
+            16,
+            2.5
+          ]
+        }
+      }
+    }
+  ]
+}

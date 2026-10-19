@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.healthcare;
 
+import com.micatechnologies.minecraft.csm.healthcare.clinical.CeilingHung;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.NurseCallNetwork;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainPanel;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainTrack;
@@ -35,6 +36,10 @@ import net.minecraft.world.World;
  *   (opened, it bunches at the run's end nearest that position).</li>
  *   <li>{@code curtain pattern <x y z> <pattern>} -- changes a curtain's cloth.</li>
  *   <li>{@code curtain clear <track x y z>} -- takes down the curtain under a track run.</li>
+ *   <li>{@code boom fill <head x y z>} -- fills the drop column above a ceiling-hung head (the
+ *   ICU pendant, the surgical equipment boom, the trauma exam light) up to the ceiling.</li>
+ *   <li>{@code boom clear <head x y z>} -- takes the column above a head down, leaving the
+ *   head.</li>
  * </ul>
  *
  * @since 2026.10
@@ -43,7 +48,7 @@ public class CommandHealthcare extends CommandBase {
 
   private static final String USAGE = "/csmhealthcare <nursecall <link|unlink <parent x y z> "
       + "<device x y z>|status <x y z>|prune>|curtain <fill <x y z> [drop|auto] [pattern]"
-      + "|open|close|clear <x y z>|pattern <x y z> <pattern>>>";
+      + "|open|close|clear <x y z>|pattern <x y z> <pattern>>|boom <fill|clear> <x y z>>";
 
   @Override
   public String getName() {
@@ -63,6 +68,10 @@ public class CommandHealthcare extends CommandBase {
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
+    if (args.length >= 2 && "boom".equals(args[0])) {
+      boom(sender, args);
+      return;
+    }
     if (args.length >= 2 && "curtain".equals(args[0])) {
       curtain(sender, args);
       return;
@@ -182,6 +191,31 @@ public class CommandHealthcare extends CommandBase {
     }
   }
 
+  private static void boom(ICommandSender sender, String[] args) throws CommandException {
+    if (args.length < 5) {
+      throw new WrongUsageException("/csmhealthcare boom <fill|clear> <head x y z>");
+    }
+    World world = sender.getEntityWorld();
+    BlockPos head = parseBlockPos(sender, args, 2, false);
+    if (!CeilingHung.isHead(world.getBlockState(head).getBlock())) {
+      throw new CommandException("No ceiling-hung head at " + NurseCallNetwork.describe(head)
+          + ".");
+    }
+    if ("fill".equals(args[1])) {
+      int n = CeilingHung.fillColumn(world, head);
+      if (n < 0) {
+        throw new CommandException("No ceiling within " + CeilingHung.MAX_COLUMN
+            + " blocks above " + NurseCallNetwork.describe(head) + ".");
+      }
+      say(sender, "Placed " + n + " column cell" + (n == 1 ? "" : "s") + ".");
+    } else if ("clear".equals(args[1])) {
+      int n = CeilingHung.clearColumn(world, head);
+      say(sender, "Removed " + n + " column cell" + (n == 1 ? "" : "s") + ".");
+    } else {
+      throw new WrongUsageException("/csmhealthcare boom <fill|clear> <head x y z>");
+    }
+  }
+
   private static void status(ICommandSender sender, World world, NurseCallNetwork net,
       BlockPos pos) throws CommandException {
     NurseCallNetwork.Kind kind = NurseCallNetwork.kindOf(world, pos);
@@ -225,7 +259,16 @@ public class CommandHealthcare extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "nursecall", "curtain");
+      return getListOfStringsMatchingLastWord(args, "nursecall", "curtain", "boom");
+    }
+    if ("boom".equals(args[0])) {
+      if (args.length == 2) {
+        return getListOfStringsMatchingLastWord(args, "fill", "clear");
+      }
+      if (args.length >= 3 && args.length <= 5) {
+        return getTabCompletionCoordinate(args, 2, targetPos);
+      }
+      return Collections.emptyList();
     }
     if ("curtain".equals(args[0])) {
       if (args.length == 2) {

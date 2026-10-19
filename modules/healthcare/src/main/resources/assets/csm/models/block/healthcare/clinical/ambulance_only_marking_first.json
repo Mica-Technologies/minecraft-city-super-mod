@@ -1,0 +1,35 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "mark": "csm:blocks/healthcare/clinical/mark_left",
+    "left": "csm:blocks/healthcare/clinical/mark_left",
+    "right": "csm:blocks/healthcare/clinical/mark_right",
+    "particle": "csm:blocks/healthcare/clinical/mark_left"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        0.05,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#left",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "rotation": 180
+        }
+      }
+    }
+  ]
+}

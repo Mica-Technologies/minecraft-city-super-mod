@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockCeilingColumn;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainPanel;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockHospitalBedFoot;
 import net.minecraft.block.Block;
@@ -41,5 +42,7 @@ public class CsmTabHealthcareHidden extends CsmTab {
     // --- gen_healthcare_wards.py --fragments ---
     initTabBlock(new BlockHospitalBedFoot());
     initTabBlock(new BlockCurtainPanel());
+    // --- gen_healthcare_clinical.py --fragments ---
+    initTabBlock(new BlockCeilingColumn());
   }
 }

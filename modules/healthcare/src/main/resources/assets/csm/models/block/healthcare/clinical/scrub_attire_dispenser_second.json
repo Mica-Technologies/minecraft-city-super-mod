@@ -1,0 +1,249 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/wards/white",
+    "grey": "csm:blocks/healthcare/wards/dark_grey",
+    "window": "csm:blocks/healthcare/clinical/scrub_window",
+    "door": "csm:blocks/healthcare/clinical/dispense_door",
+    "label": "csm:blocks/healthcare/clinical/scrub_label",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        0.5,
+        0,
+        2
+      ],
+      "to": [
+        15.5,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            0.5,
+            2,
+            15.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            0.5,
+            2,
+            15.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            2,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            2,
+            2,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.25,
+        14,
+        1.75
+      ],
+      "to": [
+        15.75,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            0.25,
+            1,
+            15.75,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#grey",
+          "uv": [
+            0.25,
+            1,
+            15.75,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#grey",
+          "uv": [
+            0,
+            1,
+            14.25,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            1.75,
+            1,
+            16,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            0.25,
+            1.75,
+            15.75,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#grey",
+          "uv": [
+            0.25,
+            0,
+            15.75,
+            14.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        0,
+        1.6
+      ],
+      "to": [
+        14,
+        12,
+        2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#window",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            2,
+            4,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            14,
+            4,
+            14.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            1.6,
+            4,
+            2,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            2,
+            1.6,
+            14,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        0,
+        1.2
+      ],
+      "to": [
+        13.5,
+        1,
+        1.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            2.5,
+            15,
+            5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#grey",
+          "uv": [
+            11,
+            15,
+            13.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#grey",
+          "uv": [
+            14.4,
+            15,
+            14.8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            1.2,
+            15,
+            1.6,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            11,
+            1.2,
+            13.5,
+            1.6
+          ]
+        }
+      }
+    }
+  ]
+}
