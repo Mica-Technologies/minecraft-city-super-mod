@@ -7,6 +7,9 @@ import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkFacing;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkJoining;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkSaguaro;
+import com.micatechnologies.minecraft.csm.parks.planters.BlockPlanter;
+import com.micatechnologies.minecraft.csm.parks.planters.BlockPlanterBed;
+import com.micatechnologies.minecraft.csm.parks.planters.BlockPlanterTrough;
 import com.micatechnologies.minecraft.csm.parks.planting.ItemTreePlantingTool;
 import com.micatechnologies.minecraft.csm.parks.tools.BlockBrushPile;
 import com.micatechnologies.minecraft.csm.parks.tools.ItemChainsaw;
@@ -465,12 +468,14 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkJoining("hedge_privet_low", BlockParkJoining.Kind.HEDGE, 10, 14));
     initTabBlock(new BlockParkJoining("hedge_privet_tall", BlockParkJoining.Kind.HEDGE, 16, 14));
     initTabBlock(new BlockParkJoining("tree_pit_fence", BlockParkJoining.Kind.FENCE, 9, 2));
-    initTabBlock(new BlockParkJoining("raised_bed_concrete", BlockParkJoining.Kind.BED, 12, 16));
-    initTabBlock(new BlockParkProp("planter_concrete", BlockParkProp.Kind.PLANTER, 14, 1));
-    initTabBlock(new BlockParkJoining("raised_bed_wood", BlockParkJoining.Kind.BED, 12, 16));
-    initTabBlock(new BlockParkProp("planter_wood", BlockParkProp.Kind.PLANTER, 14, 1));
-    initTabBlock(new BlockParkJoining("raised_bed_corten", BlockParkJoining.Kind.BED, 12, 16));
-    initTabBlock(new BlockParkProp("planter_corten", BlockParkProp.Kind.PLANTER, 14, 1));
+    initTabBlock(new BlockPlanterBed("raised_bed_concrete", 12, 16, 10.0F, 1.0F));
+    initTabBlock(new BlockPlanter("planter_concrete", 14, 1, 14.0F, 1.0F));
+    initTabBlock(new BlockPlanterBed("raised_bed_wood", 12, 16, 10.0F, 1.0F));
+    initTabBlock(new BlockPlanter("planter_wood", 14, 1, 14.0F, 1.0F));
+    initTabBlock(new BlockPlanterBed("raised_bed_corten", 12, 16, 10.0F, 1.0F));
+    initTabBlock(new BlockPlanter("planter_corten", 14, 1, 14.0F, 1.0F));
+    initTabBlock(new BlockPlanterTrough("planter_trough_concrete", false, 11, 9.0F, 0.7F));
+    initTabBlock(new BlockPlanterTrough("planter_trough_corten", true, 11, 9.0F, 0.7F));
     initTabBlock(new BlockParkProp("shrub_boxwood", BlockParkProp.Kind.SHRUB, 12, 2));
     initTabBlock(new BlockParkProp("shrub_hydrangea", BlockParkProp.Kind.SHRUB, 14, 1));
     initTabBlock(new BlockParkProp("shrub_juniper", BlockParkProp.Kind.SHRUB, 16, 2));
@@ -613,11 +618,11 @@ public class CsmTabTreesPlants extends CsmTab {
     initTabBlock(new BlockParkProp("potted_shrub_bougainvillea", BlockParkProp.Kind.SHRUB, 15, 3));
 
     // The nursery, garden centre and farm: more planters, nursery benches and stock, crop rows.
-    initTabBlock(new BlockParkProp("planter_terracotta_small", BlockParkProp.Kind.PLANTER, 8, 4));
-    initTabBlock(new BlockParkProp("planter_terracotta_large", BlockParkProp.Kind.PLANTER, 13, 2));
-    initTabBlock(new BlockParkProp("planter_glazed_urn", BlockParkProp.Kind.PLANTER, 14, 2));
-    initTabBlock(new BlockParkProp("planter_concrete_bowl", BlockParkProp.Kind.PLANTER, 8, 1));
-    initTabBlock(new BlockParkProp("planter_half_barrel", BlockParkProp.Kind.PLANTER, 10, 1));
+    initTabBlock(new BlockPlanter("planter_terracotta_small", 8, 4, 8.0F, 0.45F));
+    initTabBlock(new BlockPlanter("planter_terracotta_large", 13, 2, 13.0F, 0.7F));
+    initTabBlock(new BlockPlanter("planter_glazed_urn", 14, 2, 14.0F, 0.55F));
+    initTabBlock(new BlockPlanter("planter_concrete_bowl", 8, 1, 8.0F, 0.8F, "mixed_basket"));
+    initTabBlock(new BlockPlanter("planter_half_barrel", 10, 1, 10.0F, 0.85F));
     initTabBlock(new BlockParkFacing("window_box_flowers", new int[]{1, 0, 10, 15, 10, 16}, true));
     initTabBlock(new BlockParkJoining("nursery_bench", BlockParkJoining.Kind.TABLE, 16, 16));
     initTabBlock(new BlockParkFacing("potting_bench", new int[]{0, 0, 3, 16, 16, 16}, true));

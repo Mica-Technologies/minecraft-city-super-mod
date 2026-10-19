@@ -444,6 +444,22 @@ def prop(registry, kind, height, inset, names, models, blockstate, item=None):
         % (registry, kind, height, inset), names, models, blockstate, item)
 
 
+def jfloat(v):
+    """A Java float literal: 14.0F, 0.45F."""
+    return ("%.1f" % v if float(v) == int(v) else ("%g" % v)) + "F"
+
+
+def planter(registry, height, inset, soil, scale, names, models, blockstate, hide=None):
+    """A plantable planter (BlockPlanter): a PLANTER prop whose soil surface is at `soil`
+    sixteenths and which draws a plant planted in it at `scale` (its baked model merged into
+    the planter's, PlanterBakedModel). `hide` names a texture of the model that is left out
+    while something is planted: the bowl's own bedding flowers."""
+    java = 'new BlockPlanter("%s", %d, %d, %s, %s%s)' % (
+        registry, height, inset, jfloat(soil), jfloat(scale),
+        ', "%s"' % hide if hide else "")
+    add(registry, java, names, models, blockstate)
+
+
 # --- tree grates and pits: full ground blocks a tree stands on ---
 for gid, names in (
         ("square", ("Square Tree Grate", "Quadratischer Baumrost", "Alcorque cuadrado",
@@ -470,7 +486,7 @@ SIDES = (("north", 0), ("east", 90), ("south", 180), ("west", 270))
 
 
 def joining(registry, kind, height, width, names, post, side, item_extra=(), side_when="true",
-            corner=None):
+            corner=None, java=None):
     """post: elements always drawn; side: elements drawn toward north, turned for the others.
 
     A hedge or fence draws a side where it joins (side_when "true"); a bed draws its wall where
@@ -508,7 +524,7 @@ def joining(registry, kind, height, width, names, post, side, item_extra=(), sid
         "display": {"gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0],
                             "scale": [0.625, 0.625, 0.625]}},
     }
-    add(registry, 'new BlockParkJoining("%s", BlockParkJoining.Kind.%s, %d, %d)'
+    add(registry, java or 'new BlockParkJoining("%s", BlockParkJoining.Kind.%s, %d, %d)'
         % (registry, kind, height, width), names, models, {"multipart": parts}, item_model)
 
 
@@ -561,15 +577,95 @@ for mat, names_m in (("concrete", ("Concrete", "Beton", "hormigón", "betong")),
     joining(reg, "BED", 12, 16,
             ("Raised %s Planting Bed" % names_m[0], "Hochbeet (%s)" % names_m[1],
              "Bancal elevado de %s" % names_m[2], "Upphöjd odlingsbädd av %s" % names_m[3]),
-            post, side, item_extra=walls, side_when="false", corner=corner)
+            post, side, item_extra=walls, side_when="false", corner=corner,
+            # Plantable, one plant a cell, standing on the soil at y = 10.
+            java='new BlockPlanterBed("%s", 12, 16, %s, %s)' % (reg, jfloat(10), jfloat(1.0)))
     reg = "planter_" + mat
     tex = {"side": T("planter_" + mat), "top": T("planter_%s_top" % mat),
            "particle": T("planter_" + mat)}
-    prop(reg, "PLANTER", 14, 1,
-         ("%s Planter" % names_m[0], "Pflanzkübel (%s)" % names_m[1],
-          "Jardinera de %s" % names_m[2], "Planteringskärl av %s" % names_m[3]),
-         {reg: model(tex, [box([1, 0, 1], [15, 14, 15], "side", per={"up": "top"})])},
-         simple_state(reg))
+    planter(reg, 14, 1, 14, 1.0,
+            ("%s Planter" % names_m[0], "Pflanzkübel (%s)" % names_m[1],
+             "Jardinera de %s" % names_m[2], "Planteringskärl av %s" % names_m[3]),
+            {reg: model(tex, [box([1, 0, 1], [15, 14, 15], "side", per={"up": "top"})])},
+            simple_state(reg))
+
+
+# --- linear troughs: a long planter for a median or a plaza, joined along its axis ---
+# Drawn running north-south (axis z); the blockstate turns it for axis x. A cell is two side
+# walls and soil between them; each end is either a cap across the trough (the run ends there)
+# or the walls and soil carried on to the block line (the run goes on), picked by the NEG and
+# POS actual-state sides, so a run of troughs is one trough with caps only at its two ends.
+TROUGH_WALL = (1, 3)     # the west wall's x span; the east wall mirrors it
+TROUGH_H = 11            # wall height
+TROUGH_SOIL = 9          # soil surface
+TROUGH_END = 2           # how far an end piece reaches into the cell
+TROUGH_SCALE = 0.7       # a plant in a 10 px wide bed of soil
+
+
+def trough_parts(mat):
+    tex = {"wall": T("planter_" + mat), "soil": T("soil"), "particle": T("planter_" + mat)}
+    w0, w1 = TROUGH_WALL
+    e = TROUGH_END
+    # Walls run between the end pieces and draw no end faces: an end piece meets them there.
+    middle = model(tex, [
+        box([w0, 0, e], [w1, TROUGH_H, 16 - e], "wall", faces=("west", "east", "up", "down")),
+        box([16 - w1, 0, e], [16 - w0, TROUGH_H, 16 - e], "wall",
+            faces=("west", "east", "up", "down")),
+        box([w1, 0, e], [16 - w1, TROUGH_SOIL, 16 - e], "soil", faces=("up", "down")),
+    ])
+    # The run ends here: one cap across the whole end.
+    cap = model(tex, [box([w0, 0, 0], [16 - w0, TROUGH_H, e], "wall")])
+    # The run goes on: the walls and soil carried to the block line, open toward the next cell.
+    open_end = model(tex, [
+        box([w0, 0, 0], [w1, TROUGH_H, e], "wall", faces=("west", "east", "up", "down")),
+        box([16 - w1, 0, 0], [16 - w0, TROUGH_H, e], "wall",
+            faces=("west", "east", "up", "down")),
+        box([w1, 0, 0], [16 - w1, TROUGH_SOIL, e], "soil", faces=("up", "down")),
+    ])
+    return tex, middle, cap, open_end
+
+
+def trough(mat, names, metal):
+    reg = "planter_trough_" + mat
+    tex, middle, cap, open_end = trough_parts(mat)
+    models = {reg + "_middle": middle, reg + "_cap": cap, reg + "_open": open_end}
+    parts = []
+    # The north end (z = 0) is the negative end of an axis-z run; turned 90 it is the east (the
+    # positive end of an axis-x run), turned 270 the west (negative).
+    for axis, along in (("z", 0), ("x", 90)):
+        apply = {"model": MODEL + reg + "_middle"}
+        if along:
+            apply["y"] = along
+            apply["uvlock"] = False
+        parts.append({"when": {"axis": axis}, "apply": apply})
+        ends = (("neg", 0), ("pos", 180)) if axis == "z" else (("neg", 270), ("pos", 90))
+        for side, rot in ends:
+            for joined, piece in (("false", "_cap"), ("true", "_open")):
+                apply = {"model": MODEL + reg + piece}
+                if rot:
+                    apply["y"] = rot
+                    apply["uvlock"] = False
+                parts.append({"when": {"axis": axis, side: joined}, "apply": apply})
+    # The item: one trough capped at both ends.
+    south_cap = box([TROUGH_WALL[0], 0, 16 - TROUGH_END], [16 - TROUGH_WALL[0], TROUGH_H, 16],
+                    "wall")
+    models[reg + "_item"] = {
+        "parent": "block/block",
+        "textures": tex,
+        "elements": middle["elements"] + cap["elements"] + [south_cap],
+        "display": {"gui": {"rotation": [30, 225, 0], "translation": [0, 0, 0],
+                            "scale": [0.625, 0.625, 0.625]}},
+    }
+    item_model = {"parent": "csm:block/parks/landscape/" + reg + "_item"}
+    add(reg, 'new BlockPlanterTrough("%s", %s, %d, %s, %s)'
+        % (reg, "true" if metal else "false", TROUGH_H, jfloat(TROUGH_SOIL),
+           jfloat(TROUGH_SCALE)), names, models, {"multipart": parts}, item_model)
+
+
+trough("concrete", ("Concrete Trough Planter", "Beton-Pflanztrog", "Jardinera lineal de hormigón",
+                    "Planteringsränna av betong"), False)
+trough("corten", ("Corten Steel Trough Planter", "Pflanztrog aus Cortenstahl",
+                  "Jardinera lineal de acero corten", "Planteringsränna av cortenstål"), True)
 
 
 # --- shrubs: stacked boxes ---
@@ -2522,11 +2618,13 @@ for size, (foot, body, rim, height), names in (
     els = [box([fi, fy0, fi], [16 - fi, fy1, 16 - fi], "clay", faces=sides + ("down",)),
            box([bi, by0, bi], [16 - bi, by1, 16 - bi], "clay", faces=sides + ("down",)),
            box([ri, ry0, ri], [16 - ri, ry1, 16 - ri], "clay", per={"up": "top"})]
-    prop(reg, "PLANTER", height, int(ri), names, {reg: model(tex, els)}, simple_state(reg))
+    # The soil is the rim's top, inside the rolled rim drawn into its texture.
+    planter(reg, height, int(ri), ry1, {"small": 0.45, "large": 0.7}[size], names,
+            {reg: model(tex, els)}, simple_state(reg))
 
 # --- a glazed ceramic urn: bellied, a narrow neck, a thick lip ---
 urn_tex = {"glaze": T("glazed_urn"), "top": T("glazed_urn_top"), "particle": T("glazed_urn")}
-prop("planter_glazed_urn", "PLANTER", 14, 2,
+planter("planter_glazed_urn", 14, 2, 14, 0.55,
      ("Glazed Ceramic Urn", "Glasierte Keramikurne", "Urna de cerámica esmaltada",
       "Glaserad keramikurna"),
      {"planter_glazed_urn": model(urn_tex, [
@@ -2541,7 +2639,7 @@ prop("planter_glazed_urn", "PLANTER", 14, 2,
 # --- a concrete bowl on a pedestal, planted with bedding flowers ---
 bowl_tex = {"concrete": T("planter_concrete"), "top": T("planter_concrete_top"),
             "flowers": T("mixed_basket"), "particle": T("planter_concrete")}
-prop("planter_concrete_bowl", "PLANTER", 8, 1,
+planter("planter_concrete_bowl", 8, 1, 8, 0.8,
      ("Concrete Bowl Planter", "Beton-Pflanzschale", "Jardinera de cuenco de hormigón",
       "Planteringsskål av betong"),
      {"planter_concrete_bowl": model(bowl_tex, [
@@ -2552,13 +2650,15 @@ prop("planter_concrete_bowl", "PLANTER", 8, 1,
          # Bedding flowers mounded in it, a little short of its rim.
          box([2, 8, 2], [14, 10.5, 14], "flowers", faces=("north", "south", "east", "west", "up")),
          box([4, 10.5, 4], [12, 11.5, 12], "flowers", faces=("north", "south", "east", "west", "up")),
-     ], ao=False)}, simple_state("planter_concrete_bowl"))
+     ], ao=False)}, simple_state("planter_concrete_bowl"),
+     # Something planted in the bowl takes the place of its bedding flowers.
+     hide="mixed_basket")
 
 # --- a half whiskey barrel: oak staves, two iron hoops standing just proud of them ---
 barrel_tex = {"staves": T("barrel_staves"), "top": T("barrel_top"), "iron": T("steel"),
               "particle": T("barrel_staves")}
 hoop = ("north", "south", "east", "west", "up", "down")
-prop("planter_half_barrel", "PLANTER", 10, 1,
+planter("planter_half_barrel", 10, 1, 10, 0.85,
      ("Half Barrel Planter", "Halbfass-Pflanzkübel", "Jardinera de medio barril",
       "Halvtunna för plantering"),
      {"planter_half_barrel": model(barrel_tex, [

@@ -99,7 +99,7 @@ container per jar.
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
-| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities; two tabs, Trees & Plants and Parks |
+| `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities, and plantable planters, raised beds and troughs (`parks.planters`: a plant's baked quads merged onto the soil, no TESR; `/csmparks planter fill`); two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, and a walk-through jet bridge; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 | `modules/healthcare` | `csm_healthcare` | CSM: Healthcare | `healthcare`: the hospital fit-out of GitHub #293 (patient rooms and wards first: beds, headwalls, monitors, IV poles, cubicle curtains on a ceiling track, a linked nurse call network with its `/csmhealthcare` command, dispensers and carts); two tabs, Healthcare - Patient Care and Healthcare - Clinical, and a hidden tab; Core only |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
@@ -135,7 +135,8 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    small cell)
 ├── signage/         (modules/signage) ad kiosks, poster boards, billboards
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
-│                    generators), landscape/ (plantings), amenities/ (the Parks tab)
+│                    generators), landscape/ (plantings), planters/ (planting in planters),
+│                    amenities/ (the Parks tab)
 ├── technology/       # Modern tech: servers, routers, TVs
 ├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards),
 │                    stop/, shelter/, platform/ (station and platform fit-out),
@@ -761,8 +762,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   drawn in Java from their connections; the catalogue only appends, so existing textures never
   change. `--fragments` prints the tab lines; `--check` fails on drift
 - `gen_park_plantings.py` -- the street-tree accessories and plantings (grates, pit fence, stakes,
-  pole-fitted hanging baskets, hedges, shrubs, grasses, flower beds, ground covers, planters and
-  raised beds), the regional plants, herbs and garden plants, cacti and succulents (the stacking
+  pole-fitted hanging baskets, hedges, shrubs, grasses, flower beds, ground covers, planters,
+  raised beds and the joining troughs, each planter's tab line carrying its soil height and plant
+  scale), the regional plants, herbs and garden plants, cacti and succulents (the stacking
   saguaro, `BlockParkSaguaro`) and garden flowers with their nursery pots, and the nursery,
   garden centre and farm pieces (terracotta pots, urn, bowl, half barrel, window box, the joining
   nursery bench, potting bench, stacked pots, seedling flats, compost bin, wheelbarrow, crop rows,

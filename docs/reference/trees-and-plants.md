@@ -2,7 +2,7 @@
 
 Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings.
 
-!!! info "475 blocks in this tab"
+!!! info "477 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -83,9 +83,11 @@ Street trees built block by block from thin, leaning logs and leaves, the Tree P
 | Colorado Blue Columbine | `csm:flower_columbine` |  |  |  |  |
 | Concrete Bowl Planter | `csm:planter_concrete_bowl` |  |  |  |  |
 | Concrete Planter | `csm:planter_concrete` |  |  |  |  |
+| Concrete Trough Planter | `csm:planter_trough_concrete` | 1.5 | 3.0 | pickaxe | 0 |
 | Coontie | `csm:plant_coontie` |  |  |  |  |
 | Coreopsis | `csm:flower_coreopsis` |  |  |  |  |
 | Corten Steel Planter | `csm:planter_corten` |  |  |  |  |
+| Corten Steel Trough Planter | `csm:planter_trough_corten` | 1.5 | 3.0 | pickaxe | 0 |
 | Crape Myrtle Log | `csm:tree_log_crapemyrtle_medium` | 2.0 | 5.0 | axe | 0 |
 | Crape Myrtle Twig | `csm:tree_log_crapemyrtle_twig` | 2.0 | 5.0 | axe | 0 |
 | Daffodils | `csm:flower_daffodils` |  |  |  |  |
