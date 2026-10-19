@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockAirfieldLight;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockAirfieldSign;
+import com.micatechnologies.minecraft.csm.transit.airport.BlockHelipadMarking;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockAirportCounter;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockBaggageCarousel;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockBoardingPassScanner;
@@ -295,5 +296,17 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_large_corner", JetBridgeTurnShape.CORNER_LARGE));
     initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_large_turn", JetBridgeTurnShape.TURN_LARGE));
     initTabBlock(new BlockJetBridgeTurn("airport_jet_bridge_large_uturn", JetBridgeTurnShape.UTURN_LARGE));
+
+    // The helipad (gen_transit_airside.py --fragments): marking pieces and the pad's lights;
+    // /csmtransit helipad lays a whole pad
+    initTabBlock(new BlockHelipadMarking("airport_helipad_surface"));
+    initTabBlock(new BlockHelipadMarking("airport_helipad_circle"));
+    initTabBlock(new BlockHelipadMarking("airport_helipad_h"));
+    initTabBlock(new BlockHelipadMarking("airport_helipad_h_red"));
+    initTabBlock(new BlockHelipadMarking("airport_helipad_box"));
+    initTabBlock(new BlockAirfieldLight("airport_helipad_inset_light", new double[]{3.8, 0, 3.8, 12.2, 1.3, 12.2}, "helipad", 10));
+    initTabBlock(new BlockAirfieldLight("airport_helipad_edge_light", new double[]{5.8, 0, 5.8, 10.2, 12.8, 10.2}, "helipad", 10));
+    initTabBlock(new BlockAirfieldLight("airport_helipad_fato_light", new double[]{5.8, 0, 5.8, 10.2, 12.8, 10.2}, "helipad", 10));
+    initTabBlock(new BlockAirfieldLight("airport_helipad_floodlight", new double[]{4, 0, 4.2, 12, 6.7, 11}, "helipad", 15));
   }
 }
