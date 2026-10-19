@@ -130,13 +130,20 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
         armSprite = quad.getSprite();
       }
     }
+    // A narrow leaf's sidelite, fixed in the frame beside it, both halves.
+    for (BakedQuad quad : lowerQuads) {
+      if (quad.getTintIndex() == TINT_FIXED) {
+        put(buffer, quad, facingTurn, -1, 0);
+      }
+    }
     if (armSprite != null) {
       drawArm(buffer, armSprite, turn, left, out, facingTurn);
     }
     tessellator.draw();
 
     // The leaf and everything fitted to it, turned about the hinge.
-    double px = left ? PIVOT_X : 1 - PIVOT_X;
+    double hinge = block.pivotX();
+    double px = left ? hinge : 1 - hinge;
     GlStateManager.translate(px, 0, pz);
     GlStateManager.rotate(angle, 0F, 1F, 0F);
     GlStateManager.translate(-px, 0, -pz);

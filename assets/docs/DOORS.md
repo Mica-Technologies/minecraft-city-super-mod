@@ -15,6 +15,13 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Front Door (White / Red / Black) | `door_front_white`, `door_front_red`, `door_front_black` |
 | Back Door (Half Glass) | `door_back_halfglass` |
 | Job Trailer Door (in the Construction Site tab, for the job trailer; see `CONSTRUCTION_SITE.md`) | `job_trailer_door` |
+| Hospital Door (Maple / Blue Metal / Sage Metal; Vision Lite or Half Glass), and each as a Narrow Leaf | `door_hosp_<finish>_<leaf>`, `door_hosp_<finish>_<leaf>_narrow`; finish `maple`, `metal_blue`, `metal_sage`; leaf `lite`, `halfglass` |
+| Smoke Barrier Door (Grey / Beige) | `door_smoke_metal_grey`, `door_smoke_metal_beige` |
+| Lead-Lined Door (Radiation) | `door_lead_lined` |
+
+The hospital, smoke and lead-lined doors were added for a hospital build (2026-10),
+whose corridors read as white walls with solid white doors; see **Hospital doors**
+below, and **Placing by command** for the metadata of every door.
 
 ## Using them
 
@@ -192,6 +199,85 @@ and its arm looked folded the wrong way (issues #235 and #236): see the traps. T
 registered with Core's `CsmBakedModelWrappers` rather than put in place by walking the model registry
 in a `ModelBakeEvent` handler, which in a pack running VintageFix finds no door at all and left every
 glazed door's glass opaque (issue #242; PERFORMANCE_AND_SECURITY.md).
+
+## Hospital doors
+
+Twelve leaves on `BlockBuildingDoor`, by registry name, three finishes by two leaves, each full
+or narrow: a **maple** veneer, or hollow metal painted **blue** or **sage** (named "Blue Metal",
+"Sage Metal", which is also what prices them in sheet metal); a **vision lite**
+(a narrow 4 x 25 in lite toward the latch) or **half glass**. Every one has a stainless kick plate
+across the foot of both faces and a lever. They swing in, as an interior door does, and do
+everything the other doors do: pairs, the Door Closer, the Door Swing Tool, keypad locks,
+redstone.
+
+- **Single and double.** One door is a single; two of a kind side by side, latch to latch, are a
+  double pair, made by placing them (or by command, below) as any pair is.
+- **1.5-leaf (unequal pair).** A **narrow leaf** (`..._narrow`) is an 8 px leaf hinged in the
+  middle of its cell, with a fixed sidelite in the other half: an inactive leaf beside its
+  frame's sidelite. It pairs with the full leaf of its own finish and leaf type
+  (`BlockBuildingDoor.pairFamily`, the registry name without `_narrow`), and is placed on the full
+  leaf's latch side, hinged the other way, so the two leaves meet in the middle. How the pair
+  opens:
+  - a hand (or a linked keypad, button or station) opening the **full leaf** opens it alone; the
+    narrow leaf is **held**, as a real inactive leaf is by its flush bolts;
+  - a click on the **narrow leaf** opens **both** -- for a bed or a cart;
+  - **redstone** at either opens and shuts **both** (`setOpen` skips the held leaf only for a
+    hand opening the full leaf);
+  - shutting either shuts both.
+  The narrow leaf takes no closer (its models have none, and the item refuses it); fit the
+  closer to the full leaf, which shuts the pair. It turns about (8.875, 15.125) px rather than the
+  usual pivot (`pivotX`, SHARED with `gen_doors.NARROW_PIVOT_X`), and its sidelite is marked
+  `TINT_FIXED`, so the swing renderer turns the leaf and leaves the sidelite where it is (the
+  renderer now draws a lower half's fixed quads too). Open, its box covers the sidelite and the
+  open leaf. Its face texture is the 8 px leaf drawn twice side by side, and the sidelite's the
+  same, so a face shows the whole drawing whichever half its position-derived UVs land on.
+- **Smoke barrier doors** (`door_smoke_metal_grey`, `door_smoke_metal_beige`): cross-corridor
+  smoke compartment doors, hollow metal in neutral colours with no red in them, a tall vision
+  panel, a stainless push plate on the push face and a pull bar on the other, kick plates. Placed
+  as a double pair across the corridor. **The closer is built in** (`builtInCloser`): the upper
+  half reads its closer bit as set whatever the metadata says, sneak-clicking does not take it
+  off, and breaking one drops no closer item. So the doors **shut the moment the redstone holding
+  them goes**: Life Safety's Magnetic Door Holder powers the door beside it while its panel is
+  normal and drops the signal on alarm, which is all the release there is. Nothing in Building
+  names Life Safety; any redstone does the same.
+- **Lead-lined door** (`door_lead_lined`): a solid veneer leaf with a small lead-glass lite and a
+  radiation trefoil plate (the public-domain symbol, black on yellow) on its outside face. The
+  plate stays on the outside face whichever way the door swings: reversed, the leaf is mirrored to
+  the inside face of the cell and the plate is put back on its outside (`trefoil_plate` in the
+  generator), rather than mirrored with it as handles are.
+
+## Placing by command
+
+Every door can be placed and set up with `/setblock` alone; none needs a GUI or a click. A door
+is two blocks: put the **lower half first, then the upper half** in the cell above (with nothing
+changing round them between, the lower half does not look for its upper half until a neighbour
+changes). Facing is a horizontal index: **S 0, W 1, N 2, E 3**. Hinge left or right is as seen
+from outside, looking in (facing north: left is west).
+
+| Half | Bits | Meaning |
+|---|---|---|
+| Lower | 0-1 | facing: the way to the **inside** (the way a player faced, from outside, placing it) |
+| Lower | 2 (4) | open |
+| Upper | 3 (8) | always set: this is the upper half |
+| Upper | 0 (1) | hinge on the right |
+| Upper | 1 (2) | closer fitted (always read as set on a smoke barrier door) |
+| Upper | 2 (4) | reversed: swings the other way from its kind's default (ignored by sliding doors) |
+
+So a shut door facing north, hinged left: lower `2`, upper `8`; the same hinged right: upper `9`;
+with a closer: upper `10` / `11`. A **pair** facing north: the west door hinged left (`8`), the
+east door hinged right (`9`). A **1.5 pair**: the full leaf and the narrow leaf of the same finish
+and leaf, the narrow one on the full leaf's latch side and hinged the other way (west full `8`,
+east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave them out.
+
+| Block | Lower | Upper | Notes |
+|---|---|---|---|
+| `door_hosp_*` (full) | facing, open | hinge, closer, reversed | swings in by default |
+| `door_hosp_*_narrow` | facing, open | hinge, reversed (closer ignored) | pairs with its full leaf |
+| `door_smoke_metal_*` | facing, open | hinge, reversed (closer always on) | held open by redstone, shuts when it goes |
+| `door_lead_lined` | facing, open | hinge, closer, reversed | plate on the outside face |
+
+No door has NBT to set: at rest no door has a tile entity (the custom door's settings are the
+exception, in its own section).
 
 ## Cost
 

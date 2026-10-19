@@ -140,6 +140,70 @@ DOORS = {
         "Job Trailer Door", "Oficina de Obra (Puerta)", "Baucontainer (Tür)", "Bodvagn (Dörr)")),
 }
 
+# The hospital doors: a narrow vision lite or a half-glass leaf, in a wood veneer (maple) or a
+# painted hollow metal finish (blue, sage), each with a stainless kick plate on both faces. Every
+# leaf also comes NARROW (`_narrow`): an 8 px leaf hinged in the middle of its cell beside a fixed
+# 8 px sidelite, the inactive leaf of a 1.5-leaf pair, which pairs with the full leaf of its own
+# finish. finish -> (colour, veneer, name in each language).
+HOSPITAL_FINISHES = {
+    "maple": ((212, 172, 120), True, ("Maple", "Arce", "Ahorn", "Lönn")),
+    "metal_blue": ((126, 154, 182), False, ("Blue Metal", "Metal Azul", "Metall Blau", "Blå Metall")),
+    "metal_sage": ((146, 168, 136), False, ("Sage Metal", "Metal Salvia", "Metall Salbeigrün",
+                                            "Salviagrön Metall")),
+}
+HOSPITAL_LEAVES = {
+    "lite": ("Vision Lite", "Mirilla", "Lichtausschnitt", "Glasruta"),
+    "halfglass": ("Half Glass", "Media Vidriera", "Halbverglast", "Halvglasad"),
+}
+NARROW_NAMES = ("Narrow Leaf", "Hoja Estrecha", "Schmaler Flügel", "Smalt Dörrblad")
+HOSPITAL_NAMES = ("Hospital Door", "Puerta de Hospital", "Krankenhaustür", "Sjukhusdörr")
+
+for _f, (_rgb, _veneer_on, _fn) in HOSPITAL_FINISHES.items():
+    for _l, _ln in HOSPITAL_LEAVES.items():
+        for _narrow in (False, True):
+            _names = tuple("%s (%s, %s%s)" % (h, f, l, (", " + n) if _narrow else "")
+                           for h, f, l, n in zip(HOSPITAL_NAMES, _fn, _ln, NARROW_NAMES))
+            DOORS["door_hosp_%s_%s%s" % (_f, _l, "_narrow" if _narrow else "")] = (
+                "hosp_%s%s" % (_l, "_narrow" if _narrow else ""), _rgb, True, _names)
+
+# Cross-corridor smoke-compartment doors: hollow metal in neutral, red-free colours, a tall vision
+# panel, a push plate and a pull, kick plates, and a closer that is always fitted. Placed as a
+# pair across a corridor, held open by Life Safety's magnetic door holders through redstone, and
+# shut on the closer as soon as the signal goes.
+DOORS["door_smoke_metal_grey"] = ("smoke", (176, 178, 176), True, (
+    "Smoke Barrier Door (Grey Metal)", "Puerta de Barrera de Humo (Metal Gris)",
+    "Rauchschutztür (Metall Grau)", "Brandcellsdörr (Grå Metall)"))
+DOORS["door_smoke_metal_beige"] = ("smoke", (200, 190, 168), True, (
+    "Smoke Barrier Door (Beige Metal)", "Puerta de Barrera de Humo (Metal Beige)",
+    "Rauchschutztür (Metall Beige)", "Brandcellsdörr (Beige Metall)"))
+# A lead-lined (radiation shielding) door: a solid veneer leaf with a small lead-glass lite and a
+# radiation trefoil plate on its outside face.
+DOORS["door_lead_lined"] = ("lead", (150, 108, 72), True, (
+    "Lead-Lined Door (Radiation)", "Puerta Plomada (Radiación)", "Bleitür (Strahlenschutz)",
+    "Blyskyddsdörr (Strålning)"))
+
+# Doors whose closer is always fitted (BlockBuildingDoor.builtInCloser). SHARED.
+BUILT_IN_CLOSER = ("door_smoke_metal_grey", "door_smoke_metal_beige")
+
+# A narrow leaf's hinge pivot, in px: the left-hinged leaf spans x 8..16, beside a fixed sidelite
+# at x 0..8, and turns about (8.875, 15.125). SHARED with BlockBuildingDoor.pivotX.
+NARROW_PIVOT_X = 8.875
+
+
+def narrow(name):
+    return name.endswith("_narrow")
+
+
+def hosp_finish(name):
+    """A hospital door's finish key, from door_hosp_<finish>_<leaf>[_narrow]."""
+    rest = name[len("door_hosp_"):]
+    return next(f for f in HOSPITAL_FINISHES if rest.startswith(f + "_"))
+
+
+def full_leaf(name):
+    """The full leaf a narrow leaf pairs with, whose edge texture it shares."""
+    return name[:-len("_narrow")] if narrow(name) else name
+
 CLOSER_NAMES = ("Door Closer", "Cierrapuertas", "Türschließer", "Dörrstängare")
 SWING_TOOL_NAMES = ("Door Swing Tool", "Herramienta de Sentido de Puerta", "Türanschlagwerkzeug",
                     "Dörrvändningsverktyg")
@@ -271,14 +335,14 @@ def _veneer(rgb, rng, px):
             px[x, y] = _shift(rgb, tone + rng.uniform(-3, 3))
 
 
-def _glass(px, x0, y0, x1, y1, frame_rgb, wired=False):
+def _glass(px, x0, y0, x1, y1, frame_rgb, wired=False, glass=GLASS):
     """A lite from (x0, y0) to (x1, y1) inclusive, in a one-pixel frame."""
     for y in range(y0 - 1, y1 + 2):
         for x in range(x0 - 1, x1 + 2):
             px[x, y] = _shift(frame_rgb, -16)
     for y in range(y0, y1 + 1):
         for x in range(x0, x1 + 1):
-            g = GLASS
+            g = glass
             if wired and ((x - x0) % 3 == 1 or (y - y0) % 3 == 1):
                 g = (120, 124, 128, 200)
             px[x, y] = g
@@ -344,7 +408,81 @@ def door_faces(name):
                 _glass(up, x0, y0, x0 + 2, y0 + 2, rgb)
         _panel(lp, rgb, 2, 2, 7, 13)
         _panel(lp, rgb, 9, 2, 14, 13)
+    elif style.startswith("hosp_"):
+        if HOSPITAL_FINISHES[hosp_finish(name)][1]:
+            _veneer(rgb, rng, lp)
+            _veneer(rgb, rng, up)
+        # A narrow leaf is 8 px wide: its drawing is made twice, side by side, so that whichever
+        # half of the texture a face's UVs fall on (they follow the face's position, and so its
+        # hinge and swing), it shows the whole leaf.
+        copies = (0, 8) if style.endswith("_narrow") else (None,)
+        for ox in copies:
+            if style.startswith("hosp_lite"):
+                # A narrow vision lite, 4 in by 25 in, toward the latch.
+                if ox is None:
+                    _glass(up, 10, 6, 11, 14, rgb)
+                else:
+                    _glass(up, ox + 4, 6, ox + 5, 14, rgb)
+            else:
+                if ox is None:
+                    _glass(up, 3, 2, 12, 14, rgb)
+                else:
+                    _glass(up, ox + 2, 2, ox + 5, 14, rgb)
+    elif style == "smoke":
+        # A tall vision panel of clear fire-rated glass.
+        _glass(up, 4, 2, 11, 14, rgb)
+        _glass(lp, 4, 0, 11, 1, rgb)
+        for x in range(3, 13):
+            lp[x, 0] = _shift(rgb, -16)
+    elif style == "lead":
+        _veneer(rgb, rng, lp)
+        _veneer(rgb, rng, up)
+        # A small lite of lead glass, greyer and darker than plain glass.
+        _glass(up, 6, 3, 9, 7, rgb, glass=(120, 134, 126, 170))
     return lower, upper
+
+
+# The fixed sidelite beside a narrow leaf: a light grey hollow metal frame round clear glass, with
+# a solid panel below kick height. Drawn twice side by side, as the narrow leaf is.
+SIDELITE_FRAME = (204, 204, 200)
+
+
+def sidelite_faces():
+    rng = random.Random(20261941)
+    lower, lp = _canvas(SIDELITE_FRAME, rng, 2)
+    upper, up = _canvas(SIDELITE_FRAME, rng, 2)
+    for ox in (0, 8):
+        for y in range(16):
+            for x in range(ox + 1, ox + 7):
+                up[x, y] = GLASS if y >= 1 else _shift(SIDELITE_FRAME, -10)
+                if y < 9:
+                    lp[x, y] = GLASS
+                elif y == 9:
+                    lp[x, y] = _shift(SIDELITE_FRAME, -16)
+        for y in range(16):
+            for img_px in (lp, up):
+                img_px[ox, y] = _shift(SIDELITE_FRAME, 8)
+                img_px[ox + 7, y] = _shift(SIDELITE_FRAME, -14)
+    return lower, upper
+
+
+def trefoil():
+    """The radiation warning plate: a black trefoil on yellow, in a thin black border. The
+    trefoil is the public-domain symbol: a disc, and three blades of 60 degrees each, 120 apart."""
+    img = Image.new("RGBA", (16, 16))
+    px = img.load()
+    yellow, black = (242, 200, 40), (24, 22, 20)
+    c = 7.5
+    for y in range(16):
+        for x in range(16):
+            dx, dy = x - c, c - y
+            r = math.hypot(dx, dy)
+            a = math.degrees(math.atan2(dy, dx)) % 360
+            blade = any(abs((a - centre + 180) % 360 - 180) <= 30 for centre in (90, 210, 330))
+            on = r <= 1.6 or (2.6 <= r <= 6.2 and blade)
+            edge = x in (0, 15) or y in (0, 15)
+            px[x, y] = black + (255,) if on or edge else yellow + (255,)
+    return img
 
 
 def edge(rgb, rng):
@@ -501,15 +639,27 @@ def workshop_state():
 
 def textures():
     out = {}
+    side_lower, side_upper = sidelite_faces()
     for name, (style, rgb, _, _) in DOORS.items():
         lower, upper = door_faces(name)
         out[name + "_lower"] = lower
         out[name + "_upper"] = upper
+        if narrow(name):
+            # The icon: the sidelite and the leaf beside it, as the pair's narrow half stands.
+            il, iu = lower.copy(), upper.copy()
+            il.paste(side_lower.crop((0, 0, 8, 16)), (0, 0))
+            iu.paste(side_upper.crop((0, 0, 8, 16)), (0, 0))
+            out[name + "_icon"] = door_icon(il, iu)
+            continue
         out[name + "_icon"] = door_icon(lower, upper)
         out[name + "_edge"] = edge(rgb, random.Random(_seed(name) + 1))
     out["door_brass"] = hardware(BRASS, random.Random(20261901))
     out["door_silver"] = hardware(SILVER, random.Random(20261902))
     out["door_black"] = hardware((34, 34, 36), random.Random(20261903))
+    out["door_hosp_sidelite_lower"] = side_lower
+    out["door_hosp_sidelite_upper"] = side_upper
+    out["door_hm_frame"] = hardware(SIDELITE_FRAME, random.Random(20261942))
+    out["door_trefoil"] = trefoil()
     out.update(workshop_textures())
     return out
 
@@ -587,9 +737,56 @@ def pull_handle_top(z_out):
             box(12, 5.25, z_out, 13, 6, z_out + 1.5, "#hw")]
 
 
+KICK_H = 4.0
+
+
+def kick_plates(x0, z_in, z_out):
+    """A stainless kick plate across the foot of each face, 10 in high, standing a quarter pixel
+    proud of the leaf."""
+    faces = _but_faces("north")
+    out = [box(x0, 0, z_out, 16 - 0.5, KICK_H, z_out + 0.25, "#hw", faces=faces)]
+    back = _but_faces("south")
+    out.append(box(x0, 0, z_in - 0.25, 16 - 0.5, KICK_H, z_in, "#hw", faces=back))
+    return out
+
+
+def _but_faces(*leave):
+    return tuple(f for f in ("north", "south", "east", "west", "up", "down") if f not in leave)
+
+
+def push_plate(z_out):
+    """A smoke door's stainless push plate on the face it is pushed from, latch side."""
+    return [box(10.5, 9, z_out, 14.5, 15, z_out + 0.25, "#hw", faces=_but_faces("north"))]
+
+
+def pull_bar(z_in):
+    """And its pull on the other face: a vertical bar on two standoffs."""
+    return [box(12.5, 7, z_in - 1.75, 13.5, 15, z_in - 1, "#hw"),
+            box(12.5, 7.5, z_in - 1, 13.5, 8.5, z_in, "#hw"),
+            box(12.5, 13.5, z_in - 1, 13.5, 14.5, z_in, "#hw")]
+
+
+def trefoil_plate(z_face, outward=1):
+    """The radiation warning plate on the leaf's outside face (z_face, standing off it toward
+    `outward`), below the lead-glass lite."""
+    z0, z1 = (z_face, z_face + 0.2) if outward > 0 else (z_face - 0.2, z_face)
+    back = "north" if outward > 0 else "south"
+    return [box(5.5, 1.5, z0, 10.5, 6.5, z1, "#plate", faces=_but_faces(back))]
+
+
 def hardware_for(style, upper, z_in=Z0, z_out=Z1):
     """The hardware on a leaf whose inside face is at z_in and outside face at z_out: the push bar
     goes on the inside, the side a person leaving pushes from."""
+    if style.startswith("hosp_") or style in ("smoke", "lead"):
+        if upper:
+            return []
+        x0 = 10.0 if style.endswith("_narrow") else 0.5
+        kick = kick_plates(x0, z_in, z_out)
+        if style.endswith("_narrow"):
+            return kick
+        if style == "smoke":
+            return kick + push_plate(z_out) + pull_bar(z_in)
+        return kick + lever(z_in, z_out)
     if upper:
         return pull_handle_top(z_out) if style == "storefront" else []
     if style == "exit":
@@ -732,6 +929,33 @@ def _open(elements):
     return out
 
 
+def _open_about(elements, px):
+    """_open about a pivot at (px, PIVOT[1]): a narrow leaf's, hinged in the middle of its cell.
+    (x, z) -> (z - pz + px, pz + px - x)."""
+    pz = PIVOT[1]
+    out = []
+    for e in elements:
+        m = json.loads(json.dumps(e))
+        (x0, y0, z0), (x1, y1, z1) = e["from"], e["to"]
+        m["from"] = [round(z0 - pz + px, 4), y0, round(pz + px - x1, 4)]
+        m["to"] = [round(z1 - pz + px, 4), y1, round(pz + px - x0, 4)]
+        m["faces"] = {FACE_TURN[face]: dict(spec) for face, spec in e["faces"].items()}
+        out.append(sc._reuv(m))
+    return out
+
+
+def narrow_leaf(z0=Z0, z1=Z1):
+    """A narrow leaf (x 8..16, hinged at x 8) and the fixed sidelite beside it (x 0..8), which is
+    marked TINT_FIXED: the swing renderer draws it where it is."""
+    el = box(8, 0, z0, 16, 16, z1, "#edge")
+    el["faces"]["south"]["texture"] = "#face"
+    el["faces"]["north"]["texture"] = "#face"
+    side = box(0, 0, z0, 8, 16, z1, "#frame")
+    side["faces"]["south"]["texture"] = "#side"
+    side["faces"]["north"]["texture"] = "#side"
+    return [el], _tint([side], TINT_FIXED)
+
+
 def _open_out(elements):
     """Turn a left-hinged outswing door's closed model to its open pose: the depth mirror of
     _open, a quarter turn clockwise (seen from above) about (0.875, 0.875), which carries the leaf
@@ -767,23 +991,48 @@ def models():
         turn = _open_out if name in OUTSWING else _open
         for half in ("lower", "upper"):
             upper = half == "upper"
-            els = (storefront_leaf(upper, z_in, z_out) if style == "storefront"
-                   else leaf(upper, z_in, z_out))
+            fixed = []
+            if narrow(name):
+                els, fixed = narrow_leaf(z_in, z_out)
+                turn = lambda e: _open_about(e, NARROW_PIVOT_X)  # noqa: E731
+            elif style == "storefront":
+                els = storefront_leaf(upper, z_in, z_out)
+            else:
+                els = leaf(upper, z_in, z_out)
             els = els + hardware_for(style, upper, z_in, z_out)
-            tex = {"face": TEX_REF % (name + "_" + half), "edge": TEX_REF % (name + "_edge"),
-                   "hw": _hw_tex(style)}
-            left = els
-            right = sc._mirror_x(els)
+            tex = {"face": TEX_REF % (name + "_" + half),
+                   "edge": TEX_REF % (full_leaf(name) + "_edge"), "hw": _hw_tex(style)}
+            if narrow(name):
+                tex["side"] = TEX_REF % ("door_hosp_sidelite_" + half)
+                tex["frame"] = TEX_REF % "door_hm_frame"
+            plate = upper and style == "lead"
+            if plate:
+                tex["plate"] = TEX_REF % "door_trefoil"
+            # The leaf, and what is fixed to the frame beside it (a narrow leaf's sidelite), which
+            # the open models keep where it is.
+            left = els + (trefoil_plate(z_out) if plate else []) + fixed
+            left_open = turn(els + (trefoil_plate(z_out) if plate else [])) + fixed
+            right = sc._mirror_x(left)
             out["%s_%s_left" % (name, half)] = _model(left, tex)
             out["%s_%s_right" % (name, half)] = _model(right, tex)
-            out["%s_%s_left_open" % (name, half)] = _model(turn(left), tex)
-            out["%s_%s_right_open" % (name, half)] = _model(sc._mirror_x(turn(left)), tex)
+            out["%s_%s_left_open" % (name, half)] = _model(left_open, tex)
+            out["%s_%s_right_open" % (name, half)] = _model(sc._mirror_x(left_open), tex)
             # Reversed: the depth mirror of every one of those, so the leaf hangs on the other face
             # of the cell and opens the other way, and the hardware goes with it (a push bar stays
             # on the face that is pushed).
             rev = reversed_suffix(name)
+            if plate:
+                # A sign plate stays on the outside, whichever way the door swings: the leaf is
+                # mirrored to the inside face and the plate goes on its outside face there.
+                shut = _rounded(sc._mirror_z(els) + trefoil_plate(LEAF))
+                for hinge, flip in (("left", lambda e: e), ("right", sc._mirror_x)):
+                    out["%s_%s_%s%s" % (name, half, hinge, rev)] = _model(
+                        _rounded(flip(shut)), tex)
+                    out["%s_%s_%s%s_open" % (name, half, hinge, rev)] = _model(
+                        _rounded(flip(_open_out(shut))), tex)
+                continue
             for hinge, shut in (("left", left), ("right", right)):
-                opened = turn(left) if hinge == "left" else sc._mirror_x(turn(left))
+                opened = left_open if hinge == "left" else sc._mirror_x(left_open)
                 out["%s_%s_%s%s" % (name, half, hinge, rev)] = _model(
                     _rounded(sc._mirror_z(shut)), tex)
                 out["%s_%s_%s%s_open" % (name, half, hinge, rev)] = _model(
@@ -829,7 +1078,8 @@ def state_for(name):
                         if rot:
                             apply["y"] = rot
                         parts.append({"when": when, "apply": apply})
-                        if half == "upper":
+                        # A narrow leaf takes no closer: its inactive leaf is held by bolts.
+                        if half == "upper" and not narrow(name):
                             outward = (name in OUTSWING) != reversed_
                             closer = "closer_out_%s%s" if outward else "closer_%s%s"
                             c = dict(when)

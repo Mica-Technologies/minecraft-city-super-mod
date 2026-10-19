@@ -30,7 +30,14 @@ class DoorSwingDirectionTest {
   private static final String[] DOORS = {"door_wood_oak", "door_wood_oak_lite",
       "door_wood_white", "door_wood_white_lite", "door_metal_grey", "door_metal_fire",
       "door_metal_exit", "door_storefront_bronze", "door_front_white", "door_front_red",
-      "door_front_black", "door_back_halfglass", "job_trailer_door"};
+      "door_front_black", "door_back_halfglass", "job_trailer_door",
+      "door_hosp_maple_lite", "door_hosp_maple_lite_narrow", "door_hosp_maple_halfglass",
+      "door_hosp_maple_halfglass_narrow", "door_hosp_metal_blue_lite",
+      "door_hosp_metal_blue_lite_narrow", "door_hosp_metal_blue_halfglass",
+      "door_hosp_metal_blue_halfglass_narrow", "door_hosp_metal_sage_lite",
+      "door_hosp_metal_sage_lite_narrow", "door_hosp_metal_sage_halfglass",
+      "door_hosp_metal_sage_halfglass_narrow", "door_smoke_metal_grey", "door_smoke_metal_beige",
+      "door_lead_lined"};
   private static final String[] FACINGS = {"north", "east", "south", "west"};
 
   @Test
@@ -85,11 +92,14 @@ class DoorSwingDirectionTest {
                     + (open ? " open" : "") + (reversed ? " reversed" : "");
                 List<String> leaf = models(parts, facing, half, hinge, open, reversed, false);
                 assertEquals(1, leaf.size(), what + " draws one leaf");
-                assertLeafPlane(leaf.get(0), open, out, what);
+                boolean narrow = door.endsWith("_narrow");
+                assertLeafPlane(leaf.get(0), open, out, narrow, what);
                 List<String> withCloser = models(parts, facing, half, hinge, open, reversed,
                     true);
                 withCloser.removeAll(leaf);
-                if (half.equals("upper")) {
+                if (narrow) {
+                  assertTrue(withCloser.isEmpty(), what + ": a narrow leaf takes no closer");
+                } else if (half.equals("upper")) {
                   assertEquals(1, withCloser.size(), what + " draws one closer");
                   assertEquals(out, withCloser.get(0).startsWith("csm:doors/closer_out_"),
                       what + ": the closer is on the push side");
@@ -153,8 +163,8 @@ class DoorSwingDirectionTest {
    * along the outside face (z 14.25..16) of a door that swings in and the inside face (z 0..1.75)
    * of one that swings out; open, along the jamb, the whole depth of the cell.
    */
-  private static void assertLeafPlane(String model, boolean open, boolean out, String what)
-      throws IOException {
+  private static void assertLeafPlane(String model, boolean open, boolean out, boolean narrow,
+      String what) throws IOException {
     JsonObject m = read(modelPath(model));
     double z0 = Double.MAX_VALUE;
     double z1 = -Double.MAX_VALUE;
@@ -162,14 +172,18 @@ class DoorSwingDirectionTest {
       JsonObject e = el.getAsJsonObject();
       String texture = e.getAsJsonObject("faces").entrySet().iterator().next().getValue()
           .getAsJsonObject().get("texture").getAsString();
-      if (texture.equals("#hw")) {
+      if (texture.equals("#hw") || texture.equals("#plate")) {
         continue;
       }
       z0 = Math.min(z0, vec(e, "from")[2]);
       z1 = Math.max(z1, vec(e, "to")[2]);
     }
     assertTrue(z0 <= z1, what + ": no leaf");
-    if (open) {
+    if (open && narrow) {
+      // An 8 px leaf open beside its sidelite, which stays on the leaf's shut plane.
+      assertEquals(out ? 0.0 : 8.0, z0, 1e-6, what + ": the open narrow leaf");
+      assertEquals(out ? 8.0 : 16.0, z1, 1e-6, what + ": the open narrow leaf");
+    } else if (open) {
       assertEquals(0.0, z0, 1e-6, what + ": the open leaf runs the depth of the cell");
       assertEquals(16.0, z1, 1e-6, what + ": the open leaf runs the depth of the cell");
     } else if (out) {

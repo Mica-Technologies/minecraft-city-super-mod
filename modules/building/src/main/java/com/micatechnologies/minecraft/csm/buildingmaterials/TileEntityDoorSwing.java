@@ -35,10 +35,13 @@ public class TileEntityDoorSwing extends AbstractTileEntity implements ITickable
 
   private boolean opening;
   private long startTick;
+  /** How long the movement takes, in ticks: a swing, or a sliding door's slide. */
+  private int ticks = BlockBuildingDoor.SWING_TICKS;
 
-  void begin(boolean opening, long now) {
+  void begin(boolean opening, long now, int ticks) {
     this.opening = opening;
     this.startTick = now;
+    this.ticks = Math.max(1, ticks);
   }
 
   public boolean isOpening() {
@@ -58,8 +61,7 @@ public class TileEntityDoorSwing extends AbstractTileEntity implements ITickable
     if (startTick == 0L) {
       return 1.0;
     }
-    double t = (world.getTotalWorldTime() - startTick + partialTicks)
-        / BlockBuildingDoor.SWING_TICKS;
+    double t = (world.getTotalWorldTime() - startTick + partialTicks) / ticks;
     return Math.max(0.0, Math.min(1.0, t));
   }
 
@@ -78,7 +80,7 @@ public class TileEntityDoorSwing extends AbstractTileEntity implements ITickable
       putRightLegacySwing(world, pos);
       return;
     }
-    if (startTick == 0L || world.getTotalWorldTime() - startTick >= BlockBuildingDoor.SWING_TICKS) {
+    if (startTick == 0L || world.getTotalWorldTime() - startTick >= ticks) {
       world.removeTileEntity(pos);
       redraw(world, pos);
     }

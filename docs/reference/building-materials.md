@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "203 blocks in this tab"
+!!! info "218 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -123,6 +123,18 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ground-Face Block Slab | `csm:cmu_groundface_slab` | 2 | 10 | pickaxe | 1 |
 | Ground-Face Block Stairs | `csm:cmu_groundface_stairs` | 2 | 10 | pickaxe | 1 |
 | Hollow Metal Door (Grey) | `csm:door_metal_grey` |  |  |  |  |
+| Hospital Door (Blue Metal, Half Glass) | `csm:door_hosp_metal_blue_halfglass` |  |  |  |  |
+| Hospital Door (Blue Metal, Half Glass, Narrow Leaf) | `csm:door_hosp_metal_blue_halfglass_narrow` |  |  |  |  |
+| Hospital Door (Blue Metal, Vision Lite) | `csm:door_hosp_metal_blue_lite` |  |  |  |  |
+| Hospital Door (Blue Metal, Vision Lite, Narrow Leaf) | `csm:door_hosp_metal_blue_lite_narrow` |  |  |  |  |
+| Hospital Door (Maple, Half Glass) | `csm:door_hosp_maple_halfglass` |  |  |  |  |
+| Hospital Door (Maple, Half Glass, Narrow Leaf) | `csm:door_hosp_maple_halfglass_narrow` |  |  |  |  |
+| Hospital Door (Maple, Vision Lite) | `csm:door_hosp_maple_lite` |  |  |  |  |
+| Hospital Door (Maple, Vision Lite, Narrow Leaf) | `csm:door_hosp_maple_lite_narrow` |  |  |  |  |
+| Hospital Door (Sage Metal, Half Glass) | `csm:door_hosp_metal_sage_halfglass` |  |  |  |  |
+| Hospital Door (Sage Metal, Half Glass, Narrow Leaf) | `csm:door_hosp_metal_sage_halfglass_narrow` |  |  |  |  |
+| Hospital Door (Sage Metal, Vision Lite) | `csm:door_hosp_metal_sage_lite` |  |  |  |  |
+| Hospital Door (Sage Metal, Vision Lite, Narrow Leaf) | `csm:door_hosp_metal_sage_lite_narrow` |  |  |  |  |
 | Insulated Panel Cladding | `csm:cladding_insulated` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Fence | `csm:cladding_insulated_fence` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Slab | `csm:cladding_insulated_slab` | 3 | 10 | pickaxe | 1 |
@@ -139,6 +151,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Knockdown Stucco Fence | `csm:stucco_knockdown_fence` | 2 | 10 | pickaxe | 1 |
 | Knockdown Stucco Slab | `csm:stucco_knockdown_slab` | 2 | 10 | pickaxe | 1 |
 | Knockdown Stucco Stairs | `csm:stucco_knockdown_stairs` | 2 | 10 | pickaxe | 1 |
+| Lead-Lined Door (Radiation) | `csm:door_lead_lined` |  |  |  |  |
 | Light Blue Metal | `csm:lightbluemetal` | 2 | 10 | pickaxe | 1 |
 | Light Blue Metal Fence | `csm:lightbluemetal_fence` | 2 | 10 | pickaxe | 1 |
 | Light Blue Metal Slab | `csm:lightbluemetal_slab` | 2 | 10 | pickaxe | 1 |
@@ -187,6 +200,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Silver Metal Fence | `csm:silvermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Slab | `csm:silvermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Stairs | `csm:silvermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Smoke Barrier Door (Beige Metal) | `csm:door_smoke_metal_beige` |  |  |  |  |
+| Smoke Barrier Door (Grey Metal) | `csm:door_smoke_metal_grey` |  |  |  |  |
 | Smooth Stucco | `csm:stucco_smooth` | 2 | 10 | pickaxe | 1 |
 | Smooth Stucco Fence | `csm:stucco_smooth_fence` | 2 | 10 | pickaxe | 1 |
 | Smooth Stucco Slab | `csm:stucco_smooth_slab` | 2 | 10 | pickaxe | 1 |
