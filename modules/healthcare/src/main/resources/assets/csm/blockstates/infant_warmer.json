@@ -1,0 +1,37 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:healthcare/patient/infant_warmer"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "state": {
+      "0": {},
+      "1": {
+        "textures": {
+          "lens": "csm:blocks/healthcare/patient/heater_on"
+        }
+      },
+      "2": {},
+      "3": {
+        "textures": {
+          "lens": "csm:blocks/healthcare/patient/heater_on"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

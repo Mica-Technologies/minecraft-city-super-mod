@@ -5,10 +5,14 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareLight;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcarePair;
+import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareRun;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareScreen;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseCallDevice;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseCallDomeLight;
+import com.micatechnologies.minecraft.csm.healthcare.patient.BlockExerciseStairs;
+import com.micatechnologies.minecraft.csm.healthcare.queue.BlockNowServingDisplay;
+import com.micatechnologies.minecraft.csm.healthcare.queue.BlockQueueController;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCorridorRail;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainTrack;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockHospitalBed;
@@ -57,6 +61,7 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHospitalBed(HospitalBedVariant.MAUVE));
     initTabBlock(new BlockHospitalBed(HospitalBedVariant.ICU));
     initTabBlock(new BlockHospitalBed(HospitalBedVariant.BARIATRIC));
+    initTabBlock(new BlockHospitalBed(HospitalBedVariant.LABOR));
     initTabBlock(new BlockHealthcarePair("patient_headwall", new int[]{0, 0, 13, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE));
     initTabBlock(new BlockHealthcarePair("patient_headwall_upper", new int[]{0, 0, 14, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE));
     initTabBlock(new BlockHealthcareLight("patient_reading_light", new int[]{5, 8, 6, 11, 14, 16}, 12));
@@ -97,5 +102,23 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHealthcareScreen("dental_chair", new int[]{2, 0, 1, 14, 16, 16}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(7.5, 0.5));
     initTabBlock(new BlockHealthcare("refraction_chair", new int[]{1, 0, 3, 16, 16, 15}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(8.5, 0.5));
     initTabBlock(new BlockHealthcare("visual_acuity_chart", new int[]{3, 1, 15, 13, 15, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
+    // --- gen_healthcare_patient_areas.py --fragments ---
+    initTabBlock(new BlockHealthcareLight("infant_warmer", new int[]{2, 0, 2, 14, 16, 15}, 9));
+    initTabBlock(new BlockHealthcare("bassinet", new int[]{3, 0, 3, 13, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcareScreen("nicu_incubator", new int[]{2, 0, 2, 16, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcareRun("parallel_bars", new int[]{0, 0, 0, 16, 16, 16}, HealthcareMaterial.WOOD, false, "parallel_bars"));
+    initTabBlock(new BlockHealthcarePair("treatment_plinth", new int[]{0, 0, 2, 16, 10, 14}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE).withSeat(9.5, 0));
+    initTabBlock(new BlockExerciseStairs());
+    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_blue", new int[]{0, 0, 3, 16, 15, 13}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
+    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_teal", new int[]{0, 0, 3, 16, 15, 13}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
+    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_charcoal", new int[]{0, 0, 3, 16, 15, 13}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
+    initTabBlock(new BlockQueueController("check_in_kiosk", new int[]{3, 0, 4, 13, 16, 13}, true));
+    initTabBlock(new BlockQueueController("queue_desk_console", new int[]{4, 0, 5, 12, 4, 12}, false));
+    initTabBlock(new BlockNowServingDisplay());
+    initTabBlock(new BlockHealthcare("kids_play_table", new int[]{1, 0, 1, 15, 8, 15}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("kids_chair_red", new int[]{4, 0, 4, 12, 11, 12}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true).withSeat(5.5, 0));
+    initTabBlock(new BlockHealthcare("kids_chair_blue", new int[]{4, 0, 4, 12, 11, 12}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true).withSeat(5.5, 0));
+    initTabBlock(new BlockHealthcare("kids_chair_green", new int[]{4, 0, 4, 12, 11, 12}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true).withSeat(5.5, 0));
+    initTabBlock(new BlockHealthcare("playroom_toy_box", new int[]{2, 0, 4, 14, 10, 13}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true));
   }
 }

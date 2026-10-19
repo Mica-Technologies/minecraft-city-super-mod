@@ -1,0 +1,155 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/wards/charcoal",
+    "keys": "csm:blocks/healthcare/patient/console_top",
+    "particle": "csm:blocks/healthcare/wards/charcoal"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        0,
+        6
+      ],
+      "to": [
+        12,
+        1.2,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            4,
+            14.8,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            14.8,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            4,
+            14.8,
+            10,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            6,
+            14.8,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            4,
+            6,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            4,
+            12,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        1.2,
+        6
+      ],
+      "to": [
+        12,
+        2.2,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            4,
+            13.8,
+            12,
+            14.8
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            13.8,
+            12,
+            14.8
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            4,
+            13.8,
+            10,
+            14.8
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            6,
+            13.8,
+            12,
+            14.8
+          ]
+        },
+        "up": {
+          "texture": "#keys",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            4,
+            12,
+            10
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          1.2,
+          12
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "raised": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "raised": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "raised": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "raised": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body_raised",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "raised": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east_raised",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "raised": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west_raised",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "raised": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "raised": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "raised": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "raised": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body_raised",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "raised": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east_raised",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "raised": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west_raised",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "raised": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "raised": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "raised": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "raised": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body_raised",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "raised": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east_raised",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "raised": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west_raised",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "raised": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "raised": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "raised": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "raised": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_body_raised",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "raised": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_east_raised",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "raised": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/patient/lecture_hall_seat_end_west_raised",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -5,7 +5,8 @@ import net.minecraft.util.IStringSerializable;
 
 /**
  * The hospital beds: four blanket colours on the standard bed, the ICU bed with its air
- * mattress and pump, and the wider bariatric bed. Each is its own head block
+ * mattress and pump, the wider bariatric bed, and the labour and delivery bed with its split foot
+ * section and leg supports. Each is its own head block
  * ({@code hospital_bed_<name>}); the one foot block they share reads which bed it belongs to
  * from the head beside it. The order is the foot's {@code variant} property's, so append only.
  *
@@ -17,7 +18,9 @@ public enum HospitalBedVariant implements IStringSerializable {
   GREEN,
   MAUVE,
   ICU,
-  BARIATRIC;
+  BARIATRIC,
+  /** The labour and delivery bed: a split foot section and leg supports. */
+  LABOR;
 
   @Override
   @Nonnull

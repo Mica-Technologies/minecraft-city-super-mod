@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.healthcare;
 
 import com.micatechnologies.minecraft.csm.healthcare.clinical.CeilingHung;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.NurseCallNetwork;
+import com.micatechnologies.minecraft.csm.healthcare.queue.QueueNetwork;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainPanel;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainTrack;
 import com.micatechnologies.minecraft.csm.healthcare.wards.CubicleCurtains;
@@ -44,6 +45,13 @@ import net.minecraft.world.World;
  *   <li>{@code unit fill <master x y z>} -- fills the free cells of a unit bigger than a block
  *   (the CT and MRI scanners) with its parts; a master placed by {@code /setblock} does this by
  *   itself, so this is for cells that were not free then.</li>
+ *   <li>{@code queue link <controller x y z> <display x y z>} -- links a now-serving display to a
+ *   check-in kiosk or queue call console, so it shows that queue's number; {@code queue unlink}
+ *   (same args) undoes it.</li>
+ *   <li>{@code queue next <x y z>} -- calls the next number at a controller (or the controller of
+ *   a display), as a click on it does; {@code queue set <x y z> <number>} sets it.</li>
+ *   <li>{@code queue status <x y z>} -- a controller's number and displays, or a display's
+ *   controller; {@code queue prune} drops queues and displays that are gone.</li>
  * </ul>
  *
  * @since 2026.10
@@ -53,7 +61,8 @@ public class CommandHealthcare extends CommandBase {
   private static final String USAGE = "/csmhealthcare <nursecall <link|unlink <parent x y z> "
       + "<device x y z>|status <x y z>|prune>|curtain <fill <x y z> [drop|auto] [pattern]"
       + "|open|close|clear <x y z>|pattern <x y z> <pattern>>|boom <fill|clear> <x y z>"
-      + "|unit fill <x y z>>";
+      + "|unit fill <x y z>|queue <link|unlink <controller x y z> <display x y z>"
+      + "|next|status <x y z>|set <x y z> <number>|prune>>";
 
   @Override
   public String getName() {
@@ -75,6 +84,10 @@ public class CommandHealthcare extends CommandBase {
       throws CommandException {
     if (args.length >= 2 && "boom".equals(args[0])) {
       boom(sender, args);
+      return;
+    }
+    if (args.length >= 2 && "queue".equals(args[0])) {
+      queue(sender, args);
       return;
     }
     if (args.length >= 2 && "unit".equals(args[0])) {
@@ -240,6 +253,101 @@ public class CommandHealthcare extends CommandBase {
     say(sender, "Placed " + n + " part" + (n == 1 ? "" : "s") + ".");
   }
 
+  private static void queue(ICommandSender sender, String[] args) throws CommandException {
+    World world = sender.getEntityWorld();
+    QueueNetwork net = QueueNetwork.get(world);
+    switch (args[1]) {
+      case "link":
+      case "unlink": {
+        if (args.length < 8) {
+          throw new WrongUsageException("/csmhealthcare queue " + args[1]
+              + " <controller x y z> <display x y z>");
+        }
+        BlockPos controller = parseBlockPos(sender, args, 2, false);
+        BlockPos display = parseBlockPos(sender, args, 5, false);
+        if ("link".equals(args[1])) {
+          try {
+            net.link(world, controller, display);
+          } catch (IllegalArgumentException e) {
+            throw new CommandException("Cannot link: " + e.getMessage() + ".");
+          }
+          say(sender, "Linked the display at " + NurseCallNetwork.describe(display)
+              + " to the queue at " + NurseCallNetwork.describe(controller) + ".");
+        } else {
+          say(sender, net.unlink(world, controller, display)
+              ? "Unlinked the display at " + NurseCallNetwork.describe(display) + "."
+              : "The display at " + NurseCallNetwork.describe(display)
+                  + " is not linked to that queue.");
+        }
+        break;
+      }
+      case "next":
+      case "set": {
+        if (args.length < ("set".equals(args[1]) ? 6 : 5)) {
+          throw new WrongUsageException("/csmhealthcare queue " + args[1] + " <x y z>"
+              + ("set".equals(args[1]) ? " <number>" : ""));
+        }
+        BlockPos pos = queueController(world, net, parseBlockPos(sender, args, 2, false));
+        if ("next".equals(args[1])) {
+          say(sender, "Now serving " + String.format("%03d", net.advance(world, pos)) + ".");
+        } else {
+          net.set(world, pos, parseInt(args[5], 0, QueueNetwork.MAX_NUMBER));
+          say(sender, "Now serving " + String.format("%03d", net.numberOf(pos)) + ".");
+        }
+        break;
+      }
+      case "status": {
+        if (args.length < 5) {
+          throw new WrongUsageException("/csmhealthcare queue status <x y z>");
+        }
+        BlockPos pos = parseBlockPos(sender, args, 2, false);
+        if (QueueNetwork.isDisplay(world, pos)) {
+          BlockPos c = net.controllerOf(pos);
+          say(sender, "Now-serving display at " + NurseCallNetwork.describe(pos) + ": "
+              + (c == null ? "not linked" : "linked to the queue at "
+              + NurseCallNetwork.describe(c) + ", serving " + net.numberOf(c)));
+        } else if (QueueNetwork.isController(world, pos)) {
+          List<Long> ds = net.displaysOf(pos);
+          say(sender, "Queue at " + NurseCallNetwork.describe(pos) + ": serving "
+              + net.numberOf(pos) + ", " + ds.size() + " display" + (ds.size() == 1 ? "" : "s"));
+          for (long d : ds) {
+            say(sender, "  " + NurseCallNetwork.describe(BlockPos.fromLong(d)));
+          }
+        } else {
+          throw new CommandException("No queue kiosk, console or display at "
+              + NurseCallNetwork.describe(pos) + ".");
+        }
+        break;
+      }
+      case "prune": {
+        int n = net.prune(world);
+        say(sender, n == 0 ? "No missing queue blocks." : "Dropped " + n
+            + " missing queue block" + (n == 1 ? "" : "s") + ".");
+        break;
+      }
+      default:
+        throw new WrongUsageException(USAGE);
+    }
+  }
+
+  /** The controller at {@code pos}, or the controller of the display there. */
+  private static BlockPos queueController(World world, QueueNetwork net, BlockPos pos)
+      throws CommandException {
+    if (QueueNetwork.isController(world, pos)) {
+      return pos;
+    }
+    if (QueueNetwork.isDisplay(world, pos)) {
+      BlockPos c = net.controllerOf(pos);
+      if (c != null) {
+        return c;
+      }
+      throw new CommandException("The display at " + NurseCallNetwork.describe(pos)
+          + " is not linked to a queue.");
+    }
+    throw new CommandException("No check-in kiosk, queue console or display at "
+        + NurseCallNetwork.describe(pos) + ".");
+  }
+
   private static void status(ICommandSender sender, World world, NurseCallNetwork net,
       BlockPos pos) throws CommandException {
     NurseCallNetwork.Kind kind = NurseCallNetwork.kindOf(world, pos);
@@ -283,7 +391,20 @@ public class CommandHealthcare extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "nursecall", "curtain", "boom", "unit");
+      return getListOfStringsMatchingLastWord(args, "nursecall", "curtain", "boom", "unit",
+          "queue");
+    }
+    if ("queue".equals(args[0])) {
+      if (args.length == 2) {
+        return getListOfStringsMatchingLastWord(args, "link", "unlink", "next", "set", "status",
+            "prune");
+      }
+      int last = "prune".equals(args[1]) ? 1 : "link".equals(args[1])
+          || "unlink".equals(args[1]) ? 7 : 4;
+      if (args.length >= 3 && args.length <= last + 1) {
+        return getTabCompletionCoordinate(args, 2 + ((args.length - 3) / 3) * 3, targetPos);
+      }
+      return Collections.emptyList();
     }
     if ("unit".equals(args[0])) {
       if (args.length == 2) {

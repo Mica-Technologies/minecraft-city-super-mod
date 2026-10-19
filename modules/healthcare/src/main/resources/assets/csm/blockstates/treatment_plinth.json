@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:healthcare/patient/treatment_plinth_first"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:healthcare/patient/treatment_plinth_item"
+      }
+    ],
+    "second": {
+      "false": {},
+      "true": {
+        "model": "csm:healthcare/patient/treatment_plinth_second"
+      }
+    }
+  }
+}

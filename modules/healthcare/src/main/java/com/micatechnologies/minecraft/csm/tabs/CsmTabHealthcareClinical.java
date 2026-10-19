@@ -15,6 +15,8 @@ import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockNurseStation;
 import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockLabBench;
 import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockMorgueCabinet;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseCallMasterPanel;
+import com.micatechnologies.minecraft.csm.healthcare.patient.BlockLectureSeating;
+import com.micatechnologies.minecraft.csm.healthcare.patient.BlockSimulationMannequin;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -127,5 +129,11 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockMorgueCabinet());
     initTabBlock(new BlockHealthcarePair("autopsy_table", new int[]{0, 0, 2, 16, 12, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE));
     initTabBlock(new BlockHealthcarePair("body_cart", new int[]{0, 0, 2, 16, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE));
+    // --- gen_healthcare_patient_areas.py --fragments ---
+    initTabBlock(new BlockSimulationMannequin());
+    initTabBlock(new BlockHealthcare("anatomical_torso_model", new int[]{4, 0, 5, 12, 16, 11}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.FLOOR, false));
+    initTabBlock(new BlockHealthcarePair("skeleton_stand", new int[]{3, 0, 6, 13, 16, 15}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcarePair("dissection_table", new int[]{0, 0, 2, 16, 12, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE));
+    initTabBlock(new BlockLectureSeating());
   }
 }

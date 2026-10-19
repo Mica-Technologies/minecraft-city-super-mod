@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:healthcare/patient/simulation_mannequin_flat"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:healthcare/patient/simulation_mannequin_item"
+      }
+    ],
+    "rest": {
+      "flat": {
+        "model": "csm:healthcare/patient/simulation_mannequin_flat"
+      },
+      "bed_low": {
+        "model": "csm:healthcare/patient/simulation_mannequin_bed_low"
+      },
+      "bed_high": {
+        "model": "csm:healthcare/patient/simulation_mannequin_bed_high"
+      },
+      "bed_low_foot": {
+        "model": "csm:healthcare/patient/simulation_mannequin_bed_low_foot"
+      },
+      "bed_high_foot": {
+        "model": "csm:healthcare/patient/simulation_mannequin_bed_high_foot"
+      },
+      "exam": {
+        "model": "csm:healthcare/patient/simulation_mannequin_exam"
+      },
+      "exam_flat": {
+        "model": "csm:healthcare/patient/simulation_mannequin_exam_flat"
+      },
+      "table": {
+        "model": "csm:healthcare/patient/simulation_mannequin_table"
+      }
+    }
+  }
+}
