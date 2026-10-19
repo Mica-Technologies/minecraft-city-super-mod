@@ -315,6 +315,14 @@ panel (`pc`, `pr`, `pw`, `ph`) is worked out on the server whenever a cell is ad
 ragged build) is drawn plain. Quads are cached by facing and face (up to 2,048), so a ward of
 identical signs bakes each cell's share once. The panel gives light 8 and is CUTOUT_MIPPED.
 
+**Every printable ASCII character draws.** The committed Series D font has no percent, semicolon,
+angle or square brackets, backslash, caret, underscore, backtick, braces, bar or tilde; those
+fourteen are drawn by `gen_healthcare_systems.py` (`DRAWN`) in the font's own stem width and full
+stop, polylines with round joints in units of the cap height, and go onto the sheet and into the
+glyph table like the font's own. Brackets, braces and the bar reach from the cap line to below the
+baseline, as the font's parentheses do; the angle brackets, caret and tilde sit on the axis at
+half the cap height.
+
 By hand, without a GUI: a click steps through presets (INFORMATION, EMERGENCY, IMAGING, SURGERY,
 MATERNITY, OUTPATIENT, WARDS, LABORATORY, PHARMACY, ADMINISTRATION, ELEVATORS, STAIRS, RESTROOMS,
 CAFE, CHAPEL, PARKING, EXIT) keeping the arrow; a sneak-click steps the arrow. A cell placed fresh,
@@ -662,8 +670,5 @@ place on signed plinths; nothing is missing today (146 of 146).
 - **The operating room**: the OR table, anaesthesia machine, surgical light and scrub sink, left
   to the Hospital Mod's Theatre Pack, which covers the OR (the builder agreed). A consistent CSM
   set with proper facing and metadata docs is the obvious next family if the pack ever goes.
-- **Wayfinding glyphs**: legends use only the printable ASCII the committed Series D font has;
-  percent, semicolon, angle and square brackets, backslash, caret, underscore, backtick, braces,
-  bar and tilde are missing from the sheet.
 
 Open items and checks still to do are in `agent_progress/UNFINISHED_ITEMS.md`, D.28.

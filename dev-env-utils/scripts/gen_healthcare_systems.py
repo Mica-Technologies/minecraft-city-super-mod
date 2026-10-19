@@ -6,7 +6,8 @@ Wayfinding: the hospital wayfinding panel, a drop-in for Transit's airport_wayfi
 (the same NBT and metadata): cells that join into one panel up to 16 x 6, each cell a charcoal
 slab with a frame on the panel's outer edges (actual state), and the legend, pictogram, arrow and
 hanger rods BAKED into the chunk by HospitalWayfindingBakedModel from one sheet this script draws:
-the printable ASCII glyphs of the committed highway font (Series D), the fourteen hospital
+the printable ASCII glyphs of the committed highway font (Series D) -- the fourteen it lacks
+(% ; < > [ \\ ] ^ _ ` { | } ~) drawn here in its stroke and proportions -- the fourteen hospital
 pictograms (black art on a white square), the two arrows and a white swatch for the coloured
 backgrounds. The glyph metrics go into HospitalWayfindingGlyphs.java (written here too), so the
 Java and the sheet cannot drift.
@@ -129,10 +130,85 @@ def _cap_size():
     return int(round(400 * CAP * SUPER / float(b[3] - b[1])))
 
 
+# The glyphs the committed Series D font lacks, drawn in its stroke and proportions: each a list of
+# strokes in units of the cap height H from the pen (x right, y up from the baseline), a stroke
+# being a polyline drawn the font's stem wide with round joints and ends ("ring" an ellipse
+# outline, "dot" a filled square of the font's full stop), and its advance in H. Brackets, braces
+# and the bar reach from the cap line to below the baseline as the font's parentheses do; the
+# angle brackets, caret and tilde sit on the mathematical axis, half the cap height.
+def _brace(sign):
+    """{ (sign 1) or } (sign -1): a stem pinched to a point at the axis, hooked at its ends."""
+    x0, xs, xp = (0.36, 0.22, 0.07) if sign > 0 else (0.10, 0.24, 0.39)
+    return [[(x0, 1.06), (xs, 1.0), (xs, 0.6), (xp, 0.45), (xs, 0.3), (xs, -0.1), (x0, -0.16)]]
+
+
+DRAWN = {
+    "%": ([("ring", 0.04, 0.58, 0.36, 1.0), ("ring", 0.42, 0.0, 0.74, 0.42),
+           [(0.62, 1.0), (0.16, 0.0)]], 0.86),
+    ";": ([("dot", 0.18, 0.62), [(0.24, 0.12), (0.18, -0.2)], ("dot", 0.18, 0.12)], 0.48),
+    "<": ([[(0.56, 0.78), (0.1, 0.5), (0.56, 0.22)]], 0.68),
+    ">": ([[(0.12, 0.78), (0.58, 0.5), (0.12, 0.22)]], 0.68),
+    "[": ([[(0.38, 1.06), (0.14, 1.06), (0.14, -0.16), (0.38, -0.16)]], 0.48),
+    "]": ([[(0.1, 1.06), (0.34, 1.06), (0.34, -0.16), (0.1, -0.16)]], 0.48),
+    "\\": ([[(0.06, 1.0), (0.52, 0.0)]], 0.6),
+    "^": ([[(0.08, 0.58), (0.32, 1.0), (0.56, 0.58)]], 0.66),
+    "_": ([[(0.04, -0.14), (0.62, -0.14)]], 0.66),
+    "`": ([[(0.12, 1.02), (0.26, 0.84)]], 0.42),
+    "{": (_brace(1), 0.48),
+    "}": (_brace(-1), 0.48),
+    "|": ([[(0.2, 1.06), (0.2, -0.16)]], 0.42),
+    "~": ([[(0.06 + 0.56 * i / 12.0, 0.5 + 0.08 * math.sin(math.pi * 2 * i / 12.0))
+            for i in range(13)]], 0.72),
+}
+
+
+def _stem(f):
+    """The font's stem width, px at drawing size: the inked width of its I."""
+    return _ink_width(f, "I")
+
+
+def _ink_width(f, ch):
+    """A glyph's inked width, px (getbbox counts its side bearings)."""
+    img = Image.new("L", (f.size * 2, f.size * 2), 0)
+    ImageDraw.Draw(img).text((f.size // 2, f.size), ch, font=f, fill=255, anchor="ls")
+    b = img.getbbox()
+    return b[2] - b[0]
+
+
+def _drawn_glyph(ch, f, size):
+    """One of DRAWN on a canvas as the font's glyphs are drawn: (canvas, pen_x, base_y)."""
+    strokes, _ = DRAWN[ch]
+    h = CAP * SUPER
+    w = _stem(f)
+    dot_w = _ink_width(f, ".")
+    pen_x, base_y = 4 * SUPER * 4, size * 2
+    canvas = Image.new("L", (size * 3, size * 3), 0)
+    d = ImageDraw.Draw(canvas)
+
+    def at(x, y):
+        return pen_x + x * h, base_y - y * h
+
+    for st in strokes:
+        if isinstance(st, tuple) and st[0] == "ring":
+            x0, y0 = at(st[1], st[4])
+            x1, y1 = at(st[3], st[2])
+            d.ellipse([x0, y0, x1, y1], outline=255, width=int(round(w * 0.8)))
+        elif isinstance(st, tuple) and st[0] == "dot":
+            cx, cy = at(st[1], st[2])
+            d.rectangle([cx - dot_w / 2.0, cy - dot_w / 2.0, cx + dot_w / 2.0,
+                         cy + dot_w / 2.0], fill=255)
+        else:
+            pts = [at(x, y) for x, y in st]
+            d.line(pts, fill=255, width=int(round(w)))
+            for x, y in pts:
+                d.ellipse([x - w / 2.0, y - w / 2.0, x + w / 2.0, y + w / 2.0], fill=255)
+    return canvas, pen_x, base_y
+
+
 def glyph_images():
     """Each printable ASCII character drawn white on clear at CAP px capitals: its sheet image
     (with a one px clear margin), the image's left edge from the pen and top from the cap line,
-    in px, and its advance."""
+    in px, and its advance. The characters the font lacks are drawn from DRAWN."""
     size = _cap_size()
     f = _font(size)
     cap_top = f.getbbox("H", anchor="ls")[1]   # negative: the cap line above the baseline
@@ -142,16 +218,16 @@ def glyph_images():
     for code in range(32, 127):
         ch = chr(code)
         if code not in cmap:
-            # the font has no such glyph (% ; < > [ \ ] ^ _ ` { | } ~): a gap, never tofu
-            out[ch] = (None, 0, 0, CAP * 0.5)
-            continue
-        adv = f.getlength(ch) / SUPER
-        if ch == " ":
-            out[ch] = (None, 0, 0, adv)
-            continue
-        pen_x, base_y = 4 * SUPER * 4, size * 2
-        canvas = Image.new("L", (size * 3, size * 3), 0)
-        ImageDraw.Draw(canvas).text((pen_x, base_y), ch, font=f, fill=255, anchor="ls")
+            canvas, pen_x, base_y = _drawn_glyph(ch, f, size)
+            adv = DRAWN[ch][1] * CAP
+        else:
+            adv = f.getlength(ch) / SUPER
+            if ch == " ":
+                out[ch] = (None, 0, 0, adv)
+                continue
+            pen_x, base_y = 4 * SUPER * 4, size * 2
+            canvas = Image.new("L", (size * 3, size * 3), 0)
+            ImageDraw.Draw(canvas).text((pen_x, base_y), ch, font=f, fill=255, anchor="ls")
         bbox = canvas.getbbox()
         if bbox is None:
             out[ch] = (None, 0, 0, adv)
