@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.CsmScrollViewport;
 import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicStreetSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignColor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignEmblemKind;
 import com.micatechnologies.minecraft.csm.trafficaccessories.streetsign.StreetSignLegend;
@@ -570,11 +571,28 @@ public class DynamicStreetSignGui extends GuiScreen {
     }
   }
 
+  /**
+   * A colour button's label that fits its button: the prefix and full name, else the prefix and
+   * short name, else the short name alone (the style tab's colour button is half width).
+   */
+  private String colorLabel(String prefix, GuideSignColor color, int buttonWidth) {
+    int room = buttonWidth - 8;
+    String full = prefix + color.getFriendlyName();
+    if (fontRenderer.getStringWidth(full) <= room) {
+      return full;
+    }
+    String shortened = prefix + color.getShortName();
+    if (fontRenderer.getStringWidth(shortened) <= room) {
+      return shortened;
+    }
+    return color.getShortName();
+  }
+
   private void drawStyleTabLabels(int left, int y, int centerX) {
     for (GuiButton btn : buttonList) {
       switch (btn.id) {
         case BTN_SIGN_COLOR:
-          btn.displayString = data.getSignColor().getFriendlyName();
+          btn.displayString = colorLabel("", data.getSignColor(), btn.width);
           break;
         case BTN_CORNER_STYLE:
           btn.displayString = "Corners: " + data.getCornerStyle().getFriendlyName();

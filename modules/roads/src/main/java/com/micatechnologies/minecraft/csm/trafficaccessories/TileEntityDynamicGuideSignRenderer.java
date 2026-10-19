@@ -474,7 +474,8 @@ public class TileEntityDynamicGuideSignRenderer
     CornerStyle cornerStyle = data.getCornerStyle();
 
     // Legend (border, dividers, default text) contrasts with the sign background:
-    // white on green/blue/brown/black/purple, near-black on white/yellow.
+    // white on green/blue/brown/black/purple/red, near-black on white/yellow/orange/
+    // fluorescent yellow-green/coral (GuideSignColor.isLight).
     boolean lightSign = signColor.isLight();
     float legendR = lightSign ? 0.06f : 0.92f;
     float legendG = lightSign ? 0.06f : 0.92f;

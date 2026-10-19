@@ -41,7 +41,7 @@ dependency, so it is usable on both sides. Gson serializes it to one NBT string 
 | `StreetSignLogoType` | Civic logos | 16 generic municipal motifs in the shared atlas, rows 11–12 (see below). |
 | `StreetSignTemplates` | Preset configurations | 6 cycling presets: Standard Green Blade, Blue Blade, Illuminated Blade, Numbered Cross Street, Historic District, Flat Wall Blade. Each `get(index)` returns a fresh instance. |
 
-**Reused wholesale from the guide sign's model:** `GuideSignColor` (7 FHWA colors),
+**Reused wholesale from the guide sign's model:** `GuideSignColor` (11 FHWA colors, append-only),
 `CornerStyle`, `SignLightMode`, `GuideSignArrowType` (10 arrows), `GuideSignShieldType` (67
 markers), `GuideSignAtlas`, and `GuideSignFontRenderer` (the FHWA legend font). One atlas, one
 font, one visual language.

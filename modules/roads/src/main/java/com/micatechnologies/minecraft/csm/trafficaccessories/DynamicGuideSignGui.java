@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmScrollViewport;
 import com.micatechnologies.minecraft.csm.trafficaccessories.packets.DynamicGuideSignUpdatePacket;
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.ExitTabData;
+import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignColor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignData;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignElement;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignPanel;
@@ -739,10 +740,27 @@ public class DynamicGuideSignGui extends GuiScreen {
     }
   }
 
+  /**
+   * A colour button's label that fits its button: the prefix and full name, else the prefix and
+   * short name, else the short name alone (the exit tab's colour button is 84 px).
+   */
+  private String colorLabel(String prefix, GuideSignColor color, int buttonWidth) {
+    int room = buttonWidth - 8;
+    String full = prefix + color.getFriendlyName();
+    if (fontRenderer.getStringWidth(full) <= room) {
+      return full;
+    }
+    String shortened = prefix + color.getShortName();
+    if (fontRenderer.getStringWidth(shortened) <= room) {
+      return shortened;
+    }
+    return color.getShortName();
+  }
+
   private void drawPropertiesLabels(int left, int y, int centerX) {
     for (GuiButton btn : buttonList) {
       if (btn.id == BTN_SIGN_COLOR) {
-        btn.displayString = "Color: " + data.getSignColor().getFriendlyName();
+        btn.displayString = colorLabel("Color: ", data.getSignColor(), btn.width);
       } else if (btn.id == BTN_POST_TYPE) {
         btn.displayString = "Post: " + data.getPostType().getFriendlyName();
       } else if (btn.id == BTN_CORNER_STYLE) {
@@ -791,7 +809,8 @@ public class DynamicGuideSignGui extends GuiScreen {
       } else if (btn.id == BTN_EXIT_TAB_POS && panel.hasExitTab()) {
         btn.displayString = "Pos: " + panel.getExitTab().getPositionName();
       } else if (btn.id == BTN_EXIT_TAB_COLOR && panel.hasExitTab()) {
-        btn.displayString = "Color: " + panel.getExitTab().getGuideSignColor().getFriendlyName();
+        btn.displayString =
+            colorLabel("Color: ", panel.getExitTab().getGuideSignColor(), btn.width);
       } else if (btn.id == BTN_EXIT_TAB_TOLL && panel.hasExitTab()) {
         btn.displayString = "Toll: " + (panel.getExitTab().isToll() ? "Yes" : "No");
       } else if (btn.id == BTN_EXIT_TAB_WIDE && panel.hasExitTab()) {

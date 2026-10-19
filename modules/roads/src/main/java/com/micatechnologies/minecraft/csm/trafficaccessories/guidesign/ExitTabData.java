@@ -21,7 +21,7 @@ public class ExitTabData {
   public ExitTabData(int position, String text, int color, boolean toll) {
     this.position = position;
     this.text = text;
-    this.color = color;
+    this.color = GuideSignColor.sanitize(color);
     this.toll = toll;
   }
 
@@ -54,7 +54,7 @@ public class ExitTabData {
   }
 
   public void setColor(int color) {
-    this.color = color;
+    this.color = GuideSignColor.sanitize(color);
   }
 
   public GuideSignColor getGuideSignColor() {
