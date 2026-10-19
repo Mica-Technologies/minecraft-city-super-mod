@@ -32,6 +32,9 @@ def csmModules = [
     [name: 'signage', modId: 'csm_signage', displayName: 'CSM: Signage & Advertising'],
     [name: 'parks', modId: 'csm_parks', displayName: 'CSM: Parks & Greenery'],
     [name: 'transit', modId: 'csm_transit', displayName: 'CSM: Transit', deps: ['roads']],
+    // Healthcare depends on Core alone: its bed, headwall, nurse call and fit-out name no other
+    // module's class, so a server without hospitals leaves the jar out.
+    [name: 'healthcare', modId: 'csm_healthcare', displayName: 'CSM: Healthcare'],
     // Vehicles builds on Immersive Vehicles (`external:` -> the vehiclesExternal configuration in
     // dependencies.gradle) and calls Roads' preempts through Core's preempt source service.
     [name: 'vehicles', modId: 'csm_vehicles', displayName: 'CSM: Vehicles', deps: ['roads'],

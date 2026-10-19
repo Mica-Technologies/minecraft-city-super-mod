@@ -30,6 +30,7 @@ import org.apache.logging.log4j.Logger;
  * <p>Each {@link CsmTab} subclass is annotated with {@code @CsmTab.Load(order = N)}. The complete
  * order list is:</p>
  * <pre>
+ *   Order -11 = CsmTabHealthcareHidden  (hidden: a hospital bed's foot cell)
  *   Order -10 = CsmTabRoadsHidden       (hidden: retired road/signal blocks)
  *   Order  -9 = CsmTabLightingHidden    (hidden: light-up air)
  *   Order  -8 = CsmTabSignageHidden     (hidden: advertising board parts)
@@ -61,6 +62,8 @@ import org.apache.logging.log4j.Logger;
  *   Order 26 = CsmTabMarketStore
  *   Order 27 = CsmTabTransit
  *   Order 28 = CsmTabUtilities        (Utilities module, beside its Power Grid tab)
+ *   Order 29 = CsmTabHealthcarePatientCare
+ *   Order 30 = CsmTabHealthcareClinical
  * </pre>
  * <p>When adding a new tab, choose the next available order value and update this list. A
  * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs

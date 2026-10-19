@@ -17,7 +17,7 @@ install fails at startup on purpose.
 Download the jars you want from the
 [latest release](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
 and drop them into your Forge 1.12.2 `mods` folder. Want everything the mod has ever had? Take all
-thirteen.
+fifteen.
 
 | Jar | What it adds |
 |---|---|
@@ -34,6 +34,7 @@ thirteen.
 | CSM: Signage & Advertising | Street ad kiosks, wall poster boards and billboards built to size |
 | CSM: Parks & Greenery | Street trees built from blocks, a planting tool, hedges and plantings, benches, playgrounds, fountains, irrigation |
 | CSM: Transit | Working fare gates, a fare vending machine, fare tickets and transit cards, bus stop signs, bus shelters — **also requires CSM: Roads & Traffic** |
+| CSM: Healthcare | Hospital beds, patient headwalls, monitors, IV poles, cubicle curtains, a linked nurse call system and the rest of a hospital ward |
 
 Installing a subset only removes that content — nothing about the blocks you keep changes. Removing
 a module from a world that already uses its blocks is the usual missing-mod situation, though:

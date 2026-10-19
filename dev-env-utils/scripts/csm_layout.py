@@ -74,6 +74,9 @@ MODULE_OF_TAB = {
     "tabsignage": "signage",
     "tabsignagehidden": "signage",
     "tabtransit": "transit",
+    "tabhealthcarepatientcare": "healthcare",
+    "tabhealthcareclinical": "healthcare",
+    "tabhealthcarehidden": "healthcare",
     "tabmaterials": CORE,
 }
 
