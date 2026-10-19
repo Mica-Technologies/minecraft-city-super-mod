@@ -868,7 +868,9 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     /** Not flipped: the door or its pair is open or still swinging. */
     BUSY,
     /** Not flipped: this door's movement is not a swing that can be reversed. */
-    FIXED
+    FIXED,
+    /** Not flipped: a sliding door, which has no swing at all. */
+    SLIDING
   }
 
   /**
@@ -885,7 +887,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
    */
   FlipResult flipSwing(World world, BlockPos pos) {
     if (!reversible()) {
-      return FlipResult.FIXED;
+      return this instanceof BlockAutoSlidingDoor ? FlipResult.SLIDING : FlipResult.FIXED;
     }
     BlockPos lowerPos = lower(world.getBlockState(pos), pos);
     IBlockState door = whole(world, lowerPos);

@@ -37,6 +37,7 @@ gui.csm.door.sound.trapdoor=Fallucka
 gui.csm.door.sound.wood=Trä
 gui.csm.door.swing_busy=Stäng dörren och låt den stanna först
 gui.csm.door.swing_fixed=Dörrens rörelse ställs in i Dörrverkstaden
+gui.csm.door.swing_sliding=En skjutdörr har ingen slagriktning att vända
 gui.csm.door.swing_in=Dörren öppnas nu inåt
 gui.csm.door.swing_out=Dörren öppnas nu utåt
 gui.csm.door.swing_tool.tip=Högerklicka på en stängd dörr för att vända dess öppning

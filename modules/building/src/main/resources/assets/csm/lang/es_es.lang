@@ -37,6 +37,7 @@ gui.csm.door.sound.trapdoor=Trampilla
 gui.csm.door.sound.wood=Madera
 gui.csm.door.swing_busy=Cierra la puerta y espera a que se detenga
 gui.csm.door.swing_fixed=El movimiento de esta puerta se ajusta en el Taller de Puertas
+gui.csm.door.swing_sliding=Una puerta corredera no tiene giro que invertir
 gui.csm.door.swing_in=Esta puerta ahora abre hacia dentro
 gui.csm.door.swing_out=Esta puerta ahora abre hacia fuera
 gui.csm.door.swing_tool.tip=Clic derecho en una puerta cerrada para invertir su apertura

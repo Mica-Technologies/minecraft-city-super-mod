@@ -77,6 +77,10 @@ public class ItemDoorSwingTool extends AbstractItem {
       case BUSY:
         player.sendStatusMessage(new TextComponentTranslation("gui.csm.door.swing_busy"), true);
         return EnumActionResult.FAIL;
+      case SLIDING:
+        player.sendStatusMessage(new TextComponentTranslation("gui.csm.door.swing_sliding"),
+            true);
+        return EnumActionResult.FAIL;
       default:
         player.sendStatusMessage(new TextComponentTranslation("gui.csm.door.swing_fixed"), true);
         return EnumActionResult.FAIL;
