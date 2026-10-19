@@ -1,0 +1,29 @@
+{
+  "code_blue_chime": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:code_blue_chime",
+        "stream": false
+      }
+    ]
+  },
+  "medical_gas_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:medical_gas_alarm",
+        "stream": false
+      }
+    ]
+  },
+  "infant_security_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:infant_security_alarm",
+        "stream": false
+      }
+    ]
+  }
+}
