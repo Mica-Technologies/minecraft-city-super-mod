@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCorridorRail;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainTrack;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockHospitalBed;
 import com.micatechnologies.minecraft.csm.healthcare.wards.HospitalBedVariant;
+import com.micatechnologies.minecraft.csm.healthcare.wayfinding.BlockHospitalWayfindingPanel;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -120,5 +121,7 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHealthcare("kids_chair_blue", new int[]{4, 0, 4, 12, 11, 12}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true).withSeat(5.5, 0));
     initTabBlock(new BlockHealthcare("kids_chair_green", new int[]{4, 0, 4, 12, 11, 12}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true).withSeat(5.5, 0));
     initTabBlock(new BlockHealthcare("playroom_toy_box", new int[]{2, 0, 4, 14, 10, 13}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true));
+    // --- gen_healthcare_systems.py --fragments ---
+    initTabBlock(new BlockHospitalWayfindingPanel());
   }
 }

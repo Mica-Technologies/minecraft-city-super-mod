@@ -1,0 +1,148 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "white": "csm:blocks/healthcare/wards/white",
+    "white_face": "csm:blocks/healthcare/systems/outlet_white",
+    "red": "csm:blocks/healthcare/wards/red",
+    "red_face": "csm:blocks/healthcare/systems/outlet_red",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        8.3,
+        4,
+        15.4
+      ],
+      "to": [
+        14,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#white_face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#white",
+          "uv": [
+            8.3,
+            4,
+            14,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#white",
+          "uv": [
+            0,
+            4,
+            0.6,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#white",
+          "uv": [
+            15.4,
+            4,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#white",
+          "uv": [
+            8.3,
+            15.4,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#white",
+          "uv": [
+            8.3,
+            0,
+            14,
+            0.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4,
+        15.4
+      ],
+      "to": [
+        7.7,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#red_face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#red",
+          "uv": [
+            2,
+            4,
+            7.7,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#red",
+          "uv": [
+            0,
+            4,
+            0.6,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#red",
+          "uv": [
+            15.4,
+            4,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#red",
+          "uv": [
+            2,
+            15.4,
+            7.7,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#red",
+          "uv": [
+            2,
+            0,
+            7.7,
+            0.6
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "white": "csm:blocks/healthcare/wards/white",
+    "white_face": "csm:blocks/healthcare/systems/outlet_white",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        4,
+        15.4
+      ],
+      "to": [
+        11,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#white_face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#white",
+          "uv": [
+            5,
+            4,
+            11,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#white",
+          "uv": [
+            0,
+            4,
+            0.6,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#white",
+          "uv": [
+            15.4,
+            4,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#white",
+          "uv": [
+            5,
+            15.4,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#white",
+          "uv": [
+            5,
+            0,
+            11,
+            0.6
+          ]
+        }
+      }
+    }
+  ]
+}

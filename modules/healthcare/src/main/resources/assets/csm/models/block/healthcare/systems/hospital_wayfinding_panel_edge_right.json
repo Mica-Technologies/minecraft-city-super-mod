@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "panel": "csm:blocks/healthcare/wards/charcoal",
+    "frame": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/wards/charcoal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        5.2
+      ],
+      "to": [
+        0.8,
+        16,
+        10.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            15.2,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            0.8,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            5.2,
+            0,
+            10.8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            5.2,
+            0,
+            10.8,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            5.2,
+            0.8,
+            10.8
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            5.2,
+            0.8,
+            10.8
+          ]
+        }
+      }
+    }
+  ]
+}

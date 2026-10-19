@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/systems/code_blue_body",
+    "front": "csm:blocks/healthcare/systems/code_blue_front",
+    "particle": "csm:blocks/healthcare/systems/code_blue_body"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        3,
+        14
+      ],
+      "to": [
+        12,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            3,
+            12,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            3,
+            2,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            14,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            4,
+            14,
+            12,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            0,
+            12,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

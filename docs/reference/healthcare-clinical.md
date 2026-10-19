@@ -2,7 +2,7 @@
 
 The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station.
 
-!!! info "70 blocks in this tab"
+!!! info "78 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -27,6 +27,8 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Centrifuge (Bench-Top) | `csm:lab_centrifuge` |  |  |  |  |
 | Chemistry Analyser | `csm:chemistry_analyser` |  |  |  |  |
 | Clean Linen Cart | `csm:clean_linen_cart` |  |  |  |  |
+| Code Blue Annunciator (Strobe and Chime) | `csm:code_blue_annunciator` |  |  |  |  |
+| Code Blue Button | `csm:code_blue_button` |  |  |  |  |
 | Crash Cart | `csm:crash_cart` |  |  |  |  |
 | CT Scanner | `csm:ct_scanner` |  |  |  |  |
 | Decontamination Shower | `csm:decontamination_shower` |  |  |  |  |
@@ -41,13 +43,16 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Hand Sanitizer Dispenser | `csm:hand_sanitizer_dispenser` |  |  |  |  |
 | ICU Pendant | `csm:icu_pendant` |  |  |  |  |
 | ICU Ventilator | `csm:icu_ventilator` |  |  |  |  |
+| Infant Security Door Panel | `csm:infant_security_panel` |  |  |  |  |
 | Inpatient Pharmacy Bin Shelving | `csm:pharmacy_bin_shelving` |  |  |  |  |
 | Inpatient Pharmacy Unit-Dose Cabinet | `csm:pharmacy_unit_dose_cabinet` |  |  |  |  |
 | Lab Bench with Reagent Shelf | `csm:lab_bench` |  |  |  |  |
 | Lab Bench with Sink | `csm:lab_bench_sink` |  |  |  |  |
 | Lead Apron Rack | `csm:lead_apron_rack` |  |  |  |  |
 | Mammography Unit | `csm:mammography_unit` |  |  |  |  |
+| Medical Gas Master Alarm Panel | `csm:medical_gas_master_alarm` | 1.5 | 3.0 | pickaxe | 0 |
 | Medical Gas Outlet (Oxygen) | `csm:medical_gas_outlet_o2` |  |  |  |  |
+| Medical Gas Zone Valve Box | `csm:medical_gas_zone_valve_box` |  |  |  |  |
 | Medical Gas Zone Valve Sign | `csm:medical_gas_zone_sign` |  |  |  |  |
 | Medication Cart | `csm:medication_cart` |  |  |  |  |
 | Medication Refrigerator | `csm:medication_fridge` |  |  |  |  |
@@ -64,6 +69,9 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Nurses' Station Counter (Monitors) | `csm:nurse_station_counter_monitors` |  |  |  |  |
 | Patient Status Board | `csm:patient_status_board` |  |  |  |  |
 | Pneumatic Tube Station | `csm:pneumatic_tube_station` |  |  |  |  |
+| Power Outlet (Emergency Power, Red) | `csm:hospital_outlet_emergency` |  |  |  |  |
+| Power Outlet (Normal Power) | `csm:hospital_outlet_normal` |  |  |  |  |
+| Power Outlets (Normal and Emergency) | `csm:hospital_outlet_pair` |  |  |  |  |
 | PPE Isolation Cart | `csm:ppe_isolation_cart` |  |  |  |  |
 | Radiation Warning Sign (X-Ray) | `csm:radiation_warning_sign` |  |  |  |  |
 | Radiology Reading Workstation | `csm:radiology_reading_workstation` |  |  |  |  |
