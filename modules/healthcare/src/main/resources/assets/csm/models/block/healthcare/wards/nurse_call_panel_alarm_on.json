@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "lamp": "csm:blocks/healthcare/wards/panel_alarm_on",
+    "particle": "csm:blocks/healthcare/wards/charcoal"
+  },
+  "elements": [
+    {
+      "from": [
+        12.5,
+        11.2,
+        13.4
+      ],
+      "to": [
+        14,
+        12.8,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            2,
+            3.2,
+            3.5,
+            4.8
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            2,
+            3.2,
+            2.6,
+            4.8
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            13.4,
+            3.2,
+            14,
+            4.8
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            12.5,
+            13.4,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            12.5,
+            2,
+            14,
+            2.6
+          ]
+        }
+      }
+    }
+  ]
+}

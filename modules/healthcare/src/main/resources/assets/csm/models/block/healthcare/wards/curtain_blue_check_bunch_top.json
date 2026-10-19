@@ -1,0 +1,180 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cloth": "csm:blocks/healthcare/wards/curtain_blue_check",
+    "hem": "csm:blocks/healthcare/wards/curtain_blue_check_hem",
+    "mesh": "csm:blocks/healthcare/wards/curtain_mesh",
+    "tape": "csm:blocks/healthcare/wards/curtain_tape",
+    "particle": "csm:blocks/healthcare/wards/curtain_blue_check"
+  },
+  "elements": [
+    {
+      "from": [
+        5.4,
+        0,
+        5.4
+      ],
+      "to": [
+        10.6,
+        9,
+        10.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cloth",
+          "uv": [
+            5.4,
+            7,
+            10.6,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cloth",
+          "uv": [
+            5.4,
+            7,
+            10.6,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cloth",
+          "uv": [
+            5.4,
+            7,
+            10.6,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cloth",
+          "uv": [
+            5.4,
+            7,
+            10.6,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.8,
+        9,
+        5.8
+      ],
+      "to": [
+        10.2,
+        15,
+        10.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#mesh",
+          "uv": [
+            5.8,
+            1,
+            10.2,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#mesh",
+          "uv": [
+            5.8,
+            1,
+            10.2,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#mesh",
+          "uv": [
+            5.8,
+            1,
+            10.2,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#mesh",
+          "uv": [
+            5.8,
+            1,
+            10.2,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        15,
+        5.5
+      ],
+      "to": [
+        10.5,
+        16,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tape",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#tape",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#tape",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#tape",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#tape",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#tape",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

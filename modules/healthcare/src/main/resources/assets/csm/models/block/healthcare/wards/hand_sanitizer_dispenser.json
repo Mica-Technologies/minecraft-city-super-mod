@@ -1,0 +1,147 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/wards/white",
+    "front": "csm:blocks/healthcare/wards/sanitizer_front",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        4,
+        12.5
+      ],
+      "to": [
+        11,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            5,
+            3,
+            11,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            3,
+            3.5,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            12.5,
+            3,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            5,
+            12.5,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            5,
+            0,
+            11,
+            3.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        3,
+        12
+      ],
+      "to": [
+        10,
+        4,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            6,
+            12,
+            10,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#grey",
+          "uv": [
+            6,
+            12,
+            10,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#grey",
+          "uv": [
+            1.5,
+            12,
+            4,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            12,
+            12,
+            14.5,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            6,
+            12,
+            10,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#grey",
+          "uv": [
+            6,
+            1.5,
+            10,
+            4
+          ]
+        }
+      }
+    }
+  ]
+}

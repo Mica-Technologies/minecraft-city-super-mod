@@ -1,0 +1,70 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "tile": "csm:blocks/healthcare/wards/ceiling_tile",
+    "particle": "csm:blocks/healthcare/wards/ceiling_tile"
+  },
+  "elements": [
+    {
+      "from": [
+        6.8,
+        -1.4,
+        6.8
+      ],
+      "to": [
+        9.2,
+        0,
+        9.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#metal",
+          "uv": [
+            6.8,
+            14.6,
+            9.2,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [
+            6.8,
+            14.6,
+            9.2,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [
+            6.8,
+            14.6,
+            9.2,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [
+            6.8,
+            14.6,
+            9.2,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [
+            6.8,
+            6.8,
+            9.2,
+            9.2
+          ]
+        }
+      }
+    }
+  ]
+}

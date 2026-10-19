@@ -1,0 +1,139 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "carcass": "csm:blocks/healthcare/wards/warm_white",
+    "doors": "csm:blocks/healthcare/wards/wardrobe_doors",
+    "doors_top": "csm:blocks/healthcare/wards/wardrobe_doors_top",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/wards/warm_white"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        2
+      ],
+      "to": [
+        15,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#doors_top",
+          "uv": [
+            1,
+            3,
+            15,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#carcass",
+          "uv": [
+            1,
+            3,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#carcass",
+          "uv": [
+            0,
+            3,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#carcass",
+          "uv": [
+            2,
+            3,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#carcass",
+          "uv": [
+            1,
+            0,
+            15,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        13,
+        1.5
+      ],
+      "to": [
+        15.5,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#carcass",
+          "uv": [
+            0.5,
+            2,
+            15.5,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#carcass",
+          "uv": [
+            0.5,
+            2,
+            15.5,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#carcass",
+          "uv": [
+            0,
+            2,
+            14.5,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#carcass",
+          "uv": [
+            1.5,
+            2,
+            16,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#carcass",
+          "uv": [
+            0.5,
+            1.5,
+            15.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#carcass",
+          "uv": [
+            0.5,
+            0,
+            15.5,
+            14.5
+          ]
+        }
+      }
+    }
+  ]
+}

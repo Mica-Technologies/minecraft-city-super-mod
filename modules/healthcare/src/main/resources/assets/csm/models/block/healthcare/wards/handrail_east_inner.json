@@ -1,0 +1,110 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rail": "csm:blocks/healthcare/wards/beech",
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/wards/beech"
+  },
+  "elements": [
+    {
+      "from": [
+        12,
+        13.4,
+        12.8
+      ],
+      "to": [
+        14.4,
+        15,
+        14.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            1.6,
+            1,
+            4,
+            2.6
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            12,
+            1,
+            14.4,
+            2.6
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            12,
+            12.8,
+            14.4,
+            14.4
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            12,
+            1.6,
+            14.4,
+            3.2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12.8,
+        13.4,
+        0
+      ],
+      "to": [
+        14.4,
+        15,
+        13.6
+      ],
+      "faces": {
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            2.4,
+            1,
+            16,
+            2.6
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            1,
+            13.6,
+            2.6
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            12.8,
+            0,
+            14.4,
+            13.6
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            12.8,
+            2.4,
+            14.4,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

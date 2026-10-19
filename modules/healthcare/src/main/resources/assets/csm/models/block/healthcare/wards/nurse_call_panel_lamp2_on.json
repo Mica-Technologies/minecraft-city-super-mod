@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "lamp": "csm:blocks/healthcare/wards/panel_lamp_on",
+    "particle": "csm:blocks/healthcare/wards/charcoal"
+  },
+  "elements": [
+    {
+      "from": [
+        6.8,
+        6.8,
+        13.4
+      ],
+      "to": [
+        9.2,
+        9.2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            6.8,
+            6.8,
+            9.2,
+            9.2
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            2,
+            6.8,
+            2.6,
+            9.2
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            13.4,
+            6.8,
+            14,
+            9.2
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            6.8,
+            13.4,
+            9.2,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            6.8,
+            2,
+            9.2,
+            2.6
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,360 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_centre",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_end",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "east": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_join",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "east": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_inner",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "east": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_outer",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_end",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_join",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_inner",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_outer",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_centre",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_end",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "east": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_join",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "east": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_inner",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "east": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_outer",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_end",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_join",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_inner",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_outer",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_centre",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_end",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_join",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_inner",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_outer",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_end",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_join",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_inner",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_outer",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_centre",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_end",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_join",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_inner",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_east_outer",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_end",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "west": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_join",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "west": "inner"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_inner",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "west": "outer"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/handrail_west_outer",
+        "y": 270
+      }
+    }
+  ]
+}

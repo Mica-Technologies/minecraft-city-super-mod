@@ -1,0 +1,266 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/wards/white",
+    "face": "csm:blocks/healthcare/wards/pull_station",
+    "cord": "csm:blocks/healthcare/wards/red",
+    "lamp": "csm:blocks/healthcare/wards/call_lamp_off",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        10,
+        15
+      ],
+      "to": [
+        11,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            5,
+            0,
+            11,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            0,
+            1,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            15,
+            0,
+            16,
+            6
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            5,
+            15,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        14.6,
+        14.6
+      ],
+      "to": [
+        9,
+        15.6,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            7,
+            0.4,
+            9,
+            1.4
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            1,
+            0.4,
+            1.4,
+            1.4
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            14.6,
+            0.4,
+            15,
+            1.4
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            7,
+            14.6,
+            9,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            7,
+            1,
+            9,
+            1.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.9,
+        -12,
+        14.6
+      ],
+      "to": [
+        8.1,
+        10,
+        14.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cord",
+          "uv": [
+            7.9,
+            -6,
+            8.1,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cord",
+          "uv": [
+            7.9,
+            -6,
+            8.1,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cord",
+          "uv": [
+            1.2,
+            -6,
+            1.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cord",
+          "uv": [
+            14.6,
+            -6,
+            14.8,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cord",
+          "uv": [
+            7.9,
+            14.6,
+            8.1,
+            14.8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        -14,
+        14.4
+      ],
+      "to": [
+        9,
+        -12,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cord",
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cord",
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cord",
+          "uv": [
+            1,
+            14,
+            1.6,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cord",
+          "uv": [
+            14.4,
+            14,
+            15,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cord",
+          "uv": [
+            7,
+            14.4,
+            9,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#cord",
+          "uv": [
+            7,
+            1,
+            9,
+            1.6
+          ]
+        }
+      }
+    }
+  ]
+}
