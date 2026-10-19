@@ -1,0 +1,335 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cabinet": "csm:blocks/healthcare/clinics/cabinet",
+    "front": "csm:blocks/healthcare/clinics/exam_cabinet_front",
+    "pad": "csm:blocks/healthcare/clinics/exam_vinyl",
+    "paper": "csm:blocks/healthcare/clinics/exam_paper",
+    "roll": "csm:blocks/healthcare/clinics/exam_paper",
+    "roll_end": "csm:blocks/healthcare/clinics/paper_roll_end",
+    "tread": "csm:blocks/healthcare/clinics/tread",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/clinics/cabinet"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        3
+      ],
+      "to": [
+        16,
+        8.5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cabinet",
+          "uv": [
+            2,
+            7.5,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cabinet",
+          "uv": [
+            3,
+            7.5,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cabinet",
+          "uv": [
+            2,
+            3,
+            16,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#cabinet",
+          "uv": [
+            2,
+            3,
+            16,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        8.5,
+        2.5
+      ],
+      "to": [
+        16,
+        9.2,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            0,
+            6.8,
+            14.5,
+            7.5
+          ]
+        },
+        "south": {
+          "texture": "#grey",
+          "uv": [
+            1.5,
+            6.8,
+            16,
+            7.5
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            2.5,
+            6.8,
+            13.5,
+            7.5
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            1.5,
+            2.5,
+            16,
+            13.5
+          ]
+        },
+        "down": {
+          "texture": "#grey",
+          "uv": [
+            1.5,
+            2.5,
+            16,
+            13.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        10,
+        2.5,
+        0.5
+      ],
+      "to": [
+        16,
+        4.5,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cabinet",
+          "uv": [
+            0,
+            11.5,
+            6,
+            13.5
+          ]
+        },
+        "south": {
+          "texture": "#cabinet",
+          "uv": [
+            10,
+            11.5,
+            16,
+            13.5
+          ]
+        },
+        "west": {
+          "texture": "#cabinet",
+          "uv": [
+            0.5,
+            11.5,
+            3,
+            13.5
+          ]
+        },
+        "up": {
+          "texture": "#cabinet",
+          "uv": [
+            10,
+            0.5,
+            16,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#cabinet",
+          "uv": [
+            10,
+            13,
+            16,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        10,
+        4.5,
+        0.5
+      ],
+      "to": [
+        16,
+        4.8,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            11.2,
+            6,
+            11.5
+          ]
+        },
+        "south": {
+          "texture": "#tread",
+          "uv": [
+            10,
+            11.2,
+            16,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#tread",
+          "uv": [
+            0.5,
+            11.2,
+            3,
+            11.5
+          ]
+        },
+        "up": {
+          "texture": "#tread",
+          "uv": [
+            10,
+            0.5,
+            16,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#tread",
+          "uv": [
+            10,
+            13,
+            16,
+            15.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        9.2,
+        3.5
+      ],
+      "to": [
+        16,
+        11.2,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pad",
+          "uv": [
+            0,
+            4.8,
+            14,
+            6.8
+          ]
+        },
+        "south": {
+          "texture": "#pad",
+          "uv": [
+            2,
+            4.8,
+            16,
+            6.8
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            3.5,
+            4.8,
+            12.5,
+            6.8
+          ]
+        },
+        "up": {
+          "texture": "#pad",
+          "uv": [
+            2,
+            3.5,
+            16,
+            12.5
+          ]
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            2,
+            3.5,
+            16,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        11.2,
+        5
+      ],
+      "to": [
+        16,
+        11.4,
+        11
+      ],
+      "faces": {
+        "up": {
+          "texture": "#paper",
+          "uv": [
+            2,
+            5,
+            16,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

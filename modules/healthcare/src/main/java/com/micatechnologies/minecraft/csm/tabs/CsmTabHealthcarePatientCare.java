@@ -85,5 +85,17 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHealthcare("walker", new int[]{2, 0, 3, 14, 15, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcarePair("patient_lift_mobile", new int[]{2, 0, 0, 14, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
     initTabBlock(new BlockHealthcare("ceiling_patient_lift", new int[]{0, 0, 0, 16, 1, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    // --- gen_healthcare_clinics.py --fragments ---
+    initTabBlock(new BlockHealthcarePair("exam_table", new int[]{0, 0, 2, 16, 12, 14}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE));
+    initTabBlock(new BlockHealthcareLight("clinic_exam_light", new int[]{4, 0, 0, 12, 16, 12}, 12));
+    initTabBlock(new BlockHealthcare("wall_diagnostic_set", new int[]{2, 2, 13, 14, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
+    initTabBlock(new BlockHealthcareScreen("patient_scale", new int[]{3, 0, 2, 13, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("phlebotomy_chair", new int[]{1, 0, 1, 15, 16, 15}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(8.5, 0.5));
+    initTabBlock(new BlockHealthcare("clinic_step_stool", new int[]{3, 0, 2, 13, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("dialysis_chair", new int[]{1, 0, 0, 15, 16, 16}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(8, 1));
+    initTabBlock(new BlockHealthcareScreen("infusion_recliner", new int[]{0, 0, 0, 16, 16, 16}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(8, 1));
+    initTabBlock(new BlockHealthcareScreen("dental_chair", new int[]{2, 0, 1, 14, 16, 16}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(7.5, 0.5));
+    initTabBlock(new BlockHealthcare("refraction_chair", new int[]{1, 0, 3, 16, 16, 15}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, true).withSeat(8.5, 0.5));
+    initTabBlock(new BlockHealthcare("visual_acuity_chart", new int[]{3, 1, 15, 13, 15, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
   }
 }

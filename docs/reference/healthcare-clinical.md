@@ -2,7 +2,7 @@
 
 The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station.
 
-!!! info "31 blocks in this tab"
+!!! info "34 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -21,6 +21,9 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Crash Cart | `csm:crash_cart` |  |  |  |  |
 | Decontamination Shower | `csm:decontamination_shower` |  |  |  |  |
 | Defibrillator (Rolling Stand) | `csm:defibrillator` |  |  |  |  |
+| Dialysis Machine | `csm:dialysis_machine` |  |  |  |  |
+| Dialysis RO Water Unit | `csm:dialysis_ro_unit` |  |  |  |  |
+| Endoscopy Tower | `csm:endoscopy_tower` |  |  |  |  |
 | Glove Box Dispenser | `csm:glove_box_dispenser` |  |  |  |  |
 | Hand Sanitizer Dispenser | `csm:hand_sanitizer_dispenser` |  |  |  |  |
 | ICU Pendant | `csm:icu_pendant` |  |  |  |  |

@@ -2,7 +2,7 @@
 
 Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV poles, the room's furniture and TV, cubicle curtains on their ceiling track, the nurse call devices and corridor dome lights, and the corridor rails.
 
-!!! info "27 blocks in this tab"
+!!! info "38 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -17,6 +17,12 @@ Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV 
 | Corridor Crash Rail | `csm:corridor_crash_rail` |  |  |  |  |
 | Corridor Handrail | `csm:corridor_handrail` |  |  |  |  |
 | Cubicle Curtain Track | `csm:cubicle_curtain_track` | 1.0 | 2.0 | pickaxe | 0 |
+| Dental Chair | `csm:dental_chair` |  |  |  |  |
+| Dialysis Chair | `csm:dialysis_chair` |  |  |  |  |
+| Exam Light (Rolling Stand) | `csm:clinic_exam_light` | 1.0 | 2.0 | pickaxe | 0 |
+| Exam Table | `csm:exam_table` |  |  |  |  |
+| Eye Exam Chair (Phoropter) | `csm:refraction_chair` |  |  |  |  |
+| Infusion Recliner (with IV Pump) | `csm:infusion_recliner` |  |  |  |  |
 | IV Pole | `csm:iv_pole` |  |  |  |  |
 | IV Pole with Infusion Pump | `csm:iv_pole_pump` |  |  |  |  |
 | Mobile Patient Lift | `csm:patient_lift_mobile` |  |  |  |  |
@@ -30,9 +36,14 @@ Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV 
 | Patient Reading Light | `csm:patient_reading_light` | 1.0 | 2.0 | pickaxe | 0 |
 | Patient Recliner | `csm:patient_recliner` |  |  |  |  |
 | Patient Room TV | `csm:patient_room_tv` |  |  |  |  |
+| Patient Scale (Column) | `csm:patient_scale` |  |  |  |  |
 | Patient Wardrobe | `csm:patient_wardrobe` |  |  |  |  |
+| Phlebotomy Chair | `csm:phlebotomy_chair` |  |  |  |  |
+| Step Stool (Clinic) | `csm:clinic_step_stool` |  |  |  |  |
 | Visitor Chair | `csm:visitor_chair` |  |  |  |  |
+| Visual Acuity Chart | `csm:visual_acuity_chart` |  |  |  |  |
 | Walker | `csm:walker` |  |  |  |  |
+| Wall Diagnostic Set | `csm:wall_diagnostic_set` |  |  |  |  |
 | Wall Suction Regulator | `csm:suction_regulator` |  |  |  |  |
 | Wall Vitals Unit | `csm:vitals_wall_unit` |  |  |  |  |
 | Wheelchair | `csm:wheelchair` |  |  |  |  |

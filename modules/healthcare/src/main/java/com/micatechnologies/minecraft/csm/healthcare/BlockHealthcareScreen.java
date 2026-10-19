@@ -43,7 +43,12 @@ public class BlockHealthcareScreen extends BlockHealthcare {
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
-    if (player.isSneaking()) {
+    // A seat with a screen (the infusion recliner and its pump): a click sits, a sneak-click
+    // switches the screen. Anything else: a click switches it.
+    if (hasSeat() && !player.isSneaking()) {
+      return super.onBlockActivated(world, pos, state, player, hand, side, hitX, hitY, hitZ);
+    }
+    if (player.isSneaking() && !hasSeat()) {
       return false;
     }
     if (!world.isRemote) {
