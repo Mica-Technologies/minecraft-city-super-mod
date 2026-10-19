@@ -309,25 +309,38 @@ def _bed_pump():
 
 
 # --- headwall ----------------------------------------------------------------------------
-def headwall_face(seed, draw):
+def headwall_face(seed, draw, fine=None):
+    """A headwall face drawn at 32 px; ``fine`` then draws on it doubled to 64 px, for labels
+    the 3 x 5 font would make too big at 32."""
     def f():
         img = fill(hc.WARM_WHITE, size=32, grain=2, seed=seed)
         # the coloured band through the headwall at outlet height
         rect(img, 0, 22, 32, 25, hc.PALE_BLUE)
         draw(img)
+        if fine:
+            img = img.resize((64, 64), Image.NEAREST)
+            fine(img)
         return img
     return f
 
 
+# the gas outlets' centres across the left panel's texture (32 px), matching the outlet elements
+# headwall_elements() stands proud of it (x = 11.4, 6.9, 2.4; u = 16 - x, two texels a unit)
+HW_GAS = ((hc.O2_GREEN, "O2"), (hc.AIR_YELLOW, "AIR"), ((250, 250, 250), "VAC"))
+HW_GAS_U = (9, 18, 27)
+
+
 def _hw_left(img):
-    # gas outlet plates: oxygen, medical air, vacuum
-    for i, (c, label) in enumerate(((hc.O2_GREEN, "O2"), (hc.AIR_YELLOW, "AIR"),
-                                    ((250, 250, 250), "VAC"))):
-        x = 4 + i * 9
-        rect(img, x, 6, x + 7, 16, (232, 232, 228))
-        frame(img, x, 6, x + 7, 16, (170, 170, 166))
-        rect(img, x + 1, 7, x + 6, 10, c)
-        draw_text_centred(img, label, x + 3.5, 11, (60, 60, 64))
+    # gas outlet plates: oxygen, medical air, vacuum; the outlet stands on the plate's lower half
+    for (c, _label), u in zip(HW_GAS, HW_GAS_U):
+        rect(img, u - 4, 4, u + 4, 18, (232, 232, 228))
+        frame(img, u - 4, 4, u + 4, 18, (170, 170, 166))
+        rect(img, u - 3, 5, u + 3, 8, c)
+
+
+def _hw_left_labels(img):
+    for (_c, label), u in zip(HW_GAS, HW_GAS_U):
+        draw_text_centred(img, label, u * 2, 18, (60, 60, 64))
 
 
 def _hw_right(img):
@@ -350,7 +363,7 @@ def _hw_upper(img):
     rect(img, 0, 8, 32, 9, (130, 136, 142))
 
 
-tex("headwall_left", headwall_face(1301, _hw_left))
+tex("headwall_left", headwall_face(1301, _hw_left, _hw_left_labels))
 tex("headwall_right", headwall_face(1302, _hw_right))
 tex("headwall_upper", headwall_face(1303, _hw_upper))
 
@@ -520,8 +533,8 @@ def _call_station():
     img = fill((236, 236, 232), size=32, grain=1, seed=1601)
     hc.emblem(img, 16, 6, 3.5, (60, 110, 170))
     draw_text_centred(img, "CALL", 16, 12, (70, 70, 74))
-    rect(img, 22, 22, 28, 28, (120, 124, 130))
-    draw_text_centred(img, "OFF", 25, 29, (90, 90, 94))
+    rect(img, 13, 19, 19, 25, (120, 124, 130))
+    draw_text_centred(img, "OFF", 16, 26, (90, 90, 94))
     return img
 
 
@@ -558,20 +571,23 @@ def _pillow_speaker():
 
 @C.texture("pull_station")
 def _pull_station():
-    img = fill((236, 236, 232), grain=1, seed=1606)
-    draw_text_centred(img, "PULL", 8, 9, (200, 40, 36))
+    img = fill((236, 236, 232), size=32, grain=1, seed=1606)
+    draw_text_centred(img, "PULL", 16, 17, (200, 40, 36), scale=2)
     return img
+
+
+# the master panel's lamp rows on its face texture (32 px): each lamp's number sits under it
+PANEL_ROWS = (10.5, 21.5)
 
 
 @C.texture("panel_face")
 def _panel_face():
     img = fill((52, 56, 62), size=32, grain=1, seed=1607)
     draw_text_centred(img, "NURSE", 17, 3, (220, 220, 220))
-    hc.emblem(img, 3.5, 7.5, 2.5, (110, 160, 210))
     for i in range(6):
         cx = 8 + (i % 3) * 8
-        cy = 16 + (i // 3) * 9
-        draw_text_centred(img, str(i + 1), cx, cy + 4, (200, 200, 200))
+        cy = PANEL_ROWS[i // 3]
+        draw_text_centred(img, str(i + 1), cx, int(cy + 4), (200, 200, 200))
     return img
 
 
@@ -670,11 +686,19 @@ def _sharps_front():
 
 @C.texture("glove_boxes")
 def _glove_boxes():
-    img = fill((236, 236, 232), grain=1, seed=1802)
+    """Three glove boxes on their ends, side by side: each a box with a printed band, an oval
+    opening and a glove's cuff showing through it (sizes S, M, L)."""
+    img = fill((236, 236, 232), size=32, grain=1, seed=1802)
     for i, c in enumerate(((96, 130, 210), (150, 110, 200), (90, 180, 190))):
-        x = 1 + i * 5
-        rect(img, x, 2, x + 4, 14, c)
-        rect(img, x + 1, 5, x + 3, 7, (250, 250, 250))
+        x = 2 + i * 10
+        rect(img, x, 4, x + 9, 28, (244, 244, 240))
+        frame(img, x, 4, x + 9, 28, shade(c, 0.8))
+        rect(img, x + 1, 5, x + 8, 9, c)
+        rect(img, x + 1, 23, x + 8, 27, c)
+        for cy in (14, 17):
+            disc(img, x + 4.5, cy, 3.4, (80, 84, 90))
+        for cy in (14, 17):
+            disc(img, x + 4.5, cy, 2.4, shade(c, 1.45))
     return img
 
 
@@ -801,8 +825,8 @@ def _gas_sign():
 @C.texture("o2_plate")
 def _o2_plate():
     img = fill((236, 236, 232), grain=1, seed=1811)
-    rect(img, 0, 0, 16, 4, hc.O2_GREEN)
-    draw_text_centred(img, "O2", 8, 0, (250, 250, 250))
+    rect(img, 0, 0, 16, 7, hc.O2_GREEN)
+    draw_text_centred(img, "O2", 8, 1, (250, 250, 250))
     disc(img, 8, 10, 3.5, (60, 60, 60))
     disc(img, 8, 10, 1.5, (20, 20, 20))
     return img
@@ -1012,7 +1036,7 @@ def headwall_elements(upper):
         for i, g in enumerate(("o2", "air", "vac")):
             x = 13 - i * 4.5
             els.append(el([x - 2.6, 7.6, 13.9], [x - 0.6, 9.6, 14.5], "panel",
-                          per={"north": "gas_" + g}))
+                          per={"north": "gas_" + g}, uv={"north": [0, 0, 16, 16]}))
         # the equipment rail along the bottom
         els.append(el([-15, 2.5, 13.6], [15, 3.5, 14.5], "stainless"))
         for x in (-12, -4, 4, 12):
@@ -1297,12 +1321,12 @@ def panel_models():
     models = {"nurse_call_panel_base": base}
     for i in range(6):
         cx = 16 - (1.5 + 13 * (8 + (i % 3) * 8) / 32.0)
-        cy = 16 - (2.5 + 11 * (16 + (i // 3) * 9) / 32.0)
+        cy = 16 - (2.5 + 11 * PANEL_ROWS[i // 3] / 32.0)
         for on in (False, True):
             models["nurse_call_panel_lamp%d_%s" % (i + 1, "on" if on else "off")] = model(
                 {"lamp": T("panel_lamp_on" if on else "panel_lamp_off"),
                  "particle": T("charcoal")},
-                [el([cx - 1.2, cy - 1.2, 13.4], [cx + 1.2, cy + 1.2, 14], "lamp",
+                [el([cx - 0.8, cy - 0.8, 13.5], [cx + 0.8, cy + 0.8, 14], "lamp",
                     faces=("north", "east", "west", "up", "down"))])
     for on in (False, True):
         models["nurse_call_panel_alarm_%s" % ("on" if on else "off")] = model(
