@@ -2,7 +2,7 @@
 
 The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station.
 
-!!! info "67 blocks in this tab"
+!!! info "70 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -13,6 +13,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 |---|---|---|---|---|---|
 | AMBULANCE ONLY Floor Marking | `csm:ambulance_only_marking` |  |  |  |  |
 | AMBULANCE ONLY Sign | `csm:ambulance_only_sign` |  |  |  |  |
+| Anatomical Torso Model | `csm:anatomical_torso_model` |  |  |  |  |
 | Autoclave | `csm:autoclave` |  |  |  |  |
 | Automated Dispensing Cabinet | `csm:medication_dispensing_cabinet` |  |  |  |  |
 | Autopsy Table | `csm:autopsy_table` |  |  |  |  |
@@ -32,6 +33,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Defibrillator (Rolling Stand) | `csm:defibrillator` |  |  |  |  |
 | Dialysis Machine | `csm:dialysis_machine` |  |  |  |  |
 | Dialysis RO Water Unit | `csm:dialysis_ro_unit` |  |  |  |  |
+| Dissection Table | `csm:dissection_table` |  |  |  |  |
 | Endoscopy Tower | `csm:endoscopy_tower` |  |  |  |  |
 | Fume Hood | `csm:fume_hood` |  |  |  |  |
 | Glove Box Dispenser | `csm:glove_box_dispenser` |  |  |  |  |
@@ -67,6 +69,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Radiology Reading Workstation | `csm:radiology_reading_workstation` |  |  |  |  |
 | Scrub Attire Dispenser | `csm:scrub_attire_dispenser` |  |  |  |  |
 | Sharps Container | `csm:sharps_container` |  |  |  |  |
+| Skeleton on Stand | `csm:skeleton_stand` |  |  |  |  |
 | Soiled Linen Hamper | `csm:soiled_linen_hamper` |  |  |  |  |
 | Specimen Pass-Through | `csm:specimen_pass_through` |  |  |  |  |
 | Sterile Compounding Hood | `csm:iv_compounding_hood` |  |  |  |  |

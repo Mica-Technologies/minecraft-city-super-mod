@@ -274,6 +274,18 @@ public class BlockHealthcare extends AbstractBlockRotatableNSEW {
     return seatTop >= 0;
   }
 
+  /**
+   * The top of the seat in {@code state}, in blocks above the block's floor: the fixed seat
+   * height, or more for a seat that can stand on a riser.
+   *
+   * @param state the block's state
+   *
+   * @return the seat's top
+   */
+  protected double seatTop(IBlockState state) {
+    return seatTop;
+  }
+
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
@@ -282,7 +294,7 @@ public class BlockHealthcare extends AbstractBlockRotatableNSEW {
     }
     if (!world.isRemote) {
       EnumFacing front = state.getValue(FACING);
-      sit(world, pos, front, seatTop, seatForward, player);
+      sit(world, pos, front, seatTop(state), seatForward, player);
     }
     return true;
   }

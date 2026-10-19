@@ -1,0 +1,150 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "seat": "csm:blocks/healthcare/patient/seat_blue",
+    "metal": "csm:blocks/healthcare/wards/dark_grey",
+    "wood": "csm:blocks/healthcare/wards/beech",
+    "riser": "csm:blocks/healthcare/wards/charcoal",
+    "carpet": "csm:blocks/healthcare/patient/carpet",
+    "nosing": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/wards/beech"
+  },
+  "elements": [
+    {
+      "from": [
+        15.2,
+        0,
+        6
+      ],
+      "to": [
+        16,
+        11,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            5,
+            0.8,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            15.2,
+            5,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            1,
+            5,
+            10,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            6,
+            5,
+            15,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            15.2,
+            6,
+            16,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            15.2,
+            1,
+            16,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.2,
+        11,
+        4.8
+      ],
+      "to": [
+        16,
+        11.6,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#wood",
+          "uv": [
+            0,
+            4.4,
+            0.8,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#wood",
+          "uv": [
+            15.2,
+            4.4,
+            16,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            4.4,
+            11,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            5,
+            4.4,
+            13,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            15.2,
+            5,
+            16,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#wood",
+          "uv": [
+            15.2,
+            3,
+            16,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

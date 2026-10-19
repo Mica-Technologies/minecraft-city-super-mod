@@ -10,15 +10,15 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | Tab | Blocks | What is in it |
 |---|---|---|
 | [Building Materials](building-materials.md) | 223 | Bulk material sets, with matching stairs, slabs and fences. |
-| [Commercial & Office](commercial-office.md) | 94 | The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards that join into one of any size, classroom seating, lecterns, lockers, a trophy case, projectors, the cafeteria table, the things on a desk and a copier that copies books. |
+| [Commercial & Office](commercial-office.md) | 98 | The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards that join into one of any size, classroom seating, lecterns, lockers, a trophy case, projectors, the cafeteria table, the things on a desk and a copier that copies books. |
 | [Construction Site](construction-site.md) | 42 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
 | [Furniture](furniture.md) | 21 | Interior fittings: seating, counters, appliances and fixtures. |
 | [Gaming](gaming.md) | 13 | Arcade cabinets and the playable machines that go with them. |
 | [Emergency Services](emergency-services.md) | 62 | Fire, police and ambulance station fittings, community warning sirens and dispatch. |
 | [Exits & Emergency Lighting](exits-and-emergency-lighting.md) | 38 | Exit and stair signs, and the emergency lights that take over when the power fails. |
 | [Fire Protection](fire-protection.md) | 53 | Sprinklers and the rest of what a building fights a fire with besides its alarm. |
-| [Healthcare - Clinical](healthcare-clinical.md) | 67 | The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station. |
-| [Healthcare - Patient Care](healthcare-patient-care.md) | 38 | Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV poles, the room's furniture and TV, cubicle curtains on their ceiling track, the nurse call devices and corridor dome lights, and the corridor rails. |
+| [Healthcare - Clinical](healthcare-clinical.md) | 70 | The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station. |
+| [Healthcare - Patient Care](healthcare-patient-care.md) | 53 | Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV poles, the room's furniture and TV, cubicle curtains on their ceiling track, the nurse call devices and corridor dome lights, and the corridor rails. |
 | [HVAC](hvac.md) | 46 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 84 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Fire Alarm & Detection](life-safety.md) | 152 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
@@ -28,7 +28,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Novelties](novelties.md) | 19 | Decorative oddities that did not belong anywhere else. |
 | [Parks](parks.md) | 32 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
-| [Residential](residential.md) | 353 | The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard. |
+| [Residential](residential.md) | 355 | The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard. |
 | [Road Signs](road-signs.md) | 692 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Signage & Advertising](signage.md) | 6 | Street ad kiosks, wall poster boards and billboards built to size. |
 | [Streetscape](streetscape.md) | 102 | Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters. |
@@ -40,7 +40,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Trees & Plants](trees-and-plants.md) | 477 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Utilities](utilities.md) | 82 | The services a city runs to its buildings: electric meters single and in banks, the meter socket, service disconnect, main breaker panel and switchboard, gas meters single and in banks, the water meter setter and utility room labels; and the water system: the water tower built to size (legs, riser, bracing, the pedestal column, tanks with their balcony and name band, the caged ladder), ground storage tanks, the pump station's pipes, valves, pumps and panel, air release and backflow enclosures, and the treatment skid; and sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall's headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser and emergency spillway, and precast manhole sections whole and cut away; the gas yard: a regulator station's skid, gas pipe, ball valves, pressure regulator, turbine meter, line heater, vent stack and odorant tank, and its warning signs; and telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna array, and a small cell's canister antenna and radio for the street poles. |
 | [Unlisted](unlisted.md) | 138 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **3883** | |
+| **Total** | **3907** | |
 
 ## How to read the table
 

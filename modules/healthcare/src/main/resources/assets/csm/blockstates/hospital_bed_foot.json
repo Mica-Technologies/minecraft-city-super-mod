@@ -241,6 +241,46 @@
         }
       }
     ],
+    "facing=north,high=false,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_low",
+        "y": 0,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=north,high=true,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_high",
+        "y": 0,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=north,high=false,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_low",
+        "y": 0,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=north,high=true,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_high",
+        "y": 0,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
     "facing=east,high=false,rails=false,variant=white": [
       {
         "model": "csm:healthcare/wards/bed_foot_std_down_low",
@@ -477,6 +517,46 @@
         "y": 90,
         "textures": {
           "blanket": "csm:blocks/healthcare/wards/blanket_blue",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=east,high=false,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_low",
+        "y": 90,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=east,high=true,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_high",
+        "y": 90,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=east,high=false,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_low",
+        "y": 90,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=east,high=true,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_high",
+        "y": 90,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
           "mattress": "csm:blocks/healthcare/wards/mattress"
         }
       }
@@ -721,6 +801,46 @@
         }
       }
     ],
+    "facing=south,high=false,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_low",
+        "y": 180,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=south,high=true,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_high",
+        "y": 180,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=south,high=false,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_low",
+        "y": 180,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=south,high=true,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_high",
+        "y": 180,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
     "facing=west,high=false,rails=false,variant=white": [
       {
         "model": "csm:healthcare/wards/bed_foot_std_down_low",
@@ -957,6 +1077,46 @@
         "y": 270,
         "textures": {
           "blanket": "csm:blocks/healthcare/wards/blanket_blue",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=west,high=false,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_low",
+        "y": 270,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=west,high=true,rails=false,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_down_high",
+        "y": 270,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=west,high=false,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_low",
+        "y": 270,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
+          "mattress": "csm:blocks/healthcare/wards/mattress"
+        }
+      }
+    ],
+    "facing=west,high=true,rails=true,variant=labor": [
+      {
+        "model": "csm:healthcare/wards/bed_foot_labor_up_high",
+        "y": 270,
+        "textures": {
+          "blanket": "csm:blocks/healthcare/wards/blanket_mauve",
           "mattress": "csm:blocks/healthcare/wards/mattress"
         }
       }

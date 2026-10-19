@@ -3,7 +3,8 @@
 gen_healthcare_wards.py -- the Healthcare module's patient rooms and wards.
 
 What a hospital ward and its rooms are fitted with: the hospital bed (four blanket colours, the
-ICU bed with its air mattress and pump, the wider bariatric bed), the patient headwall and its
+ICU bed with its air mattress and pump, the wider bariatric bed, the labour and delivery bed
+with its split foot section and leg supports), the patient headwall and its
 upper panel, the reading light, the bedside monitor on its wall arm and on a rolling stand, the
 IV pole and the IV pole with its infusion pump, the overbed table, the patient recliner and
 visitor chair, the wardrobe, the patient-room TV, the wall vitals unit and suction regulator,
@@ -848,8 +849,10 @@ def _iv_bag():
 # ==========================================================================================
 # The hospital bed
 # ==========================================================================================
-def bed_elements(rails, high, wide=False, icu=False):
-    """The whole bed in its frame: foot z 0..16, head z 16..32 (against the wall)."""
+def bed_elements(rails, high, wide=False, icu=False, labor=False):
+    """The whole bed in its frame: foot z 0..16, head z 16..32 (against the wall). The labour
+    and delivery bed (``labor``) has its foot section split in two and dropped below the seat,
+    no footboard, rails at the head only, and a padded leg support on a post each side."""
     x0, x1 = (0.25, 15.75) if wide else (1.5, 14.5)
     D = 10 if high else 6
     Mt = D + 3
@@ -868,27 +871,44 @@ def bed_elements(rails, high, wide=False, icu=False):
     # the deck
     els.append(el([x0, D - 1, 1], [x1, D, 31], "frame_grey"))
     # the mattress: a flat seat and leg section, and the back raised
-    els.append(el([x0 + 0.5, D, 1.5], [x1 - 0.5, Mt, 20.5], "mattress",
-                  per={"up": "blanket"}))
+    if labor:
+        # the seat, and the foot section split down the middle and dropped 2 px below it
+        els.append(el([x0 + 0.5, D, 10.5], [x1 - 0.5, Mt, 20.5], "mattress",
+                      per={"up": "blanket"}))
+        for fx in ((x0 + 0.5, 7.6), (8.4, x1 - 0.5)):
+            els.append(el([fx[0], D - 2, 2.5], [fx[1], Mt - 2, 10.2], "mattress"))
+    else:
+        els.append(el([x0 + 0.5, D, 1.5], [x1 - 0.5, Mt, 20.5], "mattress",
+                      per={"up": "blanket"}))
     back = el([x0 + 0.5, D, 20.5], [x1 - 0.5, Mt, 30.5], "mattress")
     els.append(rot(back, "x", -22.5, [8, D, 20.5]))
     pillow = el([4, Mt, 24], [12, Mt + 2, 29.5], "pillow")
     els.append(rot(pillow, "x", -22.5, [8, D, 20.5]))
     # the blanket over the legs, its turned-down sheet, and the sides it drapes over
-    els.append(el([x0 + 0.2, Mt, 1.2], [x1 - 0.2, Mt + 0.6, 19], "blanket"))
+    b0 = 10.8 if labor else 1.2
+    els.append(el([x0 + 0.2, Mt, b0], [x1 - 0.2, Mt + 0.6, 19], "blanket"))
     els.append(el([x0 + 0.2, Mt + 0.6, 16.5], [x1 - 0.2, Mt + 1.0, 19], "pillow"))
     for sx in ((x0 + 0.2 - 0.4, x0 + 0.2), (x1 - 0.2, x1 - 0.2 + 0.4)):
-        els.append(el([sx[0], Mt - 2.5, 1.2], [sx[1], Mt + 0.6, 19], "blanket"))
+        els.append(el([sx[0], Mt - 2.5, b0], [sx[1], Mt + 0.6, 19], "blanket"))
     # head and foot boards
     els.append(el([x0, D - 2, 30.5], [x1, D + 8, 31.5], "warm_white",
                   per={"north": "headboard", "south": "headboard"}))
-    els.append(el([x0, D - 2, 0.5], [x1, D + 6, 1.5], "warm_white",
-                  per={"north": "footboard"}))
+    if labor:
+        # no footboard: a grab bar across the end of the frame, and a leg support each side,
+        # a padded calf rest on a post rising from the frame beside the dropped foot section
+        els.append(el([x0 + 1, D - 1.5, 1], [x1 - 1, D - 0.5, 2], "stainless"))
+        for px, bx in ((x0 - 0.4, (x0 - 0.9, x0 + 2.1)), (x1 - 0.6, (x1 - 2.1, x1 + 0.9))):
+            els.append(el([px, D - 1, 6], [px + 1, Mt + 6, 7], "stainless"))
+            els.append(el([bx[0], Mt + 5, 3.5], [bx[1], Mt + 7.5, 9], "mattress"))
+    else:
+        els.append(el([x0, D - 2, 0.5], [x1, D + 6, 1.5], "warm_white",
+                      per={"north": "footboard"}))
     # side rails: a split rail each side, up beside the mattress or folded down
     ry0, ry1 = (Mt - 0.5, Mt + 4.5) if rails else (D - 5, D)
     for rx in ((x0 - 0.6, x0 + 0.1), (x1 - 0.1, x1 + 0.6)):
         els.append(el([rx[0], ry0, 21], [rx[1], ry1, 29.5], "rail"))
-        els.append(el([rx[0], ry0, 6], [rx[1], ry1, 18.5], "rail"))
+        if not labor:
+            els.append(el([rx[0], ry0, 6], [rx[1], ry1, 18.5], "rail"))
     if icu:
         # the mattress pump hung on the footboard, facing the room
         els.append(el([5, D + 1, -0.6], [11, D + 5, 0.5], "dark_grey",
@@ -921,8 +941,11 @@ BED_VARIANTS = [
     ("bariatric", "wide", "blanket_blue", "mattress",
      "Bariatric Hospital Bed", "Schwerlast-Krankenhausbett", "Cama de hospital bariátrica",
      "Bariatrisk sjukhussäng"),
+    ("labor", "labor", "blanket_mauve", "mattress",
+     "Labor and Delivery Bed", "Kreißbett", "Cama de partos", "Förlossningssäng"),
 ]
-GEOMS = {"std": dict(), "icu": dict(icu=True), "wide": dict(wide=True)}
+GEOMS = {"std": dict(), "icu": dict(icu=True), "wide": dict(wide=True),
+         "labor": dict(labor=True)}
 BOOL = ("false", "true")
 
 
