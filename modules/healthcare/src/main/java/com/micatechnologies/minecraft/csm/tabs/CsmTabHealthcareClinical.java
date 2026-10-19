@@ -84,5 +84,9 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockHealthcareScreen("autoclave", new int[]{1, 0, 1, 15, 15, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcare("case_cart", new int[]{1, 0, 2, 15, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcarePair("scrub_attire_dispenser", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    // --- gen_healthcare_clinics.py --fragments ---
+    initTabBlock(new BlockHealthcareScreen("dialysis_machine", new int[]{2, 0, 3, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcarePair("dialysis_ro_unit", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcareScreen("endoscopy_tower", new int[]{2, 0, 3, 15, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
   }
 }
