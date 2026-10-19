@@ -37,6 +37,7 @@ gui.csm.door.sound.trapdoor=Falltür
 gui.csm.door.sound.wood=Holz
 gui.csm.door.swing_busy=Erst die Tür schließen und stehen lassen
 gui.csm.door.swing_fixed=Die Bewegung dieser Tür wird in der Türwerkstatt eingestellt
+gui.csm.door.swing_sliding=Eine Schiebetür hat keine Schwenkrichtung zum Umkehren
 gui.csm.door.swing_in=Diese Tür öffnet jetzt nach innen
 gui.csm.door.swing_out=Diese Tür öffnet jetzt nach außen
 gui.csm.door.swing_tool.tip=Rechtsklick auf eine geschlossene Tür kehrt ihren Anschlag um

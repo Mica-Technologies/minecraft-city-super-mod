@@ -662,7 +662,7 @@ PLATE = (1, 2, 15, 14)
 PLATE_D = 0.5
 ROOM_NAMES = ("", "EXAM", "PATIENT", "SOILED|UTILITY", "CLEAN|UTILITY", "NOURISHMENT",
               "STAFF|ONLY", "MED ROOM", "STORAGE")
-SHEET_W, SHEET_H = 128, 64
+SHEET_W, SHEET_H = 128, 128   # square: a block sprite that is not square is refused as a broken animation
 NAME_SLOT = (64, 12)   # each name's slot on the sheet: two columns of four, from y 8
 NAME_TOP = 8
 NAME_ROW = 14

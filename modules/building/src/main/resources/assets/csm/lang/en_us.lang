@@ -37,6 +37,7 @@ gui.csm.door.sound.trapdoor=Trapdoor
 gui.csm.door.sound.wood=Wood
 gui.csm.door.swing_busy=Shut the door and let it stop first
 gui.csm.door.swing_fixed=This door's movement is set in the Door Workshop
+gui.csm.door.swing_sliding=A sliding door has no swing to reverse
 gui.csm.door.swing_in=This door now swings in
 gui.csm.door.swing_out=This door now swings out
 gui.csm.door.swing_tool.tip=Right-click a shut door to make it swing the other way

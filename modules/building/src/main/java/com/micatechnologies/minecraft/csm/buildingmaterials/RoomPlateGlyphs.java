@@ -24,7 +24,7 @@ public final class RoomPlateGlyphs {
   public static final int MAX_NUMBER = 9999;
 
   static final float SHEET_W = 128;
-  static final float SHEET_H = 64;
+  static final float SHEET_H = 128;
   static final float NAME_SLOT_W = 64;
   static final float NAME_SLOT_H = 12;
   static final float NAME_TOP = 8;
