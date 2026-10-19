@@ -170,3 +170,5 @@ tile.hospital_outlet_normal.name=Power Outlet (Normal Power)
 tile.hospital_outlet_emergency.name=Power Outlet (Emergency Power, Red)
 tile.hospital_outlet_pair.name=Power Outlets (Normal and Emergency)
 tile.infant_security_panel.name=Infant Security Door Panel
+csm.healthcare.nursecall.pick_panel_first=[Nurse call] Sneak-click a master panel first, then this monitor.
+csm.healthcare.nursecall.monitor_unlinked=[Nurse call] Not linked to a master panel: sneak-click a panel, then these monitors.

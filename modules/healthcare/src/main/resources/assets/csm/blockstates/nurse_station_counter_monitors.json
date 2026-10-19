@@ -127,10 +127,228 @@
     },
     {
       "when": {
+        "facing": "north",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_chart",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "north",
+            "room1": "true"
+          },
+          {
+            "facing": "north",
+            "room2": "true"
+          },
+          {
+            "facing": "north",
+            "room3": "true"
+          },
+          {
+            "facing": "north",
+            "room4": "true"
+          },
+          {
+            "facing": "north",
+            "room5": "true"
+          },
+          {
+            "facing": "north",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_call",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room1",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room2",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room3",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room4",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room5",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room6",
+        "y": 0
+      }
+    },
+    {
+      "when": {
         "facing": "east"
       },
       "apply": {
         "model": "csm:healthcare/clinical/station_monitors",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_chart",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "east",
+            "room1": "true"
+          },
+          {
+            "facing": "east",
+            "room2": "true"
+          },
+          {
+            "facing": "east",
+            "room3": "true"
+          },
+          {
+            "facing": "east",
+            "room4": "true"
+          },
+          {
+            "facing": "east",
+            "room5": "true"
+          },
+          {
+            "facing": "east",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_call",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room6",
         "y": 90
       }
     },
@@ -145,10 +363,228 @@
     },
     {
       "when": {
+        "facing": "south",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_chart",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "south",
+            "room1": "true"
+          },
+          {
+            "facing": "south",
+            "room2": "true"
+          },
+          {
+            "facing": "south",
+            "room3": "true"
+          },
+          {
+            "facing": "south",
+            "room4": "true"
+          },
+          {
+            "facing": "south",
+            "room5": "true"
+          },
+          {
+            "facing": "south",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_call",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
         "facing": "west"
       },
       "apply": {
         "model": "csm:healthcare/clinical/station_monitors",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_chart",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "west",
+            "room1": "true"
+          },
+          {
+            "facing": "west",
+            "room2": "true"
+          },
+          {
+            "facing": "west",
+            "room3": "true"
+          },
+          {
+            "facing": "west",
+            "room4": "true"
+          },
+          {
+            "facing": "west",
+            "room5": "true"
+          },
+          {
+            "facing": "west",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_monitors_call",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/clinical/station_call_room6",
         "y": 270
       }
     }

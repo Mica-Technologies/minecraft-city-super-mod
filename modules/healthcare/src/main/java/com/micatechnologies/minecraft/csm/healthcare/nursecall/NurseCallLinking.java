@@ -10,7 +10,8 @@ import net.minecraft.world.World;
 
 /**
  * Linking by hand: sneak-click a master panel or a dome light to pick it, then sneak-click each
- * dome light or device to link it there. The pick is kept per player on the server until they
+ * dome light or device to link it there, or (a panel picked) each nurses' station monitor to show
+ * the panel's calls. The pick is kept per player on the server until they
  * pick another or log out. Generators link with {@code /csmhealthcare nursecall link} instead.
  *
  * @since 2026.10
@@ -61,7 +62,8 @@ public final class NurseCallLinking {
     NurseCallNetwork.Kind picked = pick == null ? null : NurseCallNetwork.kindOf(world, pick.pos);
     boolean linkHere = pick != null && !pick.pos.equals(pos)
         && (kind == NurseCallNetwork.Kind.DEVICE
-        || kind == NurseCallNetwork.Kind.DOME && picked == NurseCallNetwork.Kind.PANEL);
+        || (kind == NurseCallNetwork.Kind.DOME || kind == NurseCallNetwork.Kind.MONITOR)
+        && picked == NurseCallNetwork.Kind.PANEL);
     if (linkHere) {
       try {
         NurseCallNetwork.get(world).link(world, pick.pos, pos);
@@ -76,6 +78,11 @@ public final class NurseCallLinking {
     if (kind == NurseCallNetwork.Kind.DEVICE) {
       player.sendStatusMessage(new TextComponentTranslation(
           "csm.healthcare.nursecall.pick_first"), true);
+      return;
+    }
+    if (kind == NurseCallNetwork.Kind.MONITOR) {
+      player.sendStatusMessage(new TextComponentTranslation(
+          "csm.healthcare.nursecall.pick_panel_first"), true);
       return;
     }
     PICKS.put(player.getUniqueID(), new Pick(world.provider.getDimension(), pos.toImmutable()));

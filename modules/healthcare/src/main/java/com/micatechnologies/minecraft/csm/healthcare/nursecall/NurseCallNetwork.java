@@ -35,6 +35,10 @@ import net.minecraft.world.storage.WorldSavedData;
  * A panel shows {@link BlockNurseCallMasterPanel#ROOMS six rooms}, in the order they were
  * linked.</p>
  *
+ * <p>A nurses' station's <b>monitors</b> ({@link BlockNurseStationMonitors}) are linked to one
+ * panel each, any number to a panel, and show its rooms' calls: they take no room on it and are
+ * kept apart from the rooms, and whenever the panel is brought up to date they are too.</p>
+ *
  * <p>It is all event-driven: a device pressed, a call cancelled or a link made updates the dome
  * light and the panel it reaches, once, and nothing polls. A block in a chunk that is not loaded is
  * left as it is: its call is still recorded here, and it catches up the next time something in its
@@ -49,7 +53,7 @@ public class NurseCallNetwork extends WorldSavedData {
 
   /** What a linked position holds. */
   public enum Kind {
-    PANEL, DOME, DEVICE
+    PANEL, DOME, DEVICE, MONITOR
   }
 
   /** child -> parent */
@@ -58,6 +62,10 @@ public class NurseCallNetwork extends WorldSavedData {
   private final Map<Long, List<Long>> children = new LinkedHashMap<>();
   /** devices calling */
   private final Set<Long> calling = new HashSet<>();
+  /** station monitor -> the panel it shows */
+  private final Map<Long, Long> monitorPanel = new HashMap<>();
+  /** panel -> the station monitors showing it, in link order */
+  private final Map<Long, List<Long>> monitors = new LinkedHashMap<>();
 
   public NurseCallNetwork(String name) {
     super(name);
@@ -104,14 +112,17 @@ public class NurseCallNetwork extends WorldSavedData {
     if (b instanceof BlockNurseCallDevice) {
       return Kind.DEVICE;
     }
+    if (b instanceof BlockNurseStationMonitors) {
+      return Kind.MONITOR;
+    }
     return null;
   }
 
   // --- links ---------------------------------------------------------------------------------
 
   /**
-   * Links {@code child} to {@code parent}: a dome light or a device to a panel, or a device to a
-   * dome light. A child already linked elsewhere moves.
+   * Links {@code child} to {@code parent}: a dome light or a device to a panel, a device to a
+   * dome light, or a nurses' station monitor to a panel. A child already linked elsewhere moves.
    *
    * @param world  the world
    * @param parent the panel or dome light
@@ -127,8 +138,23 @@ public class NurseCallNetwork extends WorldSavedData {
           + describe(parent));
     }
     if (ck == null || ck == Kind.PANEL) {
-      throw new IllegalArgumentException("there is no nurse call device or dome light at "
-          + describe(child));
+      throw new IllegalArgumentException("there is no nurse call device, dome light or nurses'"
+          + " station monitor at " + describe(child));
+    }
+    if (ck == Kind.MONITOR) {
+      if (pk != Kind.PANEL) {
+        throw new IllegalArgumentException("a nurses' station monitor links to a master panel");
+      }
+      long p = parent.toLong();
+      long c = child.toLong();
+      if (!Long.valueOf(p).equals(monitorPanel.get(c))) {
+        detachMonitor(c);
+        monitorPanel.put(c, p);
+        monitors.computeIfAbsent(p, k -> new ArrayList<>()).add(c);
+        markDirty();
+      }
+      refresh(world, child);
+      return;
     }
     if (pk == Kind.DOME && ck == Kind.DOME) {
       throw new IllegalArgumentException("a dome light links to a master panel, not to another"
@@ -167,6 +193,12 @@ public class NurseCallNetwork extends WorldSavedData {
   public boolean unlink(World world, BlockPos parent, BlockPos child) {
     long p = parent.toLong();
     long c = child.toLong();
+    if (Long.valueOf(p).equals(monitorPanel.get(c))) {
+      detachMonitor(c);
+      markDirty();
+      refresh(world, child);
+      return true;
+    }
     if (!Long.valueOf(p).equals(parents.get(c))) {
       return false;
     }
@@ -174,6 +206,19 @@ public class NurseCallNetwork extends WorldSavedData {
     markDirty();
     refresh(world, parent);
     return true;
+  }
+
+  private void detachMonitor(long monitor) {
+    Long p = monitorPanel.remove(monitor);
+    if (p != null) {
+      List<Long> list = monitors.get(p);
+      if (list != null) {
+        list.remove(Long.valueOf(monitor));
+        if (list.isEmpty()) {
+          monitors.remove(p);
+        }
+      }
+    }
   }
 
   private void detach(long child) {
@@ -200,6 +245,8 @@ public class NurseCallNetwork extends WorldSavedData {
   public int prune(World world) {
     Set<Long> all = new HashSet<>(parents.keySet());
     all.addAll(children.keySet());
+    all.addAll(monitorPanel.keySet());
+    all.addAll(monitors.keySet());
     int dropped = 0;
     for (long l : all) {
       BlockPos pos = BlockPos.fromLong(l);
@@ -209,7 +256,11 @@ public class NurseCallNetwork extends WorldSavedData {
       Kind k = kindOf(world, pos);
       boolean asChild = parents.containsKey(l);
       boolean asParent = children.containsKey(l);
-      boolean ok = k != null && (!asChild || k != Kind.PANEL) && (!asParent || k != Kind.DEVICE);
+      boolean shown = monitors.containsKey(l);
+      boolean asMonitor = monitorPanel.containsKey(l);
+      boolean ok = k != null && (!asChild || k != Kind.PANEL && k != Kind.MONITOR)
+          && (!asParent || k == Kind.PANEL || k == Kind.DOME) && (!shown || k == Kind.PANEL)
+          && (!asMonitor || k == Kind.MONITOR);
       if (!ok) {
         forget(l);
         dropped++;
@@ -222,6 +273,13 @@ public class NurseCallNetwork extends WorldSavedData {
   }
 
   private void forget(long l) {
+    detachMonitor(l);
+    List<Long> shown = monitors.remove(l);
+    if (shown != null) {
+      for (long m : shown) {
+        monitorPanel.remove(m);
+      }
+    }
     detach(l);
     List<Long> kids = children.remove(l);
     if (kids != null) {
@@ -236,6 +294,50 @@ public class NurseCallNetwork extends WorldSavedData {
   public List<Long> childrenOf(long parent) {
     List<Long> kids = children.get(parent);
     return kids == null ? Collections.emptyList() : kids;
+  }
+
+  /**
+   * The master panel a nurses' station monitor shows, or null.
+   *
+   * @param monitor the monitor
+   *
+   * @return its panel
+   */
+  @Nullable
+  public BlockPos panelOfMonitor(BlockPos monitor) {
+    Long p = monitorPanel.get(monitor.toLong());
+    return p == null ? null : BlockPos.fromLong(p);
+  }
+
+  /**
+   * The nurses' station monitors showing a panel, in link order.
+   *
+   * @param panel the panel
+   *
+   * @return its monitors
+   */
+  public List<Long> monitorsOf(long panel) {
+    List<Long> list = monitors.get(panel);
+    return list == null ? Collections.emptyList() : list;
+  }
+
+  /**
+   * Which of a panel's six rooms are calling, one bit a room, from the network alone (the panel
+   * need not be loaded).
+   *
+   * @param panel the panel
+   *
+   * @return the mask
+   */
+  public int panelMask(long panel) {
+    int mask = 0;
+    List<Long> rooms = childrenOf(panel);
+    for (int i = 0; i < rooms.size() && i < BlockNurseCallMasterPanel.ROOMS; i++) {
+      if (roomCalling(rooms.get(i))) {
+        mask |= 1 << i;
+      }
+    }
+    return mask;
   }
 
   /** The parent of a child, or null. */
@@ -330,13 +432,18 @@ public class NurseCallNetwork extends WorldSavedData {
 
   /**
    * Brings the block at {@code pos} up to date with the network -- a dome light's lamp, a panel's
-   * room lamps -- and then whatever it reports to.
+   * room lamps and the station monitors showing them, a monitor's room lamps -- and then whatever
+   * it reports to.
    *
    * @param world the world
-   * @param pos   a dome light or panel (anything else is left alone)
+   * @param pos   a dome light, panel or station monitor (anything else is left alone)
    */
   public void refresh(World world, BlockPos pos) {
     if (!world.isBlockLoaded(pos)) {
+      // a panel out of loaded chunks still has its monitors brought up to date
+      for (long m : monitorsOf(pos.toLong())) {
+        refresh(world, BlockPos.fromLong(m));
+      }
       return;
     }
     IBlockState s = world.getBlockState(pos);
@@ -354,13 +461,18 @@ public class NurseCallNetwork extends WorldSavedData {
       if (p != null) {
         refresh(world, BlockPos.fromLong(p));
       }
+    } else if (b instanceof BlockNurseStationMonitors) {
+      Long p = monitorPanel.get(pos.toLong());
+      int mask = p == null ? 0 : panelMask(p);
+      TileEntity te = world.getTileEntity(pos);
+      if (te instanceof TileEntityNurseStationMonitor
+          && ((TileEntityNurseStationMonitor) te).getRooms() != mask) {
+        ((TileEntityNurseStationMonitor) te).setRooms(mask);
+      }
     } else if (b instanceof BlockNurseCallMasterPanel) {
-      int mask = 0;
-      List<Long> rooms = childrenOf(pos.toLong());
-      for (int i = 0; i < rooms.size() && i < BlockNurseCallMasterPanel.ROOMS; i++) {
-        if (roomCalling(rooms.get(i))) {
-          mask |= 1 << i;
-        }
+      int mask = panelMask(pos.toLong());
+      for (long m : monitorsOf(pos.toLong())) {
+        refresh(world, BlockPos.fromLong(m));
       }
       TileEntity te = world.getTileEntity(pos);
       if (te instanceof TileEntityNurseCallPanel) {
@@ -406,6 +518,23 @@ public class NurseCallNetwork extends WorldSavedData {
     for (int i = 0; i < calls.tagCount(); i++) {
       calling.add(((NBTTagLong) calls.get(i)).getLong());
     }
+    monitorPanel.clear();
+    monitors.clear();
+    NBTTagList shown = nbt.getTagList("monitors", 10);
+    for (int i = 0; i < shown.tagCount(); i++) {
+      NBTTagCompound l = shown.getCompoundTagAt(i);
+      long p = l.getLong("p");
+      NBTTagList list = l.getTagList("m", 4);
+      List<Long> ms = new ArrayList<>();
+      for (int j = 0; j < list.tagCount(); j++) {
+        long m = ((NBTTagLong) list.get(j)).getLong();
+        ms.add(m);
+        monitorPanel.put(m, p);
+      }
+      if (!ms.isEmpty()) {
+        monitors.put(p, ms);
+      }
+    }
   }
 
   @Override
@@ -428,6 +557,18 @@ public class NurseCallNetwork extends WorldSavedData {
       calls.appendTag(new NBTTagLong(c));
     }
     nbt.setTag("calling", calls);
+    NBTTagList shown = new NBTTagList();
+    for (Map.Entry<Long, List<Long>> e : monitors.entrySet()) {
+      NBTTagCompound l = new NBTTagCompound();
+      l.setLong("p", e.getKey());
+      NBTTagList list = new NBTTagList();
+      for (long m : e.getValue()) {
+        list.appendTag(new NBTTagLong(m));
+      }
+      l.setTag("m", list);
+      shown.appendTag(l);
+    }
+    nbt.setTag("monitors", shown);
     return nbt;
   }
 

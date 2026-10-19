@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.healthcare.codeblue.BlockCodeBlueButto
 import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockLabBench;
 import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockMorgueCabinet;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseCallMasterPanel;
+import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseStationMonitors;
 import com.micatechnologies.minecraft.csm.healthcare.patient.BlockLectureSeating;
 import com.micatechnologies.minecraft.csm.healthcare.patient.BlockSimulationMannequin;
 import com.micatechnologies.minecraft.csm.healthcare.systems.BlockInfantSecurityPanel;
@@ -78,7 +79,7 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockHealthcareScreen("crash_cart", new int[]{1, 0, 3, 15, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcareScreen("defibrillator", new int[]{3, 0, 3, 13, 16, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockNurseStation("nurse_station_counter", new int[]{0, 0, 0, 16, 16, 16}, false));
-    initTabBlock(new BlockNurseStation("nurse_station_counter_monitors", new int[]{0, 0, 0, 16, 16, 16}, false));
+    initTabBlock(new BlockNurseStationMonitors(new int[]{0, 0, 0, 16, 16, 16}));
     initTabBlock(new BlockNurseStation("nurse_station_corner", new int[]{0, 0, 0, 16, 16, 16}, true));
     initTabBlock(new BlockHealthcarePair("patient_status_board", new int[]{0, 0, 13, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE, false));
     initTabBlock(new BlockHealthcareScreen("workstation_on_wheels", new int[]{2, 0, 2, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));

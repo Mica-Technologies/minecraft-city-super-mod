@@ -170,3 +170,5 @@ tile.hospital_outlet_normal.name=Steckdose (Normalnetz)
 tile.hospital_outlet_emergency.name=Steckdose (Notstrom, rot)
 tile.hospital_outlet_pair.name=Steckdosen (Normal- und Notstrom)
 tile.infant_security_panel.name=Säuglingsschutz-Türterminal
+csm.healthcare.nursecall.pick_panel_first=[Schwesternruf] Zuerst eine Zentrale mit Schleichen und Klicken wählen, dann diesen Monitor.
+csm.healthcare.nursecall.monitor_unlinked=[Schwesternruf] Mit keiner Zentrale verbunden: eine Zentrale, dann diese Monitore mit Schleichen und Klicken wählen.

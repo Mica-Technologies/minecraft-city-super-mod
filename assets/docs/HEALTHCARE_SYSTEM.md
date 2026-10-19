@@ -7,7 +7,7 @@ the pharmacy, the morgue, maternity and the NICU, rehabilitation, the waiting ro
 paediatric playroom, wayfinding and the building systems a hospital runs on (nurse call, code
 blue, medical gas, emergency power, infant security). Like every module it pins Core to its own
 exact version and registers nothing itself. It is 150 blocks (146 in two tabs and four hidden
-cells), 2,176 block states.
+cells), 3,184 block states.
 
 It was asked for in GitHub #293, for the hospitals being built on the Alto server: they were
 furnished from the Hospital Mod and its Theatre Pack, which cover the operating room and little
@@ -71,7 +71,9 @@ nothing else will do.**
   settings, the now-serving display's number and desk, and the wayfinding cell's sign and place.
   Everything else is metadata and actual state.
 - **Every block uses `CsmBlockStateContainer`**, and every property was weighed against its state
-  product. The largest are the curtain panel (288: cloth x drawn x its shape), the master panel
+  product. The largest are the station counter with monitors (1,024: the master panel's six room
+  lamps over the counter's facings and ends, below), the curtain panel (288: cloth x drawn x its
+  shape), the master panel
   (256: six lamp bits and the alarm, actual state over four facings), the curtain track (162) and
   the shared bed foot (112). Most blocks are 4 to 16.
 - **Shared swatches and `model_depth.py`.** Every generator shares the palette's swatch textures
@@ -200,8 +202,36 @@ the dome light and the panel lamp it reaches once.
   to a dome), or by hand: sneak-click a panel or dome to pick it, then sneak-click each dome or
   device (`NurseCallLinking`, kept per player until they pick another or log out).
 
-The nurses' station counter does not show calls itself; the master panel on the wall behind it
-does (Left out, below).
+### The nurses' station monitors
+
+The counter with monitors (`nurse_station_counter_monitors`, `BlockNurseStationMonitors`) shows
+the calls of **one master panel**: while any of the panel's rooms calls, both its charting screens
+give way to a CALL screen, a red band flashing over the panel's room numbers (1-3 on the nurse's
+left screen, 4-6 on the right), and each calling room's number is lit amber. With no call the
+screens chart again. The numbers are the panel's, so the nurse reads the same room at the counter
+and on the wall.
+
+- **Linking.** `/csmhealthcare nursecall link <panel x y z> <monitors x y z>`, or by hand:
+  sneak-click the panel to pick it, then sneak-click the counter. Any number of counters can show
+  one panel; a counter shows one (linking it again moves it), and it takes no room on the panel.
+  `unlink`, `status` (on the counter: its panel and the calling rooms; on a panel: the counters
+  showing it) and `prune` take counters too. A click on a linked counter lists the calling rooms,
+  as the panel's does.
+- **Cheap.** It is the master panel's own mechanism: a data-only tile entity with the panel's
+  `rooms` byte (`TileEntityNurseStationMonitor`), read into the actual state (`room1`..`room6`)
+  for the baked multipart, and set by `NurseCallNetwork` when the panel is brought up to date, on
+  a call starting or ending or a link. The CALL band flashes by an animated texture
+  (`station_call`, two 32 px frames, its top half the left screen and the bottom half the right),
+  and each lit number is a quad over its cell from `station_call_lit`. Nothing ticks and nothing
+  is rendered by a renderer. The counters' links live in the same saved data as the rest
+  (`monitors`: panel -> counters), and a counter's lamps are worked out from the network, so a
+  counter is kept up to date even while its panel's chunk is not loaded; one in a chunk that is
+  not loaded catches up when it is next refreshed, as a panel does (and is refreshed when it is
+  placed).
+- **States.** The room lamps multiply the counter's 16 states (4 facings x its two ends) by 64,
+  to **1,024**, the module's largest; they are plain state objects with no neighbour table, and
+  the blockstate is a multipart, baked once for all of them. The plain counter and the corner are
+  unchanged (the corner has no monitors).
 
 ## The ED tracking board
 
@@ -311,9 +341,9 @@ put on. It has no collision.
 
 | Command | What it does |
 |---|---|
-| `nursecall link <parent x y z> <device x y z>` | Links a dome light or device to a master panel, or a device to a dome light |
+| `nursecall link <parent x y z> <device x y z>` | Links a dome light or device to a master panel, a device to a dome light, or a nurses' station counter with monitors to a master panel (whose calls it then shows) |
 | `nursecall unlink <parent> <device>` | Undoes one link |
-| `nursecall status <x y z>` | What a panel, dome or device is linked to, and which are calling |
+| `nursecall status <x y z>` | What a panel, dome, device or station counter is linked to, and which are calling |
 | `nursecall prune` | Drops the links of blocks that are gone (loaded chunks only) |
 | `curtain fill <track x y z> [drop\|auto] [pattern]` | Hangs the curtain under the whole run: `drop` panels a column (1-15) or `auto`, down to one above the floor; pattern `mint`, `blue_check`, `beige`, `white` |
 | `curtain open\|close <x y z>` | Opens (bunched at the run's end nearest that position) or closes the curtain at a track or panel |
@@ -380,7 +410,8 @@ hospital generators depend on this table.
 |---|---|---|---|
 | `icu_ventilator`, `crash_cart`, `defibrillator`, `workstation_on_wheels`, `triage_desk`, `autoclave` | floor | bits 0-1 facing, bit 2 screen on | |
 | `medication_cart`, `medication_fridge`, `case_cart`, `walker`, `wheelchair` (seat), `wheelchair_storage_rack` | floor | bits 0-1 facing | |
-| `nurse_station_counter`, `nurse_station_counter_monitors` | floor | bits 0-1 facing (front towards the corridor) | joins any station piece left and right |
+| `nurse_station_counter` | floor | bits 0-1 facing (front towards the corridor) | joins any station piece left and right |
+| `nurse_station_counter_monitors` | floor | bits 0-1 facing (front towards the corridor) | joins any station piece left and right; TE `rooms` (byte, bit i = room i + 1 of its panel calling), set by the network: link it with `nursecall link <panel> <counter>` rather than writing it |
 | `nurse_station_corner` | floor | bits 0-1 facing | an outside corner, front along its north and west (model) sides: a counter with the same facing joins on its east, one facing `facing.rotateYCCW()` on its south |
 | `medication_dispensing_cabinet`, `blanket_warming_cabinet`, `scrub_attire_dispenser`, `patient_lift_mobile` | floor, 2 tall | bits 0-1 facing, bit 2 upper cell | |
 | `patient_status_board` | wall, 2 wide | bits 0-2 facing, bit 3 second cell | |
@@ -631,8 +662,6 @@ place on signed plinths; nothing is missing today (146 of 146).
 - **The operating room**: the OR table, anaesthesia machine, surgical light and scrub sink, left
   to the Hospital Mod's Theatre Pack, which covers the OR (the builder agreed). A consistent CSM
   set with proper facing and metadata docs is the obvious next family if the pack ever goes.
-- **The nurses' station showing calls**: the counter's monitors could list the calling rooms; the
-  master panel on the wall does that today.
 - **Wayfinding glyphs**: legends use only the printable ASCII the committed Series D font has;
   percent, semicolon, angle and square brackets, backslash, caret, underscore, backtick, braces,
   bar and tilde are missing from the sheet.

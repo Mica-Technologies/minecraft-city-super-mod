@@ -2,7 +2,7 @@
 
 The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station.
 
-!!! info "78 blocks in this tab"
+!!! info "77 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -66,7 +66,6 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | MRI Zone IV Sign | `csm:mri_zone_4_sign` |  |  |  |  |
 | Nurses' Station Corner | `csm:nurse_station_corner` |  |  |  |  |
 | Nurses' Station Counter | `csm:nurse_station_counter` |  |  |  |  |
-| Nurses' Station Counter (Monitors) | `csm:nurse_station_counter_monitors` |  |  |  |  |
 | Patient Status Board | `csm:patient_status_board` |  |  |  |  |
 | Pneumatic Tube Station | `csm:pneumatic_tube_station` |  |  |  |  |
 | Power Outlet (Emergency Power, Red) | `csm:hospital_outlet_emergency` |  |  |  |  |

@@ -890,17 +890,80 @@ ST_END = [el([15.25, 0, 1.5], [16, 15, 15], "carcass"),
           el([15.25, 15, 0], [16, 16, 6], "top", faces=("east",))]
 
 
-def st_monitor(x0):
-    """A charting monitor on the work surface, facing the nurse (south)."""
+def st_monitor_body(x0):
+    """A charting monitor on the work surface, facing the nurse (south), without its screen."""
     return [el([x0 + 2, 11.75, 9], [x0 + 4, 12.2, 11], "grey"),
             el([x0 + 2.6, 12.2, 10.2], [x0 + 3.4, 13.5, 10.8], "grey"),
-            el([x0, 13, 10], [x0 + 6, 17, 10.6], "body"),
-            el([x0 + 0.4, 13.4, 10.65], [x0 + 5.6, 16.6, 10.65], "chart", faces=("south",),
-               uv={"south": FULL})]
+            el([x0, 13, 10], [x0 + 6, 17, 10.6], "body")]
 
 
-ST_MON = st_monitor(1.5) + st_monitor(8.5) + [
-    el([3, 11.75, 4], [10, 12.1, 7], "body", per={"up": "kbd"}, uv={"up": FULL})]
+# The two screens (left and right as the nurse sees them, facing north from the back of the
+# counter): x from, x to; y from, y to; z of the face.
+ST_SCREENS = ((1.9, 7.1), (8.9, 14.1))
+ST_SCREEN_Y = (13.4, 16.6)
+ST_SCREEN_Z = 10.65
+
+
+def st_screen(i, tex, uv=FULL):
+    (x0, x1), (y0, y1) = ST_SCREENS[i], ST_SCREEN_Y
+    return el([x0, y0, ST_SCREEN_Z], [x1, y1, ST_SCREEN_Z], tex, faces=("south",),
+              uv={"south": uv})
+
+
+def st_monitor(x0):
+    """A charting monitor on the work surface with its chart on."""
+    return st_monitor_body(x0) + [st_screen(0 if x0 < 8 else 1, "chart")]
+
+
+ST_KBD = [el([3, 11.75, 4], [10, 12.1, 7], "body", per={"up": "kbd"}, uv={"up": FULL})]
+ST_MON = st_monitor(1.5) + st_monitor(8.5) + ST_KBD
+
+# The call screen: the station_call texture's top half is the left screen (rooms 1-3), its bottom
+# half the right one (rooms 4-6), each a CALL band over three room cells. SHARED by the
+# texture, the screens' UVs and the room overlays: a cell's texels in its half.
+CALL_BAND = 7
+CALL_CELLS = [(1 + 10 * c, CALL_BAND, 10 + 10 * c, 15) for c in range(3)]
+ST_CALL_GLOW = 0.05  # the lit room cell in front of the screen
+
+
+def st_room_overlay(i):
+    """Room i's lit cell (0-5): a quad over its cell of the call screen."""
+    half, c = divmod(i, 3)
+    tx0, ty0, tx1, ty1 = CALL_CELLS[c]
+    (x0, x1), (y0, y1) = ST_SCREENS[half], ST_SCREEN_Y
+    w, h = x1 - x0, y1 - y0
+    frm = [round(x0 + w * tx0 / 32.0, 4), round(y1 - h * ty1 / 16.0, 4),
+           ST_SCREEN_Z + ST_CALL_GLOW]
+    to = [round(x0 + w * tx1 / 32.0, 4), round(y1 - h * ty0 / 16.0, 4),
+          ST_SCREEN_Z + ST_CALL_GLOW]
+    return el(frm, to, "lit", faces=("south",),
+              uv={"south": [tx0 / 2.0, (ty0 + 16 * half) / 2.0, tx1 / 2.0,
+                            (ty1 + 16 * half) / 2.0]})
+
+
+def _call_screen(lit, flash):
+    img = Image.new("RGBA", (32, 32), (16, 20, 26, 255))
+    for half in range(2):
+        oy = 16 * half
+        if not lit:
+            band = hc.CALL_RED if flash else (96, 26, 22)
+            rect(img, 0, oy, 32, oy + CALL_BAND - 1, band)
+            hc.draw_text_centred(img, "CALL", 16, oy + 1,
+                                 hc.CALL_WHITE if flash else (176, 120, 112))
+        for c, (x0, y0, x1, y1) in enumerate(CALL_CELLS):
+            rect(img, x0, oy + y0, x1, oy + y1, hc.CALL_AMBER if lit else (40, 46, 54))
+            hc.draw_text_centred(img, str(3 * half + c + 1), (x0 + x1) / 2.0, oy + y0 + 2,
+                                 (40, 26, 8) if lit else (122, 128, 136))
+    return img
+
+
+hc.animation(C, "station_call", [lambda: _call_screen(False, True),
+                                 lambda: _call_screen(False, False)], 10)
+
+
+@C.texture("station_call_lit")
+def _station_call_lit():
+    return _call_screen(True, False)
 
 
 def station_state(parts):
@@ -934,15 +997,45 @@ C.add("nurse_station_counter",
        "station_end_west": model(st_tex, mirror_x(ST_END)),
        "station_item": model(st_tex, ST_BODY + ST_END + mirror_x(ST_END), display=ITEM_SMALL)},
       station_state(["station_body"]), item={"parent": MI("station_item")}, tab=CL)
+# The counter with monitors shows its master panel's calls (BlockNurseStationMonitors): the
+# room lamps are actual state from its tile entity, room1..room6 as the panel's. With no call the
+# screens chart; with any, both show the CALL screen, and each calling room's cell is lit by an
+# overlay part.
+def monitors_models():
+    call_tex = dict(st_tex, call=T("station_call"), lit=T("station_call_lit"))
+    out = {"station_monitors": model(st_tex, st_monitor_body(1.5) + st_monitor_body(8.5)
+                                     + ST_KBD),
+           "station_monitors_chart": model(st_tex, [st_screen(0, "chart"),
+                                                    st_screen(1, "chart")]),
+           "station_monitors_call": model(call_tex, [st_screen(0, "call", [0, 0, 16, 8]),
+                                                     st_screen(1, "call", [0, 8, 16, 16])]),
+           "station_monitors_item": model(st_tex, ST_BODY + ST_END + mirror_x(ST_END) + ST_MON,
+                                          display=ITEM_SMALL)}
+    for i in range(6):
+        out["station_call_room%d" % (i + 1)] = model(call_tex, [st_room_overlay(i)])
+    return out
+
+
+def monitors_state():
+    parts = station_state(["station_body"])["multipart"]
+    for f, y in hc.ROT_Y.items():
+        parts.append({"when": {"facing": f}, "apply": {"model": M("station_monitors"), "y": y}})
+        quiet = {"facing": f}
+        quiet.update({"room%d" % (i + 1): "false" for i in range(6)})
+        parts.append({"when": quiet, "apply": {"model": M("station_monitors_chart"), "y": y}})
+        parts.append({"when": {"OR": [{"facing": f, "room%d" % (i + 1): "true"}
+                                      for i in range(6)]},
+                      "apply": {"model": M("station_monitors_call"), "y": y}})
+        for i in range(6):
+            parts.append({"when": {"facing": f, "room%d" % (i + 1): "true"},
+                          "apply": {"model": M("station_call_room%d" % (i + 1)), "y": y}})
+    return {"multipart": parts}
+
+
 C.add("nurse_station_counter_monitors",
-      'new BlockNurseStation("nurse_station_counter_monitors", %s, false)' % B(*ST_BOX),
+      'new BlockNurseStationMonitors(%s)' % B(*ST_BOX),
       ST_NAMES["nurse_station_counter_monitors"],
-      {"station_monitors": model(st_tex, ST_MON),
-       "station_monitors_item": model(st_tex, ST_BODY + ST_END + mirror_x(ST_END) + ST_MON,
-                                      display=ITEM_SMALL)},
-      {"multipart": station_state(["station_body"])["multipart"]
-       + [{"when": {"facing": f}, "apply": {"model": M("station_monitors"), "y": y}}
-          for f, y in hc.ROT_Y.items()]},
+      monitors_models(), monitors_state(),
       item={"parent": MI("station_monitors_item")}, tab=CL)
 
 ST_CORNER = [el([0, 0, 1.5], [16, 15, 2.5], "front", faces=("north", "south", "east")),
