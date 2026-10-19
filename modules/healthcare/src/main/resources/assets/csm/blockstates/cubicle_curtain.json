@@ -1,0 +1,1052 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_bunch_mid"
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_mid_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_bunch_mid_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_bunch_top"
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_arm_top_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_bunch_top_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "mint",
+        "drawn": "closed",
+        "shape": "ne|nw|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_mint_corner"
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_bunch_mid"
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_mid_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_bunch_mid_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_bunch_top"
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_arm_top_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_bunch_top_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "blue_check",
+        "drawn": "closed",
+        "shape": "ne|nw|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_blue_check_corner"
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_bunch_mid"
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_mid_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_bunch_mid_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_bunch_top"
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_arm_top_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_bunch_top_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "beige",
+        "drawn": "closed",
+        "shape": "ne|nw|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_beige_corner"
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_bunch_mid"
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_mid_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "false",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_bunch_mid_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "false",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_bunch_top"
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|ne|nw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top_hem",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|ne|se"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top_hem",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "z|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top_hem",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "closed",
+        "shape": "x|nw|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_arm_top_hem",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "top": "true",
+        "bottom": "true",
+        "drawn": "bunched"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_bunch_top_hem"
+      }
+    },
+    {
+      "when": {
+        "pattern": "white",
+        "drawn": "closed",
+        "shape": "ne|nw|se|sw"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_white_corner"
+      }
+    }
+  ]
+}

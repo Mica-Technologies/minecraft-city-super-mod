@@ -1,0 +1,128 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rail": "csm:blocks/healthcare/wards/vinyl_blue",
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/wards/vinyl_blue"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        12,
+        13.0
+      ],
+      "to": [
+        12,
+        15.5,
+        15.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            0.5,
+            12,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            0.5,
+            12,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            13.0,
+            12,
+            15.2
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            0.8,
+            12,
+            3.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.4,
+        12.5,
+        15.2
+      ],
+      "to": [
+        8.6,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#metal",
+          "uv": [
+            7.4,
+            1,
+            8.6,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [
+            7.4,
+            1,
+            8.6,
+            3.5
+          ]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [
+            0,
+            1,
+            0.8,
+            3.5
+          ]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [
+            15.2,
+            1,
+            16,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#metal",
+          "uv": [
+            7.4,
+            15.2,
+            8.6,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [
+            7.4,
+            0,
+            8.6,
+            0.8
+          ]
+        }
+      }
+    }
+  ]
+}

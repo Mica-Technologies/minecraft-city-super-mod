@@ -1,12 +1,15 @@
 package com.micatechnologies.minecraft.csm.healthcare;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.healthcare.nursecall.NurseCallLinking;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -62,6 +65,8 @@ public class CsmHealthcare {
         HealthcareFabricatorRules::price);
     CsmFabricatorCosts.registerRule(HealthcareFabricatorRules.TAB_CLINICAL,
         HealthcareFabricatorRules::price);
+    // A player's picked nurse call panel or dome light is forgotten when they leave.
+    CsmLifecycleHooks.onPlayerLoggedOut(uuid -> NurseCallLinking.forget(uuid));
 
     proxy.preInit(event);
   }
@@ -69,5 +74,10 @@ public class CsmHealthcare {
   @Mod.EventHandler
   public void init(FMLInitializationEvent event) {
     proxy.init(event);
+  }
+
+  @Mod.EventHandler
+  public void serverStarting(FMLServerStartingEvent event) {
+    event.registerServerCommand(new CommandHealthcare());
   }
 }

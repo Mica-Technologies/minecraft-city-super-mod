@@ -1,0 +1,60 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rail": "csm:blocks/healthcare/wards/vinyl_blue",
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/wards/vinyl_blue"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        12,
+        13.0
+      ],
+      "to": [
+        4,
+        15.5,
+        15.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            4,
+            0.5,
+            0,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            16,
+            0.5,
+            12,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            16,
+            13.0,
+            12,
+            15.2
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            16,
+            0.8,
+            12,
+            3.0
+          ]
+        }
+      }
+    }
+  ]
+}

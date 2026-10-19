@@ -1,0 +1,198 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "plate": "csm:blocks/healthcare/wards/call_station",
+    "body": "csm:blocks/healthcare/wards/white",
+    "button": "csm:blocks/healthcare/wards/call_button",
+    "lamp": "csm:blocks/healthcare/wards/call_lamp_off",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        4,
+        15
+      ],
+      "to": [
+        12,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            4,
+            1,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            15,
+            4,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            4,
+            15,
+            12,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            0,
+            12,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        6,
+        14.3
+      ],
+      "to": [
+        9.5,
+        9,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#button",
+          "uv": [
+            6.5,
+            7,
+            9.5,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#button",
+          "uv": [
+            1,
+            7,
+            1.7,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#button",
+          "uv": [
+            14.3,
+            7,
+            15,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#button",
+          "uv": [
+            6.5,
+            14.3,
+            9.5,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#button",
+          "uv": [
+            6.5,
+            1,
+            9.5,
+            1.7
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        9.8,
+        14.6
+      ],
+      "to": [
+        9,
+        10.8,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lamp",
+          "uv": [
+            7,
+            5.2,
+            9,
+            6.2
+          ]
+        },
+        "east": {
+          "texture": "#lamp",
+          "uv": [
+            1,
+            5.2,
+            1.4,
+            6.2
+          ]
+        },
+        "west": {
+          "texture": "#lamp",
+          "uv": [
+            14.6,
+            5.2,
+            15,
+            6.2
+          ]
+        },
+        "up": {
+          "texture": "#lamp",
+          "uv": [
+            7,
+            14.6,
+            9,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#lamp",
+          "uv": [
+            7,
+            1,
+            9,
+            1.4
+          ]
+        }
+      }
+    }
+  ]
+}

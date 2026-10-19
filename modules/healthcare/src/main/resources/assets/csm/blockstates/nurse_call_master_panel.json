@@ -1,0 +1,716 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_base",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room1": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room2": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room3": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room4": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room5": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_off",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "north",
+            "room1": "true"
+          },
+          {
+            "facing": "north",
+            "room2": "true"
+          },
+          {
+            "facing": "north",
+            "room3": "true"
+          },
+          {
+            "facing": "north",
+            "room4": "true"
+          },
+          {
+            "facing": "north",
+            "room5": "true"
+          },
+          {
+            "facing": "north",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_on",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room1": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room2": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room3": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room4": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room5": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "east",
+            "room1": "true"
+          },
+          {
+            "facing": "east",
+            "room2": "true"
+          },
+          {
+            "facing": "east",
+            "room3": "true"
+          },
+          {
+            "facing": "east",
+            "room4": "true"
+          },
+          {
+            "facing": "east",
+            "room5": "true"
+          },
+          {
+            "facing": "east",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room1": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room2": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room3": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room4": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room5": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "south",
+            "room1": "true"
+          },
+          {
+            "facing": "south",
+            "room2": "true"
+          },
+          {
+            "facing": "south",
+            "room3": "true"
+          },
+          {
+            "facing": "south",
+            "room4": "true"
+          },
+          {
+            "facing": "south",
+            "room5": "true"
+          },
+          {
+            "facing": "south",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room1": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room1": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp1_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room2": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room2": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp2_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room3": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room3": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp3_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room4": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room4": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp4_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room5": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room5": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp5_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room6": "true"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_lamp6_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "room1": "false",
+        "room2": "false",
+        "room3": "false",
+        "room4": "false",
+        "room5": "false",
+        "room6": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "west",
+            "room1": "true"
+          },
+          {
+            "facing": "west",
+            "room2": "true"
+          },
+          {
+            "facing": "west",
+            "room3": "true"
+          },
+          {
+            "facing": "west",
+            "room4": "true"
+          },
+          {
+            "facing": "west",
+            "room5": "true"
+          },
+          {
+            "facing": "west",
+            "room6": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/nurse_call_panel_alarm_on",
+        "y": 270
+      }
+    }
+  ]
+}

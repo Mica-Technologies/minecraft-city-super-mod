@@ -1,0 +1,86 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_tile"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_hub"
+      }
+    },
+    {
+      "when": {
+        "north": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_arm",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "north": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_end",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "east": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_end",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_end",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "join"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "end"
+      },
+      "apply": {
+        "model": "csm:healthcare/wards/curtain_track_end",
+        "y": 270
+      }
+    }
+  ]
+}

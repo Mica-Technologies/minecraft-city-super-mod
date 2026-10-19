@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
+import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainPanel;
+import com.micatechnologies.minecraft.csm.healthcare.wards.BlockHospitalBedFoot;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -36,5 +38,8 @@ public class CsmTabHealthcareHidden extends CsmTab {
 
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
+    // --- gen_healthcare_wards.py --fragments ---
+    initTabBlock(new BlockHospitalBedFoot());
+    initTabBlock(new BlockCurtainPanel());
   }
 }

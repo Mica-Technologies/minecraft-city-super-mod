@@ -1,0 +1,44 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cloth": "csm:blocks/healthcare/wards/curtain_blue_check",
+    "hem": "csm:blocks/healthcare/wards/curtain_blue_check_hem",
+    "mesh": "csm:blocks/healthcare/wards/curtain_mesh",
+    "tape": "csm:blocks/healthcare/wards/curtain_tape",
+    "particle": "csm:blocks/healthcare/wards/curtain_blue_check"
+  },
+  "elements": [
+    {
+      "from": [
+        7.75,
+        0.8,
+        7.75
+      ],
+      "to": [
+        8.25,
+        15,
+        8.25
+      ],
+      "faces": {
+        "up": {
+          "texture": "#cloth",
+          "uv": [
+            7.75,
+            7.75,
+            8.25,
+            8.25
+          ]
+        },
+        "down": {
+          "texture": "#cloth",
+          "uv": [
+            7.75,
+            7.75,
+            8.25,
+            8.25
+          ]
+        }
+      }
+    }
+  ]
+}

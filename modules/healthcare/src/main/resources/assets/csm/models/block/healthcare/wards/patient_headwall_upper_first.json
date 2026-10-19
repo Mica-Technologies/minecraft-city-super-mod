@@ -1,0 +1,143 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "panel": "csm:blocks/healthcare/wards/warm_white",
+    "left": "csm:blocks/healthcare/wards/headwall_left",
+    "right": "csm:blocks/healthcare/wards/headwall_right",
+    "upper": "csm:blocks/healthcare/wards/headwall_upper",
+    "gas_o2": "csm:blocks/healthcare/wards/gas_o2",
+    "gas_air": "csm:blocks/healthcare/wards/gas_air",
+    "gas_vac": "csm:blocks/healthcare/wards/gas_vac",
+    "stainless": "csm:blocks/healthcare/wards/stainless",
+    "particle": "csm:blocks/healthcare/wards/warm_white"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        14.5
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#upper",
+          "uv": [
+            1,
+            1,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            1,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            1,
+            1.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#panel",
+          "uv": [
+            14.5,
+            1,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            14.5,
+            15,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0,
+            15,
+            1.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        14,
+        13.8
+      ],
+      "to": [
+        15.5,
+        15.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#panel",
+          "uv": [
+            0.5,
+            0.5,
+            16,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0.5,
+            15.5,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0.5,
+            2.2,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            13.8,
+            15.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#panel",
+          "uv": [
+            0,
+            0,
+            15.5,
+            2.2
+          ]
+        }
+      }
+    }
+  ]
+}

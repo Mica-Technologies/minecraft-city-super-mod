@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "sign": "csm:blocks/healthcare/wards/gas_sign",
+    "body": "csm:blocks/healthcare/wards/white",
+    "particle": "csm:blocks/healthcare/wards/gas_sign"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        4,
+        15.4
+      ],
+      "to": [
+        15,
+        12,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#body",
+          "uv": [
+            1,
+            4,
+            15,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            4,
+            0.6,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            15.4,
+            4,
+            16,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            1,
+            15.4,
+            15,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            1,
+            0,
+            15,
+            0.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        4,
+        15.4
+      ],
+      "to": [
+        15,
+        12,
+        15.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#sign",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

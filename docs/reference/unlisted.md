@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "136 blocks in this tab"
+!!! info "137 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -23,6 +23,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Bounce Castle Part | `csm:bounce_castle_part` | 0.8 | 1.0 | pickaxe | 0 |
 | Bus Shelter Ad Panel | `csm:ad_shelter_panel_part` | 1.5 | 10 | pickaxe | 0 |
 | Crosswalk Signal (Gray) | `csm:controllablecrosswalkmountgray` | 2 | 10 | pickaxe | 1 |
+| Cubicle Curtain | `csm:cubicle_curtain` | 0.5 | 1.0 | axe | 0 |
 | Digital Billboard | `csm:ad_digital_billboard_part` | 1.5 | 10 | pickaxe | 0 |
 | Horizontal Angle Traffic Signal (Ahead Arrow) | `csm:controllablehorizontalangleaheadsignal` |  |  |  |  |
 | Horizontal Angle Traffic Signal (Bike, Protected) | `csm:controllablehorizontalanglebikesignal` |  |  |  |  |

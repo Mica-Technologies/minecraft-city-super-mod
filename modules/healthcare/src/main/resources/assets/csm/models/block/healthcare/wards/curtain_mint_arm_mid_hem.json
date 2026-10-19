@@ -1,0 +1,103 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cloth": "csm:blocks/healthcare/wards/curtain_mint",
+    "hem": "csm:blocks/healthcare/wards/curtain_mint_hem",
+    "mesh": "csm:blocks/healthcare/wards/curtain_mesh",
+    "tape": "csm:blocks/healthcare/wards/curtain_tape",
+    "particle": "csm:blocks/healthcare/wards/curtain_mint"
+  },
+  "elements": [
+    {
+      "from": [
+        7.75,
+        2,
+        0
+      ],
+      "to": [
+        8.25,
+        16,
+        8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#cloth",
+          "uv": [
+            8,
+            0,
+            16,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#cloth",
+          "uv": [
+            0,
+            0,
+            8,
+            14
+          ]
+        },
+        "north": {
+          "texture": "#cloth",
+          "uv": [
+            7.75,
+            0,
+            8.25,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.65,
+        1,
+        0
+      ],
+      "to": [
+        8.35,
+        2,
+        8
+      ],
+      "faces": {
+        "east": {
+          "texture": "#hem",
+          "uv": [
+            8,
+            14,
+            16,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#hem",
+          "uv": [
+            0,
+            14,
+            8,
+            15
+          ]
+        },
+        "north": {
+          "texture": "#hem",
+          "uv": [
+            7.65,
+            14,
+            8.35,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#hem",
+          "uv": [
+            7.65,
+            8,
+            8.35,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}
