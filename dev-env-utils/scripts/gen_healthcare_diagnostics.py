@@ -1053,7 +1053,11 @@ BENCH_SHELF = [el([0, 16, 15.5], [16, 17.5, 16], "epoxy"),
                plane([1, 23.8, 13.5], [15, 29.2, 13.5], "bottles", "north")]
 BENCH_END = [el([15.25, 0, 0.5], [16, 14.5, 16], "cab")]
 # the sink: a basin let into the worktop, a gooseneck tap from the shelf's riser
-SINK_TOP = [el([0, 14.5, 0], [16, 16, 3], "epoxy"), el([0, 14.5, 11], [16, 16, 16], "epoxy"),
+# The strips' faces into the basin would sit on the bowl's walls, and inside the side strips
+SINK_TOP = [el([0, 14.5, 0], [16, 16, 3], "epoxy",
+               faces=("north", "east", "west", "up", "down")),
+            el([0, 14.5, 11], [16, 16, 16], "epoxy",
+               faces=("south", "east", "west", "up", "down")),
             el([0, 14.5, 3], [4, 16, 11], "epoxy"), el([12, 14.5, 3], [16, 16, 11], "epoxy"),
             el([4, 11, 3], [12, 11, 11], "bowl", faces=("up",), uv={"up": FULL}),
             el([4, 11, 3], [12, 16, 3], "metal", faces=("south",)),
