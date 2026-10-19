@@ -6,7 +6,6 @@
     "field": "csm:blocks/doors/cathedral_bronze_field",
     "inside": "csm:blocks/doors/cathedral_bronze_inside",
     "edge": "csm:blocks/doors/cathedral_bronze_edge",
-    "hw": "csm:blocks/doors/cathedral_bronze_hw",
-    "stone": "csm:blocks/doors/cathedral_stone"
+    "hw": "csm:blocks/doors/cathedral_bronze_hw"
   }
 }

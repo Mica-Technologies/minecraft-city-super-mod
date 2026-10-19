@@ -25,9 +25,13 @@ ones turned a quarter about the hinge pivot, written out, and the swing renderer
 models about the same pivot. SHARED with BlockCathedralDoor: T, the pivot, RISE and the spans.
 
 The arch is stepped a pixel at a time: an element per run of pixel rows with the same width. The
-stone beside the arch in a head cell (the spandrel, grey ashlar) is fixed to the wall, so it
-is marked TINT_FIXED and the swing renderer leaves it where it is. It is a grey ashlar of its
-own rather than vanilla stone brick, so a module's assets name only its own and Core's textures.
+stone beside the arch in a head cell (the spandrel) is fixed to the wall, so it is marked
+TINT_FIXED and the swing renderer leaves it where it is. It is drawn in the Building module's own
+stone veneers, `stone_ashlar` or `stone_cast` (gen_stone.py), whichever the jambs beside the arch
+are built of (`stone`, actual state): the head's spandrel is its own multipart part, a model
+shared by the three door variants, so the choice costs a part and no stored bit. The tympanum
+picks its stone the same way, from the same spandrel parts (its columns are a pair's head cells:
+0 and 1 a left leaf's hinge and latch, 2 and 3 a right leaf's latch and hinge).
 """
 
 import copy
@@ -45,7 +49,10 @@ box = sc._box
 TEX_REF = "csm:blocks/doors/%s"
 MODEL_REF = "csm:doors/%s"
 PARENT_REF = "csm:block/doors/%s"
-STONE = TEX_REF % "cathedral_stone"
+# The spandrel's stone: Building's own veneers, picked by the jambs beside the arch (SHARED with
+# BlockCathedralDoorArch.Stone).
+STONES = {"ashlar": "csm:blocks/buildingmaterials/stone/stone_ashlar",
+          "cast": "csm:blocks/buildingmaterials/stone/stone_cast"}
 
 # SHARED with BlockCathedralDoor: the leaf's thickness, and the pivot a left-hinged leaf turns about
 # in its hinge column's cell, in px, inside to the north.
@@ -332,23 +339,8 @@ def tympanum_icon(v):
     return img
 
 
-def stone_texture():
-    """The stone beside an arch: grey limestone ashlar, two courses a block, joints offset."""
-    rng = random.Random("cathedral_stone")
-    rgb = (150, 146, 138)
-    img, px = _fill(16, rgb, rng, 6)
-    for y in range(16):
-        for x in range(16):
-            joint = y in (7, 15) or (x == (0 if y < 8 else 8))
-            if joint:
-                px[x, y] = _shift(rgb, -38 + rng.uniform(-3, 3))
-            elif y in (0, 8):
-                px[x, y] = _shift(rgb, 10 + rng.uniform(-3, 3))
-    return img
-
-
 def textures():
-    out = {"cathedral_stone": stone_texture(),"cathedral_iron": hardware_texture((52, 50, 50), "cathedral_iron"),
+    out = {"cathedral_iron": hardware_texture((52, 50, 50), "cathedral_iron"),
            "cathedral_bronze_hw": hardware_texture((98, 72, 40), "cathedral_bronze_hw"),
            "panelling_linenfold_dark_oak": linenfold_texture()}
     for v in VARIANTS:
@@ -527,17 +519,21 @@ def geometry():
                 c = 0 if col == "hinge" else 1
                 leaf, stone = arch_cell(c, course, SPANS[span], "#field", (0, 32))
                 base = "cathedral_geo_arch_%s_%s_%d" % (span, col, course)
-                left = leaf + stone
-                opened = _turn(leaf, *_pivot(col)) + stone
-                out[base + "_left"] = left
-                out[base + "_right"] = sc._mirror_x(left)
+                opened = _turn(leaf, *_pivot(col))
+                out[base + "_left"] = leaf
+                out[base + "_right"] = sc._mirror_x(leaf)
                 out[base + "_left_open"] = opened
                 out[base + "_right_open"] = sc._mirror_x(opened)
+                if stone:
+                    # The spandrel: its own part, the same open or shut, for every variant.
+                    sp = "cathedral_geo_spandrel_%s_%s_%d" % (span, col, course)
+                    out[sp + "_left"] = stone
+                    out[sp + "_right"] = sc._mirror_x(stone)
     for span, w in SPANS.items():
         for c in range(w // 16):
             for course in range(3):
-                leaf, stone = arch_cell(c, course, w, "#tymp", (), tymp_uv=True)
-                out["cathedral_geo_tymp_%s_%d_%d" % (span, c, course)] = leaf + stone
+                leaf, _ = arch_cell(c, course, w, "#tymp", (), tymp_uv=True)
+                out["cathedral_geo_tymp_%s_%d_%d" % (span, c, course)] = leaf
     return {k: _rounded(v) for k, v in out.items()}
 
 
@@ -548,14 +544,14 @@ def _door_textures(v):
             "field": TEX_REF % ("cathedral_%s_field" % v),
             "inside": TEX_REF % ("cathedral_%s_inside" % v),
             "edge": TEX_REF % ("cathedral_%s_edge" % v),
-            "hw": TEX_REF % hw, "stone": STONE}
+            "hw": TEX_REF % hw}
 
 
 def _tymp_textures(v, span):
     return {"particle": TEX_REF % ("cathedral_%s_edge" % v),
             "tymp": TEX_REF % ("cathedral_%s_tympanum_%s" % (v, span)),
             "inside": TEX_REF % ("cathedral_%s_inside" % v),
-            "edge": TEX_REF % ("cathedral_%s_edge" % v), "stone": STONE}
+            "edge": TEX_REF % ("cathedral_%s_edge" % v)}
 
 
 def models():
@@ -566,6 +562,8 @@ def models():
     for v in VARIANTS:
         for name in geo:
             rest = name[len("cathedral_geo_"):]
+            if rest.startswith("spandrel_"):
+                continue
             if rest.startswith("tymp_"):
                 span = rest.split("_")[1]
                 tex = _tymp_textures(v, span)
@@ -576,6 +574,12 @@ def models():
             out["cathedral_%s%s_inventory" % (v, kind)] = {
                 "parent": "item/generated",
                 "textures": {"layer0": TEX_REF % ("cathedral_%s%s_icon" % (v, kind))}}
+    for name in geo:
+        if name.startswith("cathedral_geo_spandrel_"):
+            rest = name[len("cathedral_geo_spandrel_"):]
+            for stone, tex in STONES.items():
+                out["cathedral_spandrel_%s_%s" % (stone, rest)] = {
+                    "parent": PARENT_REF % name, "textures": {"particle": tex, "stone": tex}}
     out["panelling_carved_dark_oak"] = {
         "parent": "block/cube_column",
         "textures": {"end": TEX_REF % "cathedral_dark_oak_edge",
@@ -612,7 +616,7 @@ def door_state(v):
             "multipart": parts}
 
 
-def arch_state(v):
+def arch_state(v, spandrels):
     parts = []
     for side, rot in SIDES:
         for hinge in ("left", "right"):
@@ -627,34 +631,56 @@ def arch_state(v):
                             span = "pair" if paired else "single"
                             parts.append(_part(when, "cathedral_%s_arch_%s_%s_%d_%s"
                                                % (v, span, col, course, suffix), rot))
+                            sp = "%s_%s_%d_%s" % (span, col, course, hinge)
+                            if open_ or sp not in spandrels:
+                                continue
+                            # The spandrel: one part whether the leaf is open or shut.
+                            for stone in STONES:
+                                when = {"facing": side, "hinge": hinge, "column": col,
+                                        "course": str(course), "paired": str(paired).lower(),
+                                        "stone": stone, "swing": "false"}
+                                parts.append(_part(when, "cathedral_spandrel_%s_%s"
+                                                   % (stone, sp), rot))
     return {"variants": {"inventory": {"model": MODEL_REF % ("cathedral_%s_arch_inventory" % v)}},
             "multipart": parts}
 
 
-def tymp_state(v):
-    variants = {}
+# A tympanum column's spandrel: the head cell it stands in for (column, hand).
+TYMP_SPANDREL = {0: ("hinge", "left"), 1: ("latch", "left"), 2: ("latch", "right"),
+                 3: ("hinge", "right")}
+
+
+def tymp_state(v, spandrels):
+    parts = []
     for col in range(4):
         for course in range(3):
             for side, rot in SIDES:
                 for paired in (False, True):
                     span = "pair" if paired or col >= 2 else "single"
-                    apply = {"model": MODEL_REF % ("cathedral_%s_tymp_%s_%d_%d"
-                                                   % (v, span, col, course))}
-                    if rot:
-                        apply["y"] = rot
-                    key = "col=%d,course=%d,facing=%s,paired=%s" % (col, course, side,
-                                                                    str(paired).lower())
-                    variants[key] = apply
-    variants["inventory"] = {"model": MODEL_REF % ("cathedral_%s_tympanum_inventory" % v)}
-    return {"variants": variants}
+                    when = {"col": str(col), "course": str(course), "facing": side,
+                            "paired": str(paired).lower()}
+                    parts.append(_part(when, "cathedral_%s_tymp_%s_%d_%d"
+                                       % (v, span, col, course), rot))
+                    sp = "%s_%s_%d_%s" % ((span, TYMP_SPANDREL[col][0], course,
+                                           TYMP_SPANDREL[col][1]))
+                    if sp not in spandrels:
+                        continue
+                    for stone in STONES:
+                        parts.append(_part(dict(when, stone=stone),
+                                           "cathedral_spandrel_%s_%s" % (stone, sp), rot))
+    return {"variants": {"inventory": {"model": MODEL_REF % ("cathedral_%s_tympanum_inventory"
+                                                             % v)}},
+            "multipart": parts}
 
 
 def blockstates():
     out = {}
+    spandrels = {n[len("cathedral_geo_spandrel_"):] for n in geometry()
+                 if n.startswith("cathedral_geo_spandrel_")}
     for v in VARIANTS:
         out[door_name(v)] = door_state(v)
-        out[arch_name(v)] = arch_state(v)
-        out[tymp_name(v)] = tymp_state(v)
+        out[arch_name(v)] = arch_state(v, spandrels)
+        out[tymp_name(v)] = tymp_state(v, spandrels)
     out["panelling_carved_dark_oak"] = {"variants": {
         "normal": {"model": MODEL_REF % "panelling_carved_dark_oak"},
         "inventory": {"model": MODEL_REF % "panelling_carved_dark_oak"}}}

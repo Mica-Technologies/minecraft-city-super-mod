@@ -23,6 +23,34 @@
       "when": {
         "facing": "north",
         "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -31,6 +59,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_left"
       }
     },
     {
@@ -51,6 +107,34 @@
       "when": {
         "facing": "north",
         "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -59,6 +143,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_left"
       }
     },
     {
@@ -79,6 +191,34 @@
       "when": {
         "facing": "north",
         "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -87,6 +227,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_left"
       }
     },
     {
@@ -121,6 +289,34 @@
       "when": {
         "facing": "north",
         "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -149,6 +345,34 @@
       "when": {
         "facing": "north",
         "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -163,6 +387,34 @@
       "when": {
         "facing": "north",
         "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -171,6 +423,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_left"
       }
     },
     {
@@ -359,6 +639,34 @@
       "when": {
         "facing": "north",
         "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -367,6 +675,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_right"
       }
     },
     {
@@ -387,6 +723,34 @@
       "when": {
         "facing": "north",
         "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -395,6 +759,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_right"
       }
     },
     {
@@ -415,6 +807,34 @@
       "when": {
         "facing": "north",
         "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -423,6 +843,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_right"
       }
     },
     {
@@ -457,6 +905,34 @@
       "when": {
         "facing": "north",
         "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -485,6 +961,34 @@
       "when": {
         "facing": "north",
         "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -499,6 +1003,34 @@
       "when": {
         "facing": "north",
         "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -507,6 +1039,34 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_right"
       }
     },
     {
@@ -696,6 +1256,36 @@
       "when": {
         "facing": "east",
         "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -704,6 +1294,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_left",
         "y": 90
       }
     },
@@ -726,6 +1346,36 @@
       "when": {
         "facing": "east",
         "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -734,6 +1384,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_left",
         "y": 90
       }
     },
@@ -756,6 +1436,36 @@
       "when": {
         "facing": "east",
         "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -764,6 +1474,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_left",
         "y": 90
       }
     },
@@ -801,6 +1541,36 @@
       "when": {
         "facing": "east",
         "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -831,6 +1601,36 @@
       "when": {
         "facing": "east",
         "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -846,6 +1646,36 @@
       "when": {
         "facing": "east",
         "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -854,6 +1684,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_left",
         "y": 90
       }
     },
@@ -1056,6 +1916,36 @@
       "when": {
         "facing": "east",
         "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -1064,6 +1954,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_right",
         "y": 90
       }
     },
@@ -1086,6 +2006,36 @@
       "when": {
         "facing": "east",
         "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -1094,6 +2044,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_right",
         "y": 90
       }
     },
@@ -1116,6 +2096,36 @@
       "when": {
         "facing": "east",
         "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -1124,6 +2134,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_right",
         "y": 90
       }
     },
@@ -1161,6 +2201,36 @@
       "when": {
         "facing": "east",
         "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -1191,6 +2261,36 @@
       "when": {
         "facing": "east",
         "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -1206,6 +2306,36 @@
       "when": {
         "facing": "east",
         "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -1214,6 +2344,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_right",
         "y": 90
       }
     },
@@ -1416,6 +2576,36 @@
       "when": {
         "facing": "south",
         "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -1424,6 +2614,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_left",
         "y": 180
       }
     },
@@ -1446,6 +2666,36 @@
       "when": {
         "facing": "south",
         "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -1454,6 +2704,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_left",
         "y": 180
       }
     },
@@ -1476,6 +2756,36 @@
       "when": {
         "facing": "south",
         "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -1484,6 +2794,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_left",
         "y": 180
       }
     },
@@ -1521,6 +2861,36 @@
       "when": {
         "facing": "south",
         "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -1551,6 +2921,36 @@
       "when": {
         "facing": "south",
         "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -1566,6 +2966,36 @@
       "when": {
         "facing": "south",
         "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -1574,6 +3004,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_left",
         "y": 180
       }
     },
@@ -1776,6 +3236,36 @@
       "when": {
         "facing": "south",
         "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -1784,6 +3274,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_right",
         "y": 180
       }
     },
@@ -1806,6 +3326,36 @@
       "when": {
         "facing": "south",
         "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -1814,6 +3364,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_right",
         "y": 180
       }
     },
@@ -1836,6 +3416,36 @@
       "when": {
         "facing": "south",
         "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -1844,6 +3454,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_right",
         "y": 180
       }
     },
@@ -1881,6 +3521,36 @@
       "when": {
         "facing": "south",
         "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -1911,6 +3581,36 @@
       "when": {
         "facing": "south",
         "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -1926,6 +3626,36 @@
       "when": {
         "facing": "south",
         "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -1934,6 +3664,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_right",
         "y": 180
       }
     },
@@ -2136,6 +3896,36 @@
       "when": {
         "facing": "west",
         "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -2144,6 +3934,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_left",
         "y": 270
       }
     },
@@ -2166,6 +3986,36 @@
       "when": {
         "facing": "west",
         "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -2174,6 +4024,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_left",
         "y": 270
       }
     },
@@ -2196,6 +4076,36 @@
       "when": {
         "facing": "west",
         "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -2204,6 +4114,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_left",
         "y": 270
       }
     },
@@ -2241,6 +4181,36 @@
       "when": {
         "facing": "west",
         "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -2271,6 +4241,36 @@
       "when": {
         "facing": "west",
         "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -2286,6 +4286,36 @@
       "when": {
         "facing": "west",
         "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -2294,6 +4324,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "left",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_left",
         "y": 270
       }
     },
@@ -2496,6 +4556,36 @@
       "when": {
         "facing": "west",
         "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_0_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_0_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "0",
@@ -2504,6 +4594,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_0_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_0_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_0_right",
         "y": 270
       }
     },
@@ -2526,6 +4646,36 @@
       "when": {
         "facing": "west",
         "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_1_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_1_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "1",
@@ -2534,6 +4684,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_1_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_1_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_1_right",
         "y": 270
       }
     },
@@ -2556,6 +4736,36 @@
       "when": {
         "facing": "west",
         "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_hinge_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_hinge_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
         "open": "false",
         "column": "hinge",
         "course": "2",
@@ -2564,6 +4774,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_hinge_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_hinge_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "hinge",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_hinge_2_right",
         "y": 270
       }
     },
@@ -2601,6 +4841,36 @@
       "when": {
         "facing": "west",
         "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_0_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "latch",
+        "course": "0",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_0_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "1",
@@ -2631,6 +4901,36 @@
       "when": {
         "facing": "west",
         "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_1_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "latch",
+        "course": "1",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_1_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -2646,6 +4946,36 @@
       "when": {
         "facing": "west",
         "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_pair_latch_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "true",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_pair_latch_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
         "open": "false",
         "column": "latch",
         "course": "2",
@@ -2654,6 +4984,36 @@
       },
       "apply": {
         "model": "csm:doors/cathedral_weathered_oak_arch_single_latch_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "ashlar",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_ashlar_single_latch_2_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hinge": "right",
+        "column": "latch",
+        "course": "2",
+        "paired": "false",
+        "stone": "cast",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/cathedral_spandrel_cast_single_latch_2_right",
         "y": 270
       }
     },

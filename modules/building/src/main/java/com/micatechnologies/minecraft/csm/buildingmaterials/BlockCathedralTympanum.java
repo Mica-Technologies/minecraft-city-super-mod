@@ -9,6 +9,7 @@ import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
@@ -47,6 +48,9 @@ public class BlockCathedralTympanum extends AbstractBlock {
   public static final PropertyInteger COURSE = BlockCathedralDoorArch.COURSE;
   /** Actual state only. */
   public static final PropertyBool PAIRED = BlockCathedralDoorArch.PAIRED;
+  /** Actual state only: the stone beside the arch, from the jambs either side of it. */
+  public static final PropertyEnum<BlockCathedralDoorArch.Stone> STONE =
+      BlockCathedralDoorArch.STONE;
 
   private static final AxisAlignedBB PLANE_NORTH =
       new AxisAlignedBB(0, 0, 1 - BlockCathedralDoor.LEAF, 1, 1, 1);
@@ -67,7 +71,8 @@ public class BlockCathedralTympanum extends AbstractBlock {
         : SoundType.WOOD, registryName.contains("bronze") ? "pickaxe" : "axe", 0, 3F, 15F, 0F, 0);
     this.registryName = registryName;
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
-        .withProperty(COL, 0).withProperty(COURSE, 0).withProperty(PAIRED, false));
+        .withProperty(COL, 0).withProperty(COURSE, 0).withProperty(PAIRED, false)
+        .withProperty(STONE, BlockCathedralDoorArch.Stone.ASHLAR));
     PENDING_REGISTRY_NAME.remove();
   }
 
@@ -89,7 +94,7 @@ public class BlockCathedralTympanum extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, FACING, COL, COURSE, PAIRED);
+    return new CsmBlockStateContainer(this, FACING, COL, COURSE, PAIRED, STONE);
   }
 
   /** Bits 0-1 the facing (horizontal index: S 0, W 1, N 2, E 3), bits 2-3 the column. */
@@ -127,7 +132,12 @@ public class BlockCathedralTympanum extends AbstractBlock {
       paired = s.getBlock() == this && s.getValue(FACING) == state.getValue(FACING)
           && s.getValue(COL) == 2;
     }
-    return state.withProperty(COURSE, course).withProperty(PAIRED, paired);
+    // The jambs either side of the whole arch, at this course.
+    EnumFacing right = state.getValue(FACING).rotateY();
+    BlockCathedralDoorArch.Stone stone = BlockCathedralDoorArch.Stone.of(worldIn,
+        pos.offset(right.getOpposite(), col + 1), pos.offset(right, (paired ? 4 : 2) - col));
+    return state.withProperty(COURSE, course).withProperty(PAIRED, paired)
+        .withProperty(STONE, stone);
   }
 
   /**
