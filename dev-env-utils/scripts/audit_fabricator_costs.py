@@ -566,6 +566,8 @@ def cost_for(registry, info, ancestors):
         if registry.startswith(("nurse_call_", "patient_monitor_", "iv_pole_pump",
                                 "patient_room_tv", "vitals_")) or registry.endswith("_analyser"):
             return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
+        if registry in ("or_table", "or_anaesthesia_machine", "or_surgical_light"):
+            return ("SHEET_METAL x2", "CONTROL_BOARD", "WIRING_HARNESS")
         if registry.startswith("patient_headwall"):
             return ("SHEET_METAL x2", "WIRING_HARNESS", "FASTENER_KIT")
         if registry.startswith("cubicle_curtain_track"):
