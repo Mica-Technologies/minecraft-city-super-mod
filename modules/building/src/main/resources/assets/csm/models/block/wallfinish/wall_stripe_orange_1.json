@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "stripe": "csm:blocks/wallfinish/wall_stripe_orange",
+    "particle": "csm:blocks/wallfinish/wall_stripe_orange"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        6,
+        0
+      ],
+      "to": [
+        16,
+        8,
+        0.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stripe",
+          "uv": [
+            0,
+            8,
+            16,
+            10
+          ],
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#stripe",
+          "uv": [
+            0,
+            8,
+            16,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#stripe",
+          "uv": [
+            15.75,
+            8,
+            16.0,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#stripe",
+          "uv": [
+            0,
+            8,
+            0.25,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#stripe",
+          "uv": [
+            0,
+            0,
+            16,
+            0.25
+          ]
+        },
+        "down": {
+          "texture": "#stripe",
+          "uv": [
+            0,
+            15.75,
+            16,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

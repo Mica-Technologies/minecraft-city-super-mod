@@ -1,0 +1,41 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_panel_teal",
+    "trim": "csm:blocks/wallfinish/wall_panel_trim",
+    "particle": "csm:blocks/wallfinish/wall_panel_teal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0.75
+      ],
+      "to": [
+        0.75,
+        15.5,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0.5,
+            15.25,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            0.75,
+            15.25
+          ]
+        }
+      }
+    }
+  ]
+}

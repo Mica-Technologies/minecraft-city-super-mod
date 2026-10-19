@@ -128,12 +128,15 @@ public class BlockWallFinish extends AbstractBlock {
       return SoundType.CLOTH;
     }
     return registryName.contains("beadboard") || registryName.contains("slatwall")
-        ? SoundType.WOOD : SoundType.STONE;
+        || registryName.contains("panel") ? SoundType.WOOD : SoundType.STONE;
   }
 
   private static double depth(String registryName) {
     if (registryName.contains("paint")) {
       return 0.25;
+    }
+    if (registryName.contains("panel")) {
+      return 0.75;
     }
     if (registryName.contains("acoustic")) {
       return 1.5;

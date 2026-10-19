@@ -18,6 +18,9 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConc
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCornerGuard;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockNurseScreen;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockRoomPlate;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWallStripe;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWallFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWindowTreatment;
@@ -159,7 +162,23 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockWallFinish("wall_acoustic_charcoal")); // Acoustic Wall Panel (Charcoal)
     initTabBlock(new BlockWallFinish("wall_beadboard_white")); // Beadboard (White)
     initTabBlock(new BlockWallFinish("wall_slatwall_oak")); // Wood Slat Wall (Oak)
+    initTabBlock(new BlockWallFinish("wall_panel_maple")); // Accent Wall Panel (Maple)
+    initTabBlock(new BlockWallFinish("wall_panel_walnut")); // Accent Wall Panel (Walnut)
+    initTabBlock(new BlockWallFinish("wall_panel_teal")); // Accent Wall Panel (Teal)
+    initTabBlock(new BlockWallFinish("wall_panel_blue")); // Accent Wall Panel (Blue)
+    initTabBlock(new BlockWallFinish("wall_panel_green")); // Accent Wall Panel (Green)
+    initTabBlock(new BlockWallFinish("wall_panel_yellow")); // Accent Wall Panel (Yellow)
     initTabBlock(new BlockCornerGuard("corner_guard_steel")); // Corner Guard (Stainless)
     initTabBlock(new BlockCornerGuard("corner_guard_white")); // Corner Guard (White Vinyl)
+    initTabBlock(new BlockWallStripe("wall_stripe_blue")); // Wayfinding Stripe (Blue)
+    initTabBlock(new BlockWallStripe("wall_stripe_green")); // Wayfinding Stripe (Green)
+    initTabBlock(new BlockWallStripe("wall_stripe_teal")); // Wayfinding Stripe (Teal)
+    initTabBlock(new BlockWallStripe("wall_stripe_yellow")); // Wayfinding Stripe (Yellow)
+    initTabBlock(new BlockWallStripe("wall_stripe_orange")); // Wayfinding Stripe (Orange)
+    initTabBlock(new BlockWallStripe("wall_stripe_purple")); // Wayfinding Stripe (Purple)
+    initTabBlock(new BlockRoomPlate("room_plate_charcoal")); // Room Sign (Charcoal)
+    initTabBlock(new BlockRoomPlate("room_plate_blue")); // Room Sign (Blue)
+    initTabBlock(new BlockNurseScreen("nurse_screen_clear")); // Nurse Station Glass Screen (Clear)
+    initTabBlock(new BlockNurseScreen("nurse_screen_frosted")); // Nurse Station Glass Screen (Frosted)
   }
 }

@@ -1,0 +1,49 @@
+{
+  "textures": {
+    "stripe": "csm:blocks/wallfinish/wall_stripe_orange",
+    "particle": "csm:blocks/wallfinish/wall_stripe_orange"
+  },
+  "elements": [
+    {
+      "from": [
+        15.75,
+        2,
+        0.25
+      ],
+      "to": [
+        16,
+        4,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#stripe",
+          "uv": [
+            0.25,
+            12,
+            16.0,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#stripe",
+          "uv": [
+            15.75,
+            0.25,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#stripe",
+          "uv": [
+            15.75,
+            0,
+            16.0,
+            15.75
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/nurse_screen_frosted"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_left"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_right"
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/nurse_screen_frosted_right",
+        "y": 270
+      }
+    }
+  ]
+}

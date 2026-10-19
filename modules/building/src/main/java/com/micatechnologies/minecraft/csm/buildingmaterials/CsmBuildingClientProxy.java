@@ -36,6 +36,8 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     }
     // A glazed door's glass in the translucent pass and its hardware in the cutout pass.
     CsmBakedModelWrappers.register(DoorLayerModel::wrap);
+    // A room plate's number and name, baked into the chunk from its tile entity.
+    RoomPlateBakedModel.register();
   }
 
   @Override

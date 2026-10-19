@@ -1,0 +1,59 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_panel_walnut",
+    "trim": "csm:blocks/wallfinish/wall_panel_trim",
+    "particle": "csm:blocks/wallfinish/wall_panel_walnut"
+  },
+  "elements": [
+    {
+      "from": [
+        -15.75,
+        15.5,
+        0
+      ],
+      "to": [
+        0,
+        16,
+        1.25
+      ],
+      "faces": {
+        "south": {
+          "texture": "#trim",
+          "uv": [
+            0.25,
+            0,
+            16.0,
+            0.5
+          ]
+        },
+        "west": {
+          "texture": "#trim",
+          "uv": [
+            0,
+            0,
+            1.25,
+            0.5
+          ]
+        },
+        "up": {
+          "texture": "#trim",
+          "uv": [
+            0.25,
+            0,
+            16.0,
+            1.25
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            0.25,
+            14.75,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "plate": "csm:blocks/wallfinish/room_plate_charcoal",
+    "particle": "csm:blocks/wallfinish/room_plate_charcoal"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        2,
+        0
+      ],
+      "to": [
+        15,
+        14,
+        0.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            1,
+            2,
+            15,
+            14
+          ],
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            1,
+            2,
+            15,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            15.5,
+            2,
+            16.0,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            2,
+            0.5,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            1,
+            0,
+            15,
+            0.5
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            1,
+            15.5,
+            15,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

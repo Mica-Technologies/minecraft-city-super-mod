@@ -1,0 +1,41 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_panel_blue",
+    "trim": "csm:blocks/wallfinish/wall_panel_trim",
+    "particle": "csm:blocks/wallfinish/wall_panel_blue"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        15.5,
+        0.75
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#face",
+          "uv": [
+            0.75,
+            0,
+            16.0,
+            0.5
+          ]
+        },
+        "up": {
+          "texture": "#face",
+          "uv": [
+            15.25,
+            0.75,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}
