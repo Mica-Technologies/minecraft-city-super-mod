@@ -283,6 +283,9 @@ public final class TransitFabricatorRules {
       case "airport_runway_centreline_light":
       case "airport_taxiway_centreline_light":
       case "airport_stop_bar_light":
+      case "airport_helipad_inset_light":
+      case "airport_helipad_edge_light":
+      case "airport_helipad_fato_light":
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
             FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
@@ -344,6 +347,17 @@ public final class TransitFabricatorRules {
             FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
       case "airport_jet_bridge_column":
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 2));
+      case "airport_helipad_floodlight":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "airport_helipad_surface":
+      case "airport_helipad_circle":
+      case "airport_helipad_h":
+      case "airport_helipad_h_red":
+      case "airport_helipad_box":
+        // a deck coating, as tactile paving is
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
       default:
         return null;
     }

@@ -34,6 +34,12 @@ places each (package transit.airport unless another is named):
   corridor, an octagonal rotunda three blocks across that the tunnel meets, and a cab with its
   canopy and a safety bar; the drive leg and the rotunda's column (BlockPlatformColumn) stack
   under them.
+- **The helipad** (BlockHelipadMarking): the H marking (plain or a hospital's red square), its
+  circle, the plain deck with the perimeter stripe, and the mass and size boxes, one-pixel
+  overlays whose piece is their metadata; HelipadLayout.java, written here, says which block and
+  piece each cell of the marking is, for the /csmtransit helipad command. Its lights are
+  airfield lights on a `helipad` circuit: green inset and elevated, yellow elevated and a white
+  floodlight.
 
 Every model faces north, as the terminal's do: a light's lens, a sign's legend, a vehicle's nose
 and the jet bridge's aircraft end look north. The element helpers are gen_transit_platforms.py's,
@@ -41,6 +47,7 @@ and the stand sign's cells gen_transit_airport.py's.
 """
 import math
 import os
+import random
 import sys
 
 from PIL import Image
@@ -100,6 +107,7 @@ LENSES = {
     "blue": ((78, 136, 255), (32, 46, 92)),
     "green": ((88, 255, 128), (26, 84, 44)),
     "red": ((255, 64, 52), (92, 26, 24)),
+    "yellow": ((255, 214, 64), (98, 82, 26)),
 }
 
 
@@ -2472,6 +2480,381 @@ def turn_java(java_shapes):
 
 
 # ------------------------------------------------------------------------------------------
+# The helipad (2026-10): the H marking, the perimeter stripe, the weight and size boxes, and the
+# lights
+# ------------------------------------------------------------------------------------------
+# The marking is drawn once, whole, as the 5 x 5 blocks round a pad's centre: a white circle,
+# a square inscribed in it with a white outline (filled red on a hospital's pad), and a white H.
+# It is cut into its 25 cells and every cell is found again as one of a few pictures turned a
+# quarter at a time. That is what lets every cell be one block with its piece in its metadata:
+# the ring of 16 cells is four pictures in four turns (airport_helipad_circle), and the inner 3 x
+# 3 is five pictures (airport_helipad_h and its red twin). The search runs for the H along
+# either axis, and HelipadLayout.java is the table it finds, which the /csmtransit helipad
+# command lays a pad from, so the textures and the command cannot disagree.
+HP = 32                         # texels a block on the pad
+HP_N = 5                        # the marking, in blocks across
+HP_SS = 4                       # samples a texel each way, for the circle's edge
+HP_PAD = (56, 58, 62)
+HP_WHITE = (232, 232, 226)
+HP_RED = (180, 30, 36)
+HP_SQ = 1.5                     # the square's half side, in blocks: the inner 3 x 3
+HP_OUTLINE = 3.0 / HP           # its white outline, outside it
+HP_RING = (HP_SQ * math.sqrt(2.0), 2.40)   # the circle: inside meets the square's corners
+HP_LEG = (0.5, 0.875)           # the H's legs: |u| between these
+HP_LEG_V = 1.375                # and |v| up to this
+HP_BAR_V = 6.0 / HP             # the crossbar: |v| up to this, |u| under the legs' inside
+HP_LEGENDS = ("4T", "6T", "D12", "D16")    # the boxes: two mass limits (t), two D-values (m)
+
+# the pieces of each marking block, in metadata order: (picture, quarter turns clockwise)
+HP_RING_PIECES = [(p, r) for p in ("corner", "near_a", "mid", "near_b") for r in range(4)]
+HP_H_PIECES = ([(p, r) for p in ("leg_a", "leg_b", "side") for r in range(4)]
+               + [("bar", 0), ("bar", 1), ("fill", 0), ("fill", 1)])
+# where each picture is cut from, as (column, row) of the 5 x 5 marking, north row 0
+HP_RING_CUTS = {"corner": (0, 0), "near_a": (1, 0), "mid": (2, 0), "near_b": (3, 0)}
+HP_H_CUTS = {"leg_a": (1, 1), "leg_b": (3, 1), "side": (1, 2), "bar": (2, 2), "fill": (2, 1)}
+
+
+def _hp_colour(u, v, red):
+    """The marking's colour at (u, v) blocks from the pad's centre, v to the south."""
+    m = max(abs(u), abs(v))
+    if m < HP_SQ:
+        au, av = abs(u), abs(v)
+        if (HP_LEG[0] <= au <= HP_LEG[1] and av <= HP_LEG_V) or (au <= HP_LEG[0]
+                                                                and av <= HP_BAR_V):
+            return HP_WHITE
+        return HP_RED if red else HP_PAD
+    if m <= HP_SQ + HP_OUTLINE:
+        return HP_WHITE
+    if HP_RING[0] <= math.hypot(u, v) <= HP_RING[1]:
+        return HP_WHITE
+    return HP_PAD
+
+
+def _hp_design(red):
+    """The whole 5 x 5 marking, with the H's legs running north and south. Every sample is
+    placed symmetrically about the centre, so a quarter turn of the picture is exact."""
+    size = HP * HP_N
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    half = HP_N / 2.0
+    for y in range(size):
+        for x in range(size):
+            acc = [0, 0, 0]
+            for sy in range(HP_SS):
+                v = (y + (sy + 0.5) / HP_SS) / HP - half
+                for sx in range(HP_SS):
+                    u = (x + (sx + 0.5) / HP_SS) / HP - half
+                    c = _hp_colour(u, v, red)
+                    acc[0] += c[0]
+                    acc[1] += c[1]
+                    acc[2] += c[2]
+            n = HP_SS * HP_SS
+            px[x, y] = (int(round(acc[0] / n)), int(round(acc[1] / n)),
+                        int(round(acc[2] / n)), 255)
+    return img
+
+
+def _hp_turn(img, r):
+    for _ in range(r % 4):
+        img = img.transpose(Image.ROTATE_270)      # a quarter turn clockwise, seen from above
+    return img
+
+
+def _hp_cell(img, col, row):
+    return img.crop((col * HP, row * HP, (col + 1) * HP, (row + 1) * HP))
+
+
+def _hp_grain(img, seed):
+    """A little grain over a cut picture, as paint on a deck has, after the search."""
+    rng = random.Random(seed)
+    out = img.copy()
+    px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            d = rng.uniform(-3, 3)
+            c = px[x, y]
+            px[x, y] = lc.clamp(tuple(v + d for v in c[:3])) + (255,)
+    return out
+
+
+def _hp_find(picture, pieces, pictures):
+    for i, (name, r) in enumerate(pieces):
+        if _hp_turn(pictures[name], r).tobytes() == picture.tobytes():
+            return i
+    return None
+
+
+def _hp_layout(designs):
+    """Every cell of the marking, for the H along z (its legs north and south) and along x:
+    which block ("c" the circle, "h" the H) and which piece. Checked against both colourings,
+    so the red and the plain H are laid by the same table."""
+    layouts = []
+    for quarter in (0, 1):
+        rows = []
+        for j in range(HP_N):
+            row = []
+            for i in range(HP_N):
+                found = None
+                for red, design in designs.items():
+                    world = _hp_turn(design, quarter)
+                    cell = _hp_cell(world, i, j)
+                    ring = i in (0, HP_N - 1) or j in (0, HP_N - 1)
+                    pieces, cuts = ((HP_RING_PIECES, HP_RING_CUTS) if ring
+                                    else (HP_H_PIECES, HP_H_CUTS))
+                    pictures = {k: _hp_cell(design, *c) for k, c in cuts.items()}
+                    piece = _hp_find(cell, pieces, pictures)
+                    assert piece is not None, ("helipad cell", quarter, i, j, red)
+                    entry = ("c" if ring else "h", piece)
+                    assert found is None or found == entry, ("helipad colourings", i, j)
+                    found = entry
+                row.append(found)
+            rows.append(row)
+        layouts.append(rows)
+    return layouts
+
+
+def _hp_box(text):
+    img = Image.new("RGBA", (HP, HP), HP_PAD + (255,))
+    lc.frame(img, 3, 3, HP - 3, HP - 3, HP_WHITE, width=2)
+    scale = 2 if lc.text_width(text, 2) <= HP - 10 else 1
+    lc.draw_text_centred(img, text, HP / 2.0, (HP - 5 * scale) // 2, HP_WHITE, scale)
+    return img
+
+
+def _hp_edge(kind):
+    """The perimeter stripe's pieces, stripe along the north edge (and the west, a corner)."""
+    img = Image.new("RGBA", (HP, HP), HP_PAD + (255,))
+    s0, s1 = 2, 10
+    if kind == "edge":
+        rect(img, 0, s0, HP, s1, HP_WHITE)
+    elif kind == "corner":
+        rect(img, s0, s0, HP, s1, HP_WHITE)
+        rect(img, s0, s0, s1, HP, HP_WHITE)
+    elif kind == "dash":
+        rect(img, 4, s0, HP - 4, s1, HP_WHITE)
+    return img
+
+
+HP_TEXTURES = {}                # name -> picture, grained, for register_helipad
+HP_LAYOUT = None
+
+
+def helipad_textures():
+    global HP_LAYOUT
+    designs = {False: _hp_design(False), True: _hp_design(True)}
+    HP_LAYOUT = _hp_layout(designs)
+    seed = 900
+    for name, cell in sorted(HP_RING_CUTS.items()):
+        HP_TEXTURES["helipad_ring_" + name] = _hp_grain(_hp_cell(designs[False], *cell), seed)
+        seed += 1
+    for red, prefix in ((False, "helipad_h_"), (True, "helipad_h_red_")):
+        for name, cell in sorted(HP_H_CUTS.items()):
+            HP_TEXTURES[prefix + name] = _hp_grain(_hp_cell(designs[red], *cell), seed)
+            seed += 1
+        # the item's icon: the whole marking, small
+        HP_TEXTURES[prefix + "icon"] = designs[red].resize((HP, HP), Image.LANCZOS)
+    ring_only = designs[False].copy()
+    rect(ring_only, HP, HP, HP * 4, HP * 4, HP_PAD)
+    HP_TEXTURES["helipad_ring_icon"] = ring_only.resize((HP, HP), Image.LANCZOS)
+    for kind in ("plain", "edge", "corner", "dash"):
+        HP_TEXTURES["helipad_" + kind] = _hp_grain(_hp_edge(kind), seed)
+        seed += 1
+    for text in HP_LEGENDS:
+        HP_TEXTURES["helipad_box_" + text.lower()] = _hp_grain(_hp_box(text), seed)
+        seed += 1
+    for name, img in HP_TEXTURES.items():
+        C.texture(name)(lambda img=img: img)
+
+
+def _hp_state(pieces, icon):
+    """A Forge blockstate whose `piece` (the metadata) picks a picture and a quarter turn."""
+    variants = {}
+    for i in range(16):
+        tex, r = pieces[min(i, len(pieces) - 1)]
+        v = {"textures": {"up": C.T(tex)}}
+        if r:
+            v["y"] = 90 * r
+        variants[str(i)] = v
+    return {"forge_marker": 1,
+            "defaults": {"model": C.M("airport_helipad_marking"),
+                         "textures": {"up": C.T(pieces[0][0])}},
+            "variants": {"piece": variants, "inventory": [{"textures": {"up": C.T(icon)}}]}}
+
+
+def helipad_markings():
+    model = {"parent": "block/thin_block",
+             "textures": {"up": C.T("helipad_plain"), "side": C.T("helipad_plain"),
+                          "particle": C.T("helipad_plain")},
+             "elements": [B((0, 0, 0), (16, 1, 16), "side", ALL, per={"up": "up"},
+                            uv={"up": [0, 0, 16, 16]}, cull={"down": "down"})]}
+    models = {"airport_helipad_marking": model}
+    java = 'new BlockHelipadMarking("%s")'
+    surface = [("helipad_" + k, r) for k in ("plain", "edge", "corner", "dash") for r in range(4)]
+    C.add("airport_helipad_surface", java % "airport_helipad_surface",
+          names_of("Helipad Surface", "Hubschrauberlandeplatz-Belag",
+                   "Superficie de Helipuerto", "Helikopterplattans beläggning"),
+          models, _hp_state(surface, "helipad_corner"), tab=TAB)
+    C.add("airport_helipad_circle", java % "airport_helipad_circle",
+          names_of("Helipad Marking (Circle)", "Hubschrauberlandeplatz-Markierung (Kreis)",
+                   "Marca de Helipuerto (Círculo)", "Helikoptermarkering (Cirkel)"),
+          {}, _hp_state([("helipad_ring_" + p, r) for p, r in HP_RING_PIECES],
+                        "helipad_ring_icon"), tab=TAB)
+    C.add("airport_helipad_h", java % "airport_helipad_h",
+          names_of("Helipad Marking (H)", "Hubschrauberlandeplatz-Markierung (H)",
+                   "Marca de Helipuerto (H)", "Helikoptermarkering (H)"),
+          {}, _hp_state([("helipad_h_" + p, r) for p, r in HP_H_PIECES], "helipad_h_icon"),
+          tab=TAB)
+    C.add("airport_helipad_h_red", java % "airport_helipad_h_red",
+          names_of("Helipad Marking (H, Hospital)",
+                   "Hubschrauberlandeplatz-Markierung (H, Krankenhaus)",
+                   "Marca de Helipuerto (H, Hospital)", "Helikoptermarkering (H, Sjukhus)"),
+          {}, _hp_state([("helipad_h_red_" + p, r) for p, r in HP_H_PIECES],
+                        "helipad_h_red_icon"), tab=TAB)
+    boxes = [("helipad_box_" + t.lower(), r) for t in HP_LEGENDS for r in range(4)]
+    C.add("airport_helipad_box", java % "airport_helipad_box",
+          names_of("Helipad Mass and Size Box", "Hubschrauberlandeplatz-Masse- und Größenfeld",
+                   "Recuadro de Masa y Tamaño de Helipuerto",
+                   "Helikopterplattans vikt- och storleksruta"),
+          {}, _hp_state(boxes, "helipad_box_4t"), tab=TAB)
+
+
+def helipad_lights():
+    """The pad's lights, airfield lights on their own circuit: green inset and elevated lights
+    round the touchdown area, yellow elevated lights round the final approach area, and a low
+    white floodlight that lights the deck from its edge."""
+    inset = (3.8, 0, 3.8, 12.2, 1.3, 12.2)
+    els = (post(8, 8, 4.2, 0, 0.6, "ring", bottom=False)
+           + noshade(post(8, 8, 2.0, 0.6, 1.3, "lens", bottom=False)))
+    tex = {"ring": C.T("inset_ring"), "lens": C.T("lens_green_off"),
+           "particle": C.T("inset_ring")}
+    reg = "airport_helipad_inset_light"
+    light(reg, light_java(reg, inset, "helipad", 10),
+          names_of("Helipad Inset Light (Green)", "Hubschrauberlandeplatz-Unterflurfeuer (Grün)",
+                   "Luz Empotrada de Helipuerto (Verde)", "Helikopterplattans infällda ljus (Grön)"),
+          els, tex, {"lens": "green"}, gui_display(1.4, 3.0))
+
+    box = (5.8, 0, 5.8, 10.2, 12.8, 10.2)
+    for reg, colour, names in (
+            ("airport_helipad_edge_light", "green",
+             names_of("Helipad Edge Light (Green)", "Hubschrauberlandeplatz-Randfeuer (Grün)",
+                      "Luz de Borde de Helipuerto (Verde)",
+                      "Helikopterplattans kantljus (Grön)")),
+            ("airport_helipad_fato_light", "yellow",
+             names_of("Helipad Perimeter Light (Yellow)",
+                      "Hubschrauberlandeplatz-Begrenzungsfeuer (Gelb)",
+                      "Luz Perimetral de Helipuerto (Amarilla)",
+                      "Helikopterplattans omkretsljus (Gul)"))):
+        els = elevated(noshade(post(8, 8, 1.7, 9, 12.2, "lens", top=False, bottom=False)))
+        tex = {"can": C.T("can"), "frangible": C.T("frangible"),
+               "lens": C.T("lens_%s_off" % colour), "particle": C.T("can")}
+        light(reg, light_java(reg, box, "helipad", 10), names, els, tex, {"lens": colour},
+              gui_display(1.1, 1.0))
+
+    # the floodlight: a low lamp box on a yoke, its lens to the north (the player who placed it)
+    reg = "airport_helipad_floodlight"
+    els = [B((4, 0, 5), (12, 0.8, 11), "body", SIDES + ("up",)),
+           B((4.6, 0.8, 7.4), (5.4, 4.8, 8.6), "body", ALL),
+           B((10.6, 0.8, 7.4), (11.4, 4.8, 8.6), "body", ALL),
+           B((5.4, 2.0, 5.4), (10.6, 6.2, 10.4), "body", ("south", "east", "west", "up", "down")),
+           B((5.0, 6.2, 4.2), (11.0, 6.7, 10.4), "body", ALL)]
+    els += noshade([B((5.4, 2.0, 5.4), (10.6, 6.2, 5.4), "lens", ("north",),
+                      uv={"north": [2, 4, 14, 12]})])
+    tex = {"body": C.T("lamp_body"), "lens": C.T("lens_white_off"),
+           "particle": C.T("lamp_body")}
+    light(reg, light_java(reg, (4, 0, 4.2, 12, 6.7, 11), "helipad", 15),
+          names_of("Helipad Floodlight", "Hubschrauberlandeplatz-Flutlicht",
+                   "Reflector de Helipuerto", "Helikopterplattans strålkastare"),
+          els, tex, {"lens": "white"}, gui_display(1.2, 1.5))
+
+
+HP_JAVA_REL = os.path.join("modules", "transit", "src", "main", "java", "com",
+                           "micatechnologies", "minecraft", "csm", "transit", "airport",
+                           "HelipadLayout.java")
+
+
+def helipad_java():
+    """HelipadLayout.java: the marking's cells, which block and piece each is, for the H along
+    either axis; and what the other pieces are, for the command."""
+    def table(rows):
+        return ";".join(",".join("%s%d" % (b, p) for b, p in row) for row in rows)
+    legends = ", ".join('"%s"' % t for t in HP_LEGENDS)
+    lines = [
+        "package com.micatechnologies.minecraft.csm.transit.airport;",
+        "",
+        "/**",
+        " * The helipad marking's layout. GENERATED by",
+        " * {@code dev-env-utils/scripts/gen_transit_airside.py}, which draws the marking whole, cuts",
+        " * it into its cells and finds each cell again among the marking blocks' pieces; this is",
+        " * what it found. Do not edit; change the generator and re-run it.",
+        " *",
+        " * <p>The marking is {@link #SIZE} x {@link #SIZE} blocks round the pad's centre. A cell is",
+        " * {@code c} (the circle, {@code airport_helipad_circle}) or {@code h} (the H,",
+        " * {@code airport_helipad_h} or {@code airport_helipad_h_red}) and its piece, which is the",
+        " * block's metadata. Rows run north to south, cells west to east.</p>",
+        " *",
+        " * <p>Every marking block's piece is {@code picture * 4 + turn}: the picture, turned",
+        " * {@code turn} quarters clockwise seen from above (0 as drawn, north up), except the H's",
+        " * last four (12 and 13 the crossbar along x and z, 14 and 15 the fill between the legs).",
+        " * On {@code airport_helipad_surface} the pictures are plain, the perimeter stripe along",
+        " * the north edge, the stripe round the north-west corner, and a dash of stripe; on",
+        " * {@code airport_helipad_box} the legends in {@link #LEGENDS}, read from the south.</p>",
+        " *",
+        " * @since 2026.10",
+        " */",
+        "public final class HelipadLayout {",
+        "",
+        "  /** The marking's size, in blocks. */",
+        "  public static final int SIZE = %d;" % HP_N,
+        "",
+        "  /** The surface block's pictures: piece {@code picture * 4 + turn}. */",
+        "  public static final int PLAIN = 0;",
+        "  public static final int EDGE = 1;",
+        "  public static final int CORNER = 2;",
+        "  public static final int DASH = 3;",
+        "",
+        "  /** The box block's legends: piece {@code legend * 4 + turn}. */",
+        "  public static final String[] LEGENDS = {%s};" % legends,
+        "",
+        "  /** The H with its legs north and south. */",
+        '  private static final String ALONG_Z = "%s";' % table(HP_LAYOUT[0]),
+        "  /** The H with its legs east and west. */",
+        '  private static final String ALONG_X = "%s";' % table(HP_LAYOUT[1]),
+        "",
+        "  private static final String[][][] CELLS = {split(ALONG_Z), split(ALONG_X)};",
+        "",
+        "  private HelipadLayout() {",
+        "  }",
+        "",
+        "  private static String[][] split(String table) {",
+        "    String[] rows = table.split(\";\");",
+        "    String[][] out = new String[rows.length][];",
+        "    for (int i = 0; i < rows.length; i++) {",
+        "      out[i] = rows[i].split(\",\");",
+        "    }",
+        "    return out;",
+        "  }",
+        "",
+        "  /**",
+        "   * Whether a cell of the marking is the H's (else the circle's).",
+        "   *",
+        "   * @param alongX whether the H's legs run east and west",
+        "   * @param col    the cell's column, 0 (west) to {@link #SIZE} - 1",
+        "   * @param row    the cell's row, 0 (north) to {@link #SIZE} - 1",
+        "   */",
+        "  public static boolean isH(boolean alongX, int col, int row) {",
+        "    return CELLS[alongX ? 1 : 0][row][col].charAt(0) == 'h';",
+        "  }",
+        "",
+        "  /** A cell's piece, the metadata of the block {@link #isH} names. */",
+        "  public static int piece(boolean alongX, int col, int row) {",
+        "    return Integer.parseInt(CELLS[alongX ? 1 : 0][row][col].substring(1));",
+        "  }",
+        "}",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+# ------------------------------------------------------------------------------------------
 # Lang the Java reads
 # ------------------------------------------------------------------------------------------
 C.add_lang("csm.transit.stand", ("Stand %s", "Standplatz %s", "Puesto %s", "Plats %s"))
@@ -2498,6 +2881,7 @@ C.add_lang("csm.transit.jet_bridge_turn.blocked", (
 C.add_lang("csm.transit.jet_bridge_turn.hand", ("Turns %s", "Biegt %s ab", "Gira a la %s", "Svänger %s"))
 C.add_lang("csm.transit.jet_bridge_turn.left", ("left", "links", "izquierda", "vänster"))
 C.add_lang("csm.transit.jet_bridge_turn.right", ("right", "rechts", "derecha", "höger"))
+C.add_lang("csm.transit.helipad_piece", ("Piece %s", "Teil %s", "Pieza %s", "Del %s"))
 
 register_textures()
 airfield_lights()
@@ -2511,27 +2895,31 @@ jet_bridge()
 jet_bridge_slope()
 jet_bridge_large()
 TURN_SHAPES = jet_bridge_turns()
+helipad_textures()
+helipad_markings()
+helipad_lights()
 
 
 def _main():
-    """The catalogue's own run, then JetBridgeTurnShape.java, written or (--check) compared."""
+    """The catalogue's own run, then the generated Java (JetBridgeTurnShape.java and
+    HelipadLayout.java), written or (--check) compared."""
     rc = C.main()
     if "--fragments" in sys.argv:
         return rc
-    path = os.path.join(REPO, TURN_JAVA_REL)
-    text = turn_java(TURN_SHAPES)
-    if "--check" in sys.argv:
-        try:
-            with open(path, encoding="utf-8") as fh:
-                same = fh.read() == text
-        except IOError:
-            same = False
-        if not same:
-            print("out of date (re-run without --check):\n  " + TURN_JAVA_REL)
-            return 1
-        return rc
-    with open(path, "w", newline="\n", encoding="utf-8") as fh:
-        fh.write(text)
+    for rel, text in ((TURN_JAVA_REL, turn_java(TURN_SHAPES)), (HP_JAVA_REL, helipad_java())):
+        path = os.path.join(REPO, rel)
+        if "--check" in sys.argv:
+            try:
+                with open(path, encoding="utf-8") as fh:
+                    same = fh.read() == text
+            except IOError:
+                same = False
+            if not same:
+                print("out of date (re-run without --check):\n  " + rel)
+                rc = 1
+            continue
+        with open(path, "w", newline="\n", encoding="utf-8") as fh:
+            fh.write(text)
     return rc
 
 

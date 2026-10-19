@@ -1,0 +1,111 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/airside/airport_helipad_marking",
+    "textures": {
+      "up": "csm:blocks/transit/airside/helipad_h_red_leg_a"
+    }
+  },
+  "variants": {
+    "piece": {
+      "0": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_a"
+        }
+      },
+      "1": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_a"
+        },
+        "y": 90
+      },
+      "2": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_a"
+        },
+        "y": 180
+      },
+      "3": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_a"
+        },
+        "y": 270
+      },
+      "4": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_b"
+        }
+      },
+      "5": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_b"
+        },
+        "y": 90
+      },
+      "6": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_b"
+        },
+        "y": 180
+      },
+      "7": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_leg_b"
+        },
+        "y": 270
+      },
+      "8": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_side"
+        }
+      },
+      "9": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_side"
+        },
+        "y": 90
+      },
+      "10": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_side"
+        },
+        "y": 180
+      },
+      "11": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_side"
+        },
+        "y": 270
+      },
+      "12": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_bar"
+        }
+      },
+      "13": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_bar"
+        },
+        "y": 90
+      },
+      "14": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_fill"
+        }
+      },
+      "15": {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_fill"
+        },
+        "y": 90
+      }
+    },
+    "inventory": [
+      {
+        "textures": {
+          "up": "csm:blocks/transit/airside/helipad_h_red_icon"
+        }
+      }
+    ]
+  }
+}

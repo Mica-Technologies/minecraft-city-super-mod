@@ -456,6 +456,7 @@ def cost_for(registry, info, ancestors):
                 "airport_jet_bridge_rotunda": ("SHEET_METAL x4", "FASTENER_KIT x2"),
                 "airport_jet_bridge_drive": ("POLE_SECTION x2", "WIRING_HARNESS"),
                 "airport_jet_bridge_column": ("CONCRETE_MIX x2",),
+                "airport_helipad_floodlight": ("LENS_ASSEMBLY", "LED_MODULE", "SHEET_METAL"),
             }
             for same, as_ in (("airport_taxiway_edge_light", "airport_runway_edge_light"),
                               ("airport_runway_threshold_light", "airport_runway_edge_light"),
@@ -465,10 +466,16 @@ def cost_for(registry, info, ancestors):
                               ("airport_taxiway_direction_sign", "airport_taxiway_location_sign"),
                               ("airport_runway_holding_sign", "airport_taxiway_location_sign"),
                               ("airport_runway_distance_sign", "airport_taxiway_location_sign"),
-                              ("airport_jet_bridge_tunnel", "airport_air_stairs")):
+                              ("airport_jet_bridge_tunnel", "airport_air_stairs"),
+                              ("airport_helipad_inset_light", "airport_runway_edge_light"),
+                              ("airport_helipad_edge_light", "airport_runway_edge_light"),
+                              ("airport_helipad_fato_light", "airport_runway_edge_light")):
                 airside[same] = airside[as_]
             if registry in airside:
                 return airside[registry]
+            if registry in ("airport_helipad_surface", "airport_helipad_circle",
+                            "airport_helipad_h", "airport_helipad_h_red", "airport_helipad_box"):
+                return ("CONCRETE_MIX",)
             if registry in ("airport_checkin_desk", "airport_gate_desk"):
                 return ("SHEET_METAL x2", "CONTROL_BOARD", "FASTENER_KIT")
             if registry == "airport_checkin_scale":

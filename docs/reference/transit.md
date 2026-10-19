@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside.
 
-!!! info "135 blocks in this tab"
+!!! info "144 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -70,6 +70,15 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Hanging Sign (Exit) | `csm:platform_sign_exit` | 2.0 | 6.0 | pickaxe | 1 |
 | Hanging Sign (Line Bullets) | `csm:platform_sign_lines` | 2.0 | 6.0 | pickaxe | 1 |
 | Hanging Sign (To Trains) | `csm:platform_sign_to_trains` | 2.0 | 6.0 | pickaxe | 1 |
+| Helipad Edge Light (Green) | `csm:airport_helipad_edge_light` | 2.0 | 6.0 | pickaxe | 1 |
+| Helipad Floodlight | `csm:airport_helipad_floodlight` | 2.0 | 6.0 | pickaxe | 1 |
+| Helipad Inset Light (Green) | `csm:airport_helipad_inset_light` | 2.0 | 6.0 | pickaxe | 1 |
+| Helipad Marking (Circle) | `csm:airport_helipad_circle` | 0.8 | 2 | pickaxe | 0 |
+| Helipad Marking (H) | `csm:airport_helipad_h` | 0.8 | 2 | pickaxe | 0 |
+| Helipad Marking (H, Hospital) | `csm:airport_helipad_h_red` | 0.8 | 2 | pickaxe | 0 |
+| Helipad Mass and Size Box | `csm:airport_helipad_box` | 0.8 | 2 | pickaxe | 0 |
+| Helipad Perimeter Light (Yellow) | `csm:airport_helipad_fato_light` | 2.0 | 6.0 | pickaxe | 1 |
+| Helipad Surface | `csm:airport_helipad_surface` | 0.8 | 2 | pickaxe | 0 |
 | Help Point | `csm:platform_help_point` | 2.0 | 6.0 | pickaxe | 1 |
 | Jet Bridge (Cab) | `csm:airport_jet_bridge_cab` | 2.0 | 6.0 | pickaxe | 1 |
 | Jet Bridge (Corner) | `csm:airport_jet_bridge_corner` | 2.0 | 6.0 | pickaxe | 1 |

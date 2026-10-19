@@ -1191,7 +1191,8 @@ cart rack two sheet metal and a fastener kit. `audit_fabricator_costs.py` mirror
 ### Airside
 
 Twenty-six more blocks in `transit.airport`, all drawn by `gen_transit_airside.py`: the airfield's
-lights and signs, the masts they stand on, the stand sign, ground equipment and the jet bridge.
+lights and signs, the masts they stand on, the stand sign, ground equipment and the jet bridge;
+and since then the jet bridge's slopes, large sizes and turns, and a helipad (below).
 **There are no aircraft of any kind**, static or otherwise, so nothing docks or taxis: a jet
 bridge is a corridor to walk out along and ground equipment stands where it was parked. Apron and
 runway paint is the external road mod's road paint, and cones are Roads' work-zone cones, so
@@ -1398,6 +1399,91 @@ beyond each end. Where nothing continues, it draws the straight tunnel's own end
 (`airport_jet_bridge_tunnel_end_behind`, or the large one's OBJ) turned to that face. Large turns
 join large pieces only.
 
+#### The helipad
+
+A hospital's rooftop pad, or any other (2026-10): the marking, a perimeter stripe, mass and size
+boxes and the pad's lights, nine blocks. It lives with the airfield rather than in Healthcare
+because its lights are airfield lights. **There is no helicopter.** The wind sock is the airfield's
+own (`airport_wind_sock`), which already has its red obstruction light, so there is no second one.
+
+| Block | Registry name | Class |
+|---|---|---|
+| Helipad Surface (plain deck, perimeter stripe, corner, dash) | `csm:airport_helipad_surface` | `BlockHelipadMarking` |
+| Helipad Marking (Circle) | `csm:airport_helipad_circle` | `BlockHelipadMarking` |
+| Helipad Marking (H), (H, Hospital) | `csm:airport_helipad_h`, `_h_red` | `BlockHelipadMarking` |
+| Helipad Mass and Size Box | `csm:airport_helipad_box` | `BlockHelipadMarking` |
+| Helipad Inset Light (Green), Edge Light (Green), Perimeter Light (Yellow) | `csm:airport_helipad_inset_light`, `_edge_light`, `_fato_light` | `BlockAirfieldLight` |
+| Helipad Floodlight | `csm:airport_helipad_floodlight` | `BlockAirfieldLight` |
+
+**The marking is drawn whole and found again in pieces.** `gen_transit_airside.py` draws the
+5 x 5 blocks round a pad's centre at 32 texels a block: a white circle, a square inscribed in it
+(its corners touch the circle) with a white outline, filled red on the hospital's, and a white H
+1.75 blocks wide and 2.75 tall. It cuts that into its 25 cells and finds every cell again as one
+of a few pictures turned a quarter at a time: the ring of 16 cells is four pictures (corner, the
+two cells beside it, the middle of a side) in four turns, exactly the 16 values metadata holds,
+and the inner 3 x 3 is five (a leg's end and its mirror, a leg with the crossbar's end, the
+crossbar, the fill between the legs). That is why the H's legs sit at the outer edges of their
+cells and never cross into the middle column: a sliver there would make the cell between the legs
+a picture of its own and overflow the metadata. The search is run for the H along z and along x,
+against both fillings, and asserts that every cell is found; what it finds is written into
+`HelipadLayout.java`, so the textures and the command cannot disagree.
+
+A cell stores only `piece` (0 to 15), which is its metadata: no tile entity, nothing ticks, and
+the blockstate swaps one model's top texture and turns it. One model (`airport_helipad_marking`,
+the tactile paving's one-pixel slab) serves all five blocks. Like tactile paving, a piece needs a
+solid deck under it and comes up when the deck goes. Placed by hand a piece takes the turn the
+player faces (a box then reads from where they stand); a click with an empty hand steps the piece
+on, a sneaking click back, and the action bar says which.
+
+**Laying a pad.** `/csmtransit helipad <x y z> <size> [plain|hospital] [north|east|south|west]
+[box] [box]` (op level 2) lays a square pad `size` blocks across, odd from 5 to 15, centred on
+`x z` at height `y`, the layer above the deck. The marking takes the middle 5 x 5; from 7 up the
+outer ring is the perimeter stripe; between them is plain deck, turned by position so it shows no
+repeat. The facing is the approach: the H's legs run along it (north and south are the same H)
+and the boxes read from it. From 9 up, one or two boxes (`4T`, `6T`, `D12`, `D16`: two mass
+limits in tonnes and two D-values in metres) go a block inside the stripe on the near side, two
+blocks right of the centreline and then two left. A cell is laid only where the block is free (or
+already marking) and the deck under it solid; the reply counts what was skipped. A generator that
+would rather not use the command lays the same cells with `/setblock`, from the table below.
+
+| Block | Metadata |
+|---|---|
+| Every marking block | `piece` = picture x 4 + turn, the turn quarter turns clockwise seen from above (0 as drawn, north up) |
+| `airport_helipad_surface` | pictures: 0 plain, 1 stripe along the north edge, 2 stripe round the north-west corner, 3 a dash of stripe (a dashed edge) |
+| `airport_helipad_circle` | pictures: 0 the north-west corner cell, 1 the cell east of it, 2 the middle of the north side, 3 the cell west of the north-east corner |
+| `airport_helipad_h`, `_h_red` | 0-3 the top of the west leg (turned), 4-7 the top of the east leg, 8-11 the west leg's middle with the crossbar's end, 12 and 13 the crossbar along x and along z, 14 and 15 the fill between the legs |
+| `airport_helipad_box` | legend x 4 + turn: legends 0 `4T`, 1 `6T`, 2 `D12`, 3 `D16`; turn 0 reads from the south (the approach heading north) |
+| The four lights | facing (0 south, 1 west, 2 north, 3 east, the model's north looking that way) + 4 lit + 8 powered, as every `BlockAirfieldLight` |
+
+The marking's own cells, rows north to south and cells west to east (`c` the circle, `h` the H;
+the number the metadata):
+
+| H along | Rows |
+|---|---|
+| z (approach north or south) | `c0 c4 c8 c12 c1` / `c15 h0 h14 h4 c5` / `c11 h8 h12 h10 c9` / `c7 h6 h14 h2 c13` / `c3 c14 c10 c6 c2` |
+| x (approach east or west) | `c0 c4 c8 c12 c1` / `c15 h7 h9 h1 c5` / `c11 h14 h13 h14 c9` / `c7 h3 h11 h5 c13` / `c3 c14 c10 c6 c2` |
+
+The stripe of a pad `n` across, centred on `cx cz` with `h = n / 2`: the north edge cells are
+surface 4, east 5, south 6, west 7; the corners north-west 8, north-east 9, south-east 10,
+south-west 11. So a 7 x 7 pad centred at 0 64 0 on a deck at y 63 is, for instance,
+`/setblock -3 64 -3 csm:airport_helipad_surface 8` and `/setblock 0 64 -3
+csm:airport_helipad_surface 4` round the edge, and `/setblock -1 64 -1 csm:airport_helipad_h_red
+0` for the top of the H's west leg. No block needs `/blockdata`.
+
+**The lights** are airfield lights on their own circuit, `helipad`, so one lever or click lights
+the whole pad, floodlights included, and a pad near a runway still switches apart from it:
+green inset lights flush in the deck and green elevated lights round the touchdown area (the TLOF
+perimeter), yellow elevated lights round the final approach area (the FATO perimeter, where a
+pad has one wider than its deck), and a low white floodlight that stands at the deck's edge with
+its lens towards the player who placed it, giving light 15. Lit and unlit lenses and the `_e`
+companions are the airfield's (yellow is new to the set). The marking blocks are not lit; the
+floodlights and block light do that.
+
+What is left out: the hospital cross marking some countries use (the red square is the generic
+sign), a touchdown/positioning circle separate from the aiming circle, painted H orientations
+other than the two axes, the obstacle-free sector chevron, and even-sized pads (the marking needs
+a centre cell; an even pad is an odd one with a plain row along one side, laid by hand).
+
 #### Traps
 
 - **A sloped floor has to be walked by a player 0.6 blocks long.** A player stands on the highest
@@ -1439,6 +1525,10 @@ join large pieces only.
   value to the sign's count.
 - **Circuits are found by distance, not wiring.** Two circuits of the same kind closer than eight
   blocks are one; that is the rule to tell a builder.
+- **A helipad marking cell must be one of the pieces.** Change the marking's proportions and a
+  cell may stop being a turn of the pictures (an H leg that crosses into the middle column does
+  it): the generator's search then fails, by design, rather than ship a pad that cannot be laid
+  from metadata. Keep the legs within their columns and every drawing symmetric about the centre.
 
 #### Prices
 
@@ -1453,6 +1543,8 @@ sections and a harness; the column two concrete mix; the chocks one sheet metal.
 A jet bridge turn is priced at the top of `TransitFabricatorRules.price`: its cells' worth of tunnel,
 a tunnel of its size a cell (the level tunnel's three sheet metal and a fastener kit; the large
 tunnel's two and one), so the level corner is 27 sheet metal and 9 fastener kits.
+The helipad's lights are priced as the runway edge light, the floodlight a lens assembly, an
+LED module and a sheet metal, and every marking block one concrete mix, as tactile paving is.
 `audit_fabricator_costs.py` mirrors the branch.
 
 ## Demo world
