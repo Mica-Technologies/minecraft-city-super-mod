@@ -50,7 +50,7 @@ public class GuideSignData {
   }
 
   public void setSignColor(int signColor) {
-    this.signColor = signColor;
+    this.signColor = GuideSignColor.sanitize(signColor);
   }
 
   public void cycleSignColor() {
@@ -207,6 +207,9 @@ public class GuideSignData {
       if (data.panels == null) {
         data.panels = new ArrayList<>();
       }
+      // Gson bypasses the setters: repair an out-of-range colour index here, so the stored
+      // value reads back as the colour actually drawn.
+      data.signColor = GuideSignColor.sanitize(data.signColor);
       if (data.panels.isEmpty()) {
         GuideSignPanel p = new GuideSignPanel();
         GuideSignRow row = new GuideSignRow();
@@ -215,6 +218,9 @@ public class GuideSignData {
         data.panels.add(p);
       }
       for (GuideSignPanel panel : data.panels) {
+        if (panel.getExitTab() != null) {
+          panel.getExitTab().setColor(panel.getExitTab().getColor());
+        }
         if (panel.getRows() == null) {
           panel.setRows(new ArrayList<>());
         }

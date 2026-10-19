@@ -320,6 +320,9 @@ public class StreetSignData extends StreetSignLegend {
       if (data == null) {
         return new StreetSignData();
       }
+      // Gson bypasses the setters: repair an out-of-range colour index here, so the stored
+      // value reads back as the colour actually drawn.
+      data.signColor = GuideSignColor.sanitize(data.signColor);
       data.sanitizeLegend();
       if (data.lowerBlade != null) {
         data.lowerBlade.sanitizeLegend();
