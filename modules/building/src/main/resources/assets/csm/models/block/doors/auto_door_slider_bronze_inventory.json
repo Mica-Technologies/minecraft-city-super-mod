@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "csm:blocks/doors/auto_door_slider_bronze_icon"
+  }
+}

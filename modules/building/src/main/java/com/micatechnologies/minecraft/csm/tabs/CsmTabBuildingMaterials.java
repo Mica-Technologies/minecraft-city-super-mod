@@ -5,6 +5,8 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGlazed;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAutoDoorMat;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAutoSlidingDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCustomDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDoorWorkshop;
@@ -267,6 +269,11 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockBuildingDoor("door_smoke_metal_grey")); // Smoke Barrier Door (Grey Metal)
     initTabBlock(new BlockBuildingDoor("door_smoke_metal_beige")); // Smoke Barrier Door (Beige Metal)
     initTabBlock(new BlockBuildingDoor("door_lead_lined")); // Lead-Lined Door (Radiation)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_clear")); // Automatic Sliding Door (Clear Aluminium)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_bronze")); // Automatic Sliding Door (Dark Bronze)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_clear")); // Sliding Door Sidelite (Clear Aluminium)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_bronze")); // Sliding Door Sidelite (Dark Bronze)
+    initTabBlock(BlockAutoDoorMat.class, fmlPreInitializationEvent); // Automatic Door Activation Mat
     initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
     initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent); // Door Swing Tool
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door

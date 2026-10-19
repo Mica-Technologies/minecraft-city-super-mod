@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmGlassLayer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,14 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     double p = CsmPerformance.doorAnimation() ? te.progress(partialTicks) : 1.0;
     double eased = 1 - (1 - p) * (1 - p);
     double openness = te.isOpening() ? eased : 1 - eased;
+    if (block instanceof BlockAutoSlidingDoor) {
+      // A sliding panel moves along the wall toward its hinge side, eased in and out.
+      double smooth = p * p * (3 - 2 * p);
+      double along = (te.isOpening() ? smooth : 1 - smooth) * BlockAutoSlidingDoor.SLIDE
+          * (left ? -1 : 1);
+      renderMoved(te, block, door, facing, x, y, z, along);
+      return;
+    }
     double turn = 90.0 * openness;
     // A door that swings out turns the other way, about the depth mirror of the pivot.
     boolean out = block.outward(door);
@@ -169,6 +178,73 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     GlStateManager.disableBlend();
     RenderHelper.enableStandardItemLighting();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * A sliding door's panel part way along its slide: what is fixed to the frame (the header and
+   * its sensors) where it is, and the panel, both halves, moved {@code along} blocks along the
+   * wall in model space.
+   */
+  private void renderMoved(TileEntityDoorSwing te, BlockBuildingDoor block, IBlockState door,
+      EnumFacing facing, double x, double y, double z, double along) {
+    BlockPos upperPos = te.getPos();
+    float facingTurn = -(facing.getHorizontalAngle() + 180F);
+    IBlockState closed = block.getDefaultState().withProperty(BlockBuildingDoor.OPEN, false)
+        .withProperty(BlockBuildingDoor.SWING, false)
+        .withProperty(BlockBuildingDoor.HINGE, door.getValue(BlockBuildingDoor.HINGE))
+        .withProperty(BlockBuildingDoor.CLOSER, door.getValue(BlockBuildingDoor.CLOSER))
+        .withProperty(BlockBuildingDoor.REVERSED, door.getValue(BlockBuildingDoor.REVERSED));
+    List<BakedQuad> lowerQuads = quads(closed.withProperty(BlockBuildingDoor.HALF,
+        BlockBuildingDoor.Half.LOWER));
+    List<BakedQuad> upperQuads = quads(closed.withProperty(BlockBuildingDoor.HALF,
+        BlockBuildingDoor.Half.UPPER));
+    int light = te.getWorld().getCombinedLight(upperPos.down(), 0);
+
+    bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+    GlStateManager.pushMatrix();
+    RenderHelper.disableStandardItemLighting();
+    GlStateManager.enableBlend();
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light & 0xFFFF,
+        light >> 16);
+    GlStateManager.translate(x + 0.5, y, z + 0.5);
+    GlStateManager.rotate(facingTurn, 0F, 1F, 0F);
+    GlStateManager.translate(-0.5, 0, -0.5);
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    // The solid parts first and the glass after them, so the glass blends over what is behind.
+    for (boolean glass : new boolean[]{false, true}) {
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+      for (BakedQuad quad : upperQuads) {
+        if (quad.getTintIndex() == TINT_FIXED && isGlass(quad) == glass) {
+          put(buffer, quad, facingTurn, 0, 0);
+        }
+      }
+      tessellator.draw();
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(along, 0, 0);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+      for (BakedQuad quad : lowerQuads) {
+        if (!quad.hasTintIndex() && isGlass(quad) == glass) {
+          put(buffer, quad, facingTurn, -1, 0);
+        }
+      }
+      for (BakedQuad quad : upperQuads) {
+        if (!quad.hasTintIndex() && isGlass(quad) == glass) {
+          put(buffer, quad, facingTurn, 0, 0);
+        }
+      }
+      tessellator.draw();
+      GlStateManager.popMatrix();
+    }
+    GlStateManager.disableBlend();
+    RenderHelper.enableStandardItemLighting();
+    GlStateManager.popMatrix();
+  }
+
+  private static boolean isGlass(BakedQuad quad) {
+    return CsmGlassLayer.isGlass(quad.getSprite().getIconName());
   }
 
   /** Every quad of a state's model, from every side. */

@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "218 blocks in this tab"
+!!! info "223 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,9 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ashlar Stone Veneer Fence | `csm:stone_ashlar_fence` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Slab | `csm:stone_ashlar_slab` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Stairs | `csm:stone_ashlar_stairs` | 2 | 10 | pickaxe | 1 |
+| Automatic Door Activation Mat | `csm:auto_door_mat` | 0.5 | 1 |  | 0 |
+| Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_slider_clear` |  |  |  |  |
+| Automatic Sliding Door (Dark Bronze) | `csm:auto_door_slider_bronze` |  |  |  |  |
 | Back Door (Half Glass) | `csm:door_back_halfglass` |  |  |  |  |
 | Black Metal | `csm:blackmetal` | 2 | 10 | pickaxe | 1 |
 | Black Metal Fence | `csm:blackmetal_fence` | 2 | 10 | pickaxe | 1 |
@@ -200,6 +203,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Silver Metal Fence | `csm:silvermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Slab | `csm:silvermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Stairs | `csm:silvermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Sliding Door Sidelite (Clear Aluminium) | `csm:auto_door_sidelite_clear` |  |  |  |  |
+| Sliding Door Sidelite (Dark Bronze) | `csm:auto_door_sidelite_bronze` |  |  |  |  |
 | Smoke Barrier Door (Beige Metal) | `csm:door_smoke_metal_beige` |  |  |  |  |
 | Smoke Barrier Door (Grey Metal) | `csm:door_smoke_metal_grey` |  |  |  |  |
 | Smooth Stucco | `csm:stucco_smooth` | 2 | 10 | pickaxe | 1 |
