@@ -681,9 +681,13 @@ public class TrafficSignalControllerTicker {
           // signal arrangement than the default phase and must not be recycled.
           // Left turn or pedestrian demand on the same circuit requires its own phase,
           // so we must proceed to yellow transition for those.
+          // Not while a car waits on another circuit: demand ties go to the circuit already
+          // running, so a car there would recycle a change made for that car, as at max green,
+          // and the waiting lefts were never served (#292).
           recycleToGreen =
               TrafficSignalControllerTickerUtilities.isOmnidirectionalThroughType(
-                  currentDemand.getSecond());
+                  currentDemand.getSecond())
+                  && !otherCircuitHasDemand(world, circuits, activeCircuit);
         }
       }
 
@@ -768,9 +772,11 @@ public class TrafficSignalControllerTicker {
           // omnidirectional through-type demand. Directional demand (ALL_EAST etc.)
           // requires its own phase and should not be redirected to the default.
           // Left turn demand on the same circuit should proceed to the stored
-          // upcoming phase (which is the left turn phase).
+          // upcoming phase (which is the left turn phase). Nor while a car waits on another
+          // circuit, for the reason given at the flashing don't walk recycle above (#292).
           if (TrafficSignalControllerTickerUtilities.isOmnidirectionalThroughType(
-              currentDemand.getSecond())) {
+              currentDemand.getSecond())
+              && !otherCircuitHasDemand(world, circuits, activeCircuit)) {
             upcomingGreenPhase = TrafficSignalControllerTickerUtilities
                 .getDefaultPhaseForCircuitNumber(circuits, overlaps, activeCircuit,
                     overlapPedestrianSignals, world);
@@ -900,6 +906,16 @@ public class TrafficSignalControllerTicker {
             if (phaseRecall && maxGreenTimeMet
                 && otherCircuitHasDemand(world, circuits, originalPhase.getCircuit())) {
               phaseRecall = false;
+              // Serve that car. The ranking still puts this circuit first, so the change below
+              // used to fall to the next circuit's default phase, which on a circuit of left heads
+              // alone turns nothing green: the arrows were never served again and this circuit
+              // came straight back (#292).
+              Tuple<Integer, TrafficSignalPhaseApplicability> elsewhere =
+                  TrafficSignalControllerTickerUtilities.getUpcomingPhasePriorityIndicator(world,
+                      circuits, overlapPedestrianSignals, originalPhase.getCircuit());
+              if (elsewhere != null) {
+                upcomingPhasePriorityIndicator = elsewhere;
+              }
             }
           }
         }

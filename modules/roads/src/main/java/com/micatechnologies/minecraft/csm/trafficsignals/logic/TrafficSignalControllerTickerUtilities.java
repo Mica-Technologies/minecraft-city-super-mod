@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.state.IBlockState;
@@ -1431,6 +1432,49 @@ public class TrafficSignalControllerTickerUtilities {
       World world,
       TrafficSignalControllerCircuits circuits,
       boolean overlapPedestrianSignals) {
+    return getUpcomingPhasePriorityIndicator(world, circuits, overlapPedestrianSignals, 0);
+  }
+
+  /**
+   * {@link #getUpcomingPhasePriorityIndicator(World, TrafficSignalControllerCircuits, boolean)}
+   * with one circuit left out: the best call waiting anywhere else. Demand ties go to the circuit
+   * evaluated last, which is often the one already running, so a phase whose max green is up
+   * asks this for the call it should serve next rather than taking the next circuit's default
+   * (#292).
+   *
+   * @param excludedCircuit The circuit (1-based) to leave out, or {@code 0} for none.
+   *
+   * @return The priority indicator of the best call outside {@code excludedCircuit}, or
+   *     {@code null} if there is none.
+   *
+   * @since 2026.10
+   */
+  public static Tuple<Integer, TrafficSignalPhaseApplicability> getUpcomingPhasePriorityIndicator(
+      World world,
+      TrafficSignalControllerCircuits circuits,
+      boolean overlapPedestrianSignals,
+      int excludedCircuit) {
+    return getUpcomingPhasePriorityIndicator(circuits, overlapPedestrianSignals, excludedCircuit,
+        circuit -> circuit.getSensorsWaitingSummary(world),
+        circuit -> circuit.getPedestrianAccessoriesRequestCount(world),
+        pos -> signalFacingOrNull(world, pos));
+  }
+
+  /**
+   * World-free form of
+   * {@link #getUpcomingPhasePriorityIndicator(World, TrafficSignalControllerCircuits, boolean, int)}:
+   * the sensor summaries, pedestrian request counts and signal facings come from the given
+   * functions, so the ranking is unit-testable.
+   *
+   * @since 2026.10
+   */
+  static Tuple<Integer, TrafficSignalPhaseApplicability> getUpcomingPhasePriorityIndicator(
+      TrafficSignalControllerCircuits circuits,
+      boolean overlapPedestrianSignals,
+      int excludedCircuit,
+      Function<TrafficSignalControllerCircuit, TrafficSignalSensorSummary> summaryResolver,
+      ToIntFunction<TrafficSignalControllerCircuit> pedestrianRequestResolver,
+      Function<BlockPos, EnumFacing> facingResolver) {
     // Create variables to track the highest priority phase
     int highestPriorityCircuitNumber = Integer.MIN_VALUE;
     TrafficSignalPhaseApplicability highestPriorityPhaseApplicability =
@@ -1445,7 +1489,7 @@ public class TrafficSignalControllerTickerUtilities {
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(i0);
 
       // Get pedestrian request count for circuit
-      int pedestrianAccessoriesRequestCount = circuit.getPedestrianAccessoriesRequestCount(world);
+      int pedestrianAccessoriesRequestCount = pedestrianRequestResolver.applyAsInt(circuit);
 
       // Store pedestrian request count for circuit
       pedestrianRequestCount[i0] = pedestrianAccessoriesRequestCount;
@@ -1455,17 +1499,21 @@ public class TrafficSignalControllerTickerUtilities {
     for (int i = circuits.getCircuitCount(); i > 0; i--) {
       // Get the circuit
       int i0 = i - 1;
+      if (i == excludedCircuit) {
+        continue;
+      }
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(i0);
 
       // Get sensor summary for circuit
-      TrafficSignalSensorSummary sensorSummary = circuit.getSensorsWaitingSummary(world);
+      TrafficSignalSensorSummary sensorSummary = summaryResolver.apply(circuit);
 
       // Check circuit left turn demand, adjusted for permissive FYA turns.
       // Directions with FYA left signals require 2+ detections to trigger a protected
       // left phase (single detection is assumed to clear on the permissive turn).
       // This FYA-adjusted count is used only for the ALL_LEFTS decision below — it is
       // intentionally NOT used in the through-phase demand sums, which use raw counts.
-      int allLeftTurnLanesDetectionCount = getEffectiveLeftDemand(world, circuit, sensorSummary);
+      int allLeftTurnLanesDetectionCount =
+          getEffectiveLeftDemand(facingResolver, circuit, sensorSummary);
       // Raw turn-lane counts for through-phase demand. A car sitting in a turn lane is
       // real demand for the circuit's through phase, which serves both turns:
       //   - Left turn: FYA permissive, or protected green arrow when
@@ -1492,7 +1540,7 @@ public class TrafficSignalControllerTickerUtilities {
       boolean leftsWasBest =
           highestPriorityPhaseApplicability == TrafficSignalPhaseApplicability.ALL_LEFTS;
 
-      int eastFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+      int eastFacingDetectionCount = getEffectiveDirectionalDemand(facingResolver, circuit,
           sensorSummary, EnumFacing.EAST);
       if (leftsWasBest
           ? eastFacingDetectionCount > highestPriorityWaitingCount
@@ -1503,7 +1551,7 @@ public class TrafficSignalControllerTickerUtilities {
         leftsWasBest = false;
       }
 
-      int westFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+      int westFacingDetectionCount = getEffectiveDirectionalDemand(facingResolver, circuit,
           sensorSummary, EnumFacing.WEST);
       if (leftsWasBest
           ? westFacingDetectionCount > highestPriorityWaitingCount
@@ -1514,7 +1562,7 @@ public class TrafficSignalControllerTickerUtilities {
         leftsWasBest = false;
       }
 
-      int northFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+      int northFacingDetectionCount = getEffectiveDirectionalDemand(facingResolver, circuit,
           sensorSummary, EnumFacing.NORTH);
       if (leftsWasBest
           ? northFacingDetectionCount > highestPriorityWaitingCount
@@ -1525,7 +1573,7 @@ public class TrafficSignalControllerTickerUtilities {
         leftsWasBest = false;
       }
 
-      int southFacingDetectionCount = getEffectiveDirectionalDemand(world, circuit,
+      int southFacingDetectionCount = getEffectiveDirectionalDemand(facingResolver, circuit,
           sensorSummary, EnumFacing.SOUTH);
       if (leftsWasBest
           ? southFacingDetectionCount > highestPriorityWaitingCount
@@ -2268,7 +2316,8 @@ public class TrafficSignalControllerTickerUtilities {
     if (circuit.getLeftSignals().isEmpty()) {
       return 0;
     }
-    if (facingResolver != null && !circuit.areSignalsFacingSameDirection(facingResolver)) {
+    if (facingResolver != null && !circuit.areSignalsFacingSameDirection(facingResolver)
+        && !opposedLeftsBothCalled(facingResolver, circuit, summary)) {
       return 0;
     }
 
@@ -2356,6 +2405,37 @@ public class TrafficSignalControllerTickerUtilities {
     effectiveCount += adjustForFya(summary.getRightNorth(), fyaNorth);
     effectiveCount += adjustForFya(summary.getRightSouth(), fyaSouth);
     return effectiveCount;
+  }
+
+  /**
+   * Whether a circuit of solid left arrows alone, facing two opposite ways (an east-west or a
+   * north-south pair, the opposing lefts of one street), has a car waiting at both. Such a circuit
+   * has no through phase to run its arrows beside, so the same-direction guard left it only the
+   * directional phases, one arrow at a time: with both bays occupied, one arrow went green and the
+   * other stayed red for the whole phase (#292). Opposing lefts run together like any dual left;
+   * a single call still gets its own direction's phase.
+   *
+   * @since 2026.10
+   */
+  static boolean opposedLeftsBothCalled(Function<BlockPos, EnumFacing> facingResolver,
+      TrafficSignalControllerCircuit circuit, TrafficSignalSensorSummary summary) {
+    if (throughPhaseServesVehicles(circuit)) {
+      return false;
+    }
+    EnumSet<EnumFacing> facings = EnumSet.noneOf(EnumFacing.class);
+    for (BlockPos signalPos : circuit.getLeftSignals()) {
+      EnumFacing facing = facingResolver.apply(signalPos);
+      if (facing != null) {
+        facings.add(facing);
+      }
+    }
+    if (facings.equals(EnumSet.of(EnumFacing.EAST, EnumFacing.WEST))) {
+      return summary.getLeftEast() > 0 && summary.getLeftWest() > 0;
+    }
+    if (facings.equals(EnumSet.of(EnumFacing.NORTH, EnumFacing.SOUTH))) {
+      return summary.getLeftNorth() > 0 && summary.getLeftSouth() > 0;
+    }
+    return false;
   }
 
   private static int adjustForFya(int leftCount, boolean hasFya) {
