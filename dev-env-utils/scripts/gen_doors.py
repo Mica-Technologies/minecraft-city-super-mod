@@ -73,7 +73,8 @@ PIVOT = (0.875, 15.125)
 # door opens in the direction of escape, which is what lets a push bar work at all -- a push bar on
 # a door that swings toward you is a pull handle nobody can pull -- and a storefront's or a fire
 # door's does the same. The rest swing in, as a vanilla door does.
-OUTSWING = ("door_metal_fire", "door_metal_exit", "door_storefront_bronze")
+OUTSWING = ("door_metal_fire", "door_metal_exit", "door_storefront_bronze",
+            "door_wood_dark_oak_fire")
 
 # SHARED with DoorCloserArm: the closer's arm, in px, for a left-hinged inswing door with the inside
 # to the north (every other door is a mirror of it). The spindle rides on the closer's body on the
@@ -96,6 +97,8 @@ CLOSER_ELBOW_SIDE = -1
 TINT_FIXED = 1   # fixed to the frame, so drawn where it is and not swung: the closer's shoe
 TINT_ARM = 2     # the closer's arm, which the renderer solves and draws itself at every angle
 TINT_PUSH = 3    # a push bar's touch bar, which dips toward the leaf as the door is pushed open
+
+DARK_OAK = (72, 48, 28)
 
 # registry name -> (style, colour, glass layer, name in each language). Order is creative order.
 DOORS = {
@@ -134,6 +137,20 @@ DOORS = {
     "door_back_halfglass": ("halfglass", (236, 236, 230), True, (
         "Back Door (Half Glass)", "Puerta Trasera (Media Vidriera)", "Hintertür (Halbverglast)",
         "Bakdörr (Halvglasad)")),
+    # Dark oak, for a church or a panelled hall: flush (veneer), with a vision lite, six-panel,
+    # and a fire door with a wired lite, which swings out as the steel fire door does.
+    "door_wood_dark_oak": ("wood", DARK_OAK, False, (
+        "Interior Door (Dark Oak)", "Puerta de Interior (Roble Oscuro)",
+        "Innentür (Dunkle Eiche)", "Innerdörr (Mörk Ek)")),
+    "door_wood_dark_oak_lite": ("wood_lite", DARK_OAK, True, (
+        "Interior Door (Dark Oak, Vision Lite)", "Puerta de Interior (Roble Oscuro, Mirilla)",
+        "Innentür (Dunkle Eiche, Lichtausschnitt)", "Innerdörr (Mörk Ek, Glasruta)")),
+    "door_front_dark_oak": ("front", DARK_OAK, False, (
+        "Front Door (Dark Oak)", "Puerta Principal (Roble Oscuro)", "Haustür (Dunkle Eiche)",
+        "Ytterdörr (Mörk Ek)")),
+    "door_wood_dark_oak_fire": ("wood_fire", DARK_OAK, True, (
+        "Fire Door (Dark Oak, Wired Lite)", "Puerta Cortafuegos (Roble Oscuro, Mirilla Armada)",
+        "Brandschutztür (Dunkle Eiche, Drahtglas)", "Branddörr (Mörk Ek, Trådglas)")),
     # The job trailer's entry door, registered in the Construction Site tab beside the trailer's
     # walls (issue #228: it was a wall block with a door drawn on it).
     "job_trailer_door": ("trailer", (214, 214, 208), True, (
@@ -371,6 +388,10 @@ def door_faces(name):
         if style == "wood_lite":
             _glass(up, 10, 2, 12, 12, rgb)
     elif style == "fire":
+        _glass(up, 5, 3, 10, 12, rgb, wired=True)
+    elif style == "wood_fire":
+        _veneer(rgb, rng, lp)
+        _veneer(rgb, rng, up)
         _glass(up, 5, 3, 10, 12, rgb, wired=True)
     elif style == "storefront":
         for img_px, top in ((lp, False), (up, True)):
@@ -977,7 +998,9 @@ def _model(elements, textures):
     return {"textures": t, "elements": elements}
 
 
-def _hw_tex(style):
+def _hw_tex(style, name=""):
+    if "dark_oak" in name and style != "front":
+        return TEX_REF % "door_black"
     if style in ("front", "halfglass"):
         return TEX_REF % "door_brass"
     if style == "storefront":
@@ -1002,7 +1025,7 @@ def models():
                 els = leaf(upper, z_in, z_out)
             els = els + hardware_for(style, upper, z_in, z_out)
             tex = {"face": TEX_REF % (name + "_" + half),
-                   "edge": TEX_REF % (full_leaf(name) + "_edge"), "hw": _hw_tex(style)}
+                   "edge": TEX_REF % (full_leaf(name) + "_edge"), "hw": _hw_tex(style, name)}
             if narrow(name):
                 tex["side"] = TEX_REF % ("door_hosp_sidelite_" + half)
                 tex["frame"] = TEX_REF % "door_hm_frame"

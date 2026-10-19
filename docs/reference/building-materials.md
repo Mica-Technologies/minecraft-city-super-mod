@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "223 blocks in this tab"
+!!! info "227 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -92,8 +92,10 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Fieldstone Veneer Fence | `csm:stone_fieldstone_fence` | 2 | 10 | pickaxe | 1 |
 | Fieldstone Veneer Slab | `csm:stone_fieldstone_slab` | 2 | 10 | pickaxe | 1 |
 | Fieldstone Veneer Stairs | `csm:stone_fieldstone_stairs` | 2 | 10 | pickaxe | 1 |
+| Fire Door (Dark Oak, Wired Lite) | `csm:door_wood_dark_oak_fire` |  |  |  |  |
 | Fire Door (Wired Lite) | `csm:door_metal_fire` |  |  |  |  |
 | Front Door (Black) | `csm:door_front_black` |  |  |  |  |
+| Front Door (Dark Oak) | `csm:door_front_dark_oak` |  |  |  |  |
 | Front Door (Red) | `csm:door_front_red` |  |  |  |  |
 | Front Door (White) | `csm:door_front_white` |  |  |  |  |
 | Frosted Glass | `csm:glass_frosted` |  |  | pickaxe | 0 |
@@ -142,6 +144,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Insulated Panel Cladding Fence | `csm:cladding_insulated_fence` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Slab | `csm:cladding_insulated_slab` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Stairs | `csm:cladding_insulated_stairs` | 3 | 10 | pickaxe | 1 |
+| Interior Door (Dark Oak) | `csm:door_wood_dark_oak` |  |  |  |  |
+| Interior Door (Dark Oak, Vision Lite) | `csm:door_wood_dark_oak_lite` |  |  |  |  |
 | Interior Door (Oak) | `csm:door_wood_oak` |  |  |  |  |
 | Interior Door (Oak, Vision Lite) | `csm:door_wood_oak_lite` |  |  |  |  |
 | Interior Door (White) | `csm:door_wood_white` |  |  |  |  |

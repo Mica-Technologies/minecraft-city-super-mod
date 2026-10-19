@@ -39,7 +39,8 @@ public final class DoorSwingDirection {
    * exit door opens the way people escape, which is what lets its push bar work at all.
    */
   private static final Set<String> OUTSWING = Collections.unmodifiableSet(new HashSet<>(
-      Arrays.asList("door_metal_fire", "door_metal_exit", "door_storefront_bronze")));
+      Arrays.asList("door_metal_fire", "door_metal_exit", "door_storefront_bronze",
+          "door_wood_dark_oak_fire")));
 
   private DoorSwingDirection() {
   }
