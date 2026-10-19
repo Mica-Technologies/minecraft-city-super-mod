@@ -1,0 +1,92 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "plate": "csm:blocks/healthcare/wards/white",
+    "face": "csm:blocks/healthcare/diagnostics/mri_zone_4",
+    "particle": "csm:blocks/healthcare/wards/white"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        2,
+        15.5
+      ],
+      "to": [
+        14,
+        14,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            2,
+            0.5,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            15.5,
+            2,
+            16,
+            14
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            2,
+            15.5,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            2,
+            0,
+            14,
+            0.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        2,
+        15.5
+      ],
+      "to": [
+        14,
+        14,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

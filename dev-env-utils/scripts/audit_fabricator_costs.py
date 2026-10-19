@@ -544,8 +544,10 @@ def cost_for(registry, info, ancestors):
         # Mirrors HealthcareFabricatorRules (Healthcare module).
         if registry.startswith("hospital_bed_"):
             return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS", "wool x2")
+        if registry in ("ct_scanner", "mri_scanner"):
+            return ("SHEET_METAL x4", "CONTROL_BOARD x2", "WIRING_HARNESS x2")
         if registry.startswith(("nurse_call_", "patient_monitor_", "iv_pole_pump",
-                                "patient_room_tv", "vitals_")):
+                                "patient_room_tv", "vitals_")) or registry.endswith("_analyser"):
             return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
         if registry.startswith("patient_headwall"):
             return ("SHEET_METAL x2", "WIRING_HARNESS", "FASTENER_KIT")
