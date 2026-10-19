@@ -4,7 +4,6 @@
     "particle": "csm:blocks/doors/cathedral_bronze_edge",
     "tymp": "csm:blocks/doors/cathedral_bronze_tympanum_single",
     "inside": "csm:blocks/doors/cathedral_bronze_inside",
-    "edge": "csm:blocks/doors/cathedral_bronze_edge",
-    "stone": "csm:blocks/doors/cathedral_stone"
+    "edge": "csm:blocks/doors/cathedral_bronze_edge"
   }
 }

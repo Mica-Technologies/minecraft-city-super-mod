@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/doors/cathedral_geo_spandrel_pair_latch_2_right",
+  "textures": {
+    "particle": "csm:blocks/buildingmaterials/stone/stone_ashlar",
+    "stone": "csm:blocks/buildingmaterials/stone/stone_ashlar"
+  }
+}

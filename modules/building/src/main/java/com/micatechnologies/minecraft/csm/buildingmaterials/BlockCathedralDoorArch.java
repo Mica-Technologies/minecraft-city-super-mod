@@ -1,9 +1,13 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,10 +32,44 @@ import net.minecraft.world.World;
  */
 public class BlockCathedralDoorArch extends BlockCathedralDoor {
 
+  /**
+   * The stone beside the arch (the spandrel), one of the Building module's veneers: cast stone
+   * where a jamb beside the arch is cast stone, ashlar otherwise. SHARED with
+   * {@code gen_cathedral_doors.STONES}.
+   *
+   * @since 1.0
+   */
+  public enum Stone implements IStringSerializable {
+    ASHLAR, CAST;
+
+    @Override
+    @Nonnull
+    public String getName() {
+      return name().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * The spandrel's stone for the jambs at {@code a} and {@code b}: cast if either is a cast stone
+     * block (the block, its stairs, slab or fence).
+     *
+     * @since 1.0
+     */
+    static Stone of(IBlockAccess world, BlockPos a, BlockPos b) {
+      return cast(world, a) || cast(world, b) ? CAST : ASHLAR;
+    }
+
+    private static boolean cast(IBlockAccess world, BlockPos p) {
+      ResourceLocation name = world.getBlockState(p).getBlock().getRegistryName();
+      return name != null && name.getPath().startsWith("stone_cast");
+    }
+  }
+
   /** Actual state only: the course of the head, 0 just above the leaf. */
   public static final PropertyInteger COURSE = PropertyInteger.create("course", 0, 2);
   /** Actual state only: whether the leaf is one of a pair. */
   public static final PropertyBool PAIRED = PropertyBool.create("paired");
+  /** Actual state only: the stone beside the arch, from the jambs either side of it. */
+  public static final PropertyEnum<Stone> STONE = PropertyEnum.create("stone", Stone.class);
 
   /**
    * Constructs a {@link BlockCathedralDoorArch}.
@@ -46,13 +84,15 @@ public class BlockCathedralDoorArch extends BlockCathedralDoor {
 
   @Override
   protected IBlockState initialState(IBlockState state) {
-    return state.withProperty(COURSE, 0).withProperty(PAIRED, false);
+    return state.withProperty(COURSE, 0).withProperty(PAIRED, false)
+        .withProperty(STONE, Stone.ASHLAR);
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, FACING, OPEN, HINGE, SWING, COLUMN, COURSE, PAIRED);
+    return new CsmBlockStateContainer(this, FACING, OPEN, HINGE, SWING, COLUMN, COURSE, PAIRED,
+        STONE);
   }
 
   @Override
@@ -71,8 +111,14 @@ public class BlockCathedralDoorArch extends BlockCathedralDoor {
     boolean paired = beyond.getBlock() == this
         && beyond.getValue(FACING) == state.getValue(FACING)
         && beyond.getValue(HINGE) != state.getValue(HINGE);
+    // The jambs either side of the whole arch, at this course: the one beside this leaf's hinge
+    // column, and the one past its latch column (past the pair's other leaf over a pair).
+    EnumFacing hinge = hingeSide(state);
+    BlockPos hingeCell = column == Column.HINGE ? pos : pos.offset(hinge);
+    Stone stone = Stone.of(worldIn, hingeCell.offset(hinge),
+        latchCell.offset(latch, paired ? 3 : 1));
     return withSwing(state.withProperty(COLUMN, column).withProperty(COURSE, course)
-        .withProperty(PAIRED, paired), worldIn, pos);
+        .withProperty(PAIRED, paired).withProperty(STONE, stone), worldIn, pos);
   }
 
   /**

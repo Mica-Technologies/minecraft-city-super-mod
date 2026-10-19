@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/doors/cathedral_geo_spandrel_pair_hinge_1_left",
+  "textures": {
+    "particle": "csm:blocks/buildingmaterials/stone/stone_cast",
+    "stone": "csm:blocks/buildingmaterials/stone/stone_cast"
+  }
+}

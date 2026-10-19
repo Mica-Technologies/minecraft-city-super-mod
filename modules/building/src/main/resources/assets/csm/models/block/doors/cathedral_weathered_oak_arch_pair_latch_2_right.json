@@ -6,7 +6,6 @@
     "field": "csm:blocks/doors/cathedral_weathered_oak_field",
     "inside": "csm:blocks/doors/cathedral_weathered_oak_inside",
     "edge": "csm:blocks/doors/cathedral_weathered_oak_edge",
-    "hw": "csm:blocks/doors/cathedral_iron",
-    "stone": "csm:blocks/doors/cathedral_stone"
+    "hw": "csm:blocks/doors/cathedral_iron"
   }
 }

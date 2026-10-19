@@ -604,6 +604,12 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
     if (hand != EnumHand.MAIN_HAND) {
       return false;
     }
+    Item held = playerIn.getHeldItem(hand).getItem();
+    if (facing == EnumFacing.UP && (held instanceof ItemCathedralDoor
+        || held instanceof BlockCathedralTympanum.ItemTympanum)) {
+      // An arch head or tympanum put on top of the leaf: the item places it.
+      return false;
+    }
     BlockPos master = master(worldIn::getBlockState, pos, state);
     if (playerIn.isSneaking()) {
       // Linking a keypad or control to this leaf.
@@ -691,9 +697,11 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
   // --- shape ------------------------------------------------------------------------------------
 
   /**
-   * Shut, the leaf's plane on the outside face of the cell. Open, the hinge column's piece along
-   * the jamb, and the latch column's along the jamb a block inside -- outside its own cell, where
-   * its model draws it; entities gather boxes from the blocks round them, so it still collides.
+   * Shut, the leaf's plane on the outside face of the cell. Open, the hinge column's cell has the
+   * whole leaf along the jamb, its own half and the latch column's half a block inside; the latch
+   * column's cell has its own half, out where its model draws it. A look ray that meets that half
+   * crosses only the cell it lies in, which is not the door's, so {@link DoorClickThrough} gives
+   * such a click to the door.
    *
    * @since 1.0
    */
@@ -706,8 +714,11 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
     boolean left = state.getValue(HINGE) == BlockBuildingDoor.Hinge.LEFT;
     AxisAlignedBB north;
     if (column(source::getBlockState, pos, state) == Column.HINGE) {
-      north = left ? new AxisAlignedBB(0, 0, 0, LEAF, 1, 1)
-          : new AxisAlignedBB(1 - LEAF, 0, 0, 1, 1, 1);
+      // The whole open leaf, the latch column's half too: that half lies in the cell inside this
+      // one, diagonal to its own cell, and an entity's collision skips the cells diagonal to the
+      // ones it is in, so only this cell, beside it, can make it solid.
+      north = left ? new AxisAlignedBB(0, 0, -1, LEAF, 1, 1)
+          : new AxisAlignedBB(1 - LEAF, 0, -1, 1, 1, 1);
     } else {
       north = left ? new AxisAlignedBB(-1, 0, -1, -1 + LEAF, 1, 0)
           : new AxisAlignedBB(2 - LEAF, 0, -1, 2, 1, 0);

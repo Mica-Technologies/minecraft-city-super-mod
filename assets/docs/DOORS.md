@@ -316,7 +316,8 @@ blocks wide** and as tall as its opening, in dark oak, weathered oak or bronze, 
 hinges on its bottom and top rows (bronze straps on the bronze door), a ring pull, and studded
 panels on its outside face (boards and ledges inside). `BlockCathedralDoorArch`
 (`cathedral_door_<variant>_arch`) is its **pointed head**: three courses of leaf above it, cut by
-the arch, with the stone beside the arch (a grey ashlar) in the leaf's plane. Two leaves
+the arch, with the stone beside the arch (the spandrel) in the leaf's plane, in the module's own
+ashlar or cast stone veneer (below). Two leaves
 latch to latch are a **pair**, and their heads make one arch four blocks across; a single leaf's
 head is a lancet two across. Both rise three blocks. `BlockCathedralTympanum` fills the same arch,
 fixed, over a square-headed door, and `BlockCarvedPanelling` is a block of linenfold for the
@@ -331,7 +332,14 @@ two lancets and a ring).
   the far side and grows away from it. The **arch head** is placed on top of a leaf (click the
   top of its top row): it fills three courses over both columns, hung and opened as the leaf is.
   The **tympanum** is placed from its left column: four blocks across where there is room
-  (**sneak** for two), three high.
+  (**sneak** for two), three high, on the top of a square-headed leaf or anywhere else. A click on
+  the top of a leaf holding either places it rather than opening the door.
+- **The spandrel's stone** is `stone_ashlar` or `stone_cast`, the Building module's own stone
+  veneers (`gen_stone.py`), so an arch set in a wall of either reads as part of it: **cast stone
+  where a jamb either side of the arch, at that course, is a cast stone block** (the block, its
+  stairs, slab or fence), ashlar otherwise. Nothing is stored and nothing is chosen: build the jambs
+  of cast stone for cast stone dressings round an ashlar wall's doorway. The tympanum does the
+  same.
 - **Using.** A click opens or shuts the leaf and its pair. **Redstone** at any cell of a leaf
   holds it and its pair open while powered. A **keypad, button or control station** links to a
   leaf as to any door (sneak-click the control, then any cell of the leaf); a keypad locks the
@@ -355,14 +363,20 @@ state:
 | `column` (hinge / latch) | count the like cells beside it toward its hinge side: even is the hinge column, odd the latch, so two leaves hinged the same way side by side stay two leaves |
 | `row` (bottom / middle / top) | whether a like cell is below it and above it; straps go on the bottom and top rows, the ring pull on the bottom row of the latch column |
 | `course` (0-2), `paired` (head only) | like cells below it; whether, past its latch column, the next leaf's head is hinged the other way |
+| `stone` (ashlar / cast, head and tympanum) | the jambs either side of the whole arch at the cell's height: beside this leaf's hinge column, and past its latch column (past the other leaf of a pair); cast if either is a `stone_cast` block |
 | `swing` | whether the leaf's **master** -- its bottom cell on the hinge side -- has a `TileEntityDoorSwing` |
 
 So each cell draws its own piece from baked models and nothing has a tile entity at rest. States:
 the leaf block 4 facings x 2 open x 2 hinges x 2 columns x 3 rows x 2 swing = **192**, the head
-4 x 2 x 2 x 2 x 3 courses x 2 paired x 2 swing = **384**, the tympanum 4 facings x 4 columns x
-3 courses x 2 paired = **96**, the panelling 1; 2,017 for all ten blocks. Each state draws one
-model, a child of a geometry parent shared by the three variants (a model names textures only),
-so 90 geometry parents and 270 small children in all. The cost of finding things out from
+4 x 2 x 2 x 2 x 3 courses x 2 paired x 2 stones x 2 swing = **768**, the tympanum 4 facings x
+4 columns x 3 courses x 2 paired x 2 stones = **192**, the panelling 1; 3,457 for all ten blocks.
+Every blockstate is a multipart, which CSM bakes once for all of a block's states, so the stone
+adds states (plain objects, no neighbour table) and no baked model. A body cell draws one model;
+a head or tympanum cell draws its piece of leaf and, where the arch leaves any, its spandrel, a
+part of its own shared by every variant and the tympana (`cathedral_spandrel_<stone>_...`, 40
+children of 20 geometry parents). Each model is a child of a geometry parent shared by the three
+variants (a model names textures only): 110 geometry parents and 310 small children in all. The
+cost of finding things out from
 neighbours is a handful of `getBlockState` calls per cell when a chunk is built (the run walk
 stops at the first unlike cell; a leaf is at most 12 cells tall), and the same when a door is
 clicked or its neighbours change.
@@ -376,10 +390,17 @@ T/2) px, T = 2.5, which `gen_cathedral_doors.py` turns the open models about, so
 exactly the open models. The head's stone is marked `TINT_FIXED` and drawn where it is. When the
 swing is over the tile entity takes itself away and the cells are rebuilt again. The latch
 column's open model lies along the jamb a block inside its cell, at x -16..-13.5 px and z -16..0
-in its own frame, inside what a JSON element may reach; its collision box is out there with it,
-and entities gather boxes from the blocks round them, so it collides. Nothing on the inside face
-of the latch column can stand proud of the leaf, or its open model would pass -16: the ring pull
-and the straps are outside.
+in its own frame, inside what a JSON element may reach. Nothing on the inside face of the latch
+column can stand proud of the leaf, or its open model would pass -16: the ring pull and the
+straps are outside.
+
+**The open leaf's far half.** That half lies in the cell inside the hinge column's, diagonal to
+its own cell, and neither the game's collision nor its look ray ever asks a block about a cell
+diagonal to it (below, Traps). So the **hinge column's** open box is the whole leaf, its own half
+and the latch half beside it, which makes the far half solid; and a click whose look ray meets
+the far half before what it landed on (the wall behind, as a rule) is given to the door by
+`DoorClickThrough`: a right click works the door as a click on the leaf does, a left click does
+nothing, so the wall is neither built on nor broken. The outline still shows the wall there.
 
 **The arch.** Each side of the arch is an arc centred on the springing line: over a pair, a span of
 64 px and a rise of 48 (radius 52, a drop arch); over a single leaf, 32 and 48 (radius 80, a
@@ -463,7 +484,10 @@ with a head is two columns and the head's lancet follows from it having no pair.
 A **tympanum** cell's metadata is `facing + 4 * column`, column 0 to 3 from the left seen from
 outside; course and pair are found from the neighbours. Over a square-headed pair facing north
 at (x, y, z): `/setblock x+c y+k z csm:cathedral_tympanum_dark_oak <2 + 4c>` for c 0-3, k 0-2
-(metadata 2, 6, 10, 14 by column). Over a single leaf, columns 0 and 1 only.
+(metadata 2, 6, 10, 14 by column). Over a single leaf, columns 0 and 1 only. The stone beside
+an arch head or tympanum is not set: it is cast stone where a jamb either side of the arch is
+`csm:stone_cast` (or its stairs, slab or fence) and ashlar otherwise, so set the jambs first or
+after, in any order.
 `panelling_carved_dark_oak` is a plain block, metadata 0.
 
 **Replacing other doors in place.** Clear the old doors first (`/fill ... air` changes the whole
@@ -514,6 +538,17 @@ Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.j
   its leaf from the cells still there and its own old state (`was`), not from the world.
 - **A JSON element's -16..32 limit binds the open pose, not the shut one.** A cathedral latch
   column turns a block away from its cell; anything on its inside face would have passed -16.
+- **An entity collides with nothing diagonal to the cells it is in.** `World.getCollisionBoxes`
+  looks one cell past the entity's box each way but leaves out the corners of that ring, so a
+  box that reaches into the cell diagonal to its own block is never asked. A cathedral leaf's
+  latch half was walked through until the hinge column's box took it in.
+- **The look ray asks only the cells it crosses.** A box that reaches into a cell of air is never
+  hit by a ray that crosses only that cell: an open cathedral leaf's far half was clicked through,
+  and a held block was placed on the wall behind it (`DoorClickThrough` gives such a click to the
+  door).
+- **A door takes a click before the held item does.** The arch head and tympanum are placed by
+  clicking the top of a leaf, which opened the door instead (sneaking placed a head but made a
+  tympanum two wide); the leaf passes a click on its top to those two items.
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
 - **A door's box is not always where the door is drawn.** A swing's box jumps to where the swing

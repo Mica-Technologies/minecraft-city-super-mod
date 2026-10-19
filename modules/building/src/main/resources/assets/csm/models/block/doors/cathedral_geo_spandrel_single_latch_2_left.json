@@ -1,0 +1,434 @@
+{
+  "elements": [
+    {
+      "from": [
+        9,
+        0,
+        13.5
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            14,
+            7,
+            16
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            9,
+            14,
+            16,
+            16
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            14,
+            16.0,
+            16
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        2,
+        13.5
+      ],
+      "to": [
+        16,
+        4,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            12,
+            8,
+            14
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            8,
+            12,
+            16,
+            14
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            12,
+            16.0,
+            14
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        4,
+        13.5
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            10,
+            9,
+            12
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            7,
+            10,
+            16,
+            12
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            10,
+            16.0,
+            12
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        6,
+        6,
+        13.5
+      ],
+      "to": [
+        16,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            8,
+            10,
+            10
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            6,
+            8,
+            16,
+            10
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            8,
+            16.0,
+            10
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        8,
+        13.5
+      ],
+      "to": [
+        16,
+        9,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            7,
+            11,
+            8
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            5,
+            7,
+            16,
+            8
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            7,
+            16.0,
+            8
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        9,
+        13.5
+      ],
+      "to": [
+        16,
+        11,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            5,
+            12,
+            7
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            4,
+            5,
+            16,
+            7
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            5,
+            16.0,
+            7
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11,
+        13.5
+      ],
+      "to": [
+        16,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            4,
+            13,
+            5
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            3,
+            4,
+            16,
+            5
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            4,
+            16.0,
+            5
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        12,
+        13.5
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            2,
+            14,
+            4
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            2,
+            2,
+            16,
+            4
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            2,
+            16.0,
+            4
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        14,
+        13.5
+      ],
+      "to": [
+        16,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            1,
+            15,
+            2
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            1,
+            1,
+            16,
+            2
+          ],
+          "tintindex": 1
+        },
+        "west": {
+          "texture": "#stone",
+          "uv": [
+            13.5,
+            1,
+            16.0,
+            2
+          ],
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        15,
+        13.5
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#stone",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ],
+          "tintindex": 1
+        }
+      }
+    }
+  ]
+}
