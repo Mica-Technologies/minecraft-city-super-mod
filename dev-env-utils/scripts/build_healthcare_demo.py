@@ -17,8 +17,12 @@ lanterns, and a helipad on the roof over the emergency department.
             doors: ICU bed, pendant, ventilator, ceiling lift, code blue button), the emergency
             department (tracking board bank, trauma bay, decon shower, surgery support, an
             ambulance entrance outside), imaging (CT, MRI, x-ray room, C-arm, mammography, lead
-            door, IN USE lights, MRI zone signs), the lab, the pharmacy and the morgue
-  south     the nurses' station (counters, master panel, code blue annunciator, gas alarm), a
+            door, IN USE lights, MRI zone signs), the lab, the pharmacy, the morgue and an
+            operating room (the CSM OR set: table under the twin surgical light, anaesthesia
+            machine, back table, Mayo stand, kick bucket, supply cabinets, drape trolley and a
+            three-bay scrub sink)
+  south     the nurses' station (counters whose monitors show the master panel's calls, master
+            panel, code blue annunciator, gas alarm), a
             clinic (exam room, eye lane, dental chair), dialysis and infusion, maternity and NICU
             (with the infant security panel at its door), the waiting room (beam seating, a
             check-in kiosk linked to a now-serving display), a chapel, a lecture hall (tiers,
@@ -519,6 +523,29 @@ def morgue():
     flush()
 
 
+def operating_room():
+    """The CSM operating room set at the east end of the north side: the table under the twin
+    surgical light, the anaesthesia machine at its head, the back table and Mayo stand at its
+    foot, supply cabinets and the drape trolley along the walls, a three-bay scrub sink."""
+    wide('or_table', 102, -6, S)                       # head at x 102, foot at 103
+    heads = [hung('or_surgical_light', 102, -6, N, 2, N * 4 + 3)]
+    floor('or_anaesthesia_machine', 100, -6, E, 1)
+    floor('or_mayo_stand', 104, -6, W)
+    wide('or_back_table', 104, -9, S)
+    floor('or_kick_bucket', 101, -4, N)
+    tall('or_supply_cabinet', 108, -10, S)
+    tall('or_supply_cabinet', 109, -10, S)
+    floor('or_drape_trolley', 110, -7, W)
+    for z in (-9, -8, -7):
+        floor('or_scrub_sink', 95, z, E)
+    wall('medical_gas_outlet_o2', 97, Y + 1, -10, 'S')
+    wall('suction_regulator', 98, Y + 1, -10, 'S')
+    corridor_door(101, True, 'door_hosp_metal_blue_lite')
+    corridor_door(102, True, 'door_hosp_metal_blue_lite', hinge_right=True)
+    flush()
+    return heads
+
+
 # ------------------------------------------------------------------------------------------
 # South side
 # ------------------------------------------------------------------------------------------
@@ -684,6 +711,9 @@ def wiring(heads):
         cmd('csmhealthcare nursecall link %s %s' % (panel_at, at(*dome)))
     for device, dome in CALLS:
         cmd('csmhealthcare nursecall link %s %s' % (at(*dome), at(*device)))
+    # the station's monitors show the panel's calls
+    for mx in (5, 7):
+        cmd('csmhealthcare nursecall link %s %s' % (panel_at, at(mx, Y, 7)))
     # one call left on: bed 1's pillow speaker (set it from air with the calling bit)
     x, y, z = CALLS[0][0]
     put(x, y, z, 'minecraft:air')
@@ -722,6 +752,7 @@ CLASS_REGISTRY = {
     'BlockExerciseStairs': 'exercise_stairs',
     'BlockNowServingDisplay': 'now_serving_display',
     'BlockHospitalWayfindingPanel': 'hospital_wayfinding_panel',
+    'BlockNurseStationMonitors': 'nurse_station_counter_monitors',
 }
 
 
@@ -767,7 +798,7 @@ def plinths():
 
 BOARD = [
     ['Healthcare Demo', 'one hospital', 'floor (x, z)', ''],
-    ['North: ward', 'ICU, ED, imaging', 'lab, pharmacy,', 'morgue'],
+    ['North: ward', 'ICU, ED, imaging', 'lab, pharmacy,', 'morgue, OR'],
     ['South: station', 'clinic, dialysis', 'maternity, wait,', 'chapel, lecture'],
     ['Then playroom,', 'laundry, rehab;', 'helipad on the', 'roof over the ED'],
     ['Try: beds (rails', 'sneak: height),', 'curtains, kiosk,', 'code blue button'],
@@ -798,6 +829,7 @@ heads += imaging()
 lab()
 pharmacy()
 morgue()
+heads += operating_room()
 print('north done')
 station()
 clinic()

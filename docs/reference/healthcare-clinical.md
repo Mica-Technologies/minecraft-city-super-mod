@@ -2,7 +2,7 @@
 
 The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station.
 
-!!! info "77 blocks in this tab"
+!!! info "86 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -13,6 +13,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 |---|---|---|---|---|---|
 | AMBULANCE ONLY Floor Marking | `csm:ambulance_only_marking` |  |  |  |  |
 | AMBULANCE ONLY Sign | `csm:ambulance_only_sign` |  |  |  |  |
+| Anaesthesia Machine | `csm:or_anaesthesia_machine` |  |  |  |  |
 | Anatomical Torso Model | `csm:anatomical_torso_model` |  |  |  |  |
 | Autoclave | `csm:autoclave` |  |  |  |  |
 | Automated Dispensing Cabinet | `csm:medication_dispensing_cabinet` |  |  |  |  |
@@ -46,10 +47,13 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Infant Security Door Panel | `csm:infant_security_panel` |  |  |  |  |
 | Inpatient Pharmacy Bin Shelving | `csm:pharmacy_bin_shelving` |  |  |  |  |
 | Inpatient Pharmacy Unit-Dose Cabinet | `csm:pharmacy_unit_dose_cabinet` |  |  |  |  |
+| Instrument Back Table | `csm:or_back_table` |  |  |  |  |
+| Kick Bucket | `csm:or_kick_bucket` |  |  |  |  |
 | Lab Bench with Reagent Shelf | `csm:lab_bench` |  |  |  |  |
 | Lab Bench with Sink | `csm:lab_bench_sink` |  |  |  |  |
 | Lead Apron Rack | `csm:lead_apron_rack` |  |  |  |  |
 | Mammography Unit | `csm:mammography_unit` |  |  |  |  |
+| Mayo Stand (Instrument Tray) | `csm:or_mayo_stand` |  |  |  |  |
 | Medical Gas Master Alarm Panel | `csm:medical_gas_master_alarm` | 1.5 | 3.0 | pickaxe | 0 |
 | Medical Gas Outlet (Oxygen) | `csm:medical_gas_outlet_o2` |  |  |  |  |
 | Medical Gas Zone Valve Box | `csm:medical_gas_zone_valve_box` |  |  |  |  |
@@ -66,6 +70,8 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | MRI Zone IV Sign | `csm:mri_zone_4_sign` |  |  |  |  |
 | Nurses' Station Corner | `csm:nurse_station_corner` |  |  |  |  |
 | Nurses' Station Counter | `csm:nurse_station_counter` |  |  |  |  |
+| Operating Table | `csm:or_table` |  |  |  |  |
+| OR Supply Cabinet | `csm:or_supply_cabinet` |  |  |  |  |
 | Patient Status Board | `csm:patient_status_board` |  |  |  |  |
 | Pneumatic Tube Station | `csm:pneumatic_tube_station` |  |  |  |  |
 | Power Outlet (Emergency Power, Red) | `csm:hospital_outlet_emergency` |  |  |  |  |
@@ -80,8 +86,11 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Soiled Linen Hamper | `csm:soiled_linen_hamper` |  |  |  |  |
 | Specimen Pass-Through | `csm:specimen_pass_through` |  |  |  |  |
 | Sterile Compounding Hood | `csm:iv_compounding_hood` |  |  |  |  |
+| Sterile Drape Trolley | `csm:or_drape_trolley` |  |  |  |  |
 | Surgical Case Cart | `csm:case_cart` |  |  |  |  |
 | Surgical Equipment Boom | `csm:surgical_equipment_boom` |  |  |  |  |
+| Surgical Light (Twin Head) | `csm:or_surgical_light` | 1.0 | 2.0 | pickaxe | 0 |
+| Surgical Scrub Sink | `csm:or_scrub_sink` |  |  |  |  |
 | Trauma Bay Exam Light | `csm:trauma_exam_light` | 1.0 | 2.0 | pickaxe | 0 |
 | Triage Desk | `csm:triage_desk` |  |  |  |  |
 | Wall Bucky Stand | `csm:xray_wall_bucky` |  |  |  |  |

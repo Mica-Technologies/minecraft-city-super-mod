@@ -11,7 +11,8 @@ import net.minecraft.block.Block;
  * What the Fabricator charges for the two Healthcare tabs, by what a piece is made of: a frame,
  * a motor and its controls for a bed; electronics where a piece has a screen or calls someone;
  * sheet metal and wiring for a headwall, several of each for a CT or MRI scanner; cloth for a
- * curtain; a sign blank for a sign; sheet metal and fittings for the rest. {@code audit_fabricator_costs.py} mirrors these branches.
+ * curtain; a sign blank for a sign; sheet metal, controls and wiring for the operating table,
+ * anaesthesia machine and surgical light; sheet metal and fittings for the rest. {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
  */
@@ -54,6 +55,13 @@ public final class HealthcareFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if ("or_table".equals(registryName) || "or_anaesthesia_machine".equals(registryName)
+        || "or_surgical_light".equals(registryName)) {
+      // the operating room's powered pieces: a frame or housing, its controls and wiring
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
     }
     if (registryName.startsWith("patient_headwall")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),

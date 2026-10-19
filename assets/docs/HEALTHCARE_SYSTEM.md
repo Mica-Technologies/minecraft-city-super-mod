@@ -6,8 +6,8 @@ department, nursing stations, surgery support, clinics, dialysis and infusion, i
 the pharmacy, the morgue, maternity and the NICU, rehabilitation, the waiting room, teaching, the
 paediatric playroom, wayfinding and the building systems a hospital runs on (nurse call, code
 blue, medical gas, emergency power, infant security). Like every module it pins Core to its own
-exact version and registers nothing itself. It is 150 blocks (146 in two tabs and four hidden
-cells), 3,184 block states.
+exact version and registers nothing itself. It is 159 blocks (155 in two tabs and four hidden
+cells), 3,260 block states.
 
 It was asked for in GitHub #293, for the hospitals being built on the Alto server: they were
 furnished from the Hospital Mod and its Theatre Pack, which cover the operating room and little
@@ -33,10 +33,10 @@ font code); the dependency rule is about Java.
 | Tab | Id | Order | Holds |
 |---|---|---|---|
 | **CSM: Healthcare - Patient Care** | `tabhealthcarepatientcare` | 29 | Beds and everything round a bed (headwalls, monitors, IV poles, curtains, room furniture, nurse call devices and dome lights), corridor rails, wheelchairs and lifts, the exam room, dental and eye exam chairs, dialysis and infusion chairs, maternity, rehabilitation, the waiting room and its queue, the playroom, and the wayfinding panel (63) |
-| **CSM: Healthcare - Clinical** | `tabhealthcareclinical` | 30 | Nursing (the master panel, the nurses' station, medication, dispensers, carts and bins), the ICU and ED, surgery support, the dialysis and endoscopy equipment, imaging, the lab, the pharmacy, the morgue, teaching models, and the building systems (83) |
+| **CSM: Healthcare - Clinical** | `tabhealthcareclinical` | 30 | Nursing (the master panel, the nurses' station, medication, dispensers, carts and bins), the ICU and ED, surgery support, the dialysis and endoscopy equipment, imaging, the lab, the pharmacy, the morgue, teaching models, the building systems, and the operating room (92) |
 | Hidden | `tabhealthcarehidden` | -11 | `hospital_bed_foot`, `cubicle_curtain`, `ceiling_boom_column`, `healthcare_unit_part`: cells placed by another block, never by hand (4) |
 
-About 150 blocks are too many for one tab's page, and the split follows who reaches for them: a
+About 160 blocks are too many for one tab's page, and the split follows who reaches for them: a
 builder furnishing rooms, or one fitting out a department's equipment. New tabs at the next free
 order values register after everything that exists, so no existing block moved.
 
@@ -328,6 +328,34 @@ MATERNITY, OUTPATIENT, WARDS, LABORATORY, PHARMACY, ADMINISTRATION, ELEVATORS, S
 CAFE, CHAPEL, PARKING, EXIT) keeping the arrow; a sneak-click steps the arrow. A cell placed fresh,
 by any placement, adopts a joined neighbour's sign.
 
+## The operating room
+
+The OR set (`gen_healthcare_surgery.py`) was added after the module shipped, when the hospital
+builder asked for an operating room with the module's look and placing rules rather than the
+third-party theatre pack's: nothing in it is taken from that pack, neither a name nor a model.
+Every piece is one of the module's existing kinds, so it places, faces and behaves as its
+neighbours do, and nothing in it ticks or has a renderer:
+
+| Block | Kind | What it does |
+|---|---|---|
+| `or_table` | wide pair (`BlockHealthcarePair`), a seat | The operating table: a column on a base plate, four pad sections on a steel frame with side rails, the headrest on the first cell, an arm board out to the front at the shoulders and the control pendant on the far rail. A click lies the player on it, on Core's seat at the pad's top, as the bed's sit-up does |
+| `or_anaesthesia_machine` | screen (`BlockHealthcareScreen`) | A drawer cart with the gas panel (oxygen, nitrous oxide and air flowmeters), two vaporizers in their agents' colours, the bellows and absorber, cylinders on the back and the breathing circuit; its workstation screen on top is an animated texture (pressure, flow and CO2 traces), switched by a click |
+| `or_surgical_light` | ceiling-hung lit head (`BlockCeilingHeadLight`, as the trauma bay light) | A hub on the drop column with an arm out each side to a round lamp head, lenses down, a sterile handle in each. Lighting's metadata; light 15 when lit; the lenses are the trauma light's own textures |
+| `or_scrub_sink` | run (`BlockHealthcareRun`, group `or_scrub_sink`) | One bay a block, each with its gooseneck tap, sensor and knee panel; bays side by side are one deep trough under one splashback, with legs and side panels only where the run stops. It stands against a wall |
+| `or_back_table` | wide pair | The instrument back table, draped, the set laid out on it, a lower shelf |
+| `or_mayo_stand` | floor piece, no collision | A U base open to the front so it rolls over the table, a column and the draped tray with its instruments |
+| `or_kick_bucket` | floor piece | A stainless bucket in a ring frame on casters |
+| `or_supply_cabinet` | tall pair | Drawers below, a glazed door above showing the sterile packs on its shelves |
+| `or_drape_trolley` | floor piece | A wire cart with folded drapes and gowns |
+
+They share the wards' and the clinical generator's swatches (stainless, the frame grey, the warm
+white, rubber, the monitor body, the drawer banks, the exam light's lenses, the gas cylinder,
+the wire shelf, the linen stack); the set draws only its pad, drape and instrument layout, the
+machine's front and screen, the bellows and the cabinet glazing, seven small textures. States:
+76 for all nine (the light 16, the sink 16, the pairs and the screen 8 each, the rest 4). The
+three powered pieces (table, machine, light) cost sheet metal, a control board and a wiring
+harness at the Fabricator; the rest sheet metal and fittings.
+
 ## The simulation mannequin and what it rests on
 
 `simulation_mannequin` is a block of its own set in the cell **above** what it lies on, drawn sunk
@@ -482,6 +510,18 @@ south: +x to west, +z to north; west: +x to north, +z to east).
 | `check_in_kiosk`, `queue_desk_console` | floor (the console on a counter: the cell above it) | bits 0-1 facing | a queue controller; a click calls the next number; its number is in saved data, from 0 |
 | `now_serving_display` | wall | bits 0-2 facing | TE `number` (0-999, 0 dashes), `desk` (0-99, 0 no desk line); a linked display's number follows its controller |
 
+### The operating room
+
+| Block (csm:) | Mount | Meta | NBT / notes |
+|---|---|---|---|
+| `or_table` | floor, 2 wide, seat | bits 0-1 facing, bit 2 second cell | the head (headrest, arm board) is the first cell; the second at `first.offset(facing.rotateYCCW())`; a click lies the player on it |
+| `or_anaesthesia_machine` | floor | bits 0-1 facing, bit 2 screen on | the front (gas panel) faces the facing; a click switches the screen |
+| `or_surgical_light` | head, hung, lit | `facing * 4 + state` | `ceiling_boom_column` above it up to the ceiling, or `boom fill`; by hand on a ceiling it goes 2 above the floor; light 15 when lit; the arms run along the facing's left and right |
+| `or_scrub_sink` | floor, run, against a wall | bits 0-1 facing (towards the room) | joins any scrub sink facing the same way left and right |
+| `or_back_table` | floor, 2 wide | bits 0-1 facing, bit 2 second cell | |
+| `or_mayo_stand`, `or_kick_bucket`, `or_drape_trolley` | floor | bits 0-1 facing | the Mayo stand has no collision, so it can stand over the table |
+| `or_supply_cabinet` | floor, 2 tall | bits 0-1 facing, bit 2 upper cell | |
+
 ### Wayfinding and building systems
 
 | Block (csm:) | Mount | Meta | NBT / notes |
@@ -528,7 +568,7 @@ written shows INFORMATION, `info`, `right`, `neutral`.
 |---|---|
 | Its own module, Core only | A server without hospitals leaves the jar out; nothing a hospital needs is worth a dependency |
 | Each neighbour's piece in its own module (smoke and hospital doors in Building, helipad in Transit, pews and laundry in Furnishings) | Each has a natural home and is not hospital-only |
-| Leave the operating room to the Theatre Pack | The issue says it covers the OR; the builder agreed |
+| Leave the operating room to the Theatre Pack, at first | The issue says it covers the OR; the builder agreed. Later the builder asked for a consistent CSM OR with the module's facing and metadata docs, so the set was added (The operating room), drawn from scratch, nothing taken from the pack |
 | No real brands, no red cross | The red cross is a protected emblem; a generic six-armed star or plain text instead, as Life Safety does |
 | Light behaviour, plus three richer systems | Most blocks are light (clicks toggle state); the user added the nurse call network, the ED board and the now-serving display on top |
 | Lying in bed is sitting up on Core's seat | `EntityCsmSeat` rides in the sitting pose; sleeping stays with the Residential beds |
@@ -596,7 +636,13 @@ written shows INFORMATION, `info`, `right`, `neutral`.
 Measured 2026-10-19 in the dev client (every module, plus the IV content packs, FAWE and a
 third-party road mod's test jar in `run/mods`), `-Xmx6G`, on a machine also running a game.
 
-**Blocks and models** (`/csm memstats dump`, the module's row): 150 blocks, **2,176 states**,
+**Since then** (2026-10-20, counted from the block classes, not measured): the station counter
+with monitors' room lamps added 1,008 states and the operating room set nine blocks and 76
+states, so the module is 159 blocks and **3,260 states**; both are multiparts or Forge
+blockstates of small parts, and the set added seven textures of 16 and 32 px (the atlas stayed at
+95.4%).
+
+**Blocks and models** (`/csm memstats dump`, the module's row, before the above): 150 blocks, **2,176 states**,
 1,060 model locations, 34,727 quads (5.6 MB), about 6.7 MB in all. The most states are the curtain
 panel (288), the master panel (256), the curtain track (162), the bed foot (112), the corridor
 rails and wayfinding panel (64 each); the heaviest models are the mannequin (2,512 quads across
@@ -653,22 +699,24 @@ call left on), an ICU bay behind sliding doors (ICU and bariatric beds, pendant,
 ceiling lift, a code blue button linked to the station's annunciator), the ED (a tracking board
 bank, trauma bay, decon shower, surgery support, an ambulance entrance with its marking and sign),
 imaging (CT, MRI, an X-ray room, C-arm, mammography, lead doors, IN USE lights, MRI zone signs),
-the lab, the pharmacy and the morgue. South: the nurses' station open to the corridor (counters
-and corner, master panel, annunciator, gas alarm, outlets), a clinic with an eye lane and a dental
+the lab, the pharmacy, the morgue and the operating room (the table under the twin surgical
+light, the anaesthesia machine at its head, the back table and Mayo stand at its foot, supply
+cabinets, the drape trolley and a three-bay scrub sink). South: the nurses' station open to the corridor (counters
+and corner, the monitors linked to the master panel and showing its calls, master panel, annunciator, gas alarm, outlets), a clinic with an eye lane and a dental
 chair, dialysis and infusion, maternity and NICU (labour and postpartum beds, the infant security
 panel at its door), the waiting room open to the corridor (beam seating facing two now-serving
 displays, the kiosk serving 042 and the desk console 117), a chapel (pews, altar, lectern), a
 lecture hall (tiered seats, a mannequin on a bed, skeleton, dissection table and torso), the
 playroom, the laundry and a rehab gym. A 9 x 9 hospital helipad with its lights and wind sock
 sits on the roof over the ED. It reads both tabs' registration lists and puts anything it did not
-place on signed plinths; nothing is missing today (146 of 146).
+place on signed plinths; nothing is missing today (155 of 155).
 
 ---
 
 ## Left out, and what the module could grow into
 
-- **The operating room**: the OR table, anaesthesia machine, surgical light and scrub sink, left
-  to the Hospital Mod's Theatre Pack, which covers the OR (the builder agreed). A consistent CSM
-  set with proper facing and metadata docs is the obvious next family if the pack ever goes.
+- **More of the operating room**: an equipment boom and the surgical light share the drop column
+  pattern, so a combined boom-and-light head, a second OR table pose (tilted), warming cabinets
+  and a scrub-room hand dryer are the obvious next pieces.
 
 Open items and checks still to do are in `agent_progress/UNFINISHED_ITEMS.md`, D.28.

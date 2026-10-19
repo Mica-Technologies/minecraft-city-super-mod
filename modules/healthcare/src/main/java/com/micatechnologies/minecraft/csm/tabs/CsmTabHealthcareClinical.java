@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareLight;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcarePair;
+import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareRun;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareScreen;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcareUnit;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
@@ -149,5 +150,16 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockHealthcare("hospital_outlet_emergency", new int[]{5, 4, 15, 11, 12, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
     initTabBlock(new BlockHealthcare("hospital_outlet_pair", new int[]{2, 4, 15, 14, 12, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
     initTabBlock(new BlockInfantSecurityPanel("infant_security_panel", new int[]{4, 3, 14, 12, 13, 16}));
+
+    // The operating room (gen_healthcare_surgery.py)
+    initTabBlock(new BlockHealthcarePair("or_table", new int[]{0, 0, 2, 16, 12, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE).withSeat(12, 0));
+    initTabBlock(new BlockHealthcareScreen("or_anaesthesia_machine", new int[]{1, 0, 2, 15, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockCeilingHeadLight("or_surgical_light", new int[]{2, 2, 2, 14, 16, 14}, 15, 2));
+    initTabBlock(new BlockHealthcareRun("or_scrub_sink", new int[]{0, 0, 5, 16, 16, 16}, HealthcareMaterial.METAL, true, "or_scrub_sink"));
+    initTabBlock(new BlockHealthcarePair("or_back_table", new int[]{0, 0, 2, 16, 14, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE));
+    initTabBlock(new BlockHealthcare("or_mayo_stand", new int[]{2, 0, 1, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, false));
+    initTabBlock(new BlockHealthcare("or_kick_bucket", new int[]{4, 0, 4, 12, 8, 12}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcarePair("or_supply_cabinet", new int[]{0, 0, 2, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcare("or_drape_trolley", new int[]{2, 0, 2, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
   }
 }

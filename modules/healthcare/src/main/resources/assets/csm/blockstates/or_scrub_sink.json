@@ -1,0 +1,120 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_body",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_east",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_west",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_east",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_west",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_east",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_west",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "east": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_east",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:healthcare/surgery/or_scrub_sink_end_west",
+        "y": 270
+      }
+    }
+  ]
+}
