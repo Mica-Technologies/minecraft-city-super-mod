@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.healthcare;
 
 import com.micatechnologies.minecraft.csm.healthcare.clinical.CeilingHung;
+import com.micatechnologies.minecraft.csm.healthcare.codeblue.BlockCodeBlueAnnunciator;
+import com.micatechnologies.minecraft.csm.healthcare.codeblue.BlockCodeBlueButton;
+import com.micatechnologies.minecraft.csm.healthcare.codeblue.CodeBlueNetwork;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.NurseCallNetwork;
 import com.micatechnologies.minecraft.csm.healthcare.queue.QueueNetwork;
 import com.micatechnologies.minecraft.csm.healthcare.wards.BlockCurtainPanel;
@@ -52,6 +55,12 @@ import net.minecraft.world.World;
  *   a display), as a click on it does; {@code queue set <x y z> <number>} sets it.</li>
  *   <li>{@code queue status <x y z>} -- a controller's number and displays, or a display's
  *   controller; {@code queue prune} drops queues and displays that are gone.</li>
+ *   <li>{@code codeblue link <button x y z> <annunciator x y z>} -- a code blue button calls an
+ *   annunciator; {@code codeblue unlink} (same args) undoes it.</li>
+ *   <li>{@code codeblue status <x y z>} -- a button's annunciators or an annunciator's buttons,
+ *   and which are active; {@code codeblue prune} drops links to blocks that are gone.</li>
+ *   <li>{@code codeblue reset <x y z>} -- resets the code at a button or annunciator, as a
+ *   sneak-click on it does.</li>
  * </ul>
  *
  * @since 2026.10
@@ -62,7 +71,8 @@ public class CommandHealthcare extends CommandBase {
       + "<device x y z>|status <x y z>|prune>|curtain <fill <x y z> [drop|auto] [pattern]"
       + "|open|close|clear <x y z>|pattern <x y z> <pattern>>|boom <fill|clear> <x y z>"
       + "|unit fill <x y z>|queue <link|unlink <controller x y z> <display x y z>"
-      + "|next|status <x y z>|set <x y z> <number>|prune>>";
+      + "|next|status <x y z>|set <x y z> <number>|prune>"
+      + "|codeblue <link|unlink <button x y z> <annunciator x y z>|status|reset <x y z>|prune>>";
 
   @Override
   public String getName() {
@@ -88,6 +98,10 @@ public class CommandHealthcare extends CommandBase {
     }
     if (args.length >= 2 && "queue".equals(args[0])) {
       queue(sender, args);
+      return;
+    }
+    if (args.length >= 2 && "codeblue".equals(args[0])) {
+      codeBlue(sender, args);
       return;
     }
     if (args.length >= 2 && "unit".equals(args[0])) {
@@ -383,6 +397,86 @@ public class CommandHealthcare extends CommandBase {
     }
   }
 
+  private static void codeBlue(ICommandSender sender, String[] args) throws CommandException {
+    World world = sender.getEntityWorld();
+    CodeBlueNetwork net = CodeBlueNetwork.get(world);
+    switch (args[1]) {
+      case "link":
+      case "unlink": {
+        if (args.length < 8) {
+          throw new WrongUsageException("/csmhealthcare codeblue " + args[1]
+              + " <button x y z> <annunciator x y z>");
+        }
+        BlockPos button = parseBlockPos(sender, args, 2, false);
+        BlockPos annunciator = parseBlockPos(sender, args, 5, false);
+        if ("link".equals(args[1])) {
+          try {
+            net.link(world, button, annunciator);
+          } catch (IllegalArgumentException e) {
+            throw new CommandException("Cannot link: " + e.getMessage() + ".");
+          }
+          say(sender, "Linked the code blue button at " + CodeBlueNetwork.describe(button)
+              + " to the annunciator at " + CodeBlueNetwork.describe(annunciator) + ".");
+        } else {
+          say(sender, net.unlink(world, button, annunciator)
+              ? "Unlinked " + CodeBlueNetwork.describe(button) + " from "
+                  + CodeBlueNetwork.describe(annunciator) + "."
+              : CodeBlueNetwork.describe(button) + " does not call "
+                  + CodeBlueNetwork.describe(annunciator) + ".");
+        }
+        break;
+      }
+      case "status": {
+        if (args.length < 5) {
+          throw new WrongUsageException("/csmhealthcare codeblue status <x y z>");
+        }
+        BlockPos pos = parseBlockPos(sender, args, 2, false);
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() instanceof BlockCodeBlueButton) {
+          List<BlockPos> to = net.annunciatorsOf(pos);
+          say(sender, "Code blue button at " + CodeBlueNetwork.describe(pos) + ": "
+              + (state.getValue(BlockCodeBlueButton.ACTIVE) ? "ACTIVE" : "ready") + ", calls "
+              + to.size() + " annunciator" + (to.size() == 1 ? "" : "s") + ".");
+          for (BlockPos a : to) {
+            say(sender, "  annunciator " + CodeBlueNetwork.describe(a));
+          }
+        } else if (state.getBlock() instanceof BlockCodeBlueAnnunciator) {
+          List<BlockPos> from = net.buttonsOf(pos);
+          say(sender, "Code blue annunciator at " + CodeBlueNetwork.describe(pos) + ": "
+              + (state.getValue(BlockCodeBlueAnnunciator.ACTIVE) ? "SOUNDING" : "quiet")
+              + (world.isBlockPowered(pos) ? " (powered)" : "") + ", answers " + from.size()
+              + " button" + (from.size() == 1 ? "" : "s") + ".");
+          for (BlockPos b : from) {
+            say(sender, "  button " + CodeBlueNetwork.describe(b)
+                + (net.isActive(b) ? " ACTIVE" : ""));
+          }
+        } else {
+          throw new CommandException("No code blue button or annunciator at "
+              + CodeBlueNetwork.describe(pos) + ".");
+        }
+        break;
+      }
+      case "reset": {
+        if (args.length < 5) {
+          throw new WrongUsageException("/csmhealthcare codeblue reset <x y z>");
+        }
+        BlockPos pos = parseBlockPos(sender, args, 2, false);
+        net.reset(world, pos);
+        say(sender, "Reset the code blue at " + CodeBlueNetwork.describe(pos) + ".");
+        break;
+      }
+      case "prune": {
+        int n = net.prune(world);
+        say(sender, n == 0 ? "No missing code blue blocks."
+            : "Dropped the links of " + n + " missing code blue block" + (n == 1 ? "" : "s")
+                + ".");
+        break;
+      }
+      default:
+        throw new WrongUsageException(USAGE);
+    }
+  }
+
   private static void say(ICommandSender sender, String text) {
     sender.sendMessage(new TextComponentString(text));
   }
@@ -392,7 +486,19 @@ public class CommandHealthcare extends CommandBase {
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, "nursecall", "curtain", "boom", "unit",
-          "queue");
+          "queue", "codeblue");
+    }
+    if ("codeblue".equals(args[0])) {
+      if (args.length == 2) {
+        return getListOfStringsMatchingLastWord(args, "link", "unlink", "status", "reset",
+            "prune");
+      }
+      int last = "prune".equals(args[1]) ? 1 : "link".equals(args[1])
+          || "unlink".equals(args[1]) ? 7 : 4;
+      if (args.length >= 3 && args.length <= last + 1) {
+        return getTabCompletionCoordinate(args, 2 + ((args.length - 3) / 3) * 3, targetPos);
+      }
+      return Collections.emptyList();
     }
     if ("queue".equals(args[0])) {
       if (args.length == 2) {

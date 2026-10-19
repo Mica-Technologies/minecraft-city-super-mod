@@ -4,17 +4,26 @@ import com.micatechnologies.minecraft.csm.healthcare.clinical.TileEntityEdTracki
 import com.micatechnologies.minecraft.csm.healthcare.clinical.TileEntityEdTrackingBoardRenderer;
 import com.micatechnologies.minecraft.csm.healthcare.queue.TileEntityNowServingDisplay;
 import com.micatechnologies.minecraft.csm.healthcare.queue.TileEntityNowServingDisplayRenderer;
+import com.micatechnologies.minecraft.csm.healthcare.wayfinding.HospitalWayfindingBakedModel;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The healthcare module's proxy on the client. Every block is drawn from baked models except the
  * ED tracking board's screen, whose text {@link TileEntityEdTrackingBoardRenderer} draws, and the
- * now-serving display's, drawn by {@link TileEntityNowServingDisplayRenderer}.
+ * now-serving display's, drawn by {@link TileEntityNowServingDisplayRenderer}. The hospital
+ * wayfinding panel's legend is baked, by {@link HospitalWayfindingBakedModel}.
  *
  * @since 2026.10
  */
 public class CsmHealthcareClientProxy extends CsmHealthcareCommonProxy {
+
+  @Override
+  public void preInit(FMLPreInitializationEvent event) {
+    super.preInit(event);
+    HospitalWayfindingBakedModel.register();
+  }
 
   @Override
   public void init(FMLInitializationEvent event) {

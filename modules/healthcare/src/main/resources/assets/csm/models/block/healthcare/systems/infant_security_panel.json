@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/wards/dark_grey",
+    "face": "csm:blocks/healthcare/systems/infant_panel_secure",
+    "particle": "csm:blocks/healthcare/wards/dark_grey"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        3,
+        14.5
+      ],
+      "to": [
+        12,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            4,
+            3,
+            12,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            3,
+            1.5,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            14.5,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            4,
+            14.5,
+            12,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            4,
+            0,
+            12,
+            1.5
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:healthcare/systems/medical_gas_master_alarm"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "state": {
+      "0": {},
+      "1": {
+        "textures": {
+          "face": "csm:blocks/healthcare/systems/gas_alarm_alarm"
+        }
+      },
+      "2": {
+        "textures": {
+          "face": "csm:blocks/healthcare/systems/gas_alarm_normal_muted"
+        }
+      },
+      "3": {
+        "textures": {
+          "face": "csm:blocks/healthcare/systems/gas_alarm_alarm_muted"
+        }
+      }
+    }
+  }
+}
