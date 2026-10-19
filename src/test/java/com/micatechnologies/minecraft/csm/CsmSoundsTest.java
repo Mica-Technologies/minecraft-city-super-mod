@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
+import com.micatechnologies.minecraft.csm.healthcare.HealthcareSounds;
 import com.micatechnologies.minecraft.csm.hvac.HvacSounds;
 import com.micatechnologies.minecraft.csm.lifesafety.LifeSafetySounds;
 import com.micatechnologies.minecraft.csm.novelties.FurnishingsSounds;
@@ -54,6 +55,7 @@ class CsmSoundsTest {
     MODULE_SOUNDS.put("HVAC", HvacSounds.values());
     MODULE_SOUNDS.put("Transit", TransitSounds.values());
     MODULE_SOUNDS.put("Parks & Greenery", ParksSounds.values());
+    MODULE_SOUNDS.put("Healthcare", HealthcareSounds.values());
   }
 
   /**

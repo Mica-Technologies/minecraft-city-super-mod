@@ -67,6 +67,7 @@ public class CsmHealthcare {
         HealthcareFabricatorRules::price);
     // A player's picked nurse call panel or dome light is forgotten when they leave.
     CsmLifecycleHooks.onPlayerLoggedOut(uuid -> NurseCallLinking.forget(uuid));
+    HealthcareSounds.registerSounds();
 
     proxy.preInit(event);
   }
