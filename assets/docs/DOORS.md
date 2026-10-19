@@ -18,10 +18,12 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Hospital Door (Maple / Blue Metal / Sage Metal; Vision Lite or Half Glass), and each as a Narrow Leaf | `door_hosp_<finish>_<leaf>`, `door_hosp_<finish>_<leaf>_narrow`; finish `maple`, `metal_blue`, `metal_sage`; leaf `lite`, `halfglass` |
 | Smoke Barrier Door (Grey / Beige) | `door_smoke_metal_grey`, `door_smoke_metal_beige` |
 | Lead-Lined Door (Radiation) | `door_lead_lined` |
+| Automatic Sliding Door (Clear Aluminium / Dark Bronze), and its fixed Sidelite | `auto_door_slider_clear`, `auto_door_slider_bronze`, `auto_door_sidelite_clear`, `auto_door_sidelite_bronze` |
+| Automatic Door Activation Mat | `auto_door_mat` |
 
-The hospital, smoke and lead-lined doors were added for a hospital build (2026-10),
-whose corridors read as white walls with solid white doors; see **Hospital doors**
-below, and **Placing by command** for the metadata of every door.
+The hospital, smoke, lead-lined and automatic doors were added for a hospital build (2026-10),
+whose corridors read as white walls with solid white doors; see **Hospital doors** and
+**Automatic sliding doors** below, and **Placing by command** for the metadata of every door.
 
 ## Using them
 
@@ -246,6 +248,50 @@ redstone.
   the inside face of the cell and the plate is put back on its outside (`trefoil_plate` in the
   generator), rather than mirrored with it as handles are.
 
+## Automatic sliding doors
+
+`BlockAutoSlidingDoor` (by registry name) is a `BlockBuildingDoor` that slides: two halves, the
+same metadata, keypad locks and pairs, so all of that works unchanged. A **slider**'s hinge is the
+side it slides toward; it stands in the middle of the wall (z 4..5.75 px, inside to the north)
+and slides 15.5 px along it, ending in the next cell: in front of a fixed **sidelite** (which
+stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door.
+
+- **Bi-parting**: two sliders side by side hinged on their far sides, latch to latch (a pair); they
+  part in the middle. **Single-slide**: one slider with a sidelite on its hinge side. An entrance:
+  sidelite, slider, slider, sidelite.
+- Every cell carries a length of the operator header across the top of its upper half (fixed,
+  `TINT_FIXED`), and a slider the motion sensor on each face of it. The panels are aluminium (clear
+  or dark bronze) round clear glass with a mid-rail at push height and dark break-out pivots at
+  the hinge-side corners, so they read as break-out panels. Glass in the translucent pass, the rest
+  in the cutout pass (`ICsmGlassFronted`).
+- **Opening.** Redstone opens a slider and its pair while powered; the **activation mat**
+  (`BlockAutoDoorMat`) beside it opens it when someone steps on it; a click opens it by hand; a
+  linked keypad, button or station as on any door. A sidelite never moves (a click does nothing).
+- **Closing.** Whatever opened it, it shuts **3 s** (`HOLD_TICKS`, 60) after the last thing that
+  did: each step on a mat pushes the time back (`armClose`, the closer's deadline). The door's one
+  scheduled tick then shuts it, unless redstone still holds it, or a player or a non-hostile
+  creature is in the doorway or within a block and a half either side, when it looks again a
+  second later. That look is the only entity search and only an open door makes it. When the
+  redstone goes, it shuts the same way after the hold time. **Nothing ticks while the door is idle
+  and there is no tile entity at rest.**
+- **The slide is animated** by the swing's own machinery: the same client-only
+  `TileEntityDoorSwing`, made by the block event and gone when the movement ends, now told how
+  long the movement takes (`motionTicks`: 8 for a swing, 14 for a slide), and the same renderer,
+  which moves the panel's shut models along the wall (eased) instead of turning them, leaving the
+  header where it is. At rest it is baked models; the open models are the shut ones moved 15.5 px
+  with the UVs they had shut written out, since past 0..16 a position-derived UV samples other
+  sprites.
+- **Locks.** A slider locked by a keypad does not open for a mat on its outside (the side away
+  from its facing); a mat on the inside still opens it (free egress). A click from outside asks
+  for the code as on any locked door.
+- **The mat** is a pixel-thin rubber mat with an aluminium edge, laid on the floor in front of the
+  door. It opens sliders in the four cells around it at its own height and the cell above it (a
+  pair opens with either half). It answers players and any creature that is not hostile, at most
+  every 10 ticks a mat. It listens through `onEntityCollision`, as a pressure plate does, not
+  `onEntityWalk`: the game sends the walking callback to the block under the walker's feet, which
+  for a mat a pixel thick is the floor under it.
+- No closer (the item refuses it) and no reversing (the Door Swing Tool refuses it).
+
 ## Placing by command
 
 Every door can be placed and set up with `/setblock` alone; none needs a GUI or a click. A door
@@ -275,6 +321,9 @@ east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave t
 | `door_hosp_*_narrow` | facing, open | hinge, reversed (closer ignored) | pairs with its full leaf |
 | `door_smoke_metal_*` | facing, open | hinge, reversed (closer always on) | held open by redstone, shuts when it goes |
 | `door_lead_lined` | facing, open | hinge, closer, reversed | plate on the outside face |
+| `auto_door_slider_*` | facing, open | hinge = the side it slides to | opens on redstone or a mat |
+| `auto_door_sidelite_*` | facing | `8` (hinge ignored) | never moves |
+| `auto_door_mat` | `0` | -- | one block, on the floor beside the door |
 
 No door has NBT to set: at rest no door has a tile entity (the custom door's settings are the
 exception, in its own section).

@@ -661,6 +661,7 @@ def textures():
     out["door_hm_frame"] = hardware(SIDELITE_FRAME, random.Random(20261942))
     out["door_trefoil"] = trefoil()
     out.update(workshop_textures())
+    out.update(auto_textures())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -1050,6 +1051,7 @@ def models():
         out[prefix + "_left_open"] = _model(_rounded(flip(open_)), hw)
         out[prefix + "_right_open"] = _model(_rounded(sc._mirror_x(flip(open_))), hw)
     out["door_workshop"] = workshop_model()
+    out.update(auto_models())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -1096,6 +1098,219 @@ def state_for(name):
 def blockstates():
     out = {name: state_for(name) for name in DOORS}
     out["door_workshop"] = workshop_state()
+    out.update(auto_states())
+    return out
+
+# --------------------------------------------------------------------------------------------
+# Automatic sliding doors -- BlockAutoSlidingDoor, and the activation mat (BlockAutoDoorMat)
+# --------------------------------------------------------------------------------------------
+#
+# Two blocks tall, as the swinging doors are, and built on the same class: a sliding panel is a
+# door whose "hinge" is the side it slides to. A panel stands in the middle of the wall, in the
+# plane z 4..5.75 (inside to the north), and slides 15.5 px toward its hinge side: through the
+# fixed sidelite's cell beside it, which stands in the plane behind (z 6.5..8.25), or into the
+# wall. A pair (two panels hinged on their far sides, latch to latch) is a bi-parting door; one
+# panel beside a sidelite is a single-slide door. Every cell carries a length of the operator
+# header across the top of its upper half, which never moves (TINT_FIXED), and a slider carries
+# the motion sensor on each face of it.
+#
+# The open model is the shut one moved 15.5 px, past the cell: those elements keep the UVs they
+# had shut, written out explicitly, since past 0..16 a position-derived UV samples other sprites.
+# SHARED with BlockAutoSlidingDoor: SLIDE_PX, the planes and the header.
+
+AUTO = {
+    "auto_door_slider_clear": ("slider", (198, 202, 206), (
+        "Automatic Sliding Door (Clear Aluminium)",
+        "Puerta Corredera Automática (Aluminio Natural)",
+        "Automatische Schiebetür (Aluminium natur)", "Automatisk Skjutdörr (Blank Aluminium)")),
+    "auto_door_slider_bronze": ("slider", (72, 58, 46), (
+        "Automatic Sliding Door (Dark Bronze)", "Puerta Corredera Automática (Bronce Oscuro)",
+        "Automatische Schiebetür (Dunkelbronze)", "Automatisk Skjutdörr (Mörk Brons)")),
+    "auto_door_sidelite_clear": ("sidelite", (198, 202, 206), (
+        "Sliding Door Sidelite (Clear Aluminium)", "Fijo de Puerta Corredera (Aluminio Natural)",
+        "Schiebetür-Seitenteil (Aluminium natur)", "Skjutdörr Sidoparti (Blank Aluminium)")),
+    "auto_door_sidelite_bronze": ("sidelite", (72, 58, 46), (
+        "Sliding Door Sidelite (Dark Bronze)", "Fijo de Puerta Corredera (Bronce Oscuro)",
+        "Schiebetür-Seitenteil (Dunkelbronze)", "Skjutdörr Sidoparti (Mörk Brons)")),
+}
+MAT_NAMES = ("Automatic Door Activation Mat", "Alfombra de Activación de Puerta Automática",
+             "Kontaktmatte für Automatiktür", "Aktiveringsmatta för Automatisk Dörr")
+
+SLIDE_PX = 15.5
+SLIDER_Z = (4.0, 5.75)
+SIDELITE_Z = (6.5, 8.25)
+HEADER_Y = 12.5            # in the upper half: the header runs from here to the top
+HEADER_Z = (2.5, 9.5)
+STILE = 1.5
+
+
+def auto_finish(name):
+    return name.rsplit("_", 1)[1]
+
+
+def auto_textures():
+    out = {}
+    for finish, rgb in (("clear", (198, 202, 206)), ("bronze", (72, 58, 46))):
+        rng = random.Random(_seed("auto_door_frame_" + finish))
+        img, px = _canvas(rgb, rng, 2)
+        for x in range(16):
+            tone = rng.uniform(-5, 5)
+            for y in range(16):
+                px[x, y] = _shift(rgb, tone + rng.uniform(-2, 2))
+        out["auto_door_frame_" + finish] = img
+    # The panels' glass: clear, with a faint streak so it reads as glass from the side.
+    glass = Image.new("RGBA", (16, 16))
+    gp = glass.load()
+    for y in range(16):
+        for x in range(16):
+            gp[x, y] = (186, 212, 220, 92) if (x + y) % 11 not in (0, 1) else (210, 230, 236, 120)
+    out["auto_door_glass"] = glass
+    out.update(mat_textures())
+    for name, (kind, rgb, _) in AUTO.items():
+        out[name + "_icon"] = auto_icon(kind, rgb)
+    return out
+
+
+def auto_icon(kind, rgb):
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(16):
+        for x in range(3, 13):
+            frame = x in (3, 12) or y in (2, 15) or (kind == "slider" and y == 9)
+            px[x, y] = _shift(rgb, 0) if frame else (186, 212, 220, 150)
+    for x in range(2, 14):
+        px[x, 0] = px[x, 1] = _shift(rgb, -20)
+    if kind == "slider":
+        for y in range(4, 8):
+            px[1, y] = (60, 60, 60, 255)
+        px[0, 5] = px[0, 6] = (60, 60, 60, 255)
+    return img
+
+
+def mat_textures():
+    """The activation mat: black ribbed rubber in an aluminium edge, and its edge."""
+    rng = random.Random(20261951)
+    rubber = (40, 40, 42)
+    top, tp = _canvas(rubber, rng, 3)
+    for y in range(16):
+        for x in range(16):
+            if x in (0, 15) or y in (0, 15):
+                tp[x, y] = _shift(SILVER, rng.uniform(-6, 6))
+            elif y % 3 == 1:
+                tp[x, y] = _shift(rubber, 16)
+    side = _canvas(SILVER, rng, 4)[0]
+    return {"auto_door_mat_top": top, "auto_door_mat_side": side}
+
+
+def _shift_x(elements, dx):
+    """Move elements dx px along x, keeping the UVs they had: past 0..16 a position-derived UV
+    would sample another sprite."""
+    out = []
+    for e in elements:
+        m = json.loads(json.dumps(e))
+        m["from"][0] = round(m["from"][0] + dx, 4)
+        m["to"][0] = round(m["to"][0] + dx, 4)
+        out.append(m)
+    return out
+
+
+def _slide_panel(z, upper, pivots):
+    """A sliding (or fixed) glass panel in an aluminium frame, in the plane z, left-hinged: its
+    stiles, rails and glass, a mid-rail at push height, and a slider's break-out pivots at the
+    hinge-side corners."""
+    z0, z1 = z
+    zg0, zg1 = z0 + 0.6, z1 - 0.6
+    f = "#frame"
+    if upper:
+        top = HEADER_Y
+        els = [box(0, 0, z0, STILE, top, z1, f, faces=_but_faces("down")),
+               box(16 - STILE, 0, z0, 16, top, z1, f, faces=_but_faces("down")),
+               box(STILE, top - STILE, z0, 16 - STILE, top, z1, f, faces=_but_faces("east", "west")),
+               box(STILE, 0, zg0, 16 - STILE, top - STILE, zg1, "#glass", faces=("north", "south"))]
+        if pivots:
+            els.append(box(0, top - 1, z0 - 0.25, 2, top, z1 + 0.25, "#pivot",
+                           faces=_but_faces("up")))
+        return els
+    els = [box(0, 0, z0, STILE, 16, z1, f, faces=_but_faces("up")),
+           box(16 - STILE, 0, z0, 16, 16, z1, f, faces=_but_faces("up")),
+           box(STILE, 0, z0, 16 - STILE, 3, z1, f, faces=_but_faces("east", "west")),
+           box(STILE, 13.5, z0, 16 - STILE, 15, z1, f, faces=_but_faces("east", "west")),
+           box(STILE, 3, zg0, 16 - STILE, 13.5, zg1, "#glass", faces=("north", "south")),
+           box(STILE, 15, zg0, 16 - STILE, 16, zg1, "#glass", faces=("north", "south"))]
+    if pivots:
+        els.append(box(0, 0, z0 - 0.25, 2, 1, z1 + 0.25, "#pivot", faces=_but_faces("down")))
+    return els
+
+
+def _header(sensor):
+    """The operator header across the top of the upper half, fixed to the frame (TINT_FIXED),
+    with a slider's motion sensor on each face."""
+    els = [box(0, HEADER_Y, HEADER_Z[0], 16, 16, HEADER_Z[1], "#frame")]
+    if sensor:
+        els += [box(6, 13, HEADER_Z[0] - 0.75, 10, 15, HEADER_Z[0], "#pivot",
+                    faces=_but_faces("south")),
+                box(6, 13, HEADER_Z[1], 10, 15, HEADER_Z[1] + 0.75, "#pivot",
+                    faces=_but_faces("north"))]
+    return _tint(els, TINT_FIXED)
+
+
+def auto_models():
+    out = {}
+    for name, (kind, _, _) in AUTO.items():
+        tex = {"frame": TEX_REF % ("auto_door_frame_" + auto_finish(name)),
+               "glass": TEX_REF % "auto_door_glass", "pivot": TEX_REF % "door_black"}
+        slider = kind == "slider"
+        for half in ("lower", "upper"):
+            upper = half == "upper"
+            panel = _slide_panel(SLIDER_Z if slider else SIDELITE_Z, upper, slider)
+            fixed = _header(slider) if upper else []
+            left = panel + fixed
+            if not slider:
+                out["%s_%s" % (name, half)] = _model(left, tex)
+                continue
+            right_panel = sc._mirror_x(panel)
+            out["%s_%s_left" % (name, half)] = _model(left, tex)
+            out["%s_%s_right" % (name, half)] = _model(right_panel + fixed, tex)
+            out["%s_%s_left_open" % (name, half)] = _model(_shift_x(panel, -SLIDE_PX) + fixed,
+                                                         tex)
+            out["%s_%s_right_open" % (name, half)] = _model(
+                _shift_x(right_panel, SLIDE_PX) + fixed, tex)
+        out[name + "_inventory"] = {"parent": "item/generated",
+                                    "textures": {"layer0": TEX_REF % (name + "_icon")}}
+    mat = {"top": TEX_REF % "auto_door_mat_top", "side": TEX_REF % "auto_door_mat_side"}
+    el = box(0, 0, 0, 16, 1, 16, "#side")
+    el["faces"]["up"]["texture"] = "#top"
+    el["faces"]["down"]["cullface"] = "down"
+    out["auto_door_mat"] = _model([el], mat)
+    return out
+
+
+def auto_states():
+    out = {}
+    for name, (kind, _, _) in AUTO.items():
+        parts = []
+        for side, rot in SIDES:
+            for half in ("lower", "upper"):
+                if kind == "sidelite":
+                    when = {"facing": side, "half": half}
+                    apply = {"model": MODEL_REF % ("%s_%s" % (name, half))}
+                    if rot:
+                        apply["y"] = rot
+                    parts.append({"when": when, "apply": apply})
+                    continue
+                for hinge in ("left", "right"):
+                    for open_ in (False, True):
+                        when = {"facing": side, "half": half, "hinge": hinge,
+                                "open": str(open_).lower(), "swing": "false"}
+                        apply = {"model": MODEL_REF % ("%s_%s_%s%s" % (
+                            name, half, hinge, "_open" if open_ else ""))}
+                        if rot:
+                            apply["y"] = rot
+                        parts.append({"when": when, "apply": apply})
+        out[name] = {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
+                     "multipart": parts}
+    out["auto_door_mat"] = {"variants": {"normal": {"model": MODEL_REF % "auto_door_mat"},
+                                         "inventory": {"model": MODEL_REF % "auto_door_mat"}}}
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -1138,6 +1353,9 @@ LANGS = gen_cmu.LANGS
 def lang_entries():
     out = [("tile.%s.name" % name, dict(zip(LANGS, names)))
            for name, (_, _, _, names) in DOORS.items()]
+    out += [("tile.%s.name" % name, dict(zip(LANGS, names)))
+            for name, (_, _, names) in AUTO.items()]
+    out.append(("tile.auto_door_mat.name", dict(zip(LANGS, MAT_NAMES))))
     out.append(("item.door_closer.name", dict(zip(LANGS, CLOSER_NAMES))))
     out.append(("item.door_swing_tool.name", dict(zip(LANGS, SWING_TOOL_NAMES))))
     out += [(k, dict(zip(LANGS, v))) for k, v in SWING_LANG.items()]
@@ -1148,6 +1366,10 @@ def lang_entries():
 def tab_lines():
     lines = ['    initTabBlock(new BlockBuildingDoor("%s")); // %s' % (n, v[3][0])
              for n, v in DOORS.items() if n.startswith("door_")]
+    lines += ['    initTabBlock(new BlockAutoSlidingDoor("%s")); // %s' % (n, v[2][0])
+              for n, v in AUTO.items()]
+    lines.append("    initTabBlock(BlockAutoDoorMat.class, fmlPreInitializationEvent);"
+                 " // Automatic Door Activation Mat")
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")
     lines.append("    initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent);"
                  " // Door Swing Tool")

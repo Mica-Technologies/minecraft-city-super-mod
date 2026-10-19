@@ -1,0 +1,87 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:doors/auto_door_sidelite_clear_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_lower"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_upper"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_clear_upper",
+        "y": 270
+      }
+    }
+  ]
+}

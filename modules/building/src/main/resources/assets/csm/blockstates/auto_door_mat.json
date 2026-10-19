@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "normal": {
+      "model": "csm:doors/auto_door_mat"
+    },
+    "inventory": {
+      "model": "csm:doors/auto_door_mat"
+    }
+  }
+}
