@@ -73,6 +73,33 @@ public abstract class AbstractTileEntity extends TileEntity {
   }
 
   /**
+   * Marks the tile entity changed and queues it to be sent to the clients with the block changes
+   * of this tick, rather than at once as {@link #markDirtySync(World, BlockPos, boolean)} does.
+   *
+   * <p>Use it for anything written while blocks are being placed in the same tick: a cell added to
+   * a multi-cell panel that refreshes or copies into the cells around it, or a {@code /setblock}
+   * with NBT whose tile entity spreads the edit. Sent at once, those updates reach a client ahead
+   * of the cells' own block changes, which it drops as updates "for null tile entity" (an error
+   * line each). Queued, the chunk's changed-block list sends each one once, after its block, with
+   * the tile entity as it ends the tick, however many times it was queued.
+   *
+   * <p>Riding the chunk's own changed-block list is what keeps the order whatever placed the
+   * block: {@link CsmDeferredSync} sends at the end of the server tick, which is ahead of the block
+   * change when the block was set by a command (players' commands run after the worlds have
+   * flushed their changes for the tick).
+   *
+   * @param world the block/tile entity's world
+   * @param pos   the block/tile entity's position
+   */
+  public void markDirtyQueueSync(World world, BlockPos pos) {
+    markDirty();
+    if (!world.isRemote) {
+      IBlockState state = world.getBlockState(pos);
+      world.notifyBlockUpdate(pos, state, state, 2);
+    }
+  }
+
+  /**
    * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
    * Subclasses may override this method to read custom NBT data. The default implementation does
    * nothing.

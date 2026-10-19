@@ -97,7 +97,7 @@ public class BlockCraneHead extends AbstractBlock implements ICsmTileEntityProvi
     } else {
       ((TileEntityCraneHead) te).setMast(false, 0.0, 0.0, livery);
     }
-    ((TileEntityCraneHead) te).markDirtySync(worldIn, pos, true);
+    ((TileEntityCraneHead) te).markDirtyQueueSync(worldIn, pos);
   }
 
   @Override

@@ -112,7 +112,7 @@ public class BlockWayfindingPanel extends BlockPlatformFixture implements ICsmTi
       if (other instanceof TileEntityWayfindingPanel) {
         TileEntityWayfindingPanel cell = (TileEntityWayfindingPanel) mine;
         cell.copySign((TileEntityWayfindingPanel) other);
-        cell.markDirtySync(world, pos, true);
+        cell.markDirtyQueueSync(world, pos);
         return;
       }
     }

@@ -148,7 +148,7 @@ public class BlockMailbox extends BlockUtilityBox implements ICsmTileEntityProvi
       TileEntityMailbox box = (TileEntityMailbox) te;
       box.init(slots);
       box.setPlacer(placer.getUniqueID(), placer.getName());
-      box.markDirtySync(world, pos, true);
+      box.markDirtyQueueSync(world, pos);
     }
   }
 
