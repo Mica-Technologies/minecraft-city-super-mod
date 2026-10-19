@@ -1,0 +1,197 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "front": "csm:blocks/healthcare/diagnostics/pt_door",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/wards/stainless"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        3,
+        13
+      ],
+      "to": [
+        14,
+        13,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#metal",
+          "uv": [
+            2,
+            3,
+            14,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#metal",
+          "uv": [
+            2,
+            3,
+            14,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [
+            0,
+            3,
+            3,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [
+            13,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#metal",
+          "uv": [
+            2,
+            13,
+            14,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [
+            2,
+            0,
+            14,
+            3
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        4,
+        12.6
+      ],
+      "to": [
+        13,
+        12,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#metal",
+          "uv": [
+            3,
+            4,
+            3.4,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#metal",
+          "uv": [
+            12.6,
+            4,
+            13,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#metal",
+          "uv": [
+            3,
+            12.6,
+            13,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#metal",
+          "uv": [
+            3,
+            3,
+            13,
+            3.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        11.5,
+        6.5,
+        12
+      ],
+      "to": [
+        12.5,
+        9.5,
+        12.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grey",
+          "uv": [
+            3.5,
+            6.5,
+            4.5,
+            9.5
+          ]
+        },
+        "east": {
+          "texture": "#grey",
+          "uv": [
+            3.4,
+            6.5,
+            4,
+            9.5
+          ]
+        },
+        "west": {
+          "texture": "#grey",
+          "uv": [
+            12,
+            6.5,
+            12.6,
+            9.5
+          ]
+        },
+        "up": {
+          "texture": "#grey",
+          "uv": [
+            11.5,
+            12,
+            12.5,
+            12.6
+          ]
+        },
+        "down": {
+          "texture": "#grey",
+          "uv": [
+            11.5,
+            3.4,
+            12.5,
+            4
+          ]
+        }
+      }
+    }
+  ]
+}

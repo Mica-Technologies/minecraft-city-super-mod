@@ -1,0 +1,161 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/healthcare/wards/dark_grey",
+    "plate": "csm:blocks/healthcare/wards/frame_grey",
+    "lens": "csm:blocks/healthcare/diagnostics/mri_in_use_off",
+    "particle": "csm:blocks/healthcare/wards/dark_grey"
+  },
+  "elements": [
+    {
+      "from": [
+        1.5,
+        4.5,
+        15
+      ],
+      "to": [
+        14.5,
+        11.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            1.5,
+            4.5,
+            14.5,
+            11.5
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            1.5,
+            4.5,
+            14.5,
+            11.5
+          ]
+        },
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            4.5,
+            1,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#plate",
+          "uv": [
+            15,
+            4.5,
+            16,
+            11.5
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            1.5,
+            15,
+            14.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            1
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        5,
+        12.5
+      ],
+      "to": [
+        14,
+        11,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            2,
+            5,
+            14,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            1,
+            5,
+            3.5,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            12.5,
+            5,
+            15,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            2,
+            12.5,
+            14,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            2,
+            1,
+            14,
+            3.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.6,
+        5.6,
+        12.3
+      ],
+      "to": [
+        13.4,
+        10.4,
+        12.45
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lens",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

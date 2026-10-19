@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.healthcare.wards.CubicleCurtains;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -40,6 +41,9 @@ import net.minecraft.world.World;
  *   ICU pendant, the surgical equipment boom, the trauma exam light) up to the ceiling.</li>
  *   <li>{@code boom clear <head x y z>} -- takes the column above a head down, leaving the
  *   head.</li>
+ *   <li>{@code unit fill <master x y z>} -- fills the free cells of a unit bigger than a block
+ *   (the CT and MRI scanners) with its parts; a master placed by {@code /setblock} does this by
+ *   itself, so this is for cells that were not free then.</li>
  * </ul>
  *
  * @since 2026.10
@@ -48,7 +52,8 @@ public class CommandHealthcare extends CommandBase {
 
   private static final String USAGE = "/csmhealthcare <nursecall <link|unlink <parent x y z> "
       + "<device x y z>|status <x y z>|prune>|curtain <fill <x y z> [drop|auto] [pattern]"
-      + "|open|close|clear <x y z>|pattern <x y z> <pattern>>|boom <fill|clear> <x y z>>";
+      + "|open|close|clear <x y z>|pattern <x y z> <pattern>>|boom <fill|clear> <x y z>"
+      + "|unit fill <x y z>>";
 
   @Override
   public String getName() {
@@ -70,6 +75,10 @@ public class CommandHealthcare extends CommandBase {
       throws CommandException {
     if (args.length >= 2 && "boom".equals(args[0])) {
       boom(sender, args);
+      return;
+    }
+    if (args.length >= 2 && "unit".equals(args[0])) {
+      unit(sender, args);
       return;
     }
     if (args.length >= 2 && "curtain".equals(args[0])) {
@@ -216,6 +225,21 @@ public class CommandHealthcare extends CommandBase {
     }
   }
 
+  private static void unit(ICommandSender sender, String[] args) throws CommandException {
+    if (args.length < 5 || !"fill".equals(args[1])) {
+      throw new WrongUsageException("/csmhealthcare unit fill <master x y z>");
+    }
+    World world = sender.getEntityWorld();
+    BlockPos pos = parseBlockPos(sender, args, 2, false);
+    IBlockState state = world.getBlockState(pos);
+    if (!(state.getBlock() instanceof BlockHealthcareUnit)) {
+      throw new CommandException("No multi-block unit master at "
+          + NurseCallNetwork.describe(pos) + ".");
+    }
+    int n = ((BlockHealthcareUnit) state.getBlock()).fillParts(world, pos, state);
+    say(sender, "Placed " + n + " part" + (n == 1 ? "" : "s") + ".");
+  }
+
   private static void status(ICommandSender sender, World world, NurseCallNetwork net,
       BlockPos pos) throws CommandException {
     NurseCallNetwork.Kind kind = NurseCallNetwork.kindOf(world, pos);
@@ -259,7 +283,16 @@ public class CommandHealthcare extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "nursecall", "curtain", "boom");
+      return getListOfStringsMatchingLastWord(args, "nursecall", "curtain", "boom", "unit");
+    }
+    if ("unit".equals(args[0])) {
+      if (args.length == 2) {
+        return getListOfStringsMatchingLastWord(args, "fill");
+      }
+      if (args.length >= 3 && args.length <= 5) {
+        return getTabCompletionCoordinate(args, 2, targetPos);
+      }
+      return Collections.emptyList();
     }
     if ("boom".equals(args[0])) {
       if (args.length == 2) {

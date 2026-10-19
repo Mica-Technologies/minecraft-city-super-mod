@@ -1,0 +1,83 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cab": "csm:blocks/healthcare/clinics/cabinet",
+    "doors": "csm:blocks/healthcare/diagnostics/lab_cabinet",
+    "epoxy": "csm:blocks/healthcare/diagnostics/epoxy",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "metal": "csm:blocks/healthcare/wards/stainless",
+    "bottles": "csm:blocks/healthcare/diagnostics/bottles",
+    "bowl": "csm:blocks/healthcare/diagnostics/sink_bowl",
+    "particle": "csm:blocks/healthcare/diagnostics/epoxy"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        0,
+        0.5
+      ],
+      "to": [
+        16,
+        14.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cab",
+          "uv": [
+            0,
+            1.5,
+            0.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            15.25,
+            1.5,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            0,
+            1.5,
+            15.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            0.5,
+            1.5,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cab",
+          "uv": [
+            15.25,
+            0.5,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cab",
+          "uv": [
+            15.25,
+            0,
+            16,
+            15.5
+          ]
+        }
+      }
+    }
+  ]
+}

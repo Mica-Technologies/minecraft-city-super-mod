@@ -1,0 +1,106 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,open=false,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_closed",
+        "y": 0
+      }
+    ],
+    "facing=north,open=true,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_open",
+        "y": 0
+      }
+    ],
+    "facing=north,open=false,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_closed",
+        "y": 0
+      }
+    ],
+    "facing=north,open=true,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_open",
+        "y": 0
+      }
+    ],
+    "facing=east,open=false,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_closed",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_open",
+        "y": 90
+      }
+    ],
+    "facing=east,open=false,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_closed",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_open",
+        "y": 90
+      }
+    ],
+    "facing=south,open=false,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_closed",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_open",
+        "y": 180
+      }
+    ],
+    "facing=south,open=false,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_closed",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_open",
+        "y": 180
+      }
+    ],
+    "facing=west,open=false,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_closed",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,second=false": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_lower_open",
+        "y": 270
+      }
+    ],
+    "facing=west,open=false,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_closed",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,second=true": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_upper_open",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:healthcare/diagnostics/morgue_cabinet_item"
+      }
+    ]
+  }
+}
