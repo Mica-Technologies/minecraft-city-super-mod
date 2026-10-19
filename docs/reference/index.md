@@ -17,6 +17,8 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Emergency Services](emergency-services.md) | 62 | Fire, police and ambulance station fittings, community warning sirens and dispatch. |
 | [Exits & Emergency Lighting](exits-and-emergency-lighting.md) | 38 | Exit and stair signs, and the emergency lights that take over when the power fails. |
 | [Fire Protection](fire-protection.md) | 53 | Sprinklers and the rest of what a building fights a fire with besides its alarm. |
+| [Healthcare - Clinical](healthcare-clinical.md) | 0 | The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station. |
+| [Healthcare - Patient Care](healthcare-patient-care.md) | 0 | Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV poles, the room's furniture and TV, cubicle curtains on their ceiling track, the nurse call devices and corridor dome lights, and the corridor rails. |
 | [HVAC](hvac.md) | 46 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 68 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Fire Alarm & Detection](life-safety.md) | 152 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |

@@ -165,6 +165,15 @@ TABS = {
                    "shelters, bus station departure boards, fare gates, the fare vending "
                    "machine and the tickets and cards they take, station and platform fit-out, "
                    "station entrances and fare lines, and the airport terminal and airside."),
+    "tabhealthcarepatientcare": ("healthcare-patient-care", "Healthcare - Patient Care",
+                                 "Patient rooms and wards: hospital beds, patient headwalls, "
+                                 "bedside monitors, IV poles, the room's furniture and TV, "
+                                 "cubicle curtains on their ceiling track, the nurse call "
+                                 "devices and corridor dome lights, and the corridor rails."),
+    "tabhealthcareclinical": ("healthcare-clinical", "Healthcare - Clinical",
+                              "The clinical side of a hospital: the nurse call master panel, "
+                              "wall dispensers, infection control carts and bins, linen, "
+                              "medical gas outlets and the eyewash station."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
                               "Poles, mounts, mast arms, span wire hardware, backplates and "
                               "cameras."),
@@ -198,6 +207,7 @@ TABS = {
 
 PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsite", "tabfurniture", "tabgaming",
               "tabemergencyservices", "tabexitsemergency", "tabfireprotection",
+              "tabhealthcareclinical", "tabhealthcarepatientcare",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmarketstore",
               "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",

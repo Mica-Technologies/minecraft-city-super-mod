@@ -540,6 +540,22 @@ def cost_for(registry, info, ancestors):
         if registry.startswith(("vault_lid", "valve_box", "sewer_cleanout")):
             return ("iron_ingot", "CONCRETE_MIX")
         return ("iron_ingot x2",)
+    if tab in ("tabhealthcarepatientcare", "tabhealthcareclinical"):
+        # Mirrors HealthcareFabricatorRules (Healthcare module).
+        if registry.startswith("hospital_bed_"):
+            return ("SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS", "wool x2")
+        if registry.startswith(("nurse_call_", "patient_monitor_", "iv_pole_pump",
+                                "patient_room_tv", "vitals_")):
+            return ("CONTROL_BOARD", "LED_MODULE", "SHEET_METAL")
+        if registry.startswith("patient_headwall"):
+            return ("SHEET_METAL x2", "WIRING_HARNESS", "FASTENER_KIT")
+        if registry.startswith("cubicle_curtain_track"):
+            return ("SHEET_METAL", "FASTENER_KIT")
+        if registry.startswith("cubicle_curtain"):
+            return ("wool",)
+        if registry.endswith("_sign"):
+            return ("SIGN_BLANK",)
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabutilities":
         # Mirrors UtilitiesFabricatorRules (Utilities module).
         if registry.startswith("utility_label_"):
