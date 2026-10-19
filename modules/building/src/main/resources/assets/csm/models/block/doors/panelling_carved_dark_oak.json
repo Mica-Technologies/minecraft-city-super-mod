@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "csm:blocks/doors/cathedral_dark_oak_edge",
+    "side": "csm:blocks/doors/panelling_linenfold_dark_oak"
+  }
+}

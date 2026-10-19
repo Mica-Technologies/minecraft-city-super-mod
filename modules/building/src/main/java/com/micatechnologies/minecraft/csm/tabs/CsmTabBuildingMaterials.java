@@ -8,6 +8,10 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAutoDoorMat;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAutoSlidingDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCarvedPanelling;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCathedralTympanum;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCathedralDoorArch;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCathedralDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCustomDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDoorWorkshop;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
@@ -282,5 +286,17 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent); // Door Swing Tool
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door
     initTabBlock(BlockDoorWorkshop.class, fmlPreInitializationEvent); // Door Workshop
+    // Cathedral doors: a leaf two blocks wide built to its opening, a pointed head, the
+    // tympanum for a square-headed door, and carved panelling for the surround.
+    initTabBlock(new BlockCathedralDoor("cathedral_door_dark_oak")); // Cathedral Door (Dark Oak)
+    initTabBlock(new BlockCathedralDoorArch("cathedral_door_dark_oak_arch")); // Cathedral Door Arch Head (Dark Oak)
+    initTabBlock(new BlockCathedralDoor("cathedral_door_weathered_oak")); // Cathedral Door (Weathered Oak)
+    initTabBlock(new BlockCathedralDoorArch("cathedral_door_weathered_oak_arch")); // Cathedral Door Arch Head (Weathered Oak)
+    initTabBlock(new BlockCathedralDoor("cathedral_door_bronze")); // Cathedral Door (Bronze)
+    initTabBlock(new BlockCathedralDoorArch("cathedral_door_bronze_arch")); // Cathedral Door Arch Head (Bronze)
+    initTabBlock(new BlockCathedralTympanum("cathedral_tympanum_dark_oak")); // Tympanum (Dark Oak)
+    initTabBlock(new BlockCathedralTympanum("cathedral_tympanum_weathered_oak")); // Tympanum (Weathered Oak)
+    initTabBlock(new BlockCathedralTympanum("cathedral_tympanum_bronze")); // Tympanum (Bronze)
+    initTabBlock(new BlockCarvedPanelling("panelling_carved_dark_oak")); // Carved Panelling (Dark Oak)
   }
 }

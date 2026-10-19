@@ -21,6 +21,12 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Automatic Sliding Door (Clear Aluminium / Dark Bronze), and its fixed Sidelite | `auto_door_slider_clear`, `auto_door_slider_bronze`, `auto_door_sidelite_clear`, `auto_door_sidelite_bronze` |
 | Automatic Door Activation Mat | `auto_door_mat` |
 | Interior Door (Dark Oak), with a Vision Lite, Front Door (Dark Oak), Fire Door (Dark Oak, Wired Lite) | `door_wood_dark_oak`, `door_wood_dark_oak_lite`, `door_front_dark_oak`, `door_wood_dark_oak_fire` |
+| Cathedral Door (Dark Oak / Weathered Oak / Bronze), and its Arch Head | `cathedral_door_<variant>`, `cathedral_door_<variant>_arch`; variant `dark_oak`, `weathered_oak`, `bronze` |
+| Tympanum (Dark Oak / Weathered Oak / Bronze) | `cathedral_tympanum_<variant>` |
+| Carved Panelling (Dark Oak) | `panelling_carved_dark_oak` |
+
+The dark oak and cathedral doors were added for a Gothic church (2026-10), whose great west
+portal had to be built of CSM doors; see **Dark oak doors** and **Cathedral doors** below.
 
 The hospital, smoke, lead-lined and automatic doors were added for a hospital build (2026-10),
 whose corridors read as white walls with solid white doors; see **Hospital doors** and
@@ -303,6 +309,84 @@ fire door's look on a veneer leaf. As the steel fire door does, the dark oak fir
 **out** by default (`OUTSWING`, in `gen_doors.py` and `DoorSwingDirection`). The plain and lite
 leaves wear black levers, the front door brass, as the white and black front doors do.
 
+## Cathedral doors
+
+A great door for a church portal: `BlockCathedralDoor` (`cathedral_door_<variant>`), a leaf **two
+blocks wide** and as tall as its opening, in dark oak, weathered oak or bronze, with iron strap
+hinges on its bottom and top rows (bronze straps on the bronze door), a ring pull, and studded
+panels on its outside face (boards and ledges inside). `BlockCathedralDoorArch`
+(`cathedral_door_<variant>_arch`) is its **pointed head**: three courses of leaf above it, cut by
+the arch, with the stone beside the arch (a grey ashlar) in the leaf's plane. Two leaves
+latch to latch are a **pair**, and their heads make one arch four blocks across; a single leaf's
+head is a lancet two across. Both rise three blocks. `BlockCathedralTympanum` fills the same arch,
+fixed, over a square-headed door, and `BlockCarvedPanelling` is a block of linenfold for the
+surround. Every asset comes from `gen_cathedral_doors.py`, which `gen_doors.py` imports and writes
+and checks with the rest (no religious symbols: the tympanum's carving is plain blind tracery,
+two lancets and a ring).
+
+- **Placing from the item.** Look in from outside, as for any door. The cell clicked into is the
+  leaf's **hinge column** and the leaf grows to the right (**sneak**: hinged on the right, growing
+  left), filling the opening upward: three blocks, or four if the fourth is clear. A leaf placed
+  beside another leaf's latch column, that leaf still alone, becomes its **pair**: it hinges on
+  the far side and grows away from it. The **arch head** is placed on top of a leaf (click the
+  top of its top row): it fills three courses over both columns, hung and opened as the leaf is.
+  The **tympanum** is placed from its left column: four blocks across where there is room
+  (**sneak** for two), three high.
+- **Using.** A click opens or shuts the leaf and its pair. **Redstone** at any cell of a leaf
+  holds it and its pair open while powered. A **keypad, button or control station** links to a
+  leaf as to any door (sneak-click the control, then any cell of the leaf); a keypad locks the
+  leaf (and so the pair) from outside, and the inside still lets people out. No closer and no
+  reversing: a cathedral door swings in.
+- **Breaking** any cell of the leaf takes the whole leaf and its head; one item drops (and the
+  head's, for a survival player). Breaking a head cell takes only the head.
+
+**One block per cell, not a master and parts.** A leaf could have been one master cell with
+invisible part cells, as Roads' utility box and Healthcare's units are. That was weighed and
+turned down: a master's four bits are spent on the facing, open and hinge every leaf needs, so its
+height and its head would have had to live in a tile entity, and a refill command would have been
+needed to put back lost parts; one cell drawing a 2 x 7 leaf would be lit by its own light, culled
+with its own chunk section, and reach past the -16..32 a JSON element allows. Instead, as a garage
+door is built to its opening, **every cell stores the same four bits** -- facing (bits 0-1),
+open (bit 2), hinged on the right (bit 3) -- and reads the rest from its neighbours as actual
+state:
+
+| Property | Where from |
+|---|---|
+| `column` (hinge / latch) | count the like cells beside it toward its hinge side: even is the hinge column, odd the latch, so two leaves hinged the same way side by side stay two leaves |
+| `row` (bottom / middle / top) | whether a like cell is below it and above it; straps go on the bottom and top rows, the ring pull on the bottom row of the latch column |
+| `course` (0-2), `paired` (head only) | like cells below it; whether, past its latch column, the next leaf's head is hinged the other way |
+| `swing` | whether the leaf's **master** -- its bottom cell on the hinge side -- has a `TileEntityDoorSwing` |
+
+So each cell draws its own piece from baked models and nothing has a tile entity at rest. States:
+the leaf block 4 facings x 2 open x 2 hinges x 2 columns x 3 rows x 2 swing = **192**, the head
+4 x 2 x 2 x 2 x 3 courses x 2 paired x 2 swing = **384**, the tympanum 4 facings x 4 columns x
+3 courses x 2 paired = **96**, the panelling 1; 2,017 for all ten blocks. Each state draws one
+model, a child of a geometry parent shared by the three variants (a model names textures only),
+so 90 geometry parents and 270 small children in all. The cost of finding things out from
+neighbours is a handful of `getBlockState` calls per cell when a chunk is built (the run walk
+stops at the first unlike cell; a leaf is at most 12 cells tall), and the same when a door is
+clicked or its neighbours change.
+
+**The swing.** Opening sets every cell of both leaves' `open` (flag 10, no neighbour updates) and
+sends a block event to each master; each client that gets it puts a `TileEntityDoorSwing` on the
+master (the same client-only tile entity as the doors', told to take 16 ticks) and has every
+cell rebuilt. The cells read `swing` true and draw nothing; the renderer draws every cell's own
+shut model, moved to where the cell is in the leaf and turned about the hinge pivot (T/2, 16 -
+T/2) px, T = 2.5, which `gen_cathedral_doors.py` turns the open models about, so the swing ends on
+exactly the open models. The head's stone is marked `TINT_FIXED` and drawn where it is. When the
+swing is over the tile entity takes itself away and the cells are rebuilt again. The latch
+column's open model lies along the jamb a block inside its cell, at x -16..-13.5 px and z -16..0
+in its own frame, inside what a JSON element may reach; its collision box is out there with it,
+and entities gather boxes from the blocks round them, so it collides. Nothing on the inside face
+of the latch column can stand proud of the leaf, or its open model would pass -16: the ring pull
+and the straps are outside.
+
+**The arch.** Each side of the arch is an arc centred on the springing line: over a pair, a span of
+64 px and a rise of 48 (radius 52, a drop arch); over a single leaf, 32 and 48 (radius 80, a
+lancet). It is stepped a pixel row at a time and rows of the same width merged, so a head cell is
+up to sixteen elements of leaf and as many of stone. The tympanum's carving is one 64 px sheet
+drawn at 16 px a block, each cell's face given its window of it as explicit UVs.
+
 ## Placing by command
 
 Every door can be placed and set up with `/setblock` alone; none needs a GUI or a click. A door
@@ -341,10 +425,59 @@ east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave t
 No door has NBT to set: at rest no door has a tile entity (the custom door's settings are the
 exception, in its own section).
 
+### Cathedral doors by command
+
+A cathedral door has no master to place and nothing to refill: **every cell of a leaf, head
+included, takes one metadata value**, `facing + 4 * open + 8 * hinged right`, and works out the
+rest from its neighbours. Fill the leaf's cells with `cathedral_door_<variant>`, the head's three
+courses above with `cathedral_door_<variant>_arch`, in any order. Facing is the way to the
+inside (the way a player faces, outside, placing it): **S 0, W 1, N 2, E 3**; left and right are
+seen from outside, looking in.
+
+| Facing | Left is | Leaf hinged left (shut / open) | Leaf hinged right (shut / open) |
+|---|---|---|---|
+| north | west (-x) | `2` / `6` | `10` / `14` |
+| east | north (-z) | `3` / `7` | `11` / `15` |
+| south | east (+x) | `0` / `4` | `8` / `12` |
+| west | south (+z) | `1` / `5` | `9` / `13` |
+
+A **pair** is a leaf hinged left with a leaf hinged right on its right, latch to latch. A
+**2 x 4 arched pair facing north**, its lower west corner at (x, y, z), dark oak:
+
+```
+/fill x   y   z x+1 y+3 z csm:cathedral_door_dark_oak 2
+/fill x   y+4 z x+1 y+6 z csm:cathedral_door_dark_oak_arch 2
+/fill x+2 y   z x+3 y+3 z csm:cathedral_door_dark_oak 10
+/fill x+2 y+4 z x+3 y+6 z csm:cathedral_door_dark_oak_arch 10
+```
+
+or cell by cell, the same thing: `/setblock` each of the 16 leaf cells (x..x+3, y..y+3) with
+the leaf block and each of the 12 head cells (x..x+3, y+4..y+6) with the head block, `2` for the
+west two columns and `10` for the east two. The west leaf's master is (x, y, z), the east
+leaf's (x+3, y, z): that is where a keypad links, and where a lock is kept. Facing east, left
+is north: the same pair in the wall at x, its north end at z, takes `3` in (x, z) and (x, z+1)
+and `11` in (x, z+2) and (x, z+3). To open a placed leaf by command, set every one of its
+cells (and its pair's) to the open value; a click or redstone does that for you. A single leaf
+with a head is two columns and the head's lancet follows from it having no pair.
+
+A **tympanum** cell's metadata is `facing + 4 * column`, column 0 to 3 from the left seen from
+outside; course and pair are found from the neighbours. Over a square-headed pair facing north
+at (x, y, z): `/setblock x+c y+k z csm:cathedral_tympanum_dark_oak <2 + 4c>` for c 0-3, k 0-2
+(metadata 2, 6, 10, 14 by column). Over a single leaf, columns 0 and 1 only.
+`panelling_carved_dark_oak` is a plain block, metadata 0.
+
+**Replacing other doors in place.** Clear the old doors first (`/fill ... air` changes the whole
+region before any neighbour is told, so nothing drops), or set each two-block door's **lower
+half first**: setting an upper half first makes its lower half find itself alone, remove itself
+and drop its item. Setting a cathedral cell to anything else takes the rest of its leaf away
+(breaking any cell does), so swap a cathedral leaf for another variant by setting all its cells.
+
 ## Cost
 
 A storefront door is two glass panes and a Sheet Metal, a hollow metal, fire or exit door two Sheet
-Metal and a Fastener Kit, and a wood or residential door three planks. The Door Closer and the
+Metal and a Fastener Kit, and a wood or residential door three planks. A cathedral door leaf (or
+its arch head) is six planks and an iron ingot, or three Sheet Metal and two Fastener Kits in
+bronze; a tympanum three planks (two Sheet Metal in bronze); carved panelling two planks. The Door Closer and the
 Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.json`,
 `recipes/door_swing_tool.json`, only while `csm_building` is loaded) instead of a Fabricator cost. The Door Workshop is four planks, two Fastener Kits and a Sheet Metal
 (a bench with a vice), priced before the door rule catches its name.
@@ -376,6 +509,11 @@ Door Swing Tool are items, so they have crafting recipes (`recipes/door_closer.j
   the closer's (and a custom door's auto-close) tick reads a deadline each hand-opening pushes back
   (`armClose` / `closeDue` in `BlockBuildingDoor`) and waits on if it has come early. Before that, a
   door shut by hand and opened again inside its time slammed on the first opening's tick (#234).
+- **A cell that finds its leaf from its neighbours cannot do so once it is gone.** `breakBlock`
+  is called after the world already holds what replaced the cell, so a cathedral cell works out
+  its leaf from the cells still there and its own old state (`was`), not from the world.
+- **A JSON element's -16..32 limit binds the open pose, not the shut one.** A cathedral latch
+  column turns a block away from its cell; anything on its inside face would have passed -16.
 - **1.12's long array tag cannot be read back** (no getter), so `DoorLocks` stores positions as
   pairs of ints.
 - **A door's box is not always where the door is drawn.** A swing's box jumps to where the swing

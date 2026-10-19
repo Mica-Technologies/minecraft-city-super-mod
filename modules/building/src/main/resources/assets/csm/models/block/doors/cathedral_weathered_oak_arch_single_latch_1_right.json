@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/doors/cathedral_geo_arch_single_latch_1_right",
+  "textures": {
+    "particle": "csm:blocks/doors/cathedral_weathered_oak_face",
+    "face": "csm:blocks/doors/cathedral_weathered_oak_face",
+    "field": "csm:blocks/doors/cathedral_weathered_oak_field",
+    "inside": "csm:blocks/doors/cathedral_weathered_oak_inside",
+    "edge": "csm:blocks/doors/cathedral_weathered_oak_edge",
+    "hw": "csm:blocks/doors/cathedral_iron",
+    "stone": "csm:blocks/doors/cathedral_stone"
+  }
+}

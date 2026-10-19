@@ -207,6 +207,12 @@ BUILT_IN_CLOSER = ("door_smoke_metal_grey", "door_smoke_metal_beige")
 NARROW_PIVOT_X = 8.875
 
 
+def _cathedral():
+    """The cathedral doors, tympana and panelling (gen_cathedral_doors.py), written with these."""
+    import gen_cathedral_doors
+    return gen_cathedral_doors
+
+
 def narrow(name):
     return name.endswith("_narrow")
 
@@ -683,6 +689,7 @@ def textures():
     out["door_trefoil"] = trefoil()
     out.update(workshop_textures())
     out.update(auto_textures())
+    out.update(_cathedral().textures())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -1075,6 +1082,7 @@ def models():
         out[prefix + "_right_open"] = _model(_rounded(sc._mirror_x(flip(open_))), hw)
     out["door_workshop"] = workshop_model()
     out.update(auto_models())
+    out.update(_cathedral().models())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -1122,6 +1130,7 @@ def blockstates():
     out = {name: state_for(name) for name in DOORS}
     out["door_workshop"] = workshop_state()
     out.update(auto_states())
+    out.update(_cathedral().blockstates())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -1383,6 +1392,7 @@ def lang_entries():
     out.append(("item.door_swing_tool.name", dict(zip(LANGS, SWING_TOOL_NAMES))))
     out += [(k, dict(zip(LANGS, v))) for k, v in SWING_LANG.items()]
     out += [(k, dict(zip(LANGS, v))) for k, v in CUSTOM_LANG.items()]
+    out += _cathedral().lang_entries(LANGS)
     return out
 
 
@@ -1396,6 +1406,7 @@ def tab_lines():
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")
     lines.append("    initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent);"
                  " // Door Swing Tool")
+    lines += _cathedral().tab_lines()
     return lines
 
 

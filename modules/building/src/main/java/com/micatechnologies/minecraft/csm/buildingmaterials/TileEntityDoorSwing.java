@@ -97,6 +97,11 @@ public class TileEntityDoorSwing extends AbstractTileEntity implements ITickable
    */
   static void redraw(World world, BlockPos upperPos) {
     IBlockState upper = world.getBlockState(upperPos);
+    if (upper.getBlock() instanceof BlockCathedralDoor) {
+      // A cathedral door's master: every cell of its leaf.
+      BlockCathedralDoor.redrawLeaf(world, upperPos);
+      return;
+    }
     IBlockState lower = world.getBlockState(upperPos.down());
     world.notifyBlockUpdate(upperPos, upper, upper, 8);
     world.notifyBlockUpdate(upperPos.down(), lower, lower, 8);
@@ -152,11 +157,18 @@ public class TileEntityDoorSwing extends AbstractTileEntity implements ITickable
     return compound;
   }
 
-  /** Both halves of the door, and the cell it swings through. */
+  /**
+   * Both halves of the door, and the cell it swings through; for a cathedral door's master, the
+   * whole leaf, its head, and the cells it swings through.
+   */
   @Override
   @SideOnly(Side.CLIENT)
   @Nonnull
   public AxisAlignedBB getRenderBoundingBox() {
+    if (world != null && world.getBlockState(pos).getBlock() instanceof BlockCathedralDoor) {
+      return new AxisAlignedBB(pos.add(-3, -1, -3),
+          pos.add(4, BlockCathedralDoor.MAX_ROWS + 1, 4));
+    }
     return new AxisAlignedBB(pos.down(), pos.up()).grow(1.0);
   }
 }

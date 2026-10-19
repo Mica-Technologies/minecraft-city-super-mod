@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -54,7 +55,8 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
       DoorLocks.get(world).unlock(this.target);
     }
     this.target = target.toImmutable();
-    if (keypad && world.getBlockState(this.target).getBlock() instanceof BlockBuildingDoor) {
+    Block door = world.getBlockState(this.target).getBlock();
+    if (keypad && (door instanceof BlockBuildingDoor || door instanceof BlockCathedralDoor)) {
       DoorLocks.get(world).lock(this.target, pos);
     }
     markDirtySync(world, pos, true);
@@ -142,6 +144,10 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
     }
     if (state.getBlock() instanceof BlockBuildingDoor) {
       ((BlockBuildingDoor) state.getBlock()).command(world, target, command);
+      return true;
+    }
+    if (state.getBlock() instanceof BlockCathedralDoor) {
+      ((BlockCathedralDoor) state.getBlock()).command(world, target, command);
       return true;
     }
     if (state.getBlock() instanceof BlockGarageDoorOpener) {
