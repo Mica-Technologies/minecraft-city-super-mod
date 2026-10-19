@@ -20,6 +20,7 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Lead-Lined Door (Radiation) | `door_lead_lined` |
 | Automatic Sliding Door (Clear Aluminium / Dark Bronze), and its fixed Sidelite | `auto_door_slider_clear`, `auto_door_slider_bronze`, `auto_door_sidelite_clear`, `auto_door_sidelite_bronze` |
 | Automatic Door Activation Mat | `auto_door_mat` |
+| Interior Door (Dark Oak), with a Vision Lite, Front Door (Dark Oak), Fire Door (Dark Oak, Wired Lite) | `door_wood_dark_oak`, `door_wood_dark_oak_lite`, `door_front_dark_oak`, `door_wood_dark_oak_fire` |
 
 The hospital, smoke, lead-lined and automatic doors were added for a hospital build (2026-10),
 whose corridors read as white walls with solid white doors; see **Hospital doors** and
@@ -292,6 +293,16 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   for a mat a pixel thick is the floor under it.
 - No closer (the item refuses it) and no reversing (the Door Swing Tool refuses it).
 
+## Dark oak doors
+
+Four more leaves on `BlockBuildingDoor`, drawn by the same generator rows as their oak and white
+siblings, so they do everything those do (pairs, hinge sides, the Door Closer, the Door Swing
+Tool, keypad locks, redstone): a flush veneer **interior door**, the same with a **vision lite**, a
+six-panel **front door** (the family's panelled look) and a **fire door** with a wired lite, the
+fire door's look on a veneer leaf. As the steel fire door does, the dark oak fire door swings
+**out** by default (`OUTSWING`, in `gen_doors.py` and `DoorSwingDirection`). The plain and lite
+leaves wear black levers, the front door brass, as the white and black front doors do.
+
 ## Placing by command
 
 Every door can be placed and set up with `/setblock` alone; none needs a GUI or a click. A door
@@ -324,6 +335,8 @@ east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave t
 | `auto_door_slider_*` | facing, open | hinge = the side it slides to | opens on redstone or a mat |
 | `auto_door_sidelite_*` | facing | `8` (hinge ignored) | never moves |
 | `auto_door_mat` | `0` | -- | one block, on the floor beside the door |
+| `door_wood_dark_oak`, `_lite`, `door_front_dark_oak` | facing, open | hinge, closer, reversed | swing in by default |
+| `door_wood_dark_oak_fire` | facing, open | hinge, closer, reversed | swings out by default |
 
 No door has NBT to set: at rest no door has a tile entity (the custom door's settings are the
 exception, in its own section).
