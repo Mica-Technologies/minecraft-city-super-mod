@@ -160,6 +160,40 @@ def emblem(img, cx, cy, r, colour, width=None):
 
 
 # ------------------------------------------------------------------------------------------
+# Sign legends in the committed highway fonts
+# ------------------------------------------------------------------------------------------
+FONT_DIR = os.path.join(REPO, "assets", "fonts")
+
+
+def legend_mask(text, cap_h, series="E", max_w=None):
+    """A legend in one of the committed FHWA-style fonts (assets/fonts) as an alpha mask, cap_h
+    texels from cap line to baseline, squeezed to max_w if it is wider. Drawn large and reduced,
+    so it is the same on every run (gen_streetscape_utility.py's way). For a sign meant to be
+    read from down a corridor, where the 3 x 5 pixel font is too thin and its M reads as H."""
+    from PIL import ImageDraw, ImageFont
+    big = 240
+    font = ImageFont.truetype(os.path.join(FONT_DIR, "MicaOpenHighway-Series%s.ttf" % series),
+                              big)
+    top, bottom = font.getbbox("H")[1], font.getbbox("H")[3]
+    l, _, r, _ = font.getbbox(text)
+    img = Image.new("L", (r - l + 8, bottom + 8), 0)
+    ImageDraw.Draw(img).text((4 - l, 0), text, font=font, fill=255)
+    img = img.crop((4, top, 4 + r - l, bottom))
+    k = cap_h / float(bottom - top)
+    w = max(1, int(round(img.width * k)))
+    if max_w is not None and w > max_w:
+        w = max_w
+    return img.resize((w, cap_h), Image.LANCZOS)
+
+
+def stamp_legend(img, text, cx, y, colour, cap_h, series="E", max_w=None):
+    """Draws a legend centred on cx with its cap line at y."""
+    mask = legend_mask(text, cap_h, series, max_w)
+    img.paste(Image.new("RGBA", mask.size, tuple(colour[:3]) + (255,)),
+              (int(round(cx - mask.width / 2.0)), y), mask)
+
+
+# ------------------------------------------------------------------------------------------
 # Animated textures
 # ------------------------------------------------------------------------------------------
 def animation(cat, name, frames, frametime, interpolate=False):
