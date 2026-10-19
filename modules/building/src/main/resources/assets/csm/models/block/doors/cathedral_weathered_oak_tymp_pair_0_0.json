@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/doors/cathedral_geo_tymp_pair_0_0",
+  "textures": {
+    "particle": "csm:blocks/doors/cathedral_weathered_oak_edge",
+    "tymp": "csm:blocks/doors/cathedral_weathered_oak_tympanum_pair",
+    "inside": "csm:blocks/doors/cathedral_weathered_oak_inside",
+    "edge": "csm:blocks/doors/cathedral_weathered_oak_edge",
+    "stone": "csm:blocks/doors/cathedral_stone"
+  }
+}

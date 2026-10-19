@@ -153,11 +153,21 @@ def cost_for(registry, info, ancestors):
     if tab == "tabbuildingmaterials":
         if (has_word(registry, "door") and not has_word(registry, "garage")
                 and not has_word(registry, "keypad")):
+            if has_word(registry, "cathedral"):
+                if has_word(registry, "bronze"):
+                    return ("SHEET_METAL x3", "FASTENER_KIT x2")
+                return ("planks x6", "iron_ingot")
+            if has_word(registry, "workshop"):
+                return ("planks x4", "FASTENER_KIT x2", "SHEET_METAL")
             if has_word(registry, "storefront"):
                 return ("glass_pane x2", "SHEET_METAL")
             if has_word(registry, "metal") or has_word(registry, "fire") or has_word(registry, "exit"):
                 return ("SHEET_METAL x2", "FASTENER_KIT")
             return ("planks x3",)
+        if has_word(registry, "tympanum"):
+            return ("SHEET_METAL x2",) if has_word(registry, "bronze") else ("planks x3",)
+        if has_word(registry, "panelling"):
+            return ("planks x2",)
         if has_word(registry, "metal"):
             dye = _metal_dye(registry)
             if has("AbstractBlockSlab"):

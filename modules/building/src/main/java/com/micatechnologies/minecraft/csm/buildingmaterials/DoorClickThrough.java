@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -59,7 +60,7 @@ public final class DoorClickThrough {
     }
     World world = event.getWorld();
     BlockPos target = event.getPos();
-    if (world.getBlockState(target).getBlock() instanceof BlockBuildingDoor) {
+    if (isDoor(world.getBlockState(target).getBlock())) {
       return; // a click on the door itself: the door handles it
     }
     Vec3d hit = event.getHitVec();
@@ -105,10 +106,14 @@ public final class DoorClickThrough {
       if (p.equals(eyeCell) || p.equals(feetCell) || !world.isBlockLoaded(p)) {
         continue;
       }
-      if (world.getBlockState(p).getBlock() instanceof BlockBuildingDoor) {
+      if (isDoor(world.getBlockState(p).getBlock())) {
         return true;
       }
     }
     return false;
+  }
+
+  private static boolean isDoor(Block block) {
+    return block instanceof BlockBuildingDoor || block instanceof BlockCathedralDoor;
   }
 }

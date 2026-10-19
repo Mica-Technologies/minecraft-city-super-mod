@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "227 blocks in this tab"
+!!! info "237 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -51,10 +51,17 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Buff Brick Stairs | `csm:brick_buff_stairs` | 2 | 10 | pickaxe | 1 |
 | Bullet-Resistant Glass | `csm:glass_bullet` |  |  | pickaxe | 0 |
 | Bullet-Resistant Glass Pane | `csm:glass_pane_bullet` |  |  | pickaxe | 0 |
+| Carved Panelling (Dark Oak) | `csm:panelling_carved_dark_oak` | 2 | 3 | axe | 0 |
 | Cast Stone Veneer | `csm:stone_cast` | 2 | 10 | pickaxe | 1 |
 | Cast Stone Veneer Fence | `csm:stone_cast_fence` | 2 | 10 | pickaxe | 1 |
 | Cast Stone Veneer Slab | `csm:stone_cast_slab` | 2 | 10 | pickaxe | 1 |
 | Cast Stone Veneer Stairs | `csm:stone_cast_stairs` | 2 | 10 | pickaxe | 1 |
+| Cathedral Door (Bronze) | `csm:cathedral_door_bronze` |  |  |  |  |
+| Cathedral Door (Dark Oak) | `csm:cathedral_door_dark_oak` |  |  |  |  |
+| Cathedral Door (Weathered Oak) | `csm:cathedral_door_weathered_oak` |  |  |  |  |
+| Cathedral Door Arch Head (Bronze) | `csm:cathedral_door_bronze_arch` |  |  |  |  |
+| Cathedral Door Arch Head (Dark Oak) | `csm:cathedral_door_dark_oak_arch` |  |  |  |  |
+| Cathedral Door Arch Head (Weathered Oak) | `csm:cathedral_door_weathered_oak_arch` |  |  |  |  |
 | Cedar Shingle Siding | `csm:siding_shingle` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Fence | `csm:siding_shingle_fence` | 2 | 5 | axe | 0 |
 | Cedar Shingle Siding Slab | `csm:siding_shingle_slab` | 2 | 5 | axe | 0 |
@@ -224,6 +231,9 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Standing Seam Cladding Slab | `csm:cladding_standingseam_slab` | 3 | 10 | pickaxe | 1 |
 | Standing Seam Cladding Stairs | `csm:cladding_standingseam_stairs` | 3 | 10 | pickaxe | 1 |
 | Storefront Door (Dark Bronze) | `csm:door_storefront_bronze` |  |  |  |  |
+| Tympanum (Bronze) | `csm:cathedral_tympanum_bronze` |  |  |  |  |
+| Tympanum (Dark Oak) | `csm:cathedral_tympanum_dark_oak` |  |  |  |  |
+| Tympanum (Weathered Oak) | `csm:cathedral_tympanum_weathered_oak` |  |  |  |  |
 | Vinyl Siding | `csm:siding_vinyl` | 2 | 5 | axe | 0 |
 | Vinyl Siding Fence | `csm:siding_vinyl_fence` | 2 | 5 | axe | 0 |
 | Vinyl Siding Slab | `csm:siding_vinyl_slab` | 2 | 5 | axe | 0 |

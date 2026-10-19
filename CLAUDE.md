@@ -373,7 +373,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   rotated, the swing drawn from the resting models by a client-only tile entity that removes
   itself, which way each door swings and how it is flipped, and why locks are world saved data;
   the hospital, smoke barrier and lead-lined doors, the automatic sliding doors and their
-  activation mat, and the metadata table for placing every door by command
+  activation mat; the dark oak doors; the cathedral doors (a leaf two wide built to its opening, one
+  block per cell with every cell the same four bits, the pointed arch head and tympanum, why not a
+  master and parts); and the metadata table for placing every door by command
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
@@ -757,7 +759,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   into the next cell; `--check` fails on drift
 - `gen_doors.py` -- the doors: two halves per door, left and right hinge, and the open pose written
   as the closed model turned a quarter about the hinge pivot the swing renderer shares; the door
-  closer's parts and item; `--check` fails on drift
+  closer's parts and item; and, through `gen_cathedral_doors.py`, the cathedral doors (a leaf's
+  cells, the arch head stepped a pixel row at a time, geometry parents shared by the three
+  variants), the tympana and the carved panelling; `--check` fails on drift
 - `gen_garage_doors.py` -- the garage doors, opener and hanger: textures, the part models drawn
   on the edge of the door they belong to, the sectional door's ceiling runs and tracks and the
   opener's rail as OBJ per length, and the multipart blockstates; `--check` fails on drift

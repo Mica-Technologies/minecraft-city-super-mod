@@ -1,0 +1,367 @@
+{
+  "variants": {
+    "col=0,course=0,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_0"
+    },
+    "col=0,course=0,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_0"
+    },
+    "col=0,course=0,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_0",
+      "y": 90
+    },
+    "col=0,course=0,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_0",
+      "y": 90
+    },
+    "col=0,course=0,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_0",
+      "y": 180
+    },
+    "col=0,course=0,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_0",
+      "y": 180
+    },
+    "col=0,course=0,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_0",
+      "y": 270
+    },
+    "col=0,course=0,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_0",
+      "y": 270
+    },
+    "col=0,course=1,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_1"
+    },
+    "col=0,course=1,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_1"
+    },
+    "col=0,course=1,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_1",
+      "y": 90
+    },
+    "col=0,course=1,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_1",
+      "y": 90
+    },
+    "col=0,course=1,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_1",
+      "y": 180
+    },
+    "col=0,course=1,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_1",
+      "y": 180
+    },
+    "col=0,course=1,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_1",
+      "y": 270
+    },
+    "col=0,course=1,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_1",
+      "y": 270
+    },
+    "col=0,course=2,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_2"
+    },
+    "col=0,course=2,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_2"
+    },
+    "col=0,course=2,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_2",
+      "y": 90
+    },
+    "col=0,course=2,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_2",
+      "y": 90
+    },
+    "col=0,course=2,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_2",
+      "y": 180
+    },
+    "col=0,course=2,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_2",
+      "y": 180
+    },
+    "col=0,course=2,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_0_2",
+      "y": 270
+    },
+    "col=0,course=2,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_0_2",
+      "y": 270
+    },
+    "col=1,course=0,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_0"
+    },
+    "col=1,course=0,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_0"
+    },
+    "col=1,course=0,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_0",
+      "y": 90
+    },
+    "col=1,course=0,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_0",
+      "y": 90
+    },
+    "col=1,course=0,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_0",
+      "y": 180
+    },
+    "col=1,course=0,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_0",
+      "y": 180
+    },
+    "col=1,course=0,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_0",
+      "y": 270
+    },
+    "col=1,course=0,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_0",
+      "y": 270
+    },
+    "col=1,course=1,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_1"
+    },
+    "col=1,course=1,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_1"
+    },
+    "col=1,course=1,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_1",
+      "y": 90
+    },
+    "col=1,course=1,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_1",
+      "y": 90
+    },
+    "col=1,course=1,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_1",
+      "y": 180
+    },
+    "col=1,course=1,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_1",
+      "y": 180
+    },
+    "col=1,course=1,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_1",
+      "y": 270
+    },
+    "col=1,course=1,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_1",
+      "y": 270
+    },
+    "col=1,course=2,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_2"
+    },
+    "col=1,course=2,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_2"
+    },
+    "col=1,course=2,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_2",
+      "y": 90
+    },
+    "col=1,course=2,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_2",
+      "y": 90
+    },
+    "col=1,course=2,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_2",
+      "y": 180
+    },
+    "col=1,course=2,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_2",
+      "y": 180
+    },
+    "col=1,course=2,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_single_1_2",
+      "y": 270
+    },
+    "col=1,course=2,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_1_2",
+      "y": 270
+    },
+    "col=2,course=0,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0"
+    },
+    "col=2,course=0,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0"
+    },
+    "col=2,course=0,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0",
+      "y": 90
+    },
+    "col=2,course=0,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0",
+      "y": 90
+    },
+    "col=2,course=0,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0",
+      "y": 180
+    },
+    "col=2,course=0,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0",
+      "y": 180
+    },
+    "col=2,course=0,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0",
+      "y": 270
+    },
+    "col=2,course=0,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_0",
+      "y": 270
+    },
+    "col=2,course=1,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1"
+    },
+    "col=2,course=1,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1"
+    },
+    "col=2,course=1,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1",
+      "y": 90
+    },
+    "col=2,course=1,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1",
+      "y": 90
+    },
+    "col=2,course=1,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1",
+      "y": 180
+    },
+    "col=2,course=1,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1",
+      "y": 180
+    },
+    "col=2,course=1,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1",
+      "y": 270
+    },
+    "col=2,course=1,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_1",
+      "y": 270
+    },
+    "col=2,course=2,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2"
+    },
+    "col=2,course=2,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2"
+    },
+    "col=2,course=2,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2",
+      "y": 90
+    },
+    "col=2,course=2,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2",
+      "y": 90
+    },
+    "col=2,course=2,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2",
+      "y": 180
+    },
+    "col=2,course=2,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2",
+      "y": 180
+    },
+    "col=2,course=2,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2",
+      "y": 270
+    },
+    "col=2,course=2,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_2_2",
+      "y": 270
+    },
+    "col=3,course=0,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0"
+    },
+    "col=3,course=0,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0"
+    },
+    "col=3,course=0,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0",
+      "y": 90
+    },
+    "col=3,course=0,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0",
+      "y": 90
+    },
+    "col=3,course=0,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0",
+      "y": 180
+    },
+    "col=3,course=0,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0",
+      "y": 180
+    },
+    "col=3,course=0,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0",
+      "y": 270
+    },
+    "col=3,course=0,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_0",
+      "y": 270
+    },
+    "col=3,course=1,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1"
+    },
+    "col=3,course=1,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1"
+    },
+    "col=3,course=1,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1",
+      "y": 90
+    },
+    "col=3,course=1,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1",
+      "y": 90
+    },
+    "col=3,course=1,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1",
+      "y": 180
+    },
+    "col=3,course=1,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1",
+      "y": 180
+    },
+    "col=3,course=1,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1",
+      "y": 270
+    },
+    "col=3,course=1,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_1",
+      "y": 270
+    },
+    "col=3,course=2,facing=north,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2"
+    },
+    "col=3,course=2,facing=north,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2"
+    },
+    "col=3,course=2,facing=east,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2",
+      "y": 90
+    },
+    "col=3,course=2,facing=east,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2",
+      "y": 90
+    },
+    "col=3,course=2,facing=south,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2",
+      "y": 180
+    },
+    "col=3,course=2,facing=south,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2",
+      "y": 180
+    },
+    "col=3,course=2,facing=west,paired=false": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2",
+      "y": 270
+    },
+    "col=3,course=2,facing=west,paired=true": {
+      "model": "csm:doors/cathedral_weathered_oak_tymp_pair_3_2",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:doors/cathedral_weathered_oak_tympanum_inventory"
+    }
+  }
+}

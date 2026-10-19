@@ -379,6 +379,16 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "door")
         && !CsmBlockDisplayNames.hasWord(registryName, "garage")
         && !CsmBlockDisplayNames.hasWord(registryName, "keypad")) {
+      // A cathedral door leaf (or its arch head) is a great deal of oak and its ironwork, or a
+      // bronze casting. Before "metal", "fire" and the timber default below.
+      if (CsmBlockDisplayNames.hasWord(registryName, "cathedral")) {
+        if (CsmBlockDisplayNames.hasWord(registryName, "bronze")) {
+          return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+              FabricatorIngredient.part(CsmParts.FASTENER_KIT, 2));
+        }
+        return cost(FabricatorIngredient.any(MC_PLANKS, 6),
+            FabricatorIngredient.any(MC_IRON_INGOT, 1));
+      }
       // The Door Workshop is a bench with a vice, not a door.
       if (CsmBlockDisplayNames.hasWord(registryName, "workshop")) {
         return cost(FabricatorIngredient.any(MC_PLANKS, 4),
@@ -396,6 +406,15 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
       }
       return cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    // A tympanum is carved oak or cast bronze; carved panelling is oak.
+    if (CsmBlockDisplayNames.hasWord(registryName, "tympanum")) {
+      return CsmBlockDisplayNames.hasWord(registryName, "bronze")
+          ? cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2))
+          : cost(FabricatorIngredient.any(MC_PLANKS, 3));
+    }
+    if (CsmBlockDisplayNames.hasWord(registryName, "panelling")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 2));
     }
     if (CsmBlockDisplayNames.hasWord(registryName, "metal")) {
       FabricatorIngredient dye = dyeForMetalColour(registryName);

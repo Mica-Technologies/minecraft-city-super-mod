@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/doors/cathedral_geo_arch_single_latch_0_left_open",
+  "textures": {
+    "particle": "csm:blocks/doors/cathedral_bronze_face",
+    "face": "csm:blocks/doors/cathedral_bronze_face",
+    "field": "csm:blocks/doors/cathedral_bronze_field",
+    "inside": "csm:blocks/doors/cathedral_bronze_inside",
+    "edge": "csm:blocks/doors/cathedral_bronze_edge",
+    "hw": "csm:blocks/doors/cathedral_bronze_hw",
+    "stone": "csm:blocks/doors/cathedral_stone"
+  }
+}

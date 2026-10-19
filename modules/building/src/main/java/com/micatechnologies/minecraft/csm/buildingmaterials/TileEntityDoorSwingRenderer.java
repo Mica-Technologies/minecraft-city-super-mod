@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -75,6 +76,11 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
       int destroyStage, float alpha) {
     BlockPos upperPos = te.getPos();
     IBlockState upper = te.getWorld().getBlockState(upperPos);
+    if (upper.getBlock() instanceof BlockCathedralDoor) {
+      bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+      renderCathedral(te, (BlockCathedralDoor) upper.getBlock(), upper, x, y, z, partialTicks);
+      return;
+    }
     if (!(upper.getBlock() instanceof BlockBuildingDoor)) {
       return;
     }
@@ -233,6 +239,82 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
       for (BakedQuad quad : upperQuads) {
         if (!quad.hasTintIndex() && isGlass(quad) == glass) {
           put(buffer, quad, facingTurn, 0, 0);
+        }
+      }
+      tessellator.draw();
+      GlStateManager.popMatrix();
+    }
+    GlStateManager.disableBlend();
+    RenderHelper.enableStandardItemLighting();
+    GlStateManager.popMatrix();
+  }
+
+  /**
+   * A cathedral door leaf while it swings, from its master (the bottom cell on the hinge side):
+   * every cell's own shut model, moved to where the cell is in the leaf and turned about the hinge
+   * pivot {@code gen_cathedral_doors.py} makes the open models with. The stone beside an arch head
+   * ({@code TINT_FIXED}) stays in the wall. Each cell is lit by its own light.
+   */
+  private void renderCathedral(TileEntityDoorSwing te, BlockCathedralDoor block,
+      IBlockState stored, double x, double y, double z, float partialTicks) {
+    World world = te.getWorld();
+    BlockPos master = te.getPos();
+    EnumFacing facing = stored.getValue(BlockCathedralDoor.FACING);
+    boolean left = stored.getValue(BlockCathedralDoor.HINGE) == BlockBuildingDoor.Hinge.LEFT;
+    double p = CsmPerformance.doorAnimation() ? te.progress(partialTicks) : 1.0;
+    double eased = 1 - (1 - p) * (1 - p);
+    double openness = te.isOpening() ? eased : 1 - eased;
+    float angle = (float) (90.0 * openness) * (left ? 1 : -1);
+    double half = BlockCathedralDoor.LEAF / 2;
+    double px = left ? half : 1 - half;
+    double pz = 1 - half;
+    float facingTurn = -(facing.getHorizontalAngle() + 180F);
+
+    GlStateManager.pushMatrix();
+    RenderHelper.disableStandardItemLighting();
+    GlStateManager.enableBlend();
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    GlStateManager.translate(x + 0.5, y, z + 0.5);
+    GlStateManager.rotate(facingTurn, 0F, 1F, 0F);
+    GlStateManager.translate(-0.5, 0, -0.5);
+    Tessellator tessellator = Tessellator.getInstance();
+    BufferBuilder buffer = tessellator.getBuffer();
+    for (BlockPos cell : block.leafCells(world::getBlockState, master, stored)) {
+      IBlockState s = world.getBlockState(cell);
+      if (!(s.getBlock() instanceof BlockCathedralDoor)) {
+        continue;
+      }
+      IBlockState shut = s.getActualState(world, cell)
+          .withProperty(BlockCathedralDoor.FACING, EnumFacing.NORTH)
+          .withProperty(BlockCathedralDoor.OPEN, false)
+          .withProperty(BlockCathedralDoor.SWING, false);
+      List<BakedQuad> cellQuads = quads(shut);
+      // Where the cell is in the leaf, in the model's frame: the latch column beside the hinge.
+      int dx = cell.getX() == master.getX() && cell.getZ() == master.getZ() ? 0 : left ? 1 : -1;
+      int dy = cell.getY() - master.getY();
+      int light = world.getCombinedLight(cell, 0);
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light & 0xFFFF,
+          light >> 16);
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(dx, dy, 0);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+      for (BakedQuad quad : cellQuads) {
+        if (quad.getTintIndex() == TINT_FIXED) {
+          put(buffer, quad, facingTurn, 0, 0);
+        }
+      }
+      tessellator.draw();
+      GlStateManager.popMatrix();
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(px, 0, pz);
+      GlStateManager.rotate(angle, 0F, 1F, 0F);
+      GlStateManager.translate(-px, 0, -pz);
+      GlStateManager.translate(dx, dy, 0);
+      buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+      for (BakedQuad quad : cellQuads) {
+        if (!quad.hasTintIndex()) {
+          put(buffer, quad, facingTurn + angle, 0, 0);
         }
       }
       tessellator.draw();
