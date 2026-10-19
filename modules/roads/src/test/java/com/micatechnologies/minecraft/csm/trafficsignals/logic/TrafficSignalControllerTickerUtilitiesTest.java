@@ -5594,18 +5594,61 @@ class TrafficSignalControllerTickerUtilitiesTest {
     void leftDemand_multiDirectionGuard() {
       BlockPos leftN = new BlockPos(1, 0, 0);
       BlockPos leftS = new BlockPos(2, 0, 0);
+      BlockPos throughN = new BlockPos(3, 0, 0);
       TrafficSignalControllerCircuit circuit = emptyCircuit();
       circuit.getLeftSignals().add(leftN);
       circuit.getLeftSignals().add(leftS);
+      circuit.getThroughSignals().add(throughN);
 
       java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
       facings.put(leftN, net.minecraft.util.EnumFacing.NORTH);
       facings.put(leftS, net.minecraft.util.EnumFacing.SOUTH);
+      facings.put(throughN, net.minecraft.util.EnumFacing.NORTH);
 
       int demand = TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
           (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
           circuit, mkSummary(0, 0, 5, 5, 0, 0, 0, 0));
       assertEquals(0, demand, "Multi-direction circuit can't safely serve protected lefts");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: opposed left arrows alone, both called → served together")
+    void leftDemand_opposedLeftsAlone_bothCalled() {
+      // #292: a circuit of two solid left arrows facing opposite ways, a car at each
+      BlockPos leftE = new BlockPos(1, 0, 0);
+      BlockPos leftW = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftE);
+      circuit.getLeftSignals().add(leftW);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(leftW, net.minecraft.util.EnumFacing.WEST);
+      Function<BlockPos, net.minecraft.util.EnumFacing> resolver = facings::get;
+
+      assertEquals(2, TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          resolver, circuit, mkSummary(1, 1, 0, 0, 0, 0, 0, 0)));
+      assertEquals(0, TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+              resolver, circuit, mkSummary(0, 3, 0, 0, 0, 0, 0, 0)),
+          "One direction called: its own directional phase serves it");
+    }
+
+    @Test
+    @DisplayName("getEffectiveLeftDemand: crossing left arrows alone are never served together")
+    void leftDemand_crossingLeftsAlone_guarded() {
+      BlockPos leftN = new BlockPos(1, 0, 0);
+      BlockPos leftE = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftN);
+      circuit.getLeftSignals().add(leftE);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(leftE, net.minecraft.util.EnumFacing.EAST);
+
+      assertEquals(0, TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(
+          (Function<BlockPos, net.minecraft.util.EnumFacing>) facings::get,
+          circuit, mkSummary(1, 0, 1, 0, 0, 0, 0, 0)));
     }
 
     @Test
@@ -6605,4 +6648,113 @@ class TrafficSignalControllerTickerUtilitiesTest {
   }
 
   // endregion
+
+  // ========================================================================
+  // getUpcomingPhasePriorityIndicator: a circuit of opposed left arrows alone (#292)
+  // ========================================================================
+  @Nested
+  @DisplayName("getUpcomingPhasePriorityIndicator with a circuit of left arrows alone")
+  class PriorityWithLeftArrowCircuitTest {
+
+    // Circuit 1 the boulevard (throughs east and west), circuit 2 its two left arrows (east and
+    // west, one sensor each), circuit 3 the cross street.
+    private final BlockPos throughE = new BlockPos(1, 0, 0);
+    private final BlockPos throughW = new BlockPos(2, 0, 0);
+    private final BlockPos leftE = new BlockPos(3, 0, 0);
+    private final BlockPos leftW = new BlockPos(4, 0, 0);
+    private final BlockPos crossN = new BlockPos(5, 0, 0);
+    private final BlockPos crossS = new BlockPos(6, 0, 0);
+    private final java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings =
+        new java.util.HashMap<>();
+    private final java.util.Map<TrafficSignalControllerCircuit, TrafficSignalSensorSummary>
+        summaries = new java.util.HashMap<>();
+    private final TrafficSignalControllerCircuits circuits = new TrafficSignalControllerCircuits();
+    private final TrafficSignalControllerCircuit boulevard = new TrafficSignalControllerCircuit();
+    private final TrafficSignalControllerCircuit lefts = new TrafficSignalControllerCircuit();
+    private final TrafficSignalControllerCircuit cross = new TrafficSignalControllerCircuit();
+
+    PriorityWithLeftArrowCircuitTest() {
+      boulevard.getThroughSignals().add(throughE);
+      boulevard.getThroughSignals().add(throughW);
+      lefts.getLeftSignals().add(leftE);
+      lefts.getLeftSignals().add(leftW);
+      cross.getThroughSignals().add(crossN);
+      cross.getThroughSignals().add(crossS);
+      circuits.addCircuit(boulevard);
+      circuits.addCircuit(lefts);
+      circuits.addCircuit(cross);
+      facings.put(throughE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(throughW, net.minecraft.util.EnumFacing.WEST);
+      facings.put(leftE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(leftW, net.minecraft.util.EnumFacing.WEST);
+      facings.put(crossN, net.minecraft.util.EnumFacing.NORTH);
+      facings.put(crossS, net.minecraft.util.EnumFacing.SOUTH);
+    }
+
+    private TrafficSignalSensorSummary cars(int standardE, int standardW, int leftCarsE,
+        int leftCarsW) {
+      return new TrafficSignalSensorSummary(
+          standardE + standardW, standardE, standardW, 0, 0,
+          leftCarsE + leftCarsW, leftCarsE, leftCarsW, 0, 0,
+          0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0);
+    }
+
+    private Tuple<Integer, TrafficSignalPhaseApplicability> rank(int excludedCircuit) {
+      return TrafficSignalControllerTickerUtilities.getUpcomingPhasePriorityIndicator(
+          circuits, false, excludedCircuit,
+          c -> summaries.getOrDefault(c, cars(0, 0, 0, 0)),
+          c -> 0,
+          facings::get);
+    }
+
+    @Test
+    @DisplayName("both left bays called → ALL_LEFTS, both arrows")
+    void bothLeftBays_allLefts() {
+      summaries.put(lefts, cars(0, 0, 1, 1));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_LEFTS, best.getSecond());
+    }
+
+    @Test
+    @DisplayName("one left bay called → that direction's phase only")
+    void oneLeftBay_directional() {
+      summaries.put(lefts, cars(0, 0, 0, 1));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_WEST, best.getSecond());
+    }
+
+    @Test
+    @DisplayName("both left bays and a boulevard car → the lefts rank first")
+    void bothLeftBaysAndBoulevard_lefts() {
+      summaries.put(lefts, cars(0, 0, 1, 1));
+      summaries.put(boulevard, cars(1, 0, 0, 0));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_LEFTS, best.getSecond());
+    }
+
+    @Test
+    @DisplayName("a tie goes to the boulevard; leaving it out finds the waiting left")
+    void tie_excludingRunningCircuitFindsWaitingLeft() {
+      summaries.put(lefts, cars(0, 0, 0, 1));
+      summaries.put(boulevard, cars(1, 0, 0, 0));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(1, best.getFirst(), "ties go to the circuit evaluated last");
+
+      Tuple<Integer, TrafficSignalPhaseApplicability> elsewhere = rank(1);
+      assertEquals(2, elsewhere.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_WEST, elsewhere.getSecond());
+    }
+
+    @Test
+    @DisplayName("leaving out the only circuit with a call → null")
+    void excludingOnlyCaller_null() {
+      summaries.put(boulevard, cars(1, 1, 0, 0));
+      assertNotNull(rank(0));
+      assertNull(rank(1));
+    }
+  }
 }

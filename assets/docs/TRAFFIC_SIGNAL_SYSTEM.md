@@ -163,7 +163,8 @@ wrappers for callers that only need a circuit-wide "any direction qualifies" che
 
 The same-direction guard for protected left (`!areSignalsFacingSameDirection → empty
 facings set`) still applies: opposing protected lefts intersect, so multi-direction
-circuits never get solid green left. Right turns on multi-direction circuits don't
+circuits never get solid green left (the one exception is a circuit of opposed left arrows
+alone with both called, which runs them together under `ALL_LEFTS`; see #292 below). Right turns on multi-direction circuits don't
 intersect (NB→E vs SB→W use disjoint paths), so the right-turn variant has no
 same-direction guard — but per-facing arbitration ensures only the directions with their
 own demand get solid green.
@@ -1244,7 +1245,18 @@ Rules the phase builders follow so the monitor never trips:
 - **Recall yields at max green to a waiting car on another circuit.** Demand ties go to the circuit
   already running, so a car standing on a left bay's sensor held its arrow while the side street
   waited behind it; once max green is up, any vehicle on another circuit's sensors now ends the
-  recall. Pedestrian requests are left out (they rank as demand of their own).
+  recall. Pedestrian requests are left out (they rank as demand of their own). The phase that
+  follows is the best call ranked with the running circuit left out
+  (`getUpcomingPhasePriorityIndicator(..., excludedCircuit)`), not the next circuit's default:
+  that default, on a circuit of left arrows alone, greens nothing, and the running circuit came
+  straight back, so waiting lefts were never served again (#292). For the same reason the
+  flashing don't walk recycle and the all-red-end redirect no longer send a change back to the
+  running circuit while a vehicle waits on another one.
+- **Opposed left arrows alone run together (#292).** A circuit of solid left arrows alone that
+  face one opposite pair (east and west, or north and south) with a car at both gets `ALL_LEFTS`
+  (`opposedLeftsBothCalled`), both arrows green; the same-direction guard otherwise left it only
+  the directional phases, one arrow at a time. A single call still gets its own direction's
+  phase, and a circuit with throughs, or with crossing arrows, keeps the guard.
 - **ADVANCED**: `RingBarrierState.enforceOutputClearance` is an output-stage clearance for the
   statelessly-computed layers (programmed overlaps' trailing green, `-GRN/YEL` modifiers, FYA
   overlays, preempt entry). Any head that was GREEN/FYA in the last applied phase and would be RED
