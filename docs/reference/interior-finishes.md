@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "68 blocks in this tab"
+!!! info "84 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,12 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Accent Wall Panel (Blue) | `csm:wall_panel_blue` |  |  |  |  |
+| Accent Wall Panel (Green) | `csm:wall_panel_green` |  |  |  |  |
+| Accent Wall Panel (Maple) | `csm:wall_panel_maple` |  |  |  |  |
+| Accent Wall Panel (Teal) | `csm:wall_panel_teal` |  |  |  |  |
+| Accent Wall Panel (Walnut) | `csm:wall_panel_walnut` |  |  |  |  |
+| Accent Wall Panel (Yellow) | `csm:wall_panel_yellow` |  |  |  |  |
 | Acoustic Wall Panel (Blue) | `csm:wall_acoustic_blue` |  |  |  |  |
 | Acoustic Wall Panel (Charcoal) | `csm:wall_acoustic_charcoal` |  |  |  |  |
 | Acoustic Wall Panel (Grey) | `csm:wall_acoustic_grey` |  |  |  |  |
@@ -46,6 +52,8 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Curtain (Navy) | `csm:curtain_navy` | 0.3 | 1 | axe | 0 |
 | Hardwood Floor (Oak) | `csm:floor_hardwood_oak` |  |  |  |  |
 | Hardwood Floor (Walnut) | `csm:floor_hardwood_walnut` |  |  |  |  |
+| Nurse Station Glass Screen (Clear) | `csm:nurse_screen_clear` | 0.5 | 2 |  | 0 |
+| Nurse Station Glass Screen (Frosted) | `csm:nurse_screen_frosted` | 0.5 | 2 |  | 0 |
 | Oak Hardwood | `csm:hardwood_oak` | 2 | 10 | axe | 0 |
 | Oak Hardwood Fence | `csm:hardwood_oak_fence` | 2 | 10 | axe | 0 |
 | Oak Hardwood Slab | `csm:hardwood_oak_slab` | 2 | 10 | axe | 0 |
@@ -65,6 +73,8 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Roller Shade (Blackout) | `csm:shade_roller_blackout` | 0.3 | 1 | axe | 0 |
 | Roller Shade (Grey) | `csm:shade_roller_grey` | 0.3 | 1 | axe | 0 |
 | Roller Shade (White) | `csm:shade_roller_white` | 0.3 | 1 | axe | 0 |
+| Room Sign (Blue) | `csm:room_plate_blue` | 0.5 | 2 |  | 0 |
+| Room Sign (Charcoal) | `csm:room_plate_charcoal` | 0.5 | 2 |  | 0 |
 | Rubber Floor (Studded) | `csm:floor_rubber_studded` |  |  |  |  |
 | Rubber Floor Block (Studded) | `csm:floor_rubber_studded_block` |  |  |  |  |
 | Sheer Curtain | `csm:curtain_sheer` | 0.3 | 1 | axe | 0 |
@@ -78,6 +88,12 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Walnut Hardwood Fence | `csm:hardwood_walnut_fence` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Slab | `csm:hardwood_walnut_slab` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Stairs | `csm:hardwood_walnut_stairs` | 2 | 10 | axe | 0 |
+| Wayfinding Stripe (Blue) | `csm:wall_stripe_blue` | 0.3 | 1 |  | 0 |
+| Wayfinding Stripe (Green) | `csm:wall_stripe_green` | 0.3 | 1 |  | 0 |
+| Wayfinding Stripe (Orange) | `csm:wall_stripe_orange` | 0.3 | 1 |  | 0 |
+| Wayfinding Stripe (Purple) | `csm:wall_stripe_purple` | 0.3 | 1 |  | 0 |
+| Wayfinding Stripe (Teal) | `csm:wall_stripe_teal` | 0.3 | 1 |  | 0 |
+| Wayfinding Stripe (Yellow) | `csm:wall_stripe_yellow` | 0.3 | 1 |  | 0 |
 | Wood Slat Wall (Oak) | `csm:wall_slatwall_oak` |  |  |  |  |
 
 </div>

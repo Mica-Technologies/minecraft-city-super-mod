@@ -1,0 +1,60 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_panel_maple",
+    "trim": "csm:blocks/wallfinish/wall_panel_trim",
+    "particle": "csm:blocks/wallfinish/wall_panel_maple"
+  },
+  "elements": [
+    {
+      "from": [
+        16,
+        0,
+        0
+      ],
+      "to": [
+        30.0,
+        15.5,
+        0.75
+      ],
+      "faces": {
+        "south": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0.5,
+            14.0,
+            16.0
+          ]
+        },
+        "north": {
+          "texture": "#face",
+          "uv": [
+            2.0,
+            0.5,
+            16.0,
+            16.0
+          ],
+          "cullface": "north"
+        },
+        "down": {
+          "texture": "#face",
+          "uv": [
+            0,
+            15.25,
+            14.0,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#face",
+          "uv": [
+            15.25,
+            0.5,
+            16.0,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

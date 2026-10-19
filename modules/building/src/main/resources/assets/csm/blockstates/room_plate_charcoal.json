@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/room_plate_charcoal_item"
+    },
+    "facing=north": {
+      "model": "csm:wallfinish/room_plate_charcoal"
+    },
+    "facing=east": {
+      "model": "csm:wallfinish/room_plate_charcoal",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wallfinish/room_plate_charcoal",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wallfinish/room_plate_charcoal",
+      "y": 270
+    }
+  }
+}

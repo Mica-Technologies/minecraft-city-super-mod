@@ -1,0 +1,59 @@
+{
+  "textures": {
+    "face": "csm:blocks/wallfinish/wall_panel_teal",
+    "trim": "csm:blocks/wallfinish/wall_panel_trim",
+    "particle": "csm:blocks/wallfinish/wall_panel_teal"
+  },
+  "elements": [
+    {
+      "from": [
+        14.75,
+        15.5,
+        1.25
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#trim",
+          "uv": [
+            1.25,
+            0,
+            16.0,
+            0.5
+          ]
+        },
+        "up": {
+          "texture": "#trim",
+          "uv": [
+            14.75,
+            1.25,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            14.75,
+            0,
+            16.0,
+            14.75
+          ]
+        },
+        "south": {
+          "texture": "#trim",
+          "uv": [
+            14.75,
+            0,
+            16.0,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

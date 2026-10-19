@@ -1,0 +1,509 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/wall_stripe_green_2"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "height": "0",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0"
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_left"
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_right"
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "0",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_0_corner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1"
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_left"
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_right"
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "1",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_1_corner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2"
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_left"
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_right"
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "2",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_2_corner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3"
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "left": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_left"
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "left": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "left": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "left": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_right"
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "height": "3",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_stripe_green_3_corner_right",
+        "y": 270
+      }
+    }
+  ]
+}

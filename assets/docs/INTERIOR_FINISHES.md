@@ -8,7 +8,8 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 |---|---|---|
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
-| Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
+| Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Accent Wall Panel (Maple, Walnut, Teal, Blue, Green, Yellow); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
+| Wall fittings | Wayfinding Stripe (Blue, Green, Teal, Yellow, Orange, Purple); Room Sign (Charcoal, Blue); Nurse Station Glass Screen (Clear, Frosted) | `gen_wall_finishes.py` |
 | Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); a full block of each of the carpet, vinyl, ceramic and rubber floors; and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
 
 ## Window treatments
@@ -144,3 +145,58 @@ tile, fabric acoustic panels, beadboard and a wood slat wall. Chosen over full-b
 Priced by material: drywall paper and a dye, wall tile two clay (it is ceramic), acoustic panels a
 wool, beadboard and slat wall a plank, a stainless guard an iron ingot and a vinyl one paper and a
 dye.
+
+### Accent wall panels
+
+`wall_panel_<colour>` (`BlockWallFinish`, kind `panel`): high-pressure laminate panels 0.75 px off
+the wall, wood-look (maple, walnut) or in a hospital colour (teal, blue, green, yellow), with the
+reveal between panels down one edge of every block and a thin anodised aluminium trim along the
+top course and the ends of the run (a trimmed kind, as tile is: `TRIM["panel"]`, one shared
+`wall_panel_trim` texture). They join, turn inside corners and abut other finishes exactly as the
+other finishes do, so an accent wall behind a nurses' station or a bed is a run of them.
+
+## Wall fittings
+
+Added for a hospital build (2026-10), on the same generator.
+
+- **Wayfinding stripe** (`BlockWallStripe`, `wall_stripe_<colour>`, six colours): a 2 px
+  department colour band, 0.25 px off a bare wall, at one of four heights. Stripes of one colour
+  at one height on one wall meet end to end with no trim, so a run reads as one band down a
+  corridor, and in an inside corner the corner cell draws the other wall's band on its side too
+  (`left` / `right`, actual state), as the finishes' corners do. Placed beside or on another
+  stripe, a stripe takes its height. No collision. A cell holds one block, so a stripe goes on a
+  bare wall (the hospital's walls are white blocks), not on a painted drywall finish.
+- **Room sign** (`BlockRoomPlate`, `room_plate_charcoal`, `room_plate_blue`): a plate beside a door
+  with the room's number over its name, white on the plate, and a row of braille dots. The legend
+  is a tile entity's (`TileEntityRoomPlate`: a number and a name index), drawn by the plate's
+  **baked model** from one 128 x 64 glyph sheet (`RoomPlateBakedModel`, `RoomPlateGlyphs`,
+  laid out as the mile markers' legends are): the quads are baked into the chunk once per number
+  and name, so a plate costs nothing a frame, and the tile entity is never ticked. Why not
+  metadata or a renderer: a number and a name are tens of thousands of combinations, past the
+  bits left after the facing and past any sane state count, and a renderer would draw every plate
+  in a hospital every frame; a data-only tile entity is a few bytes a plate. A click cycles the
+  name and a sneak-click steps the number, for building by hand.
+- **Nurse station glass screen** (`BlockNurseScreen`, `nurse_screen_clear`,
+  `nurse_screen_frosted`): a glass panel in an aluminium shoe, 11.75 px high, standing on the far
+  edge of the counter it is placed on (the edge the player looked toward). Screens of a kind side
+  by side join into one run, glass and shoe running on and a post only at each end. Glass in the
+  translucent pass, shoe and posts in the cutout pass (`ICsmGlassFronted`); the frosted screen is
+  frosted below a clear band at the top.
+
+## Placing by command
+
+Every block here is placed and set up with `/setblock` and `/blockdata` alone. Facing is a
+horizontal index, **S 0, W 1, N 2, E 3**.
+
+| Block | Metadata | NBT | States |
+|---|---|---|---|
+| `wall_<kind>_<colour>` (finishes and accent panels) | facing: the way to the wall | -- | 400 |
+| `corner_guard_*` | bits 0-1 facing (the way to the wall), bit 2 (4) the right-hand edge | -- | 8 |
+| `wall_stripe_<colour>` | bits 0-1 facing (the way to the wall), bits 2-3 height: 0 at 2..4 px, 1 at 6..8, 2 at 10..12, 3 at 13..15 | -- | 64 |
+| `room_plate_<colour>` | facing: the way to the wall | `num` (int, 0-9999, -1 for none), `name` (0 none, 1 EXAM, 2 PATIENT, 3 SOILED UTILITY, 4 CLEAN UTILITY, 5 NOURISHMENT, 6 STAFF ONLY, 7 MED ROOM, 8 STORAGE) | 4 |
+| `nurse_screen_<kind>` | facing: the side of its cell it stands on (the way to the customer side) | -- | 16 |
+
+For example, a room sign on the north wall of a corridor (the wall to the north of the cell):
+`/setblock ~ ~ ~ csm:room_plate_blue 2` then `/blockdata ~ ~ ~ {num:214,name:2}`. A new plate,
+set with no NBT, reads 101 EXAM. A stripe on the east wall at height 1: metadata `3 | 1 << 2` =
+`7`. The joins (`left`, `right`, `up`, `down`) are all actual state, never set.

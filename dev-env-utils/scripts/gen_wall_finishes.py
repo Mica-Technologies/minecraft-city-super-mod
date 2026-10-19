@@ -90,6 +90,22 @@ FINISHES = {
         "Ribbvägg (Ek)")),
 }
 
+# Accent wall panels: high-pressure laminate panels with a reveal at every block and a thin
+# aluminium trim round the run, wood-look or in a hospital colour. A trimmed kind, as tile is.
+ACCENTS = {
+    "maple": ((214, 178, 128), True, ("Maple", "Arce", "Ahorn", "Lönn")),
+    "walnut": ((122, 86, 58), True, ("Walnut", "Nogal", "Nussbaum", "Valnöt")),
+    "teal": ((66, 142, 140), False, ("Teal", "Verde Azulado", "Petrol", "Blågrön")),
+    "blue": ((74, 112, 168), False, ("Blue", "Azul", "Blau", "Blå")),
+    "green": ((112, 158, 98), False, ("Green", "Verde", "Grün", "Grön")),
+    "yellow": ((226, 184, 76), False, ("Yellow", "Amarillo", "Gelb", "Gul")),
+}
+for _c, (_rgb, _wood, _n) in ACCENTS.items():
+    FINISHES["wall_panel_" + _c] = ("panel", _rgb, tuple(
+        "%s (%s)" % (h, c) for h, c in zip(
+            ("Accent Wall Panel", "Panel de Pared Decorativo", "Akzent-Wandpaneel",
+             "Accentväggpanel"), _n)))
+
 GUARDS = {
     "corner_guard_steel": ((190, 194, 198), (
         "Corner Guard (Stainless)", "Guardavivos (Acero Inoxidable)",
@@ -217,6 +233,30 @@ def guard(rgb, rng):
     return img
 
 
+def accent(rgb, rng, wood):
+    """An accent panel: laminate with a wood grain running up it, or a plain colour with the
+    faintest speckle, and the reveal between panels down one edge of every block."""
+    img, px = _flat(rgb, rng, 2)
+    for x in range(16):
+        tone = rng.uniform(-9, 9) if wood else 0
+        for y in range(16):
+            px[x, y] = _shift(rgb, tone + rng.uniform(-3 if wood else -1.5, 3 if wood else 1.5))
+    for y in range(16):
+        px[15, y] = _shift(rgb, -46)
+        px[0, y] = _shift(rgb, 8)
+    return img
+
+
+def panel_trim(rgb, rng):
+    """The accent panels' trim: clear anodised aluminium."""
+    img, px = _flat((196, 198, 200), rng, 2)
+    for x in range(16):
+        tone = rng.uniform(-6, 6)
+        for y in range(16):
+            px[x, y] = _shift((196, 198, 200), tone + rng.uniform(-2, 2))
+    return img
+
+
 DRAW = {"paint": paint, "subway": subway, "square": square, "acoustic": acoustic,
         "beadboard": beadboard, "slatwall": slat}
 
@@ -225,6 +265,9 @@ def textures():
     out = {}
     for name, (kind, rgb, _) in FINISHES.items():
         rng = random.Random(_seed(name))
+        if kind == "panel":
+            out[name] = accent(rgb, rng, ACCENTS[name[len("wall_panel_"):]][1])
+            continue
         out[name] = DRAW[kind](rgb, rng)
         if kind in ("subway", "square", "beadboard"):
             out[name + "_cap"] = cap(rgb, random.Random(_seed(name) + 1))
@@ -234,6 +277,8 @@ def textures():
             out["wall_slatwall_felt"] = felt(rgb, random.Random(_seed(name) + 1))
     for name, (rgb, _) in GUARDS.items():
         out[name] = guard(rgb, random.Random(_seed(name)))
+    out["wall_panel_trim"] = panel_trim(None, random.Random(20261961))
+    out.update(fitting_textures())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -245,14 +290,16 @@ mirror_x = sc._mirror_x
 
 # How far each kind stands off the wall, in px.
 DEPTH = {"paint": 0.25, "subway": 1.0, "square": 1.0, "acoustic": 1.5, "beadboard": 1.0,
-         "slatwall": 0.5}
+         "slatwall": 0.5, "panel": 0.75}
 
 # A trimmed kind's trim, in px: (edge width, edge depth, cap height, cap depth). The cap is the top
 # course's trim -- a bullnose cap on tile, a chair rail on beadboard, a top rail on a slat wall --
 # and the edge the trim at an end of the run.
 TRIM = {"subway": (0.75, 1.75, 1.0, 1.75), "square": (0.75, 1.75, 1.0, 1.75),
-        "beadboard": (0.75, 1.75, 1.5, 2.0), "slatwall": (1.0, 1.75, 1.0, 1.75)}
-TRIM_TEX = {"subway": "#cap", "square": "#cap", "beadboard": "#cap", "slatwall": "#slat"}
+        "beadboard": (0.75, 1.75, 1.5, 2.0), "slatwall": (1.0, 1.75, 1.0, 1.75),
+        "panel": (0.5, 1.25, 0.5, 1.25)}
+TRIM_TEX = {"subway": "#cap", "square": "#cap", "beadboard": "#cap", "slatwall": "#slat",
+            "panel": "#trim"}
 
 # An acoustic panel's frame: its width, and the lip it stands on the fabric's face (z from, to).
 FRAME_W = 0.5
@@ -443,6 +490,8 @@ def _model(elements, textures):
 
 def _tex(name, kind):
     t = {"face": TEX_REF % name}
+    if kind == "panel":
+        t["trim"] = TEX_REF % "wall_panel_trim"
     if kind in ("subway", "square", "beadboard"):
         t["cap"] = TEX_REF % (name + "_cap")
     elif kind == "acoustic":
@@ -489,6 +538,7 @@ def models():
         left = guard_model(name)
         out[name + "_left"] = left
         out[name + "_right"] = _model(mirror_x(left["elements"]), {"guard": TEX_REF % name})
+    out.update(fitting_models())
     return out
 
 # --------------------------------------------------------------------------------------------
@@ -573,7 +623,272 @@ def guard_state(name):
 def blockstates():
     out = {name: finish_state(name) for name in FINISHES}
     out.update({name: guard_state(name) for name in GUARDS})
+    out.update(fitting_states())
     return out
+
+# --------------------------------------------------------------------------------------------
+# Fittings: the department stripe, room-number plates and the nurse-station glass screen
+# --------------------------------------------------------------------------------------------
+#
+# The stripe (BlockWallStripe) is a thin coloured band hung on a bare wall, at one of four
+# heights (stored), joining along the wall and turning an inside corner as the finishes do. A
+# room plate (BlockRoomPlate) is a sign plate whose number and room name its tile entity holds
+# and its baked model draws from one glyph sheet (no renderer). A nurse-station screen
+# (BlockNurseScreen) is a glass panel standing on the far edge of a counter, joining in runs with
+# a post at each end.
+
+STRIPES = {
+    "blue": ((44, 98, 182), ("Blue", "Azul", "Blau", "Blå")),
+    "green": ((54, 150, 86), ("Green", "Verde", "Grün", "Grön")),
+    "teal": ((30, 140, 146), ("Teal", "Verde Azulado", "Petrol", "Blågrön")),
+    "yellow": ((236, 186, 32), ("Yellow", "Amarillo", "Gelb", "Gul")),
+    "orange": ((232, 122, 38), ("Orange", "Naranja", "Orange", "Orange")),
+    "purple": ((122, 72, 162), ("Purple", "Morado", "Violett", "Lila")),
+}
+STRIPE_NAMES = ("Wayfinding Stripe", "Franja de Señalización", "Leitstreifen",
+                "Orienteringsrand")
+# SHARED with BlockWallStripe.BANDS: each height's band, (y from, y to) in px, and its depth.
+STRIPE_Y = ((2, 4), (6, 8), (10, 12), (13, 15))
+STRIPE_D = 0.25
+
+PLATES = {
+    "charcoal": ((54, 58, 62), ("Charcoal", "Carbón", "Anthrazit", "Koksgrå")),
+    "blue": ((34, 68, 118), ("Blue", "Azul", "Blau", "Blå")),
+}
+PLATE_NAMES = ("Room Sign", "Rótulo de Sala", "Raumschild", "Rumsskylt")
+# SHARED with RoomPlateGlyphs: the plate, in px (x from, y from, x to, y to), its depth, the
+# room names in index order (0 is none), and the glyph sheet's layout.
+PLATE = (1, 2, 15, 14)
+PLATE_D = 0.5
+ROOM_NAMES = ("", "EXAM", "PATIENT", "SOILED|UTILITY", "CLEAN|UTILITY", "NOURISHMENT",
+              "STAFF|ONLY", "MED ROOM", "STORAGE")
+SHEET_W, SHEET_H = 128, 64
+NAME_SLOT = (64, 12)   # each name's slot on the sheet: two columns of four, from y 8
+NAME_TOP = 8
+NAME_ROW = 14
+
+SCREENS = {
+    "clear": ("Clear", "Transparente", "Klar", "Klar"),
+    "frosted": ("Frosted", "Esmerilado", "Satiniert", "Frostad"),
+}
+SCREEN_NAMES = ("Nurse Station Glass Screen", "Mampara de Vidrio de Control de Enfermería",
+                "Glasschutzwand für Stationstresen", "Glasskärm för Sjuksköterskeexpedition")
+# SHARED with BlockNurseScreen: the screen's depth (z from, to) and height, in px.
+SCREEN_Z = (0.25, 1.75)
+SCREEN_TOP = 11.75
+
+
+def _font():
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "life_safety_gen_common.py")
+    spec = importlib.util.spec_from_file_location("life_safety_gen_common", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def glyph_sheet():
+    """The room plates' glyph sheet: the digits 0-9 across the top, four texels apart, and each
+    room name in its own slot below, one or two lines centred, white on clear."""
+    font = _font()
+    img = Image.new("RGBA", (SHEET_W, SHEET_H), (0, 0, 0, 0))
+    white = (246, 246, 244)
+    for d in range(10):
+        font.draw_text(img, str(d), d * 4, 0, white)
+    for i, name in enumerate(ROOM_NAMES[1:]):
+        col, row = i % 2, i // 2
+        x0, y0 = col * NAME_SLOT[0], NAME_TOP + row * NAME_ROW
+        lines = name.split("|")
+        ys = (y0 + 3,) if len(lines) == 1 else (y0, y0 + 7)
+        for line, y in zip(lines, ys):
+            font.draw_text_centred(img, line, x0 + NAME_SLOT[0] / 2, y, white)
+    return img
+
+
+def plate_texture(rgb, rng):
+    """A room plate's face: its colour, a fine lighter border round the plate, and a row of
+    braille dots below the name."""
+    img, px = _flat(rgb, rng, 2)
+    x0, y0, x1, y1 = PLATE
+    for x in range(x0, x1):
+        px[x, 16 - y1] = _shift(rgb, 26)
+        px[x, 15 - y0] = _shift(rgb, -18)
+    for y in range(16 - y1, 16 - y0):
+        px[x0, y] = _shift(rgb, 20)
+        px[x1 - 1, y] = _shift(rgb, -14)
+    for x in (5, 7, 8, 10):
+        px[x, 12] = _shift(rgb, 60)
+    return img
+
+
+def screen_glass(frosted):
+    img = Image.new("RGBA", (16, 16))
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            if frosted and y >= 5:
+                px[x, y] = (226, 232, 234, 196)
+            else:
+                px[x, y] = (196, 218, 226, 84) if (x + 2 * y) % 13 else (220, 236, 240, 120)
+    return img
+
+
+def fitting_textures():
+    out = {}
+    for c, (rgb, _) in STRIPES.items():
+        out["wall_stripe_" + c] = _flat(rgb, random.Random(_seed("wall_stripe_" + c)), 2)[0]
+    for c, (rgb, _) in PLATES.items():
+        out["room_plate_" + c] = plate_texture(rgb, random.Random(_seed("room_plate_" + c)))
+    out["room_plate_glyphs"] = glyph_sheet()
+    out["nurse_screen_glass"] = screen_glass(False)
+    out["nurse_screen_frosted_glass"] = screen_glass(True)
+    return out
+
+
+def stripe_models(c):
+    t = {"stripe": TEX_REF % ("wall_stripe_" + c)}
+    out = {}
+    for h, (y0, y1) in enumerate(STRIPE_Y):
+        body = _against(box(0, y0, 0, 16, y1, STRIPE_D, "#stripe"))
+        out["wall_stripe_%s_%d" % (c, h)] = _model([body], t)
+        corner = [box(0, y0, STRIPE_D, STRIPE_D, y1, 16, "#stripe", faces=("east", "up", "down"))]
+        out["wall_stripe_%s_%d_corner_left" % (c, h)] = _model(corner, t)
+        out["wall_stripe_%s_%d_corner_right" % (c, h)] = _model(_mirror(corner), t)
+    return out
+
+
+def plate_glyph_uv(ch):
+    """A digit's window on the glyph sheet, in the 0..16 UV units of the sprite."""
+    d = int(ch)
+    return [d * 4 * 16 / SHEET_W, 0, (d * 4 + 3) * 16 / SHEET_W, 5 * 16 / SHEET_H]
+
+
+def plate_name_uv(i):
+    col, row = (i - 1) % 2, (i - 1) // 2
+    x0, y0 = col * NAME_SLOT[0], NAME_TOP + row * NAME_ROW
+    return [x0 * 16 / SHEET_W, y0 * 16 / SHEET_H, (x0 + NAME_SLOT[0]) * 16 / SHEET_W,
+            (y0 + NAME_SLOT[1]) * 16 / SHEET_H]
+
+
+# SHARED with RoomPlateGlyphs: where the legend goes on the plate, in px.
+DIGIT_W, DIGIT_H, DIGIT_ADVANCE, DIGIT_TOP = 1.5, 2.5, 2.0, 12.5
+NAME_BOX = (1.75, 6.0, 14.25, 8.875)   # x from, y from, x to, y to: the name slot's quad
+LEGEND_Z = PLATE_D + 0.05
+
+
+def legend_elements(number, name_index):
+    """The legend as flat elements on the plate's face, for the item model; the baked model
+    draws the same quads from the tile entity's number and name."""
+    els = []
+    width = len(number) * DIGIT_ADVANCE - (DIGIT_ADVANCE - DIGIT_W)
+    x = 8 - width / 2
+    for ch in number:
+        el = box(round(x, 4), DIGIT_TOP - DIGIT_H, LEGEND_Z, round(x + DIGIT_W, 4), DIGIT_TOP,
+                 LEGEND_Z, "#glyphs", faces=("south",), uv=plate_glyph_uv(ch))
+        els.append(el)
+        x += DIGIT_ADVANCE
+    if name_index:
+        x0, y0, x1, y1 = NAME_BOX
+        els.append(box(x0, y0, LEGEND_Z, x1, y1, LEGEND_Z, "#glyphs", faces=("south",),
+                       uv=plate_name_uv(name_index)))
+    return els
+
+
+def plate_models(c):
+    t = {"plate": TEX_REF % ("room_plate_" + c), "glyphs": TEX_REF % "room_plate_glyphs"}
+    x0, y0, x1, y1 = PLATE
+    plate = _against(box(x0, y0, 0, x1, y1, PLATE_D, "#plate"))
+    tp = {"plate": t["plate"]}
+    return {"room_plate_" + c: _model([plate], tp),
+            "room_plate_%s_item" % c: _model([json_copy(plate)] + legend_elements("101", 1), t)}
+
+
+def json_copy(e):
+    import json
+    return json.loads(json.dumps(e))
+
+
+SILVER_REF = "csm:blocks/doors/door_silver"
+
+
+def screen_models(kind):
+    glass = "nurse_screen_glass" if kind == "clear" else "nurse_screen_frosted_glass"
+    t = {"glass": TEX_REF % glass, "post": SILVER_REF}
+    z0, z1 = SCREEN_Z
+    body = [box(0, 0, z0, 16, 1, z1, "#post", faces=("north", "south", "up", "down")),
+            box(0, 1, 0.75, 16, 11, 1.25, "#glass", faces=("north", "south", "up"))]
+    left = [box(0, 1, z0, 1, SCREEN_TOP, z1, "#post", faces=_but("down"))]
+    end_left = [box(0, 0, z0, 0.01, 1, z1, "#post", faces=("west",))]
+    out = {"nurse_screen_%s_body" % kind: _model(body, t),
+           "nurse_screen_%s_left" % kind: _model(left + end_left, t),
+           "nurse_screen_%s_right" % kind: _model(_mirror(left + end_left), t),
+           "nurse_screen_%s" % kind: _model(body + left + _mirror(left), t)}
+    return out
+
+
+def fitting_models():
+    out = {}
+    for c in STRIPES:
+        out.update(stripe_models(c))
+    for c in PLATES:
+        out.update(plate_models(c))
+    for k in SCREENS:
+        out.update(screen_models(k))
+    return out
+
+
+def fitting_states():
+    out = {}
+    for c in STRIPES:
+        conds = []
+        for h in range(len(STRIPE_Y)):
+            conds.append(({"height": str(h)}, "wall_stripe_%s_%d" % (c, h)))
+            for s in ("left", "right"):
+                conds.append(({"height": str(h), s: "true"},
+                              "wall_stripe_%s_%d_corner_%s" % (c, h, s)))
+        out["wall_stripe_" + c] = {
+            "variants": {"inventory": {"model": MODEL_REF % ("wall_stripe_%s_2" % c)}},
+            "multipart": _parts(conds)}
+    for c in PLATES:
+        variants = {"inventory": {"model": MODEL_REF % ("room_plate_%s_item" % c)}}
+        for side, rot in SIDES:
+            v = {"model": MODEL_REF % ("room_plate_" + c)}
+            if rot:
+                v["y"] = rot
+            variants["facing=" + side] = v
+        out["room_plate_" + c] = {"variants": variants}
+    for k in SCREENS:
+        conds = [({}, "nurse_screen_%s_body" % k),
+                 ({"left": "false"}, "nurse_screen_%s_left" % k),
+                 ({"right": "false"}, "nurse_screen_%s_right" % k)]
+        out["nurse_screen_" + k] = {
+            "variants": {"inventory": {"model": MODEL_REF % ("nurse_screen_" + k)}},
+            "multipart": _parts(conds)}
+    return out
+
+
+def fitting_lang():
+    out = []
+    for c, (_, n) in STRIPES.items():
+        out.append(("tile.wall_stripe_%s.name" % c, dict(zip(LANGS, (
+            "%s (%s)" % (a, b) for a, b in zip(STRIPE_NAMES, n))))))
+    for c, (_, n) in PLATES.items():
+        out.append(("tile.room_plate_%s.name" % c, dict(zip(LANGS, (
+            "%s (%s)" % (a, b) for a, b in zip(PLATE_NAMES, n))))))
+    for k, n in SCREENS.items():
+        out.append(("tile.nurse_screen_%s.name" % k, dict(zip(LANGS, (
+            "%s (%s)" % (a, b) for a, b in zip(SCREEN_NAMES, n))))))
+    return out
+
+
+def fitting_tab_lines():
+    lines = ['    initTabBlock(new BlockWallStripe("wall_stripe_%s")); // %s (%s)'
+             % (c, STRIPE_NAMES[0], n[0]) for c, (_, n) in STRIPES.items()]
+    lines += ['    initTabBlock(new BlockRoomPlate("room_plate_%s")); // %s (%s)'
+              % (c, PLATE_NAMES[0], n[0]) for c, (_, n) in PLATES.items()]
+    lines += ['    initTabBlock(new BlockNurseScreen("nurse_screen_%s")); // %s (%s)'
+              % (k, SCREEN_NAMES[0], n[0]) for k, n in SCREENS.items()]
+    return lines
 
 # --------------------------------------------------------------------------------------------
 # Writing
@@ -603,6 +918,7 @@ def lang_entries():
     out = [("tile.%s.name" % name, dict(zip(LANGS, names)))
            for name, (_, _, names) in FINISHES.items()]
     out += [("tile.%s.name" % name, dict(zip(LANGS, names))) for name, (_, names) in GUARDS.items()]
+    out += fitting_lang()
     return out
 
 
@@ -611,6 +927,7 @@ def tab_lines():
              for n, v in FINISHES.items()]
     lines += ['    initTabBlock(new BlockCornerGuard("%s")); // %s' % (n, v[1][0])
               for n, v in GUARDS.items()]
+    lines += fitting_tab_lines()
     return lines
 
 

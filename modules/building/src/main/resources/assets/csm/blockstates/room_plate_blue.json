@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/room_plate_blue_item"
+    },
+    "facing=north": {
+      "model": "csm:wallfinish/room_plate_blue"
+    },
+    "facing=east": {
+      "model": "csm:wallfinish/room_plate_blue",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:wallfinish/room_plate_blue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:wallfinish/room_plate_blue",
+      "y": 270
+    }
+  }
+}
