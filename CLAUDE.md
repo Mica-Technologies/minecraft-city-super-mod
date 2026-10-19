@@ -101,7 +101,7 @@ container per jar.
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities, and plantable planters, raised beds and troughs (`parks.planters`: a plant's baked quads merged onto the soil, no TESR; `/csmparks planter fill`); two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, a walk-through jet bridge, and a helipad: its marking, laid by `/csmtransit helipad`, and lights; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
-| `modules/healthcare` | `csm_healthcare` | CSM: Healthcare | `healthcare`: the hospital fit-out of GitHub #293 (patient rooms and wards first: beds, headwalls, monitors, IV poles, cubicle curtains on a ceiling track, a linked nurse call network with its `/csmhealthcare` command, dispensers and carts); two tabs, Healthcare - Patient Care and Healthcare - Clinical, and a hidden tab; Core only |
+| `modules/healthcare` | `csm_healthcare` | CSM: Healthcare | `healthcare`: the hospital fit-out of GitHub #293: patient rooms and wards (beds as a head and a shared foot, headwalls, monitors, IV poles, cubicle curtains filled from a ceiling track, room furniture, dispensers and carts), a linked nurse call network, the ICU, the ED (its tracking board one of the module's two renderers), the nurses' station, surgery support, ceiling-hung pendants and lights on a drop column, clinics, dialysis and infusion, imaging (the CT and MRI as a master and invisible parts), the lab, pharmacy and morgue, maternity and the NICU, rehab, the waiting room (a queue with a now-serving display, the other renderer), teaching (a mannequin that lies on a bed or table), the playroom, a baked wayfinding panel that is a drop-in for Transit's airport one, code blue, medical gas, emergency power and infant security; everything settable by `/setblock` and `/blockdata`, wired by `/csmhealthcare`; two tabs, Healthcare - Patient Care and Healthcare - Clinical, and a hidden tab; Core only (the hospital doors and finishes are Building's, the helipad Transit's, the pews and laundry Furnishings'); see `assets/docs/HEALTHCARE_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -146,7 +146,13 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    booth counter)
 ├── tts/              (modules/tts)
 ├── healthcare/      (modules/healthcare) wards/ (beds, headwalls, monitors, curtains, room
-│                    furniture), nursecall/ (devices, dome lights, master panel, network)
+│                    furniture), nursecall/ (devices, dome lights, master panel, network),
+│                    clinical/ (ICU, ED tracking board, nurses' station, ceiling-hung
+│                    pieces), diagnostics/ (lab bench, morgue cabinet), patient/ (lecture
+│                    seating, exercise stairs, mannequin), queue/ (kiosk, now-serving
+│                    display, network), codeblue/, systems/ (gas alarm, infant security),
+│                    wayfinding/ (the baked wayfinding panel); the CT/MRI unit, pair, run,
+│                    screen and light base classes at the package root
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -351,8 +357,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/INTERIOR_FINISHES.md` -- The Interior Finishes tab: window blinds, shades and
   curtains (their own block hung against any window, joining into one blind, click to cycle the
   whole blind, redstone to close it, light taken by state), flooring (overlays on any floor and
-  full-block sets, why a tile grid is never turned), wall finishes and corner guards, and where
-  the decor track grows next
+  full-block sets, why a tile grid is never turned), wall finishes and corner guards, the
+  hospital fittings (accent panels, wayfinding stripes, room signs, nurse station screens) and
+  their placing table, and where the decor track grows next
 - `assets/docs/ADVERTISING_SYSTEM.md` -- The Signage & Advertising boards: a board as one object
   (controller + tagged parts with no tile entity), drawn as one quad across the board, the three
   ad sources (generated, public-domain vintage, server-supplied), rotation and transitions,
@@ -364,7 +371,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/DOORS.md` -- Twelve two-block doors, pairs, redstone, the Door Closer add-on and
   keypad locks: the state split between the halves, why the open model is written out rather than
   rotated, the swing drawn from the resting models by a client-only tile entity that removes
-  itself, which way each door swings and how it is flipped, and why locks are world saved data
+  itself, which way each door swings and how it is flipped, and why locks are world saved data;
+  the hospital, smoke barrier and lead-lined doors, the automatic sliding doors and their
+  activation mat, and the metadata table for placing every door by command
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
@@ -455,7 +464,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   travel in an extended state to a baked model, leaves drawn as sheets on open faces with tufts past them,
   palm crowns, the Tree Planting Tool and its six generator shapes (street clearance, one volume
   check, presets appended by ordinal), the plantings and amenities (why nothing shares a trunk's
-  cell, bench runs, the irrigation controller and sprinklers), and the traps
+  cell, bench runs, the irrigation controller and sprinklers), the plantable planters and joining
+  troughs, and the traps
 - `assets/docs/SCHOOL_TIME_AND_PA.md` -- The school time and PA set in Technology: clocks whose
   hands a renderer draws from game time (dials supplied per block), the two-block clock/speaker
   panels whose speaker half is an ordinary TTS-linkable speaker, the PA speakers, and the bell
@@ -480,13 +490,22 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   lamps, the fare line railing that finds the fare gates above the floor, the service gate as a
   vanilla fence gate, line bullets, and why the line diagram is RCMC's); the airside (airfield
   lights switched a circuit at a time, the beacon turning by texture, signs, masts, ground
-  equipment on Roads' utility box, and a jet bridge that draws and collides past its cell); the
-  demo world and its builder; and what was left out and what the module could grow into
+  equipment on Roads' utility box, a jet bridge that draws and collides past its cell, and a
+  helipad laid by `/csmtransit helipad`); the demo world and its builder; and what was left out
+  and what the module could grow into
 - `assets/docs/VEHICLES_SYSTEM.md` -- The Vehicles module and emergency vehicle preemption: the
   preempt detector in Roads and Core's preempt source service, why emergency lights are found by
   custom variable name, how IV finds a pack in a module jar (and the dev client's pack-only jar),
   the parts and their flash timing, IV as the module system's one external dependency, and the
   traps (a vehicle is placed at 90 degrees to its placer, IV polls the mouse itself)
+- `assets/docs/HEALTHCARE_SYSTEM.md` -- The Healthcare module (#293, the Alto hospitals): why it
+  depends on Core only and what its neighbours make instead, the two tabs, the performance rules
+  (two renderers, animated screens, nothing ticks, event-driven links in saved data), the bed as a
+  head and a shared foot, the curtain filled from its track, ceiling-hung heads on a drop column,
+  the CT and MRI as a master and parts, joining runs, nurse call, the ED tracking board, the
+  queue, code blue, the wayfinding panel's drop-in parity with Transit's, the mannequin's rests,
+  the commands, the full per-block metadata and NBT table the hospital generators use, the
+  traps, the measured weight, the demo world and what was left out (the OR set)
 - `assets/docs/HVAC_SYSTEM.md` -- Rooms that hold heat: the thermal simulation (flood-filled
   spaces split into regions, walls/openings/ground/neighbours, implicit step), model-based
   modulating control, vent throw and the thermostat trim, why a partly unloaded room freezes, the
@@ -1003,6 +1022,51 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   leaf and the same leaf swung a quarter about its hinge, the sixteen line bullets and the booth
   counter; the legends, lines and globe colours are listed as the Java lists them; `--check`,
   `--fragments`
+- `gen_healthcare_common.py` -- what the Healthcare generators share (not run on its own): the
+  Life Safety catalogue pointed at `modules/healthcare` (writing, `--check`, `--fragments`, and
+  `model_depth.py`'s separating and pruning over everything it writes), the hospital palette as
+  shared swatch textures, the generic six-armed medical emblem (never a red cross), animated
+  screen strips with their `.mcmeta`, Forge blockstates for the floor and wall facings, and
+  `stamp_legend`, which sets a sign legend in the committed highway font
+- `gen_healthcare_wards.py` -- patient rooms and wards (Healthcare): the hospital beds drawn whole
+  and cut into a head and the shared foot (four blankets, ICU, bariatric, labour), headwall,
+  reading light, monitors, IV poles, overbed table, recliner, visitor chair, wardrobe, room TV,
+  vitals and suction, the cubicle curtain track and panels (four cloths, mesh band, hem), the
+  nurse call devices, dome light and master panel, corridor rails, dispensers, carts and bins, the
+  oxygen outlet and zone sign, and the module's messages; `--check`, `--fragments`
+- `gen_healthcare_clinical.py` -- the ICU, ED, nursing station and surgery support (Healthcare):
+  ventilator, the ceiling-hung pendant, boom and trauma light on the shared drop column, crash
+  cart, defibrillator, nurses' station counters and corner, status board, workstation on wheels,
+  dispensing cabinet, medication cart and fridge, wheelchair, rack and corral sign, walker,
+  mobile and ceiling lifts, triage desk, decon shower, AMBULANCE ONLY marking and sign, blanket
+  warmer, autoclave, case cart, scrub dispenser, and the ED tracking board's case and screen (its
+  layout numbers shared with `TileEntityEdTrackingBoardRenderer`); `--check`, `--fragments`
+- `gen_healthcare_clinics.py` -- clinics, dialysis, infusion, endoscopy, dental and eye exam
+  (Healthcare): exam table, exam light, wall diagnostic set, scale, phlebotomy chair, step stool,
+  dialysis chair and machine, the RO water unit, infusion recliner, dental chair, refraction chair
+  and acuity chart, endoscopy tower; `--check`, `--fragments`
+- `gen_healthcare_diagnostics.py` -- imaging, lab, pharmacy and morgue (Healthcare): the CT and
+  MRI drawn whole by their master (`BlockHealthcareUnit`, footprints written into the tab
+  lines), the ceiling X-ray tube, X-ray table, bucky, C-arm and cart, mammography, lead apron
+  rack, reading workstation, IN USE lights, MRI zone and radiation signs; joining lab benches,
+  analysers, centrifuge, microscope, fume hood, biosafety cabinet, blood bank fridge, specimen
+  pass-through, pneumatic tube station; compounding hood, bin shelving, unit-dose cabinet; the
+  morgue cabinet, autopsy table and body cart; `--check`, `--fragments`
+- `gen_healthcare_patient_areas.py` -- maternity, rehab, waiting room, teaching and playroom
+  (Healthcare): infant warmer, bassinet, incubator, parallel bars, treatment plinth, exercise
+  stairs, beam seating, check-in kiosk, call console and the now-serving display (layout numbers
+  shared with `TileEntityNowServingDisplayRenderer`), the simulation mannequin drawn for each
+  rest, torso model, skeleton, dissection table, tiered lecture seating with its riser, kids'
+  table, chairs and toy box; `--check`, `--fragments`
+- `gen_healthcare_systems.py` -- wayfinding and building systems (Healthcare): the wayfinding
+  panel's slab, frames and its one 512 px sheet (Series D glyphs from the committed highway font,
+  14 pictograms, two arrows, a white swatch), writing `HospitalWayfindingGlyphs.java` from the
+  same metrics so the two cannot drift; code blue button and annunciator, gas zone valve box and
+  master alarm, power outlets, infant security panel; status lamps as squares, never discs;
+  `--check` (the Java too), `--fragments`
+- `gen_healthcare_sounds.py` -- the Healthcare module's sounds, synthesised (numpy to ffmpeg to
+  OGG): the code blue chime, the medical gas alarm and the infant security alarm, and their
+  `sounds.json` entries. No `--check` (Vorbis output is not byte-stable): listen, then commit
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under
@@ -1117,6 +1181,14 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   flash, flashing green pedestrian clearance) and an Austrian one (ADVANCED, both). Every
   controller is programmed by NBT; it drives the game through the orchestrator
   (`--instance run-f2eb58`), never a game port
+- `build_healthcare_demo.py` -- builds the Healthcare demo world in a flat creative world named
+  "Healthcare Demo" (refuses any other) through the orchestrator by instance id: one hospital
+  floor along a corridor (doors, room signs, rails, stripes, wayfinding panels of four sizes), a
+  ward with curtains and linked nurse call, ICU, ED with its tracking boards and ambulance
+  entrance, imaging, lab, pharmacy, morgue, nurses' station, clinic, dialysis, maternity and
+  NICU, a waiting room with linked now-serving displays, chapel, lecture hall, playroom, laundry,
+  rehab and a rooftop helipad; it checks both Healthcare tabs' registration lists against what it
+  placed and puts the rest on signed plinths. Sets blocks and runs commands only
 - `mcmcp_orchestrator.py` -- a minimal MCP client for the MCMCP orchestrator over its stdio shim,
   for build scripts: every call names its game by instance id, so a script cannot land in another
   running game (a fixed port such as 25586 belongs to whichever game bound it first, which has
