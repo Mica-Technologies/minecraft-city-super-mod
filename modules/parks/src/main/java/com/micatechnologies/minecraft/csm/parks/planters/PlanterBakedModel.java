@@ -42,10 +42,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * mipped, a planter is not). An empty planter returns its own model's quads unchanged in its own
  * pass and nothing in the other, so it looks exactly as it did.</p>
  *
- * <p>Merged quad lists are cached per (plant state, pass) in each wrapper, and a wrapper stands
- * for one planter model variant, so the cache key is (planter model, plant, pass); the side
- * lists are the planter's own, passed through. The cache is bounded, so a world with every plant
- * in every planter holds a few hundred lists, not one per planter.</p>
+ * <p>Merged quad lists are cached per (planter state, plant state, pass) in each wrapper; the
+ * side lists are the planter's own, passed through. The planter's state is part of the key
+ * because one wrapper can stand for many shapes: a joining planter (a raised bed, a trough) has a
+ * multipart blockstate, and every state of such a block is drawn from one model location
+ * ({@code CsmMultipartStateMapper}), so keyed by plant alone, every planted bed of a run took the
+ * edges of whichever bed was drawn first. The cache is bounded, so a world with every plant in
+ * every planter holds a few hundred lists, not one per planter.</p>
  *
  * <p>Put in place through {@code CsmBakedModelWrappers}, so a pack running VintageFix's dynamic
  * resources (which bakes models as they are drawn) gets it too.</p>
@@ -76,10 +79,13 @@ public class PlanterBakedModel extends BakedModelWrapper<IBakedModel> {
 
   private static final class Key {
 
+    /** The planter's own (actual) state, without the unlisted plant: which shape it draws. */
+    final IBlockState shape;
     final IBlockState plant;
     final BlockRenderLayer layer;
 
-    Key(IBlockState plant, @Nullable BlockRenderLayer layer) {
+    Key(IBlockState shape, IBlockState plant, @Nullable BlockRenderLayer layer) {
+      this.shape = shape;
       this.plant = plant;
       this.layer = layer;
     }
@@ -90,12 +96,12 @@ public class PlanterBakedModel extends BakedModelWrapper<IBakedModel> {
         return false;
       }
       Key k = (Key) o;
-      return plant == k.plant && layer == k.layer;
+      return shape == k.shape && plant == k.plant && layer == k.layer;
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(System.identityHashCode(plant), layer);
+      return Objects.hash(System.identityHashCode(shape), System.identityHashCode(plant), layer);
     }
   }
 
@@ -115,8 +121,10 @@ public class PlanterBakedModel extends BakedModelWrapper<IBakedModel> {
       return own ? without(originalModel.getQuads(state, side, rand), soil)
           : Collections.emptyList();
     }
+    IBlockState shape = ((IExtendedBlockState) state).getClean();
     try {
-      return merged.get(new Key(plant, layer), () -> merge(state, rand, plant, layer, own, soil));
+      return merged.get(new Key(shape, plant, layer),
+          () -> merge(state, rand, plant, layer, own, soil));
     } catch (ExecutionException | RuntimeException e) {
       return own ? originalModel.getQuads(state, null, rand) : Collections.emptyList();
     }
