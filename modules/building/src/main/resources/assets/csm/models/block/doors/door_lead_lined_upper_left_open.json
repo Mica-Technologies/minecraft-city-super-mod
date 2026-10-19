@@ -1,0 +1,138 @@
+{
+  "textures": {
+    "face": "csm:blocks/doors/door_lead_lined_upper",
+    "edge": "csm:blocks/doors/door_lead_lined_edge",
+    "hw": "csm:blocks/doors/door_silver",
+    "plate": "csm:blocks/doors/door_trefoil",
+    "particle": "csm:blocks/doors/door_lead_lined_upper"
+  },
+  "elements": [
+    {
+      "from": [
+        0.0,
+        0,
+        0
+      ],
+      "to": [
+        1.75,
+        16,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            14.25,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#edge",
+          "uv": [
+            0.0,
+            0,
+            1.75,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#edge",
+          "uv": [
+            0.0,
+            0,
+            1.75,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#edge",
+          "uv": [
+            0.0,
+            0,
+            1.75,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.75,
+        1.5,
+        5.5
+      ],
+      "to": [
+        1.95,
+        6.5,
+        10.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#plate",
+          "uv": [
+            5.5,
+            9.5,
+            10.5,
+            14.5
+          ]
+        },
+        "north": {
+          "texture": "#plate",
+          "uv": [
+            14.05,
+            9.5,
+            14.25,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#plate",
+          "uv": [
+            1.75,
+            9.5,
+            1.95,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            1.75,
+            5.5,
+            1.95,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#plate",
+          "uv": [
+            1.75,
+            5.5,
+            1.95,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

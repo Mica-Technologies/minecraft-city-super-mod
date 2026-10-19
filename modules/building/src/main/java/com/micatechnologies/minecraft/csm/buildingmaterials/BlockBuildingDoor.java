@@ -192,6 +192,90 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
         || registryName.contains("trailer");
   }
 
+  /**
+   * Whether this is the narrow leaf of a 1.5-leaf pair ({@code door_hosp_*_narrow}): an 8 px leaf
+   * hinged in the middle of its cell beside a fixed sidelite. It pairs with the full leaf of its
+   * own finish ({@link #pairFamily}), takes no closer, and stays shut when a hand opens the full
+   * leaf -- held by its bolts, as a real inactive leaf is -- but opens with it on redstone, and
+   * opens both when it is clicked itself.
+   *
+   * @return whether the leaf is narrow
+   *
+   * @since 1.2
+   */
+  public boolean narrow() {
+    return getBlockRegistryName().endsWith("_narrow");
+  }
+
+  /**
+   * The doors this one pairs with: its own kind, and a narrow leaf with the full leaf of its finish.
+   *
+   * @return the registry name of the full leaf
+   *
+   * @since 1.2
+   */
+  protected String pairFamily() {
+    String n = getBlockRegistryName();
+    return n.endsWith("_narrow") ? n.substring(0, n.length() - "_narrow".length()) : n;
+  }
+
+  /**
+   * Whether a door of {@code other}'s kind can make a pair with this one.
+   *
+   * @param other the other block
+   * @return whether the two pair
+   *
+   * @since 1.2
+   */
+  protected boolean pairsWith(Block other) {
+    return other == this || other instanceof BlockBuildingDoor
+        && other.getClass() == getClass()
+        && ((BlockBuildingDoor) other).pairFamily().equals(pairFamily());
+  }
+
+  /**
+   * Whether this kind of door always has its closer: the smoke barrier doors, which a real code
+   * requires to be self-closing. Their upper half reads the closer bit as set whatever the meta
+   * says, the closer cannot be taken off, and breaking one drops no closer item.
+   *
+   * @return whether the closer is built in
+   *
+   * @since 1.2
+   */
+  public boolean builtInCloser() {
+    return getBlockRegistryName().startsWith("door_smoke_");
+  }
+
+  /**
+   * Where a left-hinged leaf turns, in blocks from its cell's west edge (inside to the north).
+   * SHARED with gen_doors.PIVOT and NARROW_PIVOT_X.
+   *
+   * @return the pivot's x
+   *
+   * @since 1.2
+   */
+  public double pivotX() {
+    return (narrow() ? 8.875 : 0.875) / 16;
+  }
+
+  /**
+   * How long the door takes to open or shut, in ticks: a swing, or a slide.
+   *
+   * @return the ticks
+   *
+   * @since 1.2
+   */
+  public int motionTicks() {
+    return SWING_TICKS;
+  }
+
+  /** The door block at {@code pos}, or null. */
+  @Nullable
+  protected static BlockBuildingDoor doorAt(IBlockAccess world, BlockPos pos) {
+    Block b = world.getBlockState(pos).getBlock();
+    return b instanceof BlockBuildingDoor ? (BlockBuildingDoor) b : null;
+  }
+
   private static Material pendingMaterial(String registryName) {
     PENDING_REGISTRY_NAME.set(registryName);
     return metal(registryName) ? Material.IRON : Material.WOOD;
@@ -246,7 +330,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   protected boolean glazed() {
     String n = getBlockRegistryName();
     return n.contains("lite") || n.contains("fire") || n.contains("storefront")
-        || n.contains("glass") || n.contains("trailer");
+        || n.contains("glass") || n.contains("trailer") || n.contains("smoke")
+        || n.contains("lead");
   }
 
   // --- state --------------------------------------------------------------------------------------
@@ -270,7 +355,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     if (DoorSwingDirection.isUpper(meta)) {
       return getDefaultState().withProperty(HALF, Half.UPPER)
           .withProperty(HINGE, DoorSwingDirection.hingeRight(meta) ? Hinge.RIGHT : Hinge.LEFT)
-          .withProperty(CLOSER, DoorSwingDirection.closer(meta))
+          .withProperty(CLOSER, DoorSwingDirection.closer(meta) || builtInCloser())
           .withProperty(REVERSED, DoorSwingDirection.reversed(meta));
     }
     return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 3))
@@ -369,7 +454,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
                 : pairable(worldIn, onRight, f, Hinge.RIGHT, true) ? onRight : null;
     if (mate != null) {
       hinge = mate == onLeft ? Hinge.RIGHT : Hinge.LEFT;
-      IBlockState door = whole(worldIn, mate);
+      IBlockState door = doorAt(worldIn, mate).whole(worldIn, mate);
       reversed = door.getValue(REVERSED);
       if (door.getValue(HINGE) == hinge) {
         flip = mate;
@@ -398,15 +483,16 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   private boolean pairable(World world, BlockPos pos, EnumFacing f, Hinge farHinge,
       boolean allowFlip) {
     IBlockState state = world.getBlockState(pos);
-    if (state.getBlock() != this || state.getValue(HALF) != Half.LOWER) {
+    if (!pairsWith(state.getBlock()) || state.getValue(HALF) != Half.LOWER) {
       return false;
     }
-    IBlockState door = whole(world, pos);
-    if (door.getValue(FACING) != f || partner(world, pos, door) != null) {
+    BlockBuildingDoor other = (BlockBuildingDoor) state.getBlock();
+    IBlockState door = other.whole(world, pos);
+    if (door.getValue(FACING) != f || other.partner(world, pos, door) != null) {
       return false;
     }
     return door.getValue(HINGE) == farHinge || allowFlip && !door.getValue(OPEN)
-        && world.getBlockState(pos.up()).getBlock() == this;
+        && pairsWith(world.getBlockState(pos.up()).getBlock());
   }
 
   @Override
@@ -420,10 +506,11 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     PENDING_FLIP.remove();
     worldIn.setBlockState(pos.up(), getDefaultState().withProperty(HALF, Half.UPPER)
         .withProperty(HINGE, hinge == null ? Hinge.LEFT : hinge)
+        .withProperty(CLOSER, builtInCloser())
         .withProperty(REVERSED, reversed != null && reversed), 2);
     if (flip != null) {
       IBlockState upper = worldIn.getBlockState(flip.up());
-      if (upper.getBlock() == this && upper.getValue(HALF) == Half.UPPER) {
+      if (pairsWith(upper.getBlock()) && upper.getValue(HALF) == Half.UPPER) {
         // Flag 3: a client redraws round the change, so the lower half's model follows.
         worldIn.setBlockState(flip.up(), upper.withProperty(HINGE,
             upper.getValue(HINGE) == Hinge.LEFT ? Hinge.RIGHT : Hinge.LEFT), 3);
@@ -500,7 +587,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     if (state.getValue(HALF) == Half.LOWER && !worldIn.isRemote) {
       DoorLocks.get(worldIn).unlock(pos);
     }
-    if (state.getValue(HALF) == Half.UPPER && state.getValue(CLOSER) && !worldIn.isRemote) {
+    if (state.getValue(HALF) == Half.UPPER && state.getValue(CLOSER) && !builtInCloser()
+        && !worldIn.isRemote) {
       spawnAsEntity(worldIn, pos, new ItemStack(ItemDoorCloser.instance()));
     }
     super.breakBlock(worldIn, pos, state);
@@ -536,10 +624,10 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     EnumFacing latch = door.getValue(HINGE) == Hinge.LEFT ? f.rotateY() : f.rotateYCCW();
     BlockPos p = lowerPos.offset(latch);
     IBlockState other = world.getBlockState(p);
-    if (other.getBlock() != this || other.getValue(HALF) != Half.LOWER) {
+    if (!pairsWith(other.getBlock()) || other.getValue(HALF) != Half.LOWER) {
       return null;
     }
-    IBlockState whole = whole(world, p);
+    IBlockState whole = ((BlockBuildingDoor) other.getBlock()).whole(world, p);
     return whole.getValue(FACING) == f && whole.getValue(HINGE) != door.getValue(HINGE) ? p
         : null;
   }
@@ -557,8 +645,14 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   void setOpen(World world, BlockPos lowerPos, boolean open, boolean byHand) {
     swing(world, lowerPos, open, byHand);
     BlockPos p = partner(world, lowerPos, whole(world, lowerPos));
-    if (p != null) {
-      swing(world, p, open, byHand);
+    BlockBuildingDoor other = p == null ? null : doorAt(world, p);
+    if (other != null) {
+      // A 1.5 pair's narrow leaf is held shut by its bolts: a hand opening the full leaf leaves
+      // it where it is. Redstone, and a click on the narrow leaf itself, open both.
+      if (open && byHand && !narrow() && other.narrow()) {
+        return;
+      }
+      other.swing(world, p, open, byHand);
     }
   }
 
@@ -573,7 +667,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       // Every client near enough to see it makes the swing's tile entity itself (eventReceived);
       // the server keeps only a pending tick on the upper half, so it knows the door is moving.
       world.addBlockEvent(lowerPos.up(), this, EVENT_SWING, open ? 1 : 0);
-      world.scheduleUpdate(lowerPos.up(), this, SWING_TICKS);
+      world.scheduleUpdate(lowerPos.up(), this, motionTicks());
       world.playSound(null, lowerPos, sound(open), SoundCategory.BLOCKS, 1.0F,
           world.rand.nextFloat() * 0.1F + 0.9F);
     }
@@ -655,7 +749,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     }
     if (worldIn.isRemote && state.getBlock() == this && state.getValue(HALF) == Half.UPPER) {
       TileEntityDoorSwing te = new TileEntityDoorSwing();
-      te.begin(param == 1, worldIn.getTotalWorldTime());
+      te.begin(param == 1, worldIn.getTotalWorldTime(), motionTicks());
       worldIn.setTileEntity(pos, te);
       TileEntityDoorSwing.redraw(worldIn, pos);
     }
@@ -667,7 +761,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
    * end-of-swing tick has not come yet.
    */
   protected boolean swinging(World world, BlockPos lowerPos) {
-    return world.isUpdateScheduled(lowerPos.up(), this);
+    BlockBuildingDoor door = doorAt(world, lowerPos.up());
+    return world.isUpdateScheduled(lowerPos.up(), door != null ? door : this);
   }
 
   /**
@@ -717,7 +812,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       if (GarageDoorLinks.finish(playerIn, worldIn, lowerPos)) {
         return true;
       }
-      if (door.getValue(CLOSER)) {
+      if (door.getValue(CLOSER) && !builtInCloser()) {
         if (!worldIn.isRemote) {
           IBlockState upper = worldIn.getBlockState(lowerPos.up());
           worldIn.setBlockState(lowerPos.up(), upper.withProperty(CLOSER, false), 3);
@@ -757,7 +852,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     IBlockState state = world.getBlockState(pos);
     BlockPos upperPos = lower(state, pos).up();
     IBlockState upper = world.getBlockState(upperPos);
-    if (upper.getBlock() != this || upper.getValue(CLOSER)) {
+    if (upper.getBlock() != this || upper.getValue(CLOSER) || narrow()) {
       return false;
     }
     world.setBlockState(upperPos, upper.withProperty(CLOSER, true), 3);
@@ -796,7 +891,8 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
     IBlockState door = whole(world, lowerPos);
     BlockPos p = partner(world, lowerPos, door);
     if (door.getValue(OPEN) || swinging(world, lowerPos)
-        || p != null && (whole(world, p).getValue(OPEN) || swinging(world, p))) {
+        || p != null && (doorAt(world, p).whole(world, p).getValue(OPEN)
+        || swinging(world, p))) {
       return FlipResult.BUSY;
     }
     boolean reversed = !door.getValue(REVERSED);
@@ -809,7 +905,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
 
   private void setReversed(World world, BlockPos lowerPos, boolean reversed) {
     IBlockState upper = world.getBlockState(lowerPos.up());
-    if (upper.getBlock() == this && upper.getValue(HALF) == Half.UPPER) {
+    if (pairsWith(upper.getBlock()) && upper.getValue(HALF) == Half.UPPER) {
       // A client redraws the blocks round a change, so the lower half's models follow.
       world.setBlockState(lowerPos.up(), upper.withProperty(REVERSED, reversed), 3);
     }
@@ -891,6 +987,14 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @Nonnull
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     IBlockState door = getActualState(state, source, pos);
+    if (narrow() && door.getValue(OPEN)) {
+      // The fixed sidelite on the leaf's plane and the narrow leaf standing open beside it.
+      boolean left = door.getValue(HINGE) == Hinge.LEFT;
+      boolean out = outward(door);
+      AxisAlignedBB north = new AxisAlignedBB(left ? 0 : 6.25 / 16, 0, out ? 0 : 0.5,
+          left ? 9.75 / 16 : 1, 1, out ? 0.5 : 1);
+      return BlockGarageDoor.turn(north, door.getValue(FACING));
+    }
     return leafBox(door, outward(door));
   }
 

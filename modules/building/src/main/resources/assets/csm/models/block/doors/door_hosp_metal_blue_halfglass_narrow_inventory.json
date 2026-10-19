@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "csm:blocks/doors/door_hosp_metal_blue_halfglass_narrow_icon"
+  }
+}

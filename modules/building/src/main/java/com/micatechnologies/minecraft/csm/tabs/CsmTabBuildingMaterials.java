@@ -252,6 +252,21 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockBuildingDoor("door_front_red")); // Front Door (Red)
     initTabBlock(new BlockBuildingDoor("door_front_black")); // Front Door (Black)
     initTabBlock(new BlockBuildingDoor("door_back_halfglass")); // Back Door (Half Glass)
+    initTabBlock(new BlockBuildingDoor("door_hosp_maple_lite")); // Hospital Door (Maple, Vision Lite)
+    initTabBlock(new BlockBuildingDoor("door_hosp_maple_lite_narrow")); // Hospital Door (Maple, Vision Lite, Narrow Leaf)
+    initTabBlock(new BlockBuildingDoor("door_hosp_maple_halfglass")); // Hospital Door (Maple, Half Glass)
+    initTabBlock(new BlockBuildingDoor("door_hosp_maple_halfglass_narrow")); // Hospital Door (Maple, Half Glass, Narrow Leaf)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_blue_lite")); // Hospital Door (Blue Metal, Vision Lite)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_blue_lite_narrow")); // Hospital Door (Blue Metal, Vision Lite, Narrow Leaf)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_blue_halfglass")); // Hospital Door (Blue Metal, Half Glass)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_blue_halfglass_narrow")); // Hospital Door (Blue Metal, Half Glass, Narrow Leaf)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_sage_lite")); // Hospital Door (Sage Metal, Vision Lite)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_sage_lite_narrow")); // Hospital Door (Sage Metal, Vision Lite, Narrow Leaf)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_sage_halfglass")); // Hospital Door (Sage Metal, Half Glass)
+    initTabBlock(new BlockBuildingDoor("door_hosp_metal_sage_halfglass_narrow")); // Hospital Door (Sage Metal, Half Glass, Narrow Leaf)
+    initTabBlock(new BlockBuildingDoor("door_smoke_metal_grey")); // Smoke Barrier Door (Grey Metal)
+    initTabBlock(new BlockBuildingDoor("door_smoke_metal_beige")); // Smoke Barrier Door (Beige Metal)
+    initTabBlock(new BlockBuildingDoor("door_lead_lined")); // Lead-Lined Door (Radiation)
     initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
     initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent); // Door Swing Tool
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door
