@@ -12,7 +12,9 @@ pencil sharpener and the classroom flag; the ceiling and overhead projectors and
 cafeteria table with its stools; the things that sit on a
 desk (a desktop computer, a computer tower, a retro computer, a laptop, a desk phone, a fax, a
 pen holder, a paper tray, a desk lamp); the copier that copies written books; and a streamer's
-green screen, ring light and studio camera.
+green screen, ring light and studio camera; and for a chapel (a hospital's, a school's or any
+other, for any faith or none) a pew that joins into rows and a plain altar table with a linen
+cloth.
 
 Borrows gen_furniture_residential.py's element helpers, woods, fabrics, output and the bookcase's
 geometry (the office shelving is the living room's bookcase with binders on its shelves), the
@@ -53,7 +55,8 @@ What joins (the Java classes compute it as actual state; nothing is stored):
     one board of any size, the frame only round its outside, the tray along its bottom row and
     the markers or chalk at that row's end, the surface unbroken across the joins;
   * the waiting-room bench joins into a row of seats on one beam, legs and arms at its ends;
-  * lockers and trophy cases join into a row, end panels only at its ends.
+  * lockers and trophy cases join into a row, end panels only at its ends;
+  * pews join into one long pew, the solid ends only where the row stops.
 
 Usage:
     python gen_furniture_office.py              # write everything
@@ -1248,6 +1251,28 @@ def tilted(spec, angle, origin, axis="x"):
     return spec
 
 
+# The chapel pew: a plain bench of boards, a seat and a raked back on a stretcher, a shelf for
+# books along the back; the solid pew ends only where the row stops. No symbols on it anywhere:
+# it is for any faith's chapel or none.
+PEW_BODY = [board([0, 7, 2.5], [16, 8, 11.5]),
+            board([0, 6, 3], [16, 7, 4], faces=("north", "down")),
+            board([0, 1.5, 7], [16, 2.75, 8.5], faces=("north", "south", "up", "down")),
+            tilted(board([0, 8, 11.5], [16, 17, 12.5], grain="h"), -22.5, (8, 8, 12)),
+            board([0, 9, 13.75], [16, 9.6, 16], faces=("up", "down", "south")),
+            board([0, 9.6, 15.4], [16, 11.6, 16], faces=("north", "south", "up"))]
+PEW_END = [board([0, 0, 2], [1, 15, 15.5], grain="v"),
+           board([0, 15, 1.75], [1.25, 15.75, 15.75])]
+
+# The altar table: a plain table with a linen cloth over its top, hanging down the front.
+ALTAR = ([board([0.5, 14.25, 2], [15.5, 15.25, 14]),
+          board([1, 12.5, 2.5], [15, 14.25, 13.5], faces=("north", "south", "east", "west"))]
+         + [R.leg([x, 0, z], [x + 1.5, 12.5, z + 1.5]) for x in (1, 13.5) for z in (2.5, 12)]
+         + [el([0.25, 15.25, 1.75], [15.75, 15.5, 14.25], "sheet"),
+            el([3.5, 10.5, 1.5], [12.5, 15.25, 1.75], "sheet", ("north", "east", "west",
+                                                                 "down")),
+            el([3.5, 10.5, 14.25], [12.5, 15.25, 14.5], "sheet", ("south", "east", "west",
+                                                                   "down"))])
+
 # The lectern: a pedestal on a plinth, open to the speaker with a shelf, its reading desk
 # sloping down to the speaker with a ledge, 1.2 m at the back edge.
 SLOPE = (8, 16.25, 8)
@@ -2023,12 +2048,21 @@ PIECES = [
      {"geo": STUDIO_CAMERA, "particle": "case",
       "java": 'new BlockBathroomFixture("%s", new int[]{4, 0, 1, 12, 21, 16}, '
               'FixtureMaterial.METAL)'}),
+    # ---- chapel ----
+    ("pew", "run", [W for W in R.WOODS if W[0] in ("oak", "walnut")],
+     ("Pew", "Kirchenbank", "Banco de capilla", "Kyrkbänk"),
+     run(PEW_BODY, PEW_END,
+         'new BlockResidentialRun("%s", new int[]{0, 0, 2, 16, 16, 16}, false, 8, 1)')),
+    ("altar_table", "single", [W for W in R.WOODS if W[0] in ("oak", "walnut")],
+     ("Altar Table", "Altartisch", "Mesa de altar", "Altarbord"),
+     {"geo": ALTAR, "particle": "wood",
+      "java": 'new BlockBathroomFixture("%s", new int[]{{box}}, FixtureMaterial.WOOD)'}),
 ]
 PIECE = {p[0]: p for p in PIECES}
 GROUPS = {"office_desk": "Office", "cubicle_panel": "Cubicles", "task_chair": "Seating",
           "whiteboard": "Boards", "school_desk": "School", "ceiling_projector": "Classroom AV",
           "cafeteria_table": "Cafeteria", "desktop_computer": "On the desk",
-          "copier": "Copier", "green_screen": "Streaming"}
+          "copier": "Copier", "green_screen": "Streaming", "pew": "Chapel"}
 GROUP_OF = {}
 _g = None
 for _p in PIECES:

@@ -2,7 +2,7 @@
 
 The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards that join into one of any size, classroom seating, lecterns, lockers, a trophy case, projectors, the cafeteria table, the things on a desk and a copier that copies books.
 
-!!! info "94 blocks in this tab"
+!!! info "98 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ The furniture of offices, schools and studios: desks that join into runs and L-s
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Altar Table (Light Oak) | `csm:altar_table_oak` | 1.5 | 3.0 | axe | 0 |
+| Altar Table (Walnut) | `csm:altar_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | AV Cart (Black) | `csm:av_cart_black` | 1.5 | 3.0 | axe | 0 |
 | Cafeteria Table (Blue) | `csm:cafeteria_table_blue` | 1.5 | 3.0 | axe | 0 |
 | Cafeteria Table (Red) | `csm:cafeteria_table_red` | 1.5 | 3.0 | axe | 0 |
@@ -75,6 +77,8 @@ The furniture of offices, schools and studios: desks that join into runs and L-s
 | Overhead Projector (Grey) | `csm:overhead_projector_grey` | 1.5 | 3.0 | axe | 0 |
 | Paper Tray (Black) | `csm:paper_tray_black` | 1.5 | 3.0 | axe | 0 |
 | Pen Holder (Black) | `csm:pen_holder_black` | 1.5 | 3.0 | axe | 0 |
+| Pew (Light Oak) | `csm:pew_oak` | 1.5 | 3.0 | axe | 0 |
+| Pew (Walnut) | `csm:pew_walnut` | 1.5 | 3.0 | axe | 0 |
 | Podium with Microphone (Light Oak) | `csm:podium_oak` | 1.5 | 3.0 | axe | 0 |
 | Podium with Microphone (Walnut) | `csm:podium_walnut` | 1.5 | 3.0 | axe | 0 |
 | Projector Screen (White) | `csm:projector_screen_white` | 1.5 | 3.0 | axe | 0 |

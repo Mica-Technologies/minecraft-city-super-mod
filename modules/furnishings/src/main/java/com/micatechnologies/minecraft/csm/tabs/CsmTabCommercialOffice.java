@@ -43,8 +43,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * school: the school desk, tablet-arm desk and stacking chair, the teacher's desk, lectern and
  * podium, lockers, the trophy case, a desk globe, the wall pencil sharpener and the classroom
  * flag; the classroom's ceiling and overhead projectors and the AV cart; the cafeteria table;
- * the things on a desk and the copier that copies written books; and a streamer's green screen,
- * ring light and camera.
+ * the things on a desk and the copier that copies written books; a streamer's green screen,
+ * ring light and camera; and a chapel's pews and altar table, plain, for any faith or none.
  * The lines below are printed by {@code gen_furniture_office.py --fragments}.
  *
  * @version 1.0
@@ -276,5 +276,14 @@ public class CsmTabCommercialOffice extends CsmTab {
 
     // Studio Camera
     initTabBlock(new BlockBathroomFixture("studio_camera_black", new int[]{4, 0, 1, 12, 21, 16}, FixtureMaterial.METAL));
+
+    // ---- Chapel ----
+    // Pew
+    initTabBlock(new BlockResidentialRun("pew_oak", new int[]{0, 0, 2, 16, 16, 16}, false, 8, 1));
+    initTabBlock(new BlockResidentialRun("pew_walnut", new int[]{0, 0, 2, 16, 16, 16}, false, 8, 1));
+
+    // Altar Table
+    initTabBlock(new BlockBathroomFixture("altar_table_oak", new int[]{0, 0, 1, 16, 16, 15}, FixtureMaterial.WOOD));
+    initTabBlock(new BlockBathroomFixture("altar_table_walnut", new int[]{0, 0, 1, 16, 16, 15}, FixtureMaterial.WOOD));
   }
 }

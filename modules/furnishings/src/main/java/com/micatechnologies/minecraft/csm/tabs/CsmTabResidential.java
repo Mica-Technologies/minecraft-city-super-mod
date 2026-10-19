@@ -573,6 +573,12 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockLaundryAppliance("dryer_white", new int[]{0, 0, 0, 16, 15, 16}, LaundryAppliances.DRYER));
     initTabBlock(new BlockLaundryAppliance("dryer_stainless", new int[]{0, 0, 0, 16, 15, 16}, LaundryAppliances.DRYER));
 
+    // Commercial Washer-Extractor
+    initTabBlock(new BlockLaundryAppliance("commercial_washer_stainless", new int[]{0, 0, 0, 16, 16, 16}, LaundryAppliances.WASHING_MACHINE));
+
+    // Commercial Tumble Dryer
+    initTabBlock(new BlockLaundryAppliance("commercial_dryer_stainless", new int[]{0, 0, 0, 16, 16, 16}, LaundryAppliances.DRYER));
+
     // Steam Iron
     initTabBlock(new BlockCounterPiece("steam_iron_blue", new int[]{5, 0, 2, 11, 4, 12}, Material.WOOD, SoundType.METAL, BlockRenderLayer.SOLID, FurnishingsSounds.IRON_STEAM, 1.0F, new double[]{8, 0.5, 3.25}));
 

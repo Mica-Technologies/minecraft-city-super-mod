@@ -10,7 +10,7 @@ towel dispensers, a grab bar and the fold-down baby changing station, flushomete
 screen, toilet partitions (door, pilaster and panel fronts that join into a run of stalls), a
 wall-hung lavatory and a trough sink with sensor faucets, two hand dryers, the jumbo roll and
 seat cover dispensers and a sanitary napkin disposal bin; and for the laundry the washing
-machine and dryer, a steam iron and ironing board, laundry baskets and a laundry tub.
+machine and dryer, a hospital laundry's commercial washer-extractor and tumble dryer, a steam iron and ironing board, laundry baskets and a laundry tub.
 
 Borrows gen_furniture_residential.py's element helpers, finishes and output, the kitchen's
 Shaker fronts, tap, stainless and white finishes and the cut of a two-block piece, the
@@ -1163,6 +1163,27 @@ def front_loader(dryer):
 WASHER = front_loader(False)
 DRYER = front_loader(True)
 
+
+def commercial_loader(dryer):
+    """A hospital laundry's front loader: a stainless cabinet a block high, a big door with the
+    same round window (lit while it runs) and the control band across the top."""
+    out = [el([0.5, 0, 1.25], [15.5, 0.75, 15.75], "rubber", ("north", "east", "west")),
+           el([0.25, 0.75, 1], [15.75, 16, 16], "shell", NO_DOWN + ("down",)),
+           ALL_UV(el([0.75, 13.5, 0.95], [15.25, 15.5, 1], "control", ("north",)), ["north"]),
+           el([1, 13.6, 0.7], [5.5, 15.4, 1], "trim", ("north", "east", "west", "up", "down")),
+           el([2.25, 1.5, 0.5], [13.75, 13, 1], "door", ("north", "east", "west", "up",
+                                                          "down")),
+           ALL_UV(el([2.75, 2, 0.45], [13.25, 12.5, 0.5], "glow", ("north",)), ["north"]),
+           el([12.9, 5.25, 0.1], [13.6, 9.25, 0.5], "handle")]
+    if dryer:
+        # the lint drawer's pull under the control band
+        out.append(el([6, 12.9, 0.75], [10, 13.3, 1], "handle", ("north", "up", "down")))
+    return out
+
+
+COMMERCIAL_WASHER = commercial_loader(False)
+COMMERCIAL_DRYER = commercial_loader(True)
+
 # --- steam iron: soleplate, body and handle, a water window at the back ------------------
 IRON = [el([5.75, 0, 4.5], [10.25, 0.5, 11.5], "chrome"),
         el([6.5, 0, 3.5], [9.5, 0.5, 4.5], "chrome", ("north", "east", "west", "up", "down")),
@@ -1474,6 +1495,19 @@ PIECES = [
                    finishes=[APPLIANCE_WHITE, STAINLESS],
                    names=("Tumble Dryer", "Wäschetrockner", "Secadora", "Torktumlare"),
                    java='new BlockLaundryAppliance("%s", new int[]{%s}, LaundryAppliances.DRYER)')),
+    ("commercial_washer", dict(kind="laundry", geo=COMMERCIAL_WASHER, glow="washer",
+                               finishes=[STAINLESS],
+                               names=("Commercial Washer-Extractor",
+                                      "Gewerbe-Waschschleudermaschine", "Lavadora industrial",
+                                      "Industritvättmaskin"),
+                               java='new BlockLaundryAppliance("%s", new int[]{%s}, '
+                                    'LaundryAppliances.WASHING_MACHINE)')),
+    ("commercial_dryer", dict(kind="laundry", geo=COMMERCIAL_DRYER, glow="dryer",
+                              finishes=[STAINLESS],
+                              names=("Commercial Tumble Dryer", "Gewerbe-Wäschetrockner",
+                                     "Secadora industrial", "Industritorktumlare"),
+                              java='new BlockLaundryAppliance("%s", new int[]{%s}, '
+                                   'LaundryAppliances.DRYER)')),
     ("steam_iron", dict(kind="counter", geo=IRON, particle="iron",
                         finishes=[fin("blue", {"iron": T("iron_blue")}, "Blue", "Blau", "azul", "blå")],
                         names=("Steam Iron", "Dampfbügeleisen", "Plancha de vapor",

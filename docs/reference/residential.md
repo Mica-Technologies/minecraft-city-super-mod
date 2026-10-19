@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard.
 
-!!! info "353 blocks in this tab"
+!!! info "355 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -75,6 +75,8 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Coffee Table (Light Oak) | `csm:coffee_table_oak` | 1.5 | 3.0 | axe | 0 |
 | Coffee Table (Walnut) | `csm:coffee_table_walnut` | 1.5 | 3.0 | axe | 0 |
 | Coffee Table (White) | `csm:coffee_table_white` | 1.5 | 3.0 | axe | 0 |
+| Commercial Tumble Dryer (Stainless Steel) | `csm:commercial_dryer_stainless` | 1.5 | 3.0 | axe | 0 |
+| Commercial Washer-Extractor (Stainless Steel) | `csm:commercial_washer_stainless` | 1.5 | 3.0 | axe | 0 |
 | Cookie Jar (Ceramic) | `csm:cookie_jar_ceramic` | 1.5 | 3.0 | axe | 0 |
 | Cooler (Blue) | `csm:cooler_blue` | 1.5 | 3.0 | axe | 0 |
 | Cooler (Red) | `csm:cooler_red` | 1.5 | 3.0 | axe | 0 |
