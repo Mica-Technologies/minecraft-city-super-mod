@@ -26,6 +26,7 @@ import tempfile
 
 from PIL import Image
 
+import csm_layout
 import gen_cmu
 import gen_scaffold as sc
 import model_depth  # noqa: E402
@@ -480,7 +481,12 @@ def check(label, write_fn, roots):
         for kind, filename in written:
             here = os.path.join(roots[kind], filename)
             there = os.path.join(tmp_roots[kind], filename)
-            if not os.path.exists(here) or not filecmp.cmp(here, there, shallow=False):
+            # text compared ignoring line endings: core.autocrlf checks the tree out as CRLF
+            # on Windows, while the generator writes LF
+            same = (os.path.exists(here) and filecmp.cmp(here, there, shallow=False)
+                    if filename.endswith(".png")
+                    else csm_layout.same_generated_text(there, here))
+            if not same:
                 drifted.append(os.path.relpath(here, REPO))
         if drifted:
             print("DRIFT: %d file(s) differ from the generator:" % len(drifted))
