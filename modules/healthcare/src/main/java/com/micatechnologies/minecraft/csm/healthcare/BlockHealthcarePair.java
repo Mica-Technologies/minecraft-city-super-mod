@@ -56,7 +56,22 @@ public class BlockHealthcarePair extends BlockHealthcare {
    */
   public BlockHealthcarePair(String registryName, int[] box, HealthcareMaterial material,
       Mount mount, Shape shape) {
-    super(registryName, box, material, mount, true);
+    this(registryName, box, material, mount, shape, true);
+  }
+
+  /**
+   * Constructs a two-cell piece that may be walked through (a floor marking).
+   *
+   * @param registryName its registry name
+   * @param box          each cell's box facing north, in sixteenths
+   * @param material     what it is made of
+   * @param mount        floor or wall
+   * @param shape        which way the second cell lies
+   * @param collides     whether it can be walked into
+   */
+  public BlockHealthcarePair(String registryName, int[] box, HealthcareMaterial material,
+      Mount mount, Shape shape, boolean collides) {
+    super(registryName, box, material, mount, collides);
     this.shape = shape;
   }
 

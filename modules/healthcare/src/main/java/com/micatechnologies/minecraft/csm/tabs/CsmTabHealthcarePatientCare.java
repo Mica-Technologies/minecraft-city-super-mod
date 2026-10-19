@@ -78,5 +78,12 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockCurtainTrack());
     initTabBlock(new BlockCorridorRail("corridor_handrail", new int[]{0, 13, 12, 16, 16, 16}));
     initTabBlock(new BlockCorridorRail("corridor_crash_rail", new int[]{0, 12, 12, 16, 16, 16}));
+    // --- gen_healthcare_clinical.py --fragments ---
+    initTabBlock(new BlockHealthcare("wheelchair", new int[]{2, 0, 1, 14, 16, 15}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true).withSeat(7.2, 0));
+    initTabBlock(new BlockHealthcare("wheelchair_storage_rack", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("wheelchair_corral_sign", new int[]{1, 3, 15, 15, 13, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, false));
+    initTabBlock(new BlockHealthcare("walker", new int[]{2, 0, 3, 14, 15, 13}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcarePair("patient_lift_mobile", new int[]{2, 0, 0, 14, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcare("ceiling_patient_lift", new int[]{0, 0, 0, 16, 1, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
   }
 }

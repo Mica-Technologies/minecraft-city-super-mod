@@ -1,0 +1,107 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "front": "csm:blocks/healthcare/clinical/station_front",
+    "top": "csm:blocks/healthcare/clinical/solid_surface",
+    "carcass": "csm:blocks/healthcare/clinical/carcass",
+    "drawers": "csm:blocks/healthcare/clinical/drawer_bank",
+    "body": "csm:blocks/healthcare/wards/monitor_body",
+    "chart": "csm:blocks/healthcare/clinical/chart_screen",
+    "grey": "csm:blocks/healthcare/wards/frame_grey",
+    "particle": "csm:blocks/healthcare/clinical/carcass",
+    "kbd": "csm:blocks/healthcare/clinical/keyboard"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        0,
+        1.3
+      ],
+      "to": [
+        16,
+        15,
+        15.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#carcass",
+          "uv": [
+            0,
+            1,
+            0.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#carcass",
+          "uv": [
+            15.25,
+            1,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#carcass",
+          "uv": [
+            1,
+            1,
+            14.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#carcass",
+          "uv": [
+            1.5,
+            1,
+            15,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#carcass",
+          "uv": [
+            15.25,
+            1.5,
+            16,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#carcass",
+          "uv": [
+            15.25,
+            1,
+            16,
+            14.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.25,
+        15,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        6
+      ],
+      "faces": {
+        "east": {
+          "texture": "#top",
+          "uv": [
+            10,
+            0,
+            16,
+            1
+          ]
+        }
+      }
+    }
+  ]
+}
