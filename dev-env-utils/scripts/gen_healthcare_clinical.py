@@ -40,7 +40,7 @@ import os
 import random
 import sys
 
-from PIL import Image
+from PIL import Image, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_healthcare_common as hc  # noqa: E402
@@ -451,13 +451,15 @@ def _wheelchair_glyph(img, x, y, s, c):
 
 @C.texture("wc_sign_full")
 def _wc_sign_full():
-    img = fill((36, 88, 170), size=64, grain=1, seed=3260).resize((64, 40))
-    frame(img, 0, 0, 64, 40, (250, 250, 250))
-    _wheelchair_glyph(img, 4, 8, 2.4, (250, 250, 250))
-    draw_text(img, "WHEEL", 32, 11, (250, 250, 250))
-    draw_text(img, "CHAIRS", 30, 19, (250, 250, 250))
-    rect(img, 30, 27, 58, 28, (250, 250, 250))
-    return img.resize((64, 64), Image.NEAREST)
+    """The corral sign: the wheelchair symbol and WHEEL / CHAIRS in highway capitals, drawn at the
+    plate's own shape (14 x 9.5 px, 128 x 87) and stretched square for the face to stretch
+    back."""
+    img = fill((36, 88, 170), size=128, grain=1, seed=3260).resize((128, 87))
+    frame(img, 0, 0, 128, 87, (250, 250, 250), width=3)
+    _wheelchair_glyph(img, 9, 13, 4.8, (250, 250, 250))
+    for text, y in (("WHEEL", 18), ("CHAIRS", 49)):
+        hc.stamp_legend(img, text, 88, y, (250, 250, 250), 20, "D", max_w=72)
+    return img.resize((128, 128), Image.NEAREST)
 
 
 @C.texture("lift_front")
@@ -512,19 +514,35 @@ def marking():
     img = Image.new("RGBA", (128, 64), (0, 0, 0, 0))
     yellow = (240, 200, 40)
     # road legends are drawn tall, so they read when seen at a low angle: each line is set at
-    # three texels a font pixel across and stretched to 26 texels high
-    for text, y in (("AMBULANCE", 4), ("ONLY", 34)):
-        line = Image.new("RGBA", (128, 15), (0, 0, 0, 0))
-        draw_text_centred(line, text, 64, 0, yellow, scale=3)
-        img.alpha_composite(line.resize((128, 26), Image.NEAREST), (0, y))
+    # in the highway font at 14 texels and stretched to 28 texels high
+    for text, y in (("AMBULANCE", 2), ("ONLY", 33)):
+        line = Image.new("RGBA", (128, 14), (0, 0, 0, 0))
+        hc.stamp_legend(line, text, 64, 0, yellow, 14, "E", max_w=124)
+        line = line.resize((128, 28), Image.LANCZOS)
+        # a texel heavier and hard-edged: the floor is seen at a low angle and from afar,
+        # where the atlas's mip levels would thin a stroke out of a cutout face
+        alpha = line.getchannel("A").filter(ImageFilter.MaxFilter(3)).point(
+            lambda v: 255 if v >= 96 else 0)
+        line = Image.new("RGBA", line.size, yellow + (255,))
+        line.putalpha(alpha)
+        img.alpha_composite(line, (0, y))
+    return img
+
+
+@C.texture("amb_sign")
+def _amb_sign():
+    """AMBULANCE / ONLY, white on red in the highway font, as large as the plate allows
+    (14 x 14 px)."""
+    img = fill(hc.CALL_RED, size=128, grain=1, seed=3282)
+    white = (250, 250, 250)
+    frame(img, 0, 0, 128, 128, white, width=3)
+    hc.stamp_legend(img, "AMBULANCE", 64, 22, white, 30, "E", max_w=118)
+    hc.stamp_legend(img, "ONLY", 64, 64, white, 44, "E", max_w=118)
     return img
 
 
 tex("mark_left", lambda: marking().crop((0, 0, 64, 64)))
 tex("mark_right", lambda: marking().crop((64, 0, 128, 64)))
-tex("amb_sign", label_plate(40, 34, [("AMBULANCE", 1), ("ONLY", 2)], (250, 250, 248),
-                            hc.CALL_RED, border=hc.CALL_RED, seed=3282,
-                            band=(11, hc.CALL_RED, "EMERGENCY")))
 
 
 # --- surgery support -----------------------------------------------------------------------
@@ -1199,12 +1217,12 @@ pair_block("ambulance_only_marking",
            pair_java("ambulance_only_marking", (0, 0, 0, 16, 1, 16), "PLASTIC", "FLOOR",
                      "WIDE", False), CL)
 
-prop("ambulance_only_sign", (2, 2, 15, 14, 14, 16), "METAL", "WALL", False,
+prop("ambulance_only_sign", (1, 1, 15, 15, 15, 16), "METAL", "WALL", False,
      ("AMBULANCE ONLY Sign", "Schild NUR RETTUNGSWAGEN", "Señal SOLO AMBULANCIAS",
       "Skylt ENDAST AMBULANS"),
      {"sign": T("amb_sign"), "body": W("white")},
-     [el([2, 2.5, 15.4], [14, 13.5, 16], "body", faces=("south", "east", "west", "up", "down")),
-      screen([2, 2.5, 15.4], [14, 13.5, 15.4], "sign")], CL)
+     [el([1, 1, 15.4], [15, 15, 16], "body", faces=("south", "east", "west", "up", "down")),
+      screen([1, 1, 15.4], [15, 15, 15.4], "sign")], CL)
 
 # ==========================================================================================
 # Surgery support

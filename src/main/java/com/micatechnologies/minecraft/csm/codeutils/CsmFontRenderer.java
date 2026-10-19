@@ -146,6 +146,12 @@ public final class CsmFontRenderer {
       GlStateManager.bindTexture(dynamicTexture.getGlTextureId());
       GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL,
           maxLevel);
+      // DynamicTexture's allocation (TextureUtil.allocateTextureImpl with 0 mip levels) also
+      // clamps GL_TEXTURE_MAX_LOD to 0, which pins sampling to the full-size atlas whatever the
+      // levels hold: minified text is then bilinear on the full-size glyphs and a thin stroke (an
+      // I, the bars of an E) falls between the four texels a pixel reads and vanishes. Lift
+      // the clamp, or the mip levels below are never used.
+      GlStateManager.glTexParameterf(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LOD, maxLevel);
       GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
           GL11.GL_LINEAR_MIPMAP_LINEAR);
       GlStateManager.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
