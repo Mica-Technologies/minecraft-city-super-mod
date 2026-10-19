@@ -90,7 +90,7 @@ public final class CraneClimber {
     TileEntity moved = world.getTileEntity(above);
     if (moved instanceof TileEntityCraneHead) {
       moved.readFromNBT(tag);
-      ((TileEntityCraneHead) moved).markDirtySync(world, above, true);
+      ((TileEntityCraneHead) moved).markDirtyQueueSync(world, above);
     }
     // And the new section where it was.
     IBlockState section0 = mast.getDefaultState().withProperty(BlockCraneMast.LIVERY, livery);

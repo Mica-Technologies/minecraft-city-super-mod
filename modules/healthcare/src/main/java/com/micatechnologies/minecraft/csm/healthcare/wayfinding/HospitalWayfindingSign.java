@@ -389,7 +389,7 @@ public final class HospitalWayfindingSign {
         if (te instanceof TileEntityHospitalWayfindingPanel) {
           TileEntityHospitalWayfindingPanel panel = (TileEntityHospitalWayfindingPanel) te;
           panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided);
-          queueSync(world, at, panel);
+          panel.markDirtyQueueSync(world, at);
         }
       }
     }
@@ -461,24 +461,11 @@ public final class HospitalWayfindingSign {
         changed = cell.setPlace(0, 0, 0, 0);
       }
       if (changed) {
-        queueSync(world, at, cell);
+        // queued, not sent: a panel built in one tick refreshes its earlier cells with each one
+        // added, and sent at once those reached a client ahead of the cells' block changes
+        cell.markDirtyQueueSync(world, at);
       }
     }
-  }
-
-  /**
-   * Marks a cell changed and queues it to be sent to the clients with the block changes of this
-   * tick, not at once. A panel built by a generator adds its cells in one tick, and each one added
-   * refreshes the cells before it: sent at once, those updates reached a client before the cells'
-   * own block changes, which it dropped as updates "for null tile entity" (an error line each,
-   * a panel's cells squared of them), and every refresh was a packet per cell. Queued, the chunk's
-   * changed-block list sends each cell once, after its block, with its tile entity as it ends the
-   * tick.
-   */
-  private static void queueSync(World world, BlockPos at, TileEntityHospitalWayfindingPanel cell) {
-    cell.markDirty();
-    IBlockState state = world.getBlockState(at);
-    world.notifyBlockUpdate(at, state, state, 2);
   }
 
   /**

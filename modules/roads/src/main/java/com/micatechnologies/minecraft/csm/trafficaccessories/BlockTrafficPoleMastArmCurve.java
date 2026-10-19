@@ -241,7 +241,7 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     TileEntity tileEntity = world.getTileEntity(pos);
     if (tileEntity instanceof TileEntityMastArmCurve) {
       ((TileEntityMastArmCurve) tileEntity).setCellIndex(index);
-      ((TileEntityMastArmCurve) tileEntity).syncServerToClient(world);
+      ((TileEntityMastArmCurve) tileEntity).markDirtyQueueSync(world, pos);
     }
   }
 

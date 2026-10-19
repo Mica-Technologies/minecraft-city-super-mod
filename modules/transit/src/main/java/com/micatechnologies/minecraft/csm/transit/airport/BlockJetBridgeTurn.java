@@ -322,7 +322,7 @@ public class BlockJetBridgeTurn extends BlockPlatformFixture implements ICsmTile
       TileEntity te = world.getTileEntity(p);
       if (te instanceof TileEntityJetBridgeTurn) {
         ((TileEntityJetBridgeTurn) te).setCell(i);
-        ((TileEntityJetBridgeTurn) te).syncServerToClient(world);
+        ((TileEntityJetBridgeTurn) te).markDirtyQueueSync(world, p);
       }
     }
   }

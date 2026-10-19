@@ -323,7 +323,7 @@ public final class WayfindingSign {
 
   /**
    * Writes a sign to every cell of the panel a cell is in, at most {@link #MAX_WIDTH} x
-   * {@link #MAX_HEIGHT}, each sent to the clients, so that whichever cell becomes the controller
+   * {@link #MAX_HEIGHT}, each queued for the clients with the tick's block changes, so that whichever cell becomes the controller
    * later already has it. Server side: the editor's packet and a {@code /blockdata} edit of any
    * cell both come here. The lines are cleaned by {@link #clamp}.
    *
@@ -344,7 +344,9 @@ public final class WayfindingSign {
       if (te instanceof TileEntityWayfindingPanel) {
         TileEntityWayfindingPanel panel = (TileEntityWayfindingPanel) te;
         panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided);
-        panel.markDirtySync(world, at, true);
+        // queued, not sent: a /setblock with NBT spreads from here before its own block change
+        // has gone out, and a client drops an update that arrives ahead of its cell
+        panel.markDirtyQueueSync(world, at);
       }
     });
   }

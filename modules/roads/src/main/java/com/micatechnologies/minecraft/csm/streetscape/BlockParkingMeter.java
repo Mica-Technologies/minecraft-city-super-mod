@@ -88,7 +88,7 @@ public class BlockParkingMeter extends BlockUtilityBox implements ICsmTileEntity
       meter.setOwner(placer.getUniqueID(), placer.getName());
       meter.setSpaces(kind == Kind.STATION ? TileEntityParkingMeter.DEFAULT_SPACES
           : heads.length);
-      meter.markDirtySync(world, pos, true);
+      meter.markDirtyQueueSync(world, pos);
     }
     refresh(world, pos);
   }
