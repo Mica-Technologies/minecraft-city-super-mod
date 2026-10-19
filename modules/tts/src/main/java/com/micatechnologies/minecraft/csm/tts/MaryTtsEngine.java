@@ -3,10 +3,11 @@ package com.micatechnologies.minecraft.csm.tts;
 import com.micatechnologies.minecraft.csm.codeutils.CsmNarrator;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTts;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTtsEngine;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -25,8 +26,9 @@ import org.apache.logging.log4j.Logger;
  *
  * <p>Loading MaryTTS takes seconds and scans the shaded jar for voices, so it happens on its own
  * thread, on first use rather than at launch, and the engine reports itself not ready until it
- * finishes. A message that arrives while it loads is held (the latest one) and spoken as soon
- * as it has loaded, so the first announcement is late rather than lost or in another voice.</p>
+ * finishes. Messages that arrive while it loads wait in the same queue as everything else (see
+ * {@link #say}) and are spoken as soon as it has loaded, so the first announcement is late rather
+ * than lost or in another voice.</p>
  *
  * @author Mica Technologies
  * @version 1.0
@@ -43,11 +45,38 @@ public class MaryTtsEngine implements ICsmTtsEngine {
   private static volatile boolean initialized = false;
   private static volatile boolean initFailed = false;
   private static volatile String currentVoice = "";
-  private static final AtomicBoolean IS_PLAYING = new AtomicBoolean(false);
-  /** The message given while loading, as {message, voice}; guarded by the class. */
-  private static String[] pending;
-  /** What the playback thread is saying, for the trace; null when it is idle. */
-  private static volatile String nowPlaying;
+  /**
+   * Most messages waiting at once. Past this the oldest goes: whatever has been waiting longest
+   * is the most out of date.
+   */
+  private static final int MAX_QUEUED = 4;
+
+  /**
+   * A message that waited longer than this is skipped rather than spoken. A station call heard
+   * ten seconds late describes a train that has already left.
+   */
+  private static final long MAX_WAIT_MS = 10_000L;
+
+  /** Messages waiting to be spoken, oldest first; guarded by the class. */
+  private static final Deque<Queued> QUEUE = new ArrayDeque<>();
+  /** Whether a playback thread is working through {@link #QUEUE}; guarded by the class. */
+  private static boolean playing;
+  /** What the playback thread is saying; null when it is idle. Guarded by the class. */
+  private static String nowPlaying;
+
+  /** One message waiting to be spoken. */
+  private static final class Queued {
+
+    final String message;
+    final String voice;
+    final long queuedAt;
+
+    Queued(String message, String voice) {
+      this.message = message;
+      this.voice = voice;
+      this.queuedAt = System.currentTimeMillis();
+    }
+  }
 
   /**
    * Logs one stage of one message, stamped with the wall clock in milliseconds so the lines line
@@ -92,30 +121,31 @@ public class MaryTtsEngine implements ICsmTtsEngine {
           m.setVoice(first);
           currentVoice = first;
         }
-        String[] held;
+        boolean startPlaying;
         synchronized (MaryTtsEngine.class) {
           mary = m;
           initialized = true;
-          held = pending;
-          pending = null;
+          startPlaying = !QUEUE.isEmpty() && !playing;
+          playing |= startPlaying;
         }
         LOGGER.info("MaryTTS initialized in {}ms — voice: {}",
             System.currentTimeMillis() - start, currentVoice);
-        if (held != null) {
-          trace("UNHOLD", "", held[0]);
-          say(held[0], held[1]);
+        if (startPlaying) {
+          // What was said while loading is spoken now, in order.
+          startPlayback();
         }
       } catch (Throwable e) {
         LOGGER.error("Failed to initialize MaryTTS — TTS will fall back to system narrator", e);
-        String[] held;
+        Queued latest;
         synchronized (MaryTtsEngine.class) {
           initFailed = true;
-          held = pending;
-          pending = null;
+          latest = QUEUE.peekLast();
+          QUEUE.clear();
         }
-        if (held != null) {
-          trace("NARRATOR", "engine-failed", held[0]);
-          CsmNarrator.say(held[0]);
+        // The narrator says one thing at a time, so only the newest of what waited.
+        if (latest != null) {
+          trace("NARRATOR", "engine-failed", latest.message);
+          CsmNarrator.say(latest.message);
         }
       }
     }, "CSM-TTS-Init").start();
@@ -141,66 +171,102 @@ public class MaryTtsEngine implements ICsmTtsEngine {
     return null;
   }
 
+  /**
+   * Queues {@code message} to be spoken after anything already waiting.
+   *
+   * <p>Messages are spoken one after another, never dropped for arriving while another plays.
+   * The engine used to do exactly that: two announcements a fraction of a second apart (a
+   * train's "This is ..." and the platform's "now arriving ...") rang two chimes and spoke one
+   * sentence, with nothing to say the other had been lost. What it still declines, and logs:
+   * a message identical to one already waiting or playing (two speakers in earshot saying the
+   * same thing), and, past {@link #MAX_QUEUED} or {@link #MAX_WAIT_MS}, the oldest ones.</p>
+   */
   @Override
   public void say(String message, String voice) {
     trace("SAY", "voice=" + voice, message);
+    boolean start;
     synchronized (MaryTtsEngine.class) {
-      if (!initialized) {
-        if (initFailed) {
-          trace("NARRATOR", "engine-failed", message);
-          CsmNarrator.say(message);
-        } else {
-          // Still loading: hold it; the loading thread speaks it when done.
-          if (pending != null) {
-            LOGGER.warn("[tts] t={} REPLACED-WHILE-LOADING \"{}\" by \"{}\"",
-                System.currentTimeMillis(), pending[0], message);
-          }
-          trace("HOLD", "loading", message);
-          pending = new String[]{message, voice};
-        }
+      if (initFailed) {
+        trace("NARRATOR", "engine-failed", message);
+        CsmNarrator.say(message);
         return;
       }
+      if (message.equals(nowPlaying) || QUEUE.stream().anyMatch(q -> q.message.equals(message))) {
+        trace("SKIP-DUPLICATE", "", message);
+        return;
+      }
+      if (QUEUE.size() >= MAX_QUEUED) {
+        Queued dropped = QUEUE.pollFirst();
+        LOGGER.warn("[tts] t={} DROPPED-QUEUE-FULL \"{}\"", System.currentTimeMillis(),
+            dropped.message);
+      }
+      QUEUE.addLast(new Queued(message, voice));
+      // Still loading: it waits with the rest, and the loading thread starts playback when done.
+      trace(initialized ? "QUEUE" : "HOLD", "depth=" + QUEUE.size()
+          + (nowPlaying == null ? "" : " behind=\"" + nowPlaying + "\""), message);
+      start = initialized && !playing;
+      playing |= start;
     }
-    if (!IS_PLAYING.compareAndSet(false, true)) {
-      LOGGER.warn("[tts] t={} DROPPED-BUSY \"{}\" while playing \"{}\"",
-          System.currentTimeMillis(), message, nowPlaying);
-      return;
+    if (start) {
+      startPlayback();
     }
-    nowPlaying = message;
+  }
 
-    // Capture classloader from calling thread (main client thread)
+  /** Speaks queued messages in order on one thread until the queue is empty. */
+  private static void startPlayback() {
+    // The caller's classloader (the client thread's, or the loading thread's, which was given
+    // Forge's): a new thread would default to the system one, which cannot see MaryTTS.
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     new Thread(() -> {
       Thread.currentThread().setContextClassLoader(cl);
-      try {
-        AudioInputStream audio;
-        long synthStart = System.currentTimeMillis();
-        trace("SYNTH-START", "", message);
+      for (;;) {
+        Queued next;
         synchronized (MaryTtsEngine.class) {
-          if (voice != null && !voice.isEmpty() && !voice.equals(currentVoice)
-              && mary.getAvailableVoices().contains(voice)) {
-            mary.setVoice(voice);
-            currentVoice = voice;
+          next = QUEUE.pollFirst();
+          nowPlaying = next == null ? null : next.message;
+          if (next == null) {
+            playing = false;
+            return;
           }
-          audio = mary.generateAudio(message);
         }
-        long audioMs = audio.getFrameLength() <= 0 ? -1L
-            : Math.round(audio.getFrameLength() * 1000.0D / audio.getFormat().getFrameRate());
-        trace("SYNTH-END", "took=" + (System.currentTimeMillis() - synthStart) + "ms audio="
-            + audioMs + "ms", message);
-
-        long playStart = System.currentTimeMillis();
-        trace("PLAY-START", "", message);
-        playAudio(audio);
-        audio.close();
-        trace("PLAY-END", "took=" + (System.currentTimeMillis() - playStart) + "ms", message);
-      } catch (Exception e) {
-        LOGGER.error("TTS playback failed for message: {}", message, e);
-      } finally {
-        nowPlaying = null;
-        IS_PLAYING.set(false);
+        long waited = System.currentTimeMillis() - next.queuedAt;
+        if (waited > MAX_WAIT_MS) {
+          LOGGER.warn("[tts] t={} DROPPED-STALE after {}ms \"{}\"", System.currentTimeMillis(),
+              waited, next.message);
+          continue;
+        }
+        speak(next.message, next.voice, waited);
       }
     }, "CSM-TTS-Playback").start();
+  }
+
+  /** Synthesises and plays one message on the calling (playback) thread. */
+  private static void speak(String message, String voice, long waited) {
+    try {
+      AudioInputStream audio;
+      long synthStart = System.currentTimeMillis();
+      trace("SYNTH-START", "waited=" + waited + "ms", message);
+      synchronized (MaryTtsEngine.class) {
+        if (voice != null && !voice.isEmpty() && !voice.equals(currentVoice)
+            && mary.getAvailableVoices().contains(voice)) {
+          mary.setVoice(voice);
+          currentVoice = voice;
+        }
+        audio = mary.generateAudio(message);
+      }
+      long audioMs = audio.getFrameLength() <= 0 ? -1L
+          : Math.round(audio.getFrameLength() * 1000.0D / audio.getFormat().getFrameRate());
+      trace("SYNTH-END", "took=" + (System.currentTimeMillis() - synthStart) + "ms audio="
+          + audioMs + "ms", message);
+
+      long playStart = System.currentTimeMillis();
+      trace("PLAY-START", "", message);
+      playAudio(audio);
+      audio.close();
+      trace("PLAY-END", "took=" + (System.currentTimeMillis() - playStart) + "ms", message);
+    } catch (Exception e) {
+      LOGGER.error("TTS playback failed for message: {}", message, e);
+    }
   }
 
   private static void playAudio(AudioInputStream audioStream) throws Exception {
