@@ -19,12 +19,6 @@
       "east": {
         "y": 90
       }
-    },
-    "inventory": [
-      {
-        "model": "csm:item/school_zone_beacon",
-        "transform": "forge:default-item"
-      }
-    ]
+    }
   }
 }
