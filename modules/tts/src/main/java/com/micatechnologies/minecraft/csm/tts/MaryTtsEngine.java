@@ -46,6 +46,20 @@ public class MaryTtsEngine implements ICsmTtsEngine {
   private static final AtomicBoolean IS_PLAYING = new AtomicBoolean(false);
   /** The message given while loading, as {message, voice}; guarded by the class. */
   private static String[] pending;
+  /** What the playback thread is saying, for the trace; null when it is idle. */
+  private static volatile String nowPlaying;
+
+  /**
+   * Logs one stage of one message, stamped with the wall clock in milliseconds so the lines line
+   * up with RCMC's announcement trace and with each other across threads. DEBUG goes to
+   * {@code logs/debug.log}; a message that is lost is also logged at WARN, in {@code latest.log}.
+   */
+  private static void trace(String stage, String detail, String message) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("[tts] t={} {}{} \"{}\"", System.currentTimeMillis(), stage,
+          detail == null || detail.isEmpty() ? "" : " " + detail, message);
+    }
+  }
 
   @Override
   public void startInit() {
@@ -88,6 +102,7 @@ public class MaryTtsEngine implements ICsmTtsEngine {
         LOGGER.info("MaryTTS initialized in {}ms — voice: {}",
             System.currentTimeMillis() - start, currentVoice);
         if (held != null) {
+          trace("UNHOLD", "", held[0]);
           say(held[0], held[1]);
         }
       } catch (Throwable e) {
@@ -99,6 +114,7 @@ public class MaryTtsEngine implements ICsmTtsEngine {
           pending = null;
         }
         if (held != null) {
+          trace("NARRATOR", "engine-failed", held[0]);
           CsmNarrator.say(held[0]);
         }
       }
@@ -127,20 +143,30 @@ public class MaryTtsEngine implements ICsmTtsEngine {
 
   @Override
   public void say(String message, String voice) {
+    trace("SAY", "voice=" + voice, message);
     synchronized (MaryTtsEngine.class) {
       if (!initialized) {
         if (initFailed) {
+          trace("NARRATOR", "engine-failed", message);
           CsmNarrator.say(message);
         } else {
           // Still loading: hold it; the loading thread speaks it when done.
+          if (pending != null) {
+            LOGGER.warn("[tts] t={} REPLACED-WHILE-LOADING \"{}\" by \"{}\"",
+                System.currentTimeMillis(), pending[0], message);
+          }
+          trace("HOLD", "loading", message);
           pending = new String[]{message, voice};
         }
         return;
       }
     }
     if (!IS_PLAYING.compareAndSet(false, true)) {
+      LOGGER.warn("[tts] t={} DROPPED-BUSY \"{}\" while playing \"{}\"",
+          System.currentTimeMillis(), message, nowPlaying);
       return;
     }
+    nowPlaying = message;
 
     // Capture classloader from calling thread (main client thread)
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -148,6 +174,8 @@ public class MaryTtsEngine implements ICsmTtsEngine {
       Thread.currentThread().setContextClassLoader(cl);
       try {
         AudioInputStream audio;
+        long synthStart = System.currentTimeMillis();
+        trace("SYNTH-START", "", message);
         synchronized (MaryTtsEngine.class) {
           if (voice != null && !voice.isEmpty() && !voice.equals(currentVoice)
               && mary.getAvailableVoices().contains(voice)) {
@@ -156,12 +184,20 @@ public class MaryTtsEngine implements ICsmTtsEngine {
           }
           audio = mary.generateAudio(message);
         }
+        long audioMs = audio.getFrameLength() <= 0 ? -1L
+            : Math.round(audio.getFrameLength() * 1000.0D / audio.getFormat().getFrameRate());
+        trace("SYNTH-END", "took=" + (System.currentTimeMillis() - synthStart) + "ms audio="
+            + audioMs + "ms", message);
 
+        long playStart = System.currentTimeMillis();
+        trace("PLAY-START", "", message);
         playAudio(audio);
         audio.close();
+        trace("PLAY-END", "took=" + (System.currentTimeMillis() - playStart) + "ms", message);
       } catch (Exception e) {
         LOGGER.error("TTS playback failed for message: {}", message, e);
       } finally {
+        nowPlaying = null;
         IS_PLAYING.set(false);
       }
     }, "CSM-TTS-Playback").start();

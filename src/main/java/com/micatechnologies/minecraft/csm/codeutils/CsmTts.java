@@ -7,6 +7,8 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The mod's speech facade. Everything that wants to say something calls this class; it speaks
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class CsmTts {
 
+  private static final Logger LOGGER = LogManager.getLogger("CSM-TTS");
   private static final String DEFAULT_VOICE = "cmu-slt-hsmm";
   private static final String[][] KNOWN_VOICES = {
       {"cmu-slt-hsmm", "CMU SLT (Female, US)"},
@@ -167,10 +170,12 @@ public class CsmTts {
     // narrator can honour -- Mojang's text2speech has no volume of its own -- so without it a
     // muted game would still talk. The engine applies the level itself, sample by sample.
     if (getVolume() <= 0.0F) {
+      trace("MUTED", message);
       return;
     }
     ICsmTtsEngine ttsEngine = engine;
     if (ttsEngine == null) {
+      trace("NARRATOR no-engine", message);
       CsmNarrator.say(message);
       return;
     }
@@ -181,11 +186,19 @@ public class CsmTts {
 
     if (!ttsEngine.isReady() && !ttsEngine.isLoading()) {
       // Failed to load: the system narrator, without blocking.
+      trace("NARRATOR engine-failed", message);
       CsmNarrator.say(message);
       return;
     }
 
     // Ready, or still loading: a loading engine holds the message and speaks it when it is.
     ttsEngine.say(message, voice);
+  }
+
+  /** One line of the speech trace; the engine logs the stages after this under the same logger. */
+  private static void trace(String stage, String message) {
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("[tts] t={} {} \"{}\"", System.currentTimeMillis(), stage, message);
+    }
   }
 }
