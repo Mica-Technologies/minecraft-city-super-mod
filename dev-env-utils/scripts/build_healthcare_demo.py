@@ -15,12 +15,12 @@ lanterns, and a helipad on the roof over the emergency department.
   north     a two-bed ward (beds, headwalls, reading lights, curtains on a ceiling track, nurse
             call linked to the station, one call left on), an ICU bay (behind automatic sliding
             doors: ICU bed, pendant, ventilator, ceiling lift, code blue button), the emergency
-            department (tracking board bank, trauma bay, decon shower, surgery support, an
-            ambulance entrance outside), imaging (CT, MRI, x-ray room, C-arm, mammography, lead
+            department (tracking board bank, trauma bay with a portable ultrasound cart, a
+            trauma stretcher, decon shower, surgery support, an ambulance entrance outside), imaging (CT, MRI, x-ray room, C-arm, mammography, lead
             door, IN USE lights, MRI zone signs), the lab, the pharmacy, the morgue and an
             operating room (the CSM OR set: table under the twin surgical light, anaesthesia
-            machine, back table, Mayo stand, kick bucket, supply cabinets, drape trolley and a
-            three-bay scrub sink)
+            machine, back table, Mayo stand, kick bucket, supply cabinets, drape trolley, a
+            three-bay scrub sink and a transport stretcher brought in from pre-op)
   south     the nurses' station (counters whose monitors show the master panel's calls, master
             panel, code blue annunciator, gas alarm), a
             clinic (exam room, eye lane, dental chair), dialysis and infusion, maternity and NICU
@@ -429,6 +429,8 @@ def ed():
     floor('triage_desk', 27, -4, E, 1)
     floor('wheelchair', 26, -2, E)
     bed('hospital_bed_white', 35, -10, S, rails=False, raised=True)
+    floor('ultrasound_cart', 36, -10, S, 1)            # beside the trauma bay bed, screen on
+    bed('hospital_stretcher_trauma', 28, -7, E)        # head at x 28, foot at 29
     heads = [hung('trauma_exam_light', 35, -8, S, 2, S * 4 + 3),
              hung('surgical_equipment_boom', 37, -8, W, 1, W | 4)]
     floor('crash_cart', 38, -10, W, 1)
@@ -536,6 +538,7 @@ def operating_room():
     tall('or_supply_cabinet', 108, -10, S)
     tall('or_supply_cabinet', 109, -10, S)
     floor('or_drape_trolley', 110, -7, W)
+    bed('hospital_stretcher', 108, -3, W, rails=False)  # in from pre-op: head 108, foot 107
     for z in (-9, -8, -7):
         floor('or_scrub_sink', 95, z, E)
     wall('medical_gas_outlet_o2', 97, Y + 1, -10, 'S')
@@ -769,7 +772,9 @@ def registered():
             if s:
                 names.append(s.group(1))
             elif v:
-                names.append('hospital_bed_' + v.group(1).lower())
+                variant = v.group(1).lower()
+                names.append(('hospital_' if variant.startswith('stretcher')
+                              else 'hospital_bed_') + variant)
             elif cls in CLASS_REGISTRY:
                 names.append(CLASS_REGISTRY[cls])
             else:

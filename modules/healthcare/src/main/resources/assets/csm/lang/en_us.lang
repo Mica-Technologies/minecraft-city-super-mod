@@ -181,3 +181,6 @@ tile.or_mayo_stand.name=Mayo Stand (Instrument Tray)
 tile.or_kick_bucket.name=Kick Bucket
 tile.or_supply_cabinet.name=OR Supply Cabinet
 tile.or_drape_trolley.name=Sterile Drape Trolley
+tile.hospital_stretcher.name=Patient Transport Stretcher
+tile.hospital_stretcher_trauma.name=Trauma Stretcher
+tile.ultrasound_cart.name=Portable Ultrasound Cart

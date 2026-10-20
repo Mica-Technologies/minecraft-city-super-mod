@@ -4,7 +4,8 @@ gen_healthcare_wards.py -- the Healthcare module's patient rooms and wards.
 
 What a hospital ward and its rooms are fitted with: the hospital bed (four blanket colours, the
 ICU bed with its air mattress and pump, the wider bariatric bed, the labour and delivery bed
-with its split foot section and leg supports), the patient headwall and its
+with its split foot section and leg supports), the patient transport stretcher and its trauma
+pad variant (built as beds: the same head and foot cells), the patient headwall and its
 upper panel, the reading light, the bedside monitor on its wall arm and on a rolling stand, the
 IV pole and the IV pole with its infusion pump, the overbed table, the patient recliner and
 visitor chair, the wardrobe, the patient-room TV, the wall vitals unit and suction regulator,
@@ -916,11 +917,76 @@ def bed_elements(rails, high, wide=False, icu=False, labor=False):
     return els
 
 
+@C.texture("stretcher_shroud")
+def _stretcher_shroud():
+    """The stretcher base's moulded cover: warm white, a darker kick edge and a pale blue
+    accent line."""
+    img = fill(hc.WARM_WHITE, grain=2, seed=1215)
+    rect(img, 0, 0, 16, 1, shade(hc.WARM_WHITE, 1.04))
+    rect(img, 0, 6, 16, 7, hc.PALE_BLUE)
+    rect(img, 0, 13, 16, 16, shade(hc.WARM_WHITE, 0.78))
+    return img
+
+
+def stretcher_elements(rails, high):
+    """The patient transport stretcher in the bed's frame (foot z 0..16, head z 16..32), at the
+    bed's two pad heights so a seat and the mannequin rest on it as on a bed: a narrow litter on
+    a shrouded base with two lift columns and four large casters, the pad with its back raised
+    and a pillow, one long side rail a side (up beside the pad or folded down), push handles at
+    the head, a bumper bar at the foot, and an IV pole standing in its socket at the head, on
+    the patient's right (+x), with a bag on its hook."""
+    x0, x1 = 2.5, 13.5
+    D = 10 if high else 6
+    Mt = D + 3
+    els = []
+    # casters, larger than the bed's, and the shrouded base
+    for cx in (2, 12):
+        for cz in (2, 28):
+            els.append(el([cx, 0, cz], [cx + 2, 2, cz + 2], "rubber"))
+    els.append(el([2.5, 2, 1.5], [13.5, 4, 30.5], "shroud"))
+    # the lift columns in their bellows, and the litter frame on them
+    for cz in (7, 23):
+        els.append(el([6.5, 4, cz], [9.5, D - 1, cz + 2], "dark_grey"))
+    els.append(el([x0, D - 1, 1], [x1, D, 31], "frame_grey"))
+    # the pad: flat seat and leg section, the back raised; the sheet is the pad's top
+    els.append(el([x0 + 0.5, D, 1.5], [x1 - 0.5, Mt, 20.5], "mattress",
+                  per={"up": "blanket"}))
+    back = el([x0 + 0.5, D, 20.5], [x1 - 0.5, Mt, 30.5], "mattress", per={"up": "blanket"})
+    els.append(rot(back, "x", -22.5, [8, D, 20.5]))
+    pillow = el([4.5, Mt, 24], [11.5, Mt + 2, 29.5], "pillow")
+    els.append(rot(pillow, "x", -22.5, [8, D, 20.5]))
+    # one long rail a side, up beside the pad or folded down against the frame: a top and a
+    # bottom tube and four uprights, as boxes (a cutout texture on a face longer than a block
+    # cannot be fitted to both cells it is cut into); no upright straddles the cut at z 16
+    ry0, ry1 = (Mt - 0.5, Mt + 3.5) if rails else (D - 4, D - 0.5)
+    for rx in ((x0 - 0.7, x0 - 0.1), (x1 + 0.1, x1 + 0.7)):
+        els.append(el([rx[0], ry1 - 0.8, 4], [rx[1], ry1, 27], "stainless"))
+        els.append(el([rx[0], ry0, 4], [rx[1], ry0 + 0.6, 27], "stainless"))
+        for uz in (4.4, 11.5, 19, 26):
+            els.append(el([rx[0] + 0.05, ry0 + 0.6, uz], [rx[1] - 0.05, ry1 - 0.8, uz + 0.6],
+                          "stainless"))
+    # push handles at the head, a bumper bar at the foot
+    for hx in (3, 12):
+        els.append(el([hx, D - 1, 30.6], [hx + 1, D + 7, 31.4], "stainless"))
+    els.append(el([3, D + 6, 30.6], [13, D + 7, 31.4], "stainless"))
+    for hx in (3, 12):
+        els.append(el([hx, D - 1, 0.2], [hx + 1, D + 1.5, 1], "stainless"))
+    els.append(el([3, D + 0.5, 0.2], [13, D + 1.5, 1], "stainless"))
+    # the IV pole socket at the head corner, the pole in it, its hook bar and a bag
+    top = D + 19
+    els.append(el([13.6, D - 2, 29], [14.8, D + 0.5, 30.2], "dark_grey"))
+    els.append(el([13.95, D + 0.5, 29.35], [14.45, top, 29.85], "stainless"))
+    els.append(el([12.6, top - 0.5, 29.35], [15.8, top, 29.85], "stainless"))
+    els.append(el([14.6, top - 6, 29.1], [15.8, top - 1.5, 30.1], "bag"))
+    return els
+
+
 BED_TEX = {"frame_grey": T("frame_grey"), "stainless": T("stainless"), "rubber": T("rubber"),
            "mattress": T("mattress"), "pillow": T("pillow"), "warm_white": T("warm_white"),
            "headboard": T("headboard"), "footboard": T("footboard"), "rail": T("bed_rail"),
            "dark_grey": T("dark_grey"), "pump": T("bed_pump"), "blanket": T("blanket_white"),
            "particle": T("frame_grey")}
+STRETCHER_TEX = dict(BED_TEX, shroud=T("stretcher_shroud"), bag=T("iv_bag"))
 
 BED_VARIANTS = [
     # (variant, geometry, blanket, mattress, en, de, es, sv)
@@ -943,10 +1009,27 @@ BED_VARIANTS = [
      "Bariatrisk sjukhussäng"),
     ("labor", "labor", "blanket_mauve", "mattress",
      "Labor and Delivery Bed", "Kreißbett", "Cama de partos", "Förlossningssäng"),
+    # the transport stretchers: the sheet is the "blanket", the pad's vinyl the "mattress"
+    ("stretcher", "stretcher", "blanket_white", "vinyl_blue",
+     "Patient Transport Stretcher", "Patiententransportliege",
+     "Camilla de transporte de pacientes", "Patienttransportbår"),
+    ("stretcher_trauma", "stretcher", "charcoal", "charcoal",
+     "Trauma Stretcher", "Schockraumliege", "Camilla de traumatología", "Traumabår"),
 ]
 GEOMS = {"std": dict(), "icu": dict(icu=True), "wide": dict(wide=True),
-         "labor": dict(labor=True)}
+         "labor": dict(labor=True), "stretcher": None}
 BOOL = ("false", "true")
+
+
+def bed_whole(g, kw, rails, high):
+    """A bed's or the stretcher's whole elements."""
+    if g == "stretcher":
+        return stretcher_elements(rails, high)
+    return bed_elements(rails, high, **kw)
+
+
+def bed_tex(g):
+    return STRETCHER_TEX if g == "stretcher" else BED_TEX
 
 
 def bed_models():
@@ -954,14 +1037,14 @@ def bed_models():
     for g, kw in GEOMS.items():
         for rails in (False, True):
             for high in (False, True):
-                whole = bed_elements(rails, high, **kw)
+                whole = bed_whole(g, kw, rails, high)
                 key = "%s_%s_%s" % (g, "up" if rails else "down", "high" if high else "low")
                 head = cut(whole, 2, 16, 48, origin=16)
                 foot = cut(whole, 2, -16, 16, origin=0)
                 if g != "icu":
-                    models["bed_head_" + key] = model(BED_TEX, head, ao=False)
-                models["bed_foot_" + key] = model(BED_TEX, foot, ao=False)
-        models["bed_item_" + g] = model(BED_TEX, shift(bed_elements(True, False, **kw), dz=-8),
+                    models["bed_head_" + key] = model(bed_tex(g), head, ao=False)
+                models["bed_foot_" + key] = model(bed_tex(g), foot, ao=False)
+        models["bed_item_" + g] = model(bed_tex(g), shift(bed_whole(g, kw, True, False), dz=-8),
                                         display=ITEM_SMALL)
     return models
 
@@ -975,7 +1058,7 @@ ALL_BED_MODELS = bed_models()
 
 def bed_states():
     for variant, g, blanket, mattress, *names in BED_VARIANTS:
-        reg = "hospital_bed_" + variant
+        reg = ("hospital_" if g == "stretcher" else "hospital_bed_") + variant
         textures = {"blanket": T(blanket), "mattress": T(mattress)}
 
         def choose(v, g=g, textures=textures):

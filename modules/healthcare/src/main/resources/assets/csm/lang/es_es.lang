@@ -181,3 +181,6 @@ tile.or_mayo_stand.name=Mesa de Mayo
 tile.or_kick_bucket.name=Cubo rodante de quirófano
 tile.or_supply_cabinet.name=Armario de suministros de quirófano
 tile.or_drape_trolley.name=Carro de paños estériles
+tile.hospital_stretcher.name=Camilla de transporte de pacientes
+tile.hospital_stretcher_trauma.name=Camilla de traumatología
+tile.ultrasound_cart.name=Ecógrafo portátil con carro

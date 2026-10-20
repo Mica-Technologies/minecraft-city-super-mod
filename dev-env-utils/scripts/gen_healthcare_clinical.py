@@ -6,7 +6,7 @@ and surgery support pieces.
 The ventilator, the ICU pendant and the drop column every ceiling-hung piece shares, the crash
 cart and the rolling defibrillator, the nurses' station counters (straight, with monitors, and the
 outside corner, joining like the furniture reception desk), the patient status board, the
-workstation on wheels, the automated dispensing cabinet, medication cart and medication fridge,
+workstation on wheels, the portable ultrasound cart, the automated dispensing cabinet, medication cart and medication fridge,
 the wheelchair, its storage rack and corral sign, the walker, the mobile and ceiling patient
 lifts, the triage desk, the trauma bay exam light, the decontamination shower (Life Safety has
 the decon sink and the eyewash station), the AMBULANCE ONLY floor marking and sign, the ED
@@ -1084,6 +1084,140 @@ screen_prop("workstation_on_wheels", (2, 0, 2, 14, 16, 14), "METAL", "FLOOR", Tr
                screen([4, 14.6, 8.45], [12, 20.4, 8.45], "screen"),
                el([12.5, 12, 4], [14.5, 13, 6], "grey")],
             CL, T("chart_screen"), display=ITEM_TALL)
+
+
+# --- portable ultrasound cart ---------------------------------------------------------------
+@C.texture("us_panel")
+def _us_panel():
+    """The ultrasound console's top: keys along the back, the touch screen, knobs and the
+    depth-gain sliders, and the trackball nearest the sonographer. Drawn as seen from above with
+    the sonographer at the bottom, then turned half round: an up face's top edge is north, and
+    the sonographer stands to the north of the cart."""
+    img = fill((58, 62, 68), size=32, grain=1, seed=3330)
+    frame(img, 0, 0, 32, 32, (40, 42, 46))
+    # the touch screen across the back
+    rect(img, 4, 2, 28, 9, (22, 26, 30))
+    rect(img, 5, 3, 27, 8, (52, 92, 128))
+    for x in (6, 12, 18, 24):
+        rect(img, x, 4, x + 3, 7, (120, 170, 210))
+    # a row of keys under it, and the depth-gain sliders on the right
+    for x in range(3, 19, 3):
+        rect(img, x, 11, x + 2, 13, (150, 154, 160))
+    for k, x in enumerate(range(21, 30, 2)):
+        rect(img, x, 11, x + 1, 19, (34, 36, 40))
+        rect(img, x, 13 + (k * 3) % 5, x + 1, 15 + (k * 3) % 5, (220, 220, 214))
+    # knobs, a green freeze key, and the trackball in its well
+    # knobs as squares: a small disc draws as a plus at the mip levels
+    for cx in (4, 9, 14):
+        rect(img, cx, 16, cx + 3, 19, (180, 184, 188))
+        rect(img, cx + 1, 17, cx + 2, 18, (110, 114, 120))
+    rect(img, 3, 22, 7, 25, (70, 160, 100))
+    disc(img, 16, 25, 4.2, (34, 36, 40))
+    disc(img, 16, 25, 3.0, (150, 156, 166))
+    disc(img, 15, 24, 1.0, (210, 214, 220))
+    rect(img, 22, 22, 26, 25, (150, 154, 160))
+    rect(img, 22, 26, 26, 29, (150, 154, 160))
+    return img.rotate(180)
+
+
+@C.texture("us_tower")
+def _us_tower():
+    """The cart's body, front: a storage drawer, the printer's paper slot and vents."""
+    img = fill(hc.WARM_WHITE, grain=2, seed=3331)
+    frame(img, 0, 0, 16, 16, shade(hc.WARM_WHITE, 0.84))
+    rect(img, 2, 2, 14, 6, shade(hc.WARM_WHITE, 0.9))
+    rect(img, 4, 3, 12, 4, (30, 32, 36))
+    rect(img, 2, 8, 14, 13, shade(hc.WARM_WHITE, 0.94))
+    rect(img, 6, 10, 10, 11, (120, 124, 130))
+    for x in range(3, 14, 2):
+        rect(img, x, 14, x + 1, 15, (150, 150, 146))
+    return img
+
+
+@C.texture("us_gel")
+def _us_gel():
+    img = fill((150, 196, 226), grain=2, seed=3332)
+    rect(img, 0, 0, 16, 4, (240, 240, 236))
+    rect(img, 2, 8, 14, 12, (250, 250, 250))
+    rect(img, 4, 9, 12, 10, (60, 110, 170))
+    return img
+
+
+def us_frame(i):
+    """One frame of the ultrasound image: a grey-scale sector fanning down from the probe at the
+    top, tissue layers, a dark oval (a fluid-filled structure) with a bright back wall and the
+    brighter band behind it, and the speckle changing frame to frame as a probe held still
+    shows it. Depth marks down the right edge."""
+    def f():
+        size = 32
+        img = Image.new("RGBA", (size, size), hc.SCREEN_BLACK + (255,))
+        px = img.load()
+        rng = random.Random(3340 + i)
+        ax, ay = 15.5, 2.0
+        half = math.radians(38)
+        breathe = 0.5 * math.sin(i * math.pi / 3)
+        ox, oy, rx, ry = 16.5, 17.5 + breathe, 5.0, 3.4
+        for y in range(size):
+            for x in range(size):
+                dx, dy = x + 0.5 - ax, y + 0.5 - ay
+                r = math.hypot(dx, dy)
+                if r < 4 or r > 27 or abs(math.atan2(dx, dy)) > half:
+                    continue
+                v = 70 + 50 * math.exp(-((r - 8) / 1.6) ** 2) - 1.2 * (r - 4)
+                if 13 < r < 14.5:
+                    v += 25
+                e = ((x + 0.5 - ox) / rx) ** 2 + ((y + 0.5 - oy) / ry) ** 2
+                if e < 1:
+                    v = 12
+                elif e < 1.45 and y + 0.5 > oy:
+                    v += 55
+                elif abs(x + 0.5 - ox) < rx * 0.8 and y + 0.5 > oy:
+                    v += 22
+                v *= rng.uniform(0.55, 1.35)
+                g = int(clamp((v,))[0])
+                px[x, y] = (g, g, g, 255)
+        for y in range(6, 30, 4):
+            rect(img, 30, y, 31, y + 1, (200, 200, 190))
+        rect(img, 1, 1, 4, 2, (240, 200, 60))
+        return img
+    return f
+
+
+hc.animation(C, "us_screen", [us_frame(i) for i in range(6)], 5)
+
+screen_prop("ultrasound_cart", (2, 0, 2, 14, 16, 14), "METAL", "FLOOR", True,
+            ("Portable Ultrasound Cart", "Mobiles Ultraschallgerät",
+             "Ecógrafo portátil con carro", "Mobil ultraljudsvagn"),
+            {"body": W("warm_white"), "front": T("us_tower"), "panel": W("dark_grey"),
+             "top": T("us_panel"), "metal": STEEL, "grey": GREY, "rubber": RUBBER,
+             "bezel": T("bezel"), "screen": W("screen_off"), "probe": W("white"),
+             "cable": W("charcoal"), "gel": T("us_gel"), "particle": W("warm_white")},
+            casters([(3.5, 3.5), (12.5, 3.5), (3.5, 12.5), (12.5, 12.5)])
+            + [el([2.5, 0.8, 2.5], [13.5, 2.2, 13.5], "body"),
+               front([4.5, 2.2, 6], [11.5, 12.5, 12.5], "body", "front"),
+               # the console, its top the keyboard, trackball and touch screen
+               el([2, 12.5, 2], [14, 13.8, 11.5], "panel", per={"up": "top"},
+                  uv={"up": FULL}),
+               # the handle across the front
+               el([3, 13, 0.6], [13, 13.8, 1.4], "metal"),
+               el([3, 13, 1.4], [4, 13.8, 2], "metal"),
+               el([12, 13, 1.4], [13, 13.8, 2], "metal"),
+               # probe holders on the left, the probes standing in them, their cables looped
+               # down to a hook; the gel bottle in its cup on the right
+               el([0.8, 10.5, 3], [2, 13.2, 9], "grey"),
+               el([1.05, 13.2, 3.6], [1.75, 15.4, 4.6], "probe"),
+               el([1.05, 13.2, 5.6], [1.75, 15, 6.4], "probe"),
+               el([1.05, 13.2, 7.4], [1.75, 15.6, 8.4], "probe"),
+               el([1.2, 6, 4], [1.6, 10.5, 4.4], "cable"),
+               el([1.2, 6, 7.8], [1.6, 10.5, 8.2], "cable"),
+               el([1.2, 5.6, 4], [1.6, 6, 8.2], "cable"),
+               el([14, 10.5, 7], [15.2, 13, 10], "grey"),
+               el([14.2, 13, 7.6], [15, 15.5, 9.4], "gel"),
+               # the monitor on its arm above the back of the console
+               el([7.3, 13.8, 10], [8.7, 17.5, 11.4], "metal"),
+               el([2.5, 16.5, 10], [13.5, 24, 11], "bezel"),
+               screen([3, 17, 9.95], [13, 23.5, 9.95], "screen")],
+            CL, T("us_screen"), display=ITEM_TALL)
 
 ADC_WHOLE = [front([0.5, 0, 2], [15.5, 16, 16], "body", "drawers"),
              front([0.5, 16, 2], [15.5, 30, 16], "body", "upper"),

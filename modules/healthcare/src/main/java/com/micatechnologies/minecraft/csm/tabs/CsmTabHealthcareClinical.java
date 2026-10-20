@@ -84,6 +84,7 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockNurseStation("nurse_station_corner", new int[]{0, 0, 0, 16, 16, 16}, true));
     initTabBlock(new BlockHealthcarePair("patient_status_board", new int[]{0, 0, 13, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE, false));
     initTabBlock(new BlockHealthcareScreen("workstation_on_wheels", new int[]{2, 0, 2, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcareScreen("ultrasound_cart", new int[]{2, 0, 2, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcarePair("medication_dispensing_cabinet", new int[]{0, 0, 2, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
     initTabBlock(new BlockHealthcare("medication_cart", new int[]{1, 0, 2, 15, 16, 14}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.FLOOR, true));
     initTabBlock(new BlockHealthcare("medication_fridge", new int[]{1, 0, 2, 15, 15, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));

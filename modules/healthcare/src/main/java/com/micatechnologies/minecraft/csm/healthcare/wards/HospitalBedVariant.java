@@ -20,7 +20,14 @@ public enum HospitalBedVariant implements IStringSerializable {
   ICU,
   BARIATRIC,
   /** The labour and delivery bed: a split foot section and leg supports. */
-  LABOR;
+  LABOR,
+  /**
+   * The patient transport stretcher (pre-op, PACU, urgent care): a narrow litter on a wheeled
+   * base, one long rail a side, push handles and an IV pole in its socket at the head.
+   */
+  STRETCHER,
+  /** The same stretcher with the emergency department's black trauma pad and no sheet. */
+  STRETCHER_TRAUMA;
 
   @Override
   @Nonnull
@@ -29,11 +36,20 @@ public enum HospitalBedVariant implements IStringSerializable {
   }
 
   /**
+   * Whether this is a stretcher rather than a bed.
+   *
+   * @return true for the stretchers
+   */
+  public boolean isStretcher() {
+    return this == STRETCHER || this == STRETCHER_TRAUMA;
+  }
+
+  /**
    * The registry name of this bed's head block.
    *
-   * @return {@code hospital_bed_<name>}
+   * @return {@code hospital_bed_<name>}, or {@code hospital_<name>} for a stretcher
    */
   public String registryName() {
-    return "hospital_bed_" + getName();
+    return (isStretcher() ? "hospital_" : "hospital_bed_") + getName();
   }
 }
