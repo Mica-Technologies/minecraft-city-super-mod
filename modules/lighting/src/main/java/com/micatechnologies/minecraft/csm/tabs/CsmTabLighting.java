@@ -123,7 +123,7 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("gem400r3cu", new AxisAlignedBB(0.312500, 0.000000, 0.062500, 0.687500, 0.406250, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem400r3cunp", new AxisAlignedBB(0.312500, 0.000000, 0.062500, 0.687500, 0.312500, 1.000000), 0));
     // OBJ prototype (#99): gen_streetlight_fixtures.py
-    initTabBlock(new BlockBrightLightFactory("gem400acu", new AxisAlignedBB(0.281250, -0.031250, 0.062500, 0.718750, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem400acu", new AxisAlignedBB(0.281250, -0.031250, 0.062500, 0.718750, 0.343750, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gepb", new AxisAlignedBB(0.125000, 0.000000, -1.000000, 0.875000, 0.750000, 1.125000), 0));
     initTabBlock(new BlockBrightLightFactory("gem240r1", new AxisAlignedBB(0.312500, -0.125000, 0.062500, 0.687500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem240r1np", new AxisAlignedBB(0.312500, -0.125000, 0.062500, 0.687500, 0.250000, 1.000000), 0));

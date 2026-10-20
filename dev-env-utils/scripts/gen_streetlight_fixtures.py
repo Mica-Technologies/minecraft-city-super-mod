@@ -243,21 +243,40 @@ def half_ellipsoid_down(mesh, centre, rx, ry, rz, mat, lat=6, lon=16):
 # (MDCA/MDCL): 31.81 in long, 15.12 in wide at the head tapering to 9.04 in at the pole end,
 # 8.32 in tall with the flat glass. Scaled into the old model's 15 px length that is 7.1 px wide
 # (held to 7, the envelope), 4.2 px at the neck and 3.9 px tall.
+#
+# The neck is wider and deeper than GE's 9 in pole end would scale to, because it has to swallow
+# the arm: every arm a cobra head hangs from in CSM ends in a 3 x 3 px square (ARM_TIP), about a
+# 6 in pipe at this scale, where the real slipfitter takes a 2 in one. A neck drawn to scale
+# left the arm's corners standing proud of the fixture's end.
 M400A_PROFILE = [
     # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
     (1.0, 1.2, 0.65, 1.45),
     (1.35, 2.1, 0.32, 2.05),
     (2.1, 2.85, 0.10, 2.70),
-    (3.3, 3.30, 0.0, 3.25),
-    (5.0, 3.48, 0.0, 3.60),
-    (7.0, 3.50, 0.0, 3.75),
-    (9.0, 3.40, 0.0, 3.75),
-    (11.0, 3.10, 0.0, 3.60),
-    (12.8, 2.70, 0.05, 3.35),
-    (14.4, 2.35, 0.25, 3.05),
-    (REAR_Z, 2.10, 0.45, 2.80),
+    (3.3, 3.30, 0.0, 3.30),
+    (5.0, 3.48, 0.0, 3.70),
+    (7.0, 3.50, 0.0, 3.90),
+    (9.0, 3.40, 0.0, 3.90),
+    (11.0, 3.10, -0.05, 3.75),
+    (12.8, 2.75, -0.20, 3.60),
+    (14.4, 2.50, -0.38, 3.52),
+    (REAR_Z, 2.45, -0.45, 3.50),
 ]
 M400A_EXPONENT = 2.6
+
+# Where the arm arrives at z = 16, in the fixture's block: x 6.5..9.5 on every arm, y 0..3 on the
+# pole light mount, the SCE mounts and NOV tapered masts 1-3, y -0.25..2.75 on masts 4 and 5.
+ARM_TIP = ((6.5, -0.25), (9.5, 3.0))
+
+
+def check_neck_holds_arm(registry, profile, ex):
+    """The rear section must contain the arm's end, corners and all, or the arm shows past it."""
+    _, hw, yb, yt = profile[-1]
+    (x0, y0), (x1, y1) = ARM_TIP
+    for x in (x0, x1):
+        for y in (y0, y1):
+            inside = y >= yb and (abs(x - 8.0) / hw) ** ex + ((y - yb) / (yt - yb)) ** ex <= 1.0
+            assert inside, "%s: the arm's corner (%s, %s) stands outside the neck" % (registry, x, y)
 
 
 def top_at(profile, z):
@@ -269,6 +288,7 @@ def top_at(profile, z):
 
 def build_m400a(optics):
     m = Mesh()
+    check_neck_holds_arm("M-400A", M400A_PROFILE, M400A_EXPONENT)
     loft_housing(m, M400A_PROFILE, M400A_EXPONENT)
     if optics == "cutoff":
         # Flat glass in the door frame: a shallow slab whose underside is the lens.
