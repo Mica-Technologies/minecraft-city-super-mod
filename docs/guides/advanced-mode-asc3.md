@@ -19,8 +19,14 @@ A **phase** is one movement — say, northbound left. Each phase has:
 
 - a **ring** (1 or 2) and a **barrier**, which together decide what may run alongside it
 - a **circuit**, which is the group of signal heads it drives
-- a **movement type**: through, left, protected left, right, or pedestrian
+- a **movement type**: through, left, protected left, right, pedestrian, or protected lane
 - its own **timing**, and a **recall** setting
+
+The **protected lane** movement (`PROT` on the phase map) is a bus, train or bike lane timed on
+its own. Without one, a circuit's protected-lane heads go green with its left turn and a vehicle in
+the sensor's protected zone calls the left. Give the circuit a protected lane phase and those heads
+and that zone belong to it instead: the bus gets its own green, and the left arrow serves only the
+left lane. It runs alongside the phases on the other ring like any other phase.
 
 Two rings run at once, one phase each, and a barrier is the line neither ring may cross until both
 are ready. That is what stops opposing lefts running with opposing throughs.

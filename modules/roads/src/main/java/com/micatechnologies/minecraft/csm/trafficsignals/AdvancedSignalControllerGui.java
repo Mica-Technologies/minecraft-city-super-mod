@@ -96,7 +96,13 @@ public class AdvancedSignalControllerGui extends GuiScreen {
    */
   private static final int TABLE_BODY_DY = 24;
 
-  private static final String[] MOVEMENT_ABBR = {"THRU", "LEFT", "PLFT", "RGHT", "PED"};
+  // By TrafficSignalPhaseMovement ordinal. PROT is the protected (bus/train/bike) lane.
+  private static final String[] MOVEMENT_ABBR = {"THRU", "LEFT", "PLFT", "RGHT", "PED", "PROT"};
+  /** The movements a preempt may trigger on, in cycle order: every movement but PED. */
+  private static final TrafficSignalPhaseMovement[] PREEMPT_TRIGGER_MOVEMENTS =
+      java.util.Arrays.stream(TrafficSignalPhaseMovement.values())
+          .filter(m -> m != TrafficSignalPhaseMovement.PED)
+          .toArray(TrafficSignalPhaseMovement[]::new);
   private static final String[] RECALL_ABBR = {"NONE", "MIN", "MAX", "PED", "SOFT"};
   // Combined ped-recall (bit 0) + rest-in-walk (bit 1) state labels for the MAP "PED" column.
   private static final String[] PED_OPT_LABELS = {"no", "PedR", "Walk", "P+W"};
@@ -818,17 +824,25 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     cells.add(new Cell(lcdX + 80, y, 60,
         () -> preemptText(pi, p -> p.isTriggerOnDetectors() ? "DET"
             : MOVEMENT_ABBR[p.getTriggerMovement().ordinal()]),
-        // PED (the last movement) is excluded: a preempt cannot trigger on the pedestrian
-        // movement (a latched button request would never drop, so the dwell could never exit).
-        // Its place in the cycle is taken by DET, the trigger circuit's preempt detectors.
+        // PED is excluded: a preempt cannot trigger on the pedestrian movement (a latched button
+        // request would never drop, so the dwell could never exit). The cycle is every other
+        // movement, then DET, the trigger circuit's preempt detectors.
         dir -> preemptEdit(pi, p -> {
-          int detectors = TrafficSignalPhaseMovement.values().length - 1;
-          int current = p.isTriggerOnDetectors() ? detectors : p.getTriggerMovement().ordinal();
+          TrafficSignalPhaseMovement[] options = PREEMPT_TRIGGER_MOVEMENTS;
+          int detectors = options.length;
+          int current = detectors;
+          if (!p.isTriggerOnDetectors()) {
+            for (int i = 0; i < options.length; i++) {
+              if (options[i] == p.getTriggerMovement()) {
+                current = i;
+              }
+            }
+          }
           int next = cyc(current, dir, detectors + 1);
           if (next == detectors) {
             send("pe.trigDetectors", pi, 1);
           } else {
-            send("pe.trigMovement", pi, next);
+            send("pe.trigMovement", pi, options[next].ordinal());
           }
         }), null));
     y += 12;
@@ -1478,8 +1492,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         {"Circuit (CKT)", "Which signal circuit (C1, C2, …) this phase drives.",
             "'--' = unassigned. Manage circuits in the main GUI."},
         {"Movement (MOVE)", "THRU through · LEFT left · PLFT protected left ·",
-            "RGHT right · PED walk. Selects both the signals the",
-            "phase drives and the detector zone that calls it."},
+            "RGHT right · PED walk · PROT bus/train/bike lane.",
+            "Picks the signals driven and the zone that calls."},
         {"Recall (RCL)", "NONE actuated (served only on a call) · MIN recall",
             "to min green · MAX hold to max green · PED recall a",
             "walk each cycle · SOFT rest here when nothing else calls."},
@@ -1784,7 +1798,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     fontRenderer.drawString("Out MOV:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 76, 9, "Output Movement",
         "Which heads on the output circuit the overlap drives.",
-        "RGHT = the common right-turn overlap.");
+        "RGHT = the common right-turn overlap. PROT = the",
+        "protected (bus/train/bike) lane heads.");
     y += 12;
     fontRenderer.drawString("Trail:", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 76, 9, "Lag (Trailing) Green",

@@ -144,6 +144,36 @@ public class TrafficSignalProgrammedPhasePlan {
     return null;
   }
 
+  /**
+   * Whether an active phase serves the {@link TrafficSignalPhaseMovement#PROTECTED} (bus/train/
+   * bike lane) movement on a circuit. When one does, that circuit's protected heads and protected
+   * zone belong to it alone; when none does, the circuit's left phase carries them, as every plan
+   * did before the movement existed.
+   *
+   * @param circuitIndex the circuit index
+   *
+   * @return {@code true} if an active PROTECTED phase is assigned to that circuit
+   */
+  public boolean hasProtectedPhaseFor(int circuitIndex) {
+    return getProtectedPhaseFor(circuitIndex) != null;
+  }
+
+  /**
+   * @param circuitIndex the circuit index
+   *
+   * @return the lowest-numbered active {@link TrafficSignalPhaseMovement#PROTECTED} phase on that
+   *     circuit, or {@code null} if there is none
+   */
+  public TrafficSignalProgrammedPhase getProtectedPhaseFor(int circuitIndex) {
+    for (TrafficSignalProgrammedPhase p : phases) {
+      if (p.isActive() && p.getCircuitIndex() == circuitIndex
+          && p.getMovement() == TrafficSignalPhaseMovement.PROTECTED) {
+        return p;
+      }
+    }
+    return null;
+  }
+
   public int[] getRing1Sequence() {
     return ring1Sequence;
   }
@@ -459,7 +489,8 @@ public class TrafficSignalProgrammedPhasePlan {
           break;
         case LEFT:
         case PROTECTED_LEFT:
-          hasSignals = !circuit.getProtectedSignals().isEmpty()
+          // The protected heads count only while no PROTECTED phase on the circuit owns them.
+          hasSignals = (!circuit.getProtectedSignals().isEmpty() && !hasProtectedPhaseFor(ci))
               || !circuit.getLeftSignals().isEmpty();
           break;
         case RIGHT:
@@ -467,6 +498,9 @@ public class TrafficSignalProgrammedPhasePlan {
           break;
         case PED:
           hasSignals = !circuit.getPedestrianSignals().isEmpty();
+          break;
+        case PROTECTED:
+          hasSignals = !circuit.getProtectedSignals().isEmpty();
           break;
         default:
           hasSignals = false;
@@ -482,7 +516,9 @@ public class TrafficSignalProgrammedPhasePlan {
     // permissive phase on the SAME barrier in the OTHER ring — which the rings can serve
     // concurrently — would let the green arrow and the "opposing" through show together.
     for (TrafficSignalProgrammedPhase p : phases) {
-      if (!p.isEnabled() || p.getPermissivePhase() <= 0) {
+      // A PROTECTED (bus/train/bike lane) phase has no FYA, so its permissive field is unused.
+      if (!p.isEnabled() || p.getPermissivePhase() <= 0
+          || p.getMovement() == TrafficSignalPhaseMovement.PROTECTED) {
         continue;
       }
       TrafficSignalProgrammedPhase perm = getPhase(p.getPermissivePhase());

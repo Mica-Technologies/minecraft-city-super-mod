@@ -120,7 +120,8 @@ public final class AdvancedPhaseBuilder {
         continue;
       }
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(ov.getOutputCircuitIndex());
-      List<BlockPos> heads = overlapOutputHeads(circuit, ov.getOutputMovement());
+      List<BlockPos> heads = overlapOutputHeads(plan, ov.getOutputCircuitIndex(), circuit,
+          ov.getOutputMovement());
       if (heads.isEmpty()) {
         continue;
       }
@@ -313,8 +314,13 @@ public final class AdvancedPhaseBuilder {
     return anyYellow ? RingBarrierState.VehInterval.YELLOW : RingBarrierState.VehInterval.RED;
   }
 
-  /** Resolves an overlap's output signal heads from its circuit and movement. */
-  private static List<BlockPos> overlapOutputHeads(TrafficSignalControllerCircuit circuit,
+  /**
+   * Resolves an overlap's output signal heads from its circuit and movement. A left output carries
+   * the circuit's protected heads only while no PROTECTED phase on that circuit owns them, as
+   * {@link #applyServed} does for a left phase.
+   */
+  private static List<BlockPos> overlapOutputHeads(TrafficSignalProgrammedPhasePlan plan,
+      int circuitIndex, TrafficSignalControllerCircuit circuit,
       TrafficSignalPhaseMovement movement) {
     switch (movement) {
       case RIGHT:
@@ -324,9 +330,13 @@ public final class AdvancedPhaseBuilder {
       case LEFT:
       case PROTECTED_LEFT: {
         List<BlockPos> combined = new ArrayList<>(circuit.getLeftSignals());
-        combined.addAll(circuit.getProtectedSignals());
+        if (!plan.hasProtectedPhaseFor(circuitIndex)) {
+          combined.addAll(circuit.getProtectedSignals());
+        }
         return combined;
       }
+      case PROTECTED:
+        return circuit.getProtectedSignals();
       case PED: {
         List<BlockPos> peds = new ArrayList<>(circuit.getPedestrianSignals());
         peds.addAll(circuit.getPedestrianAccessorySignals());
@@ -685,11 +695,18 @@ public final class AdvancedPhaseBuilder {
         break;
       case LEFT:
       case PROTECTED_LEFT:
-        vehicleSignals.addAll(circuit.getProtectedSignals());
+        // The protected (bus/train/bike lane) heads ride with the left turn unless a PROTECTED
+        // phase on this circuit serves them on their own.
+        if (!plan.hasProtectedPhaseFor(programmed.getCircuitIndex())) {
+          vehicleSignals.addAll(circuit.getProtectedSignals());
+        }
         vehicleSignals.addAll(circuit.getLeftSignals());
         break;
       case RIGHT:
         vehicleSignals.addAll(circuit.getRightSignals());
+        break;
+      case PROTECTED:
+        vehicleSignals.addAll(circuit.getProtectedSignals());
         break;
       case PED:
         // Pedestrian-only phase: no vehicle movement of its own.

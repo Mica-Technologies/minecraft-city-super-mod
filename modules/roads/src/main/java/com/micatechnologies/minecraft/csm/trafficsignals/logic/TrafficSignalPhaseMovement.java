@@ -7,10 +7,17 @@ package com.micatechnologies.minecraft.csm.trafficsignals.logic;
  *
  * <ul>
  *   <li>{@link #THROUGH} &rarr; through signals / {@code standardTotal} detection</li>
- *   <li>{@link #LEFT} / {@link #PROTECTED_LEFT} &rarr; left (or protected) signals / {@code leftTotal}</li>
+ *   <li>{@link #LEFT} / {@link #PROTECTED_LEFT} &rarr; left signals / {@code leftTotal}, plus the
+ *       circuit's protected (bus/train/bike lane) signals and {@code protectedTotal} when the plan
+ *       has no {@link #PROTECTED} phase on that circuit</li>
  *   <li>{@link #RIGHT} &rarr; right signals / {@code rightTotal}</li>
  *   <li>{@link #PED} &rarr; pedestrian signals / pedestrian button request count</li>
+ *   <li>{@link #PROTECTED} &rarr; protected (bus/train/bike lane) signals / {@code protectedTotal},
+ *       a movement of its own instead of riding with the left turn</li>
  * </ul>
+ *
+ * <p>The ordinal is what a phase, overlap, preempt and priority plan save, so a new movement is
+ * only ever appended.</p>
  *
  * @author Mica Technologies
  * @since 2026.6
@@ -20,7 +27,8 @@ public enum TrafficSignalPhaseMovement {
   LEFT("Left"),
   PROTECTED_LEFT("Protected Left"),
   RIGHT("Right"),
-  PED("Pedestrian");
+  PED("Pedestrian"),
+  PROTECTED("Protected Lane");
 
   private final String name;
 

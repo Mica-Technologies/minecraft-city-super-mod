@@ -24,8 +24,12 @@ ADVANCED mode is a thin overlay on the existing circuit/sensor model. Four piece
 | `logic/AdvancedPhaseBuilder` | Translates the two `ServedMovement`s into a concrete `TrafficSignalPhase` (the existing green/yellow/red/fya/off/walk/fdw/dontwalk signal lists), then applies overlaps. |
 
 A phase maps onto a `TrafficSignalControllerCircuit` + a `TrafficSignalPhaseMovement`
-(`THROUGH, LEFT, PROTECTED_LEFT, RIGHT, PED`), which selects both the signal heads it drives and
-the sensor-summary zone that calls it.
+(`THROUGH, LEFT, PROTECTED_LEFT, RIGHT, PED, PROTECTED`), which selects both the signal heads it
+drives and the sensor-summary zone that calls it. `PROTECTED` (GUI `PROT`, ordinal 5) is the
+protected (bus/train/bike) lane as a movement of its own: with one on a circuit, that circuit's
+protected heads and protected zone are its alone and the left phase keeps only the left lane;
+without one, the left carries them as it always has. See "Phases overlay the existing circuits" in
+`TRAFFIC_SIGNAL_SYSTEM.md`.
 
 **Edit flow (GUI → server):** `AdvancedSignalControllerGui` cells `send(action, index, value)` →
 `AdvancedSignalControllerConfigPacket` → `…ConfigPacketHandler` → `TileEntityTrafficSignalController
@@ -749,8 +753,9 @@ mode; standard mode has no transit priority at all.
 A bus lane with faces of its own wants heads that show the transit bar and follow the lane's
 **through** movement. The only bar-faced three-section head used to be the rail signal
 (`controllableverticalrailsignal`, "Rail, Protected"), which links as `SIGNAL_SIDE.PROTECTED` into
-the circuit's protected list and so lights only through a LEFT / PROTECTED_LEFT phase: a
-through-running bus needed its own circuit and an overlap at every junction (issue #285).
+the circuit's protected list and so lit only through a LEFT / PROTECTED_LEFT phase: a
+through-running bus needed its own circuit and an overlap at every junction (issue #285). A
+PROTECTED phase (#297) now serves the protected list on its own, called by the protected zone.
 
 **Vertical Traffic Signal (Transit, Through)** (`controllableverticaltransitsignal`,
 `TrafficSignalBlocks.VERTICAL_TRANSIT_THROUGH_SIGNAL`) has the same three transit-bar sections and
