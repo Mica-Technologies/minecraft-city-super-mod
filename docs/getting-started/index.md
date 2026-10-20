@@ -35,7 +35,9 @@ And three to keep handy once it is running:
 1. Install **Minecraft 1.12.2** and **Forge for 1.12.2**.
 2. Download the latest release jar from the
    [Releases page](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest).
-3. Drop it in your `mods` folder.
+3. Drop it in your `mods` folder. With every module (or other content mods), also install
+   [RoughlyEnoughIDs](https://modrinth.com/mod/reid) and [MixinBooter](https://modrinth.com/mod/mixinbooter): CSM fills 1.12.2's block ID space on its own. See
+   [Installation](installation.md#block-ids-roughlyenoughids-is-required).
 4. Launch. You will find **new creative tabs**, more than two dozen with every module installed — see the
    [block reference](../reference/index.md) for what is in each.
 

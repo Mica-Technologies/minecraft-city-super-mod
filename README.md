@@ -19,6 +19,12 @@ Download the jars you want from the
 and drop them into your Forge 1.12.2 `mods` folder. Want everything the mod has ever had? Take all
 fifteen.
 
+> **RoughlyEnoughIDs is required for a full install.** Every module together registers about
+> 4,000 blocks, which with vanilla's is past Minecraft 1.12.2's 4,096 block IDs, so install
+> [RoughlyEnoughIDs](https://modrinth.com/mod/reid) and [MixinBooter](https://modrinth.com/mod/mixinbooter) on the client and the server. A subset of modules may fit without
+> them; see the
+> [installation page](https://mica-technologies.github.io/minecraft-city-super-mod/getting-started/installation/#block-ids-roughlyenoughids-is-required).
+
 | Jar | What it adds |
 |---|---|
 | **CSM: Core** — required | The crafting parts, the CSM Fabricator, and the machinery every module needs |

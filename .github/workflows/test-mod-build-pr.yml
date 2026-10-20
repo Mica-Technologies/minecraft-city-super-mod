@@ -120,6 +120,21 @@ jobs:
       # Minecraft directly all compile cleanly and only fail at server startup.
       # The sibling SUM mod shipped three such bugs simultaneously in 2026.07.19 and
       # took the Alto server down; all three were caught by a single `runServer`.
+      # Every module together registers more blocks than 1.12.2 has ids for once vanilla's are
+      # counted, so a full install needs RoughlyEnoughIDs (and MixinBooter, which it needs), as
+      # the installation guide says. Boot the all-modules leg the way players must run it: the
+      # same release jars the City of Alto pack runs, pinned by hash.
+      - name: Add RoughlyEnoughIDs and MixinBooter (all modules)
+        if: matrix.modules == 'all'
+        run: |
+          mkdir -p run/mods
+          curl -fsSL -o 'run/mods/!mixinbooter-10.7.jar' 'https://cdn.modrinth.com/data/G1ckZuWK/versions/PZYBy1vc/%21mixinbooter-10.7.jar'
+          curl -fsSL -o run/mods/roughly-enough-ids.jar 'https://cdn.modrinth.com/data/sDhbZgv7/versions/ssC110Xa/RoughlyEnoughIDs-2.3.0.jar'
+          sha256sum -c - <<'EOF'
+          8bb53080aede2d2b1e1c5f713bbf49a38f20add8caa3d52fabcdf8a536b55a18  run/mods/!mixinbooter-10.7.jar
+          00c96666451d7a88e39670e09755e6eae1593abb5f6eaa22f819b660013d25ef  run/mods/roughly-enough-ids.jar
+          EOF
+
       - name: Boot dedicated server and assert startup
         run: bash .github/scripts/server-smoke-test.sh
         env:
