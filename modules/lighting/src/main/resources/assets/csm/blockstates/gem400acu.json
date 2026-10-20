@@ -1,0 +1,47 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/shared_models/streetlight_gem400acu.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/lighting/shared_textures/streetlight_body_ge_grey",
+      "#lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_off",
+      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "state": {
+      "0": {},
+      "1": {
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
+        }
+      },
+      "2": {},
+      "3": {
+        "textures": {
+          "#lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

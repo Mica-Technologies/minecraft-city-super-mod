@@ -40,6 +40,7 @@ tile.gem240r2cu.name=GE M240R2 (Óptica de Corte)
 tile.gem400r3.name=GE M400R3 (Estándar)
 tile.gem400r3cu.name=GE M400R3 (Óptica de Corte)
 tile.gem400r3cunp.name=GE M400R3 (Óptica de Corte, Sin Fotocélula)
+tile.gem400acu.name=GE M-400A (Óptica de Corte)
 tile.gepb.name=GE Powerbracket
 tile.hb1.name=Alto Luz LED de Nave Industrial 1
 tile.hb2.name=Alto Luz LED de Nave Industrial 2
