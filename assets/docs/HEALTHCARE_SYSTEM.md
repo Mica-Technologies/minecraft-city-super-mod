@@ -95,6 +95,11 @@ never disagree, and a generator places them with `/setblock` in either order: no
 half whose partner is missing, so a half-built bed waits for its other half. Breaking either
 breaks both, and only the head drops.
 
+The foot names itself after what it belongs to. Its own name is the generic "Hospital Bed or
+Stretcher (Foot)", since a block's name is read with no world, but its pick block (and
+`getItem`) is the item of the bed or stretcher whose head is behind it, read from the head's
+variant as its model is (the standard white bed when no head is there). Probes such as The One
+Probe and Hwyla name a block by its pick block, so a stretcher's foot reads as the stretcher.
 
 The facing is CSM's, the way the foot end faces (the same as the headwall over it), not vanilla's
 head direction. The head goes against the wall in the wall-face cell at floor level, the foot at

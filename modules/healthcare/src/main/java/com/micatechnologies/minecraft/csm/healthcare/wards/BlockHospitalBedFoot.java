@@ -27,6 +27,11 @@ import net.minecraft.world.World;
  * ({@code foot.offset(facing.getOpposite())}), so the two halves can never disagree. A foot with
  * no head behind it draws the standard bed with its rails down.
  *
+ * <p>Its own name is the generic one ("Hospital Bed or Stretcher (Foot)"), since a block's name
+ * has no world to read. Everything that names the foot a player is looking at -- pick block, and
+ * the probes that name a block by its pick block -- gets the item of the bed or stretcher it
+ * belongs to, read from its head's variant like its model.</p>
+ *
  * @since 2026.10
  */
 public class BlockHospitalBedFoot extends BlockHealthcare {
@@ -141,12 +146,29 @@ public class BlockHospitalBedFoot extends BlockHealthcare {
     return Items.AIR;
   }
 
+  /**
+   * The item of the bed or stretcher this foot belongs to: its head's variant, or the standard
+   * bed it draws when no head is behind it.
+   */
+  private ItemStack bedItem(World world, BlockPos pos, IBlockState state) {
+    HospitalBedVariant variant = getActualState(state, world, pos).getValue(VARIANT);
+    BlockHospitalBed bed = BlockHospitalBed.of(variant);
+    return bed == null ? ItemStack.EMPTY : new ItemStack(bed);
+  }
+
   @Override
   @Nonnull
   public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target,
       @Nonnull World world, @Nonnull BlockPos pos, EntityPlayer player) {
-    IBlockState h = head(world, pos, state);
-    return h == null ? ItemStack.EMPTY : new ItemStack(h.getBlock());
+    return bedItem(world, pos, state);
+  }
+
+  @Override
+  @Nonnull
+  @SuppressWarnings("deprecation")
+  public ItemStack getItem(@Nonnull World world, @Nonnull BlockPos pos,
+      @Nonnull IBlockState state) {
+    return bedItem(world, pos, state);
   }
 
   @Override

@@ -1090,8 +1090,9 @@ def bed_states():
                            ("rails", list(BOOL)), ("high", list(BOOL))], choose_foot)
     foot["variants"]["inventory"] = [{"model": M("bed_item_std")}]
     C.add("hospital_bed_foot", "new BlockHospitalBedFoot()",
-          ("Hospital Bed (Foot)", "Krankenhausbett (Fußende)", "Cama de hospital (pies)",
-           "Sjukhussäng (fotände)"), {}, foot, tab=HID)
+          ("Hospital Bed or Stretcher (Foot)", "Krankenhausbett oder Liege (Fußende)",
+           "Cama de hospital o camilla (pies)", "Sjukhussäng eller bår (fotände)"), {}, foot,
+          tab=HID)
 
 
 bed_states()
