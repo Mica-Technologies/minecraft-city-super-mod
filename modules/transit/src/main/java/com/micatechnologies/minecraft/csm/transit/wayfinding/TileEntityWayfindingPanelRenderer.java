@@ -34,12 +34,12 @@ import org.lwjgl.opengl.GL11;
  * panel's middle, so its legend reads the right way and its arrow (mirrored) points the same way
  * in the world as the front's.</p>
  *
- * <p><b>Layout.</b> The pictogram is a square the panel's height less its margins, at the end
- * away from the arrow; the arrow, {@link #ARROW_SHARE} of that, at the end it points to (the left end for the three
- * leftward arrows, else the right); the text left-aligned between them, its capitals
- * {@link #CAPS_ONE_LINE} of the panel's height on one line or {@link #CAPS_TWO_LINES} each on two,
- * scaled down together to fit the width. Worked out once per
- * sign and panel size and kept on the tile entity.</p>
+ * <p><b>Layout</b> ({@link WayfindingPanelLayout}). The pictogram is a square the panel's height
+ * less its margins, at the end away from the arrow; the arrow, 0.8 of that, at the end it points
+ * to (the left end for the three leftward arrows, else the right); the text left-aligned between
+ * them, its capitals 0.45 of the panel's height on one line or 0.28 each on two, scaled down
+ * together to fit the width. Worked out once per sign and panel size and kept on the tile
+ * entity.</p>
  *
  * <p><b>Drawing.</b> The face is fullbright, as a backlit sign is: the baked slab behind it is
  * lit by the world and is what shows beyond the render distance. The legend's glyphs are a
@@ -61,29 +61,10 @@ public class TileEntityWayfindingPanelRenderer
   /** The slab's face, from the block's middle plane (the model's z 6 and 10), in blocks. */
   static final float FACE_Z = 2f / 16f;
   /** The frame's width on the panel's outer edges (the generator's PANEL_FRAME), in blocks. */
-  static final float FRAME = 0.8f / 16f;
+  static final float FRAME = WayfindingPanelLayout.FRAME;
   /** How far in front of the slab's face the background and the art are drawn, in blocks. */
   private static final float BACKGROUND_LIFT = 0.1f / 16f;
   private static final float ART_LIFT = 0.2f / 16f;
-
-  /**
-   * The Highway Gothic capitals' height as a share of the font's line height, measured in game:
-   * the line height leaves room for accents and descenders, so the legend is sized by its
-   * capitals, which sit about centred in the line.
-   */
-  private static final float CAP_SHARE = 0.45f;
-  /** The capitals' height on a one-line sign and on each line of a two-line one, of the panel. */
-  private static final float CAPS_ONE_LINE = 0.45f;
-  private static final float CAPS_TWO_LINES = 0.28f;
-  /** The arrow's square as a share of the pictogram's: an arrow reads well smaller. */
-  private static final float ARROW_SHARE = 0.8f;
-  /**
-   * How small the pictogram and arrow may go, as a share of the panel's height inside its
-   * margins, to give a long legend room before the legend itself is shrunk to fit.
-   */
-  private static final float MIN_ART_SHARE = 0.55f;
-  /** From one line to the next, in line heights. */
-  private static final float LINE_STEP = 0.85f;
 
   private static final String ARROW_SPRITE = "csm:blocks/transit/airport/wayfinding_arrow";
 
@@ -116,7 +97,7 @@ public class TileEntityWayfindingPanelRenderer
     }
     // Fetched before any list is opened, so its lazy constructor cannot bind during a compile.
     CsmFontRenderer fr = CsmFontRenderer.highwayGothic();
-    Layout layout = layout(te, fr);
+    WayfindingPanelLayout layout = layout(te, fr);
     int width = te.getWidth();
     int height = te.getHeight();
 
@@ -165,8 +146,8 @@ public class TileEntityWayfindingPanelRenderer
   }
 
   /** One face of the sign, in the reader's space with the slab's face at z = 0. */
-  private void face(TileEntityWayfindingPanel te, Layout layout, Arrow arrow, int width,
-      int height, CsmFontRenderer fr) {
+  private void face(TileEntityWayfindingPanel te, WayfindingPanelLayout layout, Arrow arrow,
+      int width, int height, CsmFontRenderer fr) {
     WayfindingSign.Scheme scheme = te.getScheme();
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
@@ -224,7 +205,8 @@ public class TileEntityWayfindingPanelRenderer
   }
 
   /** The legend's glyphs, from the controller's list, compiling it the first time. */
-  private static void text(TileEntityWayfindingPanel te, Layout layout, CsmFontRenderer fr) {
+  private static void text(TileEntityWayfindingPanel te, WayfindingPanelLayout layout,
+      CsmFontRenderer fr) {
     BlockPos pos = te.getPos();
     int list = TEXT_LISTS.get(pos, layout.textKey);
     if (list == CsmDisplayListCache.NO_LIST) {
@@ -244,7 +226,7 @@ public class TileEntityWayfindingPanelRenderer
   }
 
   /** The lines in the font's units, the first at the origin, y down. Geometry only. */
-  private static void glyphs(Layout layout, CsmFontRenderer fr) {
+  private static void glyphs(WayfindingPanelLayout layout, CsmFontRenderer fr) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
@@ -278,30 +260,7 @@ public class TileEntityWayfindingPanelRenderer
   // Layout
   // ---------------------------------------------------------------------------------------
 
-  /** Where everything goes on a face, in blocks; worked out once per sign and size. */
-  static final class Layout {
-
-    float margin;
-    float square;
-    /** The pictogram's and arrow's middle, up the face. */
-    float artMiddle;
-    float arrow;
-    /** With the arrow at the right end, or none. */
-    float pictX;
-    float arrowX;
-    float textX;
-    /** With the arrow at the left end. */
-    float pictXArrowLeft;
-    float arrowXLeft;
-    float textXArrowLeft;
-    float textTop;
-    float textScale;
-    String[] lines;
-    int lineStep;
-    long textKey;
-  }
-
-  private static Layout layout(TileEntityWayfindingPanel te, CsmFontRenderer fr) {
+  private static WayfindingPanelLayout layout(TileEntityWayfindingPanel te, CsmFontRenderer fr) {
     String line1 = te.getLine1();
     String line2 = te.getLine2();
     long textKey = hash(line1, line2);
@@ -314,81 +273,11 @@ public class TileEntityWayfindingPanelRenderer
     key = key * 1000003L ^ height;
     key = key * 1000003L ^ (pictogram ? 1 : 0);
     key = key * 1000003L ^ (arrow ? 1 : 0);
-    if (te.renderLayout instanceof Layout && te.renderLayoutKey == key) {
-      return (Layout) te.renderLayout;
+    if (te.renderLayout instanceof WayfindingPanelLayout && te.renderLayoutKey == key) {
+      return (WayfindingPanelLayout) te.renderLayout;
     }
-    Layout l = new Layout();
-    l.textKey = textKey;
-    l.margin = FRAME + 0.08f * height;
-    float fullSquare = height - 2 * l.margin;
-    float gap = l.margin;
-
-    if (line1.isEmpty() && line2.isEmpty()) {
-      l.lines = new String[0];
-    } else if (line1.isEmpty() || line2.isEmpty()) {
-      l.lines = new String[]{line1.isEmpty() ? line2 : line1};
-    } else {
-      l.lines = new String[]{line1, line2};
-    }
-    int n = l.lines.length;
-    int fontHeight = fr.FONT_HEIGHT;
-    l.lineStep = Math.round(fontHeight * LINE_STEP);
-    int widest = 0;
-    for (String line : l.lines) {
-      widest = Math.max(widest, fr.getStringWidth(line));
-    }
-    float wantScale = n == 0 ? 0
-        : (n == 1 ? CAPS_ONE_LINE : CAPS_TWO_LINES) * height / (CAP_SHARE * fontHeight);
-
-    // A legend too long for the room beside a full-height pictogram and arrow takes room from
-    // them first, down to MIN_ART_SHARE, and is shrunk only past that: the words are the sign.
-    float perSquare = (pictogram ? 1f : 0f) + (arrow ? ARROW_SHARE : 0f);
-    float room = width - 2 * l.margin - (pictogram ? fullSquare + gap : 0)
-        - (arrow ? fullSquare * ARROW_SHARE + gap : 0);
-    float short_ = widest * wantScale - room;
-    l.square = fullSquare;
-    if (short_ > 0 && perSquare > 0) {
-      l.square = Math.max(fullSquare * MIN_ART_SHARE, fullSquare - short_ / perSquare);
-    }
-    l.arrow = l.square * ARROW_SHARE;
-    l.artMiddle = height / 2f;
-
-    // the arrow at the right end (or none): pictogram, text, arrow
-    float xl = l.margin;
-    float xr = width - l.margin;
-    if (arrow) {
-      l.arrowX = xr - l.arrow;
-      xr -= l.arrow + gap;
-    }
-    if (pictogram) {
-      l.pictX = xl;
-      xl += l.square + gap;
-    }
-    l.textX = xl;
-    float textWidth = xr - xl;
-    // the arrow at the left end: arrow, text, pictogram
-    xl = l.margin;
-    xr = width - l.margin;
-    l.arrowXLeft = xl;
-    if (arrow) {
-      xl += l.arrow + gap;
-    }
-    if (pictogram) {
-      l.pictXArrowLeft = xr - l.square;
-    }
-    l.textXArrowLeft = xl;
-
-    if (n == 0 || widest == 0 || textWidth <= 0) {
-      l.textScale = 0;
-    } else {
-      float scale = wantScale;
-      if (widest * scale > textWidth) {
-        scale = textWidth / widest;
-      }
-      l.textScale = scale;
-      float block = ((n - 1) * l.lineStep + fontHeight) * scale;
-      l.textTop = height / 2f + block / 2f;
-    }
+    WayfindingPanelLayout l = WayfindingPanelLayout.of(width, height, pictogram, arrow, line1,
+        line2, fr.FONT_HEIGHT, fr::getStringWidth, textKey);
     te.renderLayout = l;
     te.renderLayoutKey = key;
     return l;
