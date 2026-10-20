@@ -235,13 +235,48 @@ list before adding it, so an overlap move cannot leave a dual-member head in two
 
 - **`AbstractBlockTrafficSignalSensor`** -- Base class. Small wall-mounted block with
   `ICsmTileEntityProvider`.
-- **`TileEntityTrafficSignalSensor`** -- Defines scan regions as bounding box corner pairs
-  (main lane, left turn, protected, right turn). Each tick, queries
-  `world.getEntitiesWithinAABB()` for `EntityPlayer` and `EntityVillager` within each region
-  to detect vehicle presence.
+- **`TileEntityTrafficSignalSensor`** -- Defines four zone types (main lane, left turn,
+  protected, right turn), each made of up to `MAX_BOXES_PER_ZONE` (8) boxes given by corner
+  pairs, so one zone can cover two lanes, an L-shaped bay or a curve. When polled, it runs one
+  `world.getEntitiesWithinAABB()` per box for `EntityPlayer` and `EntityVillager` and reports,
+  per type, the number of **distinct** entities across that type's boxes: a vehicle in two
+  overlapping boxes, or straddling the edge two boxes share, is one vehicle. A one-box zone
+  takes the old single-query path with no set allocated, and the boxes' `AxisAlignedBB`s are
+  built once per change rather than every poll. Wrong-way detection
+  (`scanEntitiesWithPositions`) covers every main-zone box, each entity once.
 - Concrete implementations: `BlockTrafficLightSensor`, `BlockTrafficLightSensorBell`,
   `BlockTrafficLightSensorBelowGround`, `BlockTrafficLightSensorModern`,
   `BlockTrafficLightSensorShort`.
+
+#### Drawing Zones and the Zone NBT
+
+The Sensor Zone Tool (`ItemSensorZoneTool`, `ewsignallinker`): right-click the sensor, then two
+opposite corners. Each box drawn is **added** to the current mode's zone (sneak-click any other
+block to cycle Through / Left / Protected / Right) and the chat names it "box N of 8". A ninth
+box is refused, and so is a box with the same extent as one the zone already has (corners in
+either order). Nothing a tool click does replaces or removes a box: sneak + right-click the
+sensor to open `SensorConfigGui`, which shows each zone's box count and has a **Remove Last**
+button per zone (the most recently drawn box), a **Clear** per zone (every box) and **Clear
+All Zones**. The `SensorConfigAction` ordinals travel in the packet, so the `REMOVE_LAST_*`
+actions were appended after `ANGLE_RIGHT`. The radar speed sign keeps its single zone, and a
+new box still replaces it.
+
+| Zone | Box 0 corners | Boxes 1..7 |
+|---|---|---|
+| Through (main) | `m1`, `m2` (legacy `blockPos1/2`) | `mx` |
+| Left | `l1`, `l2` (legacy `leftBlockPos1/2`) | `lx` |
+| Protected | `p1`, `p2` (legacy `protectedBlockPos1/2`) | `px` |
+| Right | `r1`, `r2` (legacy `rightBlockPos1/2`) | `rx` |
+
+Box 0 keeps the original keys, each a `BlockPos.toLong()`, so a sensor with one box per zone
+saves byte for byte as it did before multi-box zones and old worlds load unchanged. The extra
+boxes are a list of int arrays, each `[x1, y1, z1, x2, y2, z2]`, written only when the zone has
+more than one box. A list read without box 0 becomes boxes 0 and up, so box 0 is always the
+first box. A second main-zone box by command:
+
+```
+/blockdata <x> <y> <z> {mx:[[I;10,64,20,14,68,30]]}
+```
 
 #### Sensor Facing Convention
 
