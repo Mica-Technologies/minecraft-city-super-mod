@@ -68,6 +68,8 @@ public class CsmHealthcare {
     // A player's picked nurse call panel or dome light is forgotten when they leave.
     CsmLifecycleHooks.onPlayerLoggedOut(uuid -> NurseCallLinking.forget(uuid));
     HealthcareSounds.registerSounds();
+    // A nurse call device, code blue button or wayfinding cell set over itself by /setblock.
+    HealthcareStateChanges.register();
 
     proxy.preInit(event);
   }
