@@ -22,7 +22,8 @@ import net.minecraft.world.World;
  * A hospital bed's head cell. A bed is one block wide and two long like a vanilla bed: this
  * head cell, which carries the item and the bed's state, and a {@link BlockHospitalBedFoot} cell
  * in front of it. The head goes against the wall (under the patient headwall) and the foot faces
- * the room.
+ * the room. The transport stretchers ({@code hospital_stretcher}, {@code _trauma}) are beds
+ * here too: the same two cells, metadata, clicks and pad heights, drawn as a stretcher.
  *
  * <p><b>Metadata</b>: bits 0-1 the facing (S 0, W 1, N 2, E 3), the way the foot end faces, the
  * same as the headwall above it; bit 2 the side rails up; bit 3 the bed raised to its high

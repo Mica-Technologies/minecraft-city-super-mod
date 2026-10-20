@@ -181,3 +181,6 @@ tile.or_mayo_stand.name=Mayo-Instrumententisch
 tile.or_kick_bucket.name=Abwurfeimer (OP)
 tile.or_supply_cabinet.name=OP-Materialschrank
 tile.or_drape_trolley.name=Sterilgutwagen (Abdecktücher)
+tile.hospital_stretcher.name=Patiententransportliege
+tile.hospital_stretcher_trauma.name=Schockraumliege
+tile.ultrasound_cart.name=Mobiles Ultraschallgerät

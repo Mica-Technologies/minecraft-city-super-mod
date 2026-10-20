@@ -38,7 +38,8 @@ public final class HealthcareFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
-    if (registryName.startsWith("hospital_bed_")) {
+    if (registryName.startsWith("hospital_bed_")
+        || registryName.startsWith("hospital_stretcher")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
@@ -51,7 +52,8 @@ public final class HealthcareFabricatorRules {
     }
     if (registryName.startsWith("nurse_call_") || registryName.startsWith("patient_monitor_")
         || registryName.startsWith("iv_pole_pump") || registryName.startsWith("patient_room_tv")
-        || registryName.startsWith("vitals_") || registryName.endsWith("_analyser")) {
+        || registryName.startsWith("vitals_") || registryName.endsWith("_analyser")
+        || registryName.startsWith("ultrasound_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));

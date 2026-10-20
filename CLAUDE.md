@@ -1035,7 +1035,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   screen strips with their `.mcmeta`, Forge blockstates for the floor and wall facings, and
   `stamp_legend`, which sets a sign legend in the committed highway font
 - `gen_healthcare_wards.py` -- patient rooms and wards (Healthcare): the hospital beds drawn whole
-  and cut into a head and the shared foot (four blankets, ICU, bariatric, labour), headwall,
+  and cut into a head and the shared foot (four blankets, ICU, bariatric, labour, and the
+  transport and trauma stretchers on the same two cells), headwall,
   reading light, monitors, IV poles, overbed table, recliner, visitor chair, wardrobe, room TV,
   vitals and suction, the cubicle curtain track and panels (four cloths, mesh band, hem), the
   nurse call devices, dome light and master panel, corridor rails, dispensers, carts and bins, the
@@ -1043,7 +1044,7 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_healthcare_clinical.py` -- the ICU, ED, nursing station and surgery support (Healthcare):
   ventilator, the ceiling-hung pendant, boom and trauma light on the shared drop column, crash
   cart, defibrillator, nurses' station counters and corner, status board, workstation on wheels,
-  dispensing cabinet, medication cart and fridge, wheelchair, rack and corral sign, walker,
+  portable ultrasound cart (animated image), dispensing cabinet, medication cart and fridge, wheelchair, rack and corral sign, walker,
   mobile and ceiling lifts, triage desk, decon shower, AMBULANCE ONLY marking and sign, blanket
   warmer, autoclave, case cart, scrub dispenser, and the ED tracking board's case and screen (its
   layout numbers shared with `TileEntityEdTrackingBoardRenderer`); `--check`, `--fragments`

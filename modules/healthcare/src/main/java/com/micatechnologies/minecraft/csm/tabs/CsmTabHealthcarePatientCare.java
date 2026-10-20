@@ -63,6 +63,8 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHospitalBed(HospitalBedVariant.ICU));
     initTabBlock(new BlockHospitalBed(HospitalBedVariant.BARIATRIC));
     initTabBlock(new BlockHospitalBed(HospitalBedVariant.LABOR));
+    initTabBlock(new BlockHospitalBed(HospitalBedVariant.STRETCHER));
+    initTabBlock(new BlockHospitalBed(HospitalBedVariant.STRETCHER_TRAUMA));
     initTabBlock(new BlockHealthcarePair("patient_headwall", new int[]{0, 0, 13, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE));
     initTabBlock(new BlockHealthcarePair("patient_headwall_upper", new int[]{0, 0, 14, 16, 16, 16}, HealthcareMaterial.PLASTIC, BlockHealthcare.Mount.WALL, BlockHealthcarePair.Shape.WIDE));
     initTabBlock(new BlockHealthcareLight("patient_reading_light", new int[]{5, 8, 6, 11, 14, 16}, 12));

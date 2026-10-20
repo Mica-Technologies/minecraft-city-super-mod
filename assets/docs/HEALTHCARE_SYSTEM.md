@@ -6,8 +6,8 @@ department, nursing stations, surgery support, clinics, dialysis and infusion, i
 the pharmacy, the morgue, maternity and the NICU, rehabilitation, the waiting room, teaching, the
 paediatric playroom, wayfinding and the building systems a hospital runs on (nurse call, code
 blue, medical gas, emergency power, infant security). Like every module it pins Core to its own
-exact version and registers nothing itself. It is 159 blocks (155 in two tabs and four hidden
-cells), 3,260 block states.
+exact version and registers nothing itself. It is 162 blocks (158 in two tabs and four hidden
+cells), 3,332 block states.
 
 It was asked for in GitHub #293, for the hospitals being built on the Alto server: they were
 furnished from the Hospital Mod and its Theatre Pack, which cover the operating room and little
@@ -32,8 +32,8 @@ font code); the dependency rule is about Java.
 
 | Tab | Id | Order | Holds |
 |---|---|---|---|
-| **CSM: Healthcare - Patient Care** | `tabhealthcarepatientcare` | 29 | Beds and everything round a bed (headwalls, monitors, IV poles, curtains, room furniture, nurse call devices and dome lights), corridor rails, wheelchairs and lifts, the exam room, dental and eye exam chairs, dialysis and infusion chairs, maternity, rehabilitation, the waiting room and its queue, the playroom, and the wayfinding panel (63) |
-| **CSM: Healthcare - Clinical** | `tabhealthcareclinical` | 30 | Nursing (the master panel, the nurses' station, medication, dispensers, carts and bins), the ICU and ED, surgery support, the dialysis and endoscopy equipment, imaging, the lab, the pharmacy, the morgue, teaching models, the building systems, and the operating room (92) |
+| **CSM: Healthcare - Patient Care** | `tabhealthcarepatientcare` | 29 | Beds and everything round a bed (headwalls, monitors, IV poles, curtains, room furniture, nurse call devices and dome lights), corridor rails, wheelchairs and lifts, the exam room, dental and eye exam chairs, dialysis and infusion chairs, maternity, rehabilitation, the waiting room and its queue, the playroom, the transport stretchers, and the wayfinding panel (65) |
+| **CSM: Healthcare - Clinical** | `tabhealthcareclinical` | 30 | Nursing (the master panel, the nurses' station, medication, dispensers, carts and bins), the ICU and ED, surgery support, the dialysis and endoscopy equipment, imaging and the portable ultrasound cart, the lab, the pharmacy, the morgue, teaching models, the building systems, and the operating room (93) |
 | Hidden | `tabhealthcarehidden` | -11 | `hospital_bed_foot`, `cubicle_curtain`, `ceiling_boom_column`, `healthcare_unit_part`: cells placed by another block, never by hand (4) |
 
 About 160 blocks are too many for one tab's page, and the split follows who reaches for them: a
@@ -75,7 +75,7 @@ nothing else will do.**
   lamps over the counter's facings and ends, below), the curtain panel (288: cloth x drawn x its
   shape), the master panel
   (256: six lamp bits and the alarm, actual state over four facings), the curtain track (162) and
-  the shared bed foot (112). Most blocks are 4 to 16.
+  the shared bed foot (144). Most blocks are 4 to 16.
 - **Shared swatches and `model_depth.py`.** Every generator shares the palette's swatch textures
   by path and runs `model_depth.py` over what it writes (coplanar faces separated, hidden faces
   pruned).
@@ -101,7 +101,20 @@ head direction. The head goes against the wall in the wall-face cell at floor le
 upper panel y+2), drawn at the back of its cell. The bed is drawn whole in one frame by
 `gen_healthcare_wards.py` and cut at the block line into one model a cell; `HospitalBedVariant`'s
 order is the foot's `variant` property's, so a bed is only ever appended (the labour bed made it
-seven values, 112 foot states).
+seven values, 112 foot states; the stretchers nine, 144).
+
+**Transport stretchers** (`hospital_stretcher`, `hospital_stretcher_trauma`) are beds in all but
+their drawing: the same `BlockHospitalBed` head and shared foot, the same metadata, clicks and
+the bed's two pad heights (so the seat, and the simulation mannequin laid on one, rest on the pad
+as on a bed). The geometry is `stretcher_elements` in `gen_healthcare_wards.py`: a narrow litter
+on a shrouded base with two lift columns and four large casters, a pad with its back raised and a
+pillow, one long side rail a side (up, or folded down below the litter), push handles at the
+head, a bumper bar at the foot, and an IV pole standing in its socket at the head on the
+patient's right with a bag on its hook. The rails are boxes, not the bed's cutout texture: a
+face longer than a block is cut into two cells, and a texture fitted to the whole rail cannot be
+fitted to both halves. The trauma stretcher is a texture swap only, the ED's black pad with no
+sheet. They are for pre-op, PACU, the ED and urgent care, in place of Life Safety's
+`ems_stretcher`, which reads as an ambulance's.
 
 Clicks: a long side raises or lowers the rails; a sneak-click raises or lowers the bed; anywhere
 else sits the player up in it on Core's `EntityCsmSeat`, facing the foot. There is no sleeping in a
@@ -429,6 +442,7 @@ hospital generators depend on this table.
 | Block (csm:) | Mount | Meta | NBT / notes |
 |---|---|---|---|
 | `hospital_bed_white`, `_blue`, `_green`, `_mauve`, `_icu`, `_bariatric`, `_labor` | head cell, floor | bits 0-1 facing (towards the foot), bit 2 rails up, bit 3 raised | head in the wall-face cell; foot at `head.offset(facing)` |
+| `hospital_stretcher`, `hospital_stretcher_trauma` | head cell, floor | bits 0-1 facing (towards the foot), bit 2 rails up, bit 3 raised | exactly as a bed: foot (`hospital_bed_foot`) at `head.offset(facing)`, either cell first; a click on a long side raises or lowers the rails, a sneak-click the height, anywhere else lies the player on it |
 | `hospital_bed_foot` (hidden) | foot cell, floor | bits 0-1 facing (the head's) | reads variant, rails and height from the head at `foot.offset(facing.opposite)`; either cell first; breaking one breaks both |
 | `patient_headwall`, `patient_headwall_upper` | wall, 2 wide | bits 0-2 facing, bit 3 second cell | over the bed head, at +1 and +2 |
 | `patient_wardrobe` | floor, 2 tall | bits 0-1 facing, bit 2 upper cell | |
@@ -450,6 +464,7 @@ hospital generators depend on this table.
 | Block (csm:) | Mount | Meta | NBT / notes |
 |---|---|---|---|
 | `icu_ventilator`, `crash_cart`, `defibrillator`, `workstation_on_wheels`, `triage_desk`, `autoclave` | floor | bits 0-1 facing, bit 2 screen on | |
+| `ultrasound_cart` | floor | bits 0-1 facing (the console and screen face the sonographer), bit 2 screen on | the image is an animated texture; a click switches it. Probe holders on the left, the gel bottle on the right, both just past the collision box |
 | `medication_cart`, `medication_fridge`, `case_cart`, `walker`, `wheelchair` (seat), `wheelchair_storage_rack` | floor | bits 0-1 facing | |
 | `nurse_station_counter` | floor | bits 0-1 facing (front towards the corridor) | joins any station piece left and right |
 | `nurse_station_counter_monitors` | floor | bits 0-1 facing (front towards the corridor) | joins any station piece left and right; TE `rooms` (byte, bit i = room i + 1 of its panel calling), set by the network: link it with `nursecall link <panel> <counter>` rather than writing it |
@@ -648,8 +663,10 @@ Measured 2026-10-19 in the dev client (every module, plus the IV content packs, 
 third-party road mod's test jar in `run/mods`), `-Xmx6G`, on a machine also running a game.
 
 **Since then** (2026-10-20, counted from the block classes, not measured): the station counter
-with monitors' room lamps added 1,008 states and the operating room set nine blocks and 76
-states, so the module is 159 blocks and **3,260 states**; both are multiparts or Forge
+with monitors' room lamps added 1,008 states, the operating room set nine blocks and 76
+states, and the two transport stretchers (16 head states each, 32 more on the shared foot) and
+the ultrasound cart (8) three blocks and 72 states, so the module is 162 blocks and **3,332
+states**; both are multiparts or Forge
 blockstates of small parts, and the set added seven textures of 16 and 32 px (the atlas stayed at
 95.4%).
 
@@ -709,10 +726,11 @@ end). North of it: a two-bed ward (curtain round one bed, nurse call linked to t
 call left on), an ICU bay behind sliding doors (ICU and bariatric beds, pendant, ventilator,
 ceiling lift, a code blue button linked to the station's annunciator), the ED (a tracking board
 bank, trauma bay, decon shower, surgery support, an ambulance entrance with its marking and sign),
-imaging (CT, MRI, an X-ray room, C-arm, mammography, lead doors, IN USE lights, MRI zone signs),
+imaging (CT, MRI, an X-ray room, C-arm, mammography, lead doors, IN USE lights, MRI zone signs; the
+ED also has a trauma stretcher and an ultrasound cart at its trauma bay),
 the lab, the pharmacy, the morgue and the operating room (the table under the twin surgical
 light, the anaesthesia machine at its head, the back table and Mayo stand at its foot, supply
-cabinets, the drape trolley and a three-bay scrub sink). South: the nurses' station open to the corridor (counters
+cabinets, the drape trolley, a three-bay scrub sink and a transport stretcher in from pre-op). South: the nurses' station open to the corridor (counters
 and corner, the monitors linked to the master panel and showing its calls, master panel, annunciator, gas alarm, outlets), a clinic with an eye lane and a dental
 chair, dialysis and infusion, maternity and NICU (labour and postpartum beds, the infant security
 panel at its door), the waiting room open to the corridor (beam seating facing two now-serving
@@ -720,7 +738,7 @@ displays, the kiosk serving 042 and the desk console 117), a chapel (pews, altar
 lecture hall (tiered seats, a mannequin on a bed, skeleton, dissection table and torso), the
 playroom, the laundry and a rehab gym. A 9 x 9 hospital helipad with its lights and wind sock
 sits on the roof over the ED. It reads both tabs' registration lists and puts anything it did not
-place on signed plinths; nothing is missing today (155 of 155).
+place on signed plinths; nothing is missing today (158 of 158).
 
 ---
 

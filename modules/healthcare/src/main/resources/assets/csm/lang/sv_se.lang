@@ -181,3 +181,6 @@ tile.or_mayo_stand.name=Mayobord
 tile.or_kick_bucket.name=Rullhink (operation)
 tile.or_supply_cabinet.name=Materialskåp (operation)
 tile.or_drape_trolley.name=Vagn för sterila draperingar
+tile.hospital_stretcher.name=Patienttransportbår
+tile.hospital_stretcher_trauma.name=Traumabår
+tile.ultrasound_cart.name=Mobil ultraljudsvagn
