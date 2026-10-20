@@ -1202,17 +1202,18 @@ screen_prop("ultrasound_cart", (2, 0, 2, 14, 16, 14), "METAL", "FLOOR", True,
                el([3, 13, 0.6], [13, 13.8, 1.4], "metal"),
                el([3, 13, 1.4], [4, 13.8, 2], "metal"),
                el([12, 13, 1.4], [13, 13.8, 2], "metal"),
-               # probe holders on the left, the probes standing in them, their cables looped
-               # down to a hook; the gel bottle in its cup on the right
-               el([0.8, 10.5, 3], [2, 13.2, 9], "grey"),
-               el([1.05, 13.2, 3.6], [1.75, 15.4, 4.6], "probe"),
-               el([1.05, 13.2, 5.6], [1.75, 15, 6.4], "probe"),
-               el([1.05, 13.2, 7.4], [1.75, 15.6, 8.4], "probe"),
-               el([1.2, 6, 4], [1.6, 10.5, 4.4], "cable"),
-               el([1.2, 6, 7.8], [1.6, 10.5, 8.2], "cable"),
-               el([1.2, 5.6, 4], [1.6, 6, 8.2], "cable"),
-               el([14, 10.5, 7], [15.2, 13, 10], "grey"),
-               el([14.2, 13, 7.6], [15, 15.5, 9.4], "gel"),
+               # probe holders on the sonographer's left, the probes standing in them, their
+               # cables looped down to a hook; the gel bottle in its cup on the right. The
+               # sonographer stands at the front (north, z 0) facing south, so their left is +x
+               el([14, 10.5, 3], [15.2, 13.2, 9], "grey"),
+               el([14.25, 13.2, 3.6], [14.95, 15.4, 4.6], "probe"),
+               el([14.25, 13.2, 5.6], [14.95, 15, 6.4], "probe"),
+               el([14.25, 13.2, 7.4], [14.95, 15.6, 8.4], "probe"),
+               el([14.4, 6, 4], [14.8, 10.5, 4.4], "cable"),
+               el([14.4, 6, 7.8], [14.8, 10.5, 8.2], "cable"),
+               el([14.4, 5.6, 4], [14.8, 6, 8.2], "cable"),
+               el([0.8, 10.5, 7], [2, 13, 10], "grey"),
+               el([1, 13, 7.6], [1.8, 15.5, 9.4], "gel"),
                # the monitor on its arm above the back of the console
                el([7.3, 13.8, 10], [8.7, 17.5, 11.4], "metal"),
                el([2.5, 16.5, 10], [13.5, 24, 11], "bezel"),
