@@ -351,6 +351,26 @@ def all_textures():
 
 
 # --------------------------------------------------------------------------- blockstates
+def _display(rotation, translation_px, scale):
+    # A blockstate transform's translation is in blocks, not the 1/16 a model's `display` uses.
+    return {"rotation": rotation, "translation": [round(t / 16.0, 5) for t in translation_px],
+            "scale": [scale] * 3}
+
+
+# The JSON cobra heads' `display` (ge_m400r3_cutoff.json), so the OBJ fixtures sit in a slot, a
+# hand and on the ground as their neighbours in the tab do: side on in the slot, lifted to its
+# middle. forge:default-block draws a fixture this low and long as a sliver in the slot's corner.
+INVENTORY_TRANSFORM = {
+    "gui": _display([0, 90, -5], [0.5, 4.5, 0], 0.625),
+    "ground": _display([0, 0, 0], [0, 6.5, 0], 1.0),
+    "fixed": _display([0, 0, 0], [0, 0, 0], 0.5),
+    "thirdperson_righthand": _display([0, 90, 0], [0, 4.5, 0], 0.55),
+    "thirdperson_lefthand": _display([0, -90, 0], [0, 4.5, 0], 0.55),
+    "firstperson_righthand": _display([0, 45, 0], [3, 5, 0], 0.4),
+    "firstperson_lefthand": _display([0, 225, 0], [3, 5, 0], 0.4),
+}
+
+
 def blockstate(registry, body_tex):
     model = "csm:lighting/shared_models/streetlight_%s.obj" % registry
     lit = {"textures": {"#lens": TEX + LENS_ON}}
@@ -365,7 +385,7 @@ def blockstate(registry, body_tex):
         "variants": {
             "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
             "state": {"0": {}, "1": lit, "2": {}, "3": lit},
-            "inventory": [{"transform": "forge:default-block"}],
+            "inventory": [{"transform": INVENTORY_TRANSFORM}],
         },
     }
 
