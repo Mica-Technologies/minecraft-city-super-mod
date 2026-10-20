@@ -84,7 +84,9 @@ jobs:
     # The all-modules leg keeps the exact name the branch protection rule requires; only the
     # Core-only leg carries a suffix.
     name: ${{ matrix.modules == 'all' && 'Dedicated Server Smoke Test' || format('Dedicated Server Smoke Test ({0})', matrix.modules) }}
-    needs: compile
+    # No `needs: compile`: runServer builds the mod itself, so waiting for the compile job only
+    # added its four minutes to every pull request. Both start at once; a branch that does not
+    # compile fails both, which costs a runner but no one's time.
     runs-on: ubuntu-latest
     # CSM is a large content mod; world gen on a cold cache is the slow part.
     timeout-minutes: 30
