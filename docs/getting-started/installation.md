@@ -7,6 +7,7 @@
 | **Minecraft** | 1.12.2 |
 | **Mod loader** | [Forge for 1.12.2](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html) |
 | **Java** | Whatever your Forge 1.12.2 profile already uses (Java 8) |
+| **Block IDs** | **[RoughlyEnoughIDs](https://modrinth.com/mod/reid) and [MixinBooter](https://modrinth.com/mod/mixinbooter)** -- required with every module installed, and with most installs alongside other content mods. See [Block IDs](#block-ids-roughlyenoughids-is-required) |
 | **Memory** | **2 GB** for the game client with every module installed (`-Xmx2G` in the launcher profile's JVM arguments, which is what most launchers give by default), and more if the modpack has other large mods. It needs that much only while it loads its models; in a world it uses well under 1 GB. At 1.75 GB it still starts, a little slower; at 1.5 GB or less it does not reach the title screen. Core alone runs in 512 MB. See [Performance & Graphics](performance-and-graphics.md) for video memory and the settings that lighten the load |
 
 ## The mod comes in pieces
@@ -45,21 +46,22 @@ every module requires it. Beyond that, install only the subsystems you actually 
     of the module that now holds them (the fare equipment to Transit, for example). Modpacks that
     shipped the old single jar should list every jar they want instead.
 
-## Block IDs: install RoughlyEnoughIDs
+## Block IDs: RoughlyEnoughIDs is required
 
 Minecraft 1.12.2 has room for **4,096 block IDs** in a world, shared by vanilla and every mod.
-City Super Mod uses most of them: with every module installed it registers about **3,700
-blocks**, and vanilla takes around 250 more, which leaves only about 160 for every other mod
-in the pack. Past the limit the game does not start; it stops with
-`Invalid id 4096 - maximum id range exceeded`.
+With every module installed, City Super Mod registers about **4,000 blocks**, and vanilla takes
+around 250 more, which is already **past the limit with no other mods at all**. Past the limit
+the game does not start; it stops with `Invalid id 4096 - maximum id range exceeded` (CSM logs
+a line naming RoughlyEnoughIDs just before).
 
-!!! tip "Recommended: RoughlyEnoughIDs"
+!!! warning "Required: RoughlyEnoughIDs and MixinBooter"
 
-    Install **RoughlyEnoughIDs** (REID), which lifts the limit, together with **MixinBooter**,
-    which it needs. Both are ordinary jars in `mods`, on the client and the server. With them,
-    CSM and any number of other content mods fit. They are what the City of Alto packs run.
+    Install **[RoughlyEnoughIDs](https://modrinth.com/mod/reid)** (REID), which lifts the limit, together with **[MixinBooter](https://modrinth.com/mod/mixinbooter)**, which it needs.
+    Both are ordinary jars in `mods`, on the client **and** the server. With them, every CSM
+    module and any number of other content mods fit. They are what the City of Alto packs run.
 
-    You can skip them only with a few CSM modules and few other mods. The block catalogue's
+    You can do without them only with a subset of CSM modules and few other mods, keeping the
+    total under 4,096 with vanilla's 250 included. The block catalogue's
     [reference pages](../reference/index.md) show how many blocks each module adds.
 
 ## Steps
@@ -68,11 +70,12 @@ in the pack. Past the limit the game does not start; it stops with
 2. Open the
    [Releases page](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
    and download **CSM: Core** plus each module you want. The release lists a `SHA256SUMS.txt` you
-   can check the downloads against.
+   can check the downloads against. Installing every module (or CSM alongside other content
+   mods)? Also download **[RoughlyEnoughIDs](https://modrinth.com/mod/reid)** and **[MixinBooter](https://modrinth.com/mod/mixinbooter)** -- see [Block IDs](#block-ids-roughlyenoughids-is-required).
 
     [![Latest release](https://img.shields.io/github/v/release/Mica-Technologies/minecraft-city-super-mod?sort=semver&display_name=tag&style=for-the-badge&label=Latest%20Version)](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
 
-3. Put **all** of the jars you downloaded in `mods`:
+3. Put **all** of the jars you downloaded in `mods`, RoughlyEnoughIDs and MixinBooter included:
 
     === "Windows"
 

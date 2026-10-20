@@ -35,6 +35,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ProgressManager;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -377,7 +378,29 @@ public class Csm {
    */
   @SubscribeEvent
   public void registerBlocks(RegistryEvent.Register<Block> event) {
+    warnIfBlockIdsRunOut(event.getRegistry().getValuesCollection().size(),
+        CsmRegistry.getBlocks().size());
     event.getRegistry().registerAll(CsmRegistry.getBlocks().toArray(new Block[0]));
+  }
+
+  /** 1.12.2's block id space, shared by vanilla and every mod. */
+  private static final int VANILLA_BLOCK_ID_LIMIT = 4096;
+
+  /**
+   * Every module together registers more blocks than 1.12.2 has ids for once vanilla's are
+   * counted, and Forge then stops with a bare "Invalid id 4096". Says what to install first,
+   * unless an id extender is loaded: RoughlyEnoughIDs keeps JustEnoughIDs' mod id, {@code jeid}.
+   */
+  private static void warnIfBlockIdsRunOut(int alreadyRegistered, int csmBlocks) {
+    if (Loader.isModLoaded("jeid")
+        || alreadyRegistered + csmBlocks <= VANILLA_BLOCK_ID_LIMIT) {
+      return;
+    }
+    logger.fatal("City Super Mod and its installed modules need {} block ids and {} are already"
+            + " taken, past Minecraft 1.12.2's limit of {}. Install RoughlyEnoughIDs (with"
+            + " MixinBooter), or remove some CSM modules; the game is about to stop with \"Invalid"
+            + " id 4096\". See the installation guide's \"Block IDs\" section.", csmBlocks,
+        alreadyRegistered, VANILLA_BLOCK_ID_LIMIT);
   }
 
   /**

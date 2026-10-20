@@ -224,6 +224,10 @@ jobs:
             install as many of them alongside Core as you want. All jars in a release must be
             the same version as each other.
 
+            **Installing every module needs RoughlyEnoughIDs** (https://modrinth.com/mod/reid)
+            and MixinBooter (https://modrinth.com/mod/mixinbooter): together the modules pass
+            Minecraft 1.12.2's 4,096 block IDs.
+
             ${{ env.RELEASE_JAR_TABLE }}
 
             `SHA256SUMS.txt` is attached in `sha256sum` format, so
@@ -250,6 +254,10 @@ jobs:
             The `core` jar is required. Every other jar is optional and adds one subsystem;
             install as many of them alongside Core as you want. All jars in a release must be
             the same version as each other.
+
+            **Installing every module needs RoughlyEnoughIDs** (https://modrinth.com/mod/reid)
+            and MixinBooter (https://modrinth.com/mod/mixinbooter): together the modules pass
+            Minecraft 1.12.2's 4,096 block IDs.
 
             ${{ env.RELEASE_JAR_TABLE }}
 

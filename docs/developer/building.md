@@ -48,15 +48,16 @@ loaded:
 Running a module on its own is the only check that proves its assets are self-contained. See
 `assets/docs/MODULE_SYSTEM.md` for the whole design.
 
-### Every module with other mods: RoughlyEnoughIDs
+### Every module: RoughlyEnoughIDs
 
-Every module together registers about 3,700 blocks, so the dev client is close to 1.12.2's
-4,096 block id limit on its own; add another content mod to `run/mods` and it stops with
-`Invalid id 4096 - maximum id range exceeded`. Put the City of Alto pack's
+Every module together registers about 4,000 blocks, which with vanilla's is past 1.12.2's
+4,096 block id limit on its own: a dev client or server with every module and no id extender
+stops with `Invalid id 4096 - maximum id range exceeded`. Put the City of Alto pack's
 **`!mixinbooter-10.7.jar`** and **`roughly-enough-ids.jar`** in `run/mods`, as release jars:
 MixinBooter loads as a coremod and its mixin service remaps REID's mixins in the dev client.
 (Setting the build's `forceEnableMixins` property instead was tried and is not enough: the run
-still fails with `NoClassDefFoundError: zone/rong/mixinbooter/IEarlyMixinLoader`.)
+still fails with `NoClassDefFoundError: zone/rong/mixinbooter/IEarlyMixinLoader`.) The pull
+request's all-modules server smoke test downloads the same two jars, pinned by hash.
 
 !!! warning "Subset runs and Immersive Vehicles content packs"
 

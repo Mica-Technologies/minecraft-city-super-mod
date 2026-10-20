@@ -24,7 +24,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # sync: "2. Run Client (Core only)", "(Core + All modules)", "(Core + <module>)", and the "3."
 # server set
 
-# Every module plus another content mod passes 1.12.2's 4,096 block ids (CSM alone is ~3,700):
+# Every module passes 1.12.2's 4,096 block ids on its own (CSM is ~4,000 + vanilla ~250), so a
+# full install REQUIRES RoughlyEnoughIDs (docs/getting-started/installation.md); the PR smoke test adds it:
 # copy the Alto pack's !mixinbooter-10.7.jar and roughly-enough-ids.jar into run/mods (release
 # jars; setting forceEnableMixins instead does not work). A subset run without Vehicles
 # stops on Forge's Missing Mods screen if the IV content packs are in run/mods: move them out.

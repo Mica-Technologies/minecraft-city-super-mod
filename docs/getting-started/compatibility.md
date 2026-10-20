@@ -6,6 +6,9 @@ The City Super Mod supports:
 
 - **[Forge 1.12.2](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html)**
 
+With every module installed, CSM needs **[RoughlyEnoughIDs](https://modrinth.com/mod/reid)** and **[MixinBooter](https://modrinth.com/mod/mixinbooter)** to fit 1.12.2's 4,096 block
+IDs; see [Installation](installation.md#block-ids-roughlyenoughids-is-required).
+
 Support is not provided or planned for versions not listed above. If you would like to help add
 support for another version, contributions are welcome — see the
 [repository README](https://github.com/Mica-Technologies/minecraft-city-super-mod).
