@@ -1254,9 +1254,13 @@ Rules the phase builders follow so the monitor never trips:
   running circuit while a vehicle waits on another one.
 - **Opposed left arrows alone run together (#292).** A circuit of solid left arrows alone that
   face one opposite pair (east and west, or north and south) with a car at both gets `ALL_LEFTS`
-  (`opposedLeftsBothCalled`), both arrows green; the same-direction guard otherwise left it only
+  (`opposedLeftCalls`), both arrows green; the same-direction guard otherwise left it only
   the directional phases, one arrow at a time. A single call still gets its own direction's
-  phase, and a circuit with throughs, or with crossing arrows, keeps the guard.
+  phase, and a circuit with throughs, or with crossing arrows, keeps the guard. A bay's car counts
+  in its sensor's main zone as well as its left zone: one sensor a bay is usually drawn with the
+  zone tool's default, the main zone, so its car is standard demand at the sensor's facing. The
+  first fix counted the left zone alone and missed every such bay; traced in game, the ranking
+  saw `std[E1 W1] left[0]` and picked `ALL_WEST`, one arrow.
 - **ADVANCED**: `RingBarrierState.enforceOutputClearance` is an output-stage clearance for the
   statelessly-computed layers (programmed overlaps' trailing green, `-GRN/YEL` modifiers, FYA
   overlays, preempt entry). Any head that was GREEN/FYA in the last applied phase and would be RED
