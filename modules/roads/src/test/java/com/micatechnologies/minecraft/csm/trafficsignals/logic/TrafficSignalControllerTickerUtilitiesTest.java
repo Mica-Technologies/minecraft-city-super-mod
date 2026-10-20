@@ -5634,6 +5634,30 @@ class TrafficSignalControllerTickerUtilitiesTest {
     }
 
     @Test
+    @DisplayName("getEffectiveLeftDemand: opposed left arrows alone, both bays in main zones")
+    void leftDemand_opposedLeftsAlone_mainZoneBays() {
+      // #292 as the game builds it: each bay's sensor counts its car as standard, not left
+      BlockPos leftE = new BlockPos(1, 0, 0);
+      BlockPos leftW = new BlockPos(2, 0, 0);
+      TrafficSignalControllerCircuit circuit = emptyCircuit();
+      circuit.getLeftSignals().add(leftE);
+      circuit.getLeftSignals().add(leftW);
+
+      java.util.Map<BlockPos, net.minecraft.util.EnumFacing> facings = new java.util.HashMap<>();
+      facings.put(leftE, net.minecraft.util.EnumFacing.EAST);
+      facings.put(leftW, net.minecraft.util.EnumFacing.WEST);
+      Function<BlockPos, net.minecraft.util.EnumFacing> resolver = facings::get;
+
+      assertEquals(2, TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(resolver,
+          circuit, new TrafficSignalSensorSummary(2, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0)));
+      assertEquals(0, TrafficSignalControllerTickerUtilities.getEffectiveLeftDemand(resolver,
+              circuit, new TrafficSignalSensorSummary(3, 3, 0, 0, 0, 0, 0, 0, 0, 0,
+                  0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
+          "One direction called: its own directional phase serves it");
+    }
+
+    @Test
     @DisplayName("getEffectiveLeftDemand: crossing left arrows alone are never served together")
     void leftDemand_crossingLeftsAlone_guarded() {
       BlockPos leftN = new BlockPos(1, 0, 0);
@@ -6747,6 +6771,52 @@ class TrafficSignalControllerTickerUtilitiesTest {
       Tuple<Integer, TrafficSignalPhaseApplicability> elsewhere = rank(1);
       assertEquals(2, elsewhere.getFirst());
       assertEquals(TrafficSignalPhaseApplicability.ALL_WEST, elsewhere.getSecond());
+    }
+
+    // The junction as the game builds it: one sensor a bay, its bay drawn as the main zone (the
+    // zone tool's default), so each car counts as standard demand at its sensor's facing, never
+    // as left demand. Traced in game, the summary was std[E1 W1] left[0] and the ranking picked
+    // ALL_WEST: one arrow green, the other bay starved (#292).
+
+    @Test
+    @DisplayName("both bays called in their main zones → ALL_LEFTS, both arrows")
+    void bothLeftBays_mainZone_allLefts() {
+      summaries.put(lefts, cars(1, 1, 0, 0));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_LEFTS, best.getSecond());
+    }
+
+    @Test
+    @DisplayName("one bay called in its main zone → that direction's phase only")
+    void oneLeftBay_mainZone_directional() {
+      summaries.put(lefts, cars(1, 0, 0, 0));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_EAST, best.getSecond());
+    }
+
+    @Test
+    @DisplayName("both bays in their main zones and a boulevard car → the lefts rank first")
+    void bothLeftBays_mainZoneAndBoulevard_lefts() {
+      summaries.put(lefts, cars(1, 1, 0, 0));
+      summaries.put(boulevard, cars(1, 0, 0, 0));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_LEFTS, best.getSecond());
+      // and when the boulevard's max green is up, the change it asks for serves both arrows
+      Tuple<Integer, TrafficSignalPhaseApplicability> elsewhere = rank(1);
+      assertEquals(2, elsewhere.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_LEFTS, elsewhere.getSecond());
+    }
+
+    @Test
+    @DisplayName("one bay in its main zone, the other in its left zone → ALL_LEFTS")
+    void bothLeftBays_mixedZones_allLefts() {
+      summaries.put(lefts, cars(1, 0, 0, 1));
+      Tuple<Integer, TrafficSignalPhaseApplicability> best = rank(0);
+      assertEquals(2, best.getFirst());
+      assertEquals(TrafficSignalPhaseApplicability.ALL_LEFTS, best.getSecond());
     }
 
     @Test

@@ -2310,14 +2310,16 @@ public class TrafficSignalControllerTickerUtilities {
    */
   public static int getEffectiveLeftDemand(Function<BlockPos, EnumFacing> facingResolver,
       TrafficSignalControllerCircuit circuit, TrafficSignalSensorSummary summary) {
-    if (summary.getLeftTotal() == 0) {
-      return 0;
-    }
     if (circuit.getLeftSignals().isEmpty()) {
       return 0;
     }
-    if (facingResolver != null && !circuit.areSignalsFacingSameDirection(facingResolver)
-        && !opposedLeftsBothCalled(facingResolver, circuit, summary)) {
+    if (facingResolver != null && !circuit.areSignalsFacingSameDirection(facingResolver)) {
+      // Checked before the left-zone total: the bays of a circuit of left arrows alone are
+      // usually drawn as the sensors' main zone, the zone tool's default, so their cars count as
+      // standard rather than left (#292).
+      return opposedLeftCalls(facingResolver, circuit, summary);
+    }
+    if (summary.getLeftTotal() == 0) {
       return 0;
     }
 
@@ -2408,19 +2410,28 @@ public class TrafficSignalControllerTickerUtilities {
   }
 
   /**
-   * Whether a circuit of solid left arrows alone, facing two opposite ways (an east-west or a
-   * north-south pair, the opposing lefts of one street), has a car waiting at both. Such a circuit
-   * has no through phase to run its arrows beside, so the same-direction guard left it only the
-   * directional phases, one arrow at a time: with both bays occupied, one arrow went green and the
-   * other stayed red for the whole phase (#292). Opposing lefts run together like any dual left;
-   * a single call still gets its own direction's phase.
+   * The cars waiting at a circuit of solid left arrows alone, facing two opposite ways (an
+   * east-west or a north-south pair, the opposing lefts of one street), when both have a car: its
+   * demand as {@code ALL_LEFTS}, which out-counts either direction's own phase. {@code 0} for any
+   * other circuit, or when only one direction is called. Such a circuit has no through phase to
+   * run its arrows beside, so the same-direction guard left it only the directional phases, one
+   * arrow at a time: with both bays occupied, one arrow went green and the other stayed red for
+   * the whole phase (#292). Opposing lefts run together like any dual left; a single call still
+   * gets its own direction's phase.
+   *
+   * <p>A car counts in any of its sensor's zones, the main zone as well as the left: such a
+   * circuit has nothing but its arrows to serve, and one sensor a bay is usually drawn with the
+   * zone tool's default, the main zone. Counting the left zone alone, as the first fix did, missed
+   * every such bay, and the junction still served one arrow (#292).</p>
+   *
+   * @return The cars at both directions' bays, or {@code 0}.
    *
    * @since 2026.10
    */
-  static boolean opposedLeftsBothCalled(Function<BlockPos, EnumFacing> facingResolver,
+  static int opposedLeftCalls(Function<BlockPos, EnumFacing> facingResolver,
       TrafficSignalControllerCircuit circuit, TrafficSignalSensorSummary summary) {
     if (throughPhaseServesVehicles(circuit)) {
-      return false;
+      return 0;
     }
     EnumSet<EnumFacing> facings = EnumSet.noneOf(EnumFacing.class);
     for (BlockPos signalPos : circuit.getLeftSignals()) {
@@ -2429,13 +2440,28 @@ public class TrafficSignalControllerTickerUtilities {
         facings.add(facing);
       }
     }
+    EnumFacing one;
     if (facings.equals(EnumSet.of(EnumFacing.EAST, EnumFacing.WEST))) {
-      return summary.getLeftEast() > 0 && summary.getLeftWest() > 0;
+      one = EnumFacing.EAST;
+    } else if (facings.equals(EnumSet.of(EnumFacing.NORTH, EnumFacing.SOUTH))) {
+      one = EnumFacing.NORTH;
+    } else {
+      return 0;
     }
-    if (facings.equals(EnumSet.of(EnumFacing.NORTH, EnumFacing.SOUTH))) {
-      return summary.getLeftNorth() > 0 && summary.getLeftSouth() > 0;
+    int oneCalls = bayCalls(summary, one);
+    int otherCalls = bayCalls(summary, one.getOpposite());
+    return oneCalls > 0 && otherCalls > 0 ? oneCalls + otherCalls : 0;
+  }
+
+  /** The cars a direction's sensors see in their main and left zones. */
+  private static int bayCalls(TrafficSignalSensorSummary summary, EnumFacing direction) {
+    switch (direction) {
+      case EAST:  return summary.getStandardEast() + summary.getLeftEast();
+      case WEST:  return summary.getStandardWest() + summary.getLeftWest();
+      case NORTH: return summary.getStandardNorth() + summary.getLeftNorth();
+      case SOUTH: return summary.getStandardSouth() + summary.getLeftSouth();
+      default:    return 0;
     }
-    return false;
   }
 
   private static int adjustForFya(int leftCount, boolean hasFya) {
