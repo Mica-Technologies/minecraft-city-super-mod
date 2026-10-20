@@ -408,29 +408,30 @@ def _lens_on():
     return img
 
 
-@C.texture("dome_white")
-def _dome_white():
-    img = fill((214, 214, 206), grain=2, seed=1403)
-    for x in range(0, 16, 4):
-        rect(img, x, 0, x + 1, 16, (190, 190, 182))
-    return img
-
-
 @C.texture("dome_amber")
 def _dome_amber():
-    img = fill(shade(hc.CALL_AMBER, 0.55), grain=2, seed=1404)
+    """The lens dark: a dull, greyed amber, so a dome that is off reads as off in daylight."""
+    off = clamp(tuple(0.45 * a + 0.55 * g for a, g in zip(hc.CALL_AMBER, (150, 140, 124))))
+    img = fill(shade(off, 0.8), grain=2, seed=1404)
     for x in range(0, 16, 4):
-        rect(img, x, 0, x + 1, 16, shade(hc.CALL_AMBER, 0.45))
+        rect(img, x, 0, x + 1, 16, shade(off, 0.68))
     return img
 
 
-@C.texture("dome_amber_on")
-def _dome_amber_on():
-    img = fill(hc.CALL_AMBER, grain=2, seed=1405)
+def _dome_lit():
+    """The lens lit: a saturated amber, hotter toward the lamp in the middle."""
+    img = fill((255, 186, 36), grain=1, seed=1405)
     for x in range(0, 16, 4):
-        rect(img, x, 0, x + 1, 16, shade(hc.CALL_AMBER, 1.1))
-    disc(img, 8, 8, 4, (255, 236, 150))
+        rect(img, x, 0, x + 1, 16, (255, 204, 84))
+    disc(img, 8, 8, 6, (255, 214, 104))
+    disc(img, 8, 8, 4, (255, 236, 160))
+    disc(img, 8, 8, 2, (255, 250, 222))
     return img
+
+
+# The lit lens and its OptiFine emissive companion: the same pixels, so the whole lens glows
+C.texture("dome_amber_on")(_dome_lit)
+C.texture("dome_amber_on_e")(_dome_lit)
 
 
 # --- screens (animated) ------------------------------------------------------------------
@@ -1405,17 +1406,27 @@ call_device("nurse_call_pull_cord",
              el([7, -14, 14.4], [9, -12, 15], "cord")],
             (5, 0, 14, 11, 16, 16))
 
+def _lamp(e):
+    """A lens element: unshaded, so it is the same brightness from every side, as a lamp is."""
+    e["shade"] = False
+    return e
+
+
+# The dome is all lens round a white bezel, standing 6 px off the wall so its sides show down a
+# corridor; lit, the lens is unshaded bright amber with an OptiFine _e companion.
 C.add("nurse_call_dome_light", 'new BlockNurseCallDomeLight("nurse_call_dome_light", %s)'
-      % B(4, 5, 10, 12, 11, 16),
+      % B(4, 5, 9, 12, 11, 16),
       ("Nurse Call Dome Light", "Schwesternruf-Zimmerleuchte",
        "Luz de pasillo de llamada a enfermería", "Sköterskeanrop (korridorlampa)"),
       {"nurse_call_dome_light": model(
-          {"base": T("white"), "white": T("dome_white"), "amber": T("dome_amber"),
-           "particle": T("white")},
+          {"base": T("white"), "amber": T("dome_amber"), "particle": T("white")},
           [el([4, 5, 15], [12, 11, 16], "base"),
-           el([5, 6, 12.5], [8, 10, 15], "white"),
-           el([8, 6, 12.5], [11, 10, 15], "amber"),
-           el([5.5, 6.5, 11], [10.5, 9.5, 12.5], "white")])},
+           el([4.5, 5.5, 14.5], [11.5, 10.5, 15], "base",
+              faces=("north", "east", "west", "up", "down")),
+           _lamp(el([5, 6, 10.5], [11, 10, 14.5], "amber",
+                    faces=("north", "east", "west", "up", "down"))),
+           _lamp(el([6, 6.75, 9], [10, 9.25, 10.5], "amber",
+                    faces=("north", "east", "west", "up", "down")))], ao=False)},
       light_state(M("nurse_call_dome_light"), {"amber": T("dome_amber_on")}), tab=PC)
 
 

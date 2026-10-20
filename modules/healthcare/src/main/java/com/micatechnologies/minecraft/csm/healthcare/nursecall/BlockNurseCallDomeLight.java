@@ -30,7 +30,7 @@ import net.minecraft.world.World;
 public class BlockNurseCallDomeLight extends BlockHealthcareLight {
 
   public BlockNurseCallDomeLight(String registryName, int[] box) {
-    super(registryName, box, 7);
+    super(registryName, box, 9);
   }
 
   @Override

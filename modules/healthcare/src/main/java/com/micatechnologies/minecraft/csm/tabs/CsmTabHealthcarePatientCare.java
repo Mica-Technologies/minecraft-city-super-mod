@@ -82,7 +82,7 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockNurseCallDevice("nurse_call_button", new int[]{4, 4, 14, 12, 12, 16}));
     initTabBlock(new BlockNurseCallDevice("nurse_call_pillow_speaker", new int[]{6, 3, 13, 10, 13, 16}));
     initTabBlock(new BlockNurseCallDevice("nurse_call_pull_cord", new int[]{5, 0, 14, 11, 16, 16}));
-    initTabBlock(new BlockNurseCallDomeLight("nurse_call_dome_light", new int[]{4, 5, 10, 12, 11, 16}));
+    initTabBlock(new BlockNurseCallDomeLight("nurse_call_dome_light", new int[]{4, 5, 9, 12, 11, 16}));
     initTabBlock(new BlockCurtainTrack());
     initTabBlock(new BlockCorridorRail("corridor_handrail", new int[]{0, 13, 12, 16, 16, 16}));
     initTabBlock(new BlockCorridorRail("corridor_crash_rail", new int[]{0, 12, 12, 16, 16, 16}));

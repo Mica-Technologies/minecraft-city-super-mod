@@ -95,6 +95,7 @@ never disagree, and a generator places them with `/setblock` in either order: no
 half whose partner is missing, so a half-built bed waits for its other half. Breaking either
 breaks both, and only the head drops.
 
+
 The facing is CSM's, the way the foot end faces (the same as the headwall over it), not vanilla's
 head direction. The head goes against the wall in the wall-face cell at floor level, the foot at
 `head.offset(facing)`, and the patient headwall in the wall-face cells above the head (y+1, its
@@ -213,6 +214,10 @@ the dome light and the panel lamp it reaches once.
   redstone signal; a generator can force it with 2 (dark) or 3 (lit). A click on it cancels the
   room's calls, as a nurse does on arriving. It takes redstone and gives none, so a lamp that
   powered the dust powering it cannot hold itself on.
+- The dome is all lens: an amber dome standing 6 px off its white bezel, so its sides show from down a
+  corridor. Lit, the lens is a saturated amber drawn unshaded (`"shade": false`, so it is as bright
+  from every side), with an OptiFine `_e` companion, and the block gives light 9; dark, it is a
+  greyed amber that reads as off in daylight. Only the texture changes with the state.
 - The master panel's lamps are its tile entity's `rooms` byte, read into the actual state for the
   baked model; a new call chimes (vanilla's note chime), and while any room calls the panel gives
   redstone and its alarm lamp lights. A click lists the calling rooms.
