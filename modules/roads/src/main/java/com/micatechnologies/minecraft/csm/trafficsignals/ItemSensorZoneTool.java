@@ -122,34 +122,27 @@ public class ItemSensorZoneTool extends AbstractItem {
           } else if (tileEntity instanceof TileEntityTrafficSignalSensor) {
             TileEntityTrafficSignalSensor tileEntityTrafficSignalSensor
                 = (TileEntityTrafficSignalSensor) tileEntity;
-            boolean overwrote;
-            int currentMode = modeMap.getOrDefault(player.getUniqueID(), 1);
-            if (currentMode == 2) {
-              overwrote = tileEntityTrafficSignalSensor.setLeftScanCorners(corner1Pos, corner2Pos);
-            } else if (currentMode == 3) {
-              overwrote =
-                  tileEntityTrafficSignalSensor.setProtectedScanCorners(corner1Pos, corner2Pos);
-            } else if (currentMode == 4) {
-              overwrote =
-                  tileEntityTrafficSignalSensor.setRightScanCorners(corner1Pos, corner2Pos);
-            } else {
-              overwrote = tileEntityTrafficSignalSensor.setScanCorners(corner1Pos, corner2Pos);
-            }
-
-            if (overwrote) {
-              player.sendMessage(
-                  new TextComponentString("The selected search box corners have been " +
-                      "applied to the following sensor detection zone " +
-                      "successfully: " +
-                      getModeName(player) +
-                      " (Replaced previous " +
-                      "search box)"));
+            // A zone is made of up to MAX_BOXES_PER_ZONE boxes, so each box drawn is added to
+            // the mode's zone rather than replacing it. Boxes are removed (last first) or
+            // cleared from the sensor's configuration GUI.
+            TileEntityTrafficSignalSensor.ZoneType zoneType = getZoneType(player);
+            int boxNumber = tileEntityTrafficSignalSensor.addBox(zoneType, corner1Pos,
+                corner2Pos);
+            if (boxNumber == TileEntityTrafficSignalSensor.ADD_REFUSED_FULL) {
+              player.sendMessage(new TextComponentString("The " + getModeName(player)
+                  + " detection zone already has "
+                  + TileEntityTrafficSignalSensor.MAX_BOXES_PER_ZONE
+                  + " search boxes, the most it can hold. Sneak + right-click the sensor to "
+                  + "remove a box or clear the zone first."));
+            } else if (boxNumber == TileEntityTrafficSignalSensor.ADD_REFUSED_DUPLICATE) {
+              player.sendMessage(new TextComponentString("The " + getModeName(player)
+                  + " detection zone already has that search box; nothing was added."));
             } else {
               player.sendMessage(
-                  new TextComponentString("The selected search box corners have been " +
-                      "applied to the following sensor detection zone " +
-                      "successfully: " +
-                      getModeName(player)));
+                  new TextComponentString("The selected search box has been added to the "
+                      + "following sensor detection zone successfully: " + getModeName(player)
+                      + " (box " + boxNumber + " of "
+                      + TileEntityTrafficSignalSensor.MAX_BOXES_PER_ZONE + ")"));
             }
 
           } else {
@@ -194,13 +187,29 @@ public class ItemSensorZoneTool extends AbstractItem {
     return modeName;
   }
 
+  /** @return the sensor zone type the player's current mode draws into. */
+  private TileEntityTrafficSignalSensor.ZoneType getZoneType(EntityPlayer player) {
+    int currentMode = modeMap.getOrDefault(player.getUniqueID(), 1);
+    if (currentMode == 2) {
+      return TileEntityTrafficSignalSensor.ZoneType.LEFT;
+    } else if (currentMode == 3) {
+      return TileEntityTrafficSignalSensor.ZoneType.PROTECTED;
+    } else if (currentMode == 4) {
+      return TileEntityTrafficSignalSensor.ZoneType.RIGHT;
+    }
+    return TileEntityTrafficSignalSensor.ZoneType.STANDARD;
+  }
+
   @Override
   public void addInformation(ItemStack itemstack, World world, List<String> list,
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
     list.add("Configure detection zones on traffic signal sensors (Standard, Left, Right, Protected).");
+    list.add("Each box drawn adds to the zone, up to "
+        + TileEntityTrafficSignalSensor.MAX_BOXES_PER_ZONE + " boxes per zone.");
     list.add("Also programs the detection zone of a radar speed feedback sign.");
-    list.add("Sneak + right-click a sensor to open its configuration GUI.");
+    list.add("Sneak + right-click a sensor to open its configuration GUI"
+        + " (remove the last box, or clear a zone).");
   }
 
   /**

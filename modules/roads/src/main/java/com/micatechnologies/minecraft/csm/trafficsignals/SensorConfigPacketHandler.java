@@ -13,8 +13,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Server-side handler for {@link SensorConfigPacket}. Validates the tile entity and applies the
- * requested {@link SensorConfigAction}: clearing a detection zone, or setting the cosmetic aim angle
- * on the sensor block state.
+ * requested {@link SensorConfigAction}: clearing a detection zone or removing its last box, or
+ * setting the cosmetic aim angle on the sensor block state.
  */
 public class SensorConfigPacketHandler implements IMessageHandler<SensorConfigPacket, IMessage> {
 
@@ -61,6 +61,18 @@ public class SensorConfigPacketHandler implements IMessageHandler<SensorConfigPa
           break;
         case ANGLE_RIGHT:
           applyAngle(world, message.getPos(), SensorAngle.RIGHT);
+          break;
+        case REMOVE_LAST_STANDARD:
+          sensor.removeLastBox(TileEntityTrafficSignalSensor.ZoneType.STANDARD);
+          break;
+        case REMOVE_LAST_LEFT:
+          sensor.removeLastBox(TileEntityTrafficSignalSensor.ZoneType.LEFT);
+          break;
+        case REMOVE_LAST_RIGHT:
+          sensor.removeLastBox(TileEntityTrafficSignalSensor.ZoneType.RIGHT);
+          break;
+        case REMOVE_LAST_PROTECTED:
+          sensor.removeLastBox(TileEntityTrafficSignalSensor.ZoneType.PROTECTED);
           break;
       }
     });

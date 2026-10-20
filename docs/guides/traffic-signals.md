@@ -33,7 +33,11 @@ Then use the **Traffic Signal Configuration Tool** to change timings and behavio
     itself, so a left-turn head lands in the circuit's left list and a right-turn head in its right
     list.
 
-    A sensor's detection zone is a separate matter, set with the **Sensor Zone Tool**.
+    A sensor's detection zone is a separate matter, set with the **Sensor Zone Tool**:
+    right-click the sensor, then two opposite corners of a box. Each box you draw is added to
+    the zone, up to eight a zone, so one sensor can cover two lanes or a bay that bends, and a
+    car in two boxes still counts once. Sneak + right-click a sensor to see how many boxes each
+    zone has, remove the last one you drew, or clear a zone.
 
 ## Operating modes
 
