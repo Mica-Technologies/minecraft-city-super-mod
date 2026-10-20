@@ -190,7 +190,12 @@ the dome light and the panel lamp it reaches once.
 
 - A device click places a call or cancels its own; a call gives redstone 15 from the device while
   it lasts, so it reaches a chime, a lamp or another mod. A `/setblock` with the calling bit
-  registers the call.
+  starts the call exactly as a click does (dome light, master panel lamp and chime, station
+  monitors), and one with the bit clear ends it, whether the cell held air or the same device
+  before: a device set over itself is heard by the module's world listener
+  (`HealthcareStateChanges`), since the game calls no block method when only the metadata
+  changes. A device that calls before it is linked keeps its call, and its room lights when the
+  link is made.
 - The dome light keeps Lighting's metadata: in states 0 and 1 it follows the room's calls or a
   redstone signal; a generator can force it with 2 (dark) or 3 (lit). A click on it cancels the
   room's calls, as a nurse does on arriving. It takes redstone and gives none, so a lamp that
@@ -433,7 +438,7 @@ hospital generators depend on this table.
 | `iv_pole`, `overbed_table`, `patient_recliner` (seat), `visitor_chair` (seat) | floor | bits 0-1 facing | |
 | `suction_regulator`, `sharps_container`, `glove_box_dispenser`, `hand_sanitizer_dispenser`, `medical_gas_outlet_o2`, `medical_gas_zone_sign` | wall | bits 0-2 facing | |
 | `ppe_isolation_cart`, `biohazard_bin`, `soiled_linen_hamper`, `clean_linen_cart` | floor | bits 0-1 facing | |
-| `nurse_call_button`, `nurse_call_pillow_speaker`, `nurse_call_pull_cord` | wall | bits 0-2 facing, bit 3 calling | redstone 15 while calling; a `/setblock` with bit 3 registers the call |
+| `nurse_call_button`, `nurse_call_pillow_speaker`, `nurse_call_pull_cord` | wall | bits 0-2 facing, bit 3 calling | redstone 15 while calling. A `/setblock` with bit 3 starts the call as a click does (dome light, panel lamp and chime, station monitors) and one without bit 3 ends it, from air or over the same device (re-setting in place works; no air first). Link before or after: an unlinked device keeps its call and its room lights when linked |
 | `nurse_call_dome_light` | wall, lit | `facing * 4 + state` | 0/1 follow the room's calls or redstone; 2/3 force dark or lit |
 | `nurse_call_master_panel` | wall | bits 0-2 facing | TE `rooms` (byte, bit i = room i + 1's lamp), set by the network on any change |
 | `corridor_handrail`, `corridor_crash_rail` | wall | bits 0-2 facing | ends (join, inner, outer, end) from neighbours |
@@ -526,8 +531,8 @@ south: +x to west, +z to north; west: +x to north, +z to east).
 
 | Block (csm:) | Mount | Meta | NBT / notes |
 |---|---|---|---|
-| `hospital_wayfinding_panel` | hung cell, joins into a panel up to 16 x 6 | facing S 0, W 1, N 2, E 3 (towards the reader; Transit's) | TE as `airport_wayfinding_panel`: `l1`, `l2` (printable ASCII, 32 characters), `p` pictogram, `a` arrow, `s` scheme, `d` back carries the legend (byte, default 1). A compound without `p` leaves the sign alone. A `/setblock` with NBT or `/blockdata` on any cell writes the whole panel. `pc`, `pr`, `pw`, `ph` are the server's; never write them. Re-facing a cell by `/setblock` of the same block skips the panel refresh: set air first |
-| `code_blue_button` | wall | bits 0-2 facing, bit 3 active | a `/setblock` from air with bit 3 activates the code (over the same block it does not: set air first); redstone 15 while active, strong into its wall |
+| `hospital_wayfinding_panel` | hung cell, joins into a panel up to 16 x 6 | facing S 0, W 1, N 2, E 3 (towards the reader; Transit's) | TE as `airport_wayfinding_panel`: `l1`, `l2` (printable ASCII, 32 characters), `p` pictogram, `a` arrow, `s` scheme, `d` back carries the legend (byte, default 1). A compound without `p` leaves the sign alone. A `/setblock` with NBT or `/blockdata` on any cell writes the whole panel. `pc`, `pr`, `pw`, `ph` are the server's; never write them. Re-facing a cell by `/setblock` of the same block leaves its old panel and joins the new one, as placing it fresh does |
+| `code_blue_button` | wall | bits 0-2 facing, bit 3 active | a `/setblock` with bit 3 activates the code, from air or over the same button; one without bit 3 over an active button stands that button down (its annunciators fall silent unless another linked button or redstone holds them; a reset clears every button sharing them). Redstone 15 while active, strong into its wall |
 | `code_blue_annunciator` | wall | bits 0-2 facing, bit 3 active (worked out) | active while a linked button is active or it is powered |
 | `medical_gas_zone_valve_box`, `hospital_outlet_normal`, `hospital_outlet_emergency`, `hospital_outlet_pair` | wall | bits 0-2 facing | outlets sit low in the wall-face cell at floor level (the pair: red on the viewer's left) |
 | `medical_gas_master_alarm` | wall | `facing * 4 + state` (horizontal index); state bit 0 alarm (from redstone), bit 1 buzzer silenced | place quiet with `facing * 4 + 2` |
@@ -612,9 +617,15 @@ written shows INFORMATION, `info`, `right`, `neutral`.
 - **Two halves placed by command never clean each other up.** A bed, pair or unit set cell by cell
   is half-built in between, so nothing removes a cell whose partner is missing; only breaking does.
   A generator that crashes half way leaves halves for the next run to finish.
-- **Re-facing by `/setblock` of the same block skips the refresh.** The wayfinding panel's
-  `onBlockAdded` does not run for a metadata change on the same block, and a code blue button set
-  over itself with the active bit does not activate. Set air first.
+- **A `/setblock` of the same block runs no block method.** The game calls `onBlockAdded` and
+  `breakBlock` only when a block replaces a different one, so a nurse call device set over itself
+  with the calling bit started no call (reported by the hospital builder after 2026.10.20), a
+  code blue button did not activate and a re-faced wayfinding cell kept its old panel. Every
+  change sent to clients passes a world's listeners with the state before and after, so the
+  module adds one to each server world (`HealthcareStateChanges`) and hands a same-block change
+  to a block that implements its `Listening`: the nurse call devices, the code blue button and
+  the wayfinding panel. A block that keeps a link or a call in state should implement it too. A
+  change made without flag 2 (not sent to clients) is still not heard.
 - **Wayfinding cell updates go with the tick's block changes.** A panel built in one tick refreshes
   its cells as each is added; sent at once, those updates arrived at the client before the cells
   themselves and were dropped ("Received invalid update packet for null tile entity"), a packet

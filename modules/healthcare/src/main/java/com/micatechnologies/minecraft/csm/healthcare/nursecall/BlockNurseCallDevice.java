@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.healthcare.nursecall;
 
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
+import com.micatechnologies.minecraft.csm.healthcare.HealthcareStateChanges;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.properties.PropertyBool;
@@ -22,12 +23,16 @@ import net.minecraft.world.World;
  * signal while it calls, so the call reaches anything else (a chime, a light, another mod).
  *
  * <p><b>Metadata</b>: the facing out of the wall in bits 0-2 (N 2, S 3, W 4, E 5), and bit 3
- * set while calling. A generator links devices with {@code /csmhealthcare nursecall link}; a
- * player sneak-clicks a dome light or panel and then the device.</p>
+ * set while calling. A {@code /setblock} with bit 3 starts a call exactly as a click does, and
+ * one with bit 3 clear ends it, whether the cell held air or this same device before (the same
+ * device is heard through {@link HealthcareStateChanges}, since the game calls no block method
+ * for it). A generator links devices with {@code /csmhealthcare nursecall link}; a player
+ * sneak-clicks a dome light or panel and then the device.</p>
  *
  * @since 2026.10
  */
-public class BlockNurseCallDevice extends BlockHealthcare {
+public class BlockNurseCallDevice extends BlockHealthcare
+    implements HealthcareStateChanges.Listening {
 
   /** A call is placed. */
   public static final PropertyBool CALLING = PropertyBool.create("calling");
@@ -73,6 +78,20 @@ public class BlockNurseCallDevice extends BlockHealthcare {
     super.onBlockAdded(world, pos, state);
     if (!world.isRemote && state.getValue(CALLING)) {
       NurseCallNetwork.get(world).setCalling(world, pos, true);
+    }
+  }
+
+  /**
+   * A device set over itself with the calling bit changed (a {@code /setblock}, or the network
+   * cancelling its room) starts or ends its call, as a click does. A click's own change arrives
+   * here too, and finds the network already agreeing.
+   */
+  @Override
+  public void onStateChangedInPlace(World world, BlockPos pos, IBlockState before,
+      IBlockState after) {
+    boolean call = after.getValue(CALLING);
+    if (before.getValue(CALLING) != call) {
+      NurseCallNetwork.get(world).setCalling(world, pos, call);
     }
   }
 

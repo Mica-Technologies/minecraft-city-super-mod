@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
+import com.micatechnologies.minecraft.csm.healthcare.HealthcareStateChanges;
 import com.micatechnologies.minecraft.csm.healthcare.wayfinding.HospitalWayfindingSign.Preset;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +49,7 @@ import net.minecraftforge.common.property.IUnlistedProperty;
  * @since 2026.10
  */
 public class BlockHospitalWayfindingPanel extends BlockHealthcare implements
-    ICsmTileEntityProvider {
+    ICsmTileEntityProvider, HealthcareStateChanges.Listening {
 
   public static final PropertyBool EDGE_LEFT = PropertyBool.create("edge_left");
   public static final PropertyBool EDGE_RIGHT = PropertyBool.create("edge_right");
@@ -172,6 +173,21 @@ public class BlockHospitalWayfindingPanel extends BlockHealthcare implements
           (TileEntityHospitalWayfindingPanel) te);
     }
     HospitalWayfindingSign.refresh(world, pos, this, facing);
+  }
+
+  /**
+   * A cell set over itself facing another way (a {@code /setblock} of the same block) leaves the
+   * panel it was in and joins the one it now faces with, as breaking it and placing it would.
+   */
+  @Override
+  public void onStateChangedInPlace(World world, BlockPos pos, IBlockState before,
+      IBlockState after) {
+    EnumFacing was = before.getValue(FACING);
+    EnumFacing now = after.getValue(FACING);
+    if (was != now) {
+      HospitalWayfindingSign.refresh(world, pos, this, was);
+      onBlockAdded(world, pos, after);
+    }
   }
 
   @Override

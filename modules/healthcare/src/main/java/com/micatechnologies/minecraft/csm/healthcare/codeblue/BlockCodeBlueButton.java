@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.healthcare.codeblue;
 
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
+import com.micatechnologies.minecraft.csm.healthcare.HealthcareStateChanges;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.properties.PropertyBool;
@@ -25,12 +26,15 @@ import net.minecraft.world.World;
  * annunciator, or {@code /csmhealthcare codeblue reset}.
  *
  * <p><b>Metadata</b>: the facing out of the wall in bits 0-2 (N 2, S 3, W 4, E 5) and bit 3 set
- * while active; a {@code /setblock} with bit 3 activates the code. Links are made with
+ * while active; a {@code /setblock} with bit 3 activates the code and one with bit 3 clear stands
+ * this button down, whether the cell held air or this same button before (the same button is
+ * heard through {@link HealthcareStateChanges}). Links are made with
  * {@code /csmhealthcare codeblue link}.</p>
  *
  * @since 2026.10
  */
-public class BlockCodeBlueButton extends BlockHealthcare {
+public class BlockCodeBlueButton extends BlockHealthcare
+    implements HealthcareStateChanges.Listening {
 
   /** The code is active. */
   public static final PropertyBool ACTIVE = PropertyBool.create("active");
@@ -85,6 +89,22 @@ public class BlockCodeBlueButton extends BlockHealthcare {
     if (!world.isRemote && state.getValue(ACTIVE)) {
       CodeBlueNetwork.get(world).setActive(world, pos, true);
       world.notifyNeighborsOfStateChange(pos.offset(state.getValue(FACING).getOpposite()), this,
+          false);
+    }
+  }
+
+  /**
+   * A button set over itself with the active bit changed (a {@code /setblock}) activates the code
+   * or stands this button down, and tells the wall behind it. A press's or a reset's own change
+   * arrives here too, and finds the network already agreeing.
+   */
+  @Override
+  public void onStateChangedInPlace(World world, BlockPos pos, IBlockState before,
+      IBlockState after) {
+    boolean on = after.getValue(ACTIVE);
+    if (before.getValue(ACTIVE) != on && CodeBlueNetwork.get(world).isActive(pos) != on) {
+      CodeBlueNetwork.get(world).setActive(world, pos, on);
+      world.notifyNeighborsOfStateChange(pos.offset(after.getValue(FACING).getOpposite()), this,
           false);
     }
   }
