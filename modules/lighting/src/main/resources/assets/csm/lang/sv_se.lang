@@ -40,6 +40,7 @@ tile.gem240r2cu.name=GE M240R2 (Avskärmad Optik)
 tile.gem400r3.name=GE M400R3 (Standard)
 tile.gem400r3cu.name=GE M400R3 (Avskärmad Optik)
 tile.gem400r3cunp.name=GE M400R3 (Avskärmad Optik, utan Fotocell)
+tile.gem400acu.name=GE M-400A (Avskärmad Optik)
 tile.gepb.name=GE Powerbracket
 tile.hb1.name=Alto LED-Höghallsljus 1
 tile.hb2.name=Alto LED-Höghallsljus 2
