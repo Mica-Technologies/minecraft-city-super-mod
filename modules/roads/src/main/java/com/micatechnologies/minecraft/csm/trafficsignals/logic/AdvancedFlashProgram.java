@@ -69,7 +69,8 @@ public class AdvancedFlashProgram {
         continue;
       }
       TrafficSignalControllerCircuit circuit = circuits.getCircuit(programmed.getCircuitIndex());
-      List<BlockPos> heads = movementHeads(circuit, programmed.getMovement());
+      List<BlockPos> heads = movementHeads(circuit, programmed.getMovement(),
+          protectedHeadsFlashOnTheirOwn(plan, programmed.getCircuitIndex()));
       if (heads.isEmpty()) {
         continue;
       }
@@ -146,13 +147,27 @@ public class AdvancedFlashProgram {
   }
 
   /**
+   * Whether a circuit's protected (bus/train/bike lane) heads take their flash from a
+   * {@link TrafficSignalPhaseMovement#PROTECTED} phase rather than from the circuit's left phase:
+   * only when that circuit has an active PROTECTED phase with a flash override of its own. A
+   * PROTECTED phase left at no override keeps the protected heads flashing with the left, as they
+   * did before the movement existed.
+   */
+  private static boolean protectedHeadsFlashOnTheirOwn(TrafficSignalProgrammedPhasePlan plan,
+      int circuitIndex) {
+    TrafficSignalProgrammedPhase protectedPhase = plan.getProtectedPhaseFor(circuitIndex);
+    return protectedPhase != null && protectedPhase.getFlashOverride().isOverride();
+  }
+
+  /**
    * Resolves the heads a programmed phase drives, mirroring
    * {@code AdvancedPhaseBuilder.applyServed}: a through phase also carries its concurrent right
-   * turn, and a left phase carries both the protected and permissive-left lenses. A pedestrian
-   * phase has no vehicle movement of its own, so it drives nothing in flash.
+   * turn, and a left phase carries both the protected and permissive-left lenses, unless the
+   * protected lenses flash with a PROTECTED phase of their own. A pedestrian phase has no vehicle
+   * movement of its own, so it drives nothing in flash.
    */
   private static List<BlockPos> movementHeads(TrafficSignalControllerCircuit circuit,
-      TrafficSignalPhaseMovement movement) {
+      TrafficSignalPhaseMovement movement, boolean protectedOnTheirOwn) {
     List<BlockPos> heads = new ArrayList<>();
     switch (movement) {
       case THROUGH:
@@ -162,13 +177,18 @@ public class AdvancedFlashProgram {
         break;
       case LEFT:
       case PROTECTED_LEFT:
-        heads.addAll(circuit.getProtectedSignals());
+        if (!protectedOnTheirOwn) {
+          heads.addAll(circuit.getProtectedSignals());
+        }
         heads.addAll(circuit.getLeftSignals());
         heads.addAll(circuit.getFlashingLeftSignals());
         break;
       case RIGHT:
         heads.addAll(circuit.getRightSignals());
         heads.addAll(circuit.getFlashingRightSignals());
+        break;
+      case PROTECTED:
+        heads.addAll(circuit.getProtectedSignals());
         break;
       case PED:
       default:

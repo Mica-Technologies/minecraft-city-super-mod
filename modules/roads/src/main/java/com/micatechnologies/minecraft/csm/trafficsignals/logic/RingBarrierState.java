@@ -216,6 +216,7 @@ public class RingBarrierState {
   // Per-tick context / scratch (set at the top of each tick()).
   private World tickWorld;
   private TrafficSignalControllerCircuits tickCircuits;
+  private TrafficSignalProgrammedPhasePlan tickPlan;
   /** Source of detector/ped demand for this tick. World-backed in production, canned in tests. */
   private DemandSource demand;
   /** Last movements described this tick (exposed package-private for unit tests). */
@@ -443,6 +444,7 @@ public class RingBarrierState {
       DemandSource demandSource, World world) {
     this.tickWorld = world;
     this.tickCircuits = circuits;
+    this.tickPlan = plan;
     this.demand = demandSource;
 
     // Compute coordination windows for this tick (no-op in FREE mode).
@@ -2496,8 +2498,12 @@ public class RingBarrierState {
     if (otherRing == 0 || otherRing == activeRingNum) {
       return true;
     }
-    return other.getPermissivePhase() == active.getPhaseNumber()
-        || active.getPermissivePhase() == n;
+    // The FYA pair is a left and its opposing through. A PROTECTED (bus/train/bike lane) phase is
+    // never the left of one, whatever its permissive field holds.
+    return (other.getMovement() != TrafficSignalPhaseMovement.PROTECTED
+        && other.getPermissivePhase() == active.getPhaseNumber())
+        || (active.getMovement() != TrafficSignalPhaseMovement.PROTECTED
+        && active.getPermissivePhase() == n);
   }
 
   /**
@@ -2571,7 +2577,11 @@ public class RingBarrierState {
     return zoneCount(phase.getCircuitIndex(), phase.getMovement());
   }
 
-  /** Vehicle count in a circuit's sensor zone for the given movement. */
+  /**
+   * Vehicle count in a circuit's sensor zone for the given movement. The protected (bus/train/
+   * bike lane) zone calls the circuit's PROTECTED phase when the plan has one, and otherwise
+   * counts toward its left phase, as it did before the movement existed.
+   */
   private int zoneCount(int circuitIndex, TrafficSignalPhaseMovement movement) {
     TrafficSignalSensorSummary summary = summaryForCircuit(circuitIndex);
     if (summary == null) {
@@ -2582,7 +2592,12 @@ public class RingBarrierState {
         return summary.getStandardTotal();
       case LEFT:
       case PROTECTED_LEFT:
+        if (tickPlan != null && tickPlan.hasProtectedPhaseFor(circuitIndex)) {
+          return summary.getLeftTotal();
+        }
         return summary.getLeftTotal() + summary.getProtectedTotal();
+      case PROTECTED:
+        return summary.getProtectedTotal();
       case RIGHT:
         return summary.getRightTotal();
       case PED:

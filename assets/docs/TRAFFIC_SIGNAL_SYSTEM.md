@@ -993,13 +993,35 @@ green on the coordinated phases.
 ### Phases overlay the existing circuits
 
 A programmed phase (`TrafficSignalProgrammedPhase`) references an existing **circuit + movement**
-(`TrafficSignalPhaseMovement`: THROUGH / LEFT / PROTECTED_LEFT / RIGHT / PED). That selects both the
-signal heads it drives and the sensor zone that calls it:
+(`TrafficSignalPhaseMovement`: THROUGH / LEFT / PROTECTED_LEFT / RIGHT / PED / PROTECTED). That
+selects both the signal heads it drives and the sensor zone that calls it:
 
 - THROUGH → through signals / sensor `standardTotal`
-- LEFT / PROTECTED_LEFT → protected+left signals / sensor `leftTotal`+`protectedTotal`
+- LEFT / PROTECTED_LEFT → protected+left signals / sensor `leftTotal`+`protectedTotal`, or left
+  signals / `leftTotal` only when the plan has a PROTECTED phase on the same circuit
 - RIGHT → right signals / sensor `rightTotal`
 - PED → pedestrian signals / pedestrian button request count
+- PROTECTED → protected (bus/train/bike lane) signals / sensor `protectedTotal`
+
+The movement ordinal is saved (phase `mv`, overlap output, preempt and priority triggers), so
+PROTECTED was appended as ordinal 5 and 0-4 decode as they always have.
+
+**The protected-lane movement (GitHub #297).** Before it, a circuit's protected heads and its
+protected zone belonged to the left turn: a bus lane could only run with the left arrow. A
+PROTECTED phase takes both for itself: it lights only the circuit's protected heads, only the
+protected zone calls it, and the left phase on that circuit (and a LEFT/PROTECTED_LEFT overlap
+output on it) drives and counts the left lane alone
+(`TrafficSignalProgrammedPhasePlan.hasProtectedPhaseFor`). A plan with no PROTECTED phase on a
+circuit is exactly as before; `ProtectedMovementRegressionTest` pins head colours and service
+tick by tick for the standard dual ring, PPLT/FYA lefts and overlaps of every output against
+traces captured before the change. Otherwise it is an ordinary phase: ring and barrier rules are
+untouched, so it runs beside the same-barrier phases on the other ring, gets the same yellow and
+red clearance, and goes red under a preempt unless the preempt's phase sets serve it. It is never
+half of an FYA pair: `RingBarrierState.conflicts` ignores a permissive phase set on it, the FYA
+lens and hold-flash logic stay left-only, and validation skips its permissive field. In flash it
+claims the protected heads only when it has a FLSH override of its own; left at none, they keep
+flashing with the left phase as before. Validation needs protected heads on its circuit, and a
+left phase whose only heads were the protected ones now reports that it has none.
 
 No new linking or sensor blocks — set circuits up as today (one circuit per approach recommended).
 
