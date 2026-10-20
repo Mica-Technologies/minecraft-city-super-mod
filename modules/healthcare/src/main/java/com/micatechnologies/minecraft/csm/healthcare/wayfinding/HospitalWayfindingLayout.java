@@ -19,6 +19,12 @@ import java.util.List;
  * height on one line or 0.28 each on two, both lines scaled down together to fit; a long legend
  * first takes room from the pictogram and arrow, down to 0.55 of their size.</p>
  *
+ * <p><b>The text scale</b> is Transit's too: each line's capitals are the size above times its
+ * scale ({@link HospitalWayfindingFace#scale1}, {@code scale2}), the lines are fitted to the
+ * width together at those sizes (so the room the art gives up is the scaled legend's), and each
+ * line keeps the middle it has at full size, left-aligned beside the art. With no scale every
+ * piece is exactly where it always was.</p>
+ *
  * @since 2026.10
  */
 public final class HospitalWayfindingLayout {
@@ -110,17 +116,25 @@ public final class HospitalWayfindingLayout {
         f.scheme.getBackground(), LAYER_BACKGROUND));
 
     String[] lines;
+    float[] scales;
     if (f.line1.isEmpty() && f.line2.isEmpty()) {
       lines = new String[0];
+      scales = new float[0];
     } else if (f.line1.isEmpty() || f.line2.isEmpty()) {
       lines = new String[]{f.line1.isEmpty() ? f.line2 : f.line1};
+      scales = new float[]{f.line1.isEmpty() ? f.scale2 : f.scale1};
     } else {
       lines = new String[]{f.line1, f.line2};
+      scales = new float[]{f.scale1, f.scale2};
     }
     int n = lines.length;
     float widest = 0;
-    for (String line : lines) {
-      widest = Math.max(widest, lineWidth(line));
+    // the widest line at the size it wants, as a share of full size: widest when unscaled
+    float widestScaled = 0;
+    for (int i = 0; i < n; i++) {
+      float w = lineWidth(lines[i]);
+      widest = Math.max(widest, w);
+      widestScaled = Math.max(widestScaled, w * scales[i]);
     }
     boolean pictogram = f.pictogram != Pictogram.NONE
         && HospitalWayfindingGlyphs.pictogram(f.pictogram.getId()) != null;
@@ -133,7 +147,7 @@ public final class HospitalWayfindingLayout {
     float perSquare = (pictogram ? 1f : 0f) + (hasArrow ? ARROW_SHARE : 0f);
     float room = width - 2 * margin - (pictogram ? fullSquare + gap : 0)
         - (hasArrow ? fullSquare * ARROW_SHARE + gap : 0);
-    float shortBy = widest * cap - room;
+    float shortBy = widestScaled * cap - room;
     float square = fullSquare;
     if (shortBy > 0 && perSquare > 0) {
       square = Math.max(fullSquare * MIN_ART_SHARE, fullSquare - shortBy / perSquare);
@@ -182,14 +196,28 @@ public final class HospitalWayfindingLayout {
 
     float textWidth = xr - xl;
     if (n > 0 && widest > 0 && textWidth > 0) {
+      float want = cap;
       if (widest * cap > textWidth) {
         cap = textWidth / widest;
       }
       float step = cap * LINE_STEP;
       float total = cap + (n - 1) * step;
       float top = mid + total / 2f;
+      // the lines at the sizes they want, fitted together; unscaled, exactly the cap above
+      float fitted = want;
+      if (widestScaled * fitted > textWidth) {
+        fitted = textWidth / widestScaled;
+      }
       for (int i = 0; i < n; i++) {
-        glyphs(out, lines[i], xl, top - i * step, cap, f.scheme.getLegend());
+        float lineCap = fitted * scales[i];
+        float capTop = top - i * step;
+        if (lineCap == cap) {
+          glyphs(out, lines[i], xl, capTop, cap, f.scheme.getLegend());
+        } else {
+          // smaller capitals about the same middle
+          glyphs(out, lines[i], xl, capTop - (cap - lineCap) / 2f, lineCap,
+              f.scheme.getLegend());
+        }
       }
     }
     return out;

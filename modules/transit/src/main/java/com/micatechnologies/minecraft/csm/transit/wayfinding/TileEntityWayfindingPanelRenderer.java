@@ -43,10 +43,10 @@ import org.lwjgl.opengl.GL11;
  *
  * <p><b>Drawing.</b> The face is fullbright, as a backlit sign is: the baked slab behind it is
  * lit by the world and is what shows beyond the render distance. The legend's glyphs are a
- * display list per controller, keyed by the text, in the font's units, and placed and scaled
- * outside it; following "Display lists: one texture, no cached state" in
- * {@code TRAFFIC_SIGNAL_SYSTEM.md}, the list holds geometry only, and the font atlas, colour and
- * lightmap are set outside it every frame. The background is one untextured quad, and the
+ * display list per controller, keyed by the text (and any line's text scale), in the font's
+ * units, and placed and scaled outside it; following "Display lists: one texture, no cached
+ * state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}, the list holds geometry only, and the font atlas,
+ * colour and lightmap are set outside it every frame. The background is one untextured quad, and the
  * pictogram and arrow one block-atlas quad each, drawn directly.</p>
  *
  * <p>The sprites are {@code gen_transit_airport.py}'s {@code wayfinding_panel()}; no model face
@@ -225,15 +225,36 @@ public class TileEntityWayfindingPanelRenderer
     }
   }
 
-  /** The lines in the font's units, the first at the origin, y down. Geometry only. */
+  /**
+   * The lines in the font's units, the first at the origin, y down. Geometry only: a line with a
+   * text scale of its own is placed by a raw GL matrix push, translate and scale, balanced inside
+   * the list, which no {@code GlStateManager} cache knows about or needs to.
+   */
   private static void glyphs(WayfindingPanelLayout layout, CsmFontRenderer fr) {
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
     for (int i = 0; i < layout.lines.length; i++) {
-      fr.addString(buf, layout.lines[i], 0, i * layout.lineStep);
+      if (layout.lineK[i] == 1f) {
+        fr.addString(buf, layout.lines[i], 0, i * layout.lineStep);
+      }
     }
     tess.draw();
+    if (layout.isUnscaled()) {
+      return;
+    }
+    for (int i = 0; i < layout.lines.length; i++) {
+      float k = layout.lineK[i];
+      if (k != 1f) {
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0, layout.lineY[i], 0);
+        GL11.glScalef(k, k, 1f);
+        buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        fr.addString(buf, layout.lines[i], 0, 0);
+        tess.draw();
+        GL11.glPopMatrix();
+      }
+    }
   }
 
   private static void quad(BufferBuilder buf, float x0, float y0, float x1, float y1, float z) {
@@ -263,6 +284,8 @@ public class TileEntityWayfindingPanelRenderer
   private static WayfindingPanelLayout layout(TileEntityWayfindingPanel te, CsmFontRenderer fr) {
     String line1 = te.getLine1();
     String line2 = te.getLine2();
+    float scale1 = te.getLineTextScale(1);
+    float scale2 = te.getLineTextScale(2);
     long textKey = hash(line1, line2);
     int width = te.getWidth();
     int height = te.getHeight();
@@ -273,11 +296,13 @@ public class TileEntityWayfindingPanelRenderer
     key = key * 1000003L ^ height;
     key = key * 1000003L ^ (pictogram ? 1 : 0);
     key = key * 1000003L ^ (arrow ? 1 : 0);
+    key = key * 1000003L ^ Float.floatToIntBits(scale1);
+    key = key * 1000003L ^ Float.floatToIntBits(scale2);
     if (te.renderLayout instanceof WayfindingPanelLayout && te.renderLayoutKey == key) {
       return (WayfindingPanelLayout) te.renderLayout;
     }
     WayfindingPanelLayout l = WayfindingPanelLayout.of(width, height, pictogram, arrow, line1,
-        line2, fr.FONT_HEIGHT, fr::getStringWidth, textKey);
+        line2, scale1, scale2, fr.FONT_HEIGHT, fr::getStringWidth, textKey);
     te.renderLayout = l;
     te.renderLayoutKey = key;
     return l;

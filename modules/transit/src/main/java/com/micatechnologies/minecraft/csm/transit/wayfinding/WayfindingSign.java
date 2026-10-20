@@ -35,6 +35,20 @@ public final class WayfindingSign {
   public static final int MAX_LINE_LENGTH = 32;
   /** How far above a panel the renderer looks for something to hang it from, in blocks. */
   public static final int MAX_ROD_DROP = CellPanel.MAX_ROD_DROP;
+  /**
+   * The smallest text scale a line may be drawn at ({@code ts} times {@code ts1} or {@code ts2}),
+   * and the smallest each key holds.
+   */
+  public static final float MIN_TEXT_SCALE = 0.5f;
+  /**
+   * The largest: the size the panel's height gives, which a scale only ever makes smaller. Two
+   * lines at that size already reach from margin to margin up the panel (from the first line's
+   * cap line to the second's baseline is 0.81 of its height, the room inside the margins 0.74 of
+   * a one-high panel's and 0.82 of a six-high one's), so there is nothing to grow into; one line
+   * has room, but past 1 it would outgrow the pictogram it is set beside, and Healthcare's panel
+   * keeps the same limit.
+   */
+  public static final float MAX_TEXT_SCALE = 1f;
 
   private WayfindingSign() {
   }
@@ -285,6 +299,34 @@ public final class WayfindingSign {
     return out.toString().trim();
   }
 
+  /**
+   * What a text scale may be: {@link #MIN_TEXT_SCALE} to {@link #MAX_TEXT_SCALE}, 1 (none) for a
+   * value that is not a number.
+   *
+   * @param scale the scale as given
+   *
+   * @return the scale clamped
+   */
+  public static float clampTextScale(float scale) {
+    if (Float.isNaN(scale)) {
+      return 1f;
+    }
+    return Math.max(MIN_TEXT_SCALE, Math.min(MAX_TEXT_SCALE, scale));
+  }
+
+  /**
+   * The scale a line is drawn at: the panel's ({@code ts}) times the line's own ({@code ts1} or
+   * {@code ts2}), clamped again, so two halves make no less than {@link #MIN_TEXT_SCALE}.
+   *
+   * @param textScale the panel's scale
+   * @param lineScale the line's scale
+   *
+   * @return the line's scale, exactly 1 when both are
+   */
+  public static float lineTextScale(float textScale, float lineScale) {
+    return clampTextScale(textScale * lineScale);
+  }
+
   /** Whether the cell at {@code pos} is this block facing this way: part of the same panel. */
   static boolean joins(IBlockAccess world, BlockPos pos, Block block, EnumFacing facing) {
     return CellPanel.joins(world, pos, block, facing);
@@ -335,15 +377,20 @@ public final class WayfindingSign {
    * @param arrow       the arrow
    * @param scheme      the colours
    * @param doubleSided whether the back carries the legend too
+   * @param textScale   the legend's scale ({@code ts}), 1 for the size the panel gives
+   * @param line1Scale  the top line's own scale ({@code ts1}), times {@code textScale}
+   * @param line2Scale  the bottom line's own scale ({@code ts2}), times {@code textScale}
    */
   public static void applyToPanel(World world, BlockPos cell, String line1, String line2,
-      Pictogram pictogram, Arrow arrow, Scheme scheme, boolean doubleSided) {
+      Pictogram pictogram, Arrow arrow, Scheme scheme, boolean doubleSided, float textScale,
+      float line1Scale, float line2Scale) {
     String l1 = clamp(line1);
     String l2 = clamp(line2);
     CellPanel.forEachCell(world, cell, MAX_WIDTH, MAX_HEIGHT, (at, te) -> {
       if (te instanceof TileEntityWayfindingPanel) {
         TileEntityWayfindingPanel panel = (TileEntityWayfindingPanel) te;
-        panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided);
+        panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided, textScale, line1Scale,
+            line2Scale);
         // queued, not sent: a /setblock with NBT spreads from here before its own block change
         // has gone out, and a client drops an update that arrives ahead of its cell
         panel.markDirtyQueueSync(world, at);

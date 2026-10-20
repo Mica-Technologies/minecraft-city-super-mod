@@ -17,9 +17,12 @@ import org.lwjgl.input.Keyboard;
 
 /**
  * The editor for a large hanging sign: its two lines, buttons that step through the pictograms,
- * arrows and colour schemes, a toggle for the back, and a preset button that sets the whole sign
- * at once. Every change is sent at once, so the sign in the world updates while the screen is
- * open; Tab moves between the fields, Enter or Done closes it.
+ * arrows and colour schemes, a toggle for the back, a preset button that sets the whole sign
+ * at once, and a text size button that steps the legend's scale ({@code ts}) down by 5% from
+ * 100% to 50% and round again (Shift held steps it up); a line's own scale ({@code ts1},
+ * {@code ts2}) is kept as it is, set only by {@code /blockdata}. Every change is sent at once,
+ * so the sign in the world updates while the screen is open; Tab moves between the fields, Enter
+ * or Done closes it.
  *
  * @since 2026.10
  */
@@ -35,6 +38,10 @@ public class WayfindingPanelGui extends GuiScreen {
   private static final int ID_SCHEME = 3;
   private static final int ID_DOUBLE = 4;
   private static final int ID_PRESET = 5;
+  private static final int ID_TEXT_SIZE = 6;
+  /** The text size button's steps, largest first. */
+  private static final float[] TEXT_SIZES = {1.0f, 0.95f, 0.9f, 0.85f, 0.8f, 0.75f, 0.7f, 0.65f,
+      0.6f, 0.55f, 0.5f};
 
   private final BlockPos cell;
   private final TileEntityWayfindingPanel controller;
@@ -47,11 +54,15 @@ public class WayfindingPanelGui extends GuiScreen {
   private GuiButton schemeButton;
   private GuiButton doubleButton;
   private GuiButton presetButton;
+  private GuiButton textSizeButton;
 
   private Pictogram pictogram;
   private Arrow arrow;
   private Scheme scheme;
   private boolean doubleSided;
+  private float textScale;
+  private final float line1Scale;
+  private final float line2Scale;
   /** The preset last applied, or -1 before any. */
   private int preset = -1;
 
@@ -70,6 +81,9 @@ public class WayfindingPanelGui extends GuiScreen {
     this.arrow = controller.getArrow();
     this.scheme = controller.getScheme();
     this.doubleSided = controller.isDoubleSided();
+    this.textScale = controller.getTextScale();
+    this.line1Scale = controller.getLine1Scale();
+    this.line2Scale = controller.getLine2Scale();
   }
 
   private int top() {
@@ -103,8 +117,10 @@ public class WayfindingPanelGui extends GuiScreen {
     buttonList.add(arrowButton);
     buttonList.add(schemeButton);
     buttonList.add(doubleButton);
+    textSizeButton = new GuiButton(ID_TEXT_SIZE, bx0, by + 3 * ROW + 6, BUTTON_WIDTH, 20, "");
     buttonList.add(presetButton);
-    buttonList.add(new GuiButton(ID_DONE, width / 2 - 50, by + 3 * ROW + 6, 100, 20,
+    buttonList.add(textSizeButton);
+    buttonList.add(new GuiButton(ID_DONE, bx1, by + 3 * ROW + 6, BUTTON_WIDTH, 20,
         I18n.format("gui.done")));
     labels();
   }
@@ -120,6 +136,30 @@ public class WayfindingPanelGui extends GuiScreen {
         I18n.format(doubleSided ? "options.on" : "options.off"));
     presetButton.displayString = preset < 0 ? I18n.format("gui.csm.wayfinding.preset.none")
         : I18n.format("gui.csm.wayfinding.preset", Preset.values()[preset].getLabel());
+    textSizeButton.displayString = I18n.format("gui.csm.wayfinding.text_size",
+        Math.round(textScale * 100));
+  }
+
+  /**
+   * The text size after a click: the next step down from the scale, or up with Shift held,
+   * round from the last step to the first. A scale set between steps by {@code /blockdata} goes
+   * to the next step past it.
+   */
+  private static float nextTextSize(float scale, boolean up) {
+    if (up) {
+      for (int i = TEXT_SIZES.length - 1; i >= 0; i--) {
+        if (TEXT_SIZES[i] > scale + 1e-4f) {
+          return TEXT_SIZES[i];
+        }
+      }
+      return TEXT_SIZES[TEXT_SIZES.length - 1];
+    }
+    for (float size : TEXT_SIZES) {
+      if (size < scale - 1e-4f) {
+        return size;
+      }
+    }
+    return TEXT_SIZES[0];
   }
 
   @Override
@@ -144,6 +184,9 @@ public class WayfindingPanelGui extends GuiScreen {
         break;
       case ID_DOUBLE:
         doubleSided = !doubleSided;
+        break;
+      case ID_TEXT_SIZE:
+        textScale = nextTextSize(textScale, isShiftKeyDown());
         break;
       case ID_PRESET:
         preset = (preset + 1) % Preset.values().length;
@@ -213,7 +256,8 @@ public class WayfindingPanelGui extends GuiScreen {
 
   private void send() {
     CsmTransit.NETWORK.sendToServer(new WayfindingPanelPacket(cell, line1.getText(),
-        line2.getText(), pictogram, arrow, scheme, doubleSided));
+        line2.getText(), pictogram, arrow, scheme, doubleSided, textScale, line1Scale,
+        line2Scale));
   }
 
   @Override

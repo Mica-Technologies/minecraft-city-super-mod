@@ -177,6 +177,7 @@ gui.csm.wayfinding.scheme=Farben: %s
 gui.csm.wayfinding.double=Beide Seiten: %s
 gui.csm.wayfinding.preset=Vorlage: %s
 gui.csm.wayfinding.preset.none=Vorlage anwenden
+gui.csm.wayfinding.text_size=Schriftgröße: %d%%
 gui.csm.wayfinding.size=Schild: %d x %d Blöcke
 gui.csm.wayfinding.hint=Tafeln neben- und übereinander bilden ein Schild, bis 16 x 6
 gui.csm.wayfinding.pictogram.none=Keins

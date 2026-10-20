@@ -177,6 +177,7 @@ gui.csm.wayfinding.scheme=Färger: %s
 gui.csm.wayfinding.double=Båda sidor: %s
 gui.csm.wayfinding.preset=Mall: %s
 gui.csm.wayfinding.preset.none=Använd en mall
+gui.csm.wayfinding.text_size=Textstorlek: %d%%
 gui.csm.wayfinding.size=Skylt: %d x %d block
 gui.csm.wayfinding.hint=Paneler bredvid och ovanpå varandra blir en skylt, upp till 16 x 6
 gui.csm.wayfinding.pictogram.none=Inget

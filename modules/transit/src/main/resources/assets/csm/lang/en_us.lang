@@ -177,6 +177,7 @@ gui.csm.wayfinding.scheme=Colours: %s
 gui.csm.wayfinding.double=Both sides: %s
 gui.csm.wayfinding.preset=Preset: %s
 gui.csm.wayfinding.preset.none=Apply a preset
+gui.csm.wayfinding.text_size=Text size: %d%%
 gui.csm.wayfinding.size=Sign: %d x %d blocks
 gui.csm.wayfinding.hint=Panels side by side and stacked join into one sign, up to 16 x 6
 gui.csm.wayfinding.pictogram.none=None

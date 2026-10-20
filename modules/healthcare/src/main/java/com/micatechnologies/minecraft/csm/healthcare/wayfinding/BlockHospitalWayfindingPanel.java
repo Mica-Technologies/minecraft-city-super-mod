@@ -44,7 +44,8 @@ import net.minecraftforge.common.property.IUnlistedProperty;
  * a little light (8), as a lit sign would.</p>
  *
  * <p>No editor screen: a {@code /blockdata} sets the sign, as on Transit's; by hand, a click
- * steps through the {@link Preset presets} and a sneak-click through the arrows.</p>
+ * steps through the {@link Preset presets} and a sneak-click through the arrows, both keeping
+ * the sign's text scale.</p>
  *
  * @since 2026.10
  */
@@ -219,13 +220,15 @@ public class BlockHospitalWayfindingPanel extends BlockHealthcare implements
     if (player.isSneaking()) {
       HospitalWayfindingSign.Arrow next = cell.getArrow().next();
       HospitalWayfindingSign.applyToPanel(world, pos, cell.getLine1(), cell.getLine2(),
-          cell.getPictogram(), next, cell.getScheme(), cell.isDoubleSided());
+          cell.getPictogram(), next, cell.getScheme(), cell.isDoubleSided(),
+          cell.getTextScale(), cell.getLine1Scale(), cell.getLine2Scale());
       player.sendStatusMessage(new TextComponentTranslation(
           "csm.healthcare.wayfinding.arrow", next.getId()), true);
     } else {
       Preset p = Preset.after(cell.getLine1(), cell.getLine2());
       HospitalWayfindingSign.applyToPanel(world, pos, p.getLine1(), p.getLine2(),
-          p.getPictogram(), cell.getArrow(), p.getScheme(), cell.isDoubleSided());
+          p.getPictogram(), cell.getArrow(), p.getScheme(), cell.isDoubleSided(),
+          cell.getTextScale(), cell.getLine1Scale(), cell.getLine2Scale());
       player.sendStatusMessage(new TextComponentTranslation(
           "csm.healthcare.wayfinding.preset", p.getLabel()), true);
     }

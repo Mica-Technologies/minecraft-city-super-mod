@@ -15,16 +15,23 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * A cell of a large hanging sign ({@link BlockWayfindingPanel}).
  *
- * <p><b>The sign.</b> Two lines, a pictogram, an arrow, a colour scheme and whether the back
- * carries the legend too. Every cell of a panel holds a copy: an edit writes them all (from the
- * GUI or by {@code /blockdata} on any cell), and a cell placed against a panel copies its
- * neighbour, so when the controller changes (a cell added to the left or below, or the controller
- * broken) the new one already has the sign. Only the controller's copy is drawn.</p>
+ * <p><b>The sign.</b> Two lines, a pictogram, an arrow, a colour scheme, whether the back
+ * carries the legend too and the legend's text scale. Every cell of a panel holds a copy: an
+ * edit writes them all (from the GUI or by {@code /blockdata} on any cell), and a cell placed
+ * against a panel copies its neighbour, so when the controller changes (a cell added to the left
+ * or below, or the controller broken) the new one already has the sign. Only the controller's
+ * copy is drawn.</p>
  *
  * <p><b>The layout</b> (client only): whether this cell is the controller, the panel's size and
  * where its hanger rods go and how long they are: a {@link PanelLayout}, worked out by
  * {@link #refreshLayout}, which the renderer calls every frame but which walks the world only
  * when a nearby chunk section was rebuilt or two seconds have passed.</p>
+ *
+ * <p><b>The text scale</b> ({@code ts}, a float, and {@code ts1} and {@code ts2} for each line,
+ * times {@code ts}) makes the legend smaller than the size the panel's height gives: each key
+ * {@value WayfindingSign#MIN_TEXT_SCALE} to {@value WayfindingSign#MAX_TEXT_SCALE}, and a line's
+ * product clamped to the same. A key at 1 is the same as no key and is never written, so a sign
+ * that was never scaled saves exactly what it did before the scale existed.</p>
  *
  * @since 2026.10
  */
@@ -36,6 +43,9 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
   private static final String KEY_ARROW = "a";
   private static final String KEY_SCHEME = "s";
   private static final String KEY_DOUBLE = "d";
+  private static final String KEY_TEXT_SCALE = "ts";
+  private static final String KEY_LINE1_SCALE = "ts1";
+  private static final String KEY_LINE2_SCALE = "ts2";
 
   private String line1 = WayfindingSign.Preset.GATES.getLine1();
   private String line2 = "";
@@ -43,6 +53,9 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
   private Arrow arrow = Arrow.RIGHT;
   private Scheme scheme = Scheme.AIRPORT;
   private boolean doubleSided = true;
+  private float textScale = 1f;
+  private float line1Scale = 1f;
+  private float line2Scale = 1f;
 
   /** Client only, never saved: the panel this cell is in ({@link PanelLayout}). */
   private final PanelLayout layout = new PanelLayout(BlockWayfindingPanel.class,
@@ -79,24 +92,52 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
     return doubleSided;
   }
 
+  /** The legend's scale ({@code ts}), 1 for none. */
+  public float getTextScale() {
+    return textScale;
+  }
+
+  /** The top line's own scale ({@code ts1}), 1 for none. */
+  public float getLine1Scale() {
+    return line1Scale;
+  }
+
+  /** The bottom line's own scale ({@code ts2}), 1 for none. */
+  public float getLine2Scale() {
+    return line2Scale;
+  }
+
   /**
-   * Sets the whole sign, every string cleaned by {@link WayfindingSign#clamp}.
+   * The scale a line is drawn at, the legend's times its own, clamped.
+   *
+   * @param line 1 for the top line, 2 for the bottom one
+   */
+  public float getLineTextScale(int line) {
+    return WayfindingSign.lineTextScale(textScale, line == 1 ? line1Scale : line2Scale);
+  }
+
+  /**
+   * Sets the whole sign, every string cleaned by {@link WayfindingSign#clamp} and every scale by
+   * {@link WayfindingSign#clampTextScale}.
    */
   public void setSign(String line1, String line2, Pictogram pictogram, Arrow arrow,
-      Scheme scheme, boolean doubleSided) {
+      Scheme scheme, boolean doubleSided, float textScale, float line1Scale, float line2Scale) {
     this.line1 = WayfindingSign.clamp(line1);
     this.line2 = WayfindingSign.clamp(line2);
     this.pictogram = pictogram == null ? Pictogram.NONE : pictogram;
     this.arrow = arrow == null ? Arrow.NONE : arrow;
     this.scheme = scheme == null ? Scheme.AIRPORT : scheme;
     this.doubleSided = doubleSided;
+    this.textScale = WayfindingSign.clampTextScale(textScale);
+    this.line1Scale = WayfindingSign.clampTextScale(line1Scale);
+    this.line2Scale = WayfindingSign.clampTextScale(line2Scale);
     renderLayout = null;
   }
 
   /** Takes another cell's sign. */
   public void copySign(TileEntityWayfindingPanel other) {
     setSign(other.line1, other.line2, other.pictogram, other.arrow, other.scheme,
-        other.doubleSided);
+        other.doubleSided, other.textScale, other.line1Scale, other.line2Scale);
   }
 
   /**
@@ -184,7 +225,9 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
     setSign(compound.getString(KEY_LINE1), compound.getString(KEY_LINE2),
         Pictogram.byId(compound.getString(KEY_PICTOGRAM)),
         Arrow.byId(compound.getString(KEY_ARROW)), Scheme.byId(compound.getString(KEY_SCHEME)),
-        !compound.hasKey(KEY_DOUBLE) || compound.getBoolean(KEY_DOUBLE));
+        !compound.hasKey(KEY_DOUBLE) || compound.getBoolean(KEY_DOUBLE),
+        readScale(compound, KEY_TEXT_SCALE), readScale(compound, KEY_LINE1_SCALE),
+        readScale(compound, KEY_LINE2_SCALE));
     // a new sign may change which cells are drawn: look again at once
     layout.invalidate();
     spreadEdit();
@@ -206,7 +249,7 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
     spreading = true;
     try {
       WayfindingSign.applyToPanel(world, pos, line1, line2, pictogram, arrow, scheme,
-          doubleSided);
+          doubleSided, textScale, line1Scale, line2Scale);
     } finally {
       spreading = false;
     }
@@ -224,6 +267,21 @@ public class TileEntityWayfindingPanel extends AbstractTileEntity {
     compound.setString(KEY_ARROW, arrow.getId());
     compound.setString(KEY_SCHEME, scheme.getId());
     compound.setBoolean(KEY_DOUBLE, doubleSided);
+    writeScale(compound, KEY_TEXT_SCALE, textScale);
+    writeScale(compound, KEY_LINE1_SCALE, line1Scale);
+    writeScale(compound, KEY_LINE2_SCALE, line2Scale);
     return compound;
+  }
+
+  /** A scale key, any number type (a {@code /blockdata} may write a double), 1 when absent. */
+  private static float readScale(NBTTagCompound compound, String key) {
+    return compound.hasKey(key, 99) ? compound.getFloat(key) : 1f;
+  }
+
+  /** A scale key, left out at 1 so an unscaled sign writes only what it always did. */
+  private static void writeScale(NBTTagCompound compound, String key, float scale) {
+    if (scale != 1f) {
+      compound.setFloat(key, scale);
+    }
   }
 }

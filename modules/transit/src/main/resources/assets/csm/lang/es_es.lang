@@ -177,6 +177,7 @@ gui.csm.wayfinding.scheme=Colores: %s
 gui.csm.wayfinding.double=Ambas caras: %s
 gui.csm.wayfinding.preset=Plantilla: %s
 gui.csm.wayfinding.preset.none=Aplicar una plantilla
+gui.csm.wayfinding.text_size=Tamaño del texto: %d%%
 gui.csm.wayfinding.size=Letrero: %d x %d bloques
 gui.csm.wayfinding.hint=Los paneles contiguos y apilados forman un letrero, hasta 16 x 6
 gui.csm.wayfinding.pictogram.none=Ninguno

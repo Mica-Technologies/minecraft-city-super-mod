@@ -87,4 +87,118 @@ class TileEntityHospitalWayfindingPanelNbtTest {
     assertEquals(a.getBakedModelKey(), b.getBakedModelKey());
     assertEquals(a.face(null), b.face(null));
   }
+
+  // --- the text scale ------------------------------------------------------------------------
+
+  @Test
+  void textScaleRoundTrips() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.8f);
+    in.setFloat("ts1", 0.9f);
+    TileEntityHospitalWayfindingPanel te = new TileEntityHospitalWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.8f, te.getTextScale());
+    assertEquals(0.9f, te.getLine1Scale());
+    assertEquals(1f, te.getLine2Scale());
+    NBTTagCompound out = te.writeNBT(new NBTTagCompound());
+    assertEquals(in, out);
+    assertFalse(out.hasKey("ts2"));
+    assertEquals(0.8f * 0.9f, te.face(null).scale1);
+    assertEquals(0.8f, te.face(null).scale2);
+  }
+
+  @Test
+  void textScaleIsClamped() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.2f);
+    in.setFloat("ts1", 3f);
+    in.setFloat("ts2", Float.NaN);
+    TileEntityHospitalWayfindingPanel te = new TileEntityHospitalWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.5f, te.getTextScale());
+    assertEquals(1f, te.getLine1Scale());
+    assertEquals(1f, te.getLine2Scale());
+    NBTTagCompound out = te.writeNBT(new NBTTagCompound());
+    assertEquals(0.5f, out.getFloat("ts"));
+    assertFalse(out.hasKey("ts1"), "a scale clamped to 1 is no scale");
+    assertFalse(out.hasKey("ts2"), "a scale that is not a number is no scale");
+  }
+
+  @Test
+  void lineScaleProductIsClampedToTheMinimum() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.6f);
+    in.setFloat("ts2", 0.6f);
+    TileEntityHospitalWayfindingPanel te = new TileEntityHospitalWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.6f, te.face(null).scale1);
+    assertEquals(0.5f, te.face(null).scale2);
+  }
+
+  @Test
+  void textScaleOfOneWritesNoKey() throws IOException {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 1f);
+    in.setFloat("ts1", 1f);
+    in.setFloat("ts2", 1f);
+    NBTTagCompound out = roundTrip(in);
+    assertArrayEquals(bytes(sample()), bytes(out));
+  }
+
+  @Test
+  void textScaleReadsAnyNumberType() {
+    NBTTagCompound in = sample();
+    in.setDouble("ts", 0.75);
+    in.setInteger("ts2", 0);
+    TileEntityHospitalWayfindingPanel te = new TileEntityHospitalWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.75f, te.getTextScale());
+    assertEquals(0.5f, te.getLine2Scale());
+  }
+
+  @Test
+  void scaledSignIsCopiedWhole() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.85f);
+    in.setFloat("ts2", 0.7f);
+    TileEntityHospitalWayfindingPanel a = new TileEntityHospitalWayfindingPanel();
+    a.readNBT(in);
+    TileEntityHospitalWayfindingPanel b = new TileEntityHospitalWayfindingPanel();
+    b.copySign(a);
+    assertEquals(0.85f, b.getTextScale());
+    assertEquals(1f, b.getLine1Scale());
+    assertEquals(0.7f, b.getLine2Scale());
+  }
+  @Test
+  void textScaleIsPartOfTheBakedModelKey() {
+    TileEntityHospitalWayfindingPanel plain = new TileEntityHospitalWayfindingPanel();
+    plain.readNBT(sample());
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.8f);
+    TileEntityHospitalWayfindingPanel scaled = new TileEntityHospitalWayfindingPanel();
+    scaled.readNBT(in);
+    assertNotEquals(plain.getBakedModelKey(), scaled.getBakedModelKey());
+    assertNotEquals(plain.face(null), scaled.face(null));
+    assertEquals(0.8f, scaled.face(null).scale1);
+    assertEquals(0.8f, scaled.face(null).scale2);
+    in.setFloat("ts1", 0.9f);
+    TileEntityHospitalWayfindingPanel line = new TileEntityHospitalWayfindingPanel();
+    line.readNBT(in);
+    assertNotEquals(scaled.getBakedModelKey(), line.getBakedModelKey());
+    assertNotEquals(scaled.face(null), line.face(null));
+  }
+
+  @Test
+  void copySignReportsAScaleChange() {
+    TileEntityHospitalWayfindingPanel a = new TileEntityHospitalWayfindingPanel();
+    a.readNBT(sample());
+    TileEntityHospitalWayfindingPanel b = new TileEntityHospitalWayfindingPanel();
+    b.readNBT(sample());
+    assertFalse(b.copySign(a));
+    NBTTagCompound in = sample();
+    in.setFloat("ts2", 0.75f);
+    a.readNBT(in);
+    assertTrue(b.copySign(a));
+    assertEquals(0.75f, b.getLine2Scale());
+  }
 }

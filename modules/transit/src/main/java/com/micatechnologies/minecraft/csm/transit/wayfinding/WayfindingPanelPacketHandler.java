@@ -39,7 +39,8 @@ public class WayfindingPanelPacketHandler
       }
       WayfindingSign.applyToPanel(world, target, message.getLine1(), message.getLine2(),
           message.getPictogram(), message.getArrow(), message.getScheme(),
-          message.isDoubleSided());
+          message.isDoubleSided(), message.getTextScale(), message.getLine1Scale(),
+          message.getLine2Scale());
     });
     return null;
   }
