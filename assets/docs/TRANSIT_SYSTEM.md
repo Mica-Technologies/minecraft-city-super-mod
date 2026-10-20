@@ -1101,9 +1101,13 @@ panel built to size from cells, the legend set in a screen rather than baked.
   Exit white on green, Information white on blue), the back toggle, and a Preset button that sets
   the whole sign: GATES, ARRIVALS, CHECK-IN, BAGGAGE CLAIM, GROUND TRANSPORTATION, TO TRAINS,
   EXIT, RESTROOMS. A preset with no arrow of its own keeps the sign's, since which way a sign
-  points depends on where it hangs. Every change is sent at once (`WayfindingPanelPacket`); the
+  points depends on where it hangs. Beside Done, a Text size button steps the legend's scale
+  (`ts`, below) down by 5% from 100% to 50% and round again, or up with Shift held; a scale set
+  between steps by `/blockdata` goes to the next step past it, and the lines' own scales
+  (`ts1`, `ts2`) are kept as they are. Every change is sent at once (`WayfindingPanelPacket`,
+  its three scales appended after the first release's fields and read only when present); the
   server checks reach to the cell clicked, `allowEdit` and `isBlockModifiable`, cleans the lines
-  again, and writes the sign to every cell of the panel.
+  and clamps the scales again, and writes the sign to every cell of the panel.
 - **Every cell holds the sign.** An edit writes them all, and a cell a player places against a
   panel copies its neighbour's, so adding a column on the left or a row below (which moves the
   controller) or breaking the controller keeps the legend. `/fill` and `/setblock` do not run
@@ -1119,7 +1123,16 @@ panel built to size from cells, the legend set in a screen rather than baked.
   `baggage`, `ground`, `train`, `bus`, `taxi`, `restroom`, `exit`), `a` the arrow (`none`, `left`,
   `right`, `up`, `down`, `up_left`, `up_right`, `down_left`, `down_right`), `s` the colours
   (`airport`, `metro`, `exit`, `info`) and `d` whether the back carries the legend (a byte, on
-  unless `0b`). An unknown id reads as the list's first value. Only a live edit spreads: a cell
+  unless `0b`). An unknown id reads as the list's first value. Optionally, the text scale: `ts`
+  (a float) for the whole legend and `ts1` and `ts2` for the top and bottom line, each times
+  `ts`, so `{ts:0.8f,ts2:0.9f}` draws the top line at 80% and the bottom at 72%. Each key is
+  clamped to 0.5..1 as it is read (any number type; not a number reads as 1), and a line's
+  product to 0.5..1 again (`WayfindingSign.clampTextScale`, `lineTextScale`). A key at 1 is the
+  same as no key and is never written, so a sign that was never scaled saves byte for byte what
+  it did before the keys existed, and since a `/blockdata` merges into what is there, `ts:1f`
+  takes a scale off again. `ts1` belongs to `l1` and `ts2` to `l2` whichever is drawn, so a
+  sign with only `l2` takes `ts2`. For example
+  `/blockdata x y z {l1:"TO TRAINS",p:"train",a:"right",s:"metro",ts:0.8f}`. Only a live edit spreads: a cell
   read as its chunk loads is not yet in the world (`isBlockLoaded` is false and it is not the tile
   entity at its position), and the cells the spread writes do not spread it again (a static flag).
 - **Layout.** The pictogram is a square the panel's height less its margins, at the end away from
@@ -1127,7 +1140,21 @@ panel built to size from cells, the legend set in a screen rather than baked.
   leftward arrows); the text sits left-aligned between them in Highway Gothic, its capitals 0.45
   of the panel's height on one line or 0.28 each on two, both lines scaled down together to fit
   the width. A long word on a narrow panel is therefore small: GROUND / TRANSPORTATION wants a
-  panel seven or more wide at two tall.
+  panel seven or more wide at two tall. The numbers are `WayfindingPanelLayout`'s, free of the
+  client so `WayfindingPanelLayoutTest` can hold them, unscaled, bit for bit to a frozen copy of
+  the renderer's layout as it stood before the text scale.
+- **Text scale.** A scale only makes text smaller than the size the panel's height gives; 1 is
+  the most, because two lines at that size already fill the panel from margin to margin (cap
+  line of the first to baseline of the second is 0.81 of its height, the room inside the margins
+  0.74 of a one-high panel's and 0.82 of a six-high one's), and one line, which has room, would
+  outgrow the pictogram it sits beside. Each line wants its full size times its scale; the lines
+  are then fitted to the width together at those sizes, so a scaled line is never wider than the
+  room, and a smaller legend takes less room from the pictogram and arrow (on a panel already
+  fitted to its width, a scale may give the art some room back rather than shrink the words
+  much). Each line keeps the middle its box has at full size and stays left-aligned beside the
+  art. A line at its own scale is drawn from the same display list, under a raw GL push,
+  translate and scale balanced inside it (no `GlStateManager` cache is involved), and the list's
+  key takes in its scale and place.
 - **Hanging.** Over the top row the renderer hangs two rods, or one for about every four blocks of
   a wider panel, each from the panel's top up through air to the first block above, at most 24
   blocks; a rod with a block right on top of the panel, or with nothing within reach, is not drawn.
@@ -1136,7 +1163,7 @@ panel built to size from cells, the legend set in a screen rather than baked.
   `getActualState` under a `ChunkCache` bumps a counter, which is how a neighbour change shows on
   the client) or every two seconds for a ceiling changing out of reach of that signal; a cell that
   is not the controller costs two block lookups. The glyphs are one display list per controller,
-  keyed by the text and placed and scaled outside it; the background, pictogram and arrow are a
+  keyed by the text (and any line's text scale) and placed and scaled outside it; the background, pictogram and arrow are a
   quad each. The renderer is global, so a sixteen-block panel whose controller's section is culled
   still draws.
 - **Sprites.** The ten pictograms (64 px, black art on a white square the renderer tints) and the

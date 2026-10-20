@@ -15,6 +15,15 @@ import java.util.function.ToIntFunction;
  * {@link #CAPS_ONE_LINE} of the panel's height on one line or {@link #CAPS_TWO_LINES} each on
  * two, scaled down together to fit the width.</p>
  *
+ * <p><b>The text scale.</b> Each line may be drawn smaller ({@code ts} times {@code ts1} or
+ * {@code ts2}, {@link TileEntityWayfindingPanel}): the size it wants is scaled, and the lines are
+ * then fitted to the width together at the sizes they want, so a scaled line is never made wider
+ * than the room. A smaller legend also takes less room from the pictogram and arrow. Each line
+ * keeps the middle it has at full size ({@link #textTop} and {@link #lineStep} are the full-size
+ * layout's) and stays left-aligned beside the art. A line's own scale is {@link #lineK}, relative
+ * to {@link #textScale}, and its top {@link #lineY}; with no scale both are exactly what the
+ * layout always gave, 1 and the line's step.</p>
+ *
  * @since 2026.10
  */
 final class WayfindingPanelLayout {
@@ -60,6 +69,13 @@ final class WayfindingPanelLayout {
   String[] lines;
   /** From one line's top to the next, in font units. */
   int lineStep;
+  /** Each line's scale, as a share of {@link #textScale}: 1 for a line at full size. */
+  float[] lineK;
+  /**
+   * Each line's top below {@link #textTop}, in font units at {@link #textScale}: the line's step
+   * at full size, a scaled line moved down to keep its middle.
+   */
+  float[] lineY;
   /** The legend's glyph list key. */
   long textKey;
 
@@ -75,32 +91,46 @@ final class WayfindingPanelLayout {
    * @param arrow       whether it has an arrow
    * @param line1       the top line, empty for none
    * @param line2       the bottom line, empty for none
+   * @param line1Scale  the top line's text scale, 1 for none
+   * @param line2Scale  the bottom line's text scale, 1 for none
    * @param fontHeight  the font's line height, font units
    * @param stringWidth a line's width, font units
    * @param textKey     the key the legend's glyph list is kept under
    * @return the layout
    */
   static WayfindingPanelLayout of(int width, int height, boolean pictogram, boolean arrow,
-      String line1, String line2, int fontHeight, ToIntFunction<String> stringWidth,
-      long textKey) {
+      String line1, String line2, float line1Scale, float line2Scale, int fontHeight,
+      ToIntFunction<String> stringWidth, long textKey) {
     WayfindingPanelLayout l = new WayfindingPanelLayout();
     l.textKey = textKey;
     l.margin = FRAME + 0.08f * height;
     float fullSquare = height - 2 * l.margin;
     float gap = l.margin;
 
+    float[] scales;
     if (line1.isEmpty() && line2.isEmpty()) {
       l.lines = new String[0];
+      scales = new float[0];
     } else if (line1.isEmpty() || line2.isEmpty()) {
       l.lines = new String[]{line1.isEmpty() ? line2 : line1};
+      scales = new float[]{line1.isEmpty() ? line2Scale : line1Scale};
     } else {
       l.lines = new String[]{line1, line2};
+      scales = new float[]{line1Scale, line2Scale};
     }
     int n = l.lines.length;
     l.lineStep = Math.round(fontHeight * LINE_STEP);
+    l.lineK = new float[n];
+    l.lineY = new float[n];
     int widest = 0;
-    for (String line : l.lines) {
-      widest = Math.max(widest, stringWidth.applyAsInt(line));
+    // the widest line at the size it wants, as a share of full size: widest when unscaled
+    float widestScaled = 0;
+    for (int i = 0; i < n; i++) {
+      l.lineK[i] = 1f;
+      l.lineY[i] = i * l.lineStep;
+      int w = stringWidth.applyAsInt(l.lines[i]);
+      widest = Math.max(widest, w);
+      widestScaled = Math.max(widestScaled, w * scales[i]);
     }
     float wantScale = n == 0 ? 0
         : (n == 1 ? CAPS_ONE_LINE : CAPS_TWO_LINES) * height / (CAP_SHARE * fontHeight);
@@ -110,7 +140,7 @@ final class WayfindingPanelLayout {
     float perSquare = (pictogram ? 1f : 0f) + (arrow ? ARROW_SHARE : 0f);
     float room = width - 2 * l.margin - (pictogram ? fullSquare + gap : 0)
         - (arrow ? fullSquare * ARROW_SHARE + gap : 0);
-    float short_ = widest * wantScale - room;
+    float short_ = widestScaled * wantScale - room;
     l.square = fullSquare;
     if (short_ > 0 && perSquare > 0) {
       l.square = Math.max(fullSquare * MIN_ART_SHARE, fullSquare - short_ / perSquare);
@@ -153,7 +183,31 @@ final class WayfindingPanelLayout {
       l.textScale = scale;
       float block = ((n - 1) * l.lineStep + fontHeight) * scale;
       l.textTop = height / 2f + block / 2f;
+      // the lines at the sizes they want, fitted together; unscaled, exactly the scale above
+      float fitted = wantScale;
+      if (widestScaled * fitted > textWidth) {
+        fitted = textWidth / widestScaled;
+      }
+      for (int i = 0; i < n; i++) {
+        float s = fitted * scales[i];
+        l.lineK[i] = s == scale ? 1f : s / scale;
+        if (l.lineK[i] != 1f) {
+          l.lineY[i] += fontHeight * (1f - l.lineK[i]) / 2f;
+          l.textKey = l.textKey * 1000003L ^ Float.floatToIntBits(l.lineK[i]);
+          l.textKey = l.textKey * 1000003L ^ Float.floatToIntBits(l.lineY[i]);
+        }
+      }
     }
     return l;
+  }
+
+  /** Whether every line is drawn at {@link #textScale}, one step apart: no text scale shows. */
+  boolean isUnscaled() {
+    for (float k : lineK) {
+      if (k != 1f) {
+        return false;
+      }
+    }
+    return true;
   }
 }

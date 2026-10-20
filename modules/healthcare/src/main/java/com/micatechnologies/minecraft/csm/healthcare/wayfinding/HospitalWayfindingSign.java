@@ -46,6 +46,13 @@ public final class HospitalWayfindingSign {
   public static final int MAX_LINE_LENGTH = 32;
   /** How far above a panel a rod reaches for something to hang it from, in blocks. */
   public static final int MAX_ROD_DROP = 24;
+  /** The smallest text scale a line may be drawn at, and each key may hold (Transit's). */
+  public static final float MIN_TEXT_SCALE = 0.5f;
+  /**
+   * The largest: the size the panel's height gives (Transit's limit, for the same reason: two
+   * lines at that size already fill the panel between its margins).
+   */
+  public static final float MAX_TEXT_SCALE = 1f;
   /** The most cells one placement looks at when it works out the panels around it. */
   private static final int MAX_FLOOD = 512;
 
@@ -312,6 +319,32 @@ public final class HospitalWayfindingSign {
     return out.toString().trim();
   }
 
+  /**
+   * What a text scale may be: {@link #MIN_TEXT_SCALE} to {@link #MAX_TEXT_SCALE}, 1 (none) for a
+   * value that is not a number (Transit's rule).
+   *
+   * @param scale the scale as given
+   * @return the scale clamped
+   */
+  public static float clampTextScale(float scale) {
+    if (Float.isNaN(scale)) {
+      return 1f;
+    }
+    return Math.max(MIN_TEXT_SCALE, Math.min(MAX_TEXT_SCALE, scale));
+  }
+
+  /**
+   * The scale a line is drawn at: the panel's ({@code ts}) times the line's own ({@code ts1} or
+   * {@code ts2}), clamped again (Transit's rule).
+   *
+   * @param textScale the panel's scale
+   * @param lineScale the line's scale
+   * @return the line's scale, exactly 1 when both are
+   */
+  public static float lineTextScale(float textScale, float lineScale) {
+    return clampTextScale(textScale * lineScale);
+  }
+
   // --- the panel ---------------------------------------------------------------------------
 
   /** Whether the cell at {@code pos} is this block facing this way: part of the same panel. */
@@ -369,7 +402,8 @@ public final class HospitalWayfindingSign {
    * to the clients. Server side: a {@code /blockdata} edit of any cell and a click both come here.
    */
   public static void applyToPanel(World world, BlockPos cell, String line1, String line2,
-      Pictogram pictogram, Arrow arrow, Scheme scheme, boolean doubleSided) {
+      Pictogram pictogram, Arrow arrow, Scheme scheme, boolean doubleSided, float textScale,
+      float line1Scale, float line2Scale) {
     IBlockState state = world.getBlockState(cell);
     if (!(state.getBlock() instanceof BlockHospitalWayfindingPanel)) {
       return;
@@ -388,7 +422,8 @@ public final class HospitalWayfindingSign {
         TileEntity te = world.getTileEntity(at);
         if (te instanceof TileEntityHospitalWayfindingPanel) {
           TileEntityHospitalWayfindingPanel panel = (TileEntityHospitalWayfindingPanel) te;
-          panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided);
+          panel.setSign(l1, l2, pictogram, arrow, scheme, doubleSided, textScale, line1Scale,
+              line2Scale);
           panel.markDirtyQueueSync(world, at);
         }
       }

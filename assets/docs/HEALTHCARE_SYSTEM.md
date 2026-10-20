@@ -321,7 +321,8 @@ alarm 2.0 s, infant security alarm 1.5 s), the module's own `sounds.json` and `H
 `hospital_wayfinding_panel` takes **exactly** what Transit's `airport_wayfinding_panel` takes, so
 the hospital builder, which already wrote airport panels, switches by changing the block name:
 the same metadata (facing S 0, W 1, N 2, E 3, towards the reader), the same tile entity NBT keys
-and meanings (`l1`, `l2`, `p`, `a`, `s`, `d`), a compound without `p` leaving the sign alone, the
+and meanings (`l1`, `l2`, `p`, `a`, `s`, `d`, and the optional text scale `ts`, `ts1`, `ts2`), a
+compound without `p` leaving the sign alone, the
 same 16 x 6 limit, the same rule that the bottom-left cell as read is the controller and that a
 `/blockdata` of any cell writes the whole panel, and rods from the top row up to the first block
 above. Its values differ where a hospital needs them: department colour schemes (Transit's four
@@ -342,6 +343,21 @@ panel (`pc`, `pr`, `pw`, `ph`) is worked out on the server whenever a cell is ad
 (`HospitalWayfindingSign.refresh`) and synced, and a cell outside its controller's rectangle (a
 ragged build) is drawn plain. Quads are cached by facing and face (up to 2,048), so a ward of
 identical signs bakes each cell's share once. The panel gives light 8 and is CUTOUT_MIPPED.
+
+**The text scale, as Transit's.** `ts` (a float, the whole legend) and `ts1` and `ts2` (the top
+and bottom line, each times `ts`) make the legend smaller than the size the panel's height
+gives, with Transit's keys, clamps (each key and each line's product 0.5..1, not a number 1)
+and layout: each line wants its full size times its scale, the lines are fitted to the width
+together at those sizes, the art gives up only the room the scaled legend needs, and each line
+keeps the middle of its capitals at full size, left-aligned beside the art. A key at 1 is never
+written, so an unscaled sign's NBT, baked model key and every piece of its layout are what they
+always were (`TileEntityHospitalWayfindingPanelNbtTest`, and `HospitalWayfindingLayoutTest`'s
+digest of the pieces taken before the scale existed). Every cell holds the scale with the rest
+of the sign, so `applyToPanel`, the controller's sign copied over the panel by `refresh` and a
+fresh cell's adopted sign all carry it, and each cell's `HospitalWayfindingFace` (the quad
+cache's key) holds its lines' drawn scales: a scale change rebakes only that panel's cells. The
+click and sneak-click keep the scale. There is no GUI here, so it is set by `/blockdata`:
+`/blockdata x y z {l1:"IMAGING",p:"xray",a:"right",s:"neutral",ts:0.8f}`.
 
 **Every printable ASCII character draws.** The committed Series D font has no percent, semicolon,
 angle or square brackets, backslash, caret, underscore, backtick, braces, bar or tilde; those
@@ -556,7 +572,7 @@ south: +x to west, +z to north; west: +x to north, +z to east).
 
 | Block (csm:) | Mount | Meta | NBT / notes |
 |---|---|---|---|
-| `hospital_wayfinding_panel` | hung cell, joins into a panel up to 16 x 6 | facing S 0, W 1, N 2, E 3 (towards the reader; Transit's) | TE as `airport_wayfinding_panel`: `l1`, `l2` (printable ASCII, 32 characters), `p` pictogram, `a` arrow, `s` scheme, `d` back carries the legend (byte, default 1). A compound without `p` leaves the sign alone. A `/setblock` with NBT or `/blockdata` on any cell writes the whole panel. `pc`, `pr`, `pw`, `ph` are the server's; never write them. Re-facing a cell by `/setblock` of the same block leaves its old panel and joins the new one, as placing it fresh does |
+| `hospital_wayfinding_panel` | hung cell, joins into a panel up to 16 x 6 | facing S 0, W 1, N 2, E 3 (towards the reader; Transit's) | TE as `airport_wayfinding_panel`: `l1`, `l2` (printable ASCII, 32 characters), `p` pictogram, `a` arrow, `s` scheme, `d` back carries the legend (byte, default 1), optional `ts` (float, whole legend), `ts1`, `ts2` (float, each line, times `ts`), each 0.5..1 and left out at 1. A compound without `p` leaves the sign alone. A `/setblock` with NBT or `/blockdata` on any cell writes the whole panel. `pc`, `pr`, `pw`, `ph` are the server's; never write them. Re-facing a cell by `/setblock` of the same block leaves its old panel and joins the new one, as placing it fresh does |
 | `code_blue_button` | wall | bits 0-2 facing, bit 3 active | a `/setblock` with bit 3 activates the code, from air or over the same button; one without bit 3 over an active button stands that button down (its annunciators fall silent unless another linked button or redstone holds them; a reset clears every button sharing them). Redstone 15 while active, strong into its wall |
 | `code_blue_annunciator` | wall | bits 0-2 facing, bit 3 active (worked out) | active while a linked button is active or it is powered |
 | `medical_gas_zone_valve_box`, `hospital_outlet_normal`, `hospital_outlet_emergency`, `hospital_outlet_pair` | wall | bits 0-2 facing | outlets sit low in the wall-face cell at floor level (the pair: red on the viewer's left) |

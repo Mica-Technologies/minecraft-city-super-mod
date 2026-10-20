@@ -140,7 +140,7 @@ class WayfindingPanelLayoutTest {
                   + " pict " + pict + " arrow " + arrow;
               Reference r = Reference.of(w, h, pict, arrow, legend[0], legend[1], fh, WIDTH);
               WayfindingPanelLayout l = WayfindingPanelLayout.of(w, h, pict, arrow, legend[0],
-                  legend[1], fh, WIDTH, 0L);
+                  legend[1], 1f, 1f, fh, WIDTH, 0L);
               assertSame(r.margin, l.margin, what + " margin");
               assertSame(r.square, l.square, what + " square");
               assertSame(r.artMiddle, l.artMiddle, what + " artMiddle");
@@ -155,6 +155,11 @@ class WayfindingPanelLayoutTest {
               assertSame(r.textScale, l.textScale, what + " textScale");
               assertArrayEquals(r.lines, l.lines, what + " lines");
               assertEquals(r.lineStep, l.lineStep, what + " lineStep");
+              assertTrue(l.isUnscaled(), what + " unscaled");
+              for (int i = 0; i < l.lines.length; i++) {
+                assertSame(i * r.lineStep, l.lineY[i], what + " lineY " + i);
+              }
+              assertEquals(0L, l.textKey, what + " textKey");
               cases++;
             }
           }
@@ -163,5 +168,74 @@ class WayfindingPanelLayoutTest {
     }
     assertEquals(WIDTHS.length * HEIGHTS.length * LEGENDS.length * FONT_HEIGHTS.length * 4,
         cases);
+  }
+
+  /** A line's middle, up the face, in blocks: its box's, from the top of the first line's. */
+  private static float middle(WayfindingPanelLayout l, int i, int fontHeight) {
+    return l.textTop - (l.lineY[i] + fontHeight * l.lineK[i] / 2f) * l.textScale;
+  }
+
+  @Test
+  void scaledLinesKeepTheirMiddlesAndLeftEdge() {
+    int fh = 9;
+    for (float s1 : new float[]{1f, 0.85f, 0.75f, 0.5f}) {
+      for (float s2 : new float[]{1f, 0.9f, 0.6f}) {
+        WayfindingPanelLayout plain = WayfindingPanelLayout.of(16, 2, true, true, "GATES",
+            "B1-B20", 1f, 1f, fh, WIDTH, 0L);
+        WayfindingPanelLayout l = WayfindingPanelLayout.of(16, 2, true, true, "GATES",
+            "B1-B20", s1, s2, fh, WIDTH, 0L);
+        // a wide panel: nothing is fitted, so each line is drawn at exactly its scale
+        assertEquals(s1, l.lineK[0] * l.textScale / plain.textScale, 1e-6f);
+        assertEquals(s2, l.lineK[1] * l.textScale / plain.textScale, 1e-6f);
+        assertEquals(plain.textX, l.textX);
+        assertEquals(plain.square, l.square);
+        for (int i = 0; i < 2; i++) {
+          assertEquals(middle(plain, i, fh), middle(l, i, fh), 1e-5f);
+        }
+      }
+    }
+  }
+
+  @Test
+  void scaledLinesFitTheWidth() {
+    int fh = 9;
+    for (int w : WIDTHS) {
+      for (String[] legend : LEGENDS) {
+        for (float s : new float[]{1f, 0.9f, 0.75f, 0.5f}) {
+          WayfindingPanelLayout l = WayfindingPanelLayout.of(w, 1, true, true, legend[0],
+              legend[1], s, 1f, fh, WIDTH, 0L);
+          if (l.textScale <= 0) {
+            continue;
+          }
+          float room = (l.arrowX - l.margin) - l.textX;
+          for (int i = 0; i < l.lines.length; i++) {
+            float drawn = WIDTH.applyAsInt(l.lines[i]) * l.textScale * l.lineK[i];
+            assertTrue(drawn <= room + 1e-4f, w + " " + legend[0] + "/" + legend[1] + " at "
+                + s + ": line " + i + " is " + drawn + " wide in " + room);
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  void smallerLegendTakesLessFromTheArt() {
+    WayfindingPanelLayout full = WayfindingPanelLayout.of(3, 1, true, true,
+        "A VERY LONG LEGEND LINE HERE", "", 1f, 1f, 9, WIDTH, 0L);
+    WayfindingPanelLayout scaled = WayfindingPanelLayout.of(3, 1, true, true,
+        "A VERY LONG LEGEND LINE HERE", "", 0.5f, 1f, 9, WIDTH, 0L);
+    assertTrue(scaled.square >= full.square);
+  }
+
+  @Test
+  void scaledTextHasItsOwnGlyphListKey() {
+    WayfindingPanelLayout plain = WayfindingPanelLayout.of(16, 2, true, true, "GATES", "",
+        1f, 1f, 9, WIDTH, 42L);
+    WayfindingPanelLayout scaled = WayfindingPanelLayout.of(16, 2, true, true, "GATES", "",
+        0.8f, 1f, 9, WIDTH, 42L);
+    assertEquals(42L, plain.textKey);
+    assertTrue(plain.isUnscaled());
+    assertFalse(scaled.isUnscaled());
+    assertNotEquals(plain.textKey, scaled.textKey);
   }
 }

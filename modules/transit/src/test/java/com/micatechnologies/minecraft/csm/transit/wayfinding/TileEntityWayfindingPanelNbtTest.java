@@ -79,4 +79,84 @@ class TileEntityWayfindingPanelNbtTest {
     assertEquals("BAGGAGE", te.getLine1());
     assertEquals(sample(), te.writeNBT(new NBTTagCompound()));
   }
+
+  // --- the text scale ------------------------------------------------------------------------
+
+  @Test
+  void textScaleRoundTrips() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.8f);
+    in.setFloat("ts1", 0.9f);
+    TileEntityWayfindingPanel te = new TileEntityWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.8f, te.getTextScale());
+    assertEquals(0.9f, te.getLine1Scale());
+    assertEquals(1f, te.getLine2Scale());
+    NBTTagCompound out = te.writeNBT(new NBTTagCompound());
+    assertEquals(in, out);
+    assertFalse(out.hasKey("ts2"));
+    assertEquals(0.8f * 0.9f, te.getLineTextScale(1));
+    assertEquals(0.8f, te.getLineTextScale(2));
+  }
+
+  @Test
+  void textScaleIsClamped() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.2f);
+    in.setFloat("ts1", 3f);
+    in.setFloat("ts2", Float.NaN);
+    TileEntityWayfindingPanel te = new TileEntityWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.5f, te.getTextScale());
+    assertEquals(1f, te.getLine1Scale());
+    assertEquals(1f, te.getLine2Scale());
+    NBTTagCompound out = te.writeNBT(new NBTTagCompound());
+    assertEquals(0.5f, out.getFloat("ts"));
+    assertFalse(out.hasKey("ts1"), "a scale clamped to 1 is no scale");
+    assertFalse(out.hasKey("ts2"), "a scale that is not a number is no scale");
+  }
+
+  @Test
+  void lineScaleProductIsClampedToTheMinimum() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.6f);
+    in.setFloat("ts2", 0.6f);
+    TileEntityWayfindingPanel te = new TileEntityWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.6f, te.getLineTextScale(1));
+    assertEquals(0.5f, te.getLineTextScale(2));
+  }
+
+  @Test
+  void textScaleOfOneWritesNoKey() throws IOException {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 1f);
+    in.setFloat("ts1", 1f);
+    in.setFloat("ts2", 1f);
+    NBTTagCompound out = roundTrip(in);
+    assertArrayEquals(bytes(sample()), bytes(out));
+  }
+
+  @Test
+  void textScaleReadsAnyNumberType() {
+    NBTTagCompound in = sample();
+    in.setDouble("ts", 0.75);
+    in.setInteger("ts2", 0);
+    TileEntityWayfindingPanel te = new TileEntityWayfindingPanel();
+    te.readNBT(in);
+    assertEquals(0.75f, te.getTextScale());
+    assertEquals(0.5f, te.getLine2Scale());
+  }
+
+  @Test
+  void scaledSignIsCopiedWhole() {
+    NBTTagCompound in = sample();
+    in.setFloat("ts", 0.85f);
+    in.setFloat("ts2", 0.7f);
+    TileEntityWayfindingPanel a = new TileEntityWayfindingPanel();
+    a.readNBT(in);
+    TileEntityWayfindingPanel b = new TileEntityWayfindingPanel();
+    b.copySign(a);
+    assertEquals(a.writeNBT(new NBTTagCompound()), b.writeNBT(new NBTTagCompound()));
+  }
 }

@@ -7,7 +7,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 /**
  * A large hanging sign's whole sign, sent from its editor on every change. The server cleans the
- * lines again and reads the enums by id; what arrives here is only trusted to be short.
+ * lines again, reads the enums by id and clamps the text scales; what arrives here is only
+ * trusted to be short.
  *
  * @since 2026.10
  */
@@ -23,6 +24,9 @@ public class WayfindingPanelPacket implements IMessage {
   private String arrow;
   private String scheme;
   private boolean doubleSided;
+  private float textScale = 1f;
+  private float line1Scale = 1f;
+  private float line2Scale = 1f;
 
   public WayfindingPanelPacket() {
   }
@@ -37,10 +41,14 @@ public class WayfindingPanelPacket implements IMessage {
    * @param arrow       the arrow
    * @param scheme      the colours
    * @param doubleSided whether the back carries the legend too
+   * @param textScale   the legend's scale ({@code ts})
+   * @param line1Scale  the top line's own scale ({@code ts1})
+   * @param line2Scale  the bottom line's own scale ({@code ts2})
    */
   public WayfindingPanelPacket(BlockPos pos, String line1, String line2,
       WayfindingSign.Pictogram pictogram, WayfindingSign.Arrow arrow,
-      WayfindingSign.Scheme scheme, boolean doubleSided) {
+      WayfindingSign.Scheme scheme, boolean doubleSided, float textScale, float line1Scale,
+      float line2Scale) {
     this.pos = pos;
     this.line1 = line1 == null ? "" : line1;
     this.line2 = line2 == null ? "" : line2;
@@ -48,6 +56,9 @@ public class WayfindingPanelPacket implements IMessage {
     this.arrow = arrow.getId();
     this.scheme = scheme.getId();
     this.doubleSided = doubleSided;
+    this.textScale = textScale;
+    this.line1Scale = line1Scale;
+    this.line2Scale = line2Scale;
   }
 
   private static String read(ByteBuf buf) {
@@ -64,6 +75,12 @@ public class WayfindingPanelPacket implements IMessage {
     arrow = read(buf);
     scheme = read(buf);
     doubleSided = buf.readBoolean();
+    // appended after the first release: a packet without them is an unscaled sign
+    if (buf.readableBytes() >= 12) {
+      textScale = buf.readFloat();
+      line1Scale = buf.readFloat();
+      line2Scale = buf.readFloat();
+    }
   }
 
   @Override
@@ -75,6 +92,9 @@ public class WayfindingPanelPacket implements IMessage {
     ByteBufUtils.writeUTF8String(buf, arrow);
     ByteBufUtils.writeUTF8String(buf, scheme);
     buf.writeBoolean(doubleSided);
+    buf.writeFloat(textScale);
+    buf.writeFloat(line1Scale);
+    buf.writeFloat(line2Scale);
   }
 
   public BlockPos getPos() {
@@ -103,5 +123,18 @@ public class WayfindingPanelPacket implements IMessage {
 
   public boolean isDoubleSided() {
     return doubleSided;
+  }
+
+  /** The legend's scale, unchecked: the tile entity clamps it. */
+  public float getTextScale() {
+    return textScale;
+  }
+
+  public float getLine1Scale() {
+    return line1Scale;
+  }
+
+  public float getLine2Scale() {
+    return line2Scale;
   }
 }

@@ -22,6 +22,9 @@ public final class HospitalWayfindingFace {
   final Arrow arrow;
   final Scheme scheme;
   final boolean doubleSided;
+  /** Each line's text scale as drawn (the panel's times the line's, clamped), 1 for none. */
+  final float scale1;
+  final float scale2;
   final int col;
   final int row;
   final int width;
@@ -33,19 +36,32 @@ public final class HospitalWayfindingFace {
   HospitalWayfindingFace(String line1, String line2, Pictogram pictogram, Arrow arrow,
       Scheme scheme, boolean doubleSided, int col, int row, int width, int height,
       float[] rods) {
+    this(line1, line2, pictogram, arrow, scheme, doubleSided, 1f, 1f, col, row, width, height,
+        rods);
+  }
+
+  HospitalWayfindingFace(String line1, String line2, Pictogram pictogram, Arrow arrow,
+      Scheme scheme, boolean doubleSided, float scale1, float scale2, int col, int row,
+      int width, int height, float[] rods) {
     this.line1 = line1;
     this.line2 = line2;
     this.pictogram = pictogram;
     this.arrow = arrow;
     this.scheme = scheme;
     this.doubleSided = doubleSided;
+    this.scale1 = scale1;
+    this.scale2 = scale2;
     this.col = col;
     this.row = row;
     this.width = width;
     this.height = height;
     this.rods = rods == null ? new float[0] : rods;
-    this.hash = Objects.hash(line1, line2, pictogram, arrow, scheme, doubleSided, col, row, width,
+    int h = Objects.hash(line1, line2, pictogram, arrow, scheme, doubleSided, col, row, width,
         height) * 31 + Arrays.hashCode(this.rods);
+    if (scale1 != 1f || scale2 != 1f) {
+      h = h * 31 + Objects.hash(scale1, scale2);
+    }
+    this.hash = h;
   }
 
   /** Whether the cell draws any of the sign (a cell outside its panel's rectangle does not). */
@@ -63,7 +79,8 @@ public final class HospitalWayfindingFace {
     }
     HospitalWayfindingFace f = (HospitalWayfindingFace) o;
     return hash == f.hash && doubleSided == f.doubleSided && col == f.col && row == f.row
-        && width == f.width && height == f.height && pictogram == f.pictogram
+        && width == f.width && height == f.height && scale1 == f.scale1
+        && scale2 == f.scale2 && pictogram == f.pictogram
         && arrow == f.arrow && scheme == f.scheme && line1.equals(f.line1)
         && line2.equals(f.line2) && Arrays.equals(rods, f.rods);
   }
