@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.healthcare.wards;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareMaterial;
+import java.util.EnumMap;
+import java.util.Map;
 import javax.annotation.Nonnull;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.properties.PropertyBool;
@@ -58,6 +60,10 @@ public class BlockHospitalBed extends BlockHealthcare {
   private static final AxisAlignedBB HIGH_BOX = new AxisAlignedBB(1 / 16.0, 0, 0, 15 / 16.0,
       15 / 16.0, 1);
 
+  /** Each bed's head block by its variant, so the shared foot can name and pick its bed. */
+  private static final Map<HospitalBedVariant, BlockHospitalBed> BY_VARIANT =
+      new EnumMap<>(HospitalBedVariant.class);
+
   private final HospitalBedVariant variant;
 
   /**
@@ -69,6 +75,18 @@ public class BlockHospitalBed extends BlockHealthcare {
     super(variant.registryName(), new int[]{1, 0, 0, 15, 11, 16}, HealthcareMaterial.METAL,
         Mount.FLOOR, true);
     this.variant = variant;
+    BY_VARIANT.put(variant, this);
+  }
+
+  /**
+   * The head block of a bed.
+   *
+   * @param variant which bed
+   *
+   * @return its head block, or null if that bed is not registered
+   */
+  public static BlockHospitalBed of(HospitalBedVariant variant) {
+    return BY_VARIANT.get(variant);
   }
 
   public HospitalBedVariant getVariant() {
