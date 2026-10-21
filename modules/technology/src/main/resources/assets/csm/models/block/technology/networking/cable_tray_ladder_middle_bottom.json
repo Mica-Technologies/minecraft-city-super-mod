@@ -1,0 +1,160 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/ladder_black",
+    "particle": "csm:blocks/technology/networking/ladder_black",
+    "r": "csm:blocks/technology/networking/hanger_rod"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0.5,
+        3.625
+      ],
+      "to": [
+        14,
+        1.25,
+        4.375
+      ],
+      "faces": {
+        "north": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.75,
+            14,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.75,
+            14,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            3.625,
+            14,
+            4.375
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            11.625,
+            14,
+            12.375
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        0.5,
+        7.625
+      ],
+      "to": [
+        14,
+        1.25,
+        8.375
+      ],
+      "faces": {
+        "north": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.75,
+            14,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.75,
+            14,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            7.625,
+            14,
+            8.375
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            7.625,
+            14,
+            8.375
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        0.5,
+        11.625
+      ],
+      "to": [
+        14,
+        1.25,
+        12.375
+      ],
+      "faces": {
+        "north": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.75,
+            14,
+            15.5
+          ]
+        },
+        "south": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.75,
+            14,
+            15.5
+          ]
+        },
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            11.625,
+            14,
+            12.375
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            3.625,
+            14,
+            4.375
+          ]
+        }
+      }
+    }
+  ]
+}

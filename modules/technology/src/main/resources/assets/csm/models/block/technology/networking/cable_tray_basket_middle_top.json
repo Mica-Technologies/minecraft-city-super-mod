@@ -1,0 +1,43 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/wire_mesh",
+    "particle": "csm:blocks/technology/networking/galvanized",
+    "g": "csm:blocks/technology/networking/galvanized",
+    "r": "csm:blocks/technology/networking/hanger_rod"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        11.0,
+        2
+      ],
+      "to": [
+        14,
+        11.25,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}
