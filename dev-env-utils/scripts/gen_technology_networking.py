@@ -238,11 +238,16 @@ desk_switch("micafi_switch_flex_mini",
 C.blocks.insert(1, C.blocks.pop(0))
 
 
-def _pic_tex(name, w, h, draw, n=32, bg=WHITE, after=None):
-    """A static face picture: draw(p) on a Pic of w x h units, squeezed square."""
+def _pic_tex(name, w, h, draw, n=32, bg=WHITE, after=None, mark=None):
+    """A static face picture: draw(p) on a Pic of w x h units, squeezed square. ``mark``
+    (x, y, size, in the face's units) draws the Micafi mark before the squeeze, so it keeps its
+    shape on a face that is not square; ``after`` draws on the squeezed texture."""
     def make():
         p = Pic(w, h, n, bg=bg)
         draw(p)
+        if mark:
+            tc.micafi_mark(p.img, int(round(mark[0] * p.s)), int(round(mark[1] * p.s)),
+                           int(round(mark[2] * p.s)), tc.MICAFI_TEAL, k=2)
         img = tc.grain(p.done(), 1.5, zlib.crc32(name.encode("utf-8")) & 0xffff)
         if after:
             after(img)
@@ -314,7 +319,7 @@ def _hub_top(p):
 
 
 _pic_tex("control_hub_front", 4, 1.6, _hub_front)
-_pic_tex("control_hub_top", 4, 6, _hub_top, after=_mark_after(16, 13, 10))
+_pic_tex("control_hub_top", 4, 6, _hub_top, mark=(1.2, 1.6, 1.6))
 add_desk("micafi_control_hub",
          tc.names("Micafi Control Hub", "Micafi-Steuerzentrale", "Centro de Control Micafi",
                   "Micafi kontrollnav"),
