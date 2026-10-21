@@ -1,0 +1,266 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/technology/computers/brushed_silver",
+    "led": "csm:blocks/technology/computers/led_blue",
+    "cable": "csm:blocks/technology/common/port_black",
+    "particle": "csm:blocks/technology/computers/brushed_silver"
+  },
+  "elements": [
+    {
+      "from": [
+        6.6,
+        0,
+        6.0
+      ],
+      "to": [
+        9.4,
+        0.8,
+        10.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#body",
+          "uv": [
+            6.6,
+            15.2,
+            9.4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            6.6,
+            15.2,
+            9.4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            5.8,
+            15.2,
+            10.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            6.0,
+            15.2,
+            10.2,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            6.6,
+            6.0,
+            9.4,
+            10.2
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            6.6,
+            5.8,
+            9.4,
+            10.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.7,
+        0.8,
+        6.4
+      ],
+      "to": [
+        8.3,
+        1.0,
+        6.6
+      ],
+      "faces": {
+        "up": {
+          "texture": "#led",
+          "uv": [
+            7.7,
+            6.4,
+            8.3,
+            6.6
+          ]
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        7.6,
+        0.2,
+        10.2
+      ],
+      "to": [
+        8.4,
+        0.5,
+        13.0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            7.6,
+            15.5,
+            8.4,
+            15.8
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            3.0,
+            15.5,
+            5.8,
+            15.8
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            10.2,
+            15.5,
+            13.0,
+            15.8
+          ]
+        },
+        "down": {
+          "texture": "#cable",
+          "uv": [
+            7.6,
+            3.0,
+            8.4,
+            5.8
+          ]
+        },
+        "up": {
+          "texture": "#cable",
+          "uv": [
+            7.6,
+            10.2,
+            8.4,
+            13.0
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        2.0,
+        2.0,
+        2.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

@@ -1,22 +1,22 @@
 {
   "parent": "block/block",
   "textures": {
-    "case": "csm:blocks/technology/common/black_anodised",
     "keys": "csm:blocks/technology/computers/keyboard_layouts",
     "bed": "csm:blocks/technology/common/port_black",
-    "particle": "csm:blocks/technology/common/black_anodised"
+    "case": "csm:blocks/technology/common/black_anodised",
+    "particle": "csm:blocks/technology/common/port_black"
   },
   "elements": [
     {
       "from": [
         0.6,
-        0,
-        5.6
+        0.0,
+        5.648
       ],
       "to": [
         15.4,
         0.8,
-        10.4
+        10.352
       ],
       "faces": {
         "north": {
@@ -40,18 +40,18 @@
         "east": {
           "texture": "#case",
           "uv": [
-            5.6,
+            5.648,
             15.2,
-            10.4,
+            10.352,
             16
           ]
         },
         "west": {
           "texture": "#case",
           "uv": [
-            5.6,
+            5.648,
             15.2,
-            10.4,
+            10.352,
             16
           ]
         },
@@ -59,18 +59,18 @@
           "texture": "#case",
           "uv": [
             0.6,
-            5.6,
+            5.648,
             15.4,
-            10.4
+            10.352
           ]
         },
         "down": {
           "texture": "#case",
           "uv": [
             0.6,
-            5.6,
+            5.648,
             15.4,
-            10.4
+            10.352
           ]
         }
       }
@@ -79,21 +79,21 @@
       "from": [
         0.9,
         0.8,
-        5.9
+        5.948
       ],
       "to": [
         15.1,
         1.35,
-        10.1
+        10.052
       ],
       "faces": {
         "up": {
           "texture": "#keys",
           "uv": [
-            0,
             0.0,
-            16,
-            4.625
+            0.0,
+            8.0,
+            2.3125
           ],
           "rotation": 180
         }
@@ -103,12 +103,12 @@
       "from": [
         0.9,
         0.8,
-        5.9
+        5.948
       ],
       "to": [
         15.1,
         1.35,
-        10.1
+        10.052
       ],
       "faces": {
         "north": {
@@ -132,18 +132,18 @@
         "east": {
           "texture": "#bed",
           "uv": [
-            5.9,
+            5.948,
             14.65,
-            10.1,
+            10.052,
             15.2
           ]
         },
         "west": {
           "texture": "#bed",
           "uv": [
-            5.9,
+            5.948,
             14.65,
-            10.1,
+            10.052,
             15.2
           ]
         }

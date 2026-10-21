@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/computers/monitor_dual_arm_black"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "screen": {
+      "desktop": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_desktop",
+          "screen2": "csm:blocks/technology/computers/screen_w_code"
+        }
+      },
+      "game": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_game",
+          "screen2": "csm:blocks/technology/computers/screen_w_idle"
+        }
+      },
+      "code": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_code",
+          "screen2": "csm:blocks/technology/computers/screen_w_desktop"
+        }
+      },
+      "idle": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_idle",
+          "screen2": "csm:blocks/technology/computers/screen_w_game"
+        }
+      }
+    }
+  }
+}
