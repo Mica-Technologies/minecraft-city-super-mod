@@ -65,3 +65,7 @@ tile.school_clock_speaker_panel_vertical.name=Panel de Reloj y Altavoz Micaplex 
 tile.school_bell_controller.name=Controlador de Horario de Timbres Micaplex
 tile.school_bell_gong.name=Timbre de Pasillo Escolar
 item.school_bell_linker.name=Enlazador del Sistema de Timbres
+itemGroup.tabtechnetworking=CSM: Tecnología - Redes y TI
+tile.micafi_switch_8_port.name=Switch de Escritorio Micafi de 8 Puertos
+itemGroup.tabtechcomputers=CSM: Tecnología - Ordenadores y periféricos
+tile.keyboard_mech_full_black.name=Teclado Mecánico (Tamaño Completo, Negro)
