@@ -95,7 +95,7 @@ container per jar.
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; the gas yard: a regulator station built from a skid, gas pipe, ball valves, a regulator, a turbine meter, a line heater and a vent stack, the odorant tank, and warning signs that hang on a wall or a chain-link fence; telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna arrays, and a small cell's canister antenna and radio for the street poles); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
-| `modules/technology` | `csm_technology` | CSM: Technology | `technology`; also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`) |
+| `modules/technology` | `csm_technology` | CSM: Technology | `technology`; three tabs: Technology (AV, phones, the iMac family, the older access points), Computers & Peripherals (gaming rigs, monitors whose screens a click changes, keyboards, mice, desk extras, invented consoles) and Networking & IT, mostly the invented brand Micafi (desktop switches, gateway and wall jacks as desk devices; `technology.network`: cable trays that join into corners and tees, access points whose ring a click changes, outdoor radios fitted to Roads' poles; `technology.rack`: 42U racks two blocks tall filled with rack-mount units baked into the chunk mesh, pre-filled racks with no tile entity, the 12U wall cabinet); also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`); see `assets/docs/TECHNOLOGY_SYSTEM.md` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology, and the working shops, `furniture.market.shop`, which take SUM's money or emeralds; see `assets/docs/SHOP_SYSTEM.md`) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
@@ -138,7 +138,10 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 ├── parks/           (modules/parks) trees/ (log and leaves kit), planting/ (the tool and its
 │                    generators), landscape/ (plantings), planters/ (planting in planters),
 │                    amenities/ (the Parks tab)
-├── technology/       # Modern tech: servers, routers, TVs
+├── technology/       # AV, phones, the iMac family; desk devices (BlockDeskDeviceFactory,
+│                    BlockDeskScreenFactory) for the computers tab, network/ (cable
+│                    trays, Micafi access points and outdoor radios),
+│                    rack/ (racks, units, the baked rack model), school/ (clocks, PA, bells)
 ├── transit/         (modules/transit) fare/ (fare gates, vending machine, tickets, cards),
 │                    stop/, shelter/, platform/ (station and platform fit-out),
 │                    airport/ (terminal and airside pieces, the flight schedule),
@@ -473,6 +476,17 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   hands a renderer draws from game time (dials supplied per block), the two-block clock/speaker
   panels whose speaker half is an ordinary TTS-linkable speaker, the PA speakers, and the bell
   schedule controller (game-time periods, linked devices, a minute check, no chunk loads)
+- `assets/docs/TECHNOLOGY_SYSTEM.md` -- The Technology module's 2026-10 expansion: its three
+  tabs, the Micafi brand rule, desk devices at the bottom of their block (so they work on any
+  full block), click-cycled screens and lights in metadata (append-only ordinals, the state
+  counts), the 42U rack (2/3 px a U, two blocks split like a tall wardrobe, rows joined by actual
+  state, the tile entity's `u` byte array, units baked into the chunk mesh through an unlisted
+  property and `CsmBakedModelWrappers` with a quad cache, no renderer, doors in the glass layer,
+  the full 128 px unit sheet, the wall cabinet's depth limit, removal at the height clicked), the
+  pre-filled racks (no tile entity, the same unit boxes, `RackUnitBoxesTest`), the measured cost,
+  pole fitting, the tray joining rule, Fabricator words from the display name and the
+  `MOUNT_NOUNS` trap, the round-face and `model_depth.py` trap, the demo world, Phase 7 in
+  progress and what was left out
 - `assets/docs/TRANSIT_SYSTEM.md` -- The Transit module: the fare gates (ticket, card and exit
   sensing, the gate's states, operator modes), the fare vending machine and its purchases, the
   ticket and stored-trip card, why the move from Technology kept every registry name, GUI id and
@@ -944,6 +958,37 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `audit_model_weight.py` -- how heavy every JSON block model is: quads per model and module, the
   heaviest models, and how many of their faces are hidden by the model's own closed opaque boxes
   (what `model_depth.py`'s pruning would remove). Offline, a few seconds a module
+- `gen_technology_common.py` -- what the Technology generators share (not run on its own): the
+  Life Safety catalogue pointed at `modules/technology` (writing, `--check`, `--fragments`,
+  `model_depth.py` over everything written), the `Pic` face picture drawn in a face's own units
+  and squeezed into a square texture, the fitted-UV element helper `E`, the shared swatches, the
+  animated strip helper and the Micafi mark (an invented brand's own pixel logo)
+- `gen_technology_computers.py` -- the Computers & Peripherals tab: gaming rigs (a painted,
+  animated glass side rather than a see-through one), monitors (`BlockDeskScreenFactory`: the
+  desktop, game, code and idle screens as 64 px animated textures picked by the blockstate; the
+  ultrawide's wings turned 22.5 degrees), keyboards from one 256 px shelf-packed layout sheet
+  (`BANDS`, each layout at its true aspect), mice, pads, desk extras and the invented consoles,
+  their controllers and a VR headset as item sprites. Everything sits at the bottom of its block;
+  creative order by registry prefix (`_GROUPS`); `--check`, `--fragments`
+- `gen_technology_networking.py` -- the Networking & IT tab's desktop gear: Micafi switches with
+  animated port LEDs, the gateway, Control Hub, the Corvane modem, PoE injector, wall jacks and
+  the floor box, and the wire basket and ladder cable trays (`BlockCableTray`: middle, arm and
+  rail parts drawn once and turned by a multipart, lying or hung on rods, a charcoal item icon
+  for the black ladder); `--check`, `--fragments`
+- `gen_technology_rack.py` -- the racks: the 42U open frame and cabinets (two cells, side panels
+  only at a row's ends), the 12U wall cabinet, the fourteen rack-mount units' item models and
+  their one animated 128 px unit sheet (full: the next unit needs a second sheet), the seven
+  pre-filled racks' models from the same unit boxes as `RackUnitBoxes` (which
+  `RackUnitBoxesTest` holds them to), `RackUnitType.java` and `RackFrame.java` (units only ever
+  appended: their ordinals are saved), and the units' recipes in Core's recipes folder, each
+  conditional on `csm_technology`; `--check`, `--fragments`
+- `gen_technology_wireless.py` -- the Micafi access points and outdoor radios: ceiling APs (up or
+  down from the face clicked), wall and in-wall APs, the outdoor mesh AP, the Beam bridge on its
+  wall arm and on a pole clamp, the Station CPE, the sector antenna, two dishes and the Link 60;
+  the ring and link lights as swapped textures, round faces as a picture cut to the prism's
+  outline that is the part's only end face (16-gons from `round_z` for the dishes and the Beam),
+  and the thin and pedestal pole fits through `gen_pole_fit_models.fitted`; `--check`,
+  `--fragments`
 - `gen_technology_school.py` -- the Technology tab's school set: the Micaplex clocks (dial
   textures; each block's dial centres, radii and planes written into its tab line from the
   numbers the model is drawn with, so `TileEntitySchoolClockRenderer` draws the hands exactly on
@@ -1160,6 +1205,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   array (its three sectors an OBJ of boxes turned 120 degrees), and the small cell's canister over
   three collars and its radio over three strap sets. `--check`, `--fragments`, `--report` (OBJ
   quads)
+- `build_technology_demo.py` -- builds the Technology demo world in a flat creative world named
+  "Technology Demo" (refuses any other) through the orchestrator by instance id (default
+  `run-f2eb58`), in a dev client with every module: an office of workstations on full-block desks
+  carrying the whole Computers tab and a gaming corner; a server room with two rows of fillable
+  cabinets filled through the tile entity's `u` byte array, an open frame, two rows of pre-filled
+  racks, hung basket and ladder trays making a corner and a tee, ceiling APs; a network closet
+  with the wall cabinet and desktop gear; and Roads poles on the roof carrying every outdoor radio,
+  aimed at a second building. It checks both new tabs' registration lists against what it placed
+  and puts the rest on signed plinths. Sets blocks and runs commands only
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's
