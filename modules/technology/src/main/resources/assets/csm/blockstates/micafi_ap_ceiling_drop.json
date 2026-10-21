@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/wireless/micafi_ap_ceiling_drop"
+  },
+  "variants": {
+    "facing": {
+      "up": {},
+      "down": {
+        "x": 180
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "ring": {
+      "blue": {
+        "textures": {
+          "ring": "csm:blocks/technology/wireless/ap_face_blue"
+        }
+      },
+      "white": {
+        "textures": {
+          "ring": "csm:blocks/technology/wireless/ap_face_white"
+        }
+      },
+      "off": {
+        "textures": {
+          "ring": "csm:blocks/technology/wireless/ap_face_off"
+        }
+      },
+      "adopting": {
+        "textures": {
+          "ring": "csm:blocks/technology/wireless/ap_face_adopting"
+        }
+      }
+    }
+  }
+}

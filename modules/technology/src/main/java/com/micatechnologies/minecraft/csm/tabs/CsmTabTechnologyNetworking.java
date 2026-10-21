@@ -4,6 +4,9 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.technology.BlockDeskDeviceFactory;
 import com.micatechnologies.minecraft.csm.technology.network.BlockCableTray;
+import com.micatechnologies.minecraft.csm.technology.network.BlockMicafiCeilingAp;
+import com.micatechnologies.minecraft.csm.technology.network.BlockMicafiDevice;
+import com.micatechnologies.minecraft.csm.technology.network.MicafiLight;
 import com.micatechnologies.minecraft.csm.technology.rack.BlockNetworkCabinet;
 import com.micatechnologies.minecraft.csm.technology.rack.BlockServerRack;
 import com.micatechnologies.minecraft.csm.technology.rack.ItemRackUnit;
@@ -59,6 +62,20 @@ public class CsmTabTechnologyNetworking extends CsmTab {
     initTabBlock(new BlockDeskDeviceFactory("floor_box_network", new double[]{3.0, 0.0, 3.0, 13.0, 0.6, 13.0}));
     initTabBlock(new BlockCableTray("cable_tray_basket", new double[]{0.0, 3.0}, new double[]{11.0, 16.0}));
     initTabBlock(new BlockCableTray("cable_tray_ladder", new double[]{0.0, 2.0}, new double[]{12.0, 16.0}));
+    // --- Technology - Networking & IT (gen_technology_wireless.py --fragments) ---
+    initTabBlock(new BlockMicafiCeilingAp("micafi_ap_ceiling", new double[]{2.0, 0.0, 2.0, 14.0, 1.75, 14.0}));
+    initTabBlock(new BlockMicafiCeilingAp("micafi_ap_ceiling_lite", new double[]{3.75, 0.0, 3.75, 12.25, 1.5, 12.25}));
+    initTabBlock(new BlockMicafiCeilingAp("micafi_ap_ceiling_drop", new double[]{2.0, 0.0, 2.0, 14.0, 9.75, 14.0}));
+    initTabBlock(new BlockMicafiDevice("micafi_ap_wall", new double[]{4.5, 3.0, 14.0, 11.5, 13.0, 16.0}, MicafiLight.RING));
+    initTabBlock(new BlockMicafiDevice("micafi_ap_in_wall", new double[]{5.0, 2.0, 14.0, 11.0, 14.0, 16.0}, MicafiLight.RING));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_ap_outdoor_mesh", new double[]{6.25, 1.75, 7.75, 9.75, 13.75, 16.0}, MicafiLight.RING));
+    initTabBlock(new BlockMicafiDevice("micafi_beam_bridge", new double[]{3.75, 1.25, 2.75, 12.25, 13.75, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_beam_bridge_pole_fitted", new double[]{3.75, 2.5, 2.75, 12.25, 13.75, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_station_outdoor", new double[]{6.0, 1.5, 8.75, 10.0, 15.0, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_sector_antenna", new double[]{5.25, 0.5, 7.25, 10.75, 15.5, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_dish_small", new double[]{2.75, 2.75, 3.75, 13.25, 13.25, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_dish_large", new double[]{0.0, 0.0, 0.75, 16.0, 16.0, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_airlink_60", new double[]{3.5, 3.5, 5.5, 12.5, 12.5, 16.0}, MicafiLight.LINK));
     // --- Technology - Networking & IT (gen_technology_rack.py --fragments) ---
     initTabBlock(new BlockServerRack("server_rack_42u_open", RackFrame.OPEN_42U));
     initTabBlock(new BlockServerRack("server_rack_42u_mesh", RackFrame.CABINET_42U));
