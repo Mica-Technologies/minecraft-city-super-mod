@@ -159,6 +159,13 @@ TABS = {
                             "them, and structural steel."),
     "tabtechnology": ("technology", "Technology",
                       "Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set."),
+    "tabtechcomputers": ("technology-computers", "Technology - Computers & Peripherals",
+                         "Gaming rigs, workstations, monitors, keyboards of every kind, mice "
+                         "and the rest of what sits on a desk around a computer."),
+    "tabtechnetworking": ("technology-networking", "Technology - Networking & IT",
+                          "Micafi network gear: desktop and rack switches, gateways, wireless "
+                          "access points and bridges, server racks and the cabling a building's "
+                          "network runs on."),
     "tabtransit": ("transit", "Transit",
                    "Public transit: bus stop flags, timetable and map cases and the arrival "
                    "display (road signs, stood on the Road Signs tab's sign posts), bus "
@@ -211,7 +218,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmarketstore",
               "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
-              "tabtechnology", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
+              "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities",
               "tabnone"]
 

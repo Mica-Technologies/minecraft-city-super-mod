@@ -65,3 +65,7 @@ tile.school_clock_speaker_panel_vertical.name=Micaplex Klock-/Högtalarpanel (Ve
 tile.school_bell_controller.name=Micaplex Ringschemastyrning
 tile.school_bell_gong.name=Skolkorridorklocka
 item.school_bell_linker.name=Ringsystemslänkare
+itemGroup.tabtechnetworking=CSM: Teknik - Nätverk & IT
+tile.micafi_switch_8_port.name=Micafi 8-ports skrivbordsswitch
+itemGroup.tabtechcomputers=CSM: Teknik - Datorer & kringutrustning
+tile.keyboard_mech_full_black.name=Mekaniskt tangentbord (fullstorlek, svart)

@@ -391,6 +391,29 @@ def cost_for(registry, info, ancestors):
         return ("SHEET_METAL x2", "FASTENER_KIT")
     if tab == "tabtechnology":
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+    # The Technology module's two split tabs (CsmFabricatorCosts.techComputersCost and
+    # techNetworkingCost).
+    if tab == "tabtechcomputers":
+        if has_any(registry, ("pad", "mat")):
+            return ("wool", "dye:any")
+        if has_any(registry, ("speaker", "speakers", "subwoofer", "microphone", "mic")):
+            return ("SOUNDER_DRIVER", "CONTROL_BOARD")
+        if has_any(registry, ("monitor", "display", "ultrawide")):
+            return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
+        if has_any(registry, ("keyboard", "numpad", "mouse", "trackball", "headset",
+                              "headphones", "webcam", "hub", "drive", "dock", "kvm",
+                              "controller")):
+            return ("CONTROL_BOARD", "SHEET_METAL")
+        return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabtechnetworking":
+        if has_any(registry, ("rack", "cabinet", "enclosure")):
+            return ("SHEET_METAL x3", "FASTENER_KIT")
+        if has_any(registry, ("jack", "keystone", "tray", "ladder", "patch", "faceplate", "box")):
+            return ("SHEET_METAL", "WIRING_HARNESS")
+        if has_any(registry, ("dish", "bridge", "antenna", "sector", "airlink", "outdoor",
+                              "mesh")):
+            return ("CONTROL_BOARD", "WIRING_HARNESS", "SHEET_METAL")
+        return ("CONTROL_BOARD", "WIRING_HARNESS")
     if tab == "tabtransit":
         if has("BlockJetBridgeTurn"):
             # a turn is its cells' worth of tunnel (TransitFabricatorRules.price): a tunnel of its

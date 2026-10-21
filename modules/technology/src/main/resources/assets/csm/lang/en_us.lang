@@ -65,3 +65,7 @@ tile.school_clock_speaker_panel_vertical.name=Micaplex Clock/Speaker Panel (Vert
 tile.school_bell_controller.name=Micaplex Bell Schedule Controller
 tile.school_bell_gong.name=School Hallway Bell
 item.school_bell_linker.name=Bell System Linker
+itemGroup.tabtechnetworking=CSM: Technology - Networking & IT
+tile.micafi_switch_8_port.name=Micafi 8-Port Desktop Switch
+itemGroup.tabtechcomputers=CSM: Technology - Computers & Peripherals
+tile.keyboard_mech_full_black.name=Mechanical Keyboard (Full-Size, Black)

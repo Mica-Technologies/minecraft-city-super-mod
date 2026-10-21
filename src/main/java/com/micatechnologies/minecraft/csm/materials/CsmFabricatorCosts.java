@@ -81,6 +81,8 @@ public final class CsmFabricatorCosts {
   private static final String TAB_STRUCTURE_FRAMING = "tabstructureframing";
   private static final String TAB_STREETSCAPE = "tabstreetscape";
   private static final String TAB_TECHNOLOGY = "tabtechnology";
+  private static final String TAB_TECH_COMPUTERS = "tabtechcomputers";
+  private static final String TAB_TECH_NETWORKING = "tabtechnetworking";
   private static final String TAB_TRAFFIC_ACCESSORIES = "tabtrafficaccessories";
   private static final String TAB_TRAFFIC_SIGNALS = "tabtrafficsignals";
 
@@ -115,6 +117,33 @@ public final class CsmFabricatorCosts {
   private static final String[] METAL_FURNITURE_WORDS = {
       "hydrant", "chain", "chains", "barbed", "radiator", "grill", "grate", "rail",
   };
+
+  /** Display-name words for the small things on a desk around a computer, not the computer. */
+  private static final String[] PERIPHERAL_WORDS = {
+      "keyboard", "numpad", "mouse", "trackball", "headset", "headphones", "webcam", "hub",
+      "drive", "dock", "kvm", "controller",
+  };
+
+  /** Display-name words for desk things made of cloth and rubber rather than electronics. */
+  private static final String[] DESK_MAT_WORDS = {"pad", "mat"};
+
+  /** Display-name words for the computers tab's screens. */
+  private static final String[] SCREEN_WORDS = {"monitor", "display", "ultrawide"};
+
+  /** Display-name words for the computers tab's audio. */
+  private static final String[] AUDIO_WORDS = {"speaker", "speakers", "subwoofer", "microphone",
+      "mic"};
+
+  /** Display-name words for network enclosures: steel cabinets that equipment is bolted into. */
+  private static final String[] RACK_WORDS = {"rack", "cabinet", "enclosure"};
+
+  /** Display-name words for outdoor radio gear, which adds a weatherproof metal housing. */
+  private static final String[] RADIO_WORDS = {"dish", "bridge", "antenna", "sector", "airlink",
+      "outdoor", "mesh"};
+
+  /** Display-name words for passive cabling hardware: no electronics in it at all. */
+  private static final String[] CABLING_WORDS = {"jack", "keystone", "tray", "ladder", "patch",
+      "faceplate", "box"};
 
   /** Display-name words for novelties that are actually electronics. */
   private static final String[] ELECTRONIC_NOVELTY_WORDS = {
@@ -302,6 +331,12 @@ public final class CsmFabricatorCosts {
             FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
 
+      case TAB_TECH_COMPUTERS:
+        return techComputersCost(registryName);
+
+      case TAB_TECH_NETWORKING:
+        return techNetworkingCost(registryName);
+
       case TAB_TRAFFIC_ACCESSORIES:
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
@@ -349,6 +384,58 @@ public final class CsmFabricatorCosts {
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
+  }
+
+  /**
+   * Prices the Technology module's Computers &amp; Peripherals tab: a computer (a rig, a
+   * workstation, a console, a laptop) is a board in a steel case with its wiring; a screen adds
+   * the panel's LEDs; the things around it on a desk are a board and a shell, cheaper than the
+   * computer they plug into; a mouse pad or a desk mat is cloth.
+   */
+  private static List<FabricatorIngredient> techComputersCost(String registryName) {
+    if (hasAnyWord(registryName, DESK_MAT_WORDS)) {
+      return cost(FabricatorIngredient.any(MC_WOOL, 1), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    if (hasAnyWord(registryName, AUDIO_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+    }
+    if (hasAnyWord(registryName, SCREEN_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    if (hasAnyWord(registryName, PERIPHERAL_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+        FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+        FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+  }
+
+  /**
+   * Prices the Technology module's Networking &amp; IT tab: a rack or cabinet is steel and
+   * bolts; jacks, trays and patch hardware are passive metalwork; outdoor radio gear (dishes,
+   * bridges, sector antennas) is a board and its wiring in a weatherproof metal housing; the
+   * rest (switches, gateways, access points) is a board and its wiring.
+   */
+  private static List<FabricatorIngredient> techNetworkingCost(String registryName) {
+    if (hasAnyWord(registryName, RACK_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (hasAnyWord(registryName, CABLING_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (hasAnyWord(registryName, RADIO_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
+    return cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+        FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
   }
 
   /** Prices the Gaming tab, which mixes powered arcade cabinets with plain toys and tables. */
