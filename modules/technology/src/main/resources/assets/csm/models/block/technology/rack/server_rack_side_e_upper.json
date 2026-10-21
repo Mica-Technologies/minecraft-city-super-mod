@@ -1,0 +1,44 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "body": "csm:blocks/technology/common/black_anodised",
+    "post": "csm:blocks/technology/rack/rack_post",
+    "handle": "csm:blocks/technology/common/grey_abs",
+    "units": "csm:blocks/technology/rack/rack_units",
+    "particle": "csm:blocks/technology/common/black_anodised"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        0.6
+      ],
+      "to": [
+        16,
+        14,
+        15.4
+      ],
+      "faces": {
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0.6,
+            2,
+            15.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            0.6,
+            2,
+            15.4,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

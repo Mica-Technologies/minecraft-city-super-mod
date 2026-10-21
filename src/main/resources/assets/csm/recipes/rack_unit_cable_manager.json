@@ -1,0 +1,21 @@
+{
+  "type": "forge:ore_shapeless",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_technology"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "csm:part_sheet_metal"
+    },
+    {
+      "item": "csm:part_fastener_kit"
+    }
+  ],
+  "result": {
+    "item": "csm:rack_unit_cable_manager",
+    "count": 2
+  }
+}
