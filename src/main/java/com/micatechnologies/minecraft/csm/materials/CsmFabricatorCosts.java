@@ -121,14 +121,14 @@ public final class CsmFabricatorCosts {
   /** Display-name words for the small things on a desk around a computer, not the computer. */
   private static final String[] PERIPHERAL_WORDS = {
       "keyboard", "numpad", "mouse", "trackball", "headset", "headphones", "webcam", "hub",
-      "drive", "dock", "kvm", "controller",
+      "drive", "dock", "kvm", "controller", "keypad",
   };
 
   /** Display-name words for desk things made of cloth and rubber rather than electronics. */
   private static final String[] DESK_MAT_WORDS = {"pad", "mat"};
 
   /** Display-name words for the computers tab's screens. */
-  private static final String[] SCREEN_WORDS = {"monitor", "display", "ultrawide"};
+  private static final String[] SCREEN_WORDS = {"monitor", "monitors", "display", "ultrawide"};
 
   /** Display-name words for the computers tab's audio. */
   private static final String[] AUDIO_WORDS = {"speaker", "speakers", "subwoofer", "microphone",
