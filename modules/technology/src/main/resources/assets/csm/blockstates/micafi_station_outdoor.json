@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/wireless/micafi_station_outdoor"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "link": {
+      "green": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_green"
+        }
+      },
+      "blue": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_blue"
+        }
+      },
+      "white": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_white"
+        }
+      },
+      "off": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_off"
+        }
+      }
+    },
+    "polefit": {
+      "large": {},
+      "thin": {
+        "model": "csm:technology/wireless/micafi_station_outdoor_thin"
+      },
+      "pedestal": {
+        "model": "csm:technology/wireless/micafi_station_outdoor_pedestal"
+      }
+    }
+  }
+}

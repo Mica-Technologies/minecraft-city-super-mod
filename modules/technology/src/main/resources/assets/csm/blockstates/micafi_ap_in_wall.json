@@ -1,0 +1,45 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/wireless/micafi_ap_in_wall"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "ring": {
+      "blue": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_blue"
+        }
+      },
+      "white": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_white"
+        }
+      },
+      "off": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_off"
+        }
+      },
+      "adopting": {
+        "textures": {
+          "led": "csm:blocks/technology/wireless/led_adopting"
+        }
+      }
+    }
+  }
+}
