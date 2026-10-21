@@ -406,6 +406,8 @@ def cost_for(registry, info, ancestors):
             return ("CONTROL_BOARD", "SHEET_METAL")
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtechnetworking":
+        if has_any(registry, ("rack", "cabinet", "enclosure")) and has_any(registry, ("filled",)):
+            return ("SHEET_METAL x3", "FASTENER_KIT", "CONTROL_BOARD x2", "WIRING_HARNESS")
         if has_any(registry, ("rack", "cabinet", "enclosure")):
             return ("SHEET_METAL x3", "FASTENER_KIT")
         if has_any(registry, ("jack", "keystone", "tray", "ladder", "patch", "faceplate", "box")):

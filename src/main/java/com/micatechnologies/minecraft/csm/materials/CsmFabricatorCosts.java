@@ -137,6 +137,9 @@ public final class CsmFabricatorCosts {
   /** Display-name words for network enclosures: steel cabinets that equipment is bolted into. */
   private static final String[] RACK_WORDS = {"rack", "cabinet", "enclosure"};
 
+  /** Display-name words for a rack that comes with its units mounted. */
+  private static final String[] FILLED_WORDS = {"filled"};
+
   /** Display-name words for outdoor radio gear, which adds a weatherproof metal housing. */
   private static final String[] RADIO_WORDS = {"dish", "bridge", "antenna", "sector", "airlink",
       "outdoor", "mesh"};
@@ -416,11 +419,17 @@ public final class CsmFabricatorCosts {
 
   /**
    * Prices the Technology module's Networking &amp; IT tab: a rack or cabinet is steel and
-   * bolts; jacks, trays and patch hardware are passive metalwork; outdoor radio gear (dishes,
-   * bridges, sector antennas) is a board and its wiring in a weatherproof metal housing; the
+   * bolts, and a pre-filled one (its name says "Pre-Filled") the servers in it besides; jacks,
+   * trays and patch hardware are passive metalwork; outdoor radio gear (dishes, bridges, sector antennas) is a board and its wiring in a weatherproof metal housing; the
    * rest (switches, gateways, access points) is a board and its wiring.
    */
   private static List<FabricatorIngredient> techNetworkingCost(String registryName) {
+    if (hasAnyWord(registryName, RACK_WORDS) && hasAnyWord(registryName, FILLED_WORDS)) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 2),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
     if (hasAnyWord(registryName, RACK_WORDS)) {
       return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
