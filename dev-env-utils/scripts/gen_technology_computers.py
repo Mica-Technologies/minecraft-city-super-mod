@@ -67,8 +67,7 @@ FULL = [0, 0, 16, 16]
 # ------------------------------------------------------------------------------------------
 # Drawing helpers
 # ------------------------------------------------------------------------------------------
-def rgba(c):
-    return tuple(int(v) for v in c[:3]) + ((int(c[3]),) if len(c) == 4 else (255,))
+rgba = tc.rgba
 
 
 def hue(h, s=0.85, v=1.0):
@@ -76,74 +75,13 @@ def hue(h, s=0.85, v=1.0):
     return (int(r * 255), int(g * 255), int(b * 255))
 
 
-class Pic(object):
-    """A picture for one model face, drawn in the face's own units (model pixels, x right and y
-    down as the face is seen), supersampled and squeezed into an n x n texture: on a face of that
-    aspect with uv 0..16 it comes out the right shape."""
-
-    def __init__(self, w, h, n=32, ss=6, bg=(0, 0, 0)):
-        self.w, self.h, self.n = float(w), float(h), n
-        self.s = n * ss / max(self.w, self.h)
-        self.img = Image.new("RGBA", (max(1, int(round(w * self.s))),
-                                      max(1, int(round(h * self.s)))), rgba(bg))
-        self.d = ImageDraw.Draw(self.img)
-
-    def rect(self, x0, y0, x1, y1, c):
-        s = self.s
-        if x1 * s - 1 >= x0 * s and y1 * s - 1 >= y0 * s:
-            self.d.rectangle((x0 * s, y0 * s, x1 * s - 1, y1 * s - 1), fill=rgba(c))
-
-    def frame(self, x0, y0, x1, y1, c, w):
-        self.rect(x0, y0, x1, y0 + w, c)
-        self.rect(x0, y1 - w, x1, y1, c)
-        self.rect(x0, y0, x0 + w, y1, c)
-        self.rect(x1 - w, y0, x1, y1, c)
-
-    def ell(self, cx, cy, rx, ry, c):
-        s = self.s
-        self.d.ellipse(((cx - rx) * s, (cy - ry) * s, (cx + rx) * s, (cy + ry) * s), fill=rgba(c))
-
-    def disc(self, cx, cy, r, c):
-        self.ell(cx, cy, r, r, c)
-
-    def ring(self, cx, cy, r, w, c):
-        s = self.s
-        self.d.ellipse(((cx - r) * s, (cy - r) * s, (cx + r) * s, (cy + r) * s),
-                       outline=rgba(c), width=max(1, int(round(w * s))))
-
-    def poly(self, pts, c):
-        self.d.polygon([(x * self.s, y * self.s) for x, y in pts], fill=rgba(c))
-
-    def line(self, pts, c, w):
-        self.d.line([(x * self.s, y * self.s) for x, y in pts], fill=rgba(c),
-                    width=max(1, int(round(w * self.s))))
-
-    def vgrad(self, x0, y0, x1, y1, c0, c1, steps=40):
-        for i in range(steps):
-            k = i / float(steps - 1)
-            c = tuple(c0[j] + (c1[j] - c0[j]) * k for j in range(3))
-            self.rect(x0, y0 + (y1 - y0) * i / steps, x1, y0 + (y1 - y0) * (i + 1) / steps + 0.01,
-                      c)
-
-    def done(self):
-        return self.img.resize((self.n, self.n), Image.LANCZOS)
-
-
-def grain(img, amount, seed):
-    """A little per-texel grain over a finished texture."""
-    rng = random.Random(seed)
-    px = img.load()
-    for y in range(img.height):
-        for x in range(img.width):
-            r, g, b, a = px[x, y]
-            d = rng.uniform(-amount, amount)
-            px[x, y] = tc.clamp((r + d, g + d, b + d)) + (a,)
-    return img
+Pic = tc.Pic
+grain = tc.grain
 
 
 def anim(name, n, draw, frametime, interpolate=False):
-    """An animated texture of n frames; draw(f) returns frame f."""
-    tc.animation(C, name, [(lambda f=f: draw(f)) for f in range(n)], frametime, interpolate)
+    """An animated texture of n frames in this catalogue; draw(f) returns frame f."""
+    tc.anim(C, name, n, draw, frametime, interpolate)
 
 
 def tex(name):
@@ -154,59 +92,14 @@ def tex(name):
 # ------------------------------------------------------------------------------------------
 # Element helpers
 # ------------------------------------------------------------------------------------------
-def E(frm, to, t, faces=ALL, per=None, uv=None, rot=None, full=(), turn=None, shade=True):
-    """A box whose faces take their uv from their place (slid, never clamped, when it reaches
-    past the cell), a per-face texture key from per, explicit uvs, face rotations, faces in
-    ``full`` taking a whole picture (uv 0..16), and an element turn (axis, angle, origin)."""
-    outside = any(v < 0 or v > 16 for v in list(frm) + list(to))
-    el = (pp.wbox if outside else pp.box)(list(frm), list(to), t, faces=faces, per=per)
-    for f in full:
-        if f in el["faces"]:
-            el["faces"][f]["uv"] = list(FULL)
-    for f, u in (uv or {}).items():
-        if f in el["faces"]:
-            el["faces"][f]["uv"] = [round(v, 4) for v in u]
-    for f, r in (rot or {}).items():
-        if f in el["faces"]:
-            el["faces"][f]["rotation"] = r
-    if turn:
-        axis, angle, origin = turn
-        el["rotation"] = {"origin": [round(v, 4) for v in origin], "axis": axis, "angle": angle}
-    if not shade:
-        el["shade"] = False
-    return el
+E = tc.E
 
 
 def post(cx, cz, r, y0, y1, t, top=True, bottom=True):
     return tc.lsc.post(cx, cz, r, y0, y1, t, top=top, bottom=bottom)
 
 
-def extent(els, clamp_to_block=True):
-    """The Java box of a model: its elements' extent (turned ones by their corners), in
-    sixteenths, clamped to the block across and to 0..16 up (a selection box past the block
-    would hide its neighbours from the cursor)."""
-    pts = []
-    for e in els:
-        (x0, y0, z0), (x1, y1, z1) = e["from"], e["to"]
-        corners = [[x, y, z] for x in (x0, x1) for y in (y0, y1) for z in (z0, z1)]
-        r = e.get("rotation")
-        if r:
-            a = math.radians(r["angle"])
-            c, n = math.cos(a), math.sin(a)
-            o = r["origin"]
-            i, j = {"x": (1, 2), "y": (2, 0), "z": (0, 1)}[r["axis"]]
-            for p in corners:
-                u, v = p[i] - o[i], p[j] - o[j]
-                p[i], p[j] = o[i] + c * u - n * v, o[j] + n * u + c * v
-        pts += corners
-    lo = [min(p[k] for p in pts) for k in range(3)]
-    hi = [max(p[k] for p in pts) for k in range(3)]
-    b = [lo[0], lo[1], lo[2], hi[0], hi[1], hi[2]]
-    b = [round(math.floor(v * 4 + 1e-6) / 4.0, 2) if i < 3 else round(math.ceil(v * 4 - 1e-6) / 4.0, 2)
-         for i, v in enumerate(b)]
-    if clamp_to_block:
-        b = [max(0.0, min(16.0, v)) for v in b]
-    return b
+extent = tc.extent
 
 
 SCREENS = ("desktop", "game", "code", "idle")
