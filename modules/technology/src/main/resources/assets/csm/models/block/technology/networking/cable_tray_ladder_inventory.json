@@ -1,7 +1,7 @@
 {
   "parent": "block/block",
   "textures": {
-    "m": "csm:blocks/technology/networking/ladder_black",
+    "m": "csm:blocks/technology/networking/ladder_icon",
     "particle": "csm:blocks/technology/networking/ladder_black",
     "r": "csm:blocks/technology/networking/hanger_rod"
   },

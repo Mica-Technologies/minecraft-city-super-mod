@@ -477,6 +477,9 @@ add_desk("floor_box_network",
 # block's half.
 GALV = (172, 176, 178)
 LADDER_BLACK = (36, 37, 40)
+# the ladder's item icon: its black powder coat lifted to a charcoal, or the icon is a black
+# shape on the dark hotbar
+LADDER_ICON = (100, 103, 108)
 ROD = (90, 92, 96)
 
 
@@ -495,6 +498,7 @@ def _wire_mesh():
 
 C.textures["galvanized"] = lambda: tc.fill(GALV, 16, 4, 4230)
 C.textures["ladder_black"] = lambda: tc.fill(LADDER_BLACK, 16, 2, 4231)
+C.textures["ladder_icon"] = lambda: tc.fill(LADDER_ICON, 16, 3, 4233)
 C.textures["hanger_rod"] = lambda: tc.fill(ROD, 16, 2, 4232)
 
 
@@ -576,7 +580,8 @@ def tray(reg, names, kind):
         models["%s_%s_bottom" % (reg, name)] = tc.model(t, els)
         lifted = _lift(els, top_lift) + (_lift(rods, top_lift) if name == "rail" else [])
         models["%s_%s_top" % (reg, name)] = tc.model(t, lifted)
-    inv = tc.model(t, _turn_x(middle + arm + _flip_z(arm) + rail + _flip_z(rail)))
+    inv_t = dict(t, m=C.T("ladder_icon")) if kind == "ladder" else t
+    inv = tc.model(inv_t, _turn_x(middle + arm + _flip_z(arm) + rail + _flip_z(rail)))
     inv["display"] = TRAY_DISPLAY
     models["%s_inventory" % reg] = inv
     multipart = []
