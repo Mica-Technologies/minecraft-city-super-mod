@@ -32,6 +32,7 @@ public final class CsmGlassLayer {
   static final String[] OTHER_GLASS = {
       "blocks/constructionsite/trailer_window",   // the job trailer's frames and glass, one sheet
       "blocks/interior/curtain_sheer",
+      "blocks/technology/rack/door_mesh",         // a server cabinet's perforated door
       "blocks/transit/platforms/bag",             // the platform litter bin's clear bag
   };
 

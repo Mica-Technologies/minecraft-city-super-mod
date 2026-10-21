@@ -1,0 +1,332 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_mesh_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west",
+        "panel_w": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_w_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west",
+        "panel_e": "true"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_side_e_upper",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_lower"
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_upper"
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "upper": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:technology/rack/server_rack_42u_filled_storage_units_upper",
+        "y": 270
+      }
+    }
+  ]
+}
