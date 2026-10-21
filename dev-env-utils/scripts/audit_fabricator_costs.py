@@ -398,11 +398,11 @@ def cost_for(registry, info, ancestors):
             return ("wool", "dye:any")
         if has_any(registry, ("speaker", "speakers", "subwoofer", "microphone", "mic")):
             return ("SOUNDER_DRIVER", "CONTROL_BOARD")
-        if has_any(registry, ("monitor", "display", "ultrawide")):
+        if has_any(registry, ("monitor", "monitors", "display", "ultrawide")):
             return ("LED_MODULE", "CONTROL_BOARD", "SHEET_METAL")
         if has_any(registry, ("keyboard", "numpad", "mouse", "trackball", "headset",
                               "headphones", "webcam", "hub", "drive", "dock", "kvm",
-                              "controller")):
+                              "controller", "keypad")):
             return ("CONTROL_BOARD", "SHEET_METAL")
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
     if tab == "tabtechnetworking":
