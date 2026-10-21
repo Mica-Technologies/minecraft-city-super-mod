@@ -1,0 +1,153 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/wire_mesh",
+    "particle": "csm:blocks/technology/networking/galvanized",
+    "g": "csm:blocks/technology/networking/galvanized",
+    "r": "csm:blocks/technology/networking/hanger_rod"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        0
+      ],
+      "to": [
+        14,
+        0.25,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            0,
+            14,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        0,
+        0
+      ],
+      "to": [
+        2.25,
+        3.0,
+        2
+      ],
+      "faces": {
+        "east": {
+          "texture": "#m",
+          "uv": [
+            14,
+            13.0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#m",
+          "uv": [
+            0,
+            13.0,
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.75,
+        0,
+        0
+      ],
+      "to": [
+        14,
+        3.0,
+        2
+      ],
+      "faces": {
+        "east": {
+          "texture": "#m",
+          "uv": [
+            14,
+            13.0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#m",
+          "uv": [
+            0,
+            13.0,
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        2.75,
+        0
+      ],
+      "to": [
+        2.25,
+        3.0,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#g",
+          "uv": [
+            2,
+            0,
+            2.25,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.75,
+        2.75,
+        0
+      ],
+      "to": [
+        14,
+        3.0,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#g",
+          "uv": [
+            13.75,
+            0,
+            14,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

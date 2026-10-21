@@ -1,0 +1,110 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/ladder_black",
+    "particle": "csm:blocks/technology/networking/ladder_black",
+    "r": "csm:blocks/technology/networking/hanger_rod"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        12.0,
+        2
+      ],
+      "to": [
+        14,
+        14.0,
+        2.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.0,
+            14,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14.0,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            2,
+            14,
+            2.75
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            13.25,
+            14,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.75,
+        14.0,
+        2.0
+      ],
+      "to": [
+        8.25,
+        16.0,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#r",
+          "uv": [
+            7.75,
+            12.0,
+            8.25,
+            14.0
+          ]
+        },
+        "south": {
+          "texture": "#r",
+          "uv": [
+            7.75,
+            12.0,
+            8.25,
+            14.0
+          ]
+        },
+        "east": {
+          "texture": "#r",
+          "uv": [
+            13.5,
+            12.0,
+            14.0,
+            14.0
+          ]
+        },
+        "west": {
+          "texture": "#r",
+          "uv": [
+            2.0,
+            12.0,
+            2.5,
+            14.0
+          ]
+        }
+      }
+    }
+  ]
+}

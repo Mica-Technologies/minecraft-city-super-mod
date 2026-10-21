@@ -1,0 +1,182 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/technology/networking/stainless",
+    "particle": "csm:blocks/technology/networking/stainless",
+    "up": "csm:blocks/technology/networking/floor_box"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        0.6,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            15.4,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            15.4,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            15.4,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            15.4,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#up",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

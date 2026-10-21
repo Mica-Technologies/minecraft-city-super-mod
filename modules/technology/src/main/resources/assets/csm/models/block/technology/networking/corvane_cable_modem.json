@@ -1,0 +1,184 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/technology/networking/plastic_black",
+    "particle": "csm:blocks/technology/networking/plastic_black",
+    "north": "csm:blocks/technology/networking/corvane_modem_front",
+    "east": "csm:blocks/technology/networking/corvane_modem_side",
+    "west": "csm:blocks/technology/networking/corvane_modem_side"
+  },
+  "elements": [
+    {
+      "from": [
+        6.75,
+        0,
+        5
+      ],
+      "to": [
+        9.25,
+        9,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#north",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#shell",
+          "uv": [
+            6.75,
+            7,
+            9.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#east",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#west",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#shell",
+          "uv": [
+            6.75,
+            5,
+            9.25,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#shell",
+          "uv": [
+            6.75,
+            5,
+            9.25,
+            11
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0.5,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}
