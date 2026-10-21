@@ -34,6 +34,7 @@ swatch. Nothing ticks and there is no tile entity.
 Writes models under models/block/technology/wireless and textures under
 textures/blocks/technology/wireless.
 """
+import math
 import os
 import sys
 import zlib
@@ -76,19 +77,28 @@ def cutout(img, rgb=WHITE):
     return img
 
 
+def ngon(cx, cy, r, n=8):
+    """The corners of a regular n-gon (8 or 16) of inradius r, flats square to the axes: the
+    outline of lsc._octagon's prism (n 8) or round_z's (n 16), so a face picture cut to it
+    covers the prism's end exactly."""
+    if n == 8:
+        a = r * lsc.TAN_22_5
+        return [(cx + r, cy - a), (cx + r, cy + a), (cx + a, cy + r), (cx - a, cy + r),
+                (cx - r, cy + a), (cx - r, cy - a), (cx - a, cy - r), (cx + a, cy - r)]
+    rc = r / math.cos(math.pi / n)
+    return [(cx + rc * math.cos(math.pi / n + 2 * math.pi * k / n),
+             cy + rc * math.sin(math.pi / n + 2 * math.pi * k / n)) for k in range(n)]
+
+
 def octagon(cx, cy, r):
-    """The corners of a regular octagon of inradius r, flats square to the axes: the outline
-    of lsc._octagon's prism, so a face picture cut to it covers the prism's end exactly."""
-    a = r * lsc.TAN_22_5
-    return [(cx + r, cy - a), (cx + r, cy + a), (cx + a, cy + r), (cx - a, cy + r),
-            (cx - r, cy + a), (cx - r, cy - a), (cx - a, cy - r), (cx + a, cy - r)]
+    return ngon(cx, cy, r, 8)
 
 
-def _disc_shading(p, r=8.0):
-    """A white octagonal end lit from the upper left, as a disc: the octagon, then a few
-    nested discs, each a little lighter. The face picture of a round part is cut to the
-    octagon and is that part's only end face, so nothing lies coplanar with it."""
-    p.poly(octagon(8, 8, r), tc.shade(WHITE, 0.9))
+def _disc_shading(p, r=8.0, n=8):
+    """A white round end lit from the upper left, as a disc: the n-gon, then a few nested
+    discs, each a little lighter. The face picture of a round part is cut to the n-gon and is
+    that part's only end face, so nothing lies coplanar with it."""
+    p.poly(ngon(8, 8, r, n), tc.shade(WHITE, 0.9))
     p.disc(8, 8, r, tc.shade(WHITE, 0.93))
     p.disc(7.8, 7.8, r * 0.94, tc.shade(WHITE, 0.98))
     p.disc(7.5, 7.5, r * 0.8, tc.shade(WHITE, 1.02))
@@ -152,11 +162,12 @@ def pic_tex(name, w, h, draw, round_face=False, mark=None):
     C.textures[name] = make
 
 
-pic_tex("beam_face", 16, 16, _disc_shading, round_face=True, mark=(6.2, 6.6, 3.6))
+pic_tex("beam_face", 16, 16, lambda p: _disc_shading(p, n=16), round_face=True,
+        mark=(6.2, 6.6, 3.6))
 
 
 def _dish_face(p):
-    _disc_shading(p)
+    _disc_shading(p, n=16)
     p.ring(8, 8, 6.6, 0.18, tc.shade(WHITE, 0.88))
 
 
@@ -229,6 +240,36 @@ def oct_z(cx, cy, r, z0, z1, t, front=True, back=True):
     """An octagon of inradius r lying along z about (cx, cy); its front is north, at z0."""
     return lsc._octagon("z", cx, cy, r, z0, z1, t, front or back, cap_front=front,
                         cap_back=back)
+
+
+TAN_11_25 = math.tan(math.pi / 16)
+
+
+def round_z(cx, cy, r, z0, z1, t, front=True, back=True):
+    """A regular 16-gon prism of inradius r lying along z about (cx, cy), front (north) at z0:
+    lsc._octagon's pattern with eight rectangles, each 2r long and 2r tan(11.25) wide, turned
+    0, 22.5, -22.5 and 45 degrees about z (the steps a model element may turn), whose long
+    sides are the sixteen outside faces. A large dish or bridge read as a blocky octagon. Each
+    rectangle draws its own ends, a hair apart along z so the coplanar caps do not fight; a
+    round picture that ends the part replaces them (front=False), as it must be the part's only
+    end face."""
+    a = r * TAN_11_25
+    faces = []
+    if front:
+        faces.append("north")
+    if back:
+        faces.append("south")
+    els = []
+    k = 0
+    for ang in (0, 22.5, -22.5, 45):
+        for h1, h2 in ((r, a), (a, r)):
+            eps = 0.003 * k
+            k += 1
+            sides = ("east", "west") if h1 == r else ("up", "down")
+            turn = ("z", ang, (cx, cy, z0)) if ang else None
+            els.append(E((cx - h1, cy - h2, z0 - eps), (cx + h1, cy + h2, z1 + eps), t,
+                         faces=sides + tuple(faces), turn=turn))
+    return els
 
 
 def plane_up(cx, cz, half, y, t):
@@ -389,9 +430,9 @@ add_device("micafi_ap_outdoor_mesh",
 def beam_disc(cy=9.5):
     """The Micafi Beam's disc, facing north: a domed white front, the lit rim, the back shell
     and the hub its joint takes."""
-    return (oct_z(8, cy, 4, 3.0, 4.6, "w", front=False, back=False)
-            + oct_z(8, cy, 4.08, 4.6, 5.0, "led", back=False)
-            + oct_z(8, cy, 3.7, 5.0, 6.2, "w", front=False)
+    return (round_z(8, cy, 4, 3.0, 4.6, "w", front=False, back=False)
+            + round_z(8, cy, 4.08, 4.6, 5.0, "led", back=False)
+            + round_z(8, cy, 3.7, 5.0, 6.2, "w", front=False)
             + oct_z(8, cy, 1.5, 6.2, 7.4, "g", front=False)
             + [plane_north(4, cy - 4, 12, cy + 4, 3.0, "face")])
 
@@ -452,13 +493,13 @@ def dish(reg, names, r, z_front, cones, radio, arm_z0, clamp_y, scale):
     rim, the back stepping in as cones, the radio box (its link light underneath, where it is
     seen from below on a pole) and the arm to the clamp."""
     z = z_front
-    els = oct_z(8, 8, r, z, z + 1.2, "w", front=False, back=False)
+    els = round_z(8, 8, r, z, z + 1.2, "w", front=False, back=False)
     els.append(plane_north(8 - r, 8 - r, 8 + r, 8 + r, z, "face"))
     z += 1.2
-    els += oct_z(8, 8, round(r * 1.03, 3), z, z + 0.7, "g")
+    els += round_z(8, 8, round(r * 1.03, 3), z, z + 0.7, "g")
     z += 0.7
     for cr, dz in cones:
-        els += oct_z(8, 8, cr, z, z + dz, "g", front=False, back=True)
+        els += round_z(8, 8, cr, z, z + dz, "g", front=False, back=True)
         z += dz
     h = radio
     els.append(E((8 - h, 8 - h, z), (8 + h, 8 + h, z + 3.2), "w", faces=("south", "east", "west",

@@ -28,9 +28,11 @@ import net.minecraft.world.World;
  * block on rods to the ceiling or lies at the bottom (on top of a rack, say), as a slab is placed:
  * the underside of a block, or a side clicked in its upper half, hangs it. Everything else is
  * actual state: {@code north}, {@code east}, {@code south} and {@code west} say which way the
- * tray reaches out of its middle. A tray always runs its full length along its own axis; it also
- * reaches sideways to a tray beside it at the same height whose own run points at it, which makes
- * a tee, a corner or a crossing. Two parallel runs side by side do not join into a mat. The side
+ * tray reaches out of its middle. A tray runs its full length along its own axis, open at a run's
+ * end; it also reaches sideways to a tray beside it at the same height whose own run points at it,
+ * which makes a tee, a corner or a crossing. Where it turns, an end with no tray beyond it is
+ * closed with a rail rather than left reaching two pixels past the corner. Two parallel runs side
+ * by side do not join into a mat. The side
  * rails (and a hanging tray's rods) are drawn only on a side the tray does not reach out of. The
  * models come from {@code dev-env-utils/scripts/gen_technology_networking.py}.</p>
  *
@@ -106,18 +108,40 @@ public class BlockCableTray extends AbstractBlock {
   }
 
   /**
-   * Whether the tray reaches out of its middle towards {@code side}: always along its own run,
-   * and sideways to a tray at the same height whose run points this way.
+   * Whether the tray reaches out of its middle towards {@code side}: sideways to a tray at the
+   * same height whose run points this way; along its own run to any tray at the same height, and
+   * at an open end too, unless the tray turns here (reaches sideways), when that end is closed.
    */
   private boolean reaches(IBlockAccess world, BlockPos pos, IBlockState state, EnumFacing side) {
     Axis axis = state.getValue(AXIS);
-    if (side.getAxis() == axis) {
+    if (side.getAxis() != axis) {
+      return pointsHere(world, pos, state, side);
+    }
+    if (trayAt(world, pos, state, side) != null) {
       return true;
     }
+    for (EnumFacing across : EnumFacing.HORIZONTALS) {
+      if (across.getAxis() != axis && pointsHere(world, pos, state, across)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** The tray beside {@code pos} towards {@code side} at the same height, or null. */
+  @Nullable
+  private static IBlockState trayAt(IBlockAccess world, BlockPos pos, IBlockState state,
+      EnumFacing side) {
     IBlockState other = world.getBlockState(pos.offset(side));
     return other.getBlock() instanceof BlockCableTray
-        && other.getValue(TOP) == state.getValue(TOP)
-        && other.getValue(AXIS) == side.getAxis();
+        && other.getValue(TOP) == state.getValue(TOP) ? other : null;
+  }
+
+  /** Whether a tray beside towards {@code side}, at the same height, runs towards this one. */
+  private static boolean pointsHere(IBlockAccess world, BlockPos pos, IBlockState state,
+      EnumFacing side) {
+    IBlockState other = trayAt(world, pos, state, side);
+    return other != null && other.getValue(AXIS) == side.getAxis();
   }
 
   @Nonnull
