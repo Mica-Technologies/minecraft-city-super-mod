@@ -1,0 +1,45 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/computers/monitor_24_office_black"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "screen": {
+      "desktop": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_desktop"
+        }
+      },
+      "game": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_game"
+        }
+      },
+      "code": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_code"
+        }
+      },
+      "idle": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_w_idle"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:technology/computers/monitor_34_ultrawide_curved_black"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "screen": {
+      "desktop": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_uw_desktop"
+        }
+      },
+      "game": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_uw_game"
+        }
+      },
+      "code": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_uw_code"
+        }
+      },
+      "idle": {
+        "textures": {
+          "screen": "csm:blocks/technology/computers/screen_uw_idle"
+        }
+      }
+    }
+  }
+}

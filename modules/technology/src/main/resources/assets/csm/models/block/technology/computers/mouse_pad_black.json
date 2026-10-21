@@ -1,0 +1,183 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pad": "csm:blocks/technology/computers/cloth_black",
+    "top": "csm:blocks/technology/computers/mouse_pad_black",
+    "particle": "csm:blocks/technology/computers/cloth_black"
+  },
+  "elements": [
+    {
+      "from": [
+        4.5,
+        0,
+        5.0
+      ],
+      "to": [
+        11.5,
+        0.15,
+        11.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pad",
+          "uv": [
+            4.5,
+            15.85,
+            11.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pad",
+          "uv": [
+            4.5,
+            15.85,
+            11.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pad",
+          "uv": [
+            5.0,
+            15.85,
+            11.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            5.0,
+            15.85,
+            11.0,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "rotation": 180
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            4.5,
+            5.0,
+            11.5,
+            11.0
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        90,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1.1,
+        1.1,
+        1.1
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}
