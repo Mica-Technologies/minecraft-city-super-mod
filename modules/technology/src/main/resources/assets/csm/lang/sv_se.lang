@@ -184,3 +184,4 @@ tile.micafi_sector_antenna.name=Micafi sektorantenn (120°)
 tile.micafi_dish_small.name=Micafi parabolantenn (liten)
 tile.micafi_dish_large.name=Micafi parabolantenn (stor)
 tile.micafi_airlink_60.name=Micafi Link 60-länk (60 GHz)
+tile.cable_tray_hanger.name=Gängstångshängare för kabelränna

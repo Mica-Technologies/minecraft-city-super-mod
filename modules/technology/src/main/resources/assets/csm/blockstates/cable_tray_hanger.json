@@ -1,0 +1,44 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:technology/networking/cable_tray_hanger_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_hanger_rod"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_hanger_rod",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_hanger_rod",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_hanger_rod",
+        "y": 270
+      }
+    }
+  ]
+}
