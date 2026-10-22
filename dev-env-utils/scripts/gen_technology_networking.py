@@ -23,7 +23,8 @@ What is here, and the class that places each:
   (technology.network.BlockCableTray), which join along runs and into tees, corners and
   crossings from actual state, lie at the bottom of their block or hang at its top on rods, and
   are drawn by a multipart blockstate from three parts (the middle, an arm reaching out of it,
-  a side rail) turned to each side.
+  a side rail) turned to each side; and the threaded rod hanger (BlockCableTrayHanger), stacked
+  under a ceiling so a hung tray of either kind can sit lower, its rods lined up with the tray's.
 
 Writes models under models/block/technology/networking, textures under
 textures/blocks/technology/networking, and the shared swatches under
@@ -612,6 +613,36 @@ tray("cable_tray_basket",
 tray("cable_tray_ladder",
      tc.names("Cable Ladder Tray", "Kabelleiter", "Bandeja Portacables de Escalera",
               "Kabelstege"), "ladder")
+
+
+# The hanger extension (D12): threaded rod a block long, stacked under a ceiling so a hung tray
+# can sit one or more blocks lower. Its rod is the trays' own (ROD_X, ROD_Z: the north rail's
+# rod, turned to each side by the blockstate) carried the whole height of the block, with a
+# coupling nut at its foot where it meets the rod below; BlockCableTrayHanger draws one on each
+# side where the tray beneath it has a rail, so the rods run on unbroken into the tray's.
+def hanger(reg, names):
+    t = {"r": C.T("hanger_rod"), "particle": C.T("hanger_rod")}
+    rod = [E((7.75, 0, 2.0), (8.25, 16, 2.5), "r", faces=("north", "south", "east", "west")),
+           E((7.55, 0, 1.8), (8.45, 0.9, 2.7), "r")]
+    models = {"%s_rod" % reg: tc.model(t, rod)}
+    inv = tc.model(t, _turn_x(rod + _flip_z(rod)))
+    inv["display"] = TRAY_DISPLAY
+    models["%s_inventory" % reg] = inv
+    multipart = []
+    for side, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+        a = {"model": C.M("%s_rod" % reg)}
+        if y:
+            a["y"] = y
+        multipart.append({"when": {side: "true"}, "apply": a})
+    state = {"variants": {"inventory": {"model": C.M("%s_inventory" % reg)}},
+             "multipart": multipart}
+    C.add(reg, 'new BlockCableTrayHanger("%s")' % reg, names, models, state, tab=TAB)
+
+
+hanger("cable_tray_hanger",
+       tc.names("Cable Tray Threaded Rod Hanger", "Gewindestangen-Abhängung für Kabelrinnen",
+                "Colgador de Varilla Roscada para Bandeja Portacables",
+                "Gängstångshängare för kabelränna"))
 
 if __name__ == "__main__":
     sys.exit(C.main())

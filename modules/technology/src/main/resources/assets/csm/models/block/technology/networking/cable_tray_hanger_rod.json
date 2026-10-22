@@ -1,0 +1,127 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "r": "csm:blocks/technology/networking/hanger_rod",
+    "particle": "csm:blocks/technology/networking/hanger_rod"
+  },
+  "elements": [
+    {
+      "from": [
+        7.75,
+        0,
+        2.0
+      ],
+      "to": [
+        8.25,
+        16,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#r",
+          "uv": [
+            7.75,
+            0,
+            8.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#r",
+          "uv": [
+            7.75,
+            0,
+            8.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#r",
+          "uv": [
+            13.5,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#r",
+          "uv": [
+            2.0,
+            0,
+            2.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.55,
+        0,
+        1.8
+      ],
+      "to": [
+        8.45,
+        0.9,
+        2.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#r",
+          "uv": [
+            7.55,
+            15.1,
+            8.45,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#r",
+          "uv": [
+            7.55,
+            15.1,
+            8.45,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#r",
+          "uv": [
+            13.3,
+            15.1,
+            14.2,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#r",
+          "uv": [
+            1.8,
+            15.1,
+            2.7,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#r",
+          "uv": [
+            7.55,
+            1.8,
+            8.45,
+            2.7
+          ]
+        },
+        "down": {
+          "texture": "#r",
+          "uv": [
+            7.55,
+            13.3,
+            8.45,
+            14.2
+          ]
+        }
+      }
+    }
+  ]
+}

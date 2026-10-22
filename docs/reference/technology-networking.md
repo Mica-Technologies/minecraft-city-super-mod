@@ -2,7 +2,7 @@
 
 Micafi network gear: desktop and rack switches, gateways, wireless access points and bridges, server racks and the cabling a building's network runs on.
 
-!!! info "38 blocks in this tab"
+!!! info "39 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -23,6 +23,7 @@ Micafi network gear: desktop and rack switches, gateways, wireless access points
 | 42U Server Cabinet (Perforated Door) | `csm:server_rack_42u_mesh` | 2 | 10 | pickaxe | 1 |
 | 42U Server Rack (Open Frame) | `csm:server_rack_42u_open` | 2 | 10 | pickaxe | 1 |
 | Cable Ladder Tray | `csm:cable_tray_ladder` | 2 | 10 | pickaxe | 0 |
+| Cable Tray Threaded Rod Hanger | `csm:cable_tray_hanger` | 1.5 | 10 | pickaxe | 0 |
 | Corvane Cable Modem | `csm:corvane_cable_modem` | 1 | 10 | pickaxe | 1 |
 | Micafi 16-Port PoE Desktop Switch | `csm:micafi_switch_16_port` | 1 | 10 | pickaxe | 1 |
 | Micafi 5-Port Desktop Switch | `csm:micafi_switch_5_port` | 1 | 10 | pickaxe | 1 |

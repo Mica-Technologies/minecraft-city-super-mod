@@ -184,3 +184,4 @@ tile.micafi_sector_antenna.name=Micafi Sector Antenna (120°)
 tile.micafi_dish_small.name=Micafi Dish (Small)
 tile.micafi_dish_large.name=Micafi Dish (Large)
 tile.micafi_airlink_60.name=Micafi Link 60 Bridge (60 GHz)
+tile.cable_tray_hanger.name=Cable Tray Threaded Rod Hanger

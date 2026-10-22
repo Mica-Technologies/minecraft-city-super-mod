@@ -184,3 +184,4 @@ tile.micafi_sector_antenna.name=Antena Sectorial Micafi (120°)
 tile.micafi_dish_small.name=Antena Parabólica Micafi (Pequeña)
 tile.micafi_dish_large.name=Antena Parabólica Micafi (Grande)
 tile.micafi_airlink_60.name=Puente Micafi Link 60 (60 GHz)
+tile.cable_tray_hanger.name=Colgador de Varilla Roscada para Bandeja Portacables
