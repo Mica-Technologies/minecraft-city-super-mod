@@ -33,12 +33,11 @@ REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CORE = os.path.join(REPO, "src", "main", "resources", "assets", "csm")
 LIGHT = os.path.join(REPO, "modules", "lighting", "src", "main", "resources", "assets", "csm")
 FINISH_DIR = os.path.join(CORE, "textures", "blocks", "finishes")
-TEX_DIR = os.path.join(LIGHT, "textures", "blocks", "lighting", "linear")
 MODEL_DIR = os.path.join(LIGHT, "models", "block", "lighting", "linear")
 ITEM_DIR = os.path.join(LIGHT, "models", "item")
 STATE_DIR = os.path.join(LIGHT, "blockstates")
 FINISH_REF = "csm:blocks/finishes/finish_%s"
-TEX_REF = "csm:blocks/lighting/linear/%s"
+CABLE_REF = "csm:blocks/finishes/aircraft_cable"
 MODEL_REF = "csm:lighting/linear/%s"
 LENS_ON = "csm:blocks/lighting/troffers/troffer_lens_on"
 LENS_OFF = "csm:blocks/lighting/troffers/troffer_lens_off"
@@ -231,7 +230,8 @@ def outputs():
     for i, (fin, (kind, colour, _)) in enumerate(FINISHES.items()):
         out[os.path.join(FINISH_DIR, "finish_%s.png" % fin)] = png(
             finish_texture(kind, colour, 4500 + i))
-    out[os.path.join(TEX_DIR, "aircraft_cable.png")] = png(cable_texture())
+    # the aircraft cable is Core's too: the hanging acoustic panels hang on it
+    out[os.path.join(FINISH_DIR, "aircraft_cable.png")] = png(cable_texture())
 
     # parents: geometry only
     for h, y0 in HEIGHTS.items():
@@ -242,7 +242,7 @@ def outputs():
                 out[os.path.join(MODEL_DIR, "lens_%s_%s_%s.json" % (lk, lit, h))] = js(model(
                     {"lens": tex, "blade": BLADE, "particle": BLADE},
                     lens(lk, y0, lit == "on")))
-    cable_t = {"cable": TEX_REF % "aircraft_cable", "particle": TEX_REF % "aircraft_cable"}
+    cable_t = {"cable": CABLE_REF, "particle": CABLE_REF}
     out[os.path.join(MODEL_DIR, "cable.json")] = js(model(cable_t, cable_els(13, 16)))
     out[os.path.join(MODEL_DIR, "hanger.json")] = js(model(cable_t, cable_els(0, 16)))
     for lk in LENSES:

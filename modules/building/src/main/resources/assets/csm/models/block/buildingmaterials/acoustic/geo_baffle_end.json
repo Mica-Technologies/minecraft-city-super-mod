@@ -1,0 +1,29 @@
+{
+  "parent": "block/block",
+  "textures": {},
+  "elements": [
+    {
+      "from": [
+        7,
+        4,
+        0
+      ],
+      "to": [
+        9,
+        14,
+        0.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#felt",
+          "uv": [
+            7,
+            2,
+            9,
+            12
+          ]
+        }
+      }
+    }
+  ]
+}

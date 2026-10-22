@@ -8,6 +8,7 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 |---|---|---|
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
 | Modern ceilings | Tegular Ceiling Tile (White, Light Grey); Fine Fissured and Square Embossed Ceiling Tile; Perforated Metal Ceiling Tile (Silver, White); Pressed Tin Ceiling (Silver, Antique Copper); Wood Slat Ceiling (Light Oak, Walnut); Corrugated Metal Ceiling (Silver, White, Black); Open Cell Ceiling (Black, White); Exposed Ceiling Grid (White, Black) | `gen_ceilings.py` |
+| Hanging acoustics | Acoustic Baffle and Acoustic Ceiling Cloud, each in the linear lights' ten finishes (Black, Silver, White, Light Grey, Charcoal, Navy, Sage, Terracotta, Light Oak, Walnut) | `gen_acoustic_ceilings.py` |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
 | Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Accent Wall Panel (Maple, Walnut, Teal, Blue, Green, Yellow); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
 | Wall fittings | Wayfinding Stripe (Blue, Green, Teal, Yellow, Orange, Purple); Room Sign (Charcoal, Blue); Nurse Station Glass Screen (Clear, Frosted) | `gen_wall_finishes.py` |
@@ -39,6 +40,25 @@ The name decides the kind:
 The Fabricator prices the slats as planks (the `slat` word) and the metal ones (`corrugated`,
 `perforated`, `tin`, `grid`, `cell` on a `ceiling_` name) as sheet metal; the tiles keep the old
 tiles' cost.
+
+## Hanging acoustics
+
+Baffles and clouds for an open ceiling, in the ten finishes of Lighting's linear LED lights and
+drawn with the very same Core textures (`blocks/finishes/finish_<name>`, written by
+`gen_linear_lights.py`), so a fin and the light under it match. Both hang on the lights' aircraft
+cable texture.
+
+- **Baffle** (`BlockAcousticBaffle`): a vertical fin 2 px thick and 10 px deep, 2 px below the
+  ceiling. Stores the `axis` it runs along (the placer's look); actual state joins it with the
+  baffles along its run (`front`, north or east, and `back`), drawing the felt edge only where
+  the run stops, and hangs a cable at a run's ends and every fourth block (`cable`).
+- **Cloud** (`BlockAcousticCloud`): a flat panel 1 px thick, 4 px below the ceiling. Clouds side
+  by side are one panel with no joining state: their touching edges lie between the panels'
+  faces where nothing can see them. A cable at the cloud's north-west block and every third
+  block each way from it, so a cloud of any size hangs from at least one.
+
+Neither drops further than its own block; for a deeper drop, hang the lights lower (their
+`linear_light_hanger`) and keep the acoustics at the ceiling, as in an open office.
 
 ## Window treatments
 

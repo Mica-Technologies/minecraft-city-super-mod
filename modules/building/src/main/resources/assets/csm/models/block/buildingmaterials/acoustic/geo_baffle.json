@@ -1,0 +1,56 @@
+{
+  "parent": "block/block",
+  "textures": {},
+  "elements": [
+    {
+      "from": [
+        7,
+        4,
+        0
+      ],
+      "to": [
+        9,
+        14,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#felt",
+          "uv": [
+            0,
+            2,
+            16,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#felt",
+          "uv": [
+            0,
+            2,
+            16,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#felt",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#felt",
+          "uv": [
+            7,
+            0,
+            9,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/buildingmaterials/acoustic/geo_item_baffle",
+  "textures": {
+    "felt": "csm:blocks/finishes/finish_black",
+    "particle": "csm:blocks/finishes/finish_black"
+  }
+}

@@ -2,8 +2,8 @@
   "parent": "block/block",
   "ambientocclusion": false,
   "textures": {
-    "cable": "csm:blocks/lighting/linear/aircraft_cable",
-    "particle": "csm:blocks/lighting/linear/aircraft_cable"
+    "cable": "csm:blocks/finishes/aircraft_cable",
+    "particle": "csm:blocks/finishes/aircraft_cable"
   },
   "elements": [
     {
