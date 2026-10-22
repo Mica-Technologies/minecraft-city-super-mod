@@ -1,0 +1,56 @@
+{
+  "parent": "block/block",
+  "textures": {},
+  "elements": [
+    {
+      "from": [
+        2,
+        4,
+        2
+      ],
+      "to": [
+        14,
+        12,
+        14
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            2,
+            4,
+            14,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            2,
+            4,
+            14,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -16,6 +16,7 @@ import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeater;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterBlack;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterSilver;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacThermostat;
+import com.micatechnologies.minecraft.csm.hvac.BlockExposedDuct;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneThermostat;
 import com.micatechnologies.minecraft.csm.hvac.ItemHvacLinker;
@@ -143,6 +144,16 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(BlockHvacThermostat.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacZoneThermostat.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacVentRelay.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockExposedDuct("duct_round_galvanized")); // Exposed Spiral Duct (Galvanized)
+    initTabBlock(new BlockExposedDuct("duct_round_black")); // Exposed Spiral Duct (Black)
+    initTabBlock(new BlockExposedDuct("duct_round_white")); // Exposed Spiral Duct (White)
+    initTabBlock(new BlockExposedDuct("duct_round_charcoal")); // Exposed Spiral Duct (Charcoal)
+    initTabBlock(new BlockExposedDuct("duct_rect_galvanized")); // Exposed Rectangular Duct (Galvanized)
+    initTabBlock(new BlockExposedDuct("duct_rect_black")); // Exposed Rectangular Duct (Black)
+    initTabBlock(new BlockExposedDuct("pipe_black")); // Exposed Pipe (Black)
+    initTabBlock(new BlockExposedDuct("pipe_white")); // Exposed Pipe (White)
+    initTabBlock(new BlockExposedDuct("pipe_red")); // Exposed Pipe (Red)
+    initTabBlock(new BlockExposedDuct("pipe_silver")); // Exposed Pipe (Silver)
     initTabItem(ItemHvacLinker.class, fmlPreInitializationEvent);
   }
 }

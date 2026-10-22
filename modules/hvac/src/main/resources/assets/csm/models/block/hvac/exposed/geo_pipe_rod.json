@@ -1,0 +1,56 @@
+{
+  "parent": "block/block",
+  "textures": {},
+  "elements": [
+    {
+      "from": [
+        7.6,
+        10,
+        7.6
+      ],
+      "to": [
+        8.4,
+        16,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            6
+          ]
+        }
+      }
+    }
+  ]
+}
