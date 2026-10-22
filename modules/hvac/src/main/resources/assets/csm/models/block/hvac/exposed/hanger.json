@@ -1,0 +1,59 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/hvac/exposed/hanger_steel",
+    "particle": "csm:blocks/hvac/exposed/hanger_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        7.6,
+        0,
+        7.6
+      ],
+      "to": [
+        8.4,
+        16,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

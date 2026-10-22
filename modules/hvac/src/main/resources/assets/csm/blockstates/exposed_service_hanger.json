@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/exposed/hanger"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "csm:hvac/exposed/hanger_item"
+      }
+    ]
+  }
+}

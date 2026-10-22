@@ -1,0 +1,139 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_arm_north"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_arm_south"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_arm_east"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_arm_west"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_arm_up"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_arm_down"
+      }
+    },
+    {
+      "when": {
+        "joint": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_joint"
+      }
+    },
+    {
+      "when": {
+        "floor": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_floor"
+      }
+    },
+    {
+      "when": {
+        "ceiling": "true",
+        "covered": "false"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_ceiling"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "covered": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_escutcheon_north"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "covered": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_escutcheon_south"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "covered": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_escutcheon_east"
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "covered": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_escutcheon_west"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "covered": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_escutcheon_up"
+      }
+    },
+    {
+      "when": {
+        "down": "true",
+        "covered": "true"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/standpipe_branch_silver_escutcheon_down"
+      }
+    }
+  ]
+}

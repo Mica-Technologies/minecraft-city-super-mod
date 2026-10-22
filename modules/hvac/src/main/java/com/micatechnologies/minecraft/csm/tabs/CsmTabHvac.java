@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterBlack;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterSilver;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacThermostat;
 import com.micatechnologies.minecraft.csm.hvac.BlockExposedDuct;
+import com.micatechnologies.minecraft.csm.hvac.BlockExposedServiceHanger;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneThermostat;
 import com.micatechnologies.minecraft.csm.hvac.ItemHvacLinker;
@@ -154,6 +155,7 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(new BlockExposedDuct("pipe_white")); // Exposed Pipe (White)
     initTabBlock(new BlockExposedDuct("pipe_red")); // Exposed Pipe (Red)
     initTabBlock(new BlockExposedDuct("pipe_silver")); // Exposed Pipe (Silver)
+    initTabBlock(new BlockExposedServiceHanger()); // Threaded Rod Hanger
     initTabItem(ItemHvacLinker.class, fmlPreInitializationEvent);
   }
 }

@@ -487,7 +487,9 @@ or down when the placer looks steeply, never for the rectangular duct). Actual s
 trays' joining rule: along its axis a segment reaches any neighbour of its kind (any colour) and
 out of an open end unless it also turns; sideways only to a neighbour whose own axis points at it,
 so parallel runs do not mat together. `rod` hangs a level segment from a solid ceiling directly
-above it, with a strap round the duct where the run is straight. 384 states a block.
+above it, or from a threaded rod hanger (`BlockExposedServiceHanger`, `exposed_service_hanger`,
+stacked under a ceiling to hang a run one or more blocks lower), with a strap round the duct
+where the run is straight. 384 states a block.
 
 The round sections are exact octagons, four rectangles two of them turned 45 degrees about the
 run. The vanilla multipart draws an arm to every face reached (turned by y for the level sides, by

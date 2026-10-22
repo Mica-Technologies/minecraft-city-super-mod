@@ -33,7 +33,8 @@ import net.minecraft.world.World;
  * sideways it reaches only to a neighbour whose own axis points at it, so two parallel runs do not
  * mat together. A rectangular duct joins only level. The blockstate draws the segment's middle
  * along the one axis its arms share, or as a fitting where they turn, from the arms alone. A
- * level segment under a solid ceiling hangs on a {@code rod}. 384 states. Models from
+ * level segment under a solid ceiling, or under a {@link BlockExposedServiceHanger}, hangs on a
+ * {@code rod}. 384 states. Models from
  * {@code dev-env-utils/scripts/gen_exposed_services.py}.</p>
  *
  * @since 2026.10
@@ -180,8 +181,9 @@ public class BlockExposedDuct extends AbstractBlock {
       vertical |= r && side.getAxis() == Axis.Y;
     }
     BlockPos up = pos.up();
-    boolean rod = !vertical && world.getBlockState(up).getBlockFaceShape(world, up,
-        EnumFacing.DOWN) == BlockFaceShape.SOLID;
+    IBlockState above = world.getBlockState(up);
+    boolean rod = !vertical && (above.getBlock() instanceof BlockExposedServiceHanger
+        || above.getBlockFaceShape(world, up, EnumFacing.DOWN) == BlockFaceShape.SOLID);
     return out.withProperty(ROD, rod);
   }
 

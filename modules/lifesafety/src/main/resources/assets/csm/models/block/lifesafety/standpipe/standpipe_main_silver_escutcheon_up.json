@@ -1,0 +1,232 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "p": "csm:blocks/lifesafety/standpipe/galvanised",
+    "steel": "csm:blocks/lifesafety/fireprotection/steel",
+    "brass": "csm:blocks/lifesafety/fireprotection/brass",
+    "cap": "csm:blocks/lifesafety/fireprotection/cap_brass",
+    "wheel": "csm:blocks/lifesafety/fireprotection/handwheel",
+    "green": "csm:blocks/lifesafety/standpipe/air_green",
+    "particle": "csm:blocks/lifesafety/standpipe/galvanised"
+  },
+  "elements": [
+    {
+      "from": [
+        2.4,
+        16.192,
+        5.68
+      ],
+      "to": [
+        13.6,
+        16.408,
+        10.32
+      ],
+      "faces": {
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.01
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.01
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2.4,
+            5.68,
+            13.6,
+            10.32
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2.4,
+            5.68,
+            13.6,
+            10.32
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.68,
+        16.192,
+        2.4
+      ],
+      "to": [
+        10.32,
+        16.408,
+        13.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.004
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.004
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            2.4,
+            10.32,
+            13.6
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            2.4,
+            10.32,
+            13.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2.4,
+        15.992,
+        5.68
+      ],
+      "to": [
+        13.6,
+        16.608,
+        10.32
+      ],
+      "faces": {
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.008
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.008
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            2.4,
+            5.68,
+            13.6,
+            10.32
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            2.4,
+            5.68,
+            13.6,
+            10.32
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          16,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        5.68,
+        15.988,
+        2.4
+      ],
+      "to": [
+        10.32,
+        16.612,
+        13.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.012
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            0,
+            10.32,
+            0.012
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            2.4,
+            10.32,
+            13.6
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            5.68,
+            2.4,
+            10.32,
+            13.6
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          16,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

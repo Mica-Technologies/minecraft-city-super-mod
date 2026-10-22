@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSounderFactor
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionCabinet;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockMagneticDoorHolder;
+import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockStandpipePassthrough;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockStandpipePipe;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockStandpipeWallPipe;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -67,15 +68,19 @@ public class CsmTabFireProtection extends CsmTab {
     // Connectable dry standpipe (gen_standpipe_system.py --fragments); the riser is its red
     // wall branch pipe.
     initTabBlock(new BlockStandpipePipe("standpipe_pipe_main_red", 4.0F));
+    initTabBlock(new BlockStandpipePassthrough("standpipe_passthrough_main_red", 4.0F));
     initTabBlock(new BlockStandpipeWallPipe("standpipe_wall_pipe_main_red", 4.0F,
         BlockStandpipeWallPipe.Fitting.NONE, null));
     initTabBlock(new BlockStandpipePipe("standpipe_pipe_main_silver", 4.0F));
+    initTabBlock(new BlockStandpipePassthrough("standpipe_passthrough_main_silver", 4.0F));
     initTabBlock(new BlockStandpipeWallPipe("standpipe_wall_pipe_main_silver", 4.0F,
         BlockStandpipeWallPipe.Fitting.NONE, null));
     initTabBlock(new BlockStandpipePipe("standpipe_pipe_branch_red", 3.0F));
+    initTabBlock(new BlockStandpipePassthrough("standpipe_passthrough_branch_red", 3.0F));
     initTabBlock(new BlockStandpipeWallPipe("standpipe_riser", 3.0F,
         BlockStandpipeWallPipe.Fitting.NONE, null));
     initTabBlock(new BlockStandpipePipe("standpipe_pipe_branch_silver", 3.0F));
+    initTabBlock(new BlockStandpipePassthrough("standpipe_passthrough_branch_silver", 3.0F));
     initTabBlock(new BlockStandpipeWallPipe("standpipe_wall_pipe_branch_silver", 3.0F,
         BlockStandpipeWallPipe.Fitting.NONE, null));
     initTabBlock(new BlockStandpipeWallPipe("standpipe_inlet_manifold_red", 4.0F,
