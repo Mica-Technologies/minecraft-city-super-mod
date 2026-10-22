@@ -233,3 +233,5 @@ tile.airport_helipad_inset_light.name=Luz Empotrada de Helipuerto (Verde)
 tile.airport_helipad_edge_light.name=Luz de Borde de Helipuerto (Verde)
 tile.airport_helipad_fato_light.name=Luz Perimetral de Helipuerto (Amarilla)
 tile.airport_helipad_floodlight.name=Reflector de Helipuerto
+tile.platform_clock_large.name=Reloj de Andén (Grande)
+tile.platform_clock_large_wall.name=Reloj de Andén (Grande, de Pared)

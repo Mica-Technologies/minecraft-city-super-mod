@@ -233,3 +233,5 @@ tile.airport_helipad_inset_light.name=Hubschrauberlandeplatz-Unterflurfeuer (Gr�
 tile.airport_helipad_edge_light.name=Hubschrauberlandeplatz-Randfeuer (Grün)
 tile.airport_helipad_fato_light.name=Hubschrauberlandeplatz-Begrenzungsfeuer (Gelb)
 tile.airport_helipad_floodlight.name=Hubschrauberlandeplatz-Flutlicht
+tile.platform_clock_large.name=Bahnsteiguhr (Groß)
+tile.platform_clock_large_wall.name=Bahnsteiguhr (Groß, Wand)
