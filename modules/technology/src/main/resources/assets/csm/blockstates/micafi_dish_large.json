@@ -14,6 +14,54 @@
       },
       "west": {
         "y": 270
+      },
+      "northeast": {
+        "transform": {
+          "rotation": {
+            "y": 315
+          },
+          "translation": [
+            -0.2929,
+            0,
+            0.2929
+          ]
+        }
+      },
+      "southeast": {
+        "transform": {
+          "rotation": {
+            "y": 225
+          },
+          "translation": [
+            -0.2929,
+            0,
+            -0.2929
+          ]
+        }
+      },
+      "southwest": {
+        "transform": {
+          "rotation": {
+            "y": 135
+          },
+          "translation": [
+            0.2929,
+            0,
+            -0.2929
+          ]
+        }
+      },
+      "northwest": {
+        "transform": {
+          "rotation": {
+            "y": 45
+          },
+          "translation": [
+            0.2929,
+            0,
+            0.2929
+          ]
+        }
       }
     },
     "inventory": [
