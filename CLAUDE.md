@@ -1318,7 +1318,7 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   plus the inlet manifold, hose outlet, air release and drain valves as wall pipes with a body
   at the joint, and the pass-throughs (`BlockStandpipePassthrough`): a pipe dressed as the wall,
   floor or ceiling block it stands in, the block's own quads baked into the chunk mesh by
-  `StandpipePassthroughModels`, trim plates where the pipe leaves. Also writes `standpipe_riser`, the red wall branch pipe; `--check`, `--fragments`
+  `StandpipePassthroughModels`, trim plates where the pipe leaves. Also writes `standpipe_riser`, the red wall branch pipe, and the sprinkler heads and drops that join an exposed pipe (`BlockSprinklerHead`, `BlockSprinklerDrop`, through Core's `ICsmPipe`); `--check`, `--fragments`
 - `gen_emergency_lighting.py` -- the emergency lights added to Exits & Emergency Lighting
   (twin-head units, LED bar, remote heads, wall pack, recessed downlight), all one factory class;
   the lamp boxes in its tab lines are the model's lamps, so the renderer's glow sits on them;

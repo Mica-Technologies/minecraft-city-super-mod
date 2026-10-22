@@ -2,7 +2,7 @@
 
 Sprinklers and the rest of what a building fights a fire with besides its alarm.
 
-!!! info "57 blocks in this tab"
+!!! info "65 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -40,7 +40,12 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Old Fire Sprinkler 5 | `csm:oldfiresprinkler5` | 2 | 10 | pickaxe | 1 |
 | Old Fire Sprinkler 6 | `csm:oldfiresprinkler6` | 2 | 10 | pickaxe | 1 |
 | OS&Y Gate Valve | `csm:osy_gate_valve` | 2.0 | 6.0 | pickaxe | 0 |
+| Pendant Sprinkler Head (Black) | `csm:sprinkler_pendant_black` | 2 | 10 | pickaxe | 1 |
+| Pendant Sprinkler Head (Chrome) | `csm:sprinkler_pendant_chrome` | 2 | 10 | pickaxe | 1 |
+| Pendant Sprinkler Head (White) | `csm:sprinkler_pendant_white` | 2 | 10 | pickaxe | 1 |
 | Post Indicator Valve | `csm:post_indicator_valve` | 2.0 | 6.0 | pickaxe | 0 |
+| Sprinkler Drop (Red) | `csm:sprinkler_drop_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Sprinkler Drop (Silver) | `csm:sprinkler_drop_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Sprinkler Riser Alarm Check Valve | `csm:sprinkler_alarm_valve` | 2.0 | 6.0 | pickaxe | 0 |
 | Sprinkler Riser Room Sign | `csm:riser_sign` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Air Release Valve (Red) | `csm:standpipe_air_valve_red` | 2.0 | 6.0 | pickaxe | 0 |
@@ -65,6 +70,9 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Standpipe Main Pipe, Wall (Silver) | `csm:standpipe_wall_pipe_main_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Riser | `csm:standpipe_riser` | 2.0 | 6.0 | pickaxe | 0 |
 | Storz Fire Department Connection | `csm:fdc_storz` | 2.0 | 6.0 | pickaxe | 0 |
+| Upright Sprinkler Head (Black) | `csm:sprinkler_upright_black` | 2 | 10 | pickaxe | 1 |
+| Upright Sprinkler Head (Chrome) | `csm:sprinkler_upright_chrome` | 2 | 10 | pickaxe | 1 |
+| Upright Sprinkler Head (White) | `csm:sprinkler_upright_white` | 2 | 10 | pickaxe | 1 |
 | Water Fire Extinguisher | `csm:fire_extinguisher_water` | 2.0 | 6.0 | pickaxe | 0 |
 | Water Motor Gong | `csm:water_motor_gong` | 2 | 10 | pickaxe | 1 |
 | What To Do in Case of Fire Sign | `csm:in_case_of_fire_sign` | 2.0 | 6.0 | pickaxe | 0 |

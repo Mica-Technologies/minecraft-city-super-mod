@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.IStrobeBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmEdwardsIOPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorFactory;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSmokeDetector;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorStrobe;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmPullStationFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmESTPull;
@@ -167,7 +168,7 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmSoundIndexStrobeFactory("firealarmgentexcommander5white", new AxisAlignedBB(0.156250, 0.156250, 0.775000, 0.843750, 0.843750, 1.000000), new float[]{4.74f, 4.74f, 12.4f}, new float[]{11.17f, 8.38f, 13.1f}, FireAlarmSoundSets.GENTEX_GOS, FireAlarmSoundSets.GENTEX_GOS_NAMES));
     initTabBlock(new BlockFireAlarmSoundIndexStrobeFactory("firealarmgentexcommander5black", new AxisAlignedBB(0.156250, 0.156250, 0.775000, 0.843750, 0.843750, 1.000000), new float[]{4.74f, 4.74f, 12.4f}, new float[]{11.17f, 8.38f, 13.1f}, FireAlarmSoundSets.GENTEX_GOS, FireAlarmSoundSets.GENTEX_GOS_NAMES));
     initTabBlock(BlockFireAlarmHeatDetector.class, fmlPreInitializationEvent);
-    initTabBlock(new BlockFireAlarmDetectorFactory("smoke_detector_photoelectric", new AxisAlignedBB(0.218750, 0.218750, 0.812500, 0.781250, 0.781250, 1.000000)));
+    initTabBlock(new BlockFireAlarmSmokeDetector("smoke_detector_photoelectric", new AxisAlignedBB(0.218750, 0.218750, 0.812500, 0.781250, 0.781250, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorFactory("duct_smoke_detector", new AxisAlignedBB(0.125000, 0.187500, 0.750000, 0.875000, 0.812500, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorFactory("beam_smoke_detector", new AxisAlignedBB(0.250000, 0.187500, 0.625000, 0.750000, 0.812500, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorFactory("systemsensor_i3_smoke_detector", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000)));

@@ -348,6 +348,22 @@ def _smoke_face():
     return img
 
 
+@C.texture("smoke_face_black")
+def _smoke_face_black():
+    """The photoelectric detector's black finish: the same face, the vents a lighter grey."""
+    black = (30, 30, 32)
+    img = fill(black, grain=2, seed=102)
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            d = math.hypot(x + 0.5 - 8, y + 0.5 - 8)
+            a = math.atan2(y + 0.5 - 8, x + 0.5 - 8)
+            if 3 < d < 5 and (int((a + math.pi) / (2 * math.pi) * 16) % 2 == 0):
+                px[x, y] = (64, 64, 68, 255)
+    px[10, 5] = (40, 200, 60, 255)
+    return img
+
+
 @C.texture("duct_front")
 def _duct_front():
     img = fill((150, 152, 156), grain=3, seed=111)
@@ -1036,6 +1052,22 @@ detector("smoke_detector_photoelectric", (3.5, 3.5, 13, 12.5, 12.5, 16),
          pipe_z(8, 8, 4.5, 14.8, 16, "white")
          + pipe_z(8, 8, 3.5, 13.6, 14.8, "white")
          + [box([5, 5, 13.5], [11, 11, 13.6], "face", faces=("north",))])
+# The photoelectric detector comes in white and black (the user's request, 2026-10-22): one
+# block, its finish in the metadata above the facing and in the item's damage
+# (BlockFireAlarmSmokeDetector), so detectors already placed stay white.
+_PHOTO = C.blocks[-1]
+_PHOTO["java"] = _PHOTO["java"].replace("BlockFireAlarmDetectorFactory",
+                                        "BlockFireAlarmSmokeDetector")
+_BLACK = {"textures": {"white": T("black"), "face": T("smoke_face_black"),
+                       "particle": T("black")}}
+_v = _PHOTO["blockstate"]["variants"]
+del _v["inventory"], _v["normal"]
+_v["black"] = {"false": {}, "true": _BLACK}
+_v["inventory_white"] = [{}]
+_v["inventory_black"] = [_BLACK]
+C.add_lang("tile.smoke_detector_photoelectric.black.name",
+           ("Photoelectric Smoke Detector (Black)", "Optischer Rauchmelder (Schwarz)",
+            "Detector de humo fotoeléctrico (negro)", "Optisk rökdetektor (svart)"))
 detector("duct_smoke_detector", (2, 3, 12, 14, 13, 16),
          ("Duct Smoke Detector", "Kanalrauchmelder", "Detector de humo para conductos",
           "Kanalrökdetektor"),

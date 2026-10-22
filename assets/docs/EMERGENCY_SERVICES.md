@@ -182,6 +182,35 @@ becomes the red wall branch pipe, so risers already placed join runs. Its old mo
 - **No baked shading on pipe textures.** Each arm face takes half a block of texture, so shading
   drawn across a texture repeats along a run as bands.
 
+## Sprinkler heads on exposed pipe (#304)
+
+For an open ceiling, the Fire Protection tab has sprinkler heads that join the pipe they hang
+from:
+- **Pendants** (`sprinkler_pendant_white|black|chrome`) hang under a pipe in the cell above.
+- **Uprights** (`sprinkler_upright_*`) stand on a pipe in the cell below.
+- **Sprinkler drops** (`sprinkler_drop_red|silver`) come down from a branch, so a head can hang
+  one or more cells below it. A drop stacks, and is itself a pipe a head joins.
+
+Which pipes they join is Core's `ICsmPipe`: a pipe says where its underside and top are at the
+middle of its cell. HVAC's exposed pipe and the free-standing standpipe pipes answer it; a duct
+and a wall-run standpipe say there is no pipe there. A fitting's nipple reaches into the pipe's
+cell to that height, through the actual-state `reach` (0 to 8 sixteenths, or 9 for no pipe). So
+nothing is stored and it re-joins when the pipe is changed.
+
+With no pipe there:
+- a pendant sits flush on an escutcheon against whatever is above it;
+- an upright stands on its flange.
+
+Each head is a real sprinkler (`AbstractBlockFireSprinkler`): it finds fire, floods the cell
+under it and the fire, and drains when the panel is reset. Its stored facing is the detector
+base's and is never drawn, since a head always hangs or stands. The models come from
+`gen_standpipe_system.py` (`sprinklers()`).
+
+The Photoelectric Smoke Detector also comes in black (`BlockFireAlarmSmokeDetector`). The finish
+is stored above the facing: metadata 0-5 is white and 6-11 is black. Detectors placed before the
+black one existed therefore stay white. The finish is also carried in the item's damage, so each
+finish is its own creative stack.
+
 ## Traps
 
 - **Sneak-clicking with an item in hand skips the block.** Vanilla does not call a block's click
