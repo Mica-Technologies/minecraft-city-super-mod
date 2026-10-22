@@ -656,5 +656,9 @@ add_device("micafi_airlink_60",
            + clamp(4.5, 11.5),
            dict(W_T, face=C.T("airlink_face")), "link", "led", display(1.0, 0, -4), pole=True)
 
+# the LEDs lit under OptiFine: an _e companion for every texture with lit LED pixels
+tc.emissive(C, saturated=True, white=("ap_face_white", "ap_face_adopting", "led_white", "led_adopting"),
+            white_ring=("ap_face", 0.178, 0.228), skip=("cable",))
+
 if __name__ == "__main__":
     sys.exit(C.main())

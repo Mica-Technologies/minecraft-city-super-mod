@@ -986,7 +986,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   Life Safety catalogue pointed at `modules/technology` (writing, `--check`, `--fragments`,
   `model_depth.py` over everything written), the `Pic` face picture drawn in a face's own units
   and squeezed into a square texture, the fitted-UV element helper `E`, the shared swatches, the
-  animated strip helper and the Micafi mark (an invented brand's own pixel logo)
+  animated strip helper, the Micafi mark (an invented brand's own pixel logo), and `emissive`,
+  which gives every texture with lit LEDs an OptiFine `_e` companion from the same drawing
 - `gen_technology_computers.py` -- the Computers & Peripherals tab: gaming rigs (a painted,
   animated glass side rather than a see-through one), monitors (`BlockDeskScreenFactory`: the
   desktop, game, code and idle screens as 64 px animated textures picked by the blockstate; the

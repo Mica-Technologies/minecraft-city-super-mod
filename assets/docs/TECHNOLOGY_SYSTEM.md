@@ -330,6 +330,22 @@ aims off centre draw `micafi_beam_bridge_head_turned`, the head with the zero tu
 Only the Beam on its arm is aimed. The wall AP and the in-wall AP are flush on the wall, with no
 swivel to turn on; the pole-fitted pieces on a wall have their clamp in the wall.
 
+## Lit LEDs under OptiFine (`_e` companions)
+
+Under OptiFine the Micafi gear's LEDs glow: every networking, wireless and rack texture with a lit
+LED has an OptiFine emissive companion (`<name>_e`, Core's `emissive.properties`) holding only
+those pixels, drawn at full brightness over the texture. `gen_technology_common.emissive` makes
+them from the very drawing, at the end of the networking, wireless and rack generators, so they
+cannot drift: a pixel is lit when it is within a few levels of an LED colour the generators draw
+with (`LED_PALETTE`), or, on a face picture squeezed into its texture (which blends an LED with
+what is round it), when it is bright and strongly coloured but not the Micafi mark's printed teal.
+Near-white counts only on the white link swatch and the access points' white and adopting faces,
+where the companion is the ring's band itself (`white_ring`), since a white ring on a white disc
+cannot be told from it by colour. An animated texture's companion has the same frames and a copy
+of its `.mcmeta`, so the glow blinks with the LED; a texture with nothing lit (an unlit ring, a
+top with only the mark) gets none. Cables are left out (they come in yellow and red). Without
+OptiFine nothing is stitched and nothing changes; there is no cost to a player without it.
+
 ## Round faces and `model_depth.py`
 
 A round face (an AP's ring, a dish's radome, the Beam's disc) is a **square plane whose picture

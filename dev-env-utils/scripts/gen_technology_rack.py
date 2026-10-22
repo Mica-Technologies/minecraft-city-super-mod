@@ -1294,5 +1294,8 @@ def main():
     return 0
 
 
+# the LEDs lit under OptiFine: an _e companion for every texture with lit LED pixels
+tc.emissive(C)
+
 if __name__ == "__main__":
     sys.exit(main())

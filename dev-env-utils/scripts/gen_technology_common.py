@@ -237,6 +237,76 @@ def catalogue(name, sub):
     return TechCatalogue(name, "technology/" + sub, "technology/" + sub, assets=ASSETS)
 
 
+# Lit LED colours, every generator's: the networking gear's (tc.LED_*), the network blue, the
+# wireless lights and rings, the rack unit sheet's. An emissive companion keeps only these.
+LED_PALETTE = [LED_GREEN, LED_AMBER, (70, 140, 255),
+               (70, 232, 110), (76, 130, 255), (246, 249, 255),
+               (70, 110, 255), (170, 192, 255), (252, 253, 255),
+               (60, 230, 90), (255, 170, 40), (70, 150, 255)]
+
+
+def emissive(cat, palette=None, tol=6, saturated=False, white=(), white_ring=None, skip=()):
+    """Adds an OptiFine emissive companion (`<name>_e`, see Core's emissive.properties) for every
+    texture in ``cat`` that has lit LED pixels: the same picture with everything but those pixels
+    clear, so OptiFine draws the LEDs at full brightness over the texture and nothing else. An
+    animated texture's companion has the same frames and a copy of its .mcmeta, so the glow blinks
+    in step. A texture with no lit pixel gets no companion. Without OptiFine the companions are
+    never stitched.
+
+    Lit means within ``tol`` of a colour in ``palette``, the exact LED colours a texture drawn a
+    pixel at a time uses (the rack sheet). A face picture squeezed into its texture blends an LED
+    with what is round it, so with ``saturated`` a bright, strongly coloured pixel counts too
+    (brightest channel at least 170, at least 100 above the weakest; never the Micafi mark's
+    printed teal); textures named in ``skip``
+    (cables, which come in yellow and red) are left out. Near-white counts only in the textures
+    named in ``white`` (an access point's white ring, the white link LED): elsewhere white is
+    plastic. ``white_ring`` (a prefix, inner and outer radius as fractions of the width) makes
+    those textures' companions the ring's band itself, since a white ring on a white disc cannot
+    be told from it by colour."""
+    palette = palette or LED_PALETTE
+
+    def lit(c, allow_white):
+        if any(all(abs(c[i] - p[i]) <= tol for i in range(3)) for p in palette):
+            return True
+        hi, lo = max(c[:3]), min(c[:3])
+        # the Micafi mark's teal is printed, not a light: green and blue together, little red
+        teal = abs(c[1] - c[2]) < 50 and c[0] < min(c[1], c[2]) - 60
+        if saturated and hi >= 170 and hi - lo >= 100 and not teal:
+            return True
+        return allow_white and lo >= 240
+
+    for name, draw in sorted(cat.textures.items()):
+        if name.endswith("_e") or any(s in name for s in skip):
+            continue
+        allow_white = any(w in name for w in white)
+        img = draw().convert("RGBA")
+        out = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        src, dst = img.load(), out.load()
+        found = False
+        for y in range(img.size[1]):
+            for x in range(img.size[0]):
+                c = src[x, y]
+                if white_ring and allow_white and name.startswith(white_ring[0]):
+                    # a white ring on a white disc: colour cannot tell them apart, so the ring is
+                    # every pixel in its band, whatever its colour
+                    w = img.size[0]
+                    fy = y % w
+                    r = ((x + 0.5 - w / 2.0) ** 2 + (fy + 0.5 - w / 2.0) ** 2) ** 0.5 / w
+                    keep = white_ring[1] <= r <= white_ring[2] or lit(c, False)
+                else:
+                    keep = lit(c, allow_white)
+                if c[3] > 0 and keep:
+                    dst[x, y] = c
+                    found = True
+        if not found:
+            continue
+        cat.textures[name + "_e"] = (lambda o=out: o.copy())
+        rel = "textures/blocks/%s/%s.png.mcmeta" % (cat.tex_dir, name)
+        if rel in cat.extra:
+            companion = "textures/blocks/%s/%s_e.png.mcmeta" % (cat.tex_dir, name)
+            cat.extra[companion] = cat.extra[rel]
+
+
 def animation(cat, name, frames, frametime, interpolate=False):
     """Registers an animated texture in cat: ``frames`` is a list of functions drawing one
     square frame each; the texture is their strip and its .mcmeta goes into the catalogue's
