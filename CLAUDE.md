@@ -785,6 +785,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   along their axis, edges only at run ends) and clouds (`BlockAcousticCloud`) in the linear
   lights' ten finishes, drawn with the same Core textures (imports `gen_linear_lights.py`);
   `--check`, `--fragments`
+- `gen_exposed_services.py` -- the HVAC tab's decorative exposed ducts and pipes
+  (`BlockExposedDuct`: round spiral and rectangular duct, painted pipe), joining six ways by the
+  cable trays' rule, octagon sections, the middle and fittings picked from the arms by multipart
+  conditions, rods and straps under a solid ceiling; `--check`, `--fragments`
 - `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner

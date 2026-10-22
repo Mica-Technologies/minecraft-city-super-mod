@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/hvac/exposed/geo_pipe_middle",
+  "textures": {
+    "pipe": "csm:blocks/hvac/exposed/pipe_white",
+    "steel": "csm:blocks/hvac/exposed/hanger_steel",
+    "particle": "csm:blocks/hvac/exposed/pipe_white"
+  }
+}

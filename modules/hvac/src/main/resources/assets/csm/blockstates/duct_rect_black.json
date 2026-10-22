@@ -1,0 +1,148 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "true"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_arm"
+      }
+    },
+    {
+      "when": {
+        "east": "true"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "west": "false",
+        "up": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_middle"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "false",
+        "up": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_middle",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "north": "true",
+            "east": "true"
+          },
+          {
+            "north": "true",
+            "west": "true"
+          },
+          {
+            "south": "true",
+            "east": "true"
+          },
+          {
+            "south": "true",
+            "west": "true"
+          },
+          {
+            "north": "true",
+            "up": "true"
+          },
+          {
+            "north": "true",
+            "down": "true"
+          },
+          {
+            "south": "true",
+            "up": "true"
+          },
+          {
+            "south": "true",
+            "down": "true"
+          },
+          {
+            "east": "true",
+            "up": "true"
+          },
+          {
+            "east": "true",
+            "down": "true"
+          },
+          {
+            "west": "true",
+            "up": "true"
+          },
+          {
+            "west": "true",
+            "down": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_joint"
+      }
+    },
+    {
+      "when": {
+        "rod": "true"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_rod"
+      }
+    },
+    {
+      "when": {
+        "rod": "true",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_strap"
+      }
+    },
+    {
+      "when": {
+        "rod": "true",
+        "north": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "csm:hvac/exposed/duct_rect_black_strap",
+        "y": 90
+      }
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/hvac/exposed/geo_duct_round_middle",
+  "textures": {
+    "pipe": "csm:blocks/hvac/exposed/duct_round_white",
+    "steel": "csm:blocks/hvac/exposed/hanger_steel",
+    "particle": "csm:blocks/hvac/exposed/duct_round_white"
+  }
+}

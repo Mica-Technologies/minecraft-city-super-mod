@@ -473,3 +473,24 @@ and vent `contribution` are dropped on load.
   setpoints, as real ones do.
 - A vent whose thermostat was broken keeps its link (and its room alive) until relinked.
 - Fahrenheit only.
+
+## Exposed ducts and pipes (decorative)
+
+`BlockExposedDuct` (`gen_exposed_services.py`): round spiral duct 12 px across (galvanized,
+black, white, charcoal), rectangular duct 12 x 8 (galvanized, black) and painted pipe 4 px across
+(black, white, red, silver), for an open ceiling. **Decorative only**: no air moves through it,
+and by `HvacAirflow`'s shape rule it passes air (it spans its cell in one direction at most), so
+a duct across a room does not split it.
+
+Stored: the `axis` a segment runs along (the wall face clicked, or the placer's look; straight up
+or down when the placer looks steeply, never for the rectangular duct). Actual state, by the cable
+trays' joining rule: along its axis a segment reaches any neighbour of its kind (any colour) and
+out of an open end unless it also turns; sideways only to a neighbour whose own axis points at it,
+so parallel runs do not mat together. `rod` hangs a level segment from a solid ceiling directly
+above it, with a strap round the duct where the run is straight. 384 states a block.
+
+The round sections are exact octagons, four rectangles two of them turned 45 degrees about the
+run. The vanilla multipart draws an arm to every face reached (turned by y for the level sides, by
+x for up and down), and the middle from the arms alone: a length along the one axis all the arms
+share, or a fitting a little larger than the section where they span two axes.
+

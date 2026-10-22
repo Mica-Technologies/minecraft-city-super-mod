@@ -2,7 +2,7 @@
 
 Heating and cooling that actually simulates room temperature.
 
-!!! info "46 blocks in this tab"
+!!! info "56 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -29,6 +29,16 @@ Heating and cooling that actually simulates room temperature.
 | Diffuser Vent 1 (White) | `csm:dfv1` |  |  |  |  |
 | Diffuser Vent 2 (Black) | `csm:dfvd2` |  |  |  |  |
 | Diffuser Vent 2 (White) | `csm:dfv2` |  |  |  |  |
+| Exposed Pipe (Black) | `csm:pipe_black` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Pipe (Red) | `csm:pipe_red` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Pipe (Silver) | `csm:pipe_silver` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Pipe (White) | `csm:pipe_white` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Rectangular Duct (Black) | `csm:duct_rect_black` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Rectangular Duct (Galvanized) | `csm:duct_rect_galvanized` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Spiral Duct (Black) | `csm:duct_round_black` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Spiral Duct (Charcoal) | `csm:duct_round_charcoal` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Spiral Duct (Galvanized) | `csm:duct_round_galvanized` | 1.5 | 6 | pickaxe | 0 |
+| Exposed Spiral Duct (White) | `csm:duct_round_white` | 1.5 | 6 | pickaxe | 0 |
 | HVAC Cooler | `csm:hvac_cooler` | 3 | 15 | pickaxe | 1 |
 | HVAC Cooler (Black) | `csm:hvac_cooler_black` | 3 | 15 | pickaxe | 1 |
 | HVAC Cooler (Silver) | `csm:hvac_cooler_silver` | 3 | 15 | pickaxe | 1 |
