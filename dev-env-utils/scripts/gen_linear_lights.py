@@ -245,6 +245,24 @@ def outputs():
     cable_t = {"cable": CABLE_REF, "particle": CABLE_REF}
     out[os.path.join(MODEL_DIR, "cable.json")] = js(model(cable_t, cable_els(13, 16)))
     out[os.path.join(MODEL_DIR, "hanger.json")] = js(model(cable_t, cable_els(0, 16)))
+    # in a slot a 0.2 px cable is invisible: the item is a thicker cable under its ceiling
+    # canopy, with the gripper that holds the fixture at its foot
+    hanger_item = [box((7.5, 1, 7.5), (8.5, 15, 8.5), "cable",
+                       ("north", "south", "east", "west")),
+                   box((5.5, 15, 5.5), (10.5, 16, 10.5), "cable",
+                       ("north", "south", "east", "west", "up", "down")),
+                   box((7, 0, 7), (9, 2, 9), "cable",
+                       ("north", "south", "east", "west", "up", "down"))]
+    out[os.path.join(MODEL_DIR, "hanger_item.json")] = js(model(cable_t, hanger_item, {
+        "gui": {"rotation": [30, 45, 0], "translation": [0, 0, 0], "scale": [0.8] * 3},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25] * 3},
+        "fixed": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.5] * 3},
+        "thirdperson_righthand": {"rotation": [75, 45, 0], "translation": [0, 2.5, 0],
+                                  "scale": [0.375] * 3},
+        "firstperson_righthand": {"rotation": [0, 45, 0], "translation": [0, 0, 0],
+                                  "scale": [0.4] * 3},
+        "firstperson_lefthand": {"rotation": [0, 225, 0], "translation": [0, 0, 0],
+                                 "scale": [0.4] * 3}}))
     for lk in LENSES:
         y0 = HEIGHTS["s"]
         north_cap = cap(y0)
@@ -269,7 +287,7 @@ def outputs():
              "textures": {"housing": FINISH_REF % fin, "particle": FINISH_REF % fin}})
     out[os.path.join(STATE_DIR, HANGER + ".json")] = js(
         {"forge_marker": 1, "defaults": {"model": MODEL_REF % "hanger"},
-         "variants": {"normal": [{}], "inventory": [{}]}})
+         "variants": {"normal": [{}], "inventory": [{"model": MODEL_REF % "hanger_item"}]}})
     return out
 
 

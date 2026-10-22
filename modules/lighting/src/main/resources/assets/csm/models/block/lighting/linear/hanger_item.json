@@ -1,0 +1,300 @@
+{
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "cable": "csm:blocks/finishes/aircraft_cable",
+    "particle": "csm:blocks/finishes/aircraft_cable"
+  },
+  "elements": [
+    {
+      "from": [
+        7.5,
+        1,
+        7.5
+      ],
+      "to": [
+        8.5,
+        15,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            7.5,
+            1,
+            8.5,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            7.5,
+            1,
+            8.5,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            7.5,
+            1,
+            8.5,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            7.5,
+            1,
+            8.5,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        15,
+        5.5
+      ],
+      "to": [
+        10.5,
+        16,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#cable",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#cable",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        2,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            7,
+            14,
+            9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cable",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#cable",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}
