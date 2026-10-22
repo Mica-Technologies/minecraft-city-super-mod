@@ -175,6 +175,8 @@ public class CsmConfig {
 
   private static String hvacLightweightMode = FIELD_DEFAULT_HVAC_LIGHTWEIGHT_MODE;
   private static int hvacLightweightAutoDevices = FIELD_DEFAULT_HVAC_LIGHTWEIGHT_AUTO_DEVICES;
+  private static final int FIELD_DEFAULT_HVAC_MAX_ROOM_CELLS = 40_000;
+  private static int hvacMaxRoomCells = FIELD_DEFAULT_HVAC_MAX_ROOM_CELLS;
 
   private static final String CATEGORY_PERFORMANCE = "performance";
   private static final String CATEGORY_PERFORMANCE_DESCRIPTION =
@@ -432,6 +434,13 @@ public class CsmConfig {
             + "and linked vents, in one dimension) switch the simulation to lightweight. A "
             + "289-room test city of 1,900 devices cost about 0.2 ms a tick in full; a server "
             + "district of 11,000 devices cost 2-15 ms a tick.");
+    hvacMaxRoomCells = config.getInt("maxRoomCells", CATEGORY_HVAC,
+        FIELD_DEFAULT_HVAC_MAX_ROOM_CELLS, 1000, 262144,
+        "The largest enclosed air space, in cells, that HVAC treats as a room; anything bigger "
+            + "(a cave, the underside of a canopy) cannot be conditioned. 40,000 is a 50 x 50 x 16 "
+            + "hall. A room is flooded again when a block in it changes, at about 10 ms per 40,000 "
+            + "cells, so a larger limit makes every change in a large room cost more. HVAC Zone "
+            + "Boundary blocks split a big open floor into rooms under the limit without a wall.");
     config.setCategoryComment(CATEGORY_PERFORMANCE, CATEGORY_PERFORMANCE_DESCRIPTION);
     performanceMode = config.getString(FIELD_KEY_PERFORMANCE_MODE, CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_PERFORMANCE_MODE, FIELD_DESCRIPTION_PERFORMANCE_MODE,
@@ -592,6 +601,15 @@ public class CsmConfig {
    */
   public static int getHvacLightweightAutoDevices() {
     return hvacLightweightAutoDevices;
+  }
+
+  /**
+   * The largest enclosed air space, in cells, that HVAC treats as a room.
+   *
+   * @since 2026.10
+   */
+  public static int getHvacMaxRoomCells() {
+    return hvacMaxRoomCells;
   }
 
   /**

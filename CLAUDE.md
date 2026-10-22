@@ -793,6 +793,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   cable trays' rule, octagon sections, the middle and fittings picked from the arms by multipart
   conditions, rods and straps under a solid ceiling or the stackable threaded rod hanger
   (`BlockExposedServiceHanger`); `--check`, `--fragments`
+- `gen_hvac_data_hall.py` -- the HVAC tab's data hall CRAC/CRAH units (`BlockHvacCrac`: downflow,
+  upflow with its plenum, the chilled-water CRAH in graphite; a cabinet two blocks tall from one
+  block) and the HVAC Zone Boundary strip (`BlockHvacZoneBoundary`, #305), with their lang lines
+  by key; `--check`, `--fragments`
 - `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner

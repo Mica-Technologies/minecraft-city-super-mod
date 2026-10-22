@@ -66,6 +66,7 @@ A server can run HVAC without simulating any room (`hvac` category of `csm.cfg`)
 |---|---|---|
 | `lightweightMode` | `OFF` (always simulate), `ON` (never), `AUTO` | `AUTO` |
 | `lightweightAutoDevices` | loaded devices in a dimension at which `AUTO` goes lightweight | 2000 |
+| `maxRoomCells` | the largest space flooded as a room (1,000 to 262,144); see Large floors | 40000 |
 
 While lightweight, nothing is flooded, stepped or coupled, and the block listener returns at once.
 Anchors stay registered, a map entry each, so the devices are still read and controlled once a
@@ -130,8 +131,9 @@ of one `worldSource`, so a new source is made per scan.
 - Six-connected flood through enclosed air from the anchor's cell. Sky cells are not part of the
   space; a face onto one is an **opening**, losing heat `OPENING_FACTOR` (40) times a wall face:
   an open door in a hard winter roughly doubles a small room's load.
-- More than `MAX_CELLS` (40,000, a 50 x 50 x 16 hall) is `TOO_LARGE`: a cave system, the underside
-  of a canopy. Not conditionable; reads the biome.
+- More than `hvac.maxRoomCells` (40,000 by default, a 50 x 50 x 16 hall; `ThermalScanner.maxCells()`)
+  is `TOO_LARGE`: a cave system, the underside of a canopy. Not conditionable; reads the biome. A
+  bigger open floor is split by zone boundaries, or the limit raised (see Large floors below).
 - Reaching an unloaded chunk is `UNLOADED`: the space is not built until it can be seen whole.
 - Each wall face is followed through the wall up to 3 cells: back into the same space is a
   partition (no loss); into other enclosed air records the far cell (coupled later to whatever
@@ -167,6 +169,52 @@ the HUD change as you walk across a big room.
 
 Chosen with the user (2026-09-23): an unheated 10 x 10 x 4 room loses most of its heat to a -50°F
 winter in about 10 minutes; a properly sized system warms it from freezing in 4-5.
+
+## Large floors (#305)
+
+A modern open-plan floor outgrows the room limit: the Alto tower's floors are about 90,000 cells
+(104 x 114, 7-8 clear) and its sky lounge 200,000. Builders had been adding full-height glass walls
+just to bring each part under it. Three things fix it, cheapest first:
+
+- **Zone boundaries** (`hvac_zone_boundary`, `BlockHvacZoneBoundary`). A slim strip hung under
+  the ceiling. To the room finder its whole column, from the floor up to the ceiling it hangs
+  under, is the edge of a room; to a player it is nothing to walk into (no collision, passes
+  air). A line of them from wall to wall splits a floor into rooms each under the limit, and each
+  is rescanned on its own when a block in it changes. Across the line heat flows at
+  `ThermalScanner.BOUNDARY_UA` (1.0 a face, half the mixing rate inside a room), so the rooms
+  even out in minutes where nothing pushes them apart. Measured in a 44,800-cell hall split
+  down the middle (21,840 and 22,399 cells), the west room set to 90°F beside the east at 68°F
+  read 82.9 and 73.1°F after 30 s and 75.4 and 75.2°F after 150 s, a cooler running in each.
+  - How it works: the markers' tile entities keep a per-world index of marker columns
+    (`HvacZoneBoundaries`), filled as chunks load as the anchors are, so a room with no marker
+    near it pays one map lookup a column. The cell source classifies enclosed air sharing its
+    column's run of air with a marker as a `WALL` of `BOUNDARY_FACTOR`, and the scanner follows a
+    face onto one across the boundary (`classifyBoundaryFace`): air of the same room (a line that
+    stops short of a wall) is a partition, another room is coupled at `BOUNDARY_UA`, the sky is
+    an opening, and a real wall or the ground behind the boundary takes nothing.
+  - Air beyond a boundary that no room owns yet is taken as the room's own temperature rather
+    than half-way to outdoors, which at an open-air coupling would pin the room to the weather.
+  - Placing or breaking a marker changes no cell to the airflow rule, so the block listener's
+    "same to the scanner" shortcut makes an exception for it.
+  - The boundary's own cells belong to no room; a player standing on the line reads the room
+    beside them.
+- **The limit as a server setting** (`hvac.maxRoomCells`, 1,000 to 262,144). A room is flooded
+  again whenever a block in it changes, at about 10 ms per 40,000 cells, so raising it makes
+  every change in a large room cost more; zone boundaries are the better answer on a busy
+  server. Raising it with `/csm reloadconfig` lets a room that was too large be found on its next
+  look (within 30 s).
+- **Zones without walls or ducts.** In a system with no vents, each unit's region now follows the
+  system's thermostat (primary or zone) nearest the unit in the same room
+  (`HvacSystemControl.nearestZone`), so one big room holds a zone per thermostat, each over its own
+  units. With vents nothing changes: a region follows the zone whose vents blow into it, as before.
+
+**CRAC and CRAH units** (`hvac_crac_downflow`, `hvac_crac_upflow`, `hvac_crah`; `BlockHvacCrac`,
+`TileEntityHvacCrac`) for data halls: floor-standing cabinets drawn and collided two blocks tall
+from one block, as the fare vending machine is, 900 /s of cooling each (three cabinet coolers).
+Like a cabinet unit they cool the room they stand in with no vents (holding 74°F standalone, or a
+system's setpoint when linked) or feed a system's vents. Downflow, upflow and the chilled-water
+CRAH differ only in looks (`gen_hvac_data_hall.py`). A cabinet narrower than its cell passes air,
+so the unit's own cell is in the room.
 
 ## Lifecycle: anchors, rescans, unloads
 
@@ -441,6 +489,8 @@ Sneak+click unlinks: a vent clears its link, a zone its vents and primary, a pri
 | Cabinet coolers | `hvac_cooler`, `_black`, `_silver` | `TileEntityHvacCooler` | 300 /s |
 | Rooftop heaters | `hvac_rtu_heater`, `_black`, `_silver` | `TileEntityHvacRtuHeater` | 1,200 /s, vents only |
 | Rooftop coolers | `hvac_rtu_cooler`, `_black`, `_silver` | `TileEntityHvacRtuCooler` | 1,200 /s, vents only |
+| Data hall coolers | `hvac_crac_downflow`, `hvac_crac_upflow`, `hvac_crah` | `TileEntityHvacCrac` | 900 /s |
+| Zone boundary | `hvac_zone_boundary` | `TileEntityHvacZoneBoundary` (index only) | |
 | Thermostats | `hvac_thermostat`, `hvac_zone_thermostat` | primary / zone | |
 | Vents | `hvac_vent_relay` and 30 decorative (`art*`, `dfv*`, `lcv`, `mv*`, `pbf`, `pv`/`pvd`, `rv*`, `scv`, `sv*`/`svd*` via `BlockHvacVentFactory`) | `TileEntityHvacVentRelay` | 250 /s each |
 | Linker | `hvaclinker` | | |

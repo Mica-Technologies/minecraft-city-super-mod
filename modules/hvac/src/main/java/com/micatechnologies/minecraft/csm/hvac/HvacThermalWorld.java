@@ -77,7 +77,10 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * cells, about half a megabyte); past either the least recently used is forgotten.
    */
   private static final int TOO_LARGE_MAX_REMEMBERED = 16;
-  private static final int TOO_LARGE_MAX_CELLS = 16 * (ThermalScanner.MAX_CELLS + 1);
+
+  private static int tooLargeMaxCells() {
+    return 16 * (ThermalScanner.maxCells() + 1);
+  }
 
   /**
    * Every space's couplings and outdoor temperature are refreshed within this many ticks, a
@@ -127,6 +130,9 @@ public final class HvacThermalWorld implements IWorldEventListener {
   private static final long AUTO_LEAVE_TICKS = 6000L;
 
   final World world;
+
+  /** Where this world's HVAC Zone Boundary markers are (#305). */
+  final HvacZoneBoundaries zoneBoundaries = new HvacZoneBoundaries();
 
   /**
    * Whether this world runs lightweight: no rooms, no physics, every thermostat showing its
@@ -237,13 +243,13 @@ public final class HvacThermalWorld implements IWorldEventListener {
   }
 
   /**
-   * A flood that passed {@link ThermalScanner#MAX_CELLS}, remembered so no anchor in it floods it
+   * A flood that passed {@link ThermalScanner#maxCells()}, remembered so no anchor in it floods it
    * again while nothing that could shrink it has changed. It used to be forgotten after 30 s, just
    * as its anchors came round to retry, so a hall too large to condition was flooded to 40,000
    * cells every 30 s for ever. Only a change in a column of its cells (a block placed in it, or a
    * roof over it taken away so part of it sees the sky) or beside one can make the space smaller;
    * anything else can only add to it. It is forgotten on such a change, when a chunk it lies in
-   * unloads, or to keep within {@link #TOO_LARGE_MAX_REMEMBERED} and {@link #TOO_LARGE_MAX_CELLS}.
+   * unloads, or to keep within {@link #TOO_LARGE_MAX_REMEMBERED} and {@link #tooLargeMaxCells()}.
    */
   private static final class TooLarge {
     final LongOpenHashSet cells;
@@ -593,7 +599,7 @@ public final class HvacThermalWorld implements IWorldEventListener {
       cells += k.cells.size();
     }
     while (tooLarge.size() > 1
-        && (tooLarge.size() > TOO_LARGE_MAX_REMEMBERED || cells > TOO_LARGE_MAX_CELLS)) {
+        && (tooLarge.size() > TOO_LARGE_MAX_REMEMBERED || cells > tooLargeMaxCells())) {
       TooLarge oldest = tooLarge.get(0);
       for (TooLarge k : tooLarge) {
         if (k.lastUsed < oldest.lastUsed) {
@@ -967,6 +973,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
       long cell = s.beyondCell[i];
       int r = s.beyondRegion[i];
       ThermalSpace other = cellToSpace.get(cell);
+      if (other == null && s.beyondUA[i] >= ThermalScanner.BOUNDARY_UA) {
+        // Open air beyond a zone boundary that no room owns (nothing there has found its room
+        // yet): taken as this room's own temperature rather than half-way to outdoors, which at
+        // an open-air coupling would pin the room to the weather.
+        continue;
+      }
       if (other == null || other == s) {
         s.unconditionedUA[r] += s.beyondUA[i];
         continue;
@@ -1555,6 +1567,10 @@ public final class HvacThermalWorld implements IWorldEventListener {
 
   /** Whether a change leaves its cell the same to the scanner: passing air, and wall material. */
   private boolean sameToAir(BlockPos pos, IBlockState oldState, IBlockState newState) {
+    if (oldState.getBlock() instanceof BlockHvacZoneBoundary
+        || newState.getBlock() instanceof BlockHvacZoneBoundary) {
+      return false; // passes air either way, but splits (or joins) the rooms either side of it
+    }
     if (HvacAirflow.wallFactor(oldState) != HvacAirflow.wallFactor(newState)) {
       return false;
     }

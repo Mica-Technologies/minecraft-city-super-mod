@@ -422,11 +422,13 @@ final class HvacSystemControl {
           unitsUnconnected = true;
           continue;
         }
-        if (ua.space == zones.get(0).space()) {
-          zones.get(0).servesOwnSpace = true;
-        }
+        // Several thermostats in one big space with no ducts (#305): each unit's region follows
+        // the system's thermostat nearest to it in that space, so one open floor holds a zone
+        // per thermostat without walls. With no thermostat in its space, the primary's.
+        int zoneOfUnit = nearestZone(zones, ua.space, u.getPos());
+        zones.get(zoneOfUnit).servesOwnSpace |= ua.space == zones.get(zoneOfUnit).space();
         Served e = served.computeIfAbsent(key(ua.space, ua.region),
-            k -> new Served(ua.space, ua.region, 0));
+            k -> new Served(ua.space, ua.region, zoneOfUnit));
         if (u.hasPower()) {
           if (u.isCoolingUnit()) {
             e.coolCapHere += u.getHeatCapacity();
@@ -898,6 +900,27 @@ final class HvacSystemControl {
       t = a.temperature();
     }
     return Float.isNaN(t) ? CsmEnvironment.getBaselineTemperatureAt(w.world, pos) : t;
+  }
+
+  /**
+   * The zone (index into {@code zones}) whose thermostat is in {@code space} and nearest to
+   * {@code pos}, or 0 (the primary) when none of them is in that space.
+   */
+  private static int nearestZone(List<Zone> zones, ThermalSpace space, BlockPos pos) {
+    int best = 0;
+    double bestDist = Double.MAX_VALUE;
+    for (int zi = 0; zi < zones.size(); zi++) {
+      Zone z = zones.get(zi);
+      if (z.space() != space) {
+        continue;
+      }
+      double d = z.tstat.getPos().distanceSq(pos);
+      if (d < bestDist) {
+        bestDist = d;
+        best = zi;
+      }
+    }
+    return best;
   }
 
   private static long key(ThermalSpace s, int region) {

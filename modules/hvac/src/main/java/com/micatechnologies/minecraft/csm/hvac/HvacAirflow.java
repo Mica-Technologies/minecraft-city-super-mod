@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
@@ -171,8 +172,15 @@ public final class HvacAirflow {
    * light-based test would count a glass roof as open sky. The precipitation height is used only
    * to start the downward search, since nothing above it blocks anything. Each column's answer is
    * cached for the life of the source, so make a new source for each scan.</p>
+   *
+   * <p>Enclosed air in the run of a column that holds an HVAC Zone Boundary marker
+   * ({@link HvacZoneBoundaries}) is a {@link ThermalCellSource#WALL} of
+   * {@link ThermalScanner#BOUNDARY_FACTOR}: it splits the rooms either side of it, which stay
+   * coupled as open air is.</p>
    */
   public static ThermalCellSource worldSource(World world) {
+    HvacThermalWorld thermal = HvacThermal.peek(world);
+    HvacZoneBoundaries boundaries = thermal != null ? thermal.zoneBoundaries : null;
     return new ThermalCellSource() {
       private final BlockPos.MutableBlockPos probe = new BlockPos.MutableBlockPos();
       private final Long2IntOpenHashMap roofCache = new Long2IntOpenHashMap();
@@ -196,7 +204,36 @@ public final class HvacAirflow {
         if (!passesAir(world, probe)) {
           return WALL;
         }
-        return y < roofOf(x, z) ? AIR : SKY;
+        if (y >= roofOf(x, z)) {
+          return SKY;
+        }
+        return isBoundary(x, y, z) ? WALL : AIR;
+      }
+
+      /**
+       * Whether a passable cell shares its column's run of air with a zone boundary marker: the
+       * marker's own cell, or one with nothing but air between it and the marker.
+       */
+      private boolean isBoundary(int x, int y, int z) {
+        if (boundaries == null) {
+          return false;
+        }
+        IntArrayList ys = boundaries.column(x, z);
+        if (ys == null) {
+          return false;
+        }
+        for (int i = 0; i < ys.size(); i++) {
+          int my = ys.getInt(i);
+          boolean open = true;
+          for (int yy = Math.min(y, my) + 1; yy < Math.max(y, my) && open; yy++) {
+            probe.setPos(x, yy, z);
+            open = passesAir(world, probe);
+          }
+          if (open) {
+            return true;
+          }
+        }
+        return false;
       }
 
       /** Highest airflow-blocking block in the column, or -1. */
@@ -223,6 +260,9 @@ public final class HvacAirflow {
       @Override
       public float wallFactor(int x, int y, int z) {
         probe.setPos(x, y, z);
+        if (boundaries != null && boundaries.column(x, z) != null && passesAir(world, probe)) {
+          return ThermalScanner.BOUNDARY_FACTOR; // a WALL that passes air is a zone boundary
+        }
         return HvacAirflow.wallFactor(world.getBlockState(probe));
       }
     };

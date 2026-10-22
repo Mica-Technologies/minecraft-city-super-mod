@@ -2,7 +2,7 @@
 
 Heating and cooling that actually simulates room temperature.
 
-!!! info "57 blocks in this tab"
+!!! info "61 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -25,6 +25,9 @@ Heating and cooling that actually simulates room temperature.
 | Air Return 1 (White) | `csm:art1` |  |  |  |  |
 | Air Return 2 (Dark) | `csm:artd2` |  |  |  |  |
 | Air Return 2 (White) | `csm:art2` |  |  |  |  |
+| CRAC Unit (Downflow) | `csm:hvac_crac_downflow` | 3 | 15 | pickaxe | 1 |
+| CRAC Unit (Upflow) | `csm:hvac_crac_upflow` | 3 | 15 | pickaxe | 1 |
+| CRAH Unit (Chilled Water) | `csm:hvac_crah` | 3 | 15 | pickaxe | 1 |
 | Diffuser Vent 1 (Black) | `csm:dfvd1` |  |  |  |  |
 | Diffuser Vent 1 (White) | `csm:dfv1` |  |  |  |  |
 | Diffuser Vent 2 (Black) | `csm:dfvd2` |  |  |  |  |
@@ -47,6 +50,7 @@ Heating and cooling that actually simulates room temperature.
 | HVAC Heater (Silver) | `csm:hvac_heater_silver` | 3 | 15 | pickaxe | 1 |
 | HVAC Thermostat | `csm:hvac_thermostat` | 3 | 15 | pickaxe | 1 |
 | HVAC Vent Relay | `csm:hvac_vent_relay` | 2 | 10 | pickaxe | 1 |
+| HVAC Zone Boundary | `csm:hvac_zone_boundary` | 1 | 5 | pickaxe | 0 |
 | HVAC Zone Thermostat | `csm:hvac_zone_thermostat` | 3 | 15 | pickaxe | 1 |
 | Large Circle Vent | `csm:lcv` |  |  |  |  |
 | Modular Vent 1 (Black) | `csm:mvd1` |  |  |  |  |

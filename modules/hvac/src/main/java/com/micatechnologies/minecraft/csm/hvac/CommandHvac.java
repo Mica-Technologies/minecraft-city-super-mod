@@ -200,7 +200,7 @@ public class CommandHvac extends CommandBase {
         return "Not enclosed: it and the six cells beside it are all solid (buried in a wall?).";
       case TOO_LARGE:
         return String.format("Too large: the space passes %,d cells (a cave or vast hall); looked"
-            + " at again in %d ticks.", ThermalScanner.MAX_CELLS, Math.max(0, a.retryTick - now));
+            + " at again in %d ticks.", ThermalScanner.maxCells(), Math.max(0, a.retryTick - now));
       default:
         if (now < a.retryTick) {
           return String.format("Not scanned yet: next look in %d ticks.", a.retryTick - now);
