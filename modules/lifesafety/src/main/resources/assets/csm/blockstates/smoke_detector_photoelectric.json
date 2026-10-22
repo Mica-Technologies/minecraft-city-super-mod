@@ -22,11 +22,27 @@
         "y": 270
       }
     },
-    "inventory": [
+    "black": {
+      "false": {},
+      "true": {
+        "textures": {
+          "white": "csm:blocks/lifesafety/fireprotection/black",
+          "face": "csm:blocks/lifesafety/fireprotection/smoke_face_black",
+          "particle": "csm:blocks/lifesafety/fireprotection/black"
+        }
+      }
+    },
+    "inventory_white": [
       {}
     ],
-    "normal": [
-      {}
+    "inventory_black": [
+      {
+        "textures": {
+          "white": "csm:blocks/lifesafety/fireprotection/black",
+          "face": "csm:blocks/lifesafety/fireprotection/smoke_face_black",
+          "particle": "csm:blocks/lifesafety/fireprotection/black"
+        }
+      }
     ]
   }
 }
