@@ -91,11 +91,20 @@
     },
     "polefit": {
       "large": {},
+      "large_diagonal": {
+        "model": "csm:technology/wireless/micafi_ap_outdoor_mesh_diagonal"
+      },
       "thin": {
         "model": "csm:technology/wireless/micafi_ap_outdoor_mesh_thin"
       },
+      "thin_diagonal": {
+        "model": "csm:technology/wireless/micafi_ap_outdoor_mesh_thin_diagonal"
+      },
       "pedestal": {
         "model": "csm:technology/wireless/micafi_ap_outdoor_mesh_pedestal"
+      },
+      "pedestal_diagonal": {
+        "model": "csm:technology/wireless/micafi_ap_outdoor_mesh_pedestal_diagonal"
       }
     }
   }

@@ -26,7 +26,9 @@ What is here, in creative order, and the class that places each
   in it. A pole device also turns eight ways round its pole (D10): put in the block diagonally
   beside the pole, stored facing the cardinal 45 degrees anticlockwise of where it points, its
   blockstate has four more facings whose Forge transform carries the model 45 degrees round the
-  pole's axis (DIAGONALS), so each fit's saddles still meet the pole.
+  pole's axis (DIAGONALS), so each fit's saddles still meet the pole. Those facings draw a
+  "_diagonal" copy of each fit's model whose plain elements carry a zero turn (turnable), or
+  vanilla's FaceBakery squares their turned faces back onto the axes.
 - **The wall-arm Beam** (BlockMicafiDevice.Aimed, D11): its arm and wall plate are the block's
   model and its head a submodel turned about the ball joint by the "aim" variants (AIMS: left,
   centre or right 45 degrees, level or tipped down 20), the aim held by a tile entity that does
@@ -355,6 +357,27 @@ def diagonal_facings():
     return {name: diagonal_transform(compass, off) for name, compass, off in DIAGONALS}
 
 
+# The trap a turned transform springs on a JSON model (D10, fixed): vanilla's FaceBakery bakes
+# a face of an element with no "rotation" and then, trusting it to be square to an axis,
+# rebuilds its four corners from their bounding box on the nearest axis (applyFacing). Turned
+# 45 degrees by a blockstate transform (or 20 by the Beam's tilt), every such face comes out as a
+# flat slab square to the world: the clamps stepped, the face pictures folded into a cross, the
+# cable a sheet. An element WITH a rotation skips that step, and an angle of 0 is a valid one,
+# so each model that is ever turned off the axes has a copy whose plain elements carry a
+# zero turn; its quads are then the true turned faces with their true normals. The upright
+# models keep no such rotation, so their baking is exactly as before.
+ZERO_TURN = {"origin": [8, 8, 8], "axis": "y", "angle": 0}
+
+
+def turnable(model):
+    """``model`` with a zero turn on every element that has none, so it bakes true when a
+    transform turns it off the axes."""
+    out = dict(model)
+    out["elements"] = [el if "rotation" in el else dict(el, rotation=dict(ZERO_TURN))
+                       for el in model["elements"]]
+    return out
+
+
 def add_device(reg, names, els, textures, prop, key, disp, pole=False, java_box=None):
     """A wall or pole device (BlockMicafiDevice, PoleFitted when ``pole``): its model (and the
     thin and pedestal pole fits), its facing blockstate with the light variants, and the tab
@@ -367,10 +390,16 @@ def add_device(reg, names, els, textures, prop, key, disp, pole=False, java_box=
     models = {reg: m}
     extra = {prop: light_textures(prop, key)}
     if pole:
-        fits = {"large": {}}
+        # the diagonal facings draw the "<fit>_diagonal" values, which
+        # BlockMicafiDevice.PoleFitted's state mapper names for a device turned about a diagonal
+        # pole: each fit's model again, made turnable
+        models[reg + "_diagonal"] = turnable(m)
+        fits = {"large": {}, "large_diagonal": {"model": C.M(reg + "_diagonal")}}
         for value, suffix, delta in gpf.FITS:
             models[reg + suffix] = gpf.fitted(m, delta)
+            models[reg + suffix + "_diagonal"] = turnable(models[reg + suffix])
             fits[value] = {"model": C.M(reg + suffix)}
+            fits[value + "_diagonal"] = {"model": C.M(reg + suffix + "_diagonal")}
         extra["polefit"] = fits
     state = tc.facing_state(C.M(reg), extra)
     if pole:
@@ -513,18 +542,21 @@ def add_aimed_beam(reg, names, arm, head, textures, disp):
     arm_model = tc.with_display(tc.model(t, arm), disp)
     head_model = tc.model(t, head)
     head_ref = C.M(reg + "_head")
+    # an aim off the axes draws the turnable head (see turnable)
+    turned_ref = C.M(reg + "_head_turned")
     aims = {}
     for name, yaw, tilt in AIMS:
         sub = {"model": head_ref}
         tr = aim_transform(yaw, tilt)
         if tr:
-            sub["transform"] = tr
+            sub = {"model": turned_ref, "transform": tr}
         aims[name] = {"submodel": {"head": sub}}
     state = tc.facing_state(C.M(reg), {"link": light_textures("link", "led"), "aim": aims})
     state["variants"]["inventory"] = [{"submodel": {"head": {"model": head_ref}}}]
     b = tc.extent(arm + head)
     java = 'new BlockMicafiDevice.Aimed("%s", %s, MicafiLight.LINK)' % (reg, tc.box_java(b))
-    C.add(reg, java, names, {reg: arm_model, reg + "_head": head_model}, state, tab=TAB)
+    C.add(reg, java, names, {reg: arm_model, reg + "_head": head_model,
+                             reg + "_head_turned": turnable(head_model)}, state, tab=TAB)
 
 
 add_aimed_beam("micafi_beam_bridge",

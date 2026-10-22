@@ -92,7 +92,12 @@ class MicafiMountsTest {
     IBlockState ne = dish.getDefaultState().withProperty(BlockMicafiDevice.FACING,
         EnumFacing.NORTH).withProperty(BlockMicafiDevice.PoleFitted.DIAGONAL, true);
     assertTrue(dish.variantOf(ne).startsWith("facing=northeast,link="), dish.variantOf(ne));
-    assertTrue(!dish.variantOf(ne).contains("diagonal"));
+    // the diagonal draws the turnable copy of its fit's model (the property itself is not named)
+    assertTrue(dish.variantOf(ne).endsWith(",polefit=large_diagonal"), dish.variantOf(ne));
+    assertTrue(!dish.variantOf(ne).contains("diagonal="));
+    IBlockState n = ne.withProperty(BlockMicafiDevice.PoleFitted.DIAGONAL, false);
+    assertTrue(dish.variantOf(n).startsWith("facing=north,link="), dish.variantOf(n));
+    assertTrue(!dish.variantOf(n).contains("diagonal"), dish.variantOf(n));
   }
 
   @Test

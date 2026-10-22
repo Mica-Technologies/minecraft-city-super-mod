@@ -91,11 +91,20 @@
     },
     "polefit": {
       "large": {},
+      "large_diagonal": {
+        "model": "csm:technology/wireless/micafi_airlink_60_diagonal"
+      },
       "thin": {
         "model": "csm:technology/wireless/micafi_airlink_60_thin"
       },
+      "thin_diagonal": {
+        "model": "csm:technology/wireless/micafi_airlink_60_thin_diagonal"
+      },
       "pedestal": {
         "model": "csm:technology/wireless/micafi_airlink_60_pedestal"
+      },
+      "pedestal_diagonal": {
+        "model": "csm:technology/wireless/micafi_airlink_60_pedestal_diagonal"
       }
     }
   }

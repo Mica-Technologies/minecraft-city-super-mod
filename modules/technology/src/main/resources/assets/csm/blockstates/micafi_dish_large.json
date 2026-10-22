@@ -91,11 +91,20 @@
     },
     "polefit": {
       "large": {},
+      "large_diagonal": {
+        "model": "csm:technology/wireless/micafi_dish_large_diagonal"
+      },
       "thin": {
         "model": "csm:technology/wireless/micafi_dish_large_thin"
       },
+      "thin_diagonal": {
+        "model": "csm:technology/wireless/micafi_dish_large_thin_diagonal"
+      },
       "pedestal": {
         "model": "csm:technology/wireless/micafi_dish_large_pedestal"
+      },
+      "pedestal_diagonal": {
+        "model": "csm:technology/wireless/micafi_dish_large_pedestal_diagonal"
       }
     }
   }
