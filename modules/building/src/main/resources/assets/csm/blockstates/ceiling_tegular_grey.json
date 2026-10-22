@@ -1,9 +1,15 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
+    "model": "cube",
     "textures": {
-      "all": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey"
+      "down": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey",
+      "up": "csm:blocks/buildingmaterials/ceilings/ceiling_tile_back",
+      "north": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey_side",
+      "south": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey_side",
+      "east": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey_side",
+      "west": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey_side",
+      "particle": "csm:blocks/buildingmaterials/ceilings/ceiling_tegular_grey"
     }
   },
   "variants": {

@@ -1,9 +1,15 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "cube_all",
+    "model": "cube",
     "textures": {
-      "all": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver"
+      "down": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver",
+      "up": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver_side",
+      "north": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver_side",
+      "south": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver_side",
+      "east": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver_side",
+      "west": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver_side",
+      "particle": "csm:blocks/buildingmaterials/ceilings/ceiling_perforated_silver"
     }
   },
   "variants": {
