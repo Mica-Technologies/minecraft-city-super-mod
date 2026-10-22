@@ -233,3 +233,5 @@ tile.airport_helipad_inset_light.name=Helikopterplattans infällda ljus (Grön)
 tile.airport_helipad_edge_light.name=Helikopterplattans kantljus (Grön)
 tile.airport_helipad_fato_light.name=Helikopterplattans omkretsljus (Gul)
 tile.airport_helipad_floodlight.name=Helikopterplattans strålkastare
+tile.platform_clock_large.name=Perrongklocka (Stor)
+tile.platform_clock_large_wall.name=Perrongklocka (Stor, Vägg)

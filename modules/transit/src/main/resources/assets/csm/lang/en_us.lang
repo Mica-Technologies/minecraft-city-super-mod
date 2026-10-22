@@ -233,3 +233,5 @@ tile.airport_helipad_inset_light.name=Helipad Inset Light (Green)
 tile.airport_helipad_edge_light.name=Helipad Edge Light (Green)
 tile.airport_helipad_fato_light.name=Helipad Perimeter Light (Yellow)
 tile.airport_helipad_floodlight.name=Helipad Floodlight
+tile.platform_clock_large.name=Platform Clock (Large)
+tile.platform_clock_large_wall.name=Platform Clock (Large, Wall)

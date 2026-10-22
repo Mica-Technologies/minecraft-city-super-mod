@@ -322,20 +322,21 @@ def gap_sign():
     return img
 
 
-def clock_dial():
+def clock_dial(s=64):
     """A station clock's dial: white, a black minute track and bold hour bars, on a transparent
-    square (the rim behind it shows at the corners)."""
-    s = 64
+    square (the rim behind it shows at the corners). The large clocks' is the same drawing at
+    128 px, as crisp two blocks across as the small one is at one."""
+    k = s / 64.0
     img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
     c = s / 2.0
-    lc.disc(img, c, c, 30.5, (26, 28, 30))
-    lc.disc(img, c, c, 29.0, (246, 246, 242))
+    lc.disc(img, c, c, 30.5 * k, (26, 28, 30))
+    lc.disc(img, c, c, 29.0 * k, (246, 246, 242))
     for m in range(60):
         a = math.radians(m * 6)
-        inner = 21.0 if m % 5 == 0 else 25.5
-        width = 2.6 if m % 5 == 0 else 1.0
+        inner = (21.0 if m % 5 == 0 else 25.5) * k
+        width = (2.6 if m % 5 == 0 else 1.0) * k
         line(img, c + math.sin(a) * inner, c - math.cos(a) * inner,
-             c + math.sin(a) * 27.5, c - math.cos(a) * 27.5, (24, 24, 26), width)
+             c + math.sin(a) * 27.5 * k, c - math.cos(a) * 27.5 * k, (24, 24, 26), width)
     return img
 
 
@@ -644,6 +645,7 @@ def register_textures():
         "way_lines": way_lines,
         "gap_sign": gap_sign,
         "clock_dial": clock_dial,
+        "clock_dial_large": lambda: clock_dial(128),
         "help_header": help_header,
         "help_face": help_face,
         "help_body": lambda: grain(16, (54, 60, 66), 2, 427),
@@ -1186,6 +1188,56 @@ def clock():
             els, tex, display=gui_display(0.8, 0.0, (0, 180, 0)))
 
 
+# The large clocks (#300): the same drum and dial at a dial about two blocks across. The hung one
+# hangs as far below its cell as a model may reach (16 px), the wall one is single-faced with its
+# back to the wall. Their dials are backlit: drawn unshaded, and the block gives light. The dial
+# geometry goes into the tab line, so the renderer draws the hands on these numbers.
+LARGE_R = 14.6            # the drum, across its flats
+LARGE_D = 13.7            # half the dial picture
+LARGE_SCALE = round(LARGE_D / 3.95, 3)   # the hands against the standard clock's
+
+
+def clock_large():
+    reg = "platform_clock_large"
+    cy = 16 - 2.0 - LARGE_R
+    z0, z1, front, back = 5.5, 10.5, 5.2, 10.8
+    dial = [0, 0, 16, 16]
+    d = LARGE_D
+    els = octagon_z(8, cy, LARGE_R, z0, z1, "rim")
+    els += [B((8 - d, cy - d, front), (8 + d, cy + d, front), "dial", ("north",),
+              uv={"north": dial}, shade=False),
+            B((8 - d, cy - d, back), (8 + d, cy + d, back), "dial", ("south",),
+              uv={"south": dial}, shade=False),
+            B((7.2, cy + LARGE_R - 0.3, 7.2), (8.8, 14.5, 8.8), "rim", SIDES),
+            B((6.0, 14.5, 6.5), (10.0, 15.6, 9.5), "rim", SIDES + ("down",)),
+            ceiling_plate(8, 8, 2.4)]
+    tex = {"rim": C.T("black"), "dial": C.T("clock_dial_large"), "steel": C.T("steel"),
+           "particle": C.T("black")}
+    fixture(reg, 'new BlockPlatformClock("%s", new double[]{0, 0, 5, 16, 16, 11},\n'
+                 '        new double[]{8, %s, %s, %s}, true, 9)' % (
+                     reg, round(cy, 3), front, LARGE_SCALE),
+            names_of("Platform Clock (Large)", "Bahnsteiguhr (Groß)", "Reloj de Andén (Grande)",
+                     "Perrongklocka (Stor)"),
+            els, tex, display=gui_display(0.32, 0.0, (0, 180, 0)))
+
+
+def clock_large_wall():
+    reg = "platform_clock_large_wall"
+    cy, z0, front = 8.0, 12.5, 12.2
+    dial = [0, 0, 16, 16]
+    d = LARGE_D
+    els = octagon_z(8, cy, LARGE_R, z0, 16, "rim", back=False)
+    els += [B((8 - d, cy - d, front), (8 + d, cy + d, front), "dial", ("north",),
+              uv={"north": dial}, shade=False)]
+    tex = {"rim": C.T("black"), "dial": C.T("clock_dial_large"), "particle": C.T("black")}
+    fixture(reg, 'new BlockPlatformClock("%s", new double[]{0, 0, 12, 16, 16, 16},\n'
+                 '        new double[]{8, %s, %s, %s}, false, 9)' % (
+                     reg, cy, front, LARGE_SCALE),
+            names_of("Platform Clock (Large, Wall)", "Bahnsteiguhr (Groß, Wand)",
+                     "Reloj de Andén (Grande, de Pared)", "Perrongklocka (Stor, Vägg)"),
+            els, tex, display=gui_display(0.32, 0.0, (0, 180, 0)))
+
+
 def litter_bin():
     """A clear-bag litter bin, as stations use so nothing can be hidden in it: a steel hoop on
     a post holds a clear bag, under a lid ring with a round opening."""
@@ -1383,6 +1435,8 @@ help_point()
 emergency_point()
 cctv()
 clock()
+clock_large()
+clock_large_wall()
 litter_bin()
 number_sign()
 hanging_signs()

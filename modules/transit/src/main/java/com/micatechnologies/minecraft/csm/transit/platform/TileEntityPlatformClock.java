@@ -13,17 +13,25 @@ import net.minecraft.util.math.BlockPos;
  */
 public class TileEntityPlatformClock extends AbstractTileEntity {
 
+  /** The cell, or a block round it for a large clock whose dial reaches past it. */
   @Override
   public AxisAlignedBB getRenderBoundingBox() {
     BlockPos p = getPos();
-    return new AxisAlignedBB(p.getX(), p.getY(), p.getZ(), p.getX() + 1, p.getY() + 1,
-        p.getZ() + 1);
+    AxisAlignedBB cell = new AxisAlignedBB(p.getX(), p.getY(), p.getZ(), p.getX() + 1,
+        p.getY() + 1, p.getZ() + 1);
+    return large() ? cell.grow(1.0) : cell;
   }
 
-  /** Hands a finger long are not read from further away than this. */
+  /** Hands a finger long are not read from further away than this; a large clock's, further. */
   @Override
   public double getMaxRenderDistanceSquared() {
-    return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
+    double d = large() ? 96.0 : 48.0;
+    return CsmPerformance.capRenderDistanceSq(d * d);
+  }
+
+  private boolean large() {
+    return getBlockType() instanceof BlockPlatformClock
+        && ((BlockPlatformClock) getBlockType()).getScale() > 1.0;
   }
 
   /** Nothing a baked model draws comes from here. */

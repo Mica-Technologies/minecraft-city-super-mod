@@ -187,6 +187,10 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockPlatformFixture("platform_cctv_dome", new double[]{5, 7, 5, 11, 16, 11}));
     initTabBlock(new BlockPlatformFixture("platform_cctv_camera", new double[]{6, 8, 0, 10, 14, 16}));
     initTabBlock(new BlockPlatformClock("platform_clock", new double[]{3, 3, 6, 13, 16, 10}));
+    initTabBlock(new BlockPlatformClock("platform_clock_large", new double[]{0, 0, 5, 16, 16, 11},
+        new double[]{8, -0.6, 5.2, 3.468}, true, 9));
+    initTabBlock(new BlockPlatformClock("platform_clock_large_wall", new double[]{0, 0, 12, 16, 16, 16},
+        new double[]{8, 8.0, 12.2, 3.468}, false, 9));
     initTabBlock(new BlockPlatformFixture("platform_litter_bin", new double[]{4, 0, 4, 12, 14, 15}, true));
     initTabBlock(new BlockPlatformNumberSign("platform_number_sign", new double[]{2, 1, 7, 14, 16, 9}));
     initTabBlock(new BlockPlatformFixture("platform_sign_to_trains", new double[]{0, 5, 7, 16, 16, 9}));

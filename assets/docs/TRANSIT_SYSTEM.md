@@ -574,7 +574,7 @@ meant for the edge itself: a one-pixel overlay, below any car.
 | Help Point | `csm:platform_help_point` | `BlockPlatformHelpPoint` |
 | Station Emergency Point | `csm:station_emergency_point` | `BlockPlatformHelpPoint` |
 | CCTV Dome Camera, CCTV Camera (Wall Bracket) | `csm:platform_cctv_dome`, `csm:platform_cctv_camera` | `BlockPlatformFixture` |
-| Platform Clock | `csm:platform_clock` | `BlockPlatformClock` |
+| Platform Clock; (Large); (Large, Wall) | `csm:platform_clock`, `_large`, `_large_wall` | `BlockPlatformClock` |
 | Platform Litter Bin (Clear Bag) | `csm:platform_litter_bin` | `BlockPlatformFixture` |
 | Platform Number Sign | `csm:platform_number_sign` | `BlockPlatformNumberSign` |
 | Hanging Sign (To Trains, Exit, Line Bullets) | `csm:platform_sign_to_trains`, `_exit`, `_lines` | `BlockPlatformFixture` |
@@ -629,6 +629,14 @@ Every piece faces the player who places it; a wall piece has the wall behind it.
   dials baked, its hands the renderer's -- the world's time on both dials, four untextured quads
   a frame, the Residential wall clock's approach. The dials stand the same distance either side
   of the block's middle, so the back dial is the front one turned half round.
+  **Large clocks** (#300): `platform_clock_large`, the same double-faced drum with a dial about
+  two blocks across (1.7), hung as far below its cell as a model may reach, and
+  `platform_clock_large_wall`, single-faced with its back to the wall. Both dials are backlit
+  (drawn unshaded, the block gives light 9) so they read in a dim hall. The block carries its
+  dial geometry (middle, front face, hand scale, one or two faces), written into the tab line
+  by `gen_transit_platforms.py` from the numbers the model is drawn with, and the renderer
+  scales the hands by it; a large clock's render box and draw distance (96 blocks) grow with it.
+  Three blocks across would not fit: a block model reaches at most a block past its cell.
 - **Litter bin**: the clear-bag bin stations use, a steel hoop on a post holding a see-through
   bag (translucent layer) under a lid ring.
 
