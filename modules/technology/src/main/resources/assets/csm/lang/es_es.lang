@@ -185,3 +185,5 @@ tile.micafi_dish_small.name=Antena Parabólica Micafi (Pequeña)
 tile.micafi_dish_large.name=Antena Parabólica Micafi (Grande)
 tile.micafi_airlink_60.name=Puente Micafi Link 60 (60 GHz)
 tile.cable_tray_hanger.name=Colgador de Varilla Roscada para Bandeja Portacables
+tile.cable_tray_basket_full.name=Bandeja Portacables de Rejilla (Llena)
+tile.cable_tray_ladder_full.name=Bandeja Portacables de Escalera (Llena)

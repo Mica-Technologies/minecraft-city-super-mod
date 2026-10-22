@@ -185,3 +185,5 @@ tile.micafi_dish_small.name=Micafi parabolantenn (liten)
 tile.micafi_dish_large.name=Micafi parabolantenn (stor)
 tile.micafi_airlink_60.name=Micafi Link 60-länk (60 GHz)
 tile.cable_tray_hanger.name=Gängstångshängare för kabelränna
+tile.cable_tray_basket_full.name=Kabelränna av trådnät (full)
+tile.cable_tray_ladder_full.name=Kabelstege (full)

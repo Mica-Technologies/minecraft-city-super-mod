@@ -63,6 +63,8 @@ public class CsmTabTechnologyNetworking extends CsmTab {
     initTabBlock(new BlockDeskDeviceFactory("floor_box_network", new double[]{3.0, 0.0, 3.0, 13.0, 0.6, 13.0}));
     initTabBlock(new BlockCableTray("cable_tray_basket", new double[]{0.0, 3.0}, new double[]{11.0, 16.0}));
     initTabBlock(new BlockCableTray("cable_tray_ladder", new double[]{0.0, 2.0}, new double[]{12.0, 16.0}));
+    initTabBlock(new BlockCableTray("cable_tray_basket_full", new double[]{0.0, 3.0}, new double[]{11.0, 16.0}));
+    initTabBlock(new BlockCableTray("cable_tray_ladder_full", new double[]{0.0, 2.0}, new double[]{12.0, 16.0}));
     initTabBlock(new BlockCableTrayHanger("cable_tray_hanger"));
     // --- Technology - Networking & IT (gen_technology_wireless.py --fragments) ---
     initTabBlock(new BlockMicafiCeilingAp("micafi_ap_ceiling", new double[]{2.0, 0.0, 2.0, 14.0, 1.75, 14.0}));

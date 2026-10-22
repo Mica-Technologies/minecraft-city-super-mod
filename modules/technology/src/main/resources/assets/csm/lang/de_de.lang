@@ -185,3 +185,5 @@ tile.micafi_dish_small.name=Micafi-Richtfunkschüssel (klein)
 tile.micafi_dish_large.name=Micafi-Richtfunkschüssel (groß)
 tile.micafi_airlink_60.name=Micafi Link 60 Richtfunkbrücke (60 GHz)
 tile.cable_tray_hanger.name=Gewindestangen-Abhängung für Kabelrinnen
+tile.cable_tray_basket_full.name=Gitterkabelrinne (belegt)
+tile.cable_tray_ladder_full.name=Kabelleiter (belegt)
