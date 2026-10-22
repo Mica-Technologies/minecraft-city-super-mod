@@ -293,6 +293,9 @@ def cost_for(registry, info, ancestors):
             return ("paper", "dye")
         if has_word(registry, "acoustic"):
             return ("wool",)
+        if registry.startswith("ceiling_") and has_any(
+                registry, ("corrugated", "perforated", "tin", "grid", "cell")):
+            return ("SHEET_METAL",)
         if has_word(registry, "beadboard") or has_word(registry, "slat"):
             return ("planks",)
         if has_word(registry, "carpet"):

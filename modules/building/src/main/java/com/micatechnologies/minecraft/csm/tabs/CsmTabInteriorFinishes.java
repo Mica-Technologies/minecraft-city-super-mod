@@ -12,6 +12,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTS3;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT1;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT2;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT3;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCeilingFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinishBlock;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConcrete;
@@ -108,6 +109,23 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(BlockDCT1.class, fmlPreInitializationEvent); // DCT1
     initTabBlock(BlockDCT2.class, fmlPreInitializationEvent); // DCT2
     initTabBlock(BlockDCT3.class, fmlPreInitializationEvent); // DCT3
+    initTabBlock(new BlockCeilingFinish("ceiling_tegular_white")); // Tegular Ceiling Tile (White)
+    initTabBlock(new BlockCeilingFinish("ceiling_tegular_grey")); // Tegular Ceiling Tile (Light Grey)
+    initTabBlock(new BlockCeilingFinish("ceiling_fissured_white")); // Fine Fissured Ceiling Tile
+    initTabBlock(new BlockCeilingFinish("ceiling_embossed_white")); // Square Embossed Ceiling Tile
+    initTabBlock(new BlockCeilingFinish("ceiling_perforated_silver")); // Perforated Metal Ceiling Tile (Silver)
+    initTabBlock(new BlockCeilingFinish("ceiling_perforated_white")); // Perforated Metal Ceiling Tile (White)
+    initTabBlock(new BlockCeilingFinish("ceiling_tin_silver")); // Pressed Tin Ceiling (Silver)
+    initTabBlock(new BlockCeilingFinish("ceiling_tin_copper")); // Pressed Tin Ceiling (Antique Copper)
+    initTabBlock(new BlockCeilingFinish("ceiling_slat_oak")); // Wood Slat Ceiling (Light Oak)
+    initTabBlock(new BlockCeilingFinish("ceiling_slat_walnut")); // Wood Slat Ceiling (Walnut)
+    initTabBlock(new BlockCeilingFinish("ceiling_corrugated_silver")); // Corrugated Metal Ceiling (Silver)
+    initTabBlock(new BlockCeilingFinish("ceiling_corrugated_white")); // Corrugated Metal Ceiling (White)
+    initTabBlock(new BlockCeilingFinish("ceiling_corrugated_black")); // Corrugated Metal Ceiling (Black)
+    initTabBlock(new BlockCeilingFinish("ceiling_open_cell_black")); // Open Cell Ceiling (Black)
+    initTabBlock(new BlockCeilingFinish("ceiling_open_cell_white")); // Open Cell Ceiling (White)
+    initTabBlock(new BlockCeilingFinish("ceiling_grid_white")); // Exposed Ceiling Grid (White)
+    initTabBlock(new BlockCeilingFinish("ceiling_grid_black")); // Exposed Ceiling Grid (Black)
 
     // Window treatments: blinds, shades and curtains, hung against a window.
     initTabBlock(new BlockWindowTreatment("blind_venetian_white")); // Venetian Blind (White)

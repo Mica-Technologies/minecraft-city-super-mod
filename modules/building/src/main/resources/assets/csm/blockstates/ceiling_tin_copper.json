@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_all",
+    "textures": {
+      "all": "csm:blocks/buildingmaterials/ceilings/ceiling_tin_copper"
+    }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ]
+  }
+}

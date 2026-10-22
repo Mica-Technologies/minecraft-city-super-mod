@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "84 blocks in this tab"
+!!! info "101 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -47,9 +47,15 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Ceramic Wall Tile (White Subway) | `csm:wall_tile_subway_white` |  |  |  |  |
 | Corner Guard (Stainless) | `csm:corner_guard_steel` |  |  |  |  |
 | Corner Guard (White Vinyl) | `csm:corner_guard_white` |  |  |  |  |
+| Corrugated Metal Ceiling (Black) | `csm:ceiling_corrugated_black` |  |  |  |  |
+| Corrugated Metal Ceiling (Silver) | `csm:ceiling_corrugated_silver` |  |  |  |  |
+| Corrugated Metal Ceiling (White) | `csm:ceiling_corrugated_white` |  |  |  |  |
 | Curtain (Beige) | `csm:curtain_beige` | 0.3 | 1 | axe | 0 |
 | Curtain (Grey) | `csm:curtain_grey` | 0.3 | 1 | axe | 0 |
 | Curtain (Navy) | `csm:curtain_navy` | 0.3 | 1 | axe | 0 |
+| Exposed Ceiling Grid (Black) | `csm:ceiling_grid_black` |  |  |  |  |
+| Exposed Ceiling Grid (White) | `csm:ceiling_grid_white` |  |  |  |  |
+| Fine Fissured Ceiling Tile | `csm:ceiling_fissured_white` |  |  |  |  |
 | Hardwood Floor (Oak) | `csm:floor_hardwood_oak` |  |  |  |  |
 | Hardwood Floor (Walnut) | `csm:floor_hardwood_walnut` |  |  |  |  |
 | Nurse Station Glass Screen (Clear) | `csm:nurse_screen_clear` | 0.5 | 2 |  | 0 |
@@ -58,18 +64,24 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Oak Hardwood Fence | `csm:hardwood_oak_fence` | 2 | 10 | axe | 0 |
 | Oak Hardwood Slab | `csm:hardwood_oak_slab` | 2 | 10 | axe | 0 |
 | Oak Hardwood Stairs | `csm:hardwood_oak_stairs` | 2 | 10 | axe | 0 |
+| Open Cell Ceiling (Black) | `csm:ceiling_open_cell_black` |  |  |  |  |
+| Open Cell Ceiling (White) | `csm:ceiling_open_cell_white` |  |  |  |  |
 | Painted Drywall (Greige) | `csm:wall_paint_greige` |  |  |  |  |
 | Painted Drywall (Light Grey) | `csm:wall_paint_grey` |  |  |  |  |
 | Painted Drywall (Off-White) | `csm:wall_paint_offwhite` |  |  |  |  |
 | Painted Drywall (Pale Blue) | `csm:wall_paint_blue` |  |  |  |  |
 | Painted Drywall (Sage) | `csm:wall_paint_sage` |  |  |  |  |
 | Painted Drywall (White) | `csm:wall_paint_white` |  |  |  |  |
+| Perforated Metal Ceiling Tile (Silver) | `csm:ceiling_perforated_silver` |  |  |  |  |
+| Perforated Metal Ceiling Tile (White) | `csm:ceiling_perforated_white` |  |  |  |  |
 | Polished Concrete | `csm:polished_concrete` | 2 | 10 | pickaxe | 1 |
 | Polished Concrete Fence | `csm:polished_concrete_fence` | 2 | 10 | pickaxe | 1 |
 | Polished Concrete Floor | `csm:floor_polished_concrete` |  |  |  |  |
 | Polished Concrete Slab | `csm:polished_concrete_slab` | 2 | 10 | pickaxe | 1 |
 | Polished Concrete Stairs | `csm:polished_concrete_stairs` | 2 | 10 | pickaxe | 1 |
 | Popcorn Ceiling | `csm:pcc` | 2 | 10 | pickaxe | 1 |
+| Pressed Tin Ceiling (Antique Copper) | `csm:ceiling_tin_copper` |  |  |  |  |
+| Pressed Tin Ceiling (Silver) | `csm:ceiling_tin_silver` |  |  |  |  |
 | Roller Shade (Blackout) | `csm:shade_roller_blackout` | 0.3 | 1 | axe | 0 |
 | Roller Shade (Grey) | `csm:shade_roller_grey` | 0.3 | 1 | axe | 0 |
 | Roller Shade (White) | `csm:shade_roller_white` | 0.3 | 1 | axe | 0 |
@@ -78,6 +90,9 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Rubber Floor (Studded) | `csm:floor_rubber_studded` |  |  |  |  |
 | Rubber Floor Block (Studded) | `csm:floor_rubber_studded_block` |  |  |  |  |
 | Sheer Curtain | `csm:curtain_sheer` | 0.3 | 1 | axe | 0 |
+| Square Embossed Ceiling Tile | `csm:ceiling_embossed_white` |  |  |  |  |
+| Tegular Ceiling Tile (Light Grey) | `csm:ceiling_tegular_grey` |  |  |  |  |
+| Tegular Ceiling Tile (White) | `csm:ceiling_tegular_white` |  |  |  |  |
 | Venetian Blind (White) | `csm:blind_venetian_white` | 0.3 | 1 | axe | 0 |
 | Vertical Blind (White) | `csm:blind_vertical_white` | 0.3 | 1 | axe | 0 |
 | Vinyl Composition Tile (Beige) | `csm:floor_vct_beige` |  |  |  |  |
@@ -94,6 +109,8 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Wayfinding Stripe (Purple) | `csm:wall_stripe_purple` | 0.3 | 1 |  | 0 |
 | Wayfinding Stripe (Teal) | `csm:wall_stripe_teal` | 0.3 | 1 |  | 0 |
 | Wayfinding Stripe (Yellow) | `csm:wall_stripe_yellow` | 0.3 | 1 |  | 0 |
+| Wood Slat Ceiling (Light Oak) | `csm:ceiling_slat_oak` |  |  |  |  |
+| Wood Slat Ceiling (Walnut) | `csm:ceiling_slat_walnut` |  |  |  |  |
 | Wood Slat Wall (Oak) | `csm:wall_slatwall_oak` |  |  |  |  |
 
 </div>
