@@ -3,9 +3,12 @@ package com.micatechnologies.minecraft.csm.transit.station;
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
+import com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmBlock;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.IHasModel;
 import java.util.Objects;
+import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockFenceGate;
@@ -14,11 +17,13 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 /**
  * The fare line's service gate: a vanilla fence gate in every way -- the station railings join
@@ -29,7 +34,11 @@ import net.minecraft.world.IBlockAccess;
  *
  * @since 2026.9
  */
-public class BlockStationGate extends BlockFenceGate implements IHasModel, ICsmBlock {
+public class BlockStationGate extends BlockFenceGate
+    implements IHasModel, ICsmBlock, ICsmTileEntityProvider, CsmFireAlarmLink.Follower {
+
+  /** How often a gate following a panel looks at it, in ticks. */
+  private static final int ALARM_POLL_TICKS = 20;
 
   private final String registryName;
 
@@ -47,9 +56,76 @@ public class BlockStationGate extends BlockFenceGate implements IHasModel, ICsmB
     setHardness(3.0F);
     setResistance(10.0F);
     setHarvestLevel("pickaxe", 1);
+    // A random tick runs updateTick, which restarts the alarm look after a reload
+    setTickRandomly(true);
     CsmRegistry.registerBlock(this);
     CsmRegistry.registerItem(
         new ItemBlock(this).setRegistryName(Objects.requireNonNull(getRegistryName())));
+  }
+
+  // --- fire alarm release (#301) -------------------------------------------------------------
+
+  /**
+   * Links the gate to a fire alarm control panel: while that panel is in alarm the gate stands
+   * open, and on reset it shuts again if the alarm opened it.
+   */
+  @Override
+  public boolean followFireAlarmPanel(World world, BlockPos pos, BlockPos panel) {
+    TileEntity te = world.getTileEntity(pos);
+    if (!(te instanceof TileEntityStationGate)
+        || !((TileEntityStationGate) te).setAlarmPanel(panel)) {
+      return false;
+    }
+    world.scheduleUpdate(pos, this, ALARM_POLL_TICKS);
+    return true;
+  }
+
+  @Override
+  public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+    TileEntity te = world.getTileEntity(pos);
+    if (world.isRemote || !(te instanceof TileEntityStationGate)) {
+      return;
+    }
+    TileEntityStationGate gate = (TileEntityStationGate) te;
+    if (gate.getAlarmPanel() == null) {
+      return;
+    }
+    boolean alarm = CsmFireAlarmLink.isPanelInAlarm(world, gate.getAlarmPanel());
+    boolean open = state.getValue(OPEN);
+    if (alarm && !open) {
+      world.setBlockState(pos, state.withProperty(OPEN, true), 10);
+      world.playEvent(null, 1008, pos, 0);
+      gate.setAlarmOpened(true);
+    } else if (!alarm && gate.isAlarmOpened()) {
+      if (open) {
+        world.setBlockState(pos, state.withProperty(OPEN, false), 10);
+        world.playEvent(null, 1014, pos, 0);
+      }
+      gate.setAlarmOpened(false);
+    }
+    // a scheduled update already pending is not duplicated, so a random tick costs nothing more
+    world.scheduleUpdate(pos, this, ALARM_POLL_TICKS);
+  }
+
+  @Override
+  public boolean hasTileEntity(IBlockState state) {
+    return true;
+  }
+
+  @Override
+  public Class<? extends TileEntity> getTileEntityClass() {
+    return TileEntityStationGate.class;
+  }
+
+  @Override
+  public String getTileEntityName() {
+    return "tileentitystationgate";
+  }
+
+  @Nullable
+  @Override
+  public TileEntity createNewTileEntity(@Nonnull World world, int meta) {
+    return new TileEntityStationGate();
   }
 
   @Override

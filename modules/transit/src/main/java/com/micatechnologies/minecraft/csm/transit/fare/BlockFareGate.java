@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.fare;
 
+import com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
@@ -62,7 +63,7 @@ import net.minecraft.world.World;
  * @since 2026.5
  */
 public class BlockFareGate extends AbstractBlock
-    implements ICsmTrafficPoleBystander, ICsmTileEntityProvider {
+    implements ICsmTrafficPoleBystander, ICsmTileEntityProvider, CsmFireAlarmLink.Follower {
 
   public static final PropertyDirection FACING = BlockHorizontal.FACING;
   public static final PropertyEnum<GateState> STATE =
@@ -285,6 +286,17 @@ public class BlockFareGate extends AbstractBlock
     float pitch = newState == GateState.OPEN_ENTRY ? 1.4F : 1.0F;
     world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
         SoundEvents.BLOCK_NOTE_PLING, SoundCategory.BLOCKS, 0.7F, pitch);
+  }
+
+  /**
+   * Links the gate to a fire alarm control panel (the Life Safety linking tool or
+   * {@code /csmfirealarm link}): while that panel is in alarm the gate stands open, whatever its
+   * mode, and on reset it returns to its mode (#301).
+   */
+  @Override
+  public boolean followFireAlarmPanel(World world, BlockPos pos, BlockPos panel) {
+    TileEntity te = world.getTileEntity(pos);
+    return te instanceof TileEntityFareGate && ((TileEntityFareGate) te).setAlarmPanel(panel);
   }
 
   private void playDeniedSound(World world, BlockPos pos) {

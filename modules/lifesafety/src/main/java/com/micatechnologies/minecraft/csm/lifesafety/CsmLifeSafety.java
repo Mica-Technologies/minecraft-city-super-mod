@@ -73,6 +73,10 @@ public class CsmLifeSafety {
     MinecraftForge.EVENT_BUS.register(new BlockFirePole.FallHandler());
     // The detectors' fire census drops its counts with their chunk (see FireCensus).
     MinecraftForge.EVENT_BUS.register(new FireCensus.Events());
+    // Other modules' blocks that follow a panel (fare gates, station gates) ask through Core.
+    com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink.setPanelQuery(
+        (world, panel) -> com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry
+            .getActiveFireAlarmPanels(world.provider.getDimension()).contains(panel));
 
     // Safe here: Fabricator costs are first read at post-initialization and thereafter only
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.

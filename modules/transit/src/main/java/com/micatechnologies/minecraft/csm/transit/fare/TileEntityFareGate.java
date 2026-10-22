@@ -1,16 +1,19 @@
 package com.micatechnologies.minecraft.csm.transit.fare;
 
+import com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Drives the dynamic behavior of {@link BlockFareGate}:
@@ -40,6 +43,8 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
 
   private static final String NBT_OPENED_AT = "openedAt";
   private static final String NBT_OP_MODE = "opMode";
+  /** The fire alarm control panel the gate follows, as a long; absent when it follows none. */
+  private static final String NBT_ALARM_PANEL = "fp";
 
   /**
    * How long an opened gate stays open before auto-closing, in game ticks. 60 ticks ≈
@@ -56,6 +61,13 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
 
   /** Operator-controlled override mode (NORMAL / ALWAYS_OPEN / ALWAYS_CLOSED). */
   private FareGateOpMode opMode = FareGateOpMode.NORMAL;
+
+  /** The fire alarm control panel whose alarm releases the gate, or null (#301). */
+  @Nullable
+  private BlockPos alarmPanel;
+
+  /** Whether the gate stood open for an alarm on the last tick; re-derived after a reload. */
+  private boolean released;
 
   /**
    * UUIDs of players we believe are currently standing in the interior cell. We only fire
@@ -75,6 +87,27 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
 
   public long getAutoCloseTicks() {
     return AUTO_CLOSE_TICKS;
+  }
+
+  /**
+   * Makes the gate follow a fire alarm control panel.
+   *
+   * @return {@code true} when it was not following that panel already
+   */
+  public boolean setAlarmPanel(BlockPos panel) {
+    if (panel.equals(alarmPanel)) {
+      return false;
+    }
+    alarmPanel = panel.toImmutable();
+    if (world != null && !world.isRemote) {
+      markDirtySync(world, pos);
+    }
+    return true;
+  }
+
+  @Nullable
+  public BlockPos getAlarmPanel() {
+    return alarmPanel;
   }
 
   public FareGateOpMode getOpMode() {
@@ -168,6 +201,26 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
 
     GateState gs = state.getValue(BlockFareGate.STATE);
 
+    // A fire alarm on the panel the gate follows wins over everything: the gate stands open both
+    // ways for egress (#301). On reset it returns to its mode; in NORMAL an open gate with no
+    // timer snaps shut on the next tick.
+    if (CsmFireAlarmLink.isPanelInAlarm(world, alarmPanel)) {
+      if (!gs.isOpen()) {
+        world.setBlockState(pos, state.withProperty(BlockFareGate.STATE,
+            GateState.OPEN_ENTRY), 3);
+      }
+      openedAt = Long.MIN_VALUE;
+      released = true;
+      return;
+    }
+    if (released) {
+      released = false;
+      if (opMode != FareGateOpMode.NORMAL) {
+        applyOpModeImmediately(state);
+        return;
+      }
+    }
+
     // Operator overrides win — short-circuit the regular state machine.
     if (opMode == FareGateOpMode.ALWAYS_OPEN) {
       if (!gs.isOpen()) {
@@ -248,6 +301,8 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
     } else {
       openedAt = Long.MIN_VALUE;
     }
+    alarmPanel = compound.hasKey(NBT_ALARM_PANEL)
+        ? BlockPos.fromLong(compound.getLong(NBT_ALARM_PANEL)) : null;
     if (compound.hasKey(NBT_OP_MODE)) {
       opMode = FareGateOpMode.fromOrdinal(compound.getInteger(NBT_OP_MODE));
     } else {
@@ -264,6 +319,9 @@ public class TileEntityFareGate extends AbstractTickableTileEntity {
     }
     if (opMode != FareGateOpMode.NORMAL) {
       compound.setInteger(NBT_OP_MODE, opMode.ordinal());
+    }
+    if (alarmPanel != null) {
+      compound.setLong(NBT_ALARM_PANEL, alarmPanel.toLong());
     }
     return compound;
   }
