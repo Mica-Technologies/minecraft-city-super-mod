@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/lighting/linear/geo_item_louver",
+  "textures": {
+    "housing": "csm:blocks/finishes/finish_walnut",
+    "particle": "csm:blocks/finishes/finish_walnut"
+  }
+}

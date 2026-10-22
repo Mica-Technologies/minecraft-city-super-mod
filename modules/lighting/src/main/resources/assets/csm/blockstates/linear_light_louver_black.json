@@ -1,0 +1,435 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "hung": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_s"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "false",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "false",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "false",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_s"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "false",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_s"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_h"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "true",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "true",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "true",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_h"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "hung": "true",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_h"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_s",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "false",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "false",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "false",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_s",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "false",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_s",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_h",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "true",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "true",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "true",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_h",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "hung": "true",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_h",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_s",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "false",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "false",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "false",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_s",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "false",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_s",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_h",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "true",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "true",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "true",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_h",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "hung": "true",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_h",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_s",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "false",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "false",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_s",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "false",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_s",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "false",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_s",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "true"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/body_black_h",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "true",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "true",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cap_black_h",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "true",
+        "state": "1|3"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_on_h",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "hung": "true",
+        "state": "0|2"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/lens_louver_off_h",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "hung": "true",
+        "cable": "true"
+      },
+      "apply": {
+        "model": "csm:lighting/linear/cable"
+      }
+    }
+  ]
+}
