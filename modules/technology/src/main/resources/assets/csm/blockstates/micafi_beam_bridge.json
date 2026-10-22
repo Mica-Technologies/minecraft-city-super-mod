@@ -58,7 +58,7 @@
       "left": {
         "submodel": {
           "head": {
-            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "model": "csm:technology/wireless/micafi_beam_bridge_head_turned",
             "transform": {
               "rotation": [
                 {
@@ -72,7 +72,7 @@
       "right": {
         "submodel": {
           "head": {
-            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "model": "csm:technology/wireless/micafi_beam_bridge_head_turned",
             "transform": {
               "rotation": [
                 {
@@ -86,7 +86,7 @@
       "centre_down": {
         "submodel": {
           "head": {
-            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "model": "csm:technology/wireless/micafi_beam_bridge_head_turned",
             "transform": {
               "rotation": [
                 {
@@ -105,7 +105,7 @@
       "left_down": {
         "submodel": {
           "head": {
-            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "model": "csm:technology/wireless/micafi_beam_bridge_head_turned",
             "transform": {
               "rotation": [
                 {
@@ -127,7 +127,7 @@
       "right_down": {
         "submodel": {
           "head": {
-            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "model": "csm:technology/wireless/micafi_beam_bridge_head_turned",
             "transform": {
               "rotation": [
                 {

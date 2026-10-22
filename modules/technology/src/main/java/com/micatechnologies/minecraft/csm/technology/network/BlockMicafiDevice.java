@@ -421,7 +421,10 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
     /**
      * Registers a state mapper that folds {@link #DIAGONAL} into the facing the blockstate reads:
      * {@code facing=northeast} for a north-facing device turned about a diagonal pole, and so on,
-     * so the blockstate's eight facings each carry their own turn.
+     * so the blockstate's eight facings each carry their own turn; and into the pole fit,
+     * {@code polefit=thin_diagonal} and so on, whose models are the same with a zero rotation on
+     * every element. Without it vanilla's {@code FaceBakery} squares every plain element's faces
+     * back to the axes after the 45-degree turn, and the device bakes as stepped slabs.
      */
     @Override
     @SideOnly(Side.CLIENT)
@@ -441,7 +444,8 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
      * @param state a state of this block
      *
      * @return its blockstate variant: every property but {@link #DIAGONAL}, sorted by name, the
-     *     facing named for the way the device points
+     *     facing named for the way the device points and the pole fit marked {@code _diagonal}
+     *     when it is turned about a diagonal pole
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     String variantOf(IBlockState state) {
@@ -461,6 +465,9 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
               : facing.getName());
         } else {
           out.append(property.getName(e.getValue()));
+          if (property == CsmPoleFit.PROPERTY && state.getValue(DIAGONAL)) {
+            out.append("_diagonal");
+          }
         }
       }
       return out.toString();

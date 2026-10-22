@@ -91,11 +91,20 @@
     },
     "polefit": {
       "large": {},
+      "large_diagonal": {
+        "model": "csm:technology/wireless/micafi_sector_antenna_diagonal"
+      },
       "thin": {
         "model": "csm:technology/wireless/micafi_sector_antenna_thin"
       },
+      "thin_diagonal": {
+        "model": "csm:technology/wireless/micafi_sector_antenna_thin_diagonal"
+      },
       "pedestal": {
         "model": "csm:technology/wireless/micafi_sector_antenna_pedestal"
+      },
+      "pedestal_diagonal": {
+        "model": "csm:technology/wireless/micafi_sector_antenna_pedestal_diagonal"
       }
     }
   }

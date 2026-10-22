@@ -91,11 +91,20 @@
     },
     "polefit": {
       "large": {},
+      "large_diagonal": {
+        "model": "csm:technology/wireless/micafi_beam_bridge_pole_fitted_diagonal"
+      },
       "thin": {
         "model": "csm:technology/wireless/micafi_beam_bridge_pole_fitted_thin"
       },
+      "thin_diagonal": {
+        "model": "csm:technology/wireless/micafi_beam_bridge_pole_fitted_thin_diagonal"
+      },
       "pedestal": {
         "model": "csm:technology/wireless/micafi_beam_bridge_pole_fitted_pedestal"
+      },
+      "pedestal_diagonal": {
+        "model": "csm:technology/wireless/micafi_beam_bridge_pole_fitted_pedestal_diagonal"
       }
     }
   }

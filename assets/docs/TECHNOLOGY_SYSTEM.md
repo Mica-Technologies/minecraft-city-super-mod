@@ -252,6 +252,30 @@ round the pole's axis, clamp and saddles included, so each of the three fits sti
 pole's skin; the device sits radially, inside its own block (the large dish no longer overhangs
 it). 4 facings x 4 lights x 3 fits x 2 = 96 states; the mapper gives 96 model locations.
 
+**Trap: a turned transform folds a JSON model's plain elements flat.** The first cut used the
+ordinary models, and in game every diagonal device was wrecked: clamps and saddles as stepped
+slabs square to the world, the face pictures folded into a cross, the cable a flat blue sheet,
+holes where faces had collapsed. Not lighting: geometry. Vanilla's `FaceBakery.makeBakedQuad`
+bakes each face, then, **only for an element with no `rotation`**, trusts it to be square to an
+axis and rebuilds its four corners from their bounding box on the nearest axis (`applyFacing`).
+A 90-degree `y` keeps that true; a 45-degree Forge transform (or the Beam head's 20-degree tilt)
+does not, so every plain element's faces were squared back onto the axes. The 16-gon's turned
+rectangles, which carry a rotation, came out right, which is why the discs half survived. A flat
+road sign plate turned 45 degrees hides it (a face that is all one picture stays a plate).
+
+The fix is a copy of each model in which every plain element carries a **zero turn**
+(`"rotation": {"angle": 0, ...}`, a valid angle): an element with a rotation skips
+`applyFacing`, so its quads are the truly turned faces, with the normals Forge fills from them.
+The mapper also folds `diagonal` into the pole fit (`polefit=large_diagonal`, `thin_diagonal`,
+`pedestal_diagonal`), whose variants draw `<model>_diagonal`, `<model>_thin_diagonal` and
+`<model>_pedestal_diagonal` (`turnable` in the generator; the copies are otherwise identical, and
+use the same textures and the same `led` key, so the atlas and the light swap are untouched). The
+upright models keep no zero turns: without `applyFacing` a face turned by a 90-degree `y` keeps its
+corners in turned order, which vanilla's own smooth lighting (used when Forge's light pipeline is
+off, as under OptiFine) reads per corner. An OBJ copy was the other way, but bakes the same quads
+and would have cost every face picture's UVs again; nothing in it is better here. Any JSON model
+a transform turns off the axes needs the same treatment.
+
 Placing: a block put against a face always lands straight out from it, so the diagonal block,
 in the air beside a pole, could not be reached. `ItemBlockMicafiPoleDevice` handles a click on a
 pole's side while looking from a diagonal that includes that side (from the south-east, clicking
@@ -281,7 +305,9 @@ turned by a transform about the joint (`BEAM_PIVOT`, 8, 9.5, 8: the middle of th
 yaw needs no translation; the tilt does). Two Forge facts make this work: a submodel's transform is
 composed with the variant's `y` facing (`ModelStateComposition`), and the variant's textures (the
 link light) are synced into its submodels. A rotation list is applied last to first, so
-`[{"y": yaw}, {"x": tilt}]` tips the head, then swings it. 4 x 4 x 6 = 96 states.
+`[{"y": yaw}, {"x": tilt}]` tips the head, then swings it. 4 x 4 x 6 = 96 states. The five
+aims off centre draw `micafi_beam_bridge_head_turned`, the head with the zero turns of D10's trap
+(the centre aim keeps the plain head): without them the turned head baked as flat sheets too.
 
 Only the Beam on its arm is aimed. The wall AP and the in-wall AP are flush on the wall, with no
 swivel to turn on; the pole-fitted pieces on a wall have their clamp in the wall.
