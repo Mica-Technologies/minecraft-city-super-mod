@@ -1,0 +1,215 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/wire_mesh",
+    "particle": "csm:blocks/technology/networking/galvanized",
+    "g": "csm:blocks/technology/networking/galvanized",
+    "r": "csm:blocks/technology/networking/hanger_rod",
+    "c": "csm:blocks/technology/networking/cables_top",
+    "cs": "csm:blocks/technology/networking/cables_side",
+    "ce": "csm:blocks/technology/networking/cables_end"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        11.0,
+        0
+      ],
+      "to": [
+        14,
+        11.25,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            0,
+            14,
+            2
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            14,
+            14,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        11.0,
+        0
+      ],
+      "to": [
+        2.25,
+        14.0,
+        2
+      ],
+      "faces": {
+        "east": {
+          "texture": "#m",
+          "uv": [
+            14,
+            13.0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#m",
+          "uv": [
+            0,
+            13.0,
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.75,
+        11.0,
+        0
+      ],
+      "to": [
+        14,
+        14.0,
+        2
+      ],
+      "faces": {
+        "east": {
+          "texture": "#m",
+          "uv": [
+            14,
+            13.0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#m",
+          "uv": [
+            0,
+            13.0,
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        13.75,
+        0
+      ],
+      "to": [
+        2.25,
+        14.0,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#g",
+          "uv": [
+            2,
+            0,
+            2.25,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.75,
+        13.75,
+        0
+      ],
+      "to": [
+        14,
+        14.0,
+        2
+      ],
+      "faces": {
+        "up": {
+          "texture": "#g",
+          "uv": [
+            13.75,
+            0,
+            14,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11.3,
+        0
+      ],
+      "to": [
+        13,
+        13.25,
+        3
+      ],
+      "faces": {
+        "up": {
+          "texture": "#c",
+          "uv": [
+            0,
+            0,
+            16,
+            4.8
+          ]
+        },
+        "down": {
+          "texture": "#c",
+          "uv": [
+            0,
+            11.2,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cs",
+          "uv": [
+            0,
+            0,
+            4.8,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cs",
+          "uv": [
+            0,
+            0,
+            4.8,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#ce",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

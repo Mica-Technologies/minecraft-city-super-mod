@@ -1,0 +1,203 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:technology/networking/cable_tray_ladder_full_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "axis": "z",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_middle_bottom"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_middle_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_bottom"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_bottom"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "top": "false"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_bottom",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_middle_top"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_middle_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_top"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "false",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_arm_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "false",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:technology/networking/cable_tray_ladder_full_rail_top",
+        "y": 270
+      }
+    }
+  ]
+}

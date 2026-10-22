@@ -1,0 +1,114 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/wire_mesh",
+    "particle": "csm:blocks/technology/networking/galvanized",
+    "g": "csm:blocks/technology/networking/galvanized",
+    "r": "csm:blocks/technology/networking/hanger_rod",
+    "c": "csm:blocks/technology/networking/cables_top",
+    "cs": "csm:blocks/technology/networking/cables_side",
+    "ce": "csm:blocks/technology/networking/cables_end"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        11.0,
+        2
+      ],
+      "to": [
+        14,
+        11.25,
+        14
+      ],
+      "faces": {
+        "up": {
+          "texture": "#m",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#m",
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11.3,
+        3
+      ],
+      "to": [
+        13,
+        13.25,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ce",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#ce",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cs",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cs",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#c",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#c",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

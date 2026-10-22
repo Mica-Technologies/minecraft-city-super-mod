@@ -497,6 +497,70 @@ def _wire_mesh():
     return img
 
 
+# A full tray's cables, across the bundle from one rail to the other: mostly black and blue
+# Ethernet, a pair of yellow and a pair of red. Sixteen cables, two texels each on a 32 px sheet.
+# The order reads the same both ways: the south arm is the north arm turned half round, so its
+# cables are the middle's mirrored, and only a palindrome meets itself at every seam.
+CABLE_COLOURS = {"k": (30, 31, 34), "b": (38, 92, 178), "y": (222, 186, 40), "r": (186, 42, 38)}
+CABLE_ORDER = "bkbykbrkkrbkybkb"
+assert CABLE_ORDER == CABLE_ORDER[::-1]
+CABLE_ROWS = ("bkbybkkbbkrbkkyb", "kkbbkbykbkbkbrkk", "bykkbkbbkkybkbkb", "kbbkrkkbybkbbkkb")
+
+
+def _cable_px(c, k):
+    return tc.clamp(tuple(v * k for v in CABLE_COLOURS[c])) + (255,)
+
+
+@C.texture("cables_top")
+def _cables_top():
+    """The top of the bundle, run along v: each cable lit down its outer texel, and a black hook
+    and loop tie across the middle (v 7.5..8.5, so one tie a block). Like the order, the shading
+    is mirrored about the middle, so a turned arm meets the middle at every seam; and nothing
+    varies along the run but the tie, or the arm and middle would meet at a step."""
+    img = Image.new("RGBA", (32, 32))
+    px = img.load()
+    for i, c in enumerate(CABLE_ORDER):
+        lit, dark = (2 * i, 2 * i + 1) if i < 8 else (2 * i + 1, 2 * i)
+        for y in range(32):
+            px[lit, y] = _cable_px(c, 1.25)
+            px[dark, y] = _cable_px(c, 0.82)
+    for x in range(32):
+        px[x, 15] = (52, 53, 57, 255)
+        px[x, 16] = (24, 25, 27, 255)
+    return img
+
+
+@C.texture("cables_side")
+def _cables_side():
+    """The side of the bundle, run along u: four layers of cables seen side on, black and blue."""
+    img = Image.new("RGBA", (32, 32))
+    px = img.load()
+    for row in range(4):
+        c = "kbkb"[row]
+        for y in range(8):
+            k = (0.78, 1.0, 1.2, 1.25, 1.12, 0.98, 0.84, 0.66)[y]
+            for x in range(32):
+                px[x, row * 8 + y] = _cable_px(c, k)
+    for y in range(32):
+        px[15, y] = (52, 53, 57, 255)
+        px[16, y] = (24, 25, 27, 255)
+    return img
+
+
+@C.texture("cables_end")
+def _cables_end():
+    """The bundle cut off at a run's open end: sixteen cables across, four layers up."""
+    img = Image.new("RGBA", (32, 32), (14, 14, 16, 255))
+    px = img.load()
+    for row in range(4):
+        for i, c in enumerate(CABLE_ROWS[row]):
+            for y in range(1, 7):
+                k = 1.2 if y < 3 else (1.0 if y < 5 else 0.8)
+                px[2 * i, row * 8 + y] = _cable_px(c, k)
+                px[2 * i + 1, row * 8 + y] = _cable_px(c, k * 0.85)
+    return img
+
+
 C.textures["galvanized"] = lambda: tc.fill(GALV, 16, 4, 4230)
 C.textures["ladder_black"] = lambda: tc.fill(LADDER_BLACK, 16, 2, 4231)
 C.textures["ladder_icon"] = lambda: tc.fill(LADDER_ICON, 16, 3, 4233)
@@ -537,6 +601,8 @@ def _flip_z(els):
     return out
 
 
+FULL16 = (0, 0, 16, 16)
+
 TRAY_DISPLAY = {
     "gui": {"rotation": [30, 225, 0], "translation": [0, 2, 0], "scale": [0.625] * 3},
     "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.25] * 3},
@@ -550,9 +616,11 @@ TRAY_DISPLAY = {
 }
 
 
-def tray(reg, names, kind):
+def tray(reg, names, kind, full=False):
     """A cable tray: its six part models (middle, arm, rail; bottom and top), an inventory
-    model, and the multipart blockstate."""
+    model, and the multipart blockstate. A full tray carries a bundle of cables in its middle and
+    arms, so the bundle runs on along a run and turns with it at a corner or a tee, and is cut
+    off at a run's open end."""
     if kind == "ladder":
         t = {"m": C.T("ladder_black"), "particle": C.T("ladder_black"), "r": C.T("hanger_rod")}
         rail_h, top_lift = 2.0, 12.0
@@ -574,6 +642,24 @@ def tray(reg, names, kind):
                E((13.75, rail_h - 0.25, 0), (14, rail_h, 2), "g", faces=("up",))]
         rail = [E((2, 0, 2), (14, rail_h, 2.25), "m", faces=("north", "south")),
                 E((2, rail_h - 0.25, 2), (14, rail_h, 2.25), "g", faces=("up",))]
+    if full:
+        # Cables between the rails (x 3..13), just clear of what they lie on. The top's uv runs
+        # 16 across the bundle and at the same scale along it (1.6 a pixel), so the arms carry
+        # the middle's stripes on and the tie falls once a block, in its middle. The arm's
+        # sides take the same strip of the side texture both ways, clear of the tie. The
+        # middle has its own cut ends, inside the arms where the run goes on and capping the
+        # bundle where it turns.
+        t.update(c=C.T("cables_top"), cs=C.T("cables_side"), ce=C.T("cables_end"))
+        c0, c1 = (1.3, 2.8) if kind == "ladder" else (0.3, 2.25)
+        sides = {"east": "cs", "west": "cs", "north": "ce", "south": "ce"}
+        middle = middle + [E((3, c0, 3), (13, c1, 13), "c", per=sides,
+                             uv={f: FULL16 for f in ("up", "down", "east", "west", "north",
+                                                     "south")})]
+        arm = arm + [E((3, c0, 0), (13, c1, 3), "c", per=sides,
+                       faces=("up", "down", "east", "west", "north"),
+                       uv={"up": (0, 0, 16, 4.8), "down": (0, 11.2, 16, 16),
+                           "east": (0, 0, 4.8, 16), "west": (0, 0, 4.8, 16),
+                           "north": FULL16})]
     rods = [E((7.75, rail_h, 2.0), (8.25, 16 - top_lift, 2.5), "r",
               faces=("north", "south", "east", "west"))]
     models = {}
@@ -613,6 +699,14 @@ tray("cable_tray_basket",
 tray("cable_tray_ladder",
      tc.names("Cable Ladder Tray", "Kabelleiter", "Bandeja Portacables de Escalera",
               "Kabelstege"), "ladder")
+tray("cable_tray_basket_full",
+     tc.names("Wire Basket Cable Tray (Full)", "Gitterkabelrinne (belegt)",
+              "Bandeja Portacables de Rejilla (Llena)", "Kabelränna av trådnät (full)"),
+     "basket", full=True)
+tray("cable_tray_ladder_full",
+     tc.names("Cable Ladder Tray (Full)", "Kabelleiter (belegt)",
+              "Bandeja Portacables de Escalera (Llena)", "Kabelstege (full)"),
+     "ladder", full=True)
 
 
 # The hanger extension (D12): threaded rod a block long, stacked under a ceiling so a hung tray

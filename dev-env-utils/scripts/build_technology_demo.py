@@ -341,15 +341,16 @@ def server_room():
     rack(36, 16, 'server_rack_42u_filled_network_open', S)
     # trays hung under the ceiling: a basket over the first row, a ladder over the second, the
     # basket fed by a cross tray at its west end (a corner), the ladder by one at its middle (a
-    # tee). The ladder hangs a block lower, on a course of threaded rod hangers
+    # tee). The ladder hangs a block lower, on a course of threaded rod hangers. The feeds and
+    # the runs nearest them are full of cable, joining the empty trays further on
     for x in range(22, 35):
-        put(x, CEIL - 1, 6, 'cable_tray_basket', 1 | 2)
-        put(x, CEIL - 2, 11, 'cable_tray_ladder', 1 | 2)
+        put(x, CEIL - 1, 6, 'cable_tray_basket_full' if x < 29 else 'cable_tray_basket', 1 | 2)
+        put(x, CEIL - 2, 11, 'cable_tray_ladder_full' if x < 31 else 'cable_tray_ladder', 1 | 2)
         put(x, CEIL - 1, 11, 'cable_tray_hanger', 1)
     for z in range(2, 6):
-        put(22, CEIL - 1, z, 'cable_tray_basket', 0 | 2)
+        put(22, CEIL - 1, z, 'cable_tray_basket_full', 0 | 2)
     for z in range(12, 16):
-        put(28, CEIL - 2, z, 'cable_tray_ladder', 0 | 2)
+        put(28, CEIL - 2, z, 'cable_tray_ladder_full', 0 | 2)
         put(28, CEIL - 1, z, 'cable_tray_hanger', 0)
     # a basket tray lying on top of the pre-filled row
     for x in range(23, 35):

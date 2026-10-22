@@ -1,0 +1,69 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "m": "csm:blocks/technology/networking/wire_mesh",
+    "particle": "csm:blocks/technology/networking/galvanized",
+    "g": "csm:blocks/technology/networking/galvanized",
+    "r": "csm:blocks/technology/networking/hanger_rod",
+    "c": "csm:blocks/technology/networking/cables_top",
+    "cs": "csm:blocks/technology/networking/cables_side",
+    "ce": "csm:blocks/technology/networking/cables_end"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        3.0,
+        2.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#m",
+          "uv": [
+            2,
+            13.0,
+            14,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#m",
+          "uv": [
+            2,
+            13.0,
+            14,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        2.75,
+        2
+      ],
+      "to": [
+        14,
+        3.0,
+        2.25
+      ],
+      "faces": {
+        "up": {
+          "texture": "#g",
+          "uv": [
+            2,
+            2,
+            14,
+            2.25
+          ]
+        }
+      }
+    }
+  ]
+}

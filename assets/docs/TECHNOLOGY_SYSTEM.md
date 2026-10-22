@@ -19,7 +19,7 @@ below).
 |---|---|---|---|
 | **CSM: Technology** | `tabtechnology` | 8 | What was there before: TVs, speakers, the iMac family, set-top boxes, phones, the three older access points (`waptpl225`, `wapac`, `wapn`), the NEMA enclosure, the ONT, and the school time and PA set (`technology.school`) |
 | **CSM: Technology - Computers & Peripherals** | `tabtechcomputers` | 31 | Gaming rigs and desktops, monitors, keyboards, mice and pads, desk extras, consoles (51 blocks); console controllers and a VR headset as items (5) |
-| **CSM: Technology - Networking & IT** | `tabtechnetworking` | 32 | Micafi desktop switches, gateway, Control Hub, the Corvane modem, PoE injector, wall jacks, floor box, cable trays; Micafi access points and outdoor radios; the 42U racks, the pre-filled racks and the 12U wall cabinet (38 blocks); the fourteen rack-mount units as items (14) |
+| **CSM: Technology - Networking & IT** | `tabtechnetworking` | 32 | Micafi desktop switches, gateway, Control Hub, the Corvane modem, PoE injector, wall jacks, floor box, cable trays empty and full; Micafi access points and outdoor radios; the 42U racks, the pre-filled racks and the 12U wall cabinet (40 blocks); the fourteen rack-mount units as items (14) |
 
 The new tabs were given the next free orders, so nothing that existed moved. The computing tab
 is not called "Gaming": Furnishings already has a tab of that name, for its arcade cabinets.
@@ -203,6 +203,19 @@ The trays are cutout, not mipped: a mipped mesh of one-texel wires fades out at 
 ladder's black powder coat would make its item icon a black shape on the dark hotbar, so the
 inventory model alone uses a charcoal (`ladder_icon`).
 
+**Full trays.** `cable_tray_basket_full` and `cable_tray_ladder_full` are the same class with a
+bundle of cables in the middle and arms: mostly black and blue with a pair of yellow and a pair
+of red, sixteen across between the rails (x 3 to 13), lying a hair clear of the basket's floor or
+the ladder's rungs. **The cable order and each cable's shading read the same both ways**, and
+nothing varies along the run but the tie: the south and side arms are the north arm turned, so a
+turned arm shows the texture mirrored, and only a mirror-symmetric one meets the middle at every
+seam (the first cut jogged at every block). Because the bundle is in the middle and arm parts, it runs on along a run, turns
+with it at a corner or a tee, and is cut off (`cables_end`) at a run's open end; the rail is the
+empty tray's. Full and empty trays are both `BlockCableTray`, so they join each other and a run
+can fill up towards its feed. The top's uv runs 16 across the 10 px bundle and the same 1.6 a
+pixel along it, so the arms carry the middle's stripes on and the hook and loop tie falls once a
+block, in its middle. Three 32 px textures; 64 states each, as the empty trays.
+
 ### Hanger extensions (D12)
 
 `cable_tray_hanger` (`BlockCableTrayHanger`) is a block of threaded rod, stacked under a ceiling
@@ -350,7 +363,7 @@ tree, the `Pic` face-picture class, the element helper `E`, shared swatches, the
 | Script | Writes |
 |---|---|
 | `gen_technology_computers.py` | the Computers & Peripherals tab: models, the 256 px shelf-packed keyboard sheet (`BANDS`), the animated screens, the console sprites |
-| `gen_technology_networking.py` | the desktop networking gear, wall jacks, floor box, both cable trays and the tray hanger |
+| `gen_technology_networking.py` | the desktop networking gear, wall jacks, floor box, both cable trays (empty and full) and the tray hanger |
 | `gen_technology_rack.py` | the racks, the wall cabinet, the unit sheet and item models, the pre-filled racks' models, `RackUnitType.java` and `RackFrame.java`, the units' recipes (conditional on `csm_technology`) |
 | `gen_technology_wireless.py` | the Micafi access points and outdoor radios, their light textures, pole fits, the diagonal facings' transforms and the Beam's aimed head |
 | `gen_technology_school.py` | the school time and PA set (SCHOOL_TIME_AND_PA.md) |
@@ -360,7 +373,7 @@ tree, the `Pic` face-picture class, the element helper `E`, shared swatches, the
 ## Weight
 
 Counted from the block classes: the Computers & Peripherals tab is 300 states (43 desk devices
-at 4, 8 screens at 16); Networking & IT about 1,300 (12 desk devices at 4, 2 trays at 64, the
+at 4, 8 screens at 16); Networking & IT about 1,450 (12 desk devices at 4, 4 trays at 64, the
 tray hanger at 32, 3 ceiling APs at 8, 2 wall devices at 16, the aimed Beam at 96, 7 pole-fitted
 devices at 96, 8 cabinets at 32, 2 open frames at 8, the wall cabinet at 4). Phase 7 added no
 textures. The `blocks/technology` textures are 1.46 Mpx of the block
@@ -373,8 +386,8 @@ instance id (default `run-f2eb58`) in a flat creative world named "Technology De
 any other), loaded in a dev client with every module: an office of twelve workstations on
 full-block desks with the whole Computers tab and a gaming corner; a server room with two rows of
 fillable cabinets filled through the `u` byte array, an open frame, two rows of pre-filled racks,
-a basket and a ladder tray hung over the rows (a corner and a tee; the ladder a block lower on
-threaded rod hangers), ceiling APs; a network
+a basket and a ladder tray hung over the rows (a corner and a tee, full of cable towards their
+feeds; the ladder a block lower on threaded rod hangers), ceiling APs; a network
 closet with the wall cabinet, the desktop gear, the wall APs and jacks; and a roof of Roads poles
 carrying every outdoor radio, aimed at a second building that carries the far Beam and Link 60,
 with two more sector antennas turned 45 degrees either way round the sector's pole and a second
