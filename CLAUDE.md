@@ -95,7 +95,7 @@ container per jar.
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
 | `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; the gas yard: a regulator station built from a skid, gas pipe, ball valves, a regulator, a turbine meter, a line heater and a vent stack, the odorant tank, and warning signs that hang on a wall or a chain-link fence; telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna arrays, and a small cell's canister antenna and radio for the street poles); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
-| `modules/technology` | `csm_technology` | CSM: Technology | `technology`; three tabs: Technology (AV, phones, the iMac family, the older access points), Computers & Peripherals (gaming rigs, monitors whose screens a click changes, keyboards, mice, desk extras, invented consoles) and Networking & IT, mostly the invented brand Micafi (desktop switches, gateway and wall jacks as desk devices; `technology.network`: cable trays that join into corners and tees, access points whose ring a click changes, outdoor radios fitted to Roads' poles; `technology.rack`: 42U racks two blocks tall filled with rack-mount units baked into the chunk mesh, pre-filled racks with no tile entity, the 12U wall cabinet); also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`); see `assets/docs/TECHNOLOGY_SYSTEM.md` |
+| `modules/technology` | `csm_technology` | CSM: Technology | `technology`; three tabs: Technology (AV, phones, the iMac family, the older access points), Computers & Peripherals (gaming rigs, monitors whose screens a click changes, keyboards, mice, desk extras, invented consoles) and Networking & IT, mostly the invented brand Micafi (desktop switches, gateway and wall jacks as desk devices; `technology.network`: cable trays that join into corners and tees and hang lower on threaded rod hangers, access points whose ring a click changes, outdoor radios fitted to Roads' poles and turning eight ways round them, a wall-arm bridge whose head a sneak-click aims; `technology.rack`: 42U racks two blocks tall filled with rack-mount units baked into the chunk mesh, pre-filled racks with no tile entity, the 12U wall cabinet); also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`); see `assets/docs/TECHNOLOGY_SYSTEM.md` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology, and the working shops, `furniture.market.shop`, which take SUM's money or emeralds; see `assets/docs/SHOP_SYSTEM.md`) |
 | `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
@@ -974,7 +974,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   animated port LEDs, the gateway, Control Hub, the Corvane modem, PoE injector, wall jacks and
   the floor box, and the wire basket and ladder cable trays (`BlockCableTray`: middle, arm and
   rail parts drawn once and turned by a multipart, lying or hung on rods, a charcoal item icon
-  for the black ladder); `--check`, `--fragments`
+  for the black ladder) and the threaded rod hanger (`BlockCableTrayHanger`) that stacks under a
+  ceiling so a hung tray sits lower, a rod on each side where the tray beneath has a rail;
+  `--check`, `--fragments`
 - `gen_technology_rack.py` -- the racks: the 42U open frame and cabinets (two cells, side panels
   only at a row's ends), the 12U wall cabinet, the fourteen rack-mount units' item models and
   their one animated 128 px unit sheet (full: the next unit needs a second sheet), the seven
@@ -987,8 +989,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   wall arm and on a pole clamp, the Station CPE, the sector antenna, two dishes and the Link 60;
   the ring and link lights as swapped textures, round faces as a picture cut to the prism's
   outline that is the part's only end face (16-gons from `round_z` for the dishes and the Beam),
-  and the thin and pedestal pole fits through `gen_pole_fit_models.fitted`; `--check`,
-  `--fragments`
+  and the thin and pedestal pole fits through `gen_pole_fit_models.fitted`; the four diagonal
+  facings of every pole device (a Forge `transform` carrying the whole model 45 degrees round the
+  pole's axis, read through `BlockMicafiDevice.PoleFitted`'s state mapper), and the wall-arm
+  Beam split into arm and a head submodel the `aim` variants turn about its ball joint;
+  `--check`, `--fragments`
 - `gen_technology_school.py` -- the Technology tab's school set: the Micaplex clocks (dial
   textures; each block's dial centres, radii and planes written into its tab line from the
   numbers the model is drawn with, so `TileEntitySchoolClockRenderer` draws the hands exactly on

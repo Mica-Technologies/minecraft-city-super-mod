@@ -5,7 +5,7 @@ optional module for the electronics in a city's buildings. Before the 2026-10 ex
 one tab of AV gear, phones, set-top boxes, the iMac family, a few access points and the school
 time and PA set (SCHOOL_TIME_AND_PA.md). The expansion added the two things a modern office or a
 data centre could not be furnished without: **computers and their peripherals**, and **network
-and IT gear**, from a desk switch to a room of 42U racks and the radios on the roof. It added 89
+and IT gear**, from a desk switch to a room of 42U racks and the radios on the roof. It added 90
 blocks and 19 items in two new tabs, all Core only.
 
 Every block here is decorative or nearly so. The module's rule for this expansion was the
@@ -69,12 +69,13 @@ ticks and there is no tile entity:
 |---|---|---|---|---|
 | `BlockDeskScreenFactory` (8 monitors, the open laptop) | `screen` | desktop, game, code, idle | facing bits 0-1, screen bits 2-3 | 16 |
 | `BlockMicafiCeilingAp` (3 ceiling APs) | `ring` | blue, white, off, adopting | up/down bit 0 (from the face clicked), ring bits 1-2 | 8 |
-| `BlockMicafiDevice` (wall and in-wall AP, outdoor mesh AP: `ring`; Beam, Station, Sector, dishes, Link 60: `link`) | `ring` or `link` (`MicafiLight`) | link: green, blue, white, off | facing bits 0-1, light bits 2-3 | 16, x3 for the pole fit |
+| `BlockMicafiDevice` (wall and in-wall AP, outdoor mesh AP: `ring`; Beam, Station, Sector, dishes, Link 60: `link`) | `ring` or `link` (`MicafiLight`) | link: green, blue, white, off | facing bits 0-1, light bits 2-3 | 16; x3 pole fit x2 diagonal for `PoleFitted`; x6 aim for `Aimed` |
 
 Each screen is a 64 px animated texture (`screen_<w|uw|tall>_<kind>`, drawn at the screen's
 aspect and squeezed square); `adopting` flashes white and blue by `.mcmeta`. The enums' ordinals
 are saved in the metadata: **only ever append, and never past four values** (two bits). Sneak
-clicking is left alone, so a sneaking player can place against the device.
+clicking is left alone, so a sneaking player can place against the device; the one exception is
+the wall-arm Beam's aim (below), and only with an empty hand.
 
 ## The rack
 
@@ -202,6 +203,21 @@ The trays are cutout, not mipped: a mipped mesh of one-texel wires fades out at 
 ladder's black powder coat would make its item icon a black shape on the dark hotbar, so the
 inventory model alone uses a charcoal (`ladder_icon`).
 
+### Hanger extensions (D12)
+
+`cable_tray_hanger` (`BlockCableTrayHanger`) is a block of threaded rod, stacked under a ceiling
+so a hung tray (one at the top of its block) can sit one or more blocks lower. One block serves
+both trays: they carry their rods at the same places (x 7.75 to 8.25, z 2 to 2.5, turned per
+side). It draws a rod, with a coupling nut at its foot where it meets the rod below, on each side
+where the tray beneath it has a rail: it looks down through the stack to the first block that is
+not a hanger and reads that tray's actual state, so a straight run gets two rods, a tee one, a
+corner the outside two, and the rods run on unbroken into the tray's own, which reach the top of
+the tray's block. A crossing has no rails, and with no hung tray beneath the hanger uses its own
+stored axis (the placer's look, or the tray's or hanger's below when placed on one): rods on the
+two sides across it. Stored: the axis, one bit; 32 states; no tile entity, nothing ticks, no
+collision (a selection box only). Its last English word, "Hanger", prices it as mounting hardware
+(sheet metal and a fastener kit), which is what it is.
+
 ## Pole fitting
 
 The seven outdoor radios (`BlockMicafiDevice.PoleFitted`: outdoor mesh AP, Beam on a pole
@@ -210,6 +226,65 @@ block behind, to a large pole's skin. `gen_pole_fit_models.fitted(model, delta)`
 and pedestal copies with those saddles moved back to each pole's skin, and the blockstate gains a
 `polefit` variant picked in Java from the pole behind (`CsmPoleFit`). On a wall the clamp is
 inside the wall. The wall-arm Beam (`micafi_beam_bridge`) is not pole-fitted.
+
+## Eight ways round a pole (D10)
+
+A pole device turns a full 45 degrees about the pole, so it points eight ways. The metadata was
+already full (two bits of facing, two of light) and every placed device's metadata had to keep its
+meaning, so **nothing more is stored**: the diagonal is in the *position*. A device pointing
+north-east sits in the block diagonally north-east of the pole, stored facing **north** (the
+cardinal 45 degrees anticlockwise of where it points). Its actual state reads `diagonal`: true
+when nothing it could be mounted on is straight behind it (no pole, no full block) and a pole
+stands at `pos - diagonalOf(facing)` (north-east for north, south-east for east, and so on). Each
+stored facing has exactly one diagonal, so there is never a choice to make, and a device placed
+before D10 (with a pole or a wall straight behind it) reads exactly as before. The pole fit is
+resolved from the diagonal pole.
+
+The blockstate cannot say "turn 45 degrees" with the vanilla `y` (90-degree steps), and the parts
+are JSON elements already turned about z (the 16-gon dishes), which cannot take a second axis.
+The road signs' answer is used: a Forge `transform` with a y rotation, proven by every eight-way
+sign. `BlockMicafiDevice.PoleFitted` registers a state mapper that folds `diagonal` into the
+facing the blockstate reads (`facing=northeast` and so on, `variantOf`), and the generator writes
+four more facings, each `{"rotation": {"y": -compass}, "translation": ...}`: turned about the
+block's middle, then moved so the model's pole axis (8, 24 in sixteenths, a block south) lands on
+the diagonal pole (`diagonal_transform` in `gen_technology_wireless.py`). The **whole** model goes
+round the pole's axis, clamp and saddles included, so each of the three fits still meets its
+pole's skin; the device sits radially, inside its own block (the large dish no longer overhangs
+it). 4 facings x 4 lights x 3 fits x 2 = 96 states; the mapper gives 96 model locations.
+
+Placing: a block put against a face always lands straight out from it, so the diagonal block,
+in the air beside a pole, could not be reached. `ItemBlockMicafiPoleDevice` handles a click on a
+pole's side while looking from a diagonal that includes that side (from the south-east, clicking
+the east or south face): the device goes into the diagonal block, if free, and
+`getStateForPlacement` stores the facing (`aimFromYaw`, `storedFacing`). A click on a pole's side
+from straight on now faces the device away from that side whatever the look. The selection box is
+the north box carried round the pole the same way (`diagonalBox`), clamped to the block.
+
+**Trap:** vanilla calls every face of every block solid unless told otherwise, and the devices
+did not say: a device straight behind another (a cardinal one beside the diagonal block) counted
+as "mounted on", and the diagonal never showed. `BlockMicafiDevice` now answers `UNDEFINED`, and
+the test also wants a full block.
+
+## The wall-arm Beam's aim (D11)
+
+The Beam on its wall arm (`BlockMicafiDevice.Aimed`) keeps its wall facing; its head swivels on
+the arm's ball joint. `MicafiAim`: centre, left, right (45 degrees, as the installer at the wall
+looking out sees it), and each tipped down 20 degrees: six, cycled by sneak-clicking with an
+empty hand (holding something, a sneak-click still places it); a plain click still cycles the
+link light. Ordinals are saved: append only.
+
+The metadata is full, so the aim lives on `TileEntityMicafiAim` (`a`, one byte; it does not tick,
+has no renderer, and its `getBakedModelKey` is the aim, so only an aim change rebuilds the chunk),
+read into the actual state. The model is split: the arm and wall plate are the block's model, the
+head (disc, hub, and its cable as far as the swivel) a Forge **submodel** in the `aim` variants,
+turned by a transform about the joint (`BEAM_PIVOT`, 8, 9.5, 8: the middle of the block across, so
+yaw needs no translation; the tilt does). Two Forge facts make this work: a submodel's transform is
+composed with the variant's `y` facing (`ModelStateComposition`), and the variant's textures (the
+link light) are synced into its submodels. A rotation list is applied last to first, so
+`[{"y": yaw}, {"x": tilt}]` tips the head, then swings it. 4 x 4 x 6 = 96 states.
+
+Only the Beam on its arm is aimed. The wall AP and the in-wall AP are flush on the wall, with no
+swivel to turn on; the pole-fitted pieces on a wall have their clamp in the wall.
 
 ## Round faces and `model_depth.py`
 
@@ -249,9 +324,9 @@ tree, the `Pic` face-picture class, the element helper `E`, shared swatches, the
 | Script | Writes |
 |---|---|
 | `gen_technology_computers.py` | the Computers & Peripherals tab: models, the 256 px shelf-packed keyboard sheet (`BANDS`), the animated screens, the console sprites |
-| `gen_technology_networking.py` | the desktop networking gear, wall jacks, floor box and both cable trays |
+| `gen_technology_networking.py` | the desktop networking gear, wall jacks, floor box, both cable trays and the tray hanger |
 | `gen_technology_rack.py` | the racks, the wall cabinet, the unit sheet and item models, the pre-filled racks' models, `RackUnitType.java` and `RackFrame.java`, the units' recipes (conditional on `csm_technology`) |
-| `gen_technology_wireless.py` | the Micafi access points and outdoor radios, their light textures and pole fits |
+| `gen_technology_wireless.py` | the Micafi access points and outdoor radios, their light textures, pole fits, the diagonal facings' transforms and the Beam's aimed head |
 | `gen_technology_school.py` | the school time and PA set (SCHOOL_TIME_AND_PA.md) |
 
 `gen_pole_fit_models.py --check` covers the pole-fit copies too.
@@ -259,9 +334,10 @@ tree, the `Pic` face-picture class, the element helper `E`, shared swatches, the
 ## Weight
 
 Counted from the block classes: the Computers & Peripherals tab is 300 states (43 desk devices
-at 4, 8 screens at 16); Networking & IT about 860 (12 desk devices at 4, 2 trays at 64, 3
-ceiling APs at 8, 3 wall devices at 16, 7 pole-fitted devices at 48, 8 cabinets at 32, 2 open
-frames at 8, the wall cabinet at 4). The `blocks/technology` textures are 1.46 Mpx of the block
+at 4, 8 screens at 16); Networking & IT about 1,300 (12 desk devices at 4, 2 trays at 64, the
+tray hanger at 32, 3 ceiling APs at 8, 2 wall devices at 16, the aimed Beam at 96, 7 pole-fitted
+devices at 96, 8 cabinets at 32, 2 open frames at 8, the wall cabinet at 4). Phase 7 added no
+textures. The `blocks/technology` textures are 1.46 Mpx of the block
 atlas, which stood at 96.2% of 8192 x 4096 after the expansion (`atlas_budget.py`, 2026-10-21).
 
 ## The demo world
@@ -271,24 +347,14 @@ instance id (default `run-f2eb58`) in a flat creative world named "Technology De
 any other), loaded in a dev client with every module: an office of twelve workstations on
 full-block desks with the whole Computers tab and a gaming corner; a server room with two rows of
 fillable cabinets filled through the `u` byte array, an open frame, two rows of pre-filled racks,
-a basket and a ladder tray hung over the rows (a corner and a tee), ceiling APs; a network
+a basket and a ladder tray hung over the rows (a corner and a tee; the ladder a block lower on
+threaded rod hangers), ceiling APs; a network
 closet with the wall cabinet, the desktop gear, the wall APs and jacks; and a roof of Roads poles
-carrying every outdoor radio, aimed at a second building that carries the far Beam and Link 60.
+carrying every outdoor radio, aimed at a second building that carries the far Beam and Link 60,
+with two more sector antennas turned 45 degrees either way round the sector's pole and a second
+wall-arm Beam aimed left and down.
 It checks both new tabs' registration lists against what it placed and puts the rest on signed
 plinths (none, at the first run).
-
-## In progress
-
-Phase 7 of the expansion (decisions D10-D12, 2026-10-21) is under way:
-
-- **8-way pole mounts.** The seven pole-fitted radios turn a full 45 degrees about the pole,
-  their facing from the placer's yaw as `AbstractBlockRotatableHZEight` does, the clamp still
-  fitted to the pole.
-- **Angled wall mounts.** The Beam on its arm, the wall AP and the like keep their wall facing,
-  but the device aims left, centre or right on its mount (about 45 degrees of yaw, and tilt if
-  cheap), cycled by sneak-click; a plain click keeps cycling the light.
-- **Tray hanger extensions.** A thin threaded-rod block that stacks under a ceiling, so a hung
-  tray can sit one or more blocks below it, the rods lined up with the tray's hangers.
 
 ## Left out, and what the module could grow into
 

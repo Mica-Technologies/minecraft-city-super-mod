@@ -340,14 +340,17 @@ def server_room():
         rack(23 + i, 20, statics[(i + 2) % len(statics)], N)
     rack(36, 16, 'server_rack_42u_filled_network_open', S)
     # trays hung under the ceiling: a basket over the first row, a ladder over the second, the
-    # basket fed by a cross tray at its west end (a corner), the ladder by one at its middle (a tee)
+    # basket fed by a cross tray at its west end (a corner), the ladder by one at its middle (a
+    # tee). The ladder hangs a block lower, on a course of threaded rod hangers
     for x in range(22, 35):
         put(x, CEIL - 1, 6, 'cable_tray_basket', 1 | 2)
-        put(x, CEIL - 1, 11, 'cable_tray_ladder', 1 | 2)
+        put(x, CEIL - 2, 11, 'cable_tray_ladder', 1 | 2)
+        put(x, CEIL - 1, 11, 'cable_tray_hanger', 1)
     for z in range(2, 6):
         put(22, CEIL - 1, z, 'cable_tray_basket', 0 | 2)
     for z in range(12, 16):
-        put(28, CEIL - 1, z, 'cable_tray_ladder', 0 | 2)
+        put(28, CEIL - 2, z, 'cable_tray_ladder', 0 | 2)
+        put(28, CEIL - 1, z, 'cable_tray_hanger', 0)
     # a basket tray lying on top of the pre-filled row
     for x in range(23, 35):
         put(x, Y + 2, 16, 'cable_tray_basket', 1)
@@ -410,12 +413,19 @@ def roof():
         pole(x, 2, ROOF, top + 1)
         meta = N | ((LINK[link] << 2) if link else 0)
         put(x, top, 1, reg, meta)
+    # two more sector antennas on the sector's pole, turned 45 degrees either way round it: in
+    # the blocks diagonally beside the pole, stored facing west and north (D10)
+    put(17, 13, 1, 'micafi_sector_antenna', W | (LINK['blue'] << 2))
+    put(19, 13, 1, 'micafi_sector_antenna', N | (LINK['blue'] << 2))
     # a pedestal pole carrying a second mesh AP, to show the clamp fitted to a thinner pole
     pole(34, 2, ROOF, ROOF + 2, 'trafficpolepedestalsilver')
     put(34, ROOF + 1, 1, 'micafi_ap_outdoor_mesh', N | (RING['adopting'] << 2))
     # the Beam bridge on its wall arm on a parapet pier, facing the second building
     fill(10, ROOF + 1, 0, 10, ROOF + 2, 0, 'minecraft:concrete', 7)
     put(10, ROOF + 2, -1, 'micafi_beam_bridge', N | (LINK['green'] << 2))
+    # a second Beam on another pier, its head swung left and tipped down on its arm (aim 4)
+    fill(2, ROOF + 1, 0, 2, ROOF + 2, 0, 'minecraft:concrete', 7)
+    put(2, ROOF + 2, -1, 'micafi_beam_bridge', N | (LINK['blue'] << 2), '{a:4b}')
     # the far ends on the second building: a Beam on its south wall, a Link 60 on a pole
     put(10, BTOP - 1, BZ1 + 1, 'micafi_beam_bridge', S | (LINK['green'] << 2))
     pole(14, BZ1 - 1, BTOP + 1, BTOP + 3)
