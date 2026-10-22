@@ -364,6 +364,29 @@ models were deleted.
   as chain hardware; removing it would need a canopy-less model variant selected from the block
   above.
 
+## Modern Troffers
+
+`dev-env-utils/scripts/gen_troffers.py` writes the lay-in troffers added in 2026-10 and the
+rebuilt Lithonia 2ESL2 / 2ESL4. All are `BlockBrightLightFactory` lights sitting at the bottom of
+their ceiling cell, so the face lies in the plane of the full-block ceilings beside them; a 2x4
+reaches a block north, as the GTL does.
+
+| Registry | What |
+|---|---|
+| `troffer_slot_2x2`, `_2x4` | a white face with a narrow louvered slot down its length |
+| `troffer_basket_2x2`, `_2x4` | angled white reflectors (elements turned 22.5 degrees) either side of a raised lens |
+| `troffer_pattern_<bars|dashes|squares|dots>_2x2`, `_2x4` | a white face cut with a pattern of openings over the lens: one cutout picture drawn as tall as the fixture and cut into a square sprite a block |
+| `l2esl2`, `l2esl4` | the Lithonia 2ESL, rebuilt: its housing, two lamps and reflectors where the old hand-made model had them, the lamps now the lit lens, its white louvers replaced by silver mirror blades |
+
+No edge-lit flat panel (the GTL is one) and no parabolic of their own (the 2ESL is one).
+
+**The lens is drawn unshaded** (`"shade": false`). A down face's directional shading halves it, so
+a lit lens drawn shaded reads grey; the unlit lens (`troffer_lens_off`) is drawn at about half the
+white so an off troffer matches the shaded ceiling round it. Lit and unlit are a `#lens` swap per
+STATE, as the decorative family does. **States 0 and 2 name the unlit lens explicitly** rather
+than inheriting it: `gen_lighting_lit_atlases.py` takes any blockstate whose 0 and 2 are empty for
+its own, and these are not its.
+
 ## Tall Building Beacons (Aviation Obstruction Lights)
 
 Two aviation obstruction beacons for the top of a tall building, a tower or a mast, both

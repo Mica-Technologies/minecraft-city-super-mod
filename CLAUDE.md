@@ -734,6 +734,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
+- `gen_troffers.py` -- the modern lay-in troffers (louvered slot, center basket, four patterned
+  lenses; 2x2 and 2x4) and the rebuilt Lithonia 2ESL2/2ESL4: lens drawn unshaded and swapped per
+  STATE, states 0 and 2 naming the unlit lens so `gen_lighting_lit_atlases.py` leaves them alone,
+  patterned faces cut into a sprite a block; `--check`, `--fragments`
 - `gen_obstruction_beacons.py` -- the Lighting tab's tall building beacons (`BlockObstructionBeacon`):
   the red L-864 style flashing beacon and the white L-865 style strobe, each standing on a block or
   a shelf bracket off a wall. It writes the models with the dark lens only: the flash (FAA

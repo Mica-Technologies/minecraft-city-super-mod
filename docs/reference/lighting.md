@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "135 blocks in this tab"
+!!! info "147 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -32,6 +32,8 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Carriage Lantern Sconce (Black) | `csm:sconcelanternblack` | 2 | 10 | pickaxe | 1 |
 | Carriage Lantern Sconce (Bronze) | `csm:sconcelanternbronze` | 2 | 10 | pickaxe | 1 |
 | Carriage Lantern Sconce (Brushed Nickel) | `csm:sconcelanternnickel` | 2 | 10 | pickaxe | 1 |
+| Center Basket Troffer (2x2) | `csm:troffer_basket_2x2` | 2 | 10 | pickaxe | 1 |
+| Center Basket Troffer (2x4) | `csm:troffer_basket_2x4` | 2 | 10 | pickaxe | 1 |
 | Colonial Candle Sconce (Black) | `csm:sconcecolonialblack` | 2 | 10 | pickaxe | 1 |
 | Colonial Candle Sconce (Bronze) | `csm:sconcecolonialbronze` | 2 | 10 | pickaxe | 1 |
 | Colonial Candle Sconce (Brushed Nickel) | `csm:sconcecolonialnickel` | 2 | 10 | pickaxe | 1 |
@@ -112,11 +114,21 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Lithonia Strip Light (Half, Edge-Lit) | `csm:slhe` | 2 | 10 | pickaxe | 1 |
 | Lithonia Strip Light Half | `csm:slh` | 2 | 10 | pickaxe | 1 |
 | Lithonia Wall Strip Light | `csm:wsl` | 2 | 10 | pickaxe | 1 |
+| Louvered Slot Troffer (2x2) | `csm:troffer_slot_2x2` | 2 | 10 | pickaxe | 1 |
+| Louvered Slot Troffer (2x4) | `csm:troffer_slot_2x4` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Eliptical Curve) | `csm:novtm2` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Lakewood, CA Style) | `csm:novtm3` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Straight Mount Long) | `csm:novtm4` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Straight Mount Short) | `csm:novtm5` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Truss Style) | `csm:novtm` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Dashes, 2x2) | `csm:troffer_pattern_dashes_2x2` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Dashes, 2x4) | `csm:troffer_pattern_dashes_2x4` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Dots, 2x2) | `csm:troffer_pattern_dots_2x2` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Dots, 2x4) | `csm:troffer_pattern_dots_2x4` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Squares, 2x2) | `csm:troffer_pattern_squares_2x2` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Squares, 2x4) | `csm:troffer_pattern_squares_2x4` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Staggered Bars, 2x2) | `csm:troffer_pattern_bars_2x2` | 2 | 10 | pickaxe | 1 |
+| Patterned Lens Troffer (Staggered Bars, 2x4) | `csm:troffer_pattern_bars_2x4` | 2 | 10 | pickaxe | 1 |
 | Pendant Chain (Black) | `csm:pendchainblack` | 2 | 10 | pickaxe | 1 |
 | Pendant Chain (Bronze) | `csm:pendchainbronze` | 2 | 10 | pickaxe | 1 |
 | Pendant Chain (Brushed Nickel) | `csm:pendchainnickel` | 2 | 10 | pickaxe | 1 |

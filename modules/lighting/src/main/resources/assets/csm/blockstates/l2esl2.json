@@ -1,19 +1,17 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/shared_models/lithonia_2esl2",
+    "model": "csm:lighting/troffers/lithonia_2esl2",
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/troffers_off",
-      "particle": "csm:blocks/lighting/shared_textures/troffers_off",
-      "0": "csm:blocks/lighting/shared_textures/troffers_off"
+      "lens": "csm:blocks/lighting/troffers/troffer_lens_off"
     }
   },
   "variants": {
     "facing": {
+      "north": {},
       "east": {
         "y": 90
       },
-      "north": {},
       "south": {
         "y": 180
       },
@@ -22,25 +20,28 @@
       }
     },
     "state": {
-      "0": {},
-      "1": {
+      "0": {
         "textures": {
-          "all": "csm:blocks/lighting/shared_textures/troffers",
-          "0": "csm:blocks/lighting/shared_textures/troffers"
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_off"
         }
       },
-      "2": {},
+      "1": {
+        "textures": {
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_off"
+        }
+      },
       "3": {
         "textures": {
-          "all": "csm:blocks/lighting/shared_textures/troffers",
-          "0": "csm:blocks/lighting/shared_textures/troffers"
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_on"
         }
       }
     },
     "inventory": [
-      {}
-    ],
-    "normal": [
       {}
     ]
   }

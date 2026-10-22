@@ -1,0 +1,48 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/troffers/troffer_basket_2x2",
+    "textures": {
+      "lens": "csm:blocks/lighting/troffers/troffer_lens_off"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "state": {
+      "0": {
+        "textures": {
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_off"
+        }
+      },
+      "1": {
+        "textures": {
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_off"
+        }
+      },
+      "3": {
+        "textures": {
+          "lens": "csm:blocks/lighting/troffers/troffer_lens_on"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}
