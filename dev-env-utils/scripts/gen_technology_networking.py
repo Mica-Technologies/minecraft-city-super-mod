@@ -743,5 +743,8 @@ hanger("cable_tray_hanger",
                 "Colgador de Varilla Roscada para Bandeja Portacables",
                 "Gängstångshängare för kabelränna"))
 
+# the LEDs lit under OptiFine: an _e companion for every texture with lit LED pixels
+tc.emissive(C, saturated=True, skip=("cable",))
+
 if __name__ == "__main__":
     sys.exit(C.main())
