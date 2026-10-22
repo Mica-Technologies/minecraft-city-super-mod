@@ -8,6 +8,8 @@ import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFirePro
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockMagneticDoorHolder;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockStandpipePassthrough;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockStandpipePipe;
+import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockSprinklerDrop;
+import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockSprinklerHead;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockStandpipeWallPipe;
 import net.minecraft.util.math.AxisAlignedBB;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSprinklerBlack;
@@ -135,5 +137,15 @@ public class CsmTabFireProtection extends CsmTab {
     initTabBlock(BlockOldFireSprinkler4.class, fmlPreInitializationEvent);
     initTabBlock(BlockOldFireSprinkler5.class, fmlPreInitializationEvent);
     initTabBlock(BlockOldFireSprinkler6.class, fmlPreInitializationEvent);
+    // Sprinkler heads that join an exposed pipe above or below, and the drop (#304;
+    // gen_standpipe_system.py --fragments)
+    initTabBlock(new BlockSprinklerHead("sprinkler_pendant_white", false));
+    initTabBlock(new BlockSprinklerHead("sprinkler_pendant_black", false));
+    initTabBlock(new BlockSprinklerHead("sprinkler_pendant_chrome", false));
+    initTabBlock(new BlockSprinklerHead("sprinkler_upright_white", true));
+    initTabBlock(new BlockSprinklerHead("sprinkler_upright_black", true));
+    initTabBlock(new BlockSprinklerHead("sprinkler_upright_chrome", true));
+    initTabBlock(new BlockSprinklerDrop("sprinkler_drop_red"));
+    initTabBlock(new BlockSprinklerDrop("sprinkler_drop_silver"));
   }
 }

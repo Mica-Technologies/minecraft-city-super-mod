@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.lifesafety.fireprotection;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPipe;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -35,7 +36,7 @@ import net.minecraft.world.IBlockAccess;
  *
  * @version 1.0
  */
-public class BlockStandpipePipe extends AbstractBlock {
+public class BlockStandpipePipe extends AbstractBlock implements ICsmPipe {
 
   public static final PropertyBool NORTH = PropertyBool.create("north");
   public static final PropertyBool SOUTH = PropertyBool.create("south");
@@ -203,6 +204,17 @@ public class BlockStandpipePipe extends AbstractBlock {
   }
 
   /** The core, grown out along each joined arm. */
+  /** Where a sprinkler fitting under or over the pipe meets it (#304). */
+  @Override
+  public int pipeBottom(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return arms(world, pos)[EnumFacing.DOWN.getIndex()] ? 0 : (int) (8 - radius);
+  }
+
+  @Override
+  public int pipeTop(IBlockAccess world, BlockPos pos, IBlockState state) {
+    return arms(world, pos)[EnumFacing.UP.getIndex()] ? 16 : (int) (8 + radius);
+  }
+
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     boolean[] arms = arms(source, pos);

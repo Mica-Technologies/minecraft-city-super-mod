@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmPipe;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
@@ -39,7 +40,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.10
  */
-public class BlockExposedDuct extends AbstractBlock {
+public class BlockExposedDuct extends AbstractBlock implements ICsmPipe {
 
   public static final PropertyEnum<Axis> AXIS = PropertyEnum.create("axis", Axis.class);
   public static final PropertyBool NORTH = PropertyBool.create("north");
@@ -185,6 +186,25 @@ public class BlockExposedDuct extends AbstractBlock {
     boolean rod = !vertical && (above.getBlock() instanceof BlockExposedServiceHanger
         || above.getBlockFaceShape(world, up, EnumFacing.DOWN) == BlockFaceShape.SOLID);
     return out.withProperty(ROD, rod);
+  }
+
+  /** A sprinkler fitting joins the pipe; a duct is not a pipe to it (#304). */
+  @Override
+  @SuppressWarnings("deprecation")
+  public int pipeBottom(IBlockAccess world, BlockPos pos, IBlockState state) {
+    if (!"pipe".equals(kind)) {
+      return -1;
+    }
+    return getActualState(state, world, pos).getValue(DOWN) ? 0 : (int) (8 - halfHigh);
+  }
+
+  @Override
+  @SuppressWarnings("deprecation")
+  public int pipeTop(IBlockAccess world, BlockPos pos, IBlockState state) {
+    if (!"pipe".equals(kind)) {
+      return -1;
+    }
+    return getActualState(state, world, pos).getValue(UP) ? 16 : (int) (8 + halfHigh);
   }
 
   @Override

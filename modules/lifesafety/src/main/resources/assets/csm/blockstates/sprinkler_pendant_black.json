@@ -1,0 +1,89 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_body"
+      }
+    },
+    {
+      "when": {
+        "reach": "0"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_0"
+      }
+    },
+    {
+      "when": {
+        "reach": "1"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_1"
+      }
+    },
+    {
+      "when": {
+        "reach": "2"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_2"
+      }
+    },
+    {
+      "when": {
+        "reach": "3"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_3"
+      }
+    },
+    {
+      "when": {
+        "reach": "4"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_4"
+      }
+    },
+    {
+      "when": {
+        "reach": "5"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_5"
+      }
+    },
+    {
+      "when": {
+        "reach": "6"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_6"
+      }
+    },
+    {
+      "when": {
+        "reach": "7"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_7"
+      }
+    },
+    {
+      "when": {
+        "reach": "8"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_8"
+      }
+    },
+    {
+      "when": {
+        "reach": "9"
+      },
+      "apply": {
+        "model": "csm:lifesafety/standpipe/sprinkler_pendant_black_reach_9"
+      }
+    }
+  ]
+}
