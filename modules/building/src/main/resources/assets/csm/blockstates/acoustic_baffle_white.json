@@ -1,0 +1,68 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/baffle_white"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/baffle_end_white"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/baffle_end_white",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/baffle_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "front": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/baffle_end_white",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "back": "false"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/baffle_end_white",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cable": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/cable_baffle"
+      }
+    }
+  ]
+}

@@ -12,6 +12,8 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCTS3;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT1;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT2;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDCT3;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAcousticBaffle;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAcousticCloud;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCeilingFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinishBlock;
@@ -126,6 +128,26 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockCeilingFinish("ceiling_open_cell_white")); // Open Cell Ceiling (White)
     initTabBlock(new BlockCeilingFinish("ceiling_grid_white")); // Exposed Ceiling Grid (White)
     initTabBlock(new BlockCeilingFinish("ceiling_grid_black")); // Exposed Ceiling Grid (Black)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_black")); // Acoustic Baffle (Black)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_silver")); // Acoustic Baffle (Silver)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_white")); // Acoustic Baffle (White)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_light_grey")); // Acoustic Baffle (Light Grey)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_charcoal")); // Acoustic Baffle (Charcoal)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_navy")); // Acoustic Baffle (Navy)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_sage")); // Acoustic Baffle (Sage)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_terracotta")); // Acoustic Baffle (Terracotta)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_oak")); // Acoustic Baffle (Light Oak)
+    initTabBlock(new BlockAcousticBaffle("acoustic_baffle_walnut")); // Acoustic Baffle (Walnut)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_black")); // Acoustic Ceiling Cloud (Black)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_silver")); // Acoustic Ceiling Cloud (Silver)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_white")); // Acoustic Ceiling Cloud (White)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_light_grey")); // Acoustic Ceiling Cloud (Light Grey)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_charcoal")); // Acoustic Ceiling Cloud (Charcoal)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_navy")); // Acoustic Ceiling Cloud (Navy)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_sage")); // Acoustic Ceiling Cloud (Sage)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_terracotta")); // Acoustic Ceiling Cloud (Terracotta)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_oak")); // Acoustic Ceiling Cloud (Light Oak)
+    initTabBlock(new BlockAcousticCloud("acoustic_cloud_walnut")); // Acoustic Ceiling Cloud (Walnut)
 
     // Window treatments: blinds, shades and curtains, hung against a window.
     initTabBlock(new BlockWindowTreatment("blind_venetian_white")); // Venetian Blind (White)

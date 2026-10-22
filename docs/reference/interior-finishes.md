@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "101 blocks in this tab"
+!!! info "121 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -17,6 +17,26 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Accent Wall Panel (Teal) | `csm:wall_panel_teal` |  |  |  |  |
 | Accent Wall Panel (Walnut) | `csm:wall_panel_walnut` |  |  |  |  |
 | Accent Wall Panel (Yellow) | `csm:wall_panel_yellow` |  |  |  |  |
+| Acoustic Baffle (Black) | `csm:acoustic_baffle_black` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Charcoal) | `csm:acoustic_baffle_charcoal` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Light Grey) | `csm:acoustic_baffle_light_grey` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Light Oak) | `csm:acoustic_baffle_oak` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Navy) | `csm:acoustic_baffle_navy` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Sage) | `csm:acoustic_baffle_sage` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Silver) | `csm:acoustic_baffle_silver` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Terracotta) | `csm:acoustic_baffle_terracotta` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (Walnut) | `csm:acoustic_baffle_walnut` | 0.8 | 4 |  | 0 |
+| Acoustic Baffle (White) | `csm:acoustic_baffle_white` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Black) | `csm:acoustic_cloud_black` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Charcoal) | `csm:acoustic_cloud_charcoal` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Light Grey) | `csm:acoustic_cloud_light_grey` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Light Oak) | `csm:acoustic_cloud_oak` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Navy) | `csm:acoustic_cloud_navy` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Sage) | `csm:acoustic_cloud_sage` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Silver) | `csm:acoustic_cloud_silver` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Terracotta) | `csm:acoustic_cloud_terracotta` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (Walnut) | `csm:acoustic_cloud_walnut` | 0.8 | 4 |  | 0 |
+| Acoustic Ceiling Cloud (White) | `csm:acoustic_cloud_white` | 0.8 | 4 |  | 0 |
 | Acoustic Wall Panel (Blue) | `csm:wall_acoustic_blue` |  |  |  |  |
 | Acoustic Wall Panel (Charcoal) | `csm:wall_acoustic_charcoal` |  |  |  |  |
 | Acoustic Wall Panel (Grey) | `csm:wall_acoustic_grey` |  |  |  |  |

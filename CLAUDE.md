@@ -781,6 +781,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   fissured and embossed tiles, perforated metal and pressed tin as `cube_all` textures with the
   relief shaded in; wood slats and corrugated metal storing the axis they run along; the open cell
   and exposed T-bar grid as cutout elements at the bottom of the block; `--check`, `--fragments`
+- `gen_acoustic_ceilings.py` -- the hanging acoustic baffles (`BlockAcousticBaffle`, joining
+  along their axis, edges only at run ends) and clouds (`BlockAcousticCloud`) in the linear
+  lights' ten finishes, drawn with the same Core textures (imports `gen_linear_lights.py`);
+  `--check`, `--fragments`
 - `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner

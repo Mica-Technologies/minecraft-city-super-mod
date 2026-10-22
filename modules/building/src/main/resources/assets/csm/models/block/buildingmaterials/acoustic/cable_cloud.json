@@ -1,0 +1,59 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cable": "csm:blocks/finishes/aircraft_cable",
+    "particle": "csm:blocks/finishes/aircraft_cable"
+  },
+  "elements": [
+    {
+      "from": [
+        7.9,
+        12,
+        7.9
+      ],
+      "to": [
+        8.1,
+        16,
+        8.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            4
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/cloud_black"
+      }
+    },
+    {
+      "when": {
+        "cable": "true"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/acoustic/cable_cloud"
+      }
+    }
+  ]
+}

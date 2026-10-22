@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/buildingmaterials/acoustic/geo_cloud",
+  "textures": {
+    "felt": "csm:blocks/finishes/finish_walnut",
+    "particle": "csm:blocks/finishes/finish_walnut"
+  }
+}
