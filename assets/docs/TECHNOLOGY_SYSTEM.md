@@ -199,7 +199,11 @@ end too (a run that stops), unless it also reaches sideways: then that end is cl
 rail, so a corner does not reach two pixels past itself. Ladder rungs are 4 px apart across block
 lines: each arm carries half a rung at the block face, which meets the next block's half.
 
-The trays are cutout, not mipped: a mipped mesh of one-texel wires fades out at a distance. The
+The trays are cutout, not mipped: a mipped mesh of thin wires fades out at a distance. The
+basket's mesh is two texels (a pixel) a wire, astride each line, so the sheet is the same
+mirrored: an arm turned half round shows it mirrored, and one-texel wires jumped half a pixel at
+every block joint (and broke up at a grazing angle). Its top rims are solid bars, not a top face
+alone, so they read from the side. The
 ladder's black powder coat would make its item icon a black shape on the dark hotbar, so the
 inventory model alone uses a charcoal (`ladder_icon`).
 
@@ -207,14 +211,15 @@ inventory model alone uses a charcoal (`ladder_icon`).
 bundle of cables in the middle and arms: mostly black and blue with a pair of yellow and a pair
 of red, sixteen across between the rails (x 3 to 13), lying a hair clear of the basket's floor or
 the ladder's rungs. **The cable order and each cable's shading read the same both ways**, and
-nothing varies along the run but the tie: the south and side arms are the north arm turned, so a
+nothing varies along the run: the south and side arms are the north arm turned, so a
 turned arm shows the texture mirrored, and only a mirror-symmetric one meets the middle at every
-seam (the first cut jogged at every block). Because the bundle is in the middle and arm parts, it runs on along a run, turns
+seam (the first cut jogged at every block). The tie is not painted on (a stripe across the
+cables read as cables knocked out of line): it is a hook and loop wrap, an element of its own
+standing proud of the bundle on every side, once a block in the middle part. Because the bundle is in the middle and arm parts, it runs on along a run, turns
 with it at a corner or a tee, and is cut off (`cables_end`) at a run's open end; the rail is the
 empty tray's. Full and empty trays are both `BlockCableTray`, so they join each other and a run
 can fill up towards its feed. The top's uv runs 16 across the 10 px bundle and the same 1.6 a
-pixel along it, so the arms carry the middle's stripes on and the hook and loop tie falls once a
-block, in its middle. Three 32 px textures; 64 states each, as the empty trays.
+pixel along it, so the arms carry the middle's stripes on. Three 32 px cable textures and a 16 px wrap; 64 states each, as the empty trays.
 
 ### Hanger extensions (D12)
 
