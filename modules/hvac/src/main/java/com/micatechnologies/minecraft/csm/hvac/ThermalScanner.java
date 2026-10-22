@@ -45,11 +45,17 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 public final class ThermalScanner {
 
   /**
-   * Largest space, in air cells, that is treated as a room. Anything bigger -- a cave system, the
-   * underside of a forest canopy -- is not conditionable and reads the outdoor temperature.
-   * 40,000 cells is a 50 x 50 x 16 hall.
+   * Largest space, in air cells, that is treated as a room, by default. Anything bigger -- a cave
+   * system, the underside of a forest canopy -- is not conditionable and reads the outdoor
+   * temperature. 40,000 cells is a 50 x 50 x 16 hall. A server raises it with
+   * {@code hvac.maxRoomCells} (#305); see {@link #maxCells()}.
    */
   public static final int MAX_CELLS = 40_000;
+
+  /** The largest room the scanner floods now: the server's {@code hvac.maxRoomCells}. */
+  public static int maxCells() {
+    return com.micatechnologies.minecraft.csm.CsmConfig.getHvacMaxRoomCells();
+  }
 
   /** Horizontal size of a region, blocks. */
   public static final int REGION_XZ = 8;
@@ -82,6 +88,20 @@ public final class ThermalScanner {
    */
   public static final float OPENING_FACTOR = 40.0f;
 
+  /**
+   * The wall factor the cell source gives a zone boundary cell ({@link HvacZoneBoundaries}): open
+   * air marked as the edge of a room. Any factor this large is a boundary.
+   */
+  public static final float BOUNDARY_FACTOR = 1000.0f;
+
+  /**
+   * Conductance of one face across a zone boundary, per second per degree: half the rate air mixes
+   * between two regions of one room ({@code ThermalSpace.MIX_PER_FACE}). Rooms split by a line of
+   * markers stay within a degree or two of each other where nothing pushes them apart, and the
+   * coupling, stepped against the other room's last temperature, cannot overshoot.
+   */
+  public static final float BOUNDARY_UA = 1.0f;
+
   /** How much slower ground (or a wall thicker than the probe) conducts than a plain wall. */
   public static final float GROUND_FACTOR = 0.3f;
 
@@ -91,7 +111,7 @@ public final class ThermalScanner {
     OK,
     /** The start cell is not enclosed air (it sees the sky, or is inside a wall). */
     NOT_ENCLOSED,
-    /** The flood passed {@link #MAX_CELLS}; {@link Result#cells} holds what it visited. */
+    /** The flood passed {@link #maxCells()}; {@link Result#cells} holds what it visited. */
     TOO_LARGE,
     /** The flood reached a chunk that is not loaded, so the space cannot be known yet. */
     UNLOADED
@@ -190,6 +210,7 @@ public final class ThermalScanner {
 
     LongOpenHashSet cells = r.cells;
     LongArrayFIFOQueue queue = new LongArrayFIFOQueue();
+    int maxCells = maxCells();
     long start = pack(sx, sy, sz);
     cells.add(start);
     queue.enqueue(start);
@@ -218,7 +239,7 @@ public final class ThermalScanner {
           continue;
         }
         cells.add(key);
-        if (cells.size() > MAX_CELLS) {
+        if (cells.size() > maxCells) {
           r.status = Status.TOO_LARGE;
           return r;
         }
@@ -404,6 +425,10 @@ public final class ThermalScanner {
 
   private static void classifyWallFace(ThermalCellSource src, Result r, int region,
       int wx, int wy, int wz, int[] d, float factor) {
+    if (factor >= BOUNDARY_FACTOR) {
+      classifyBoundaryFace(src, r, region, wx, wy, wz, d);
+      return;
+    }
     for (int k = 1; k <= THICK_PROBE; k++) {
       int px = wx + d[0] * k;
       int py = wy + d[1] * k;
@@ -430,6 +455,45 @@ public final class ThermalScanner {
       return;
     }
     addTo(r.groundUA, region, U_FACE * factor * GROUND_FACTOR);
+  }
+
+  /**
+   * A face onto a zone boundary: followed across the boundary's cells (up to
+   * {@link #THICK_PROBE} of them) to the air on its other side. Air of this same space (the line
+   * of markers stops short of a wall) is a partition; other enclosed air is coupled at
+   * {@link #BOUNDARY_UA}; the sky is an opening, as the boundary is open air. A real wall or the
+   * ground behind the boundary takes nothing: the boundary's own air sits between them and the
+   * room, and is not a wall to lose heat through.
+   */
+  private static void classifyBoundaryFace(ThermalCellSource src, Result r, int region,
+      int wx, int wy, int wz, int[] d) {
+    for (int k = 1; k <= THICK_PROBE; k++) {
+      int px = wx + d[0] * k;
+      int py = wy + d[1] * k;
+      int pz = wz + d[2] * k;
+      byte kind = src.classify(px, py, pz);
+      if (kind == ThermalCellSource.WALL) {
+        if (src.wallFactor(px, py, pz) >= BOUNDARY_FACTOR) {
+          continue; // a double line of markers
+        }
+        return;
+      }
+      if (kind == ThermalCellSource.AIR) {
+        long key = pack(px, py, pz);
+        if (r.cells.contains(key)) {
+          r.envelopeFaces.set(region, r.envelopeFaces.getInt(region) - 1);
+          return;
+        }
+        r.beyondCell.add(key);
+        r.beyondRegion.add(region);
+        r.beyondUA.add(BOUNDARY_UA);
+        return;
+      }
+      if (kind == ThermalCellSource.SKY) {
+        addTo(r.openingUA, region, U_FACE * OPENING_FACTOR);
+      }
+      return;
+    }
   }
 
   private static void addTo(FloatArrayList list, int index, float value) {

@@ -17,6 +17,8 @@ import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterBlack;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterSilver;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacThermostat;
 import com.micatechnologies.minecraft.csm.hvac.BlockExposedDuct;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacCrac;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneBoundary;
 import com.micatechnologies.minecraft.csm.hvac.BlockExposedServiceHanger;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneThermostat;
@@ -140,10 +142,15 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(BlockHvacRtuCooler.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacRtuCoolerBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacRtuCoolerSilver.class, fmlPreInitializationEvent);
+    // Data hall CRAC/CRAH units (#305; gen_hvac_data_hall.py --fragments)
+    initTabBlock(new BlockHvacCrac("hvac_crac_downflow")); // CRAC Unit (Downflow)
+    initTabBlock(new BlockHvacCrac("hvac_crac_upflow")); // CRAC Unit (Upflow)
+    initTabBlock(new BlockHvacCrac("hvac_crah")); // CRAH Unit (Chilled Water)
 
     // Functional HVAC blocks — Controls and distribution
     initTabBlock(BlockHvacThermostat.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacZoneThermostat.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockHvacZoneBoundary()); // HVAC Zone Boundary (#305)
     initTabBlock(BlockHvacVentRelay.class, fmlPreInitializationEvent);
     initTabBlock(new BlockExposedDuct("duct_round_galvanized")); // Exposed Spiral Duct (Galvanized)
     initTabBlock(new BlockExposedDuct("duct_round_black")); // Exposed Spiral Duct (Black)

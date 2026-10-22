@@ -19,6 +19,8 @@ class ThermalModelTest {
   static final class Grid implements ThermalCellSource {
     final Set<Long> walls = new HashSet<>();
     final Set<Long> glass = new HashSet<>();
+    /** Cells in a zone boundary marker's column (#305): open air the scanner treats as an edge. */
+    final Set<Long> boundary = new HashSet<>();
 
     void wall(int x, int y, int z) {
       walls.add(ThermalScanner.pack(x, y, z));
@@ -46,7 +48,8 @@ class ThermalModelTest {
       if (y < 0) {
         return WALL;
       }
-      if (walls.contains(ThermalScanner.pack(x, y, z))) {
+      if (walls.contains(ThermalScanner.pack(x, y, z))
+          || boundary.contains(ThermalScanner.pack(x, y, z))) {
         return WALL;
       }
       for (int yy = y + 1; yy < 64; yy++) {
@@ -59,6 +62,9 @@ class ThermalModelTest {
 
     @Override
     public float wallFactor(int x, int y, int z) {
+      if (boundary.contains(ThermalScanner.pack(x, y, z))) {
+        return ThermalScanner.BOUNDARY_FACTOR;
+      }
       return glass.contains(ThermalScanner.pack(x, y, z)) ? 2.0f : 1.0f;
     }
   }
@@ -94,6 +100,40 @@ class ThermalModelTest {
     assertTrue(ext > 0, "walls and roof lose heat outdoors");
     assertTrue(ground > 0, "the floor on the earth loses heat to the ground");
     assertEquals(1, r.regionCount, "an ordinary room is one well-mixed region");
+  }
+
+  @Test
+  void aZoneBoundarySplitsAHallIntoCoupledRooms() {
+    Grid g = new Grid();
+    g.box(0, 0, 0, 21, 5, 11); // inside x 1..20, y 1..4, z 1..10
+    for (int y = 1; y <= 4; y++) {
+      for (int z = 1; z <= 10; z++) {
+        g.boundary.add(ThermalScanner.pack(10, y, z)); // a line of markers across at x = 10
+      }
+    }
+    ThermalScanner.Result west = ThermalScanner.scan(g, 5, 2, 5);
+    ThermalScanner.Result east = ThermalScanner.scan(g, 15, 2, 5);
+    assertEquals(ThermalScanner.Status.OK, west.status);
+    assertEquals(ThermalScanner.Status.OK, east.status);
+    assertEquals(9 * 4 * 10, west.cells.size());
+    assertEquals(10 * 4 * 10, east.cells.size());
+    // Every face onto the boundary couples to the room beyond it, at the open-air rate.
+    assertEquals(40, west.beyondCell.size());
+    for (int i = 0; i < west.beyondUA.size(); i++) {
+      assertEquals(ThermalScanner.BOUNDARY_UA, west.beyondUA.getFloat(i), 1e-6f);
+      assertTrue(east.cells.contains(west.beyondCell.getLong(i)));
+    }
+    // A boundary that stops short of a wall leaves one room: the far side is the same air.
+    Grid open = new Grid();
+    open.box(0, 0, 0, 21, 5, 11);
+    for (int y = 1; y <= 4; y++) {
+      for (int z = 1; z <= 9; z++) {
+        open.boundary.add(ThermalScanner.pack(10, y, z));
+      }
+    }
+    ThermalScanner.Result one = ThermalScanner.scan(open, 5, 2, 5);
+    assertEquals(20 * 4 * 10 - 4 * 9, one.cells.size());
+    assertEquals(0, one.beyondCell.size());
   }
 
   @Test
