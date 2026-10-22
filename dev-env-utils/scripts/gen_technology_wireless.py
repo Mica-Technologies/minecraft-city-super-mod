@@ -27,12 +27,16 @@ What is here, in creative order, and the class that places each
   beside the pole, stored facing the cardinal 45 degrees anticlockwise of where it points, its
   blockstate has four more facings whose Forge transform carries the model 45 degrees round the
   pole's axis (DIAGONALS), so each fit's saddles still meet the pole.
+- **The wall-arm Beam** (BlockMicafiDevice.Aimed, D11): its arm and wall plate are the block's
+  model and its head a submodel turned about the ball joint by the "aim" variants (AIMS: left,
+  centre or right 45 degrees, level or tipped down 20), the aim held by a tile entity that does
+  nothing else.
 
 Clicking changes the status light (MicafiLight): an access point's ring (blue, white, off, and
 adopting, which flashes white and blue) or a radio's link light (green, blue, white, off). The
 light is two bits of metadata, the blockstate swapping one texture: the AP face picture (a
 square plane with the disc cut out of it, so a round face costs one quad) or a 16 px LED
-swatch. Nothing ticks and there is no tile entity.
+swatch. Nothing ticks, and only the wall-arm Beam has a tile entity (its aim).
 
 Writes models under models/block/technology/wireless and textures under
 textures/blocks/technology/wireless.
@@ -471,19 +475,74 @@ def beam_disc(cy=9.5):
 
 
 BEAM_T = dict(W_T, face=C.T("beam_face"))
-add_device("micafi_beam_bridge",
-           N("Micafi Beam Building Bridge", "Micafi Beam Gebäudebrücke",
-             "Puente entre Edificios Micafi Beam", "Micafi Beam byggnadslänk"),
-           beam_disc()
-           + [E((7.1, 8.6, 7.4), (8.9, 10.4, 8.8), "g"),
-              E((7.4, 7.0, 8.8), (8.6, 8.6, 12.0), "g"),
-              E((7.2, 5.6, 11.4), (8.8, 7.4, 13.4), "g"),
-              E((6.6, 4.6, 13.4), (9.4, 7.8, 15.3), "g"),
-              E((5.4, 3.8, 15.3), (10.6, 8.6, 16), "g", faces=("north", "east", "west", "up",
-                                                                 "down")),
-              E((7.75, 1.4, 4.6), (8.25, 5.6, 5.1), "c"),
-              E((7.75, 1.4, 5.1), (8.25, 1.9, 16), "c", faces=("east", "west", "up", "down"))],
-           BEAM_T, "link", "led", display(1.1, 0, -4))
+# The wall-arm Beam (D11): the arm and wall plate are the block's model, the head (disc, hub and
+# its cable as far as the swivel) a submodel the "aim" variants turn about the ball joint at
+# BEAM_PIVOT, the middle of the joint, so yaw alone is a turn about the block's vertical axis.
+# The light's texture reaches the head through Forge's texture sync into submodels.
+BEAM_PIVOT = (8.0, 9.5, 8.0)
+AIMS = (("centre", 0, 0), ("left", 45, 0), ("right", -45, 0), ("centre_down", 0, -20),
+        ("left_down", 45, -20), ("right_down", -45, -20))
+
+
+def aim_transform(yaw, tilt):
+    """The head turned ``tilt`` degrees about x (negative tips its face down), then ``yaw``
+    about y (positive to the installer's left), both about BEAM_PIVOT: Forge applies a rotation
+    list last to first, and turns about the block's middle, so the translation puts the pivot
+    back where it was."""
+    d = [(BEAM_PIVOT[0] - 8) / 16.0, (BEAM_PIVOT[1] - 8) / 16.0, (BEAM_PIVOT[2] - 8) / 16.0]
+    t, y = math.radians(tilt), math.radians(yaw)
+    rx = [d[0], d[1] * math.cos(t) - d[2] * math.sin(t), d[1] * math.sin(t) + d[2] * math.cos(t)]
+    r = [rx[0] * math.cos(y) + rx[2] * math.sin(y), rx[1],
+         -rx[0] * math.sin(y) + rx[2] * math.cos(y)]
+    tr = {}
+    rot = [{"y": yaw}] if yaw else []
+    if tilt:
+        rot.append({"x": tilt})
+    if rot:
+        tr["rotation"] = rot
+    move = [round(d[k] - r[k], 4) for k in range(3)]
+    if any(move):
+        tr["translation"] = [m + 0.0 for m in move]
+    return tr
+
+
+def add_aimed_beam(reg, names, arm, head, textures, disp):
+    t = dict(textures)
+    t.setdefault("particle", tc.T("white_plastic"))
+    t["led"] = C.T("led_%s" % LINK_VALUES[0])
+    arm_model = tc.with_display(tc.model(t, arm), disp)
+    head_model = tc.model(t, head)
+    head_ref = C.M(reg + "_head")
+    aims = {}
+    for name, yaw, tilt in AIMS:
+        sub = {"model": head_ref}
+        tr = aim_transform(yaw, tilt)
+        if tr:
+            sub["transform"] = tr
+        aims[name] = {"submodel": {"head": sub}}
+    state = tc.facing_state(C.M(reg), {"link": light_textures("link", "led"), "aim": aims})
+    state["variants"]["inventory"] = [{"submodel": {"head": {"model": head_ref}}}]
+    b = tc.extent(arm + head)
+    java = 'new BlockMicafiDevice.Aimed("%s", %s, MicafiLight.LINK)' % (reg, tc.box_java(b))
+    C.add(reg, java, names, {reg: arm_model, reg + "_head": head_model}, state, tab=TAB)
+
+
+add_aimed_beam("micafi_beam_bridge",
+               N("Micafi Beam Building Bridge", "Micafi Beam Gebäudebrücke",
+                 "Puente entre Edificios Micafi Beam", "Micafi Beam byggnadslänk"),
+               [E((7.1, 8.6, 7.1), (8.9, 10.4, 8.9), "g"),
+                E((7.4, 7.0, 8.9), (8.6, 8.6, 12.0), "g"),
+                E((7.2, 5.6, 11.4), (8.8, 7.4, 13.4), "g"),
+                E((6.6, 4.6, 13.4), (9.4, 7.8, 15.3), "g"),
+                E((5.4, 3.8, 15.3), (10.6, 8.6, 16), "g", faces=("north", "east", "west", "up",
+                                                                   "down")),
+                E((7.75, 1.4, 8.0), (8.25, 1.9, 16), "c", faces=("north", "east", "west", "up",
+                                                                  "down"))],
+               beam_disc()
+               + [E((7.75, 1.4, 4.6), (8.25, 5.6, 5.1), "c"),
+                  E((7.75, 1.4, 5.1), (8.25, 1.9, 8.0), "c", faces=("east", "west", "up",
+                                                                     "down"))],
+               BEAM_T, display(1.1, 0, -4))
 add_device("micafi_beam_bridge_pole_fitted",
            N("Micafi Beam Building Bridge (for Poles)", "Micafi Beam Gebäudebrücke (für Masten)",
              "Puente entre Edificios Micafi Beam (para Postes)", "Micafi Beam byggnadslänk (för stolpar)"),
