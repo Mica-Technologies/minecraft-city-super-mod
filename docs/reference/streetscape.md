@@ -2,7 +2,7 @@
 
 Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters.
 
-!!! info "102 blocks in this tab"
+!!! info "105 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -81,11 +81,14 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Pad-Mount Transformer (Small, Rusted) | `csm:transformer_padmount_small_rusted` | 3 | 12 | pickaxe | 1 |
 | Pad-Mount Transformer (Three-Phase) | `csm:transformer_padmount_three_phase` | 3 | 12 | pickaxe | 1 |
 | Pad-Mount Transformer (Three-Phase, Rusted) | `csm:transformer_padmount_three_phase_rusted` | 3 | 12 | pickaxe | 1 |
+| Parking Exit Pay Kiosk | `csm:parking_exit_kiosk` | 3.0 | 10.0 | pickaxe | 1 |
+| Parking Gate Arm | `csm:parking_gate_arm` | 3.0 | 10.0 | pickaxe | 1 |
 | Parking Meter (Digital) | `csm:parking_meter_digital` | 3 | 12 | pickaxe | 1 |
 | Parking Meter (Digital, Double) | `csm:parking_meter_digital_double` | 3 | 12 | pickaxe | 1 |
 | Parking Meter (Mechanical) | `csm:parking_meter_mechanical` | 3 | 12 | pickaxe | 1 |
 | Parking Meter (Mechanical, Double) | `csm:parking_meter_mechanical_double` | 3 | 12 | pickaxe | 1 |
 | Parking Pay Station | `csm:parking_pay_station` | 3 | 12 | pickaxe | 1 |
+| Parking Ticket Dispenser | `csm:parking_ticket_dispenser` | 3.0 | 10.0 | pickaxe | 1 |
 | Pay-by-Phone Parking Sign | `csm:parking_pay_by_phone_sign` | 3 | 12 | pickaxe | 1 |
 | Pipe Bollard (Yellow Sleeve) | `csm:bollard_pipe_sleeve` | 3 | 12 | pickaxe | 1 |
 | Sewer Cleanout | `csm:sewer_cleanout` | 1.5 | 10 | pickaxe | 0 |
