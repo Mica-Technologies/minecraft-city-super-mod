@@ -6,7 +6,8 @@
     "r": "csm:blocks/technology/networking/hanger_rod",
     "c": "csm:blocks/technology/networking/cables_top",
     "cs": "csm:blocks/technology/networking/cables_side",
-    "ce": "csm:blocks/technology/networking/cables_end"
+    "ce": "csm:blocks/technology/networking/cables_end",
+    "w": "csm:blocks/technology/networking/cable_wrap"
   },
   "elements": [
     {

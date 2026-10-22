@@ -486,13 +486,17 @@ ROD = (90, 92, 96)
 
 @C.texture("wire_mesh")
 def _wire_mesh():
-    """A wire basket's mesh: 32 px, a wire every 8 texels each way, clear between."""
+    """A wire basket's mesh: 32 px, a wire every 8 texels each way, clear between. Each wire is
+    two texels (a pixel of the block) astride the line, so the sheet is the same mirrored: the
+    trays' turned arms show it mirrored, and a one-texel wire jumped half a pixel at every block
+    joint (a thinner wire also broke up at a grazing angle)."""
     img = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
     px = img.load()
     for y in range(32):
         for x in range(32):
-            if x % 8 == 0 or y % 8 == 0:
-                k = 1.0 if (x % 8 == 0) != (y % 8 == 0) else 1.12
+            wx, wy = x % 8 in (0, 7), y % 8 in (0, 7)
+            if wx or wy:
+                k = 1.0 if wx != wy else 1.12
                 px[x, y] = tc.clamp(tuple(v * k for v in GALV)) + (255,)
     return img
 
@@ -513,10 +517,10 @@ def _cable_px(c, k):
 
 @C.texture("cables_top")
 def _cables_top():
-    """The top of the bundle, run along v: each cable lit down its outer texel, and a black hook
-    and loop tie across the middle (v 7.5..8.5, so one tie a block). Like the order, the shading
-    is mirrored about the middle, so a turned arm meets the middle at every seam; and nothing
-    varies along the run but the tie, or the arm and middle would meet at a step."""
+    """The top of the bundle, run along v: each cable lit down its outer texel. Like the order,
+    the shading is mirrored about the middle, so a turned arm meets the middle at every seam; and
+    nothing varies along the run, or the arm and middle would meet at a step. The tie is a band
+    of its own (cable_wrap), not painted here."""
     img = Image.new("RGBA", (32, 32))
     px = img.load()
     for i, c in enumerate(CABLE_ORDER):
@@ -524,9 +528,6 @@ def _cables_top():
         for y in range(32):
             px[lit, y] = _cable_px(c, 1.25)
             px[dark, y] = _cable_px(c, 0.82)
-    for x in range(32):
-        px[x, 15] = (52, 53, 57, 255)
-        px[x, 16] = (24, 25, 27, 255)
     return img
 
 
@@ -541,9 +542,6 @@ def _cables_side():
             k = (0.78, 1.0, 1.2, 1.25, 1.12, 0.98, 0.84, 0.66)[y]
             for x in range(32):
                 px[x, row * 8 + y] = _cable_px(c, k)
-    for y in range(32):
-        px[15, y] = (52, 53, 57, 255)
-        px[16, y] = (24, 25, 27, 255)
     return img
 
 
@@ -561,6 +559,7 @@ def _cables_end():
     return img
 
 
+C.textures["cable_wrap"] = lambda: tc.fill((34, 35, 38), 16, 6, 4241)
 C.textures["galvanized"] = lambda: tc.fill(GALV, 16, 4, 4230)
 C.textures["ladder_black"] = lambda: tc.fill(LADDER_BLACK, 16, 2, 4231)
 C.textures["ladder_icon"] = lambda: tc.fill(LADDER_ICON, 16, 3, 4233)
@@ -638,23 +637,29 @@ def tray(reg, names, kind, full=False):
         arm = [E((2, 0, 0), (14, 0.25, 2), "m", faces=("up", "down")),
                E((2, 0, 0), (2.25, rail_h, 2), "m", faces=("east", "west")),
                E((13.75, 0, 0), (14, rail_h, 2), "m", faces=("east", "west")),
-               E((2, rail_h - 0.25, 0), (2.25, rail_h, 2), "g", faces=("up",)),
-               E((13.75, rail_h - 0.25, 0), (14, rail_h, 2), "g", faces=("up",))]
+               E((2, rail_h - 0.25, 0), (2.25, rail_h, 2), "g",
+                 faces=("up", "down", "east", "west")),
+               E((13.75, rail_h - 0.25, 0), (14, rail_h, 2), "g",
+                 faces=("up", "down", "east", "west"))]
         rail = [E((2, 0, 2), (14, rail_h, 2.25), "m", faces=("north", "south")),
-                E((2, rail_h - 0.25, 2), (14, rail_h, 2.25), "g", faces=("up",))]
+                E((2, rail_h - 0.25, 2), (14, rail_h, 2.25), "g",
+                  faces=("up", "down", "north", "south"))]
     if full:
         # Cables between the rails (x 3..13), just clear of what they lie on. The top's uv runs
         # 16 across the bundle and at the same scale along it (1.6 a pixel), so the arms carry
-        # the middle's stripes on and the tie falls once a block, in its middle. The arm's
+        # the middle's stripes on. A hook and loop wrap goes round the bundle once a block, in
+        # the middle's middle, standing proud of the cables on every side. The arm's
         # sides take the same strip of the side texture both ways, clear of the tie. The
         # middle has its own cut ends, inside the arms where the run goes on and capping the
         # bundle where it turns.
-        t.update(c=C.T("cables_top"), cs=C.T("cables_side"), ce=C.T("cables_end"))
+        t.update(c=C.T("cables_top"), cs=C.T("cables_side"), ce=C.T("cables_end"),
+                 w=C.T("cable_wrap"))
         c0, c1 = (1.3, 2.8) if kind == "ladder" else (0.3, 2.25)
         sides = {"east": "cs", "west": "cs", "north": "ce", "south": "ce"}
         middle = middle + [E((3, c0, 3), (13, c1, 13), "c", per=sides,
                              uv={f: FULL16 for f in ("up", "down", "east", "west", "north",
-                                                     "south")})]
+                                                     "south")}),
+                           E((2.85, c0 - 0.1, 7.6), (13.15, c1 + 0.15, 8.4), "w")]
         arm = arm + [E((3, c0, 0), (13, c1, 3), "c", per=sides,
                        faces=("up", "down", "east", "west", "north"),
                        uv={"up": (0, 0, 16, 4.8), "down": (0, 11.2, 16, 16),

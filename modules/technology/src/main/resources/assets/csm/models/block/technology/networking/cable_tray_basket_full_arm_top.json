@@ -7,7 +7,8 @@
     "r": "csm:blocks/technology/networking/hanger_rod",
     "c": "csm:blocks/technology/networking/cables_top",
     "cs": "csm:blocks/technology/networking/cables_side",
-    "ce": "csm:blocks/technology/networking/cables_end"
+    "ce": "csm:blocks/technology/networking/cables_end",
+    "w": "csm:blocks/technology/networking/cable_wrap"
   },
   "elements": [
     {
@@ -126,6 +127,33 @@
             2.25,
             2
           ]
+        },
+        "down": {
+          "texture": "#g",
+          "uv": [
+            2,
+            14,
+            2.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#g",
+          "uv": [
+            14,
+            13.0,
+            16,
+            13.25
+          ]
+        },
+        "west": {
+          "texture": "#g",
+          "uv": [
+            0,
+            13.0,
+            2,
+            13.25
+          ]
         }
       }
     },
@@ -148,6 +176,33 @@
             0,
             14,
             2
+          ]
+        },
+        "down": {
+          "texture": "#g",
+          "uv": [
+            13.75,
+            14,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#g",
+          "uv": [
+            14,
+            13.0,
+            16,
+            13.25
+          ]
+        },
+        "west": {
+          "texture": "#g",
+          "uv": [
+            0,
+            13.0,
+            2,
+            13.25
           ]
         }
       }
