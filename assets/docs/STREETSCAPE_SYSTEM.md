@@ -106,6 +106,34 @@ layout and writes it into the tab line, and places the stickers' decals 0.2 px p
   `economy_integration.allowedMods`.
   Without SUM, or when refused, meters take emeralds, which drop when a meter is broken.
 
+## Parking garage gates and ticket machines (#302)
+
+`gen_parking_garage.py` writes them; the code is in `streetscape/`.
+
+- **Gate arm** (`BlockParkingGate`, `parking_gate_arm`): a cabinet whose striped arm closes the
+  lane to its right as a driver facing it sees it (`armDirection`: the facing turned
+  anticlockwise). The arm is `TileEntityParkingGateRenderer`'s, a few dozen coloured quads with
+  the world's light, pivoting on the cabinet's side; it swings up in 1.5 s and down in 2 s.
+  Stored: the facing and `open` (bit 2), the server's answer, which the client swings toward, as
+  the railroad crossing gate's arm does. Saved on the tile entity: `md` the mode, `al` the arm
+  length (3 to 6 blocks). A click with an empty hand cycles the length, a sneak-click the mode:
+  - **Automatic**: lifts for anything in the lane (the arm's cells and a block either side, two
+    high): a player, a mob, a vehicle; holds 3 s after it clears.
+  - **Ticket**: lifts only for a ticket issued or paid at a machine beside it, for 10 s, and stays
+    up while the car is in the lane.
+  - **Redstone only.** Redstone lifts the arm in every mode.
+  The server decides every five ticks; nothing else runs.
+- **Ticket dispenser** (`parking_ticket_dispenser`) and **exit pay kiosk**
+  (`parking_exit_kiosk`), both `BlockParkingMachine`, with a head at a car window's height. The
+  dispenser hands out a `parking_ticket` stamped with the real time (`t`, epoch ms, as the meters
+  keep real time) and lifts the nearest gate within four blocks: a machine pairs with the gate
+  beside it with no linking. The kiosk takes a ticket, charges for the hours since it was issued
+  (rounded up, at least one, at most 24; an unstamped ticket is 24) at its hourly rate, in
+  emeralds or, with SUM's economy, as much money (`ParkingPaymentSum`, as the meters pay), and
+  lifts its gate. Its owner (who placed it) or an op sneak-clicks with an empty hand to change
+  the rate: 1, 2, 3, 5, 10, free. Nothing is collected for the owner (the meters' collect mode is
+  not carried over).
+
 ## Mailboxes
 
 `BlockMailbox` (`BlockMailboxCurbside` adds the flag), `TileEntityMailbox`, `ContainerMailbox`,

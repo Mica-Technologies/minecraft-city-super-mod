@@ -7,7 +7,10 @@ import com.micatechnologies.minecraft.csm.streetscape.BlockFireHydrant;
 import com.micatechnologies.minecraft.csm.streetscape.BlockMailbox;
 import com.micatechnologies.minecraft.csm.streetscape.BlockMailboxCurbside;
 import com.micatechnologies.minecraft.csm.streetscape.BlockNewsRack;
+import com.micatechnologies.minecraft.csm.streetscape.BlockParkingGate;
+import com.micatechnologies.minecraft.csm.streetscape.BlockParkingMachine;
 import com.micatechnologies.minecraft.csm.streetscape.BlockParkingMeter;
+import com.micatechnologies.minecraft.csm.streetscape.ItemParkingTicket;
 import com.micatechnologies.minecraft.csm.streetscape.BlockStreetCover;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBox;
 import com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBoxLabelled;
@@ -341,6 +344,12 @@ public class CsmTabStreetscape extends CsmTab {
         new AxisAlignedBB(0.218750, 0.000000, 0.462500, 0.781250, 1.625000, 0.562500),
         new UtilityBoxSpec.Label(8.0f, 16.3f, 7.4f, 1, 1.3f, false,
             0xF0F0EC, 0x16683E))));
+
+    // Parking garage gate and ticket machines, #302 (gen_parking_garage.py --fragments).
+    initTabBlock(new BlockParkingGate()); // Parking Gate Arm
+    initTabBlock(new BlockParkingMachine("parking_ticket_dispenser", false)); // Parking Ticket Dispenser
+    initTabBlock(new BlockParkingMachine("parking_exit_kiosk", true)); // Parking Exit Pay Kiosk
+    initTabItem(new ItemParkingTicket()); // Parking Ticket
 
     // News racks (gen_streetscape_street_furniture.py --fragments).
     initTabBlock(new BlockNewsRack("news_rack_blue", new UtilityBoxSpec(1, 1, 2,

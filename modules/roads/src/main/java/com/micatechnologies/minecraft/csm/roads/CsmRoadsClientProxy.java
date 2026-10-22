@@ -22,6 +22,10 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
 
   @Override
   public void init(FMLInitializationEvent event) {
+    // A parking gate's arm, swung by its tile entity (#302)
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.streetscape.TileEntityParkingGate.class,
+        new com.micatechnologies.minecraft.csm.streetscape.TileEntityParkingGateRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficsigns.TileEntityDynamicRouteMarkerSign.class,
         new com.micatechnologies.minecraft.csm.trafficsigns.TileEntityDynamicRouteMarkerSignRenderer());

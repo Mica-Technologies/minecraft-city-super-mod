@@ -667,6 +667,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   multi-block code. Each head's window is written into its tab line so the meter renderer draws
   exactly on it. Payment is emeralds, or money through the optional SUM economy (reached by
   reflection in `ParkingPaymentSum`, never a build dependency); `--check`, `--fragments`
+- `gen_parking_garage.py` -- the parking garage pieces (#302): the gate arm cabinet
+  (`BlockParkingGate`, its arm `TileEntityParkingGateRenderer`'s), the ticket dispenser and exit
+  pay kiosk (`BlockParkingMachine`) and the Parking Ticket sprite; `--check`, `--fragments`
 - `gen_streetscape_bollards.py` -- the bollard styles external road mods lack: cast-iron
   decorative, stainless, crash-rated, pipe with a cover sleeve, flexible delineators
   (`BlockBollardFlexible`, no collision) and the red concrete sphere, a lathed OBJ written through

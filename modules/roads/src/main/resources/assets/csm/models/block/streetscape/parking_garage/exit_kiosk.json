@@ -1,0 +1,370 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pedestal": "csm:blocks/streetscape/parking_garage/pedestal",
+    "machine": "csm:blocks/streetscape/parking_garage/machine",
+    "face": "csm:blocks/streetscape/parking_garage/kiosk_face",
+    "cap": "csm:blocks/streetscape/parking_garage/cap",
+    "particle": "csm:blocks/streetscape/parking_garage/pedestal"
+  },
+  "elements": [
+    {
+      "from": [
+        6,
+        0,
+        6
+      ],
+      "to": [
+        10,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pedestal",
+          "uv": [
+            6,
+            0,
+            10,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pedestal",
+          "uv": [
+            6,
+            0,
+            10,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pedestal",
+          "uv": [
+            6,
+            0,
+            10,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pedestal",
+          "uv": [
+            6,
+            0,
+            10,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        0,
+        5
+      ],
+      "to": [
+        11,
+        0.6,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pedestal",
+          "uv": [
+            5,
+            15.4,
+            11,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pedestal",
+          "uv": [
+            5,
+            15.4,
+            11,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pedestal",
+          "uv": [
+            5,
+            15.4,
+            11,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pedestal",
+          "uv": [
+            5,
+            15.4,
+            11,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#pedestal",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#pedestal",
+          "uv": [
+            5,
+            5,
+            11,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        16,
+        4
+      ],
+      "to": [
+        12,
+        26,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#machine",
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#machine",
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#machine",
+          "uv": [
+            0,
+            3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#machine",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#machine",
+          "uv": [
+            4,
+            4,
+            12,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        26,
+        3.5
+      ],
+      "to": [
+        12.5,
+        27,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            3.5,
+            5,
+            12.5,
+            6
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            3.5,
+            5,
+            12.5,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            3.5,
+            5,
+            12.5,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            3.5,
+            5,
+            12.5,
+            6
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            3.5,
+            3.5,
+            12.5,
+            12.5
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            3.5,
+            3.5,
+            12.5,
+            12.5
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        -1.5,
+        0
+      ],
+      "scale": [
+        0.55,
+        0.55,
+        0.55
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.375,
+        0.375,
+        0.375
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}
