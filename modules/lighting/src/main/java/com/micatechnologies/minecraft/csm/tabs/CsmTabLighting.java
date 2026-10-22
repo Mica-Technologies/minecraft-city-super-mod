@@ -4,6 +4,8 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lighting.BlockDecorativeChainFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightFactory;
+import com.micatechnologies.minecraft.csm.lighting.BlockLinearLight;
+import com.micatechnologies.minecraft.csm.lighting.BlockLinearLightHanger;
 import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightPoleColoredFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockAltoLLM;
 import com.micatechnologies.minecraft.csm.lighting.BlockFBM;
@@ -149,6 +151,27 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("troffer_pattern_squares_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Squares, 2x4)
     initTabBlock(new BlockBrightLightFactory("troffer_pattern_dots_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Dots, 2x2)
     initTabBlock(new BlockBrightLightFactory("troffer_pattern_dots_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Dots, 2x4)
+    initTabBlock(new BlockLinearLight("linear_light_black")); // Linear LED Light (Black)
+    initTabBlock(new BlockLinearLight("linear_light_silver")); // Linear LED Light (Silver)
+    initTabBlock(new BlockLinearLight("linear_light_white")); // Linear LED Light (White)
+    initTabBlock(new BlockLinearLight("linear_light_light_grey")); // Linear LED Light (Light Grey)
+    initTabBlock(new BlockLinearLight("linear_light_charcoal")); // Linear LED Light (Charcoal)
+    initTabBlock(new BlockLinearLight("linear_light_navy")); // Linear LED Light (Navy)
+    initTabBlock(new BlockLinearLight("linear_light_sage")); // Linear LED Light (Sage)
+    initTabBlock(new BlockLinearLight("linear_light_terracotta")); // Linear LED Light (Terracotta)
+    initTabBlock(new BlockLinearLight("linear_light_oak")); // Linear LED Light (Light Oak)
+    initTabBlock(new BlockLinearLight("linear_light_walnut")); // Linear LED Light (Walnut)
+    initTabBlock(new BlockLinearLight("linear_light_louver_black")); // Louvered Linear LED Light (Black)
+    initTabBlock(new BlockLinearLight("linear_light_louver_silver")); // Louvered Linear LED Light (Silver)
+    initTabBlock(new BlockLinearLight("linear_light_louver_white")); // Louvered Linear LED Light (White)
+    initTabBlock(new BlockLinearLight("linear_light_louver_light_grey")); // Louvered Linear LED Light (Light Grey)
+    initTabBlock(new BlockLinearLight("linear_light_louver_charcoal")); // Louvered Linear LED Light (Charcoal)
+    initTabBlock(new BlockLinearLight("linear_light_louver_navy")); // Louvered Linear LED Light (Navy)
+    initTabBlock(new BlockLinearLight("linear_light_louver_sage")); // Louvered Linear LED Light (Sage)
+    initTabBlock(new BlockLinearLight("linear_light_louver_terracotta")); // Louvered Linear LED Light (Terracotta)
+    initTabBlock(new BlockLinearLight("linear_light_louver_oak")); // Louvered Linear LED Light (Light Oak)
+    initTabBlock(new BlockLinearLight("linear_light_louver_walnut")); // Louvered Linear LED Light (Walnut)
+    initTabBlock(new BlockLinearLightHanger()); // Linear Light Cable Hanger
     initTabBlock(new BlockBrightLightFactory("ltecdtd", new AxisAlignedBB(0.250000, 0.000000, 0.312500, 0.750000, 0.312500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgc1v1np", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.340625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgcj", new AxisAlignedBB(0.375000, 0.000000, 0.500000, 0.625000, 0.312500, 1.000000), 0));

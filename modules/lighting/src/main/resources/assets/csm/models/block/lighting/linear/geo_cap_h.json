@@ -1,0 +1,75 @@
+{
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "textures": {},
+  "elements": [
+    {
+      "from": [
+        6.5,
+        10.0,
+        0
+      ],
+      "to": [
+        9.5,
+        13.0,
+        0.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            6.5,
+            3.0,
+            9.5,
+            6.0
+          ]
+        },
+        "south": {
+          "texture": "#housing",
+          "uv": [
+            6.5,
+            3.0,
+            9.5,
+            6.0
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            6.5,
+            15.75,
+            9.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            0.25
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            15.75,
+            3.0,
+            16,
+            6.0
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            3.0,
+            0.25,
+            6.0
+          ]
+        }
+      }
+    }
+  ]
+}

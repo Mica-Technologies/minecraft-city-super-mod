@@ -1,0 +1,130 @@
+{
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "textures": {},
+  "elements": [
+    {
+      "from": [
+        6.5,
+        10.5,
+        0
+      ],
+      "to": [
+        9.5,
+        13.0,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            3.0,
+            16,
+            5.5
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            3.0,
+            16,
+            5.5
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            6.5,
+            0,
+            9.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        10.0,
+        0
+      ],
+      "to": [
+        7.25,
+        10.5,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            6.5,
+            0,
+            7.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            5.5,
+            16,
+            6.0
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            5.5,
+            16,
+            6.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.75,
+        10.0,
+        0
+      ],
+      "to": [
+        9.5,
+        10.5,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            8.75,
+            0,
+            9.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            5.5,
+            16,
+            6.0
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            5.5,
+            16,
+            6.0
+          ]
+        }
+      }
+    }
+  ]
+}

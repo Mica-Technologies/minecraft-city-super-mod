@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/lighting/linear/geo_item_opal",
+  "textures": {
+    "housing": "csm:blocks/finishes/finish_white",
+    "particle": "csm:blocks/finishes/finish_white"
+  }
+}

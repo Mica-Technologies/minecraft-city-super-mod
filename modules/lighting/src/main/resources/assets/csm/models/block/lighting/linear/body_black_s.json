@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/lighting/linear/geo_body_s",
+  "textures": {
+    "housing": "csm:blocks/finishes/finish_black",
+    "particle": "csm:blocks/finishes/finish_black"
+  }
+}

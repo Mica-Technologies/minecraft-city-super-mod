@@ -734,6 +734,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
+- `gen_linear_lights.py` -- the linear LED lights (`BlockLinearLight`, opal and louvered, ten
+  finishes) and their cable hanger, and the shared ten-finish palette in Core
+  (`blocks/finishes/`): multipart parts drawn for a run along z, joined, capped, hung and cabled
+  by actual state; `--check`, `--fragments`
 - `gen_troffers.py` -- the modern lay-in troffers (louvered slot, center basket, four patterned
   lenses; 2x2 and 2x4) and the rebuilt Lithonia 2ESL2/2ESL4: lens drawn unshaded and swapped per
   STATE, states 0 and 2 naming the unlit lens so `gen_lighting_lit_atlases.py` leaves them alone,

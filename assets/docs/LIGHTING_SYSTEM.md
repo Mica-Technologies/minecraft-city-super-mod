@@ -387,6 +387,35 @@ STATE, as the decorative family does. **States 0 and 2 name the unlit lens expli
 than inheriting it: `gen_lighting_lit_atlases.py` takes any blockstate whose 0 and 2 are empty for
 its own, and these are not its.
 
+## Linear LED Lights
+
+`BlockLinearLight` (`gen_linear_lights.py`): the slim linear fixture of a modern open office, one
+block a segment, joined into one fixture along a run. Twenty blocks, `linear_light_<finish>`
+(opal lens, a continuous lit strip) and `linear_light_louver_<finish>` (white cross blades in
+front of the lens), in the ten-finish palette the hanging acoustic panels share: black, silver,
+white; light grey, charcoal; navy, sage, terracotta; oak, walnut. The palette's textures live in
+Core (`blocks/finishes/finish_<name>`), since Lighting and Building both draw with them.
+
+**Stored** is only what every bright light stores, facing and STATE (the metadata is full).
+**Actual state** does the rest: `front` / `back`, whether a segment on the same axis at the same
+height continues the run that way (an end cap where it does not); `hung`, whether the block above
+gives no solid underside (flush against the ceiling at y 13..16 when it does, hung at y 10..13
+otherwise); `cable`, a hung segment's aircraft cable up out of its block at a run's ends, every
+fourth block along it (by world position, so the spacing holds wherever a run starts) and under a
+`BlockLinearLightHanger`. The hanger, `linear_light_hanger`, is a block of cable stacked under a
+ceiling so a run hangs one or more blocks lower. 128 states a light.
+
+**A run is one fixture.** A click switches every segment, walking the run up to 64 blocks each
+way, and redstone powering any segment powers the whole run (each segment's `neighborChanged`
+works out the run's power and sets the rest, in the automatic states only).
+`AbstractBrightLight.handleAirLightBlock` became protected for this.
+
+The blockstate is vanilla multipart, every part drawn for a run along z and turned by the facing
+(the back cap a further half turn). Geometry is a handful of parents (`geo_body_*`, `geo_cap_*`,
+the lens models); a finish is a child naming its housing texture. The lens is unshaded, as the
+troffers' is, and in the lit louvered lens the blades are too, or they stay a shaded grey in
+front of a lit lens.
+
 ## Tall Building Beacons (Aviation Obstruction Lights)
 
 Two aviation obstruction beacons for the top of a tall building, a tower or a mast, both

@@ -157,7 +157,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     return handleAirLightBlock(true, world, pos);
   }
 
-  private boolean handleAirLightBlock(boolean on, World world, BlockPos pos) {
+  protected boolean handleAirLightBlock(boolean on, World world, BlockPos pos) {
     Block lightupAir = getLightupAirBlock();
     if (lightupAir == null) {
       return false;

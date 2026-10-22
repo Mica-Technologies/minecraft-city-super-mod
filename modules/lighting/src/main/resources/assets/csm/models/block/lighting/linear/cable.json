@@ -1,0 +1,60 @@
+{
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "cable": "csm:blocks/lighting/linear/aircraft_cable",
+    "particle": "csm:blocks/lighting/linear/aircraft_cable"
+  },
+  "elements": [
+    {
+      "from": [
+        7.9,
+        13,
+        7.9
+      ],
+      "to": [
+        8.1,
+        16,
+        8.1
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            7.9,
+            0,
+            8.1,
+            3
+          ]
+        }
+      }
+    }
+  ]
+}

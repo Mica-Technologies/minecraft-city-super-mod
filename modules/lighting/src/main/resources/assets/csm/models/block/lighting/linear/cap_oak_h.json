@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/lighting/linear/geo_cap_h",
+  "textures": {
+    "housing": "csm:blocks/finishes/finish_oak",
+    "particle": "csm:blocks/finishes/finish_oak"
+  }
+}
