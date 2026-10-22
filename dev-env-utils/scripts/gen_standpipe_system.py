@@ -373,8 +373,95 @@ def fittings():
                   models, state, item=item(reg), tab=TAB)
 
 
+# ------------------------------------------------------------------------------------------
+# Sprinkler heads and drops that join an exposed pipe (#304)
+# ------------------------------------------------------------------------------------------
+HEAD_FINISHES = {
+    # key: (texture, names en/de/es/sv)
+    "white": (FP("white"), ("White", "Weiß", "blanco", "vit")),
+    "black": (FP("black"), ("Black", "Schwarz", "negro", "svart")),
+    "chrome": (FP("chrome"), ("Chrome", "Chrom", "cromado", "krom")),
+}
+NONE = 9          # BlockSprinklerHead.NONE: no pipe to join
+NIPPLE_R = 1.1
+DROP_R = 1.5      # BlockSprinklerDrop's box is this radius
+
+
+def head_body(upright):
+    """A pendant hangs from y 16 down to its deflector at 9.5; an upright is the same turned
+    over, standing from y 0. Wrench boss and frame in the finish, a red glass bulb in the
+    frame, the deflector a thin octagon."""
+    def y(a, b):
+        return (16 - b, 16 - a) if upright else (a, b)
+    els = []
+    els += octagon("y", 8, 8, NIPPLE_R, *y(13.5, 16), "f", True)
+    els += octagon("y", 8, 8, 1.7, *y(12, 13.5), "f", True)
+    lo, hi = y(10, 12)
+    els.append(lc.box((6.3, lo, 7.5), (7.0, hi, 8.5), "f"))
+    els.append(lc.box((9.0, lo, 7.5), (9.7, hi, 8.5), "f"))
+    els += octagon("y", 8, 8, 0.5, lo, hi, "bulb", True)
+    els += octagon("y", 8, 8, 2.6, *y(9.5, 10), "f", True)
+    return els
+
+
+def head_reach(upright, reach):
+    """The nipple on into the pipe's cell, to the pipe (a pixel into it, hidden), or the
+    escutcheon (pendant) or flange (upright) flat on the ceiling or floor."""
+    if reach == NONE:
+        a, b = (15.5, 16) if not upright else (0, 0.5)
+        return octagon("y", 8, 8, 3.0, a, b, "f", True)
+    if upright:
+        return octagon("y", 8, 8, NIPPLE_R, -reach - 1, 2.5, "f", True)
+    return octagon("y", 8, 8, NIPPLE_R, 13.5, 16 + reach + 1, "f", True)
+
+
+def drop_reach(reach):
+    if reach == NONE:
+        return octagon("y", 8, 8, 3.0, 15.5, 16, "p", True)
+    return octagon("y", 8, 8, DROP_R, 16, 16 + reach + 0.5, "p", True)
+
+
+def reach_state(prefix, body):
+    parts = [{"apply": {"model": C.M(body)}}]
+    for r in range(NONE + 1):
+        parts.append({"when": {"reach": str(r)}, "apply": {"model": C.M("%s_reach_%d" % (prefix, r))}})
+    return {"multipart": parts}
+
+
+def sprinklers():
+    for kind, upright in (("pendant", False), ("upright", True)):
+        for finish, (t, (en, de, es, sv)) in HEAD_FINISHES.items():
+            reg = "sprinkler_%s_%s" % (kind, finish)
+            tex = {"f": t, "bulb": FP("red"), "particle": t}
+            models = {reg + "_body": lc.model(tex, head_body(upright))}
+            for r in range(NONE + 1):
+                models["%s_reach_%d" % (reg, r)] = lc.model(tex, head_reach(upright, r))
+            models[reg + "_item"] = lc.model(tex, head_body(upright) + head_reach(upright, NONE))
+            names = {"pendant": ("Pendant Sprinkler Head (%s)" % en,
+                                 "Hängender Sprinklerkopf (%s)" % de,
+                                 "Rociador colgante (%s)" % es,
+                                 "Hängande sprinklerhuvud (%s)" % sv),
+                     "upright": ("Upright Sprinkler Head (%s)" % en,
+                                 "Stehender Sprinklerkopf (%s)" % de,
+                                 "Rociador montante (%s)" % es,
+                                 "Stående sprinklerhuvud (%s)" % sv)}[kind]
+            C.add(reg, 'new BlockSprinklerHead("%s", %s)' % (reg, "true" if upright else "false"),
+                  names, models, reach_state(reg, reg + "_body"), item=item(reg), tab=TAB)
+    for finish, (_, (en, de, es_f, es_m, sv)) in FINISHES.items():
+        reg = "sprinkler_drop_%s" % finish
+        models = {reg + "_body": model(finish, octagon("y", 8, 8, DROP_R, 0, 16, "p", True))}
+        for r in range(NONE + 1):
+            models["%s_reach_%d" % (reg, r)] = model(finish, drop_reach(r))
+        models[reg + "_item"] = model(finish, octagon("y", 8, 8, DROP_R, 0, 16, "p", True))
+        C.add(reg, 'new BlockSprinklerDrop("%s")' % reg,
+              ("Sprinkler Drop (%s)" % en, "Sprinkler-Fallrohr (%s)" % de,
+               "Bajante de rociador (%s)" % es_f, "Sprinklernedstick (%s)" % sv),
+              models, reach_state(reg, reg + "_body"), item=item(reg), tab=TAB)
+
+
 pipes()
 fittings()
+sprinklers()
 
 # The shared arm and joint models belong to no one block; hang them on the first block so the
 # catalogue writes (and --check compares) them.
