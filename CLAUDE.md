@@ -788,7 +788,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_exposed_services.py` -- the HVAC tab's decorative exposed ducts and pipes
   (`BlockExposedDuct`: round spiral and rectangular duct, painted pipe), joining six ways by the
   cable trays' rule, octagon sections, the middle and fittings picked from the arms by multipart
-  conditions, rods and straps under a solid ceiling; `--check`, `--fragments`
+  conditions, rods and straps under a solid ceiling or the stackable threaded rod hanger
+  (`BlockExposedServiceHanger`); `--check`, `--fragments`
 - `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner
@@ -1311,7 +1312,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   (`BlockStandpipePipe`, six-way) and wall-run (`BlockStandpipeWallPipe`, axis set back to the
   wall) pipe, main and branch, red and silver, as multipart blockstates of per-side arm models,
   plus the inlet manifold, hose outlet, air release and drain valves as wall pipes with a body
-  at the joint. Also writes `standpipe_riser`, the red wall branch pipe; `--check`, `--fragments`
+  at the joint, and the pass-throughs (`BlockStandpipePassthrough`): a pipe dressed as the wall,
+  floor or ceiling block it stands in, the block's own quads baked into the chunk mesh by
+  `StandpipePassthroughModels`, trim plates where the pipe leaves. Also writes `standpipe_riser`, the red wall branch pipe; `--check`, `--fragments`
 - `gen_emergency_lighting.py` -- the emergency lights added to Exits & Emergency Lighting
   (twin-head units, LED bar, remote heads, wall pack, recessed downlight), all one factory class;
   the lamp boxes in its tab lines are the model's lamps, so the renderer's glow sits on them;

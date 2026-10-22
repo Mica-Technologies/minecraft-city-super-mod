@@ -12,6 +12,8 @@ module. Refuses any world not named "Ceilings Demo"; --create makes one (flat, c
 - **An open office** (x 0..44, z 14..34): a dark ceiling with light grey baffles over hung black
   linear runs on cable hangers, a sage cloud with a white louvered run under it, a galvanized
   spiral duct with a tee and a drop, a black rectangular duct round a corner, and a pipe rack.
+- **Standpipe pass-throughs** (x 60..76, z 14..30): through a brick wall and up through a stone
+  floor, dressed as each, and bare ones beside them.
 - **A gallery** (x 0..53, z 40..62): every linear light finish (opal and louvered), every baffle
   and cloud finish, and every duct and pipe colour with an elbow.
 
@@ -46,6 +48,8 @@ class Build:
     def __init__(self):
         self.blocks = []
         self.placed = set()
+        # pass-throughs to dress once placed: (x, y, z, block, meta)
+        self.dress = []
 
     def put(self, x, y, z, block, meta=0):
         if not block.startswith("minecraft:"):
@@ -136,6 +140,12 @@ def office(b):
         b.put(x, ceil - 1, z0 + 14, "duct_rect_black", AX)
     for z in range(z0 + 15, z0 + 19):
         b.put(35, ceil - 1, z, "duct_rect_black", AZ)
+    # a galvanized duct hung two blocks lower on threaded rod hangers
+    for x in range(22, 36):
+        b.put(x, ceil - 3, z0 + 18, "duct_round_galvanized", AX)
+    for x in (22, 26, 30, 34):
+        b.put(x, ceil - 1, z0 + 18, "exposed_service_hanger")
+        b.put(x, ceil - 2, z0 + 18, "exposed_service_hanger")
     # a pipe rack: four colours side by side
     for i, c in enumerate(("black", "white", "red", "silver")):
         for x in range(0, 20):
@@ -165,10 +175,41 @@ def gallery(b):
         b.put(x + 1, ceil - 1, z0 + 5, reg, AX)
 
 
+def passthroughs(b):
+    """Standpipe pass-throughs (x 60..76, z 14..30): a red main through a brick wall, dressed as
+    the brick; a silver main up through a stone floor, dressed as the stone; and a bare one, to
+    see before and after. The pass-throughs are dressed by their tile entity's NBT."""
+    x0, z0 = 60, 14
+    b.fill(x0, FLOOR, z0, x0 + 16, FLOOR, z0 + 16, "minecraft:quartz_block")
+    # a brick wall across x at x0 + 8, a red main through it at y FLOOR + 3
+    b.fill(x0 + 8, FLOOR + 1, z0, x0 + 8, FLOOR + 6, z0 + 8, "minecraft:brick_block")
+    for x in range(x0 + 2, x0 + 15):
+        b.put(x, FLOOR + 3, z0 + 4, "standpipe_pipe_main_red")
+    b.put(x0 + 8, FLOOR + 3, z0 + 4, "standpipe_passthrough_main_red", 1)
+    b.dress.append((x0 + 8, FLOOR + 3, z0 + 4, "minecraft:brick_block", 0))
+    # a stone floor slab at FLOOR + 4 over the far half, a silver main rising through it
+    b.fill(x0, FLOOR + 4, z0 + 10, x0 + 16, FLOOR + 4, z0 + 16, "minecraft:stone")
+    for y in range(FLOOR + 1, FLOOR + 9):
+        b.put(x0 + 8, y, z0 + 13, "standpipe_pipe_main_silver")
+    b.put(x0 + 8, FLOOR + 4, z0 + 13, "standpipe_passthrough_main_silver", 1)
+    b.dress.append((x0 + 8, FLOOR + 4, z0 + 13, "minecraft:stone", 0))
+    # and bare ones through the same slab, beside it
+    for y in range(FLOOR + 1, FLOOR + 9):
+        b.put(x0 + 4, y, z0 + 13, "standpipe_pipe_branch_red")
+    b.put(x0 + 4, FLOOR + 4, z0 + 13, "standpipe_passthrough_branch_red", 0)
+    # a silver branch through the brick wall, left bare
+    for x in range(x0 + 2, x0 + 15):
+        b.put(x, FLOOR + 5, z0 + 2, "standpipe_pipe_branch_silver")
+    b.put(x0 + 8, FLOOR + 5, z0 + 2, "standpipe_passthrough_branch_silver", 0)
+
+
 def expected():
     out = set(gen_ceilings.CATALOGUE) | set(gen_troffers.catalogue()) | {"l2esl2", "l2esl4"}
     out |= set(gen_linear_lights.registries()) | {gen_linear_lights.HANGER}
     out |= set(gen_acoustic_ceilings.registries()) | set(gen_exposed_services.registries())
+    out |= {gen_exposed_services.HANGER}
+    out |= {"standpipe_passthrough_%s_%s" % (s, f) for s in ("main", "branch")
+            for f in ("red", "silver")}
     return out
 
 
@@ -196,12 +237,16 @@ def main():
     placed_troffers, all_troffers = corridor(b)
     office(b)
     gallery(b)
+    passthroughs(b)
     # clear the volume first, then write everything in one call
     o.call("server_set_blocks", instance=server, mode="fill", block="minecraft:air", x=-2,
            y=FLOOR + 1, z=-2, toX=90, toY=FLOOR + 12, toZ=64, load=True)
     r = o.call("server_set_blocks", instance=server, mode="list", blocks=b.blocks,
                pairTwoPart=False, load=True)
     print("placed %s of %d" % (r.get("written"), len(b.blocks)))
+    for x, y, z, block, meta in b.dress:
+        o.call("server_set_blocks", instance=server, mode="list", pairTwoPart=False, blocks=[
+            {"x": x, "y": y, "z": z, "nbt": '{mb:"%s",mm:%db}' % (block, meta)}])
     missing = sorted(expected() - b.placed)
     if placed_troffers < all_troffers:
         print("troffer slots short: %d of %d placed" % (placed_troffers, all_troffers))

@@ -166,6 +166,19 @@ becomes the red wall branch pipe, so risers already placed join runs. Its old mo
   elements.
 - **Every arm is capped at both ends**, so where a main meets a branch the step is closed
   rather than see-through.
+- **Pass-throughs** (`BlockStandpipePassthrough`, four: main and branch, red and silver): a
+  free-standing pipe (it is one, so every pipe joins it) that takes on the look of the wall,
+  floor or ceiling it stands in. Right-click holding a block dresses it as that block (used up in
+  survival, given back when taken off or broken); right-click with an empty hand copies the first
+  full block beside it across the pipe's run; sneak-click with an empty hand makes it bare again.
+  Only plain, full, opaque blocks with no tile entity, drawn solid or cutout, are taken. The block
+  is kept on a tile entity that never ticks (`mb`, `mm`, `pd`); `covered` (metadata bit 0) makes
+  the pass-through opaque and solid, so neighbours cull against it and light stops at it.
+  `StandpipePassthroughModels` wraps its model (through `CsmBakedModelWrappers`) and adds the
+  copied block's own model's quads, in whichever pass that block draws in, to the chunk mesh;
+  dressed, the multipart draws only a trim plate (`_escutcheon_<side>`) on each face the pipe
+  leaves through. No renderer, nothing cached or built per frame: it costs what the block it
+  copies costs.
 - **No baked shading on pipe textures.** Each arm face takes half a block of texture, so shading
   drawn across a texture repeats along a run as bands.
 

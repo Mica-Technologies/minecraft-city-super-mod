@@ -16,8 +16,9 @@ The blockstate is vanilla multipart, every part drawn for a run along z (north) 
   for the level sides and by x for up and down;
 - the middle: a length along the one axis all its arms share (the conditions say which), or, where
   the arms turn, a fitting a little larger than the duct;
-- where the segment is level under a solid ceiling (`rod`), a threaded rod up to it, and a strap
-  round the duct when the run is straight.
+- where the segment is level under a solid ceiling or a threaded rod hanger (`rod`), a threaded
+  rod up to it, and a strap round the duct when the run is straight. The hanger
+  (BlockExposedServiceHanger) stacks under a ceiling to hang a run lower.
 """
 
 import argparse
@@ -223,6 +224,11 @@ def js(d):
     return (json.dumps(d, indent=2) + "\n").encode()
 
 
+HANGER = "exposed_service_hanger"
+HANGER_NAMES = ("Threaded Rod Hanger", "Colgador de Varilla Roscada", "Gewindestangen-Abhängung",
+                "Gängstångshängare")
+
+
 def registries():
     out = {}
     for kind, (_, _, _, colours, names) in KINDS.items():
@@ -253,6 +259,17 @@ def outputs():
             out[os.path.join(STATE_DIR, tn + ".json")] = js(blockstate(kind, c))
             out[os.path.join(ITEM_DIR, tn + ".json")] = js(
                 {"parent": PARENT_REF % ("geo_%s_item" % kind), "textures": t})
+    # the threaded rod hanger: the rod the full height of its block, and a thicker one for the
+    # item, or a 0.8 px rod is lost in a slot
+    steel = {"steel": TEX_REF % "hanger_steel", "particle": TEX_REF % "hanger_steel"}
+    out[os.path.join(MODEL_DIR, "hanger.json")] = js(model(steel, [
+        el((7.6, 0, 7.6), (8.4, 16, 8.4), "steel", ("north", "south", "east", "west"))]))
+    out[os.path.join(MODEL_DIR, "hanger_item.json")] = js(model(steel, [
+        el((7.25, 0, 7.25), (8.75, 16, 8.75), "steel",
+           ("north", "south", "east", "west", "up", "down"))], DISPLAY))
+    out[os.path.join(STATE_DIR, HANGER + ".json")] = js(
+        {"forge_marker": 1, "defaults": {"model": MODEL_REF % "hanger"},
+         "variants": {"normal": [{}], "inventory": [{"model": MODEL_REF % "hanger_item"}]}})
     return out
 
 
@@ -262,9 +279,11 @@ def fragments():
         print("# %s.lang" % lang)
         for reg, (_, _, names) in regs.items():
             print("tile.%s.name=%s" % (reg, names[i]))
+        print("tile.%s.name=%s" % (HANGER, HANGER_NAMES[i]))
     print("# CsmTabHvac")
     for reg, (_, _, names) in regs.items():
         print('    initTabBlock(new BlockExposedDuct("%s")); // %s' % (reg, names[0]))
+    print("    initTabBlock(new BlockExposedServiceHanger()); // %s" % HANGER_NAMES[0])
 
 
 def main():

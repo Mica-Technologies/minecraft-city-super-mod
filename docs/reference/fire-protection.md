@@ -2,7 +2,7 @@
 
 Sprinklers and the rest of what a building fights a fire with besides its alarm.
 
-!!! info "53 blocks in this tab"
+!!! info "57 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -45,6 +45,8 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Sprinkler Riser Room Sign | `csm:riser_sign` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Air Release Valve (Red) | `csm:standpipe_air_valve_red` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Air Release Valve (Silver) | `csm:standpipe_air_valve_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Branch Pass-Through (Red) | `csm:standpipe_passthrough_branch_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Branch Pass-Through (Silver) | `csm:standpipe_passthrough_branch_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Branch Pipe (Red) | `csm:standpipe_pipe_branch_red` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Branch Pipe (Silver) | `csm:standpipe_pipe_branch_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Branch Pipe, Wall (Silver) | `csm:standpipe_wall_pipe_branch_silver` | 2.0 | 6.0 | pickaxe | 0 |
@@ -55,6 +57,8 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Standpipe Hose Valve | `csm:standpipe_hose_valve` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Inlet Manifold (Red) | `csm:standpipe_inlet_manifold_red` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Inlet Manifold (Silver) | `csm:standpipe_inlet_manifold_silver` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Main Pass-Through (Red) | `csm:standpipe_passthrough_main_red` | 2.0 | 6.0 | pickaxe | 0 |
+| Standpipe Main Pass-Through (Silver) | `csm:standpipe_passthrough_main_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Main Pipe (Red) | `csm:standpipe_pipe_main_red` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Main Pipe (Silver) | `csm:standpipe_pipe_main_silver` | 2.0 | 6.0 | pickaxe | 0 |
 | Standpipe Main Pipe, Wall (Red) | `csm:standpipe_wall_pipe_main_red` | 2.0 | 6.0 | pickaxe | 0 |

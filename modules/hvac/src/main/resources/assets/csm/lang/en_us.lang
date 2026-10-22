@@ -56,3 +56,4 @@ tile.pipe_black.name=Exposed Pipe (Black)
 tile.pipe_white.name=Exposed Pipe (White)
 tile.pipe_red.name=Exposed Pipe (Red)
 tile.pipe_silver.name=Exposed Pipe (Silver)
+tile.exposed_service_hanger.name=Threaded Rod Hanger

@@ -56,3 +56,4 @@ tile.pipe_black.name=Sichtbares Rohr (Schwarz)
 tile.pipe_white.name=Sichtbares Rohr (Weiß)
 tile.pipe_red.name=Sichtbares Rohr (Rot)
 tile.pipe_silver.name=Sichtbares Rohr (Silber)
+tile.exposed_service_hanger.name=Gewindestangen-Abhängung

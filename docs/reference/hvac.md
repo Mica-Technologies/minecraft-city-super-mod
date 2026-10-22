@@ -2,7 +2,7 @@
 
 Heating and cooling that actually simulates room temperature.
 
-!!! info "56 blocks in this tab"
+!!! info "57 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -66,6 +66,7 @@ Heating and cooling that actually simulates room temperature.
 | Rooftop HVAC Heater (Black) | `csm:hvac_rtu_heater_black` | 3 | 15 | pickaxe | 1 |
 | Rooftop HVAC Heater (Silver) | `csm:hvac_rtu_heater_silver` | 3 | 15 | pickaxe | 1 |
 | Small Circle Vent | `csm:scv` |  |  |  |  |
+| Threaded Rod Hanger | `csm:exposed_service_hanger` | 1 | 5 | pickaxe | 0 |
 | XL Circle Vent | `csm:xlcv` |  |  |  |  |
 
 </div>

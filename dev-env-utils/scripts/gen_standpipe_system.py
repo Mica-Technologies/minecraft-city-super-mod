@@ -232,6 +232,34 @@ def wall_state(prefix, fitting_model=None):
     return {"multipart": parts}
 
 
+def escutcheon(side, r):
+    """A pass-through's trim plate on the face the pipe leaves through, standing PLATE_THICK
+    proud of it, PLATE_GROW wider than the pipe: what shows of the pipe in a dressed one."""
+    t = PLATE_THICK
+    rr = r + PLATE_GROW
+    return {
+        "north": octagon("z", 8, 8, rr, -t, 0, "steel", True),
+        "south": octagon("z", 8, 8, rr, 16, 16 + t, "steel", True),
+        "west": octagon("x", 8, 8, rr, -t, 0, "steel", True),
+        "east": octagon("x", 8, 8, rr, 16, 16 + t, "steel", True),
+        "down": octagon("y", 8, 8, rr, -t, 0, "steel", True),
+        "up": octagon("y", 8, 8, rr, 16, 16 + t, "steel", True),
+    }[side]
+
+
+def passthrough_state(prefix):
+    """The free-standing pipe's parts while bare; once dressed (`covered`), only a trim plate
+    on each face the pipe leaves through. The block it copies is drawn by
+    StandpipePassthroughModels."""
+    parts = []
+    for part in centred_state(prefix)["multipart"]:
+        parts.append({"when": dict(part["when"], covered="false"), "apply": part["apply"]})
+    for side in ("north", "south", "east", "west", "up", "down"):
+        parts.append({"when": {side: "true", "covered": "true"},
+                      "apply": {"model": C.M(prefix + "_escutcheon_" + side)}})
+    return {"multipart": parts}
+
+
 def centred_state(prefix):
     parts = [{"when": {side: "true"}, "apply": {"model": C.M(prefix + "_arm_" + side)}}
              for side in ("north", "south", "east", "west", "up", "down")]
@@ -270,6 +298,8 @@ def pipes():
             for side in ("north", "south", "east", "west", "up", "down"):
                 models[prefix + "_arm_" + side] = model(finish, centred_arm(side, r))
             models[prefix + "_joint"] = model(finish, centred_joint(r))
+            for side in ("north", "south", "east", "west", "up", "down"):
+                models[prefix + "_escutcheon_" + side] = model(finish, escutcheon(side, r))
             models[prefix + "_floor"] = model(finish, plate(8, r, False))
             models[prefix + "_ceiling"] = model(finish, plate(8, r, True))
             wp = prefix + "_wall"
@@ -298,6 +328,16 @@ def pipes():
                    "Tubería de columna seca, %s (%s)" % (es_size, es_f),
                    "Stigarledningsrör, %s (%s)" % (sv_size, sv)),
                   models, centred_state(prefix), item=item(reg), tab=TAB)
+            # Pass-through: the free-standing pipe that takes on a wall's look.
+            reg = "standpipe_passthrough_%s_%s" % (size, finish)
+            models = {reg + "_item": model(finish, centred_arm("up", r) + centred_arm("down", r)
+                                           + escutcheon("up", r) + escutcheon("down", r))}
+            C.add(reg, 'new BlockStandpipePassthrough("%s", %s)' % (reg, f1(r)),
+                  ("Standpipe %s Pass-Through (%s)" % (en_size, en),
+                   "Steigleitungs-Durchführung, %s (%s)" % (de_size, de),
+                   "Pasamuros de columna seca, %s (%s)" % (es_size, es_m),
+                   "Stigarledningsgenomföring, %s (%s)" % (sv_size, sv)),
+                  models, passthrough_state(prefix), item=item(reg), tab=TAB)
             # Wall run; the red branch is the old Standpipe Riser.
             riser = size == "branch" and finish == "red"
             reg = "standpipe_riser" if riser else "standpipe_wall_pipe_%s_%s" % (size, finish)
