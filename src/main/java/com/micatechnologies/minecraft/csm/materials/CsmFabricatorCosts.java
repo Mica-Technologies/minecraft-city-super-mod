@@ -780,6 +780,16 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "acoustic")) {
       return cost(FabricatorIngredient.any(MC_WOOL, 1));
     }
+    // Metal ceilings: corrugated, perforated and pressed tin sheet, and the open cell and
+    // exposed T-bar grids, are sheet steel.
+    if (registryName.startsWith("ceiling_")
+        && (CsmBlockDisplayNames.hasWord(registryName, "corrugated")
+        || CsmBlockDisplayNames.hasWord(registryName, "perforated")
+        || CsmBlockDisplayNames.hasWord(registryName, "tin")
+        || CsmBlockDisplayNames.hasWord(registryName, "grid")
+        || CsmBlockDisplayNames.hasWord(registryName, "cell"))) {
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
     if (CsmBlockDisplayNames.hasWord(registryName, "beadboard")
         || CsmBlockDisplayNames.hasWord(registryName, "slat")) {
       return cost(FabricatorIngredient.any(MC_PLANKS, 1));

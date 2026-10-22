@@ -7,10 +7,35 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 | Family | Blocks | Generator |
 |---|---|---|
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
+| Modern ceilings | Tegular Ceiling Tile (White, Light Grey); Fine Fissured and Square Embossed Ceiling Tile; Perforated Metal Ceiling Tile (Silver, White); Pressed Tin Ceiling (Silver, Antique Copper); Wood Slat Ceiling (Light Oak, Walnut); Corrugated Metal Ceiling (Silver, White, Black); Open Cell Ceiling (Black, White); Exposed Ceiling Grid (White, Black) | `gen_ceilings.py` |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
 | Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Accent Wall Panel (Maple, Walnut, Teal, Blue, Green, Yellow); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
 | Wall fittings | Wayfinding Stripe (Blue, Green, Teal, Yellow, Orange, Purple); Room Sign (Charcoal, Blue); Nurse Station Glass Screen (Clear, Frosted) | `gen_wall_finishes.py` |
 | Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); a full block of each of the carpet, vinyl, ceramic and rubber floors; and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
+
+## Modern ceilings
+
+Seventeen ceiling finishes, every one a **full-size block** (`BlockCeilingFinish`, one class
+constructed by registry name), so a ceiling is built a layer of blocks as the older tiles are.
+The name decides the kind:
+
+- **Plain** (tegular, fissured, embossed, perforated, pressed tin): vanilla `cube_all` with one
+  64 px texture. Relief is shaded into the texture, not modelled: the tegular tile's reveal (lit on
+  one side, in shadow on the other), the tin's bevels and boss. A tile's T-bar is drawn half on
+  each edge, with a one-texel line where the tile meets it, so a field of white tiles on white
+  bars still shows its grid.
+- **Directional** (`_slat_`, `_corrugated_`): stores the `axis` its slats or ribs run along (the
+  placer's look; metadata bit 0) and the blockstate turns the model a quarter for x. Every slat
+  (16 texels) and rib (4 texels, `gen_cladding.py`'s corrugated profile recoloured) divides the
+  block, so a field lines up across blocks in either direction.
+- **Grids** (`_open_cell_`, `_grid_`): elements at the bottom of the block, cutout, open to the
+  plenum above: the open cell's blades every 4 px, 4 px deep, half a blade on each edge so
+  neighbours make one; the exposed T-bar's flange and web round the block's edges only. Still a
+  full block to stand on and select; not opaque, so the blocks above draw.
+
+The Fabricator prices the slats as planks (the `slat` word) and the metal ones (`corrugated`,
+`perforated`, `tin`, `grid`, `cell` on a `ceiling_` name) as sheet metal; the tiles keep the old
+tiles' cost.
 
 ## Window treatments
 
