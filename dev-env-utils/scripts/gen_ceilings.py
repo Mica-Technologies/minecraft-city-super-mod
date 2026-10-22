@@ -7,10 +7,12 @@
 
 Every one is a full-size block (BlockCeilingFinish, one class constructed by registry name):
 
-- **Plain finishes**: a lay-in tile, perforated metal or pressed tin, one texture on every face
-  through vanilla's cube_all. Relief (the tegular reveal, the embossing, the tin's bevels) is
-  shaded into the texture. A tile's grid is drawn half on each edge, so a field of tiles shows one
-  T-bar between neighbours.
+- **Plain finishes**: a lay-in tile, perforated metal or pressed tin: the tile's face below, its
+  plain edge on the sides (no grid, the white wall angle along the bottom, so the edge of a
+  ceiling does not repeat the face), and plain fibreboard above (a metal tile's own metal).
+  Relief (the tegular reveal, the embossing, the tin's bevels) is shaded into the texture. A
+  tile's grid is drawn half on each edge, so a field of tiles shows one T-bar between
+  neighbours.
 - **Directional finishes** (wood slats, corrugated metal): the block stores the axis its slats or
   ribs run along, the placer's look, and the blockstate turns the model a quarter for x. Every
   slat and rib pitch divides the block, so a field lines up across blocks either way.
@@ -21,6 +23,7 @@ Textures are 64 px (32 for the corrugated, whose profile is gen_cladding.py's, r
 """
 
 import argparse
+import io
 import json
 import math
 import os
@@ -64,7 +67,7 @@ def noise(seed, size=S, amp=6.0):
     return [[rng.uniform(-amp, amp) for _ in range(size)] for _ in range(size)]
 
 
-def grid_edge(x, y, size=S, w=2):
+def grid_edge(x, y, size=S, w=3):
     """How far a texel is inside the T-bar half drawn on this tile's edges: 0 on the bar."""
     return min(x, y, size - 1 - x, size - 1 - y) - (w - 1)
 
@@ -91,8 +94,9 @@ def fissured_field(seed, body, fissures):
 
 
 def tegular(seed, body):
-    """A tegular lay-in tile: the T-bar half on each edge, then the reveal -- the tile's stepped
-    edge, lit on the side facing the light and in shadow opposite -- then the fissured face."""
+    """A tegular lay-in tile: the T-bar half on each edge, flat and white; then the reveal, the
+    tile's square edge stepping down past the bar, shaded the same all round (a light from one
+    side would turn the wrong way on every turned or mirrored tile); then the fissured face."""
     field = fissured_field(seed, body, 90)
 
     def px(x, y):
@@ -100,11 +104,35 @@ def tegular(seed, body):
         if e < 0:
             return clamp(TBAR)
         if e < 3:
-            # the step down: top and left lit, bottom and right in shadow
-            lit = min(x, y) <= min(S - 1 - x, S - 1 - y)
-            return shift(body, (10 if lit else -38) + (e * 4 if not lit else -e * 2))
+            return shift(body, -34)
+        if e == 3:
+            return shift(body, -14)
         return field(x, y)
     return canvas(px)
+
+
+def side_edge(seed, body, metal):
+    """A plain tile's sides, seen at a ceiling's edge: the tile's body with no grid on it, and
+    along the bottom the white wall angle the perimeter tiles rest on (a metal tile's own
+    turned-down edge)."""
+    n = noise(seed + 50, amp=3 if metal else 5)
+
+    def px(x, y):
+        if y >= S - 3:
+            return clamp(TBAR) if not metal else shift(body, 12)
+        if y == S - 4:
+            return shift(body, -22)
+        return shift(body, n[y][x])
+    return canvas(px)
+
+
+BACK = (198, 192, 178)
+
+
+def back(seed):
+    """The back of a lay-in tile, seen from the plenum: plain fibreboard."""
+    n = noise(seed, amp=6)
+    return canvas(lambda x, y: shift(BACK, n[y][x]))
 
 
 def fissured(seed, body):
@@ -343,27 +371,41 @@ def blockstate(reg):
         model = MODEL_REF % reg
         return {"forge_marker": 1, "defaults": {"model": model},
                 "variants": {"normal": [{}], "inventory": [{}]}}
-    d = {"model": "cube_all", "textures": {"all": TEX_REF % reg}}
     if k == "axis":
+        d = {"model": "cube_all", "textures": {"all": TEX_REF % reg}}
         return {"forge_marker": 1, "defaults": d,
                 "variants": {"axis": {"z": {}, "x": {"y": 90}}, "inventory": [{}]}}
+    # a plain tile: its face below, its plain edge on the sides, its back above
+    side = TEX_REF % (reg + "_side")
+    top = TEX_REF % ("ceiling_tile_back" if not metal(reg) else reg + "_side")
+    d = {"model": "cube", "textures": {
+        "down": TEX_REF % reg, "up": top, "north": side, "south": side, "east": side,
+        "west": side, "particle": TEX_REF % reg}}
     return {"forge_marker": 1, "defaults": d, "variants": {"normal": [{}], "inventory": [{}]}}
+
+
+def metal(reg):
+    return "_perforated_" in reg or "_tin_" in reg
 
 
 # --------------------------------------------------------------------------------------------
 # Output
 # --------------------------------------------------------------------------------------------
 
+def png(img):
+    buf = io.BytesIO()
+    img.save(buf, "PNG", optimize=True)
+    return buf.getvalue()
+
+
 def outputs():
     """Every file this script writes: path -> bytes."""
-    out = {}
+    out = {os.path.join(TEX_DIR, "ceiling_tile_back.png"): png(back(4399))}
     for reg, (draw, colour, seed, _) in CATALOGUE.items():
-        img = draw(seed, colour)
-        path = os.path.join(TEX_DIR, reg + ".png")
-        import io
-        buf = io.BytesIO()
-        img.save(buf, "PNG", optimize=True)
-        out[path] = buf.getvalue()
+        out[os.path.join(TEX_DIR, reg + ".png")] = png(draw(seed, colour))
+        if kind(reg) == "plain":
+            out[os.path.join(TEX_DIR, reg + "_side.png")] = png(side_edge(seed, colour,
+                                                                          metal(reg)))
         out[os.path.join(STATE_DIR, reg + ".json")] = (
             json.dumps(blockstate(reg), indent=2) + "\n").encode()
         if kind(reg) == "grid":

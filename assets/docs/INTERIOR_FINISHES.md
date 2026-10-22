@@ -19,11 +19,14 @@ Seventeen ceiling finishes, every one a **full-size block** (`BlockCeilingFinish
 constructed by registry name), so a ceiling is built a layer of blocks as the older tiles are.
 The name decides the kind:
 
-- **Plain** (tegular, fissured, embossed, perforated, pressed tin): vanilla `cube_all` with one
-  64 px texture. Relief is shaded into the texture, not modelled: the tegular tile's reveal (lit on
-  one side, in shadow on the other), the tin's bevels and boss. A tile's T-bar is drawn half on
-  each edge, with a one-texel line where the tile meets it, so a field of white tiles on white
-  bars still shows its grid.
+- **Plain** (tegular, fissured, embossed, perforated, pressed tin): vanilla `cube` with the tile's
+  64 px face below, a plain edge on the four sides (the tile's body with no grid, the white wall
+  angle along the bottom), so the edge of a ceiling does not repeat the face, and plain
+  fibreboard above (`ceiling_tile_back`; a metal tile's own metal). Relief is shaded into the
+  face, not modelled: the tegular tile's reveal, the tin's bevels and boss. A tile's T-bar is
+  drawn flat white, two texels on each edge, so neighbours make a one-pixel bar. **The tegular
+  reveal is shaded the same on all four sides**: a light from one side turned the wrong way on
+  every turned tile, and the user read it as untidy edges.
 - **Directional** (`_slat_`, `_corrugated_`): stores the `axis` its slats or ribs run along (the
   placer's look; metadata bit 0) and the blockstate turns the model a quarter for x. Every slat
   (16 texels) and rib (4 texels, `gen_cladding.py`'s corrugated profile recoloured) divides the
