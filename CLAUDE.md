@@ -1240,6 +1240,13 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   with the wall cabinet and desktop gear; and Roads poles on the roof carrying every outdoor radio,
   aimed at a second building. It checks both new tabs' registration lists against what it placed
   and puts the rest on signed plinths. Sets blocks and runs commands only
+- `build_ceilings_demo.py` -- builds the modern ceilings demo in a flat creative world named
+  "Ceilings Demo" (refuses any other; `--create` makes one) through the orchestrator by instance
+  id: a drop-ceiling corridor with a section of each ceiling finish and every troffer in its tiles
+  (a plenum with pipe and duct over the open grids), an open office of baffles over hung linear
+  runs with clouds, ducts and a pipe rack, and a gallery of every light, baffle, cloud, duct and
+  pipe finish. Sets blocks only, and checks every block the five ceiling generators register was
+  placed
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's
