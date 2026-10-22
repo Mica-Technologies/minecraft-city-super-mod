@@ -1,17 +1,33 @@
 package com.micatechnologies.minecraft.csm.technology.network;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
+import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPoleFitted;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMapperBase;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -33,7 +49,9 @@ import net.minecraft.world.World;
  * tile entity. Sneak-click does nothing, so a block can still be placed against it.</p>
  *
  * <p>{@link PoleFitted} is the same block drawn to meet the pole behind it ({@link CsmPoleFit}),
- * for the pieces whose clamp is meant for a pole: on a wall the clamp is hidden in it.</p>
+ * for the pieces whose clamp is meant for a pole: on a wall the clamp is hidden in it. It also
+ * turns a further 45 degrees round a pole diagonally behind it, eight ways in all, with nothing
+ * more stored.</p>
  *
  * @since 2026.10
  */
@@ -100,7 +118,17 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
   @Nonnull
   @Override
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, CsmPoleFit.properties(this, FACING, light()));
+    IProperty<?>[] properties = CsmPoleFit.properties(this, FACING, light());
+    if (this instanceof PoleFitted) {
+      properties = append(properties, PoleFitted.DIAGONAL);
+    }
+    return new CsmBlockStateContainer(this, properties);
+  }
+
+  private static IProperty<?>[] append(IProperty<?>[] properties, IProperty<?> property) {
+    IProperty<?>[] out = Arrays.copyOf(properties, properties.length + 1);
+    out[properties.length] = property;
+    return out;
   }
 
   @Nonnull
@@ -134,6 +162,15 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
     return boundingBox;
   }
 
+  /** Nothing can be mounted on a device: its faces are not a wall (vanilla calls every face of
+   * every block solid unless told otherwise). */
+  @Nonnull
+  @Override
+  public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos,
+      EnumFacing face) {
+    return BlockFaceShape.UNDEFINED;
+  }
+
   @Override
   public boolean getBlockIsOpaqueCube(IBlockState state) {
     return false;
@@ -163,8 +200,270 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
    */
   public static class PoleFitted extends BlockMicafiDevice implements ICsmPoleFitted {
 
+    /**
+     * Actual state only: the device is turned a further 45 degrees clockwise about a pole that
+     * stands diagonally behind it, at {@code pos - diagonalOf(facing)}, rather than the one
+     * straight behind it.
+     */
+    public static final PropertyBool DIAGONAL = PropertyBool.create("diagonal");
+
+    /** The model turned about a diagonal pole, facing north-east, as a selection box. */
+    private AxisAlignedBB diagonalBox;
+
     public PoleFitted(String registryName, double[] box, PropertyEnum<?> light) {
       super(registryName, box, light);
+      setDefaultState(getDefaultState().withProperty(DIAGONAL, false));
+      this.diagonalBox = diagonalBox(super.getBlockBoundingBox(getDefaultState(), null, null));
+    }
+
+    @Override
+    protected ItemBlock createItemBlock() {
+      return new ItemBlockMicafiPoleDevice(this);
+    }
+
+    /**
+     * The 45-degree turn clockwise of a stored facing: the direction the device points when the
+     * pole is diagonally behind it.
+     *
+     * @param facing the stored facing
+     *
+     * @return north-east for north, south-east for east, and so on
+     */
+    public static DirectionEight diagonalOf(EnumFacing facing) {
+      switch (facing) {
+        case EAST:
+          return DirectionEight.SE;
+        case SOUTH:
+          return DirectionEight.SW;
+        case WEST:
+          return DirectionEight.NW;
+        default:
+          return DirectionEight.NE;
+      }
+    }
+
+    /**
+     * The stored facing for a direction: a cardinal is itself, a diagonal is stored as the
+     * cardinal 45 degrees anticlockwise of it ({@link #diagonalOf} undoes it).
+     *
+     * @param aim the direction the device points
+     *
+     * @return the facing to store in metadata
+     */
+    public static EnumFacing storedFacing(DirectionEight aim) {
+      switch (aim) {
+        case NE:
+        case N:
+          return EnumFacing.NORTH;
+        case SE:
+        case E:
+          return EnumFacing.EAST;
+        case SW:
+        case S:
+          return EnumFacing.SOUTH;
+        default:
+          return EnumFacing.WEST;
+      }
+    }
+
+    /**
+     * The direction a placer's yaw points a device: towards the placer, in eight steps.
+     *
+     * @param yaw the placer's yaw
+     *
+     * @return the direction the device faces
+     */
+    public static DirectionEight aimFromYaw(float yaw) {
+      int step = Math.floorMod(Math.round(yaw / 45.0F), 8);
+      final DirectionEight[] byStep = {DirectionEight.N, DirectionEight.NE, DirectionEight.E,
+          DirectionEight.SE, DirectionEight.S, DirectionEight.SW, DirectionEight.W,
+          DirectionEight.NW};
+      return byStep[step];
+    }
+
+    /**
+     * @param world the world
+     * @param pos   a position
+     *
+     * @return the pole at {@code pos}, or null
+     */
+    @Nullable
+    static AbstractBlockTrafficPole poleAt(IBlockAccess world, BlockPos pos) {
+      Block block = world.getBlockState(pos).getBlock();
+      return block instanceof AbstractBlockTrafficPole ? (AbstractBlockTrafficPole) block : null;
+    }
+
+    /**
+     * Whether a device at {@code pos} stored facing {@code facing} turns about a diagonal pole:
+     * nothing it could be mounted on stands straight behind it (no pole, no full block), and a
+     * pole stands at {@code pos - diagonalOf(facing)}.
+     *
+     * @param world  the world
+     * @param pos    the device's position
+     * @param facing its stored facing
+     *
+     * @return the diagonal pole, or null when the device is mounted straight
+     */
+    @Nullable
+    static AbstractBlockTrafficPole diagonalPole(IBlockAccess world, BlockPos pos,
+        EnumFacing facing) {
+      BlockPos behind = pos.offset(facing.getOpposite());
+      if (poleAt(world, behind) != null) {
+        return null;
+      }
+      IBlockState behindState = world.getBlockState(behind);
+      if (behindState.isFullCube()
+          && behindState.getBlockFaceShape(world, behind, facing) == BlockFaceShape.SOLID) {
+        return null;
+      }
+      DirectionEight d = diagonalOf(facing);
+      return poleAt(world, pos.add(-d.getOffsetX(), 0, -d.getOffsetZ()));
+    }
+
+    @Nonnull
+    @Override
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing,
+        float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+      IBlockState state = getDefaultState();
+      DirectionEight aim = aimFromYaw(placer.rotationYaw);
+      if (aim.isDiagonal()) {
+        EnumFacing stored = storedFacing(aim);
+        if (diagonalPole(worldIn, pos, stored) != null) {
+          return state.withProperty(FACING, stored);
+        }
+      }
+      // put against the side of a pole: face away from it, whichever way the placer looks
+      if (facing.getAxis().isHorizontal()
+          && poleAt(worldIn, pos.offset(facing.getOpposite())) != null) {
+        return state.withProperty(FACING, facing);
+      }
+      return super.getStateForPlacement(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("deprecation")
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+      IBlockState actual = super.getActualState(state, worldIn, pos);
+      AbstractBlockTrafficPole pole = diagonalPole(worldIn, pos, state.getValue(FACING));
+      if (pole == null) {
+        return actual.withProperty(DIAGONAL, false);
+      }
+      return actual.withProperty(DIAGONAL, true)
+          .withProperty(CsmPoleFit.PROPERTY, CsmPoleFit.forPoleRadius(pole.getPoleRadius()));
+    }
+
+    @Override
+    public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source,
+        BlockPos pos) {
+      if (state.getPropertyKeys().contains(DIAGONAL) && state.getValue(DIAGONAL)) {
+        return diagonalBox;
+      }
+      return super.getBlockBoundingBox(state, source, pos);
+    }
+
+    /**
+     * The north-frame box of a device turned about a diagonal pole, before the facing turns it:
+     * the box's corners carried round the pole 45 degrees clockwise, from straight behind
+     * ({@code z + 1}) to diagonally behind ({@code x - 1, z + 1}), as the blockstate's
+     * {@code northeast} transform carries the model; then the box round them, inside the block.
+     *
+     * @param box the device's box facing north
+     *
+     * @return the turned box
+     */
+    static AxisAlignedBB diagonalBox(AxisAlignedBB box) {
+      double s = Math.sqrt(0.5);
+      double minX = Double.MAX_VALUE;
+      double minZ = Double.MAX_VALUE;
+      double maxX = -Double.MAX_VALUE;
+      double maxZ = -Double.MAX_VALUE;
+      for (double x : new double[]{box.minX, box.maxX}) {
+        for (double z : new double[]{box.minZ, box.maxZ}) {
+          // about the block's middle: turn -45 degrees about y (north to north-east), then move
+          // so the pole straight behind lands on the pole diagonally behind
+          double u = x - 0.5;
+          double v = z - 0.5;
+          double tu = u * s - v * s + (-1 + s);
+          double tv = u * s + v * s + (1 - s);
+          minX = Math.min(minX, tu + 0.5);
+          maxX = Math.max(maxX, tu + 0.5);
+          minZ = Math.min(minZ, tv + 0.5);
+          maxZ = Math.max(maxZ, tv + 0.5);
+        }
+      }
+      return new AxisAlignedBB(clamp01(minX), box.minY, clamp01(minZ), clamp01(maxX), box.maxY,
+          clamp01(maxZ));
+    }
+
+    private static double clamp01(double v) {
+      return Math.max(0.0D, Math.min(1.0D, v));
+    }
+
+    /**
+     * Registers a state mapper that folds {@link #DIAGONAL} into the facing the blockstate reads:
+     * {@code facing=northeast} for a north-facing device turned about a diagonal pole, and so on,
+     * so the blockstate's eight facings each carry their own turn.
+     */
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void registerModels() {
+      super.registerModels();
+      ModelLoader.setCustomStateMapper(this, new StateMapperBase() {
+        @Nonnull
+        @Override
+        protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState state) {
+          return new ModelResourceLocation(Objects.requireNonNull(getRegistryName()),
+              variantOf(state));
+        }
+      });
+    }
+
+    /**
+     * @param state a state of this block
+     *
+     * @return its blockstate variant: every property but {@link #DIAGONAL}, sorted by name, the
+     *     facing named for the way the device points
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    String variantOf(IBlockState state) {
+      StringBuilder out = new StringBuilder();
+      for (Map.Entry<IProperty<?>, Comparable<?>> e : state.getProperties().entrySet()) {
+        IProperty property = e.getKey();
+        if (property == DIAGONAL) {
+          continue;
+        }
+        if (out.length() > 0) {
+          out.append(',');
+        }
+        out.append(property.getName()).append('=');
+        if (property == FACING) {
+          EnumFacing facing = (EnumFacing) e.getValue();
+          out.append(state.getValue(DIAGONAL) ? facingName(diagonalOf(facing))
+              : facing.getName());
+        } else {
+          out.append(property.getName(e.getValue()));
+        }
+      }
+      return out.toString();
+    }
+
+    /**
+     * @param d a diagonal
+     *
+     * @return its blockstate name: northeast, southeast, southwest, northwest
+     */
+    static String facingName(DirectionEight d) {
+      switch (d) {
+        case SE:
+          return "southeast";
+        case SW:
+          return "southwest";
+        case NW:
+          return "northwest";
+        default:
+          return "northeast";
+      }
     }
   }
 }

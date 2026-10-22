@@ -23,7 +23,10 @@ What is here, in creative order, and the class that places each
   radome placed in pairs. Everything outdoor is BlockMicafiDevice.PoleFitted: its clamp is
   drawn three times, for the large, thin and pedestal poles (CsmPoleFit), the clamp's saddles
   moved back to each pole's skin by gen_pole_fit_models.fitted; on a wall the clamp is hidden
-  in it.
+  in it. A pole device also turns eight ways round its pole (D10): put in the block diagonally
+  beside the pole, stored facing the cardinal 45 degrees anticlockwise of where it points, its
+  blockstate has four more facings whose Forge transform carries the model 45 degrees round the
+  pole's axis (DIAGONALS), so each fit's saddles still meet the pole.
 
 Clicking changes the status light (MicafiLight): an access point's ring (blue, white, off, and
 adopting, which flashes white and blue) or a radio's link light (green, blue, white, off). The
@@ -320,6 +323,34 @@ def light_textures(prop, key):
     return {v: {"textures": {key: C.T(name % v)}} for v in values}
 
 
+# A pole device turned about a pole diagonally behind it (D10): the blockstate's four extra
+# facings, which BlockMicafiDevice.PoleFitted's state mapper names for a stored facing turned 45
+# degrees clockwise (north -> northeast). The model is drawn with the pole straight behind it,
+# its axis at (8, 24) in sixteenths; the transform turns the model 45 degrees further than its
+# stored facing about the block's middle, then moves it so that axis lands on the diagonal pole,
+# a block over each way: the whole device, clamp and saddles included, goes round the pole, so
+# each fit's saddles still meet that pole's skin. A Forge "transform" with a y rotation is what
+# every eight-way road sign uses; the vanilla "y" turns only by 90.
+DIAGONALS = (("northeast", 45, (1, -1)), ("southeast", 135, (1, 1)),
+             ("southwest", 225, (-1, 1)), ("northwest", 315, (-1, -1)))
+
+
+def diagonal_transform(compass, offset):
+    """The transform for a device pointing ``compass`` degrees clockwise of north, its pole a
+    block back along ``offset`` (x, z): turned -compass about y (Forge turns anticlockwise), and
+    moved by the pole's new place less where the turn carried the model's pole, in blocks."""
+    phi = math.radians(-compass)
+    # the model's pole, one block south of the middle, after the turn
+    px, pz = math.sin(phi), math.cos(phi)
+    tx, tz = -offset[0] - px, -offset[1] - pz
+    return {"transform": {"rotation": {"y": (-compass) % 360},
+                          "translation": [round(tx, 4), 0, round(tz, 4)]}}
+
+
+def diagonal_facings():
+    return {name: diagonal_transform(compass, off) for name, compass, off in DIAGONALS}
+
+
 def add_device(reg, names, els, textures, prop, key, disp, pole=False, java_box=None):
     """A wall or pole device (BlockMicafiDevice, PoleFitted when ``pole``): its model (and the
     thin and pedestal pole fits), its facing blockstate with the light variants, and the tab
@@ -338,6 +369,8 @@ def add_device(reg, names, els, textures, prop, key, disp, pole=False, java_box=
             fits[value] = {"model": C.M(reg + suffix)}
         extra["polefit"] = fits
     state = tc.facing_state(C.M(reg), extra)
+    if pole:
+        state["variants"]["facing"].update(diagonal_facings())
     b = java_box or tc.extent(els)
     cls = "BlockMicafiDevice.PoleFitted" if pole else "BlockMicafiDevice"
     java = 'new %s("%s", %s, MicafiLight.%s)' % (cls, reg, tc.box_java(b), prop.upper())
