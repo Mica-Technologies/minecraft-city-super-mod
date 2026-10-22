@@ -137,6 +137,18 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("lgtlh", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.625000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("lrtlf", new AxisAlignedBB(-0.078125, 0.000000, -1.000000, 1.078125, 0.625000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("lrtlh", new AxisAlignedBB(-0.078125, 0.000000, 0.000000, 1.078125, 0.625000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("troffer_slot_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Louvered Slot Troffer (2x2)
+    initTabBlock(new BlockBrightLightFactory("troffer_slot_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Louvered Slot Troffer (2x4)
+    initTabBlock(new BlockBrightLightFactory("troffer_basket_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Center Basket Troffer (2x2)
+    initTabBlock(new BlockBrightLightFactory("troffer_basket_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Center Basket Troffer (2x4)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_bars_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Staggered Bars, 2x2)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_bars_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Staggered Bars, 2x4)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_dashes_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Dashes, 2x2)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_dashes_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Dashes, 2x4)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_squares_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Squares, 2x2)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_squares_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Squares, 2x4)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_dots_2x2", new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Dots, 2x2)
+    initTabBlock(new BlockBrightLightFactory("troffer_pattern_dots_2x4", new AxisAlignedBB(0.000000, 0.000000, -1.000000, 1.000000, 0.312500, 1.000000), 0)); // Patterned Lens Troffer (Dots, 2x4)
     initTabBlock(new BlockBrightLightFactory("ltecdtd", new AxisAlignedBB(0.250000, 0.000000, 0.312500, 0.750000, 0.312500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgc1v1np", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.340625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgcj", new AxisAlignedBB(0.375000, 0.000000, 0.500000, 0.625000, 0.312500, 1.000000), 0));
