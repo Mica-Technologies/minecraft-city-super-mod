@@ -17,7 +17,13 @@
       }
     },
     "inventory": [
-      {}
+      {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head"
+          }
+        }
+      }
     ],
     "link": {
       "green": {
@@ -38,6 +44,106 @@
       "off": {
         "textures": {
           "led": "csm:blocks/technology/wireless/led_off"
+        }
+      }
+    },
+    "aim": {
+      "centre": {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head"
+          }
+        }
+      },
+      "left": {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "transform": {
+              "rotation": [
+                {
+                  "y": 45
+                }
+              ]
+            }
+          }
+        }
+      },
+      "right": {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "transform": {
+              "rotation": [
+                {
+                  "y": -45
+                }
+              ]
+            }
+          }
+        }
+      },
+      "centre_down": {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "transform": {
+              "rotation": [
+                {
+                  "x": -20
+                }
+              ],
+              "translation": [
+                0.0,
+                0.0057,
+                0.0321
+              ]
+            }
+          }
+        }
+      },
+      "left_down": {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "transform": {
+              "rotation": [
+                {
+                  "y": 45
+                },
+                {
+                  "x": -20
+                }
+              ],
+              "translation": [
+                0.0227,
+                0.0057,
+                0.0227
+              ]
+            }
+          }
+        }
+      },
+      "right_down": {
+        "submodel": {
+          "head": {
+            "model": "csm:technology/wireless/micafi_beam_bridge_head",
+            "transform": {
+              "rotation": [
+                {
+                  "y": -45
+                },
+                {
+                  "x": -20
+                }
+              ],
+              "translation": [
+                -0.0227,
+                0.0057,
+                0.0227
+              ]
+            }
+          }
         }
       }
     }

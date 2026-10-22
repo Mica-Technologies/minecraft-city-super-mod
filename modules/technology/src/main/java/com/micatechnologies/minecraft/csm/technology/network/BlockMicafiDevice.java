@@ -5,7 +5,9 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.DirectionEight;
+import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPoleFitted;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +27,7 @@ import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,12 +49,13 @@ import net.minecraft.world.World;
  * <p>Right-click changes its status light ({@link MicafiLight}): an access point's ring or a
  * radio's link light, picked per block at construction. The light is two bits of metadata beside
  * the two of the facing; the blockstate swaps the lit texture, so nothing ticks and there is no
- * tile entity. Sneak-click does nothing, so a block can still be placed against it.</p>
+ * tile entity. Sneak-click does nothing (but on an {@link Aimed} device, with an empty hand), so
+ * a block can still be placed against it.</p>
  *
  * <p>{@link PoleFitted} is the same block drawn to meet the pole behind it ({@link CsmPoleFit}),
  * for the pieces whose clamp is meant for a pole: on a wall the clamp is hidden in it. It also
  * turns a further 45 degrees round a pole diagonally behind it, eight ways in all, with nothing
- * more stored.</p>
+ * more stored. {@link Aimed} is a wall-arm device whose head swivels on the arm.</p>
  *
  * @since 2026.10
  */
@@ -122,6 +126,9 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
     if (this instanceof PoleFitted) {
       properties = append(properties, PoleFitted.DIAGONAL);
     }
+    if (this instanceof Aimed) {
+      properties = append(properties, MicafiAim.PROPERTY);
+    }
     return new CsmBlockStateContainer(this, properties);
   }
 
@@ -147,7 +154,7 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
     if (player.isSneaking()) {
-      return false;
+      return sneakActivated(world, pos, state, player, hand);
     }
     if (!world.isRemote) {
       world.setBlockState(pos, nextLight(state), 3);
@@ -155,6 +162,17 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
           0.3F, 1.2F);
     }
     return true;
+  }
+
+  /**
+   * A sneak-click (with an empty hand: holding something, sneaking places it instead). Nothing,
+   * on all but an {@link Aimed} device, so a block can still be placed against it.
+   *
+   * @return whether the click was used
+   */
+  protected boolean sneakActivated(World world, BlockPos pos, IBlockState state,
+      EntityPlayer player, EnumHand hand) {
+    return false;
   }
 
   @Override
@@ -464,6 +482,65 @@ public class BlockMicafiDevice extends AbstractBlockRotatableNSEW {
         default:
           return "northeast";
       }
+    }
+  }
+  /**
+   * A device on a wall arm whose head turns on the arm's swivel ({@link MicafiAim}): left, centre
+   * or right, level or tipped down, cycled by sneak-clicking with an empty hand. The arm and its
+   * wall plate stay as placed; the blockstate draws the head as a submodel turned about the ball
+   * joint. The metadata is full, so the aim is held by a {@link TileEntityMicafiAim} that does not
+   * tick, and read into the actual state.
+   */
+  public static class Aimed extends BlockMicafiDevice implements ICsmTileEntityProvider {
+
+    public Aimed(String registryName, double[] box, PropertyEnum<?> light) {
+      super(registryName, box, light);
+    }
+
+    @Override
+    protected boolean sneakActivated(World world, BlockPos pos, IBlockState state,
+        EntityPlayer player, EnumHand hand) {
+      if (!player.getHeldItem(hand).isEmpty()) {
+        return false;
+      }
+      if (!world.isRemote) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityMicafiAim) {
+          TileEntityMicafiAim aim = (TileEntityMicafiAim) te;
+          aim.setAim(aim.getAim().next());
+          aim.markDirtySync(world, pos, state, true);
+          world.playSound(null, pos, SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE, SoundCategory.BLOCKS,
+              0.25F, 1.6F);
+        }
+      }
+      return true;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("deprecation")
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+      IBlockState actual = super.getActualState(state, worldIn, pos);
+      TileEntity te = BlockUtils.getTileEntitySafe(worldIn, pos);
+      MicafiAim aim = te instanceof TileEntityMicafiAim ? ((TileEntityMicafiAim) te).getAim()
+          : MicafiAim.CENTRE;
+      return actual.withProperty(MicafiAim.PROPERTY, aim);
+    }
+
+    @Override
+    public Class<? extends TileEntity> getTileEntityClass() {
+      return TileEntityMicafiAim.class;
+    }
+
+    @Override
+    public String getTileEntityName() {
+      return "tileentitymicafiaim";
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(@Nonnull World worldIn, int meta) {
+      return new TileEntityMicafiAim();
     }
   }
 }

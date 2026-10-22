@@ -69,7 +69,7 @@ public class CsmTabTechnologyNetworking extends CsmTab {
     initTabBlock(new BlockMicafiDevice("micafi_ap_wall", new double[]{4.5, 3.0, 14.0, 11.5, 13.0, 16.0}, MicafiLight.RING));
     initTabBlock(new BlockMicafiDevice("micafi_ap_in_wall", new double[]{5.0, 2.0, 14.0, 11.0, 14.0, 16.0}, MicafiLight.RING));
     initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_ap_outdoor_mesh", new double[]{6.25, 1.75, 7.75, 9.75, 13.75, 16.0}, MicafiLight.RING));
-    initTabBlock(new BlockMicafiDevice("micafi_beam_bridge", new double[]{3.75, 1.25, 2.75, 12.25, 13.75, 16.0}, MicafiLight.LINK));
+    initTabBlock(new BlockMicafiDevice.Aimed("micafi_beam_bridge", new double[]{3.75, 1.25, 2.75, 12.25, 13.75, 16.0}, MicafiLight.LINK));
     initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_beam_bridge_pole_fitted", new double[]{3.75, 2.5, 2.75, 12.25, 13.75, 16.0}, MicafiLight.LINK));
     initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_station_outdoor", new double[]{6.0, 1.5, 8.75, 10.0, 15.0, 16.0}, MicafiLight.LINK));
     initTabBlock(new BlockMicafiDevice.PoleFitted("micafi_sector_antenna", new double[]{5.25, 0.5, 7.25, 10.75, 15.5, 16.0}, MicafiLight.LINK));
