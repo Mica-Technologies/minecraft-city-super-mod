@@ -65,6 +65,18 @@ needed) or **Always Closed (Maintenance)** (held in `CLOSED_LOCKED`). The choice
 server as a `FareGateOpModePacket`, which the server takes only from a player within six blocks
 of the gate, and is saved in the tile entity as `opMode` (the enum's ordinal).
 
+**Fire alarm release (#301).** A fare gate (all three widths) and the station service gate can
+follow a fire alarm control panel: link them with Life Safety's linking tool (select the panel,
+click the gate) or with `/csmfirealarm link` over an area, as door holders are. While that panel
+is in fire alarm the gate stands open both ways for egress, whatever its operator mode; on reset
+a fare gate returns to its mode (in Normal an open gate with no timer shuts on its next look),
+and the service gate shuts again only if the alarm opened it. The panel is kept on the gate
+(`fp`, and the service gate's `ao`, on its new `TileEntityStationGate`) and looked at every five
+ticks by the fare gate's tick, once a second by a scheduled update on the service gate. Transit
+does not name Life Safety: the gates are `CsmFireAlarmLink.Follower`s and ask Core's
+`CsmFireAlarmLink.isPanelInAlarm`, which Life Safety answers from its panel registry. Without
+Life Safety installed nothing links and nothing releases; an unlinked gate behaves as before.
+
 ## The fare vending machine and the fare media
 
 The machine itself is drawn by `gen_transit_fare_vending.py`: a free-standing ticket machine two

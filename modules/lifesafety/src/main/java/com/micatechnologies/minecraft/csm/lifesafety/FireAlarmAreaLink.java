@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -111,7 +112,15 @@ public final class FireAlarmAreaLink {
         continue;
       }
       Block block = world.getBlockState(cell).getBlock();
-      if (block instanceof IFireAlarmPanelFollower) {
+      if (block instanceof CsmFireAlarmLink.Follower) {
+        // another module's follower (a fare gate, a station gate)
+        if (((CsmFireAlarmLink.Follower) block).followFireAlarmPanel(world, cell.toImmutable(),
+            panelPos)) {
+          result.followersLinked++;
+        } else {
+          result.followersAlready++;
+        }
+      } else if (block instanceof IFireAlarmPanelFollower) {
         TileEntity te = world.getTileEntity(cell);
         if (te instanceof TileEntityFireAlarmSensor) {
           if (((TileEntityFireAlarmSensor) te).setLinkedPanelPos(panelPos)

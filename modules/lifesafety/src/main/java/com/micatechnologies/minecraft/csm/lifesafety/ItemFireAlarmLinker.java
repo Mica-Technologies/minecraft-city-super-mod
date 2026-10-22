@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractItem;
 import com.micatechnologies.minecraft.csm.lifesafety.stations.ILinkedDeviceController;
 import java.util.List;
@@ -175,7 +176,18 @@ public class ItemFireAlarmLinker extends AbstractItem {
       TileEntityFireAlarmControlPanel fireAlarmControlPanel
           = (TileEntityFireAlarmControlPanel) worldIn.getTileEntity(alarmPanelPos);
 
-      if (state.getBlock() instanceof IFireAlarmPanelFollower) {
+      if (state.getBlock() instanceof CsmFireAlarmLink.Follower) {
+        // Another module's block that follows a panel (a fare gate, a station gate): it keeps
+        // the panel and looks at it through Core, as a door holder does.
+        boolean linked = ((CsmFireAlarmLink.Follower) state.getBlock())
+            .followFireAlarmPanel(worldIn, pos, alarmPanelPos);
+        if (!worldIn.isRemote) {
+          player.sendMessage(new TextComponentString((linked ? "Now following" : "Already following")
+              + " fire alarm control panel at (" + alarmPanelPos.getX() + ","
+              + alarmPanelPos.getY() + "," + alarmPanelPos.getZ() + ")"));
+        }
+        return EnumActionResult.SUCCESS;
+      } else if (state.getBlock() instanceof IFireAlarmPanelFollower) {
         // A door holder or annunciator: it keeps the panel it follows and looks at it; the panel
         // keeps no list of them.
         TileEntity followerTe = worldIn.getTileEntity(pos);
