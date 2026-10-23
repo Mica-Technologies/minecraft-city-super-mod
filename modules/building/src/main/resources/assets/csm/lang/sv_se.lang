@@ -553,6 +553,7 @@ tile.wall_stripe_yellow.name=Orienteringsrand (Gul)
 tile.wall_tile_square_white.name=Kakel (Vit Kvadrat)
 tile.wall_tile_subway_green.name=Kakel (Grön Tunnelbana)
 tile.wall_tile_subway_white.name=Kakel (Vit Tunnelbana)
+tile.wayfinding_panel.name=Vägvisningsskylt
 tile.whitemetal.name=Vit Metall
 tile.whitemetal_fence.name=Vit Metallstaket
 tile.whitemetal_slab.name=Vit Metallplatta

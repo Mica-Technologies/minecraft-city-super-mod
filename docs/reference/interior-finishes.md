@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "121 blocks in this tab"
+!!! info "122 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -123,6 +123,7 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Walnut Hardwood Fence | `csm:hardwood_walnut_fence` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Slab | `csm:hardwood_walnut_slab` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Stairs | `csm:hardwood_walnut_stairs` | 2 | 10 | axe | 0 |
+| Wayfinding Panel | `csm:wayfinding_panel` | 2.0 | 6.0 | pickaxe | 1 |
 | Wayfinding Stripe (Blue) | `csm:wall_stripe_blue` | 0.3 | 1 |  | 0 |
 | Wayfinding Stripe (Green) | `csm:wall_stripe_green` | 0.3 | 1 |  | 0 |
 | Wayfinding Stripe (Orange) | `csm:wall_stripe_orange` | 0.3 | 1 |  | 0 |

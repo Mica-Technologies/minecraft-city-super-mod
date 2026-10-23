@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "csm:blocks/wayfinding/wayfinding_frame",
+    "glyphs": "csm:blocks/wayfinding/wayfinding_glyphs",
+    "icons": "csm:blocks/wayfinding/wayfinding_icons"
+  }
+}

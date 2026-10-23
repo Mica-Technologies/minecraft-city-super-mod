@@ -305,6 +305,8 @@ class Catalogue(object):
         return reg
 
     def add(self, registry, java, names, models, blockstate, item=None, tab=None):
+        """A block. blockstate None (with no models and no item) keeps only its tile name and
+        tab line here, for a block whose assets another generator writes."""
         assert len(names) == 4, registry
         assert registry not in [b["registry"] for b in self.blocks], registry
         self.blocks.append({"registry": registry, "java": java, "names": names,
@@ -348,6 +350,8 @@ class Catalogue(object):
                 rel = "models/block/%s/%s.json" % (self.model_dir, name)
                 dump(os.path.join(assets, rel), data)
                 written.append(rel)
+            if b["blockstate"] is None:
+                continue    # its assets are another generator's; only its name and tab line
             rel = "blockstates/%s.json" % b["registry"]
             dump(os.path.join(assets, rel), b["blockstate"])
             written.append(rel)

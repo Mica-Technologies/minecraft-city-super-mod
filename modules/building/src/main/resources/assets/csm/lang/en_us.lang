@@ -553,6 +553,7 @@ tile.wall_stripe_yellow.name=Wayfinding Stripe (Yellow)
 tile.wall_tile_square_white.name=Ceramic Wall Tile (White Square)
 tile.wall_tile_subway_green.name=Ceramic Wall Tile (Green Subway)
 tile.wall_tile_subway_white.name=Ceramic Wall Tile (White Subway)
+tile.wayfinding_panel.name=Wayfinding Panel
 tile.whitemetal.name=White Metal
 tile.whitemetal_fence.name=White Metal Fence
 tile.whitemetal_slab.name=White Metal Slab

@@ -150,6 +150,11 @@ public class Csm {
       // the GUI handler itself is registered in init, so the registry is complete before a GUI
       // can be opened.
       CsmGuiRegistry.register(new MaterialsGuiProvider());
+      // The wayfinding panels' editor: the panel blocks ship in modules, the engine is Core's
+      CsmGuiRegistry.register(
+          new com.micatechnologies.minecraft.csm.codeutils.wayfinding.WayfindingGuiProvider());
+      MinecraftForge.EVENT_BUS.register(
+          new com.micatechnologies.minecraft.csm.codeutils.wayfinding.WayfindingPanels.Ticker());
 
       // Register the mod's world generator
       logger.info("Registering world generator");
@@ -169,6 +174,10 @@ public class Csm {
       CsmNetwork.CORE.registerMessage(
           com.micatechnologies.minecraft.csm.materials.CsmFabricateHandler.class,
           com.micatechnologies.minecraft.csm.materials.CsmFabricatePacket.class, Side.SERVER);
+      CsmNetwork.CORE.registerMessage(
+          com.micatechnologies.minecraft.csm.codeutils.wayfinding.WayfindingPanelPacket.Handler.class,
+          com.micatechnologies.minecraft.csm.codeutils.wayfinding.WayfindingPanelPacket.class,
+          Side.SERVER);
       logger.info("Finished registering network message(s)");
 
       // Build the mod's tabs and elements: every block and item of every loaded module, by far

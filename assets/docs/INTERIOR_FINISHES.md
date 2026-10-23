@@ -11,7 +11,7 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 | Hanging acoustics | Acoustic Baffle and Acoustic Ceiling Cloud, each in the linear lights' ten finishes (Black, Silver, White, Light Grey, Charcoal, Navy, Sage, Terracotta, Light Oak, Walnut) | `gen_acoustic_ceilings.py` |
 | Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
 | Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Accent Wall Panel (Maple, Walnut, Teal, Blue, Green, Yellow); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
-| Wall fittings | Wayfinding Stripe (Blue, Green, Teal, Yellow, Orange, Purple); Room Sign (Charcoal, Blue); Nurse Station Glass Screen (Clear, Frosted) | `gen_wall_finishes.py` |
+| Wall fittings | Wayfinding Stripe (Blue, Green, Teal, Yellow, Orange, Purple); Room Sign (Charcoal, Blue); Wayfinding Panel; Nurse Station Glass Screen (Clear, Frosted) | `gen_wall_finishes.py` (the panel: `gen_wayfinding.py`) |
 | Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); a full block of each of the carpet, vinyl, ceramic and rubber floors; and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
 
 ## Modern ceilings
@@ -224,6 +224,14 @@ Added for a hospital build (2026-10), on the same generator.
   bits left after the facing and past any sane state count, and a renderer would draw every plate
   in a hospital every frame; a data-only tile entity is a few bytes a plate. A click cycles the
   name and a sneak-click steps the number, for building by hand.
+- **Wayfinding panel** (`BlockWayfindingPanelGeneric`, `wayfinding_panel`, GitHub #307): Core's
+  wayfinding panel without airport or hospital theming, for stairwell floor signs ("L3 / STAIR
+  A"), office room plates, museum galleries and corridors. It starts unlit in the corporate
+  aluminium scheme and, on its `auto` mount, sits flat on the wall it is placed against. Cells join
+  into a sign up to 16 x 6, and it takes every option the airport and hospital panels do (mounts,
+  scale, four lines with icons, colours, border): see
+  [WAYFINDING_PANELS.md](WAYFINDING_PANELS.md). Placed by command like a room sign, by
+  `/setblock` with its NBT.
 - **Nurse station glass screen** (`BlockNurseScreen`, `nurse_screen_clear`,
   `nurse_screen_frosted`): a glass panel in an aluminium shoe, 11.75 px high, standing on the far
   edge of the counter it is placed on (the edge the player looked toward). Screens of a kind side

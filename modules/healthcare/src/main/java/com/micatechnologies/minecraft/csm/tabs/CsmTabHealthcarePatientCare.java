@@ -124,6 +124,6 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHealthcare("kids_chair_green", new int[]{4, 0, 4, 12, 11, 12}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true).withSeat(5.5, 0));
     initTabBlock(new BlockHealthcare("playroom_toy_box", new int[]{2, 0, 4, 14, 10, 13}, HealthcareMaterial.WOOD, BlockHealthcare.Mount.FLOOR, true));
     // --- gen_healthcare_systems.py --fragments ---
-    initTabBlock(new BlockHospitalWayfindingPanel());
+    initTabBlock(new BlockHospitalWayfindingPanel("hospital_wayfinding_panel"));
   }
 }

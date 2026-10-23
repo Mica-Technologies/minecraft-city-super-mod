@@ -2,15 +2,9 @@
 """
 gen_healthcare_systems.py -- the Healthcare module's wayfinding and building systems.
 
-Wayfinding: the hospital wayfinding panel, a drop-in for Transit's airport_wayfinding_panel
-(the same NBT and metadata): cells that join into one panel up to 16 x 6, each cell a charcoal
-slab with a frame on the panel's outer edges (actual state), and the legend, pictogram, arrow and
-hanger rods BAKED into the chunk by HospitalWayfindingBakedModel from one sheet this script draws:
-the printable ASCII glyphs of the committed highway font (Series D) -- the fourteen it lacks
-(% ; < > [ \\ ] ^ _ ` { | } ~) drawn here in its stroke and proportions -- the fourteen hospital
-pictograms (black art on a white square), the two arrows and a white swatch for the coloured
-backgrounds. The glyph metrics go into HospitalWayfindingGlyphs.java (written here too), so the
-Java and the sheet cannot drift.
+Wayfinding: only the hospital wayfinding panel's name, tab line and messages. Its sheets, Java
+layout, blockstate and models are gen_wayfinding.py's (one engine in Core draws all three
+wayfinding panels, GitHub #307).
 
 Building systems: the code blue button and annunciator (a blue strobe, an animated texture, with
 the chime from gen_healthcare_sounds.py), the medical gas zone valve box and master alarm panel,
@@ -26,8 +20,6 @@ Writes, under modules/healthcare/src/main/resources/assets/csm:
   * blockstates/<registry>.json, and models/item/<registry>.json where needed
   * the tile names and messages in all four lang files
 
-and modules/healthcare/src/main/java/.../healthcare/wayfinding/HospitalWayfindingGlyphs.java.
-
 Usage:
     py gen_healthcare_systems.py              # write everything
     py gen_healthcare_systems.py --check      # fail if the tree has drifted
@@ -39,13 +31,13 @@ import math
 import os
 import sys
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_healthcare_common as hc  # noqa: E402
 import gen_healthcare_wards as hw  # noqa: E402
 from gen_healthcare_common import (  # noqa: E402
-    disc, draw_text_centred, fill, frame, rect, shade)
+    draw_text_centred, fill, frame, rect, shade)
 
 C = hc.catalogue("gen_healthcare_systems.py", "systems")
 T = C.T
@@ -61,11 +53,6 @@ FULL = [0, 0, 16, 16]
 
 PC = hc.PATIENT_CARE
 CL = hc.CLINICAL
-
-JAVA_GLYPHS = os.path.join(hc.REPO, "modules", "healthcare", "src", "main", "java", "com",
-                           "micatechnologies", "minecraft", "csm", "healthcare", "wayfinding",
-                           "HospitalWayfindingGlyphs.java")
-
 
 def tex(name, fn):
     C.textures[name] = fn
@@ -100,557 +87,16 @@ def java_for(cls, reg, box6, mat, collides=False):
 
 
 # ==========================================================================================
-# The wayfinding sheet
+# The wayfinding panel
 # ==========================================================================================
-SHEET = 512
-CAP = 32            # the glyphs' cap height on the sheet, px
-GLYPH_ROW = 50      # a row of glyphs: ascenders, caps, descenders and padding
-PICTO = 64          # a pictogram's (and an arrow's) square, px
-PICTO_TOP = SHEET - 2 * PICTO   # the pictograms and arrows fill the bottom two rows
-SUPER = 4           # drawn this many times larger and reduced
-FONT = os.path.join(hc.FONT_DIR, "MicaOpenHighway-SeriesD.ttf")
-
-# The pictograms, in HospitalWayfindingSign.Pictogram's order after NONE (the Java stores them
-# by id, never by ordinal, and finds each one's cell here by id).
-PICTOGRAMS = ("emergency", "xray", "lab", "pharmacy", "maternity", "elevator", "stairs",
-              "restroom", "cafe", "chapel", "parking", "info", "accessible", "exit")
-ARROWS = ("arrow_straight", "arrow_diagonal")
-# A white swatch for the coloured background (and the rods), sampled at its middle.
-WHITE_CELL = (SHEET - 16, PICTO_TOP - 16, 12)
-
-
-def _font(size):
-    return ImageFont.truetype(FONT, size)
-
-
-def _cap_size():
-    """The font size whose capitals are CAP * SUPER px tall."""
-    f = _font(400)
-    b = f.getbbox("H")
-    return int(round(400 * CAP * SUPER / float(b[3] - b[1])))
-
-
-# The glyphs the committed Series D font lacks, drawn in its stroke and proportions: each a list of
-# strokes in units of the cap height H from the pen (x right, y up from the baseline), a stroke
-# being a polyline drawn the font's stem wide with round joints and ends ("ring" an ellipse
-# outline, "dot" a filled square of the font's full stop), and its advance in H. Brackets, braces
-# and the bar reach from the cap line to below the baseline as the font's parentheses do; the
-# angle brackets, caret and tilde sit on the mathematical axis, half the cap height.
-def _brace(sign):
-    """{ (sign 1) or } (sign -1): a stem pinched to a point at the axis, hooked at its ends."""
-    x0, xs, xp = (0.36, 0.22, 0.07) if sign > 0 else (0.10, 0.24, 0.39)
-    return [[(x0, 1.06), (xs, 1.0), (xs, 0.6), (xp, 0.45), (xs, 0.3), (xs, -0.1), (x0, -0.16)]]
-
-
-DRAWN = {
-    "%": ([("ring", 0.04, 0.58, 0.36, 1.0), ("ring", 0.42, 0.0, 0.74, 0.42),
-           [(0.62, 1.0), (0.16, 0.0)]], 0.86),
-    ";": ([("dot", 0.18, 0.62), [(0.24, 0.12), (0.18, -0.2)], ("dot", 0.18, 0.12)], 0.48),
-    "<": ([[(0.56, 0.78), (0.1, 0.5), (0.56, 0.22)]], 0.68),
-    ">": ([[(0.12, 0.78), (0.58, 0.5), (0.12, 0.22)]], 0.68),
-    "[": ([[(0.38, 1.06), (0.14, 1.06), (0.14, -0.16), (0.38, -0.16)]], 0.48),
-    "]": ([[(0.1, 1.06), (0.34, 1.06), (0.34, -0.16), (0.1, -0.16)]], 0.48),
-    "\\": ([[(0.06, 1.0), (0.52, 0.0)]], 0.6),
-    "^": ([[(0.08, 0.58), (0.32, 1.0), (0.56, 0.58)]], 0.66),
-    "_": ([[(0.04, -0.14), (0.62, -0.14)]], 0.66),
-    "`": ([[(0.12, 1.02), (0.26, 0.84)]], 0.42),
-    "{": (_brace(1), 0.48),
-    "}": (_brace(-1), 0.48),
-    "|": ([[(0.2, 1.06), (0.2, -0.16)]], 0.42),
-    "~": ([[(0.06 + 0.56 * i / 12.0, 0.5 + 0.08 * math.sin(math.pi * 2 * i / 12.0))
-            for i in range(13)]], 0.72),
-}
-
-
-def _stem(f):
-    """The font's stem width, px at drawing size: the inked width of its I."""
-    return _ink_width(f, "I")
-
-
-def _ink_width(f, ch):
-    """A glyph's inked width, px (getbbox counts its side bearings)."""
-    img = Image.new("L", (f.size * 2, f.size * 2), 0)
-    ImageDraw.Draw(img).text((f.size // 2, f.size), ch, font=f, fill=255, anchor="ls")
-    b = img.getbbox()
-    return b[2] - b[0]
-
-
-def _drawn_glyph(ch, f, size):
-    """One of DRAWN on a canvas as the font's glyphs are drawn: (canvas, pen_x, base_y)."""
-    strokes, _ = DRAWN[ch]
-    h = CAP * SUPER
-    w = _stem(f)
-    dot_w = _ink_width(f, ".")
-    pen_x, base_y = 4 * SUPER * 4, size * 2
-    canvas = Image.new("L", (size * 3, size * 3), 0)
-    d = ImageDraw.Draw(canvas)
-
-    def at(x, y):
-        return pen_x + x * h, base_y - y * h
-
-    for st in strokes:
-        if isinstance(st, tuple) and st[0] == "ring":
-            x0, y0 = at(st[1], st[4])
-            x1, y1 = at(st[3], st[2])
-            d.ellipse([x0, y0, x1, y1], outline=255, width=int(round(w * 0.8)))
-        elif isinstance(st, tuple) and st[0] == "dot":
-            cx, cy = at(st[1], st[2])
-            d.rectangle([cx - dot_w / 2.0, cy - dot_w / 2.0, cx + dot_w / 2.0,
-                         cy + dot_w / 2.0], fill=255)
-        else:
-            pts = [at(x, y) for x, y in st]
-            d.line(pts, fill=255, width=int(round(w)))
-            for x, y in pts:
-                d.ellipse([x - w / 2.0, y - w / 2.0, x + w / 2.0, y + w / 2.0], fill=255)
-    return canvas, pen_x, base_y
-
-
-def glyph_images():
-    """Each printable ASCII character drawn white on clear at CAP px capitals: its sheet image
-    (with a one px clear margin), the image's left edge from the pen and top from the cap line,
-    in px, and its advance. The characters the font lacks are drawn from DRAWN."""
-    size = _cap_size()
-    f = _font(size)
-    cap_top = f.getbbox("H", anchor="ls")[1]   # negative: the cap line above the baseline
-    from fontTools.ttLib import TTFont
-    cmap = TTFont(FONT).getBestCmap()
-    out = {}
-    for code in range(32, 127):
-        ch = chr(code)
-        if code not in cmap:
-            canvas, pen_x, base_y = _drawn_glyph(ch, f, size)
-            adv = DRAWN[ch][1] * CAP
-        else:
-            adv = f.getlength(ch) / SUPER
-            if ch == " ":
-                out[ch] = (None, 0, 0, adv)
-                continue
-            pen_x, base_y = 4 * SUPER * 4, size * 2
-            canvas = Image.new("L", (size * 3, size * 3), 0)
-            ImageDraw.Draw(canvas).text((pen_x, base_y), ch, font=f, fill=255, anchor="ls")
-        bbox = canvas.getbbox()
-        if bbox is None:
-            out[ch] = (None, 0, 0, adv)
-            continue
-        cap_y = base_y + cap_top
-        x0 = int(math.floor((bbox[0] - pen_x) / float(SUPER))) - 1
-        y0 = int(math.floor((bbox[1] - cap_y) / float(SUPER))) - 1
-        x1 = int(math.ceil((bbox[2] - pen_x) / float(SUPER))) + 1
-        y1 = int(math.ceil((bbox[3] - cap_y) / float(SUPER))) + 1
-        crop = canvas.crop((pen_x + x0 * SUPER, cap_y + y0 * SUPER,
-                            pen_x + x1 * SUPER, cap_y + y1 * SUPER))
-        small = crop.resize((x1 - x0, y1 - y0), Image.BOX)
-        out[ch] = (small, x0, y0, adv)
-    return out
-
-
-# --- pictograms: drawn at SUPER x 64 in black on white, reduced ---------------------------
-S = PICTO * SUPER
-BLACK = (0, 0, 0, 255)
-WHITE = (255, 255, 255, 255)
-
-
-def _figure(d, cx, top, h, walk=0.0):
-    """A standing person, the generic signage figure: a round head and a rounded body with
-    legs, h px tall from ``top``; ``walk`` spreads the legs for a walking figure."""
-    r = h * 0.09
-    d.ellipse([cx - r, top, cx + r, top + 2 * r], fill=BLACK)
-    bt = top + 2 * r + h * 0.04
-    bw = h * 0.13
-    d.rounded_rectangle([cx - bw, bt, cx + bw, bt + h * 0.38], radius=bw * 0.8, fill=BLACK)
-    lw = h * 0.055
-    hip = bt + h * 0.34
-    for side in (-1, 1):
-        fx = cx + side * (bw * 0.55 + walk * h * 0.18)
-        d.line([(cx + side * bw * 0.45, hip), (fx, top + h)], fill=BLACK, width=int(lw * 2))
-    # arms
-    for side in (-1, 1):
-        sx = cx + side * bw
-        d.line([(sx, bt + h * 0.05), (sx + side * (h * 0.06 + walk * h * 0.12), bt + h * 0.3)],
-               fill=BLACK, width=int(lw * 1.6))
-
-
-def _text(d, text, cx, cy, size, series="D"):
-    f = ImageFont.truetype(os.path.join(hc.FONT_DIR, "MicaOpenHighway-Series%s.ttf" % series),
-                           size)
-    d.text((cx, cy), text, font=f, fill=BLACK, anchor="mm")
-
-
-def picto_emergency(d):
-    """An ambulance from the side, its light bar on the cab, a six-armed star on the box."""
-    d.rectangle([20, 70, 170, 180], fill=BLACK)                      # box
-    d.polygon([(170, 100), (205, 100), (236, 140), (236, 180), (170, 180)], fill=BLACK)
-    d.polygon([(178, 108), (203, 108), (226, 138), (178, 138)], fill=WHITE)   # windscreen
-    d.rectangle([150, 58, 190, 70], fill=BLACK)                      # light bar
-    for wx in (62, 196):
-        d.ellipse([wx - 24, 160, wx + 24, 208], fill=BLACK)
-        d.ellipse([wx - 11, 173, wx + 11, 195], fill=WHITE)
-    cx, cy, r = 95, 122, 36
-    for a in (90, 30, 150):
-        t = math.radians(a)
-        dx, dy = math.cos(t) * r, -math.sin(t) * r
-        d.line([(cx - dx, cy - dy), (cx + dx, cy + dy)], fill=WHITE, width=20)
-
-
-def picto_xray(d):
-    """A chest film: the ribs and spine light on dark."""
-    d.rounded_rectangle([36, 28, 220, 228], radius=14, fill=BLACK)
-    d.rectangle([122, 44, 134, 212], fill=WHITE)                     # spine
-    for i in range(6):
-        y = 64 + i * 24
-        for side in (-1, 1):
-            x0 = 128 + side * 14
-            pts = [(x0, y), (x0 + side * 40, y - 10), (x0 + side * 72, y + 6),
-                   (x0 + side * 76, y + 26)]
-            d.line(pts, fill=WHITE, width=9, joint="curve")
-
-
-def picto_lab(d):
-    """A conical lab flask with liquid and two bubbles."""
-    d.rectangle([108, 26, 148, 40], fill=BLACK)
-    d.polygon([(112, 40), (144, 40), (144, 100), (214, 214), (42, 214), (112, 100)], fill=BLACK)
-    d.polygon([(124, 52), (132, 52), (132, 104), (190, 200), (66, 200), (124, 104)], fill=WHITE)
-    d.polygon([(88, 150), (168, 150), (190, 200), (66, 200)], fill=BLACK)
-    d.ellipse([110, 116, 126, 132], fill=BLACK)
-    d.ellipse([136, 92, 146, 102], fill=BLACK)
-
-
-def picto_pharmacy(d):
-    """Rx, the prescription mark, and a capsule under it."""
-    _text(d, "Rx", 128, 104, 150, series="E")
-    d.rounded_rectangle([56, 176, 200, 220], radius=22, fill=BLACK)
-    d.rounded_rectangle([132, 184, 192, 212], radius=14, fill=WHITE)
-
-
-def picto_maternity(d):
-    """A parent holding a baby."""
-    d.ellipse([104, 22, 152, 70], fill=BLACK)                        # head
-    d.polygon([(96, 80), (160, 80), (196, 236), (60, 236)], fill=BLACK)   # dress
-    d.ellipse([132, 96, 196, 160], fill=WHITE)                       # the arm's cradle
-    d.ellipse([140, 104, 188, 152], fill=BLACK)                      # the baby's bundle
-    d.ellipse([168, 86, 200, 118], fill=BLACK)                       # the baby's head
-    d.ellipse([174, 92, 194, 112], fill=BLACK)
-
-
-def picto_elevator(d):
-    """A lift car with a person inside, up and down triangles beside it."""
-    d.rectangle([28, 28, 168, 228], fill=BLACK)
-    d.rectangle([42, 42, 154, 214], fill=WHITE)
-    _figure(d, 98, 62, 140)
-    d.polygon([(186, 110), (228, 110), (207, 72)], fill=BLACK)
-    d.polygon([(186, 146), (228, 146), (207, 184)], fill=BLACK)
-
-
-def picto_stairs(d):
-    """A flight of stairs rising to the right with a person climbing it."""
-    pts = [(20, 236)]
-    x, y = 20, 236
-    for _ in range(4):
-        y -= 40
-        pts.append((x, y))
-        x += 54
-        pts.append((x, y))
-    pts += [(236, y), (236, 236)]
-    d.polygon(pts, fill=BLACK)
-    _figure(d, 112, 40, 110, walk=0.6)
-
-
-def picto_restroom(d):
-    """A man and a woman either side of a bar."""
-    _figure(d, 66, 34, 196)
-    d.rectangle([124, 30, 132, 226], fill=BLACK)
-    # the woman: a head and a dress
-    d.ellipse([172, 34, 208, 70], fill=BLACK)
-    d.polygon([(170, 80), (210, 80), (234, 176), (146, 176)], fill=BLACK)
-    for lx in (176, 204):
-        d.rectangle([lx - 6, 176, lx + 6, 230], fill=BLACK)
-
-
-def picto_cafe(d):
-    """A cup of coffee on a saucer, steam rising."""
-    d.rounded_rectangle([40, 214, 216, 230], radius=8, fill=BLACK)
-    d.rectangle([60, 120, 172, 206], fill=BLACK)
-    d.ellipse([60, 180, 172, 220], fill=BLACK)
-    d.ellipse([150, 128, 214, 186], fill=BLACK)
-    d.ellipse([166, 142, 198, 172], fill=WHITE)
-    for sx in (86, 116, 146):
-        d.line([(sx, 104), (sx - 10, 80), (sx + 4, 58), (sx - 6, 34)], fill=BLACK, width=10,
-               joint="curve")
-
-
-def picto_chapel(d):
-    """A lit candle on a holder: a quiet room, of no one faith."""
-    d.ellipse([110, 22, 146, 92], fill=BLACK)                        # flame
-    d.ellipse([120, 52, 136, 86], fill=WHITE)
-    d.rectangle([126, 92, 130, 104], fill=BLACK)                     # wick
-    d.rectangle([98, 104, 158, 206], fill=BLACK)                     # candle
-    d.rounded_rectangle([56, 206, 200, 226], radius=8, fill=BLACK)
-
-
-def picto_parking(d):
-    """P, for parking."""
-    d.rounded_rectangle([34, 24, 222, 232], radius=18, fill=BLACK)
-    d.rounded_rectangle([46, 36, 210, 220], radius=12, fill=WHITE)
-    _text(d, "P", 128, 132, 210, series="E")
-
-
-def picto_info(d):
-    """i in a ring: information."""
-    d.ellipse([22, 22, 234, 234], fill=BLACK)
-    d.ellipse([40, 40, 216, 216], fill=WHITE)
-    d.ellipse([112, 56, 144, 88], fill=BLACK)
-    d.rectangle([112, 104, 144, 196], fill=BLACK)
-    d.rectangle([98, 104, 144, 116], fill=BLACK)
-    d.rectangle([98, 186, 158, 198], fill=BLACK)
-
-
-def picto_accessible(d):
-    """A person in a wheelchair: step-free access."""
-    d.ellipse([100, 18, 136, 54], fill=BLACK)
-    d.line([(112, 66), (104, 146)], fill=BLACK, width=26)            # back
-    d.line([(108, 140), (176, 140), (196, 210)], fill=BLACK, width=22, joint="curve")
-    d.line([(110, 92), (166, 92)], fill=BLACK, width=18)             # arm
-    d.ellipse([46, 128, 166, 248], outline=BLACK, width=18)          # wheel
-    d.ellipse([194, 200, 222, 228], fill=BLACK)
-
-
-def picto_exit(d):
-    """A person walking out through a doorway, an arrow leading out."""
-    d.rectangle([140, 24, 222, 232], fill=BLACK)
-    d.rectangle([154, 38, 208, 232], fill=WHITE)
-    _figure(d, 182, 52, 170, walk=0.7)
-    d.polygon([(26, 128), (86, 96), (86, 116), (126, 116), (126, 140), (86, 140), (86, 160)],
-              fill=BLACK)
-
-
-PICTO_DRAW = {"emergency": picto_emergency, "xray": picto_xray, "lab": picto_lab,
-              "pharmacy": picto_pharmacy, "maternity": picto_maternity,
-              "elevator": picto_elevator, "stairs": picto_stairs, "restroom": picto_restroom,
-              "cafe": picto_cafe, "chapel": picto_chapel, "parking": picto_parking,
-              "info": picto_info, "accessible": picto_accessible, "exit": picto_exit}
-
-
-def pictogram(kind):
-    big = Image.new("RGBA", (S, S), WHITE)
-    PICTO_DRAW[kind](ImageDraw.Draw(big))
-    return big.resize((PICTO, PICTO), Image.LANCZOS)
-
-
-def arrow(kind):
-    """The arrows: white on clear, tinted with the legend's colour. Straight points right, the
-    diagonal up and to the right; the baked model turns them."""
-    big = Image.new("L", (S, S), 0)
-    d = ImageDraw.Draw(big)
-    shaft, head = 40, 90
-    pts = [(28, 128 - shaft / 2), (150, 128 - shaft / 2), (150, 128 - head),
-           (232, 128), (150, 128 + head), (150, 128 + shaft / 2), (28, 128 + shaft / 2)]
-    d.polygon(pts, fill=255)
-    if kind == "arrow_diagonal":
-        big = big.rotate(45, resample=Image.BICUBIC, center=(128, 128))
-    alpha = big.resize((PICTO, PICTO), Image.LANCZOS)
-    out = Image.new("RGBA", (PICTO, PICTO), (255, 255, 255, 0))
-    out.putalpha(alpha)
-    return out
-
-
-def pack_glyphs(glyphs):
-    """Lays the glyphs out in rows from the top of the sheet: {char: (x, y)}."""
-    pos = {}
-    x, y = 0, 0
-    for code in range(33, 127):
-        img = glyphs[chr(code)][0]
-        if img is None:
-            continue
-        if x + img.width > SHEET:
-            x, y = 0, y + GLYPH_ROW
-        pos[chr(code)] = (x, y + 2)
-        x += img.width + 2
-    assert y + GLYPH_ROW <= PICTO_TOP - 16, "the glyphs overflow the sheet"
-    return pos
-
-
-def picto_cells():
-    """Each pictogram's and arrow's cell: {name: (x, y)}, eight to a row."""
-    names = list(PICTOGRAMS) + list(ARROWS)
-    return {n: ((i % 8) * PICTO, PICTO_TOP + (i // 8) * PICTO) for i, n in enumerate(names)}
-
-
-_GLYPHS = None
-
-
-def glyphs():
-    global _GLYPHS
-    if _GLYPHS is None:
-        _GLYPHS = glyph_images()
-    return _GLYPHS
-
-
-@C.texture("wayfinding_sheet")
-def _wayfinding_sheet():
-    g = glyphs()
-    pos = pack_glyphs(g)
-    # white everywhere, clear where nothing is drawn, so a reduced glyph has no dark fringe
-    sheet = Image.new("RGBA", (SHEET, SHEET), (255, 255, 255, 0))
-    for ch, (x, y) in pos.items():
-        img = g[ch][0]
-        white = Image.new("RGBA", img.size, (255, 255, 255, 255))
-        white.putalpha(img)
-        sheet.paste(white, (x, y))
-    for name, (x, y) in picto_cells().items():
-        sheet.paste(arrow(name) if name in ARROWS else pictogram(name), (x, y))
-    wx, wy, ws = WHITE_CELL
-    rect(sheet, wx, wy, wx + ws, wy + ws, (255, 255, 255))
-    return sheet
-
-
-def glyphs_java():
-    """HospitalWayfindingGlyphs.java: the sheet's layout, for the baked model."""
-    g = glyphs()
-    pos = pack_glyphs(g)
-    rows = []
-    for code in range(32, 127):
-        ch = chr(code)
-        img, x0, y0, adv = g[ch]
-        if img is None:
-            rows.append("      0, 0, 0, 0, 0, 0, %d, // %r" % (int(round(adv * 16)), ch))
-        else:
-            x, y = pos[ch]
-            rows.append("      %d, %d, %d, %d, %d, %d, %d, // %s" % (
-                x, y, img.width, img.height, x0, y0, int(round(adv * 16)),
-                "'\\\\'" if ch == "\\" else repr(ch)))
-    cells = picto_cells()
-    ids = ", ".join('"%s"' % p for p in PICTOGRAMS)
-    pxy = ", ".join("%d, %d" % cells[p] for p in PICTOGRAMS)
-    wx, wy, ws = WHITE_CELL
-    return """package com.micatechnologies.minecraft.csm.healthcare.wayfinding;
-
-/**
- * The hospital wayfinding panel's sheet ({@code textures/blocks/healthcare/systems/
- * wayfinding_sheet.png}): where each glyph, pictogram and arrow is on it and how the glyphs are
- * set. GENERATED by {@code dev-env-utils/scripts/gen_healthcare_systems.py} with the sheet; do
- * not edit by hand (its {@code --check} fails if the two disagree).
- *
- * @since 2026.10
- */
-public final class HospitalWayfindingGlyphs {
-
-  /** The sheet's size, px. */
-  public static final int SHEET = %d;
-  /** The glyphs' cap height on the sheet, px: the unit every glyph number below is in. */
-  public static final int CAP = %d;
-  /** A pictogram's or an arrow's square, px. */
-  public static final int PICTO = %d;
-
-  /**
-   * Per printable ASCII character from 32 (space) to 126, seven numbers: its image's x and y on
-   * the sheet, its width and height (0 for none), its left edge from the pen and its top below
-   * the cap line (px, the top negative when it reaches above the capitals), and its advance in
-   * sixteenths of a px.
-   */
-  static final int[] GLYPHS = {
-%s
-  };
-
-  /** The pictograms' ids, in HospitalWayfindingSign.Pictogram's order after NONE. */
-  static final String[] PICTOGRAM_IDS = {%s};
-  /** Each pictogram's cell's top-left corner on the sheet, x then y. */
-  static final int[] PICTOGRAM_XY = {%s};
-  /** The straight arrow (pointing right) and the diagonal (up and right): x, y. */
-  static final int[] ARROW_STRAIGHT = {%d, %d};
-  static final int[] ARROW_DIAGONAL = {%d, %d};
-  /** A white swatch, sampled at its middle for the background and the rods: x, y, size. */
-  static final int[] WHITE = {%d, %d, %d};
-
-  private HospitalWayfindingGlyphs() {
-  }
-
-  /**
-   * The index of a character in {@link #GLYPHS} (times seven), or -1 for one the sheet lacks.
-   *
-   * @param c a character
-   * @return its offset into {@link #GLYPHS}, or -1
-   */
-  static int offset(char c) {
-    return c < 32 || c > 126 ? -1 : (c - 32) * 7;
-  }
-
-  /**
-   * A pictogram's cell by id.
-   *
-   * @param id the pictogram's id
-   * @return its cell's x and y on the sheet, or null for none
-   */
-  static int[] pictogram(String id) {
-    for (int i = 0; i < PICTOGRAM_IDS.length; i++) {
-      if (PICTOGRAM_IDS[i].equals(id)) {
-        return new int[]{PICTOGRAM_XY[2 * i], PICTOGRAM_XY[2 * i + 1]};
-      }
-    }
-    return null;
-  }
-}
-""" % (SHEET, CAP, PICTO, "\n".join(rows), ids, pxy, cells["arrow_straight"][0],
-       cells["arrow_straight"][1], cells["arrow_diagonal"][0], cells["arrow_diagonal"][1],
-       wx, wy, ws)
-
-
-# ==========================================================================================
-# The wayfinding panel's model: a slab and the frame on the panel's outer edges
-# ==========================================================================================
-PANEL_Z0, PANEL_Z1 = 6.0, 10.0   # SHARED with HospitalWayfindingBakedModel.FACE_Z0/FACE_Z1
-PANEL_FRAME = 0.8                 # SHARED with HospitalWayfindingLayout.FRAME (in sixteenths)
-PANEL_LIP = 0.8                   # the frame stands this proud of each face (> the art's lift)
-
-
+# Its sheets, blockstate, models and item are gen_wayfinding.py's (Core's wayfinding engine draws
+# all three wayfinding panels, #307); only its name, tab line and messages are here.
 def wayfinding_panel():
     reg = "hospital_wayfinding_panel"
-    f, lip = PANEL_FRAME, PANEL_LIP
-    z0, z1 = PANEL_Z0 - lip, PANEL_Z1 + lip
-    parts = [
-        ("body", {}, [el([0, 0, PANEL_Z0], [16, 16, PANEL_Z1], "panel",
-                         faces=("north", "south"))]),
-        ("edge_left", {"edge_left": "true"}, [el([16 - f, 0, z0], [16, 16, z1], "frame")]),
-        ("edge_right", {"edge_right": "true"}, [el([0, 0, z0], [f, 16, z1], "frame")]),
-        ("edge_top", {"edge_top": "true"}, [el([0, 16 - f, z0], [16, 16, z1], "frame")]),
-        ("edge_bottom", {"edge_bottom": "true"}, [el([0, 0, z0], [16, f, z1], "frame")]),
-    ]
-    textures = {"panel": W("charcoal"), "frame": W("stainless"), "particle": W("charcoal")}
-    models = {}
-    rules = []
-    for name, cond, els in parts:
-        mname = reg + "_" + name
-        models[mname] = model(textures, els)
-        for facing, y in hc.ROT_Y.items():
-            w = {"facing": facing}
-            w.update(cond)
-            apply = {"model": M(mname)}
-            if y:
-                apply["y"] = y
-            rules.append({"when": w, "apply": apply})
-    # The item: a framed slab with the information pictogram, which also puts the sheet on the
-    # atlas through a model (the baked model draws from it; nothing else names it).
-    cells = picto_cells()
-    px, py = cells["info"]
-    k = 16.0 / SHEET
-    item_els = [el([0, 0, PANEL_Z0], [16, 16, PANEL_Z1], "panel"),
-                el([16 - f, 0, z0], [16, 16, z1], "frame"), el([0, 0, z0], [f, 16, z1], "frame"),
-                el([0, 16 - f, z0], [16, 16, z1], "frame"), el([0, 0, z0], [16, f, z1], "frame"),
-                el([4, 4, PANEL_Z0 - 0.3], [12, 12, PANEL_Z0], "sheet", faces=("north",),
-                   uv={"north": [round(px * k, 4), round(py * k, 4), round((px + PICTO) * k, 4),
-                                 round((py + PICTO) * k, 4)]})]
-    item_tex = dict(textures, sheet=T("wayfinding_sheet"))
-    models[reg + "_item"] = model(item_tex, item_els, display=ITEM_SMALL)
-    C.add(reg, 'new BlockHospitalWayfindingPanel()',
+    C.add(reg, 'new BlockHospitalWayfindingPanel("%s")' % reg,
           ("Hospital Wayfinding Panel", "Krankenhaus-Wegweisertafel",
            "Panel de señalización hospitalaria", "Vägvisningsskylt (sjukhus)"),
-          models, {"multipart": rules}, item={"parent": MI(reg + "_item")}, tab=PC)
-
-    def lang(key, en, de, es, sv):
-        C.add_lang("csm.healthcare.wayfinding." + key, (en, de, es, sv))
-    lang("preset", "[Wayfinding] Sign: %s", "[Wegweiser] Schild: %s", "[Señalización] Letrero: %s",
-         "[Vägvisning] Skylt: %s")
-    lang("arrow", "[Wayfinding] Arrow: %s", "[Wegweiser] Pfeil: %s", "[Señalización] Flecha: %s",
-         "[Vägvisning] Pil: %s")
+          {}, None, tab=PC)
 
 
 wayfinding_panel()
@@ -1010,33 +456,11 @@ C.add_lang("csm.healthcare.infant.secure",
 # ==========================================================================================
 # Writing
 # ==========================================================================================
-def _write_java(path, text):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", newline="\n", encoding="utf-8") as fh:
-        fh.write(text)
-
-
-def _same_java(path, text):
-    if not os.path.exists(path):
-        return False
-    with open(path, encoding="utf-8") as fh:
-        return fh.read().replace("\r\n", "\n") == text
-
-
 def main():
-    check = "--check" in sys.argv
     frag = "--fragments" in sys.argv
+    check = "--check" in sys.argv
     rc = C.main()
-    if frag:
-        return rc
-    text = glyphs_java()
-    if check:
-        if not _same_java(JAVA_GLYPHS, text):
-            print("out of date (re-run without --check):\n  " + JAVA_GLYPHS)
-            return 1
-        return rc
-    _write_java(JAVA_GLYPHS, text)
-    if rc == 0:
+    if rc == 0 and not frag and not check:
         written = []
         for root, _dirs, files in os.walk(hc.ASSETS):
             written += [os.path.join(root, f) for f in files]
