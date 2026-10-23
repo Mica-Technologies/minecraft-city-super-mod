@@ -55,7 +55,7 @@ nothing else will do.**
   board (`CsmSharedDisplayLists`), keyed by a bounded value, with the font atlas, colours, depth
   mask and lightmap set outside the lists every frame ("Display lists: one texture, no cached
   state" in TRAFFIC_SIGNAL_SYSTEM.md), and a render range (32 blocks for the board, 48 for the
-  display). The wayfinding panel, which on Transit has a renderer, is baked here.
+  display). The wayfinding panel is baked, by Core's engine (WAYFINDING_PANELS.md).
 - **Every screen is an animated texture** (`.mcmeta`): monitors, pumps, analysers, the dialysis
   and endoscopy screens, the kiosk, the code blue strobe, the gas alarm's flashing lamp, the
   infant panel's ALARM band. A screen that is on costs what one that is off costs.
@@ -316,61 +316,16 @@ never goes into its own wall, so it cannot hold itself in alarm.
 The three sounds are synthesised by `gen_healthcare_sounds.py` (code blue chime 2.25 s, medical gas
 alarm 2.0 s, infant security alarm 1.5 s), the module's own `sounds.json` and `HealthcareSounds`.
 
-## The wayfinding panel: a drop-in for Transit's
+## The wayfinding panel
 
-`hospital_wayfinding_panel` takes **exactly** what Transit's `airport_wayfinding_panel` takes, so
-the hospital builder, which already wrote airport panels, switches by changing the block name:
-the same metadata (facing S 0, W 1, N 2, E 3, towards the reader), the same tile entity NBT keys
-and meanings (`l1`, `l2`, `p`, `a`, `s`, `d`, and the optional text scale `ts`, `ts1`, `ts2`), a
-compound without `p` leaving the sign alone, the
-same 16 x 6 limit, the same rule that the bottom-left cell as read is the controller and that a
-`/blockdata` of any cell writes the whole panel, and rods from the top row up to the first block
-above. Its values differ where a hospital needs them: department colour schemes (Transit's four
-kept with their colours), hospital pictograms (Transit's `restroom` and `exit` ids kept, its
-airport and transport ones reading as none), and an unknown scheme reading as neutral where
-Transit's reads as airport. Every enum is saved by its id, never its ordinal. It is its own Java:
-Healthcare may not name Transit.
-
-**Baked, not rendered.** Each cell's model is a charcoal slab with a frame on the panel's outer
-edges (four actual-state booleans, 64 states), and `HospitalWayfindingBakedModel` adds the cell's
-share of the background, pictogram, arrow, legend and rods from one 512 px sheet
-(`wayfinding_sheet.png`: the committed highway font's Series D glyphs, 14 pictograms, two arrows
-and a white swatch), clipped to the cell's square, front and back, coloured in the vertices and
-unshaded. The layout is worked out once across the panel in the reader's space
-(`HospitalWayfindingLayout`, Transit's large hanging sign's proportions) and clipped per cell, so
-the cells show one sign with no seams. Each cell needs only its own tile entity: its place in its
-panel (`pc`, `pr`, `pw`, `ph`) is worked out on the server whenever a cell is added or removed
-(`HospitalWayfindingSign.refresh`) and synced, and a cell outside its controller's rectangle (a
-ragged build) is drawn plain. Quads are cached by facing and face (up to 2,048), so a ward of
-identical signs bakes each cell's share once. The panel gives light 8 and is CUTOUT_MIPPED.
-
-**The text scale, as Transit's.** `ts` (a float, the whole legend) and `ts1` and `ts2` (the top
-and bottom line, each times `ts`) make the legend smaller than the size the panel's height
-gives, with Transit's keys, clamps (each key and each line's product 0.5..1, not a number 1)
-and layout: each line wants its full size times its scale, the lines are fitted to the width
-together at those sizes, the art gives up only the room the scaled legend needs, and each line
-keeps the middle of its capitals at full size, left-aligned beside the art. A key at 1 is never
-written, so an unscaled sign's NBT, baked model key and every piece of its layout are what they
-always were (`TileEntityHospitalWayfindingPanelNbtTest`, and `HospitalWayfindingLayoutTest`'s
-digest of the pieces taken before the scale existed). Every cell holds the scale with the rest
-of the sign, so `applyToPanel`, the controller's sign copied over the panel by `refresh` and a
-fresh cell's adopted sign all carry it, and each cell's `HospitalWayfindingFace` (the quad
-cache's key) holds its lines' drawn scales: a scale change rebakes only that panel's cells. The
-click and sneak-click keep the scale. There is no GUI here, so it is set by `/blockdata`:
-`/blockdata x y z {l1:"IMAGING",p:"xray",a:"right",s:"neutral",ts:0.8f}`.
-
-**Every printable ASCII character draws.** The committed Series D font has no percent, semicolon,
-angle or square brackets, backslash, caret, underscore, backtick, braces, bar or tilde; those
-fourteen are drawn by `gen_healthcare_systems.py` (`DRAWN`) in the font's own stem width and full
-stop, polylines with round joints in units of the cap height, and go onto the sheet and into the
-glyph table like the font's own. Brackets, braces and the bar reach from the cap line to below the
-baseline, as the font's parentheses do; the angle brackets, caret and tilde sit on the axis at
-half the cap height.
-
-By hand, without a GUI: a click steps through presets (INFORMATION, EMERGENCY, IMAGING, SURGERY,
-MATERNITY, OUTPATIENT, WARDS, LABORATORY, PHARMACY, ADMINISTRATION, ELEVATORS, STAIRS, RESTROOMS,
-CAFE, CHAPEL, PARKING, EXIT) keeping the arrow; a sneak-click steps the arrow. A cell placed fresh,
-by any placement, adopts a joined neighbour's sign.
+`hospital_wayfinding_panel` is Core's wayfinding panel with the hospital's default sign
+(INFORMATION, the information pictogram, an arrow to the right, the neutral navy, lit) and the
+department presets. It was the first baked panel; for #307 its engine moved into Core and grew
+mounts, scaling, four lines with icons, custom colours and an editor, and Transit's airport panel
+and Building's generic `wayfinding_panel` became the same block with other defaults. Everything
+is in [WAYFINDING_PANELS.md](WAYFINDING_PANELS.md). Its metadata and NBT are unchanged, so the
+hospital generators keep working; a click now opens the editor rather than stepping the presets
+(they are the editor's preset button), and a sneak-click still turns the arrow.
 
 ## The operating room
 
@@ -572,7 +527,7 @@ south: +x to west, +z to north; west: +x to north, +z to east).
 
 | Block (csm:) | Mount | Meta | NBT / notes |
 |---|---|---|---|
-| `hospital_wayfinding_panel` | hung cell, joins into a panel up to 16 x 6 | facing S 0, W 1, N 2, E 3 (towards the reader; Transit's) | TE as `airport_wayfinding_panel`: `l1`, `l2` (printable ASCII, 32 characters), `p` pictogram, `a` arrow, `s` scheme, `d` back carries the legend (byte, default 1), optional `ts` (float, whole legend), `ts1`, `ts2` (float, each line, times `ts`), each 0.5..1 and left out at 1. A compound without `p` leaves the sign alone. A `/setblock` with NBT or `/blockdata` on any cell writes the whole panel. `pc`, `pr`, `pw`, `ph` are the server's; never write them. Re-facing a cell by `/setblock` of the same block leaves its old panel and joins the new one, as placing it fresh does |
+| `hospital_wayfinding_panel` | cell, joins into a panel up to 16 x 6; hung, wall, post or ceiling | facing S 0, W 1, N 2, E 3 (towards the reader; Transit's) | the wayfinding panels' NBT (WAYFINDING_PANELS.md, The sign and its NBT): `l1`..`l4`, `p`, `a`, `s`, `d`, `ts`, `ts1`..`ts4`, and for #307 `n`, `al`, `il1`..`il4`, `ir1`..`ir4`, `is`, `m`, `rd`, `sc`, `bg`, `fg`, `bd`, `lt`. A compound with neither `p` nor a #307 key leaves the sign alone. A `/setblock` with NBT or `/blockdata` on any cell writes the whole panel. `pc`, `pr`, `pw`, `ph` are the server's; never write them. Re-facing a cell by `/setblock` of the same block leaves its old panel and joins the new one |
 | `code_blue_button` | wall | bits 0-2 facing, bit 3 active | a `/setblock` with bit 3 activates the code, from air or over the same button; one without bit 3 over an active button stands that button down (its annunciators fall silent unless another linked button or redstone holds them; a reset clears every button sharing them). Redstone 15 while active, strong into its wall |
 | `code_blue_annunciator` | wall | bits 0-2 facing, bit 3 active (worked out) | active while a linked button is active or it is powered |
 | `medical_gas_zone_valve_box`, `hospital_outlet_normal`, `hospital_outlet_emergency`, `hospital_outlet_pair` | wall | bits 0-2 facing | outlets sit low in the wall-face cell at floor level (the pair: red on the viewer's left) |
@@ -671,7 +626,7 @@ written shows INFORMATION, `info`, `right`, `neutral`.
   its cells as each is added; sent at once, those updates arrived at the client before the cells
   themselves and were dropped ("Received invalid update packet for null tile entity"), a packet
   per cell per cell added. They are queued with the chunk's changed blocks
-  (`HospitalWayfindingSign.queueSync`).
+  (`markDirtyQueueSync`, from Core's `WayfindingPanels.refresh` since #307).
 - **A hole in a panel is a hole, not a smaller panel.** The panel is the controller's rectangle:
   its bottom row's width and its left column's height. Take out a top-right cell and the panel is
   still its full size with that cell missing (the arrow there loses its top half); a cell outside

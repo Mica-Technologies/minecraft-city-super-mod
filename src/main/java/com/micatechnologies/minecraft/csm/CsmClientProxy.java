@@ -68,6 +68,8 @@ public class CsmClientProxy implements ICsmProxy {
     // Draws a glass-fronted block's glass in the translucent pass and the rest in the cutout pass.
     com.micatechnologies.minecraft.csm.codeutils.CsmBakedModelWrappers.register(
         com.micatechnologies.minecraft.csm.codeutils.CsmGlassLayerModel::wrap);
+    // Bakes the wayfinding panels' signs into the chunk, whichever module ships the block.
+    com.micatechnologies.minecraft.csm.codeutils.wayfinding.WayfindingBakedModel.register();
     // Before the stitch, makes the element copies Forge made to retexture variants share one
     // element per distinct element.
     MinecraftForge.EVENT_BUS.register(

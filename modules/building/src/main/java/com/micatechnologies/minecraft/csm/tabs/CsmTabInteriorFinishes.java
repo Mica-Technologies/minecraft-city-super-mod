@@ -24,6 +24,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCornerGuard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockNurseScreen;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockRoomPlate;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWallStripe;
+import com.micatechnologies.minecraft.csm.buildingmaterials.wayfinding.BlockWayfindingPanelGeneric;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockPCC;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWallFinish;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockWindowTreatment;
@@ -218,6 +219,7 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockWallStripe("wall_stripe_purple")); // Wayfinding Stripe (Purple)
     initTabBlock(new BlockRoomPlate("room_plate_charcoal")); // Room Sign (Charcoal)
     initTabBlock(new BlockRoomPlate("room_plate_blue")); // Room Sign (Blue)
+    initTabBlock(new BlockWayfindingPanelGeneric("wayfinding_panel")); // Wayfinding Panel
     initTabBlock(new BlockNurseScreen("nurse_screen_clear")); // Nurse Station Glass Screen (Clear)
     initTabBlock(new BlockNurseScreen("nurse_screen_frosted")); // Nurse Station Glass Screen (Frosted)
   }

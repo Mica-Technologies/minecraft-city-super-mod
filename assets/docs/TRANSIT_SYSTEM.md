@@ -1099,99 +1099,13 @@ follows from where the loop's edge is.
 
 ### The large hanging sign
 
-The one-block wayfinding signs read as specks under a terminal ceiling fourteen blocks up, so
-there is a large one beside them (they are unchanged): `airport_wayfinding_panel`, a backlit
-panel built to size from cells, the legend set in a screen rather than baked.
-
-- **Building it.** Cells placed side by side and stacked, facing the same way (each faces the
-  player who places it), join into one panel up to 16 wide and 6 tall (`WayfindingSign.MAX_*`).
-  Each cell's baked model is a graphite slab 4 px deep (z 6..10 facing north) with a frame on the
-  panel's outer edges only, picked by four actual-state booleans (`edge_left`, `edge_right`,
-  `edge_top`, `edge_bottom`, named as the reader sees them), so the state count is 4 x 16.
-- **The controller** is the bottom-left cell as read. Its width is how far its row runs to the
-  reader's right, its height how far its column runs up; a cell outside that rectangle (a ragged
-  build, or past 16 x 6) is drawn plain. Only the controller's renderer
-  (`TileEntityWayfindingPanelRenderer`) draws: the legend once across the whole face, fullbright
-  as a backlit sign is, and the same on the back with the arrow mirrored so it points the same
-  way in the world (`doubleSided`, on by default). Past 96 blocks only the slab shows.
-- **Setting it up.** Right-click any cell with an empty hand (GUI 46): two lines (printable ASCII,
-  32 characters), cycle buttons for the pictogram (none, departures, arrivals, check-in, baggage,
-  ground transport, train, bus, taxi, restrooms, exit), the arrow (none and eight directions) and
-  the colours (Airport yellow on charcoal with a yellow pictogram square, Metro white on navy,
-  Exit white on green, Information white on blue), the back toggle, and a Preset button that sets
-  the whole sign: GATES, ARRIVALS, CHECK-IN, BAGGAGE CLAIM, GROUND TRANSPORTATION, TO TRAINS,
-  EXIT, RESTROOMS. A preset with no arrow of its own keeps the sign's, since which way a sign
-  points depends on where it hangs. Beside Done, a Text size button steps the legend's scale
-  (`ts`, below) down by 5% from 100% to 50% and round again, or up with Shift held; a scale set
-  between steps by `/blockdata` goes to the next step past it, and the lines' own scales
-  (`ts1`, `ts2`) are kept as they are. Every change is sent at once (`WayfindingPanelPacket`,
-  its three scales appended after the first release's fields and read only when present); the
-  server checks reach to the cell clicked, `allowEdit` and `isBlockModifiable`, cleans the lines
-  and clamps the scales again, and writes the sign to every cell of the panel.
-- **Every cell holds the sign.** An edit writes them all, and a cell a player places against a
-  panel copies its neighbour's, so adding a column on the left or a row below (which moves the
-  controller) or breaking the controller keeps the legend. `/fill` and `/setblock` do not run
-  placement, so cells made that way start as the default GATES sign until edited.
-- **Scripting it.** A `/blockdata` edit of any cell is the whole panel's, as a GUI edit is:
-  `TileEntityWayfindingPanel.readNBT` hands it to `WayfindingSign.applyToPanel`, the same method
-  the GUI's packet handler calls, which writes the sign to every cell of the panel and syncs each
-  to the clients. So a script places the cells with `/setblock` (facing in the metadata, 0 south,
-  1 west, 2 north, 3 east) and then sets the sign on any one of them, for example
-  `/blockdata x y z {l1:"BAGGAGE",l2:"CLAIM",p:"baggage",a:"down_left",s:"airport",d:1b}`. The keys:
-  `l1` and `l2` the two lines (printable ASCII, 32 characters, cleaned as the GUI's are; an empty
-  line is left out of the NBT), `p` the pictogram (`none`, `depart`, `arrive`, `checkin`,
-  `baggage`, `ground`, `train`, `bus`, `taxi`, `restroom`, `exit`), `a` the arrow (`none`, `left`,
-  `right`, `up`, `down`, `up_left`, `up_right`, `down_left`, `down_right`), `s` the colours
-  (`airport`, `metro`, `exit`, `info`) and `d` whether the back carries the legend (a byte, on
-  unless `0b`). An unknown id reads as the list's first value. Optionally, the text scale: `ts`
-  (a float) for the whole legend and `ts1` and `ts2` for the top and bottom line, each times
-  `ts`, so `{ts:0.8f,ts2:0.9f}` draws the top line at 80% and the bottom at 72%. Each key is
-  clamped to 0.5..1 as it is read (any number type; not a number reads as 1), and a line's
-  product to 0.5..1 again (`WayfindingSign.clampTextScale`, `lineTextScale`). A key at 1 is the
-  same as no key and is never written, so a sign that was never scaled saves byte for byte what
-  it did before the keys existed, and since a `/blockdata` merges into what is there, `ts:1f`
-  takes a scale off again. `ts1` belongs to `l1` and `ts2` to `l2` whichever is drawn, so a
-  sign with only `l2` takes `ts2`. For example
-  `/blockdata x y z {l1:"TO TRAINS",p:"train",a:"right",s:"metro",ts:0.8f}`. Only a live edit spreads: a cell
-  read as its chunk loads is not yet in the world (`isBlockLoaded` is false and it is not the tile
-  entity at its position), and the cells the spread writes do not spread it again (a static flag).
-- **Layout.** The pictogram is a square the panel's height less its margins, at the end away from
-  the arrow; the arrow is 0.8 of that at the end it points to (the left end for the three
-  leftward arrows); the text sits left-aligned between them in Highway Gothic, its capitals 0.45
-  of the panel's height on one line or 0.28 each on two, both lines scaled down together to fit
-  the width. A long word on a narrow panel is therefore small: GROUND / TRANSPORTATION wants a
-  panel seven or more wide at two tall. The numbers are `WayfindingPanelLayout`'s, free of the
-  client so `WayfindingPanelLayoutTest` can hold them, unscaled, bit for bit to a frozen copy of
-  the renderer's layout as it stood before the text scale.
-- **Text scale.** A scale only makes text smaller than the size the panel's height gives; 1 is
-  the most, because two lines at that size already fill the panel from margin to margin (cap
-  line of the first to baseline of the second is 0.81 of its height, the room inside the margins
-  0.74 of a one-high panel's and 0.82 of a six-high one's), and one line, which has room, would
-  outgrow the pictogram it sits beside. Each line wants its full size times its scale; the lines
-  are then fitted to the width together at those sizes, so a scaled line is never wider than the
-  room, and a smaller legend takes less room from the pictogram and arrow (on a panel already
-  fitted to its width, a scale may give the art some room back rather than shrink the words
-  much). Each line keeps the middle its box has at full size and stays left-aligned beside the
-  art. A line at its own scale is drawn from the same display list, under a raw GL push,
-  translate and scale balanced inside it (no `GlStateManager` cache is involved), and the list's
-  key takes in its scale and place.
-- **Hanging.** Over the top row the renderer hangs two rods, or one for about every four blocks of
-  a wider panel, each from the panel's top up through air to the first block above, at most 24
-  blocks; a rod with a block right on top of the panel, or with nothing within reach, is not drawn.
-- **What it costs.** The layout (controller or not, size, rods, render box) is cached on the tile
-  entity and worked out again only when a chunk section holding a cell was rebuilt (the block's
-  `getActualState` under a `ChunkCache` bumps a counter, which is how a neighbour change shows on
-  the client) or every two seconds for a ceiling changing out of reach of that signal; a cell that
-  is not the controller costs two block lookups. The glyphs are one display list per controller,
-  keyed by the text (and any line's text scale) and placed and scaled outside it; the background, pictogram and arrow are a
-  quad each. The renderer is global, so a sixteen-block panel whose controller's section is culled
-  still draws.
-- **Sprites.** The ten pictograms (64 px, black art on a white square the renderer tints) and the
-  arrow are `wayfinding_picto_<id>` and `wayfinding_arrow`, drawn by the generator's
-  `wayfinding_panel()` from the same `pictogram()` drawings as the small signs plus a train, a bus,
-  a taxi, a restroom pair and a running figure at a doorway, all generic. No model face draws them,
-  so the renderer's `Sprites` handler puts them on the atlas at the stitch; the item model names
-  them too, unused, so `atlas_budget.py` counts them.
+`airport_wayfinding_panel` is Core's wayfinding panel with the airport's default sign (GATES,
+departures, an arrow to the right, the airport colours, lit) and the airport's presets: cells
+that join into one sign up to 16 x 6, hung, flat on a wall, on posts or flush to a ceiling, at
+any scale, with up to four lines, an icon either side of each and custom colours. Since #307 it
+is baked rather than drawn by a renderer, and it shares its engine, NBT and editor with the
+hospital and generic panels: see [WAYFINDING_PANELS.md](WAYFINDING_PANELS.md). Its block and tile
+entity (`transit.wayfinding`) only name the defaults and keep the tile entity's registered name.
 
 ### Traps
 
@@ -1208,10 +1122,6 @@ panel built to size from cells, the legend set in a screen rather than baked.
   moved the screen forward, past the depth the renderer draws at, and the whole lit screen and its
   text vanished behind the baked one with no error. A face a renderer draws on must be more than
   0.2 from any other face of its model.
-- **The large sign's enums are saved by id.** `WayfindingSign`'s pictograms, arrows and schemes
-  are written to NBT by their `id` strings (`p`, `a`, `s`), never their ordinals, so they may be
-  reordered or added to; the pictogram ids are also the sprites' names in the generator's
-  `PANEL_PICTOGRAMS`, which must list the same ones.
 - **The large board reads its bands off the small board's texture.** Its renderer's `HEADER_V`,
   `COLHEAD_V0`/`_V1`, `ROW0_V`, `ROW1_V` and `TITLE_U` are texels of the 256 square `fids()` draws
   the screen on (the header's 27 rows, the column heads' band to 40, the first two rows' bands, the

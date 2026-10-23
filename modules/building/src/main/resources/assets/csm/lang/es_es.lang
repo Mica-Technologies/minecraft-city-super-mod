@@ -553,6 +553,7 @@ tile.wall_stripe_yellow.name=Franja de Señalización (Amarillo)
 tile.wall_tile_square_white.name=Azulejo Cerámico (Cuadrado Blanco)
 tile.wall_tile_subway_green.name=Azulejo Cerámico (Metro Verde)
 tile.wall_tile_subway_white.name=Azulejo Cerámico (Metro Blanco)
+tile.wayfinding_panel.name=Panel de señalización
 tile.whitemetal.name=Metal Blanco
 tile.whitemetal_fence.name=Cerca de Metal Blanco
 tile.whitemetal_slab.name=Losa de Metal Blanco

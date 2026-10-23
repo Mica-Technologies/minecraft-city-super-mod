@@ -553,6 +553,7 @@ tile.wall_stripe_yellow.name=Leitstreifen (Gelb)
 tile.wall_tile_square_white.name=Keramische Wandfliese (Quadrat, Weiß)
 tile.wall_tile_subway_green.name=Keramische Wandfliese (Metro, Grün)
 tile.wall_tile_subway_white.name=Keramische Wandfliese (Metro, Weiß)
+tile.wayfinding_panel.name=Wegweisertafel
 tile.whitemetal.name=Weißmetall
 tile.whitemetal_fence.name=Weißmetallzaun
 tile.whitemetal_slab.name=Weißmetallstufe

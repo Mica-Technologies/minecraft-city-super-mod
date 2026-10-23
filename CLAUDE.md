@@ -515,6 +515,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   custom variable name, how IV finds a pack in a module jar (and the dev client's pack-only jar),
   the parts and their flash timing, IV as the module system's one external dependency, and the
   traps (a vehicle is placed at 90 degrees to its placer, IV polls the mouse itself)
+- `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
+  generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
+  each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
+  drop, the panel scale, four lines with icons either side, schemes and custom colours, the two
+  sheets, the NBT every generator writes, the editor, and the traps
 - `assets/docs/HEALTHCARE_SYSTEM.md` -- The Healthcare module (#293, the Alto hospitals): why it
   depends on Core only and what its neighbours make instead, the two tabs, the performance rules
   (two renderers, animated screens, nothing ticks, event-driven links in saved data), the bed as a
@@ -1145,13 +1150,16 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   shared with `TileEntityNowServingDisplayRenderer`), the simulation mannequin drawn for each
   rest, torso model, skeleton, dissection table, tiered lecture seating with its riser, kids'
   table, chairs and toy box; `--check`, `--fragments`
-- `gen_healthcare_systems.py` -- wayfinding and building systems (Healthcare): the wayfinding
-  panel's slab, frames and its one 512 px sheet (Series D glyphs from the committed highway font,
-  with the fourteen ASCII symbols the font lacks drawn in its stroke, 14 pictograms, two arrows,
-  a white swatch), writing `HospitalWayfindingGlyphs.java` from the
-  same metrics so the two cannot drift; code blue button and annunciator, gas zone valve box and
-  master alarm, power outlets, infant security panel; status lamps as squares, never discs;
-  `--check` (the Java too), `--fragments`
+- `gen_healthcare_systems.py` -- building systems (Healthcare): code blue button and annunciator,
+  gas zone valve box and master alarm, power outlets, infant security panel; status lamps as
+  squares, never discs; and the hospital wayfinding panel's name and tab line (its assets are
+  `gen_wayfinding.py`'s); `--check`, `--fragments`
+- `gen_wayfinding.py` -- the wayfinding panels' assets (#307), for all three blocks: Core's two
+  512 px sheets (the glyphs: Series D from the committed highway font, with the fourteen ASCII
+  symbols the font lacks drawn in its stroke, and a white swatch; the icons: 46 pictograms and two
+  arrows as alpha masks in 64 px cells) and `WayfindingSheet.java` from the same metrics, the empty
+  world model, and the airport, hospital and generic panels' blockstates and item models;
+  `--check` (the Java too), `--sheet` (an icon review sheet)
 - `gen_healthcare_surgery.py` -- the operating room set (Healthcare), a CSM alternative to a
   third-party theatre pack: operating table (two cells, a seat to lie on), anaesthesia machine
   with an animated screen, twin-head surgical light on the shared drop column (lit by Lighting's

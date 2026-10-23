@@ -2,7 +2,7 @@
 
 Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV poles, the room's furniture and TV, cubicle curtains on their ceiling track, the nurse call devices and corridor dome lights, and the corridor rails.
 
-!!! info "53 blocks in this tab"
+!!! info "54 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -24,6 +24,7 @@ Patient rooms and wards: hospital beds, patient headwalls, bedside monitors, IV 
 | Exam Table | `csm:exam_table` |  |  |  |  |
 | Eye Exam Chair (Phoropter) | `csm:refraction_chair` |  |  |  |  |
 | Hospital Bassinet | `csm:bassinet` |  |  |  |  |
+| Hospital Wayfinding Panel | `csm:hospital_wayfinding_panel` | 2.0 | 6.0 | pickaxe | 1 |
 | Infant Radiant Warmer | `csm:infant_warmer` | 1.0 | 2.0 | pickaxe | 0 |
 | Infusion Recliner (with IV Pump) | `csm:infusion_recliner` |  |  |  |  |
 | IV Pole | `csm:iv_pole` |  |  |  |  |

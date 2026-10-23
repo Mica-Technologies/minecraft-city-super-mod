@@ -9,8 +9,6 @@ import com.micatechnologies.minecraft.csm.transit.fare.FareGateOpModeHandler;
 import com.micatechnologies.minecraft.csm.transit.fare.FareGateOpModePacket;
 import com.micatechnologies.minecraft.csm.transit.fare.FareVendingPurchaseHandler;
 import com.micatechnologies.minecraft.csm.transit.fare.FareVendingPurchasePacket;
-import com.micatechnologies.minecraft.csm.transit.wayfinding.WayfindingPanelPacket;
-import com.micatechnologies.minecraft.csm.transit.wayfinding.WayfindingPanelPacketHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -94,10 +92,6 @@ public class CsmTransit {
     NETWORK.registerMessage(
         FareGateOpModeHandler.class,
         FareGateOpModePacket.class,
-        Side.SERVER);
-    NETWORK.registerMessage(
-        WayfindingPanelPacketHandler.class,
-        WayfindingPanelPacket.class,
         Side.SERVER);
 
     proxy.preInit(event);
