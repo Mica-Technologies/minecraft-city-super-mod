@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.api.firealarm.CsmFireAlarmQuery;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
+import com.micatechnologies.minecraft.csm.lifesafety.FireAlarmDeviceSampler;
 import com.micatechnologies.minecraft.csm.lifesafety.IFireAlarmPanelFollower;
 import com.micatechnologies.minecraft.csm.lifesafety.TileEntityFireAlarmSensor;
 import java.util.Random;
@@ -29,10 +30,11 @@ import net.minecraft.world.World;
  * <p>Stored in metadata: the facing (two bits) and {@link #ALARM} (the third), so the model and
  * redstone read it without a tile entity lookup.</p>
  *
- * <p>The look runs on a scheduled update that starts when the block is placed, and random ticks
- * start it again if it is ever missing: a device put down by a tool that skips
- * {@code onBlockAdded} (a WorldEdit paste, a schematic) had no update scheduled, never looked,
- * and showed normal through any alarm (#261).</p>
+ * <p>The look runs from {@link FireAlarmDeviceSampler}, which the device joins when its tile
+ * entity loads, so a device put down by a tool that skips {@code onBlockAdded} (a WorldEdit
+ * paste, a schematic) looks too (#261). It used to reschedule its own block update every second,
+ * which kept one entry per device in the server's pending-tick set, and vanilla walks that set for
+ * every chunk it saves (#308). A random tick still looks once, as a fallback.</p>
  *
  * @since 2026.9
  */
@@ -41,14 +43,11 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
 
   public static final PropertyBool ALARM = PropertyBool.create("alarm");
 
-  /** Ticks between looks at the panel. */
-  private static final int POLL_TICKS = 20;
-
   protected AbstractBlockPanelFollower(String registryName, int[] box) {
     super(registryName, box, false);
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
         .withProperty(ALARM, false));
-    // A random tick runs updateTick, which reschedules the look if it was never started
+    // A random tick runs updateTick, one more look should the sampler ever miss the device
     setTickRandomly(true);
   }
 
@@ -70,15 +69,20 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
   }
 
   @Override
-  public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
-    super.onBlockAdded(world, pos, state);
-    if (!world.isRemote) {
-      world.scheduleUpdate(pos, this, POLL_TICKS);
-    }
+  public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+    // An update scheduled before #308, or a random tick: look once, and schedule nothing
+    look(world, pos, state);
   }
 
-  @Override
-  public void updateTick(World world, BlockPos pos, IBlockState state, Random rand) {
+  /**
+   * Looks at the panel and shows what it finds. Run once a second by
+   * {@link FireAlarmDeviceSampler}.
+   *
+   * @param world the world, on the server
+   * @param pos   the device
+   * @param state its state
+   */
+  public void look(World world, BlockPos pos, IBlockState state) {
     boolean alarm = isInAlarm(world, pos);
     IBlockState next = followPanel(world, pos, state.withProperty(ALARM, alarm));
     if (!next.equals(state)) {
@@ -87,8 +91,6 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
         onAlarmChanged(world, pos, alarm);
       }
     }
-    // A scheduled update already pending is not duplicated, so a random tick costs nothing more
-    world.scheduleUpdate(pos, this, POLL_TICKS);
   }
 
   /**

@@ -160,7 +160,7 @@ which it used to and should not have.
 **Why the horizontal radius is not the lever.** Volume is `W^2 x V` and floor area is `W^2`, so
 cost per unit of protected floor is exactly `V`, the vertical extent -- the horizontal term
 cancels. Halving the radius quarters each scan but needs four times as many heads for the same
-floor, which is a wash (slightly worse, given per-head tile entities and scheduled ticks). Only
+floor, which is a wash (slightly worse, given per-head tile entities and looks). Only
 the vertical axis buys anything, which is why this stops at floors rather than shrinking the box.
 
 **How it is walked.** Layer by layer from the top down, carrying a per-column "has hit its floor"
@@ -362,7 +362,7 @@ The magnetic door holders and the remote annunciator (`IFireAlarmPanelFollower`,
 `AbstractBlockPanelFollower`) are neither appliances nor initiating devices: the panel has
 nothing to send them, so they look. The linker stores the panel on the device's
 `TileEntityFireAlarmSensor` (`lp`), as it does for a pull station, but adds it to none of the
-panel's lists. Once a second (a scheduled tick) the device asks `FireAlarmPanelRegistry` whether
+panel's lists. Once a second the device asks `FireAlarmPanelRegistry` whether
 its panel is in alarm, and keeps the answer as its `alarm` block state, in metadata, so the model
 and redstone read it without a tile entity lookup. Through the registry a panel in an unloaded
 chunk still answers. An unlinked device follows any fire alarm sounding near it
@@ -373,10 +373,20 @@ panel alarms, and every door in the game is held open by power, so it needs to k
 about doors and works with CSM's and vanilla's alike. That keeps the Building Materials doors
 out of this module's code (a module may only reference Core).
 
-The look is a scheduled tick started in `onBlockAdded`, and the block also takes random ticks,
-whose `updateTick` reschedules it. A device put down by something that skips `onBlockAdded` (a
-WorldEdit paste, a schematic) had no tick scheduled, never looked, and showed normal through any
-alarm (#261).
+**The looks run from one world tick, not from scheduled block updates** (`FireAlarmDeviceSampler`,
+#308). Detectors (every 25 seconds, for fire) and panel followers (every second) join their
+world's roster when their `TileEntityFireAlarmSensor` loads -- placed, pasted or with its chunk --
+and leave when it is invalidated or unloaded; nothing is saved. Each roster is split into one
+bucket per tick of its period, a device's bucket picked from its position, so the looks spread
+over the period. Pull stations look at nothing and are not on it.
+
+They used to reschedule their own block update after every look, which kept one entry per device
+in `WorldServer`'s pending-tick set for as long as it existed. Vanilla walks that whole set once
+for every chunk it saves (`getPendingBlockUpdates`), so every autosave, `/save-all` and backup cost
+(chunks saved) x (devices), and a server that added 2,500 alarm devices in a day stalled in it. An
+update still pending from an older save runs once and is not renewed; a follower's random tick is
+kept as one more look. A device put down by something that skips `onBlockAdded` (a WorldEdit
+paste, a schematic) still looks, since joining is the tile entity's (#261).
 
 **The annunciator shows alarm and trouble.** Besides `alarm` it keeps a `trouble` state (the
 fourth metadata bit, filled in by `followPanel` from the panel when the panel's chunk is loaded,

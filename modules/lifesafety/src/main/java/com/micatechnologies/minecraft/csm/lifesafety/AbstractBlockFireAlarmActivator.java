@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
-import com.micatechnologies.minecraft.csm.codeutils.ICsmScheduledTickConsumer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -24,15 +23,19 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract base class for fire alarm activator blocks (pull stations, detectors) that can
- * be linked to a fire alarm control panel. Provides ticking, redstone output, and panel
- * activation logic.
+ * be linked to a fire alarm control panel. Provides redstone output and panel activation logic.
+ *
+ * <p>Nothing here keeps a scheduled update pending. Pull stations need none, and detectors look
+ * for fire from {@link FireAlarmDeviceSampler}: an update that rescheduled itself kept one entry
+ * per device in the server's pending-tick set, which vanilla walks for every chunk it saves
+ * (#308). An update still pending from an older save runs {@link #onTick} once and ends.</p>
  *
  * @author Mica Technologies
  * @since 2026.4
  */
 
 public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotatableNSEWUD
-    implements ICsmTileEntityProvider, ICsmScheduledTickConsumer {
+    implements ICsmTileEntityProvider {
 
   private static final Logger LOGGER = LogManager.getLogger(AbstractBlockFireAlarmActivator.class);
 
@@ -53,19 +56,11 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
     } catch (Exception e) {
       LOGGER.error("An error occurred while ticking a fire alarm activator block", e);
     }
-    p_updateTick_1_.scheduleUpdate(p_updateTick_2_, this, this.tickRate(p_updateTick_1_));
   }
 
   @Override
   public int tickRate(World p_tickRate_1_) {
     return getBlockTickRate();
-  }
-
-  @Override
-  public void onBlockAdded(World p_onBlockAdded_1_, BlockPos p_onBlockAdded_2_,
-      IBlockState p_onBlockAdded_3_) {
-    p_onBlockAdded_1_.scheduleUpdate(p_onBlockAdded_2_, this, this.tickRate(p_onBlockAdded_1_));
-    super.onBlockAdded(p_onBlockAdded_1_, p_onBlockAdded_2_, p_onBlockAdded_3_);
   }
 
   @Override

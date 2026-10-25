@@ -122,6 +122,25 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
     return compound;
   }
 
+  /** Joins the scheduled looks if this is a detector or a panel follower (#308). */
+  @Override
+  public void onLoad() {
+    super.onLoad();
+    FireAlarmDeviceSampler.add(world, pos);
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    FireAlarmDeviceSampler.remove(world, pos);
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    FireAlarmDeviceSampler.remove(world, pos);
+  }
+
   /**
    * Whether this device is linked to a control panel.
    *
