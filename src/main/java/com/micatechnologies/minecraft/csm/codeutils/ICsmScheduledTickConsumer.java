@@ -12,10 +12,11 @@ package com.micatechnologies.minecraft.csm.codeutils;
  * none of ours do, so for signal heads, thermostats, dynamic signs and the rest the scheduled tick
  * landed on vanilla's empty implementation and was pure overhead.</p>
  *
- * <p>Applied to the three blocks that genuinely consume a scheduled tick. Note that all three also
+ * <p>Applied to the two crosswalk tweeters, which genuinely consume a scheduled tick. Both also
  * seed their own chain from {@code onBlockAdded} and re-arm it from {@code updateTick}, so they do
  * not strictly depend on {@code markDirtySync} to keep running; the marker preserves the previous
- * behaviour exactly rather than relying on that, which keeps this a pure performance change.</p>
+ * behaviour exactly rather than relying on that, which keeps this a pure performance change. The
+ * fire alarm activators wore it too until their looks moved off scheduled updates (#308).</p>
  *
  * @author Mica Technologies
  * @since 2026.8
