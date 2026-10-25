@@ -1,0 +1,536 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "uvlock": true
+      },
+      "when": {
+        "facing": "north",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 90,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "north",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 180,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "north",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 270,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "north",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_east"
+      },
+      "when": {
+        "facing": "north",
+        "open": "false",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_west"
+      },
+      "when": {
+        "facing": "north",
+        "open": "false",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj"
+      },
+      "when": {
+        "facing": "north",
+        "open": "true",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj"
+      },
+      "when": {
+        "facing": "north",
+        "open": "true",
+        "left": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj"
+      },
+      "when": {
+        "facing": "north",
+        "open": "true",
+        "left": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "open": "true",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "open": "true",
+        "right": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "north",
+        "open": "true",
+        "right": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 90,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "east",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 180,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "east",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 270,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "east",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "uvlock": true
+      },
+      "when": {
+        "facing": "east",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_east",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "open": "false",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_west",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "open": "false",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "open": "true",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "open": "true",
+        "left": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "east",
+        "open": "true",
+        "left": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "open": "true",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "open": "true",
+        "right": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "east",
+        "open": "true",
+        "right": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 180,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "south",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 270,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "south",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "uvlock": true
+      },
+      "when": {
+        "facing": "south",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 90,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "south",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_east",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "open": "false",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_west",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "open": "false",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "open": "true",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "open": "true",
+        "left": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj",
+        "y": 180
+      },
+      "when": {
+        "facing": "south",
+        "open": "true",
+        "left": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj"
+      },
+      "when": {
+        "facing": "south",
+        "open": "true",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj"
+      },
+      "when": {
+        "facing": "south",
+        "open": "true",
+        "right": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj"
+      },
+      "when": {
+        "facing": "south",
+        "open": "true",
+        "right": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 270,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "west",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "uvlock": true
+      },
+      "when": {
+        "facing": "west",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 90,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "west",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_edge",
+        "y": 180,
+        "uvlock": true
+      },
+      "when": {
+        "facing": "west",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_east",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "open": "false",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_plate_west",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "open": "false",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "open": "true",
+        "left": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "open": "true",
+        "left": "false",
+        "front": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj",
+        "y": 270
+      },
+      "when": {
+        "facing": "west",
+        "open": "true",
+        "left": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "open": "true",
+        "right": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_a.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "open": "true",
+        "right": "false",
+        "back": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:utilities/sidewalk/black_leaf_1_strut_b.obj",
+        "y": 90
+      },
+      "when": {
+        "facing": "west",
+        "open": "true",
+        "right": "false",
+        "front": "false"
+      }
+    }
+  ]
+}

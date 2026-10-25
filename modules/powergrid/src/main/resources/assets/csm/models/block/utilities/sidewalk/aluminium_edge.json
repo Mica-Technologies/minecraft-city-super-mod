@@ -1,0 +1,114 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "concrete": "csm:blocks/utilities/sewer/precast",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "particle": "csm:blocks/utilities/water/diamond_plate",
+    "plate": "csm:blocks/utilities/water/diamond_plate",
+    "under": "csm:blocks/utilities/water/aluminium",
+    "frame": "csm:blocks/utilities/water/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        15.2,
+        1.5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#concrete",
+          "uv": [
+            0,
+            0.8,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#concrete",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#concrete",
+          "uv": [
+            14.5,
+            0.8,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#concrete",
+          "uv": [
+            0,
+            0.8,
+            1.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        15.2,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        1.5
+      ],
+      "faces": {
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            16,
+            1.5
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            16,
+            0.8
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            14.5,
+            0,
+            16,
+            0.8
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            1.5,
+            0.8
+          ]
+        }
+      }
+    }
+  ]
+}

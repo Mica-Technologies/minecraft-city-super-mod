@@ -2,7 +2,7 @@
 
 The services a city runs to its buildings: electric meters single and in banks, the meter socket, service disconnect, main breaker panel and switchboard, gas meters single and in banks, the water meter setter and utility room labels; and the water system: the water tower built to size (legs, riser, bracing, the pedestal column, tanks with their balcony and name band, the caged ladder), ground storage tanks, the pump station's pipes, valves, pumps and panel, air release and backflow enclosures, and the treatment skid; and sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall's headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser and emergency spillway, and precast manhole sections whole and cut away; the gas yard: a regulator station's skid, gas pipe, ball valves, pressure regulator, turbine meter, line heater, vent stack and odorant tank, and its warning signs; and telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna array, and a small cell's canister antenna and radio for the street poles.
 
-!!! info "82 blocks in this tab"
+!!! info "106 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -71,6 +71,30 @@ The services a city runs to its buildings: electric meters single and in banks, 
 | Riprap | `csm:riprap` | 1.5 | 10 | pickaxe | 0 |
 | Service Disconnect | `csm:service_disconnect` | 2.0 | 6.0 | pickaxe | 1 |
 | Service Entrance Switchboard | `csm:electric_switchboard` | 3 | 12 | pickaxe | 1 |
+| Sidewalk Door (Aluminium, 2 x 1) | `csm:sidewalk_door_aluminium_2x1` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Aluminium, 2 x 2) | `csm:sidewalk_door_aluminium_2x2` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Aluminium, 2 x 3) | `csm:sidewalk_door_aluminium_2x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Aluminium, 2 x 4) | `csm:sidewalk_door_aluminium_2x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Aluminium, 3 x 3) | `csm:sidewalk_door_aluminium_3x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Aluminium, 3 x 4) | `csm:sidewalk_door_aluminium_3x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Black Steel, 2 x 1) | `csm:sidewalk_door_black_2x1` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Black Steel, 2 x 2) | `csm:sidewalk_door_black_2x2` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Black Steel, 2 x 3) | `csm:sidewalk_door_black_2x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Black Steel, 2 x 4) | `csm:sidewalk_door_black_2x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Black Steel, 3 x 3) | `csm:sidewalk_door_black_3x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Black Steel, 3 x 4) | `csm:sidewalk_door_black_3x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Galvanized, 2 x 1) | `csm:sidewalk_door_galvanized_2x1` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Galvanized, 2 x 2) | `csm:sidewalk_door_galvanized_2x2` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Galvanized, 2 x 3) | `csm:sidewalk_door_galvanized_2x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Galvanized, 2 x 4) | `csm:sidewalk_door_galvanized_2x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Galvanized, 3 x 3) | `csm:sidewalk_door_galvanized_3x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Galvanized, 3 x 4) | `csm:sidewalk_door_galvanized_3x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Single Leaf, 2 x 1) | `csm:sidewalk_door_single_2x1` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Single Leaf, 2 x 2) | `csm:sidewalk_door_single_2x2` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Single Leaf, 2 x 3) | `csm:sidewalk_door_single_2x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Single Leaf, 2 x 4) | `csm:sidewalk_door_single_2x4` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Single Leaf, 3 x 3) | `csm:sidewalk_door_single_3x3` | 3 | 15 | pickaxe | 1 |
+| Sidewalk Door (Single Leaf, 3 x 4) | `csm:sidewalk_door_single_3x4` | 3 | 15 | pickaxe | 1 |
 | Small Cell Canister Antenna | `csm:small_cell_antenna` | 2 | 6 | pickaxe | 1 |
 | Small Cell Radio | `csm:small_cell_radio` | 2.0 | 6.0 | pickaxe | 1 |
 | Split-Case Pump | `csm:pump_split_case` | 3 | 12 | pickaxe | 1 |

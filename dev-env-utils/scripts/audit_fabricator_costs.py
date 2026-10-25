@@ -695,6 +695,9 @@ def cost_for(registry, info, ancestors):
         }
         if registry in utilities:
             return utilities[registry]
+        if registry.startswith("sidewalk_door_"):
+            w, length = registry.rsplit("_", 1)[1].split("x")
+            return ("SHEET_METAL x%d" % (int(w) * int(length)), "FASTENER_KIT")
     if tab == "tabfurniture":
         if has_any(registry, METAL_FURNITURE_WORDS):
             return ("SHEET_METAL", "FASTENER_KIT")

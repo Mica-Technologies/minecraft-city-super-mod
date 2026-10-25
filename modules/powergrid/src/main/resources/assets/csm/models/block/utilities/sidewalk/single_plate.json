@@ -1,0 +1,46 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "concrete": "csm:blocks/utilities/sewer/precast",
+    "dark": "csm:blocks/utilities/water/dark",
+    "steel": "csm:blocks/utilities/water/steel",
+    "particle": "csm:blocks/utilities/sidewalk/leaf_paint",
+    "plate": "csm:blocks/utilities/sidewalk/leaf_paint",
+    "under": "csm:blocks/utilities/sidewalk/leaf_paint",
+    "frame": "csm:blocks/utilities/water/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        15.2,
+        0
+      ],
+      "to": [
+        16,
+        15.8,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#plate",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#under",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

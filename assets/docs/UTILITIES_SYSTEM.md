@@ -480,6 +480,7 @@ quads); classes in `powergrid.sewer`.
 | Block | Registry name | Class | States |
 |---|---|---|---|
 | Wet Well Access Hatch, Valve Vault Access Hatch (a pair of leaves) | `wet_well_hatch`, `valve_vault_hatch` | `BlockAccessHatch` | 8 each |
+| Sidewalk Door (Aluminium, Black Steel, Galvanized, Single Leaf; 2 x 1, 2 x 2, 2 x 3, 2 x 4, 3 x 3, 3 x 4) | `sidewalk_door_<style>_<w>x<l>` (24) | `BlockSidewalkDoor` | 128 each |
 | Lift Station Control Panel (1 x 1 x 2) | `lift_station_control_panel` | `BlockSwitchedUnit` (Roads' utility box) | 8 |
 | Standby Generator (2 x 1 x 2) | `lift_station_generator` | `BlockSwitchedUnit` (Roads' utility box) | 8 |
 | Curb Inlet | `curb_inlet` | `BlockPrecastRun` | 16 |
@@ -521,6 +522,25 @@ valve boxes and the sewer cleanout, and the bollards. So:
   stand on their hinges and the collar and leaves collide; **the valve vault's opening is open**,
   and falling into the vault below is the point, while **the wet well's orange safety grate stays
   shut** under the leaves (real wet wells have one) and is walked on a pixel below the rim.
+- **Sidewalk doors** (#310, `gen_utilities_sidewalk_doors.py`) are the access hatch grown to a
+  vault's or a utility tunnel's opening: set flush in the pavement the same way, on the same
+  concrete collar, opened with the same click and the iron trapdoor's sounds. Four styles --
+  aluminium, black steel and galvanized diamond plate with two leaves meeting over the middle,
+  and a single painted leaf on gas struts -- in six sizes, width (across the leaves, 2 or 3) by
+  length (along the hinges, 1 to 4). **Every cell is one block of the same registry name**, and
+  stores only its facing and `open`; which part of the door it is (`left`, `right`, `front`,
+  `back`: the door carries on that way) is actual state from its neighbours, as the water tanks
+  find their tiles. The multipart draws the collar and frame on every side the door stops, the
+  shut plate split by the seam (between the cells of a door two wide, down the middle cell of one
+  three wide), and, open, the leaf standing on each hinge edge with a strut near each end. The
+  item places the whole door, to the placer's right and away from them, all or nothing (the
+  hatch's message names the blocked cell); a click on any cell opens or shuts it all, breaking any
+  cell takes it all and drops one. Open, a leaf is as tall as it is wide: 1 or 1.5 blocks for a
+  double door, 2 or 3 for the single leaf, which is past what a JSON element can reach, so the
+  standing leaves and struts are OBJ, cut into one-block slices so their uvs stay in the sprite.
+  Two doors of one kind side by side join into one, so leave a block between them. 3,072 states
+  for the 24, nothing ticks, no tile entity. The Fabricator prices a door a sheet of metal a
+  cell, with a fastener kit.
 - **The control panel** stands on a two-post unistrut rack: the stainless enclosure with its run
   lights, hand-off-auto switches, hour meters and alarm silence drawn on the door, the alarm
   beacon on its roof and an LED flood light on an arm over the door. **Powered by redstone at its

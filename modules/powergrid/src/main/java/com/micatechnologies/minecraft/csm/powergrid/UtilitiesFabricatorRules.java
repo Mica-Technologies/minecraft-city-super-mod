@@ -17,8 +17,9 @@ import net.minecraft.block.Block;
  * whole bowl, or one layer of a ground tank) is sheet metal and fasteners by its size, a tower
  * leg or riser a pole section, the bracing, pipe and fittings iron, a pump iron and a wiring
  * harness, anything that measures or controls a control board. Sewer and stormwater pieces are
- * concrete by their size (a pipe or a frame adds iron), the hatches aluminium sheet, the lift
- * station's panel and generator what is in them, riprap cobblestone. The gas yard is iron pipe
+ * concrete by their size (a pipe or a frame adds iron), the hatches and the sidewalk doors sheet
+ * metal (a door a sheet a cell), the lift station's panel and generator what is in them, riprap
+ * cobblestone. The gas yard is iron pipe
  * and fittings (a regulator adds its sheet metal diaphragm case, the meter a control board), the
  * line heater and odorant tank sheet metal vessels with their controls, a sign a sign blank; the
  * telecom cabinets are enclosure shells with what is in them, the monopole a pole section a
@@ -160,6 +161,12 @@ public final class UtilitiesFabricatorRules {
   /** Sewer and stormwater: the lift station, the precast pieces and riprap. */
   @Nullable
   private static List<FabricatorIngredient> sewer(String registryName) {
+    if (registryName.startsWith("sidewalk_door_")) {
+      // A sheet a cell, as the access hatch's leaves; the size ends the name, as in "_3x4"
+      String size = registryName.substring(registryName.lastIndexOf('_') + 1);
+      int cells = (size.charAt(0) - '0') * (size.charAt(2) - '0');
+      return CsmFabricatorCosts.cost(sheet(cells), part(CsmParts.FASTENER_KIT, 1));
+    }
     switch (registryName) {
       case "wet_well_hatch":
       case "valve_vault_hatch":
