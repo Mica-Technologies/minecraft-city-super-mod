@@ -265,6 +265,28 @@ def cost_for(registry, info, ancestors):
             return ("POLE_SECTION x4", "CONTROL_BOARD", "WIRING_HARNESS")
         return ("SHEET_METAL", "FASTENER_KIT")
 
+    if tab == "tabstairsrailings":
+        # Mirrors StairsRailingsFabricatorRules (Building module).
+        if registry.startswith("stairs_"):
+            if "steel_pan" in registry:
+                return ("SHEET_METAL", "CONCRETE_MIX")
+            if "concrete" in registry:
+                return ("CONCRETE_MIX",)
+            if "open_tread" in registry:
+                return ("planks x2", "iron_ingot")
+            if "carpet" in registry:
+                return ("planks x2", "wool")
+            return ("planks x2",)
+        if registry.startswith("handrail_wall_"):
+            return ("planks",) if "oak" in registry else ("iron_ingot",)
+        if registry.startswith("railing_glass_"):
+            return ("glass_pane x2", "iron_ingot")
+        if registry.startswith(("railing_baluster_", "railing_turned_")):
+            return ("planks x2",)
+        if registry.startswith("railing_cable_"):
+            return ("iron_ingot x2", "FASTENER_KIT")
+        return ("iron_ingot x2",)
+
     if tab == "tabinteriorfinishes":
         if registry.startswith("floor_") and registry.endswith("_block"):
             # A floor finish as a full block: the overlay's finish on a block of screed.

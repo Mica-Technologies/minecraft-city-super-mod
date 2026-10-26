@@ -1,0 +1,277 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "north": "true",
+        "slope": "none"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/level.obj"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "slope": "mid_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_pos.obj"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "slope": "mid_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_neg.obj"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "slope": "top_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_pos.obj"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "slope": "top_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_neg.obj"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "slope": "foot_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_pos.obj"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "slope": "foot_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_neg.obj"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "none"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/level.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "mid_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_pos.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "mid_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_neg.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "top_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_pos.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "top_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_neg.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "foot_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_pos.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "slope": "foot_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_neg.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "none"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/level.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "mid_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_neg.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "mid_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_pos.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "top_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_neg.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "top_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_pos.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "foot_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_neg.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "slope": "foot_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_pos.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "none"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/level.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "mid_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_neg.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "mid_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/mid_pos.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "top_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_neg.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "top_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/top_pos.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "foot_pos"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_neg.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "slope": "foot_neg"
+      },
+      "apply": {
+        "model": "csm:stairsrailings/handrail_wall_white_round/foot_pos.obj",
+        "y": 270
+      }
+    }
+  ]
+}

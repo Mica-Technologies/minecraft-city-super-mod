@@ -1,0 +1,205 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "tread": "csm:blocks/stairsrailings/wood_oak",
+    "stringer": "csm:blocks/stairsrailings/paint_black",
+    "particle": "csm:blocks/stairsrailings/wood_oak"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        6,
+        0
+      ],
+      "to": [
+        16,
+        8,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            16,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            8,
+            16,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            8,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            16,
+            8
+          ]
+        },
+        "down": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        6,
+        8
+      ],
+      "to": [
+        8,
+        8,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            8,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            8,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            8,
+            16,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            8,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            8,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        14,
+        8
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            8,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            0,
+            16,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            8,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            0,
+            16,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            8,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            0,
+            16,
+            8
+          ]
+        }
+      }
+    }
+  ]
+}

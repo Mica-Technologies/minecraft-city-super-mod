@@ -126,6 +126,9 @@ TABS = {
                        "Grocery stores and shops: stocked refrigerated displays, gondola "
                        "shelving, produce, the checkout lane and its registers and card "
                        "terminals, carts, aisle signs and the shop floor's fixtures."),
+    "tabstairsrailings": ("stairs-and-railings", "Stairs & Railings",
+                          "Stairs, and the railings, guards and wall handrails that follow a "
+                          "flight up and level off across its landings."),
     "tabmaterials": ("materials", "Materials",
                      "The CSM Fabricator, which turns vanilla ingots into CSM blocks."),
     "tabnovelties": ("novelties", "Novelties",
@@ -217,7 +220,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabhealthcareclinical", "tabhealthcarepatientcare",
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmarketstore",
               "tabmaterials",
-              "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstreetscape", "tabstructureframing",
+              "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities",
               "tabnone"]

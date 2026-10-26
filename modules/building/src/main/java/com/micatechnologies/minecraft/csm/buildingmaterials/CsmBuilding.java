@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.buildingmaterials.stairs.StairsRailingsFabricatorRules;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.constructionsite.BuildingGuiProvider;
@@ -9,6 +10,7 @@ import com.micatechnologies.minecraft.csm.constructionsite.CraneCollision;
 import com.micatechnologies.minecraft.csm.constructionsite.CraneHeadConfigPacket;
 import com.micatechnologies.minecraft.csm.constructionsite.CraneHeadConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.constructionsite.ScaffoldRailCollision;
+import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -67,6 +69,9 @@ public class CsmBuilding {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+    // Safe here: Fabricator costs are first read at post-initialization.
+    CsmFabricatorCosts.registerRule(StairsRailingsFabricatorRules.TAB_ID,
+        StairsRailingsFabricatorRules::price);
     // Guardrail collision that a jump would otherwise clear. Both sides, so they agree.
     ScaffoldRailCollision.register();
     // A tower crane's deck, walkways and cab, which its renderer draws but no block backs.

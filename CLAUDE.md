@@ -97,7 +97,7 @@ container per jar.
 | `modules/powergrid` | `csm_powergrid` | CSM: Utilities | `powergrid`: the Power Grid tab (poles, cross arms, insulators, mounts, the Forge Energy blocks) and the Utilities tab (building service meters and panels; the water system: a water tower built to size, ground storage tanks, the pump station, air release and backflow enclosures, the treatment skid; sewer and stormwater: the lift station's access hatches, control panel and standby generator, sidewalk doors over vaults and utility tunnels in four styles and six sizes, the curb inlet, the outfall headwall, flap gate, wingwalls and riprap, the pond outlet riser and emergency spillway, manhole sections whole and cut away; the gas yard: a regulator station built from a skid, gas pipe, ball valves, a regulator, a turbine meter, a line heater and a vent stack, the odorant tank, and warning signs that hang on a wall or a chain-link fence; telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna arrays, and a small cell's canister antenna and radio for the street poles); was CSM: Power Grid, and kept that mod id and tree so worlds load unchanged; requires Roads (the utility box multi-block); see `assets/docs/UTILITIES_SYSTEM.md` |
 | `modules/technology` | `csm_technology` | CSM: Technology | `technology`; three tabs: Technology (AV, phones, the iMac family, the older access points), Computers & Peripherals (gaming rigs, monitors whose screens a click changes, keyboards, mice, desk extras, invented consoles) and Networking & IT, mostly the invented brand Micafi (desktop switches, gateway and wall jacks as desk devices; `technology.network`: cable trays, empty and full of cable, that join into corners and tees and hang lower on threaded rod hangers, access points whose ring a click changes, outdoor radios fitted to Roads' poles and turning eight ways round them, a wall-arm bridge whose head a sneak-click aims; `technology.rack`: 42U racks two blocks tall filled with rack-mount units baked into the chunk mesh, pre-filled racks with no tile entity, the 12U wall cabinet); also the school time and PA set (`technology.school`: Micaplex clocks with renderer hands on game time, clock/speaker panels, PA speakers, the bell schedule controller and hallway bell; see `assets/docs/SCHOOL_TIME_AND_PA.md`); see `assets/docs/TECHNOLOGY_SYSTEM.md` |
 | `modules/furnishings` | `csm_furnishings` | CSM: Furniture & Novelties | `furniture`, `novelties`; the Furniture, Residential, Commercial & Office and Market & Store tabs (the last holds the checkout's Verifone MX915, moved here from Technology, and the working shops, `furniture.market.shop`, which take SUM's money or emeralds; see `assets/docs/SHOP_SYSTEM.md`) |
-| `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; three tabs — Building Materials, Structure & Framing, Interior Finishes |
+| `modules/building` | `csm_building` | CSM: Building Materials | `buildingmaterials`; five tabs — Building Materials, Structure & Framing, Interior Finishes, Construction Site, and Stairs & Railings (`buildingmaterials.stairs`: railings, guards and wall handrails that follow a flight and its landings, and the stairs they run on; see `assets/docs/STAIRS_AND_RAILINGS.md`) |
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and the MaryTTS engine; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | `signage`: ad kiosks, poster boards and billboards (not road signs, which stay in Roads) |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities, and plantable planters, raised beds and troughs (`parks.planters`: a plant's baked quads merged onto the soil, no TESR; `/csmparks planter fill`); two tabs, Trees & Plants and Parks |
@@ -358,6 +358,11 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   blocks and not a state, how each material is told from its nearest neighbour, the name-driven
   Fabricator pricing, the glazing (glass that joins into one framed window, one-way glass), and
   the traps (a name decides a price, fine detail mipmaps away)
+- `assets/docs/STAIRS_AND_RAILINGS.md` -- The Stairs & Railings tab: a railing as a cell over
+  the stairs (edges stored, the slope read from the stairs: mid, top, foot, level), the nosing
+  line every part follows, why both sides of a one-wide flight share a world-relative slope and
+  the blockstate mirrors the south and west edges, posts on every cell so a run needs no end
+  state, why it is all OBJ, the stairs without uvlock, and the measured cost (about 21 ns a cell)
 - `assets/docs/INTERIOR_FINISHES.md` -- The Interior Finishes tab: window blinds, shades and
   curtains (their own block hung against any window, joining into one blind, click to cycle the
   whole blind, redstone to close it, light taken by state), flooring (overlays on any floor and
@@ -785,6 +790,12 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   drawing per block position so a floor shows no repeat, full blocks of the other finishes
   (`BlockFloorFinishBlock`, the same textures and picks), and the polished concrete and hardwood
   full-block sets; `--check` fails on drift
+- `gen_stairs_railings.py` -- the Stairs & Railings tab (`BlockStairRailing`, `BlockStairFlight`):
+  27 railings in eight styles (picket, round-rail picket, two-line pipe, cable, glass, wall
+  handrail, square and turned balusters) and six stairs. Every railing part is built from one
+  nosing line per shape (level, mid, top, foot, each both ways) as OBJ, a set and MTL per finish,
+  with a JSON icon from the level cell; the stairs keep vanilla's volumes and rotations without
+  uvlock so the nosing stays at each tread's front; `--check`, `--fragments`, `--report`
 - `gen_ceilings.py` -- the modern ceiling finishes (`BlockCeilingFinish`, full blocks): tegular,
   fissured and embossed tiles, perforated metal and pressed tin as `cube_all` textures with the
   relief shaded in; wood slats and corrugated metal storing the axis they run along; the open cell
