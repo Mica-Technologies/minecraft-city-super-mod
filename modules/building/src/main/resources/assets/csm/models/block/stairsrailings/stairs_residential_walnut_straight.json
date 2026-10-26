@@ -1,0 +1,264 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "tread": "csm:blocks/stairsrailings/wood_walnut",
+    "riser": "csm:blocks/stairsrailings/paint_trim",
+    "particle": "csm:blocks/stairsrailings/wood_walnut"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        7,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            9,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        7,
+        0
+      ],
+      "to": [
+        16,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            1,
+            8,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#riser",
+          "uv": [
+            8,
+            1,
+            16,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            1,
+            16,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#riser",
+          "uv": [
+            0,
+            1,
+            16,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -1,
+        7,
+        0
+      ],
+      "to": [
+        8,
+        8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tread",
+          "uv": [
+            8,
+            8,
+            16,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            8,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            16,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            8,
+            16,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        15,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            9,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#tread",
+          "uv": [
+            7,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#tread",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#tread",
+          "uv": [
+            7,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#tread",
+          "uv": [
+            7,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

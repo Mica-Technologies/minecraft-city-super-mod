@@ -31,6 +31,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Residential](residential.md) | 355 | The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard. |
 | [Road Signs](road-signs.md) | 692 | The MUTCD sign set, grouped the way the manual groups it. |
 | [Signage & Advertising](signage.md) | 6 | Street ad kiosks, wall poster boards and billboards built to size. |
+| [Stairs & Railings](stairs-and-railings.md) | 33 | Stairs, and the railings, guards and wall handrails that follow a flight up and level off across its landings. |
 | [Streetscape](streetscape.md) | 105 | Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters. |
 | [Structure & Framing](structure-framing.md) | 32 | Steel and wood stud walls, the structure that spans between them, and structural steel. |
 | [Technology](technology.md) | 54 | Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set. |
@@ -42,7 +43,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Trees & Plants](trees-and-plants.md) | 477 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
 | [Utilities](utilities.md) | 106 | The services a city runs to its buildings: electric meters single and in banks, the meter socket, service disconnect, main breaker panel and switchboard, gas meters single and in banks, the water meter setter and utility room labels; and the water system: the water tower built to size (legs, riser, bracing, the pedestal column, tanks with their balcony and name band, the caged ladder), ground storage tanks, the pump station's pipes, valves, pumps and panel, air release and backflow enclosures, and the treatment skid; and sewer and stormwater: the lift station's access hatches, control panel and standby generator, the curb inlet, the outfall's headwall, flap gate, wingwalls and riprap, the detention pond's outlet riser and emergency spillway, and precast manhole sections whole and cut away; the gas yard: a regulator station's skid, gas pipe, ball valves, pressure regulator, turbine meter, line heater, vent stack and odorant tank, and its warning signs; and telecom: the fibre distribution cabinet, a cell site's cabinets, ice bridge and GPS antenna, a monopole built to height with its antenna array, and a small cell's canister antenna and radio for the street poles. |
 | [Unlisted](unlisted.md) | 138 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **4159** | |
+| **Total** | **4192** | |
 
 ## How to read the table
 
