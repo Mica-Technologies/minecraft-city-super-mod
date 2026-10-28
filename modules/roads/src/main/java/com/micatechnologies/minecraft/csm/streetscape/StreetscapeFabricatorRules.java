@@ -40,6 +40,23 @@ public final class StreetscapeFabricatorRules {
    */
   @Nullable
   public static List<FabricatorIngredient> price(Block block, String registryName) {
+    if (block instanceof BlockEvCharger || block instanceof BlockEvChargerWall) {
+      // A charger is power electronics and a cable in a steel case; the DC fast charger's
+      // cabinet holds twice the case and the wiring.
+      if (block instanceof BlockEvCharger
+          && ((BlockEvCharger) block).getKind() == BlockEvCharger.Kind.DC_FAST) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 2));
+      }
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+    }
+    if (registryName.startsWith("ev_stall")) {
+      // Stall paint and its stencilled markings are pavement marking, not cast iron.
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.REFLECTIVE_SHEETING, 1));
+    }
     if (block instanceof BlockParkingMeter) {
       // A digital meter or pay station is electronics in a steel case; a mechanical one is
       // clockwork, and takes the generic cost.

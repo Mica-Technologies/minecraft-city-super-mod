@@ -3,6 +3,8 @@ package com.micatechnologies.minecraft.csm.tabs;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.streetscape.BlockBollardFlexible;
+import com.micatechnologies.minecraft.csm.streetscape.BlockEvCharger;
+import com.micatechnologies.minecraft.csm.streetscape.BlockEvChargerWall;
 import com.micatechnologies.minecraft.csm.streetscape.BlockFireHydrant;
 import com.micatechnologies.minecraft.csm.streetscape.BlockMailbox;
 import com.micatechnologies.minecraft.csm.streetscape.BlockMailboxCurbside;
@@ -350,6 +352,28 @@ public class CsmTabStreetscape extends CsmTab {
     initTabBlock(new BlockParkingMachine("parking_ticket_dispenser", false)); // Parking Ticket Dispenser
     initTabBlock(new BlockParkingMachine("parking_exit_kiosk", true)); // Parking Exit Pay Kiosk
     initTabItem(new ItemParkingTicket()); // Parking Ticket
+
+    // EV charging, #315 (gen_ev_charging.py --fragments).
+    initTabBlock(new BlockEvCharger("ev_charger_pedestal", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.187500, 0.000000, 0.375000, 0.687500, 1.687500, 0.625000),
+        null),
+        BlockEvCharger.Kind.LEVEL_2));
+    initTabBlock(new BlockEvCharger("ev_charger_pedestal_dual", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.187500, 0.000000, 0.375000, 0.812500, 1.687500, 0.625000),
+        null),
+        BlockEvCharger.Kind.LEVEL_2));
+    initTabBlock(new BlockEvChargerWall("ev_charger_wall",
+        new AxisAlignedBB(0.162500, 0.037500, 0.768750, 0.875000, 0.843750, 1.000000)));
+    initTabBlock(new BlockEvCharger("ev_charger_dc_fast", new UtilityBoxSpec(1, 1, 2,
+        new AxisAlignedBB(0.031250, 0.000000, 0.218750, 0.968750, 1.906250, 0.781250),
+        null),
+        BlockEvCharger.Kind.DC_FAST));
+    initTabBlock(new BlockStreetCover("ev_stall_paint",
+        new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.062500, 1.0)));
+    initTabBlock(new BlockStreetCover("ev_stall_marking_symbol",
+        new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.062500, 1.0)));
+    initTabBlock(new BlockStreetCover("ev_stall_marking_ev_only",
+        new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 0.062500, 1.0)));
 
     // News racks (gen_streetscape_street_furniture.py --fragments).
     initTabBlock(new BlockNewsRack("news_rack_blue", new UtilityBoxSpec(1, 1, 2,
