@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/market/base/rotisserie_oven_table",
+  "textures": {
+    "glow": "csm:blocks/furniture/market/rotisserie_window_on",
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "handle": "csm:blocks/furniture/residential/chrome"
+  }
+}

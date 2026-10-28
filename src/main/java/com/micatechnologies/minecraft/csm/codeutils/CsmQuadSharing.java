@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.Csm;
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
@@ -72,6 +73,19 @@ import org.apache.commons.lang3.tuple.Pair;
  * add to a list a baked model hands out</b>, which was already wrong, since the list is the
  * model's own.</p>
  *
+ * <p><b>Other mods' models</b>, with the {@code performance.shareOtherModsQuads} switch on (off
+ * by default): the same walk and the same equality over every other namespace's models, each
+ * namespace with its own map, so a mod's quads are only ever replaced by an equal quad of the
+ * same mod's. Only {@link SimpleBakedModel} lists (that exact class, as for CSM's) and plain
+ * {@link BakedQuad}s are touched; any baked model class that is not Minecraft's or Forge's own
+ * is a custom implementation that may build, cache or change its quads its own way, so it is
+ * skipped, and so are OBJ models. Their empty lists are left as they are: another mod may still
+ * add to a list of its own after the bake, which CSM's empty-list sharing would make throw. It is
+ * a switch, not the default, because the saving depends on a rule CSM cannot check for other
+ * mods: that nothing writes into a quad's vertex data once it is baked. Some mods bake the same
+ * quad many times over (one model set in the dev client and the Alto pack holds about 1.5
+ * million duplicates, some 240 MB).</p>
+ *
  * <p>The dedup maps live only for the pass. A resource reload bakes new models and posts the
  * event again, so the pass reruns on them.</p>
  *
@@ -123,6 +137,8 @@ public final class CsmQuadSharing {
   private long emptied;
   private Object2ObjectOpenCustomHashMap<BakedQuad, BakedQuad> canonical;
   private ReferenceOpenHashSet<Object> visited;
+  /** Whether the models being walked are CSM's own (empty lists shared too) or another mod's. */
+  private boolean ownModels;
   private long seen;
   private long replaced;
   private long skippedModels;
@@ -149,6 +165,7 @@ public final class CsmQuadSharing {
       overridesField = ObfuscationReflectionHelper.findField(ItemOverrideList.class,
           "field_188023_b");
       IRegistry<ModelResourceLocation, IBakedModel> registry = event.getModelRegistry();
+      ownModels = true;
       for (ModelResourceLocation key : registry.getKeys()) {
         if (CsmConstants.MOD_NAMESPACE.equals(key.getNamespace())) {
           visit(registry.getObject(key), 0);
@@ -159,6 +176,9 @@ public final class CsmQuadSharing {
               + "{} distinct kept ({} model classes skipped); {} empty lists shared, {} ms",
           seen, visited.size(), replaced, canonical.size(), skippedModels, emptied,
           (System.nanoTime() - start) / 1_000_000L);
+      if (CsmConfig.isShareOtherModsQuads()) {
+        shareOtherMods(registry);
+      }
     } catch (Throwable t) {
       // Sharing is only a saving; a model class this does not understand must never stop the
       // game loading. Quads already replaced are equal to the ones they replaced.
@@ -169,6 +189,47 @@ public final class CsmQuadSharing {
       fieldCache.clear();
       modelHelpers.clear();
     }
+  }
+
+  /**
+   * The same pass over every other namespace's models, each namespace with a map of its own,
+   * leaving their lists where they are ({@code performance.shareOtherModsQuads}).
+   */
+  private void shareOtherMods(IRegistry<ModelResourceLocation, IBakedModel> registry) {
+    long start = System.nanoTime();
+    Map<String, List<ModelResourceLocation>> byNamespace = new HashMap<>();
+    for (ModelResourceLocation key : registry.getKeys()) {
+      if (!CsmConstants.MOD_NAMESPACE.equals(key.getNamespace())) {
+        byNamespace.computeIfAbsent(key.getNamespace(), n -> new ArrayList<>()).add(key);
+      }
+    }
+    ownModels = false;
+    long seenBefore = seen;
+    long replacedBefore = replaced;
+    long skippedBefore = skippedModels;
+    int modelsBefore = visited.size();
+    long distinct = 0;
+    String most = null;
+    long mostReplaced = 0;
+    for (Map.Entry<String, List<ModelResourceLocation>> e : byNamespace.entrySet()) {
+      canonical = new Object2ObjectOpenCustomHashMap<>(CONTENT);
+      long replacedHere = replaced;
+      for (ModelResourceLocation key : e.getValue()) {
+        visit(registry.getObject(key), 0);
+      }
+      distinct += canonical.size();
+      if (replaced - replacedHere > mostReplaced) {
+        mostReplaced = replaced - replacedHere;
+        most = e.getKey();
+      }
+    }
+    Csm.getLogger().info(
+        "Shared other mods' identical baked quads (performance.shareOtherModsQuads): {} quads in "
+            + "{} models of {} namespaces, {} replaced by an equal quad of the same mod's, {} "
+            + "distinct kept ({} model classes skipped; most replaced: {}, {}), {} ms",
+        seen - seenBefore, visited.size() - modelsBefore, byNamespace.size(),
+        replaced - replacedBefore, distinct, skippedModels - skippedBefore, most, mostReplaced,
+        (System.nanoTime() - start) / 1_000_000L);
   }
 
   private void visit(Object model, int depth) {
@@ -209,7 +270,9 @@ public final class CsmQuadSharing {
     if (value instanceof IBakedModel) {
       visit(value, depth);
     } else if (value instanceof ItemOverrideList) {
-      shareOverrides((ItemOverrideList) value);
+      if (ownModels) {
+        shareOverrides((ItemOverrideList) value);
+      }
     } else if (value instanceof Map) {
       for (Object v : ((Map<?, ?>) value).values()) {
         visitValue(v, depth + 1);
@@ -254,6 +317,9 @@ public final class CsmQuadSharing {
     share(model.getQuads(null, null, 0L));
     for (EnumFacing side : EnumFacing.values()) {
       share(model.getQuads(null, side, 0L));
+    }
+    if (!ownModels) {
+      return; // another mod's lists stay its own: it may still add to them
     }
     try {
       List<?> general = (List<?>) generalQuadsField.get(model);
@@ -313,7 +379,9 @@ public final class CsmQuadSharing {
         replaced++;
       }
     }
-    list.trimToSize();
+    if (ownModels) {
+      list.trimToSize();
+    }
   }
 
   private List<Field> fieldsOf(Class<?> type) {

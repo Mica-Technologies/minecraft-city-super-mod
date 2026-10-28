@@ -454,7 +454,10 @@ The living room's extras follow, drawn by `gen_furniture_living.py` (textures an
   rests on what is under it (`SurfaceRest`), a wall TV ignores it. A two-block TV keeps the
   channel in both blocks and a click on either changes both. The stand TV two wide is the one
   blockstate written out in full keys (channel x facing x block x rest), since both the block and
-  the rest pick its model.
+  the rest pick its model. Every TV's blockstate is then written as multipart (`forge_multipart`,
+  PERFORMANCE_AND_SECURITY.md "Memory"): the channel only swaps the screen, so each channel's
+  screen is a child model under `furniture/living/states/<block>/` and the block is one model
+  location instead of one per state.
 - **Big TVs** (`BlockLargeTelevision`): the Extra-Large (3 x 2 blocks) and Giant (4 x 2) flat
   screens, each on the wall or standing on a centre pedestal. The picture is exactly 16:9 inside
   a quarter-pixel bezel: 46 x 25.875 px across three blocks (the width limits it), 52 x 29.25 px
@@ -471,7 +474,8 @@ The living room's extras follow, drawn by `gen_furniture_living.py` (textures an
   the channel in every block's `TileEntityTelevision`. A stand TV reads the rest under its
   pedestal's column (`(cols - 1) / 2`) for all its blocks, so the picture never tears, and is
   drawn for two rests only, the floor and a TV stand (anything else draws as the floor): its
-  blockstate is written out in full keys (cell x channel x facing x rest), 288 and 384 variants;
+  blockstate is written out in full keys (cell x channel x facing x rest), 288 and 384 states,
+  each a multipart rule naming its cell's model with the channel's screen (one model location);
   the wall TVs pick the model by `cell` alone. The panel stands set back (z 10.25) so the
   pedestal sits on a TV stand run's top.
 - **Two-block pieces** (`WidePieces`, `BlockResidentialWide`): placed as one by their own item

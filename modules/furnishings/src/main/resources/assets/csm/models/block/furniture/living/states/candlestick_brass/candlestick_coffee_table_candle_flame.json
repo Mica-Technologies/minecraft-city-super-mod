@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/candlestick_coffee_table",
+  "textures": {
+    "brass": "csm:blocks/furniture/residential/brass",
+    "candle_flame": "csm:blocks/furniture/living/candle_flame"
+  }
+}

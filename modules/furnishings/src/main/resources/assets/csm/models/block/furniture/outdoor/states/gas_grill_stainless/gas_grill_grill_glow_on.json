@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/gas_grill",
+  "textures": {
+    "enamel": "csm:blocks/furniture/residential/stainless",
+    "glow": "csm:blocks/furniture/outdoor/grill_glow_on"
+  }
+}

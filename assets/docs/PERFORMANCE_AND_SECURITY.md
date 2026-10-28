@@ -230,6 +230,33 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   when the block's registry name is set (see PEDESTAL_POLE_SYSTEM.md, "The trap that design walked
   into"); a block with its own mapper is left alone.
 
+- **A property that only swaps a texture costs no model locations** (`forge_multipart.py`,
+  `dev-env-utils/scripts`). A Forge variant blockstate has a model location and a variant for
+  every combination of its properties, even when one of them only lays another texture over the
+  same model (a TV's channel, a gate sign's letter and number, a lamp's `lit`, an appliance's
+  `running`). The generators that write such blockstates turn them into multipart ones that the
+  mapper above gives one location: each (model, textures) pair a state is drawn with becomes a
+  child model under `models/block/<folder>/states/<block>/` (the variant's model as its parent,
+  the variant's textures as its own), and each state matches exactly one rule naming that child
+  with the variant's rotation; properties nothing depends on are left out of the rules. The bake
+  reads the same elements, textures and rotation, so the part bake cache and the quad sharing
+  find the same parts and quads. 76 blocks (the nine TVs, the Transit gate, stand, platform
+  number, station name signs and line bullet, the furnishing lamps, appliances, fireplaces and
+  outdoor lights, the station number plaque and the two European push buttons) went from 7,024
+  model locations to 76. `convert_if_texture_only` converts a Forge blockstate only when it is
+  one a multipart rule can say (model, `x`, `y`, `uvlock`; a JSON model) and some property of it
+  only swaps textures; the Life Safety catalogue's `as_multipart` does it for one block;
+  `model_depth` separates such a blockstate's models as its Forge form drew them, so not one
+  face moves; `verify_multipart_conversion.py <rev> --changed` checks every converted state
+  against the Forge form at a revision, and `CsmTextureSwapMultipartTest` that every state still
+  finds exactly one model. What cannot convert: a blockstate turned by Forge `transform`s or with
+  `submodel`s (the road signs' and bus stop flags' eight facings, the Micafi pole devices'
+  diagonal facings and the Beam's aimed head), since a multipart rule turns only in 90-degree
+  steps. **Rule: a new property that only swaps a texture goes through
+  `convert_if_texture_only` in its generator**, and **a converted block's particle texture must
+  be the same in every state**, since a multipart model's particle is its first part's (the
+  verifier and the test check it).
+
 - **Baked quads are shared** (`CsmQuadSharing`, Core, client). Forge bakes a submodel again for
   every blockstate variant that names it, so 7.0 million baked quads held about 750 thousand
   distinct ones. With the part bake cache there are 1.9 million, but distinct parts still repeat
@@ -239,6 +266,20 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   write into a baked quad's `getVertexData()` array** -- it is shared by every model that has that
   quad; build a new quad instead. Code that compares quads by identity sees more equal quads as the
   same instance, never fewer.
+- **Other mods' identical quads can be shared too** (`CsmQuadSharing`,
+  `performance.shareOtherModsQuads` in `csm.cfg`, **off by default**). Other mods bake duplicates
+  as Forge's variants do: in the dev client and the Alto pack one other mod's models carry about
+  1.48 million duplicate baked quads, some 237 MB. With the switch on, the same pass walks every
+  other namespace's models after CSM's, with the same equality and the same limits: only the
+  lists of a `SimpleBakedModel` (that exact class) and quads of class `BakedQuad`; OBJ models and
+  every baked model class that is not Minecraft's or Forge's own (a custom implementation that
+  may build, cache or change its quads its own way) are skipped. Each namespace has its own map,
+  so a mod's quad is only ever replaced by an equal quad of the same mod's, and their empty lists
+  are not shared or trimmed, since another mod may still add to a list of its own after the bake.
+  It logs "Shared other mods' identical baked quads" with the counts and the namespace that gave
+  the most. It is a switch because the saving rests on the rule above, that nothing writes into a
+  baked quad's vertex data, which CSM can hold for its own code but not check for other mods'; a
+  mod that breaks it would show another of its own blocks' faces in the wrong place.
 - **Empty quad and override lists are one list** (`CsmQuadSharing`). The same pass points every
   empty face and general quad list of a `SimpleBakedModel`, and every empty item override list, at
   `Collections.emptyList()`: 1.16 million lists, 24 MiB. **Rule: never add to, or otherwise change,
@@ -481,7 +522,8 @@ The rules that follow: **keep a block under about 5,000 states** (the heaviest t
 standpipes at 5,120 and the exit signs at 5,376, which `ExitSignSpecTest` holds to); past that,
 split it into blocks or keep the choice in a tile entity. **Never add a property, stored or
 actual-state only, that no model reads**, and in a variant blockstate prefer to fold a property
-the model ignores into one that it reads. **Prefer multipart for connecting blocks.** And check a
+the model ignores into one that it reads. **Prefer multipart for connecting blocks**, and write
+a property that only swaps a texture through `forge_multipart` (above). And check a
 new family with `/csm memstats` (its states, locations and quads) before and after.
 
 The render caches are under 1 MB each at full occupancy, so **if memory use needs to come down, the

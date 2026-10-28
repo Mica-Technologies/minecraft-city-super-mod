@@ -1,42 +1,87 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/residential/base/dryer",
-    "textures": {
-      "shell": "csm:blocks/furniture/residential/appliance_white",
-      "door": "csm:blocks/furniture/residential/appliance_white",
-      "handle": "csm:blocks/furniture/residential/appliance_trim",
-      "trim": "csm:blocks/furniture/residential/appliance_trim",
-      "glow": "csm:blocks/furniture/residential/dryer_window_off"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_off"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_on",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "running": "false"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_on",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "running": "false"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_on",
         "y": 270
       }
     },
-    "running": {
-      "true": {
-        "textures": {
-          "glow": "csm:blocks/furniture/residential/dryer_window_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "running": "false"
       },
-      "false": {
-        "textures": {
-          "glow": "csm:blocks/furniture/residential/dryer_window_off"
-        }
+      "apply": {
+        "model": "csm:furniture/residential/states/dryer_white/dryer_dryer_window_off",
+        "y": 270
       }
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  ]
 }

@@ -1,44 +1,87 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/office/base/ceiling_projector",
-    "textures": {
-      "shell": "csm:blocks/furniture/residential/appliance_white",
-      "trim": "csm:blocks/furniture/office/plastic_light_grey",
-      "lens": "csm:blocks/furniture/office/projector_lens_on"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_projector_lens_on"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_projector_lens_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_lens_glass"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_projector_lens_on",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_lens_glass",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_projector_lens_on",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_lens_glass",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_projector_lens_on",
         "y": 270
       }
     },
-    "inventory": [
-      {}
-    ],
-    "lit": {
-      "true": {
-        "textures": {
-          "lens": "csm:blocks/furniture/office/projector_lens_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false"
       },
-      "false": {
-        "textures": {
-          "lens": "csm:blocks/furniture/office/lens_glass"
-        }
+      "apply": {
+        "model": "csm:furniture/office/states/ceiling_projector_white/ceiling_projector_lens_glass",
+        "y": 270
       }
-    },
-    "powered": {
-      "true": {},
-      "false": {}
     }
-  }
+  ]
 }

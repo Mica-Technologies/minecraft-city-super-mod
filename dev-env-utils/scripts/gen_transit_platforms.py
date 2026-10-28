@@ -1121,6 +1121,7 @@ def number_sign():
             names_of("Platform Number Sign", "Gleisnummernschild", "Letrero de Número de Andén",
                      "Spårnummerskylt"),
             els, tex, display=gui_display(0.6, 1.0), extra_state={"number": numbers})
+    C.as_multipart(reg)  # the number only swaps the face: one model location
 
 
 def station_name_sign():
@@ -1135,6 +1136,7 @@ def station_name_sign():
             names_of("Station Name Sign", "Stationsnamensschild", "Letrero de Nombre de Estación",
                      "Stationsnamnskylt"),
             els, tex, display=gui_display(0.8, 0.0, (0, 180, 0)), extra_state={"name": names})
+    C.as_multipart(reg)  # the name only swaps the face: one model location
 
 
 def network_map_board():

@@ -1,66 +1,611 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/market/base/fountain_machine_floor",
-    "textures": {
-      "glow": "csm:blocks/furniture/residential/lamp_blue_off",
-      "shell": "csm:blocks/furniture/market/plastic_blue",
-      "trim": "csm:blocks/furniture/residential/stainless_dark",
-      "art": "csm:blocks/furniture/market/fountain_art_blue"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_item_lamp_blue_off"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "floor",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "counter",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_on",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "floor",
+        "running": "false"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "counter",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_on",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "floor",
+        "running": "false"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "counter",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_on",
         "y": 270
       }
     },
-    "rest": {
-      "floor": {
-        "model": "csm:furniture/market/base/fountain_machine_floor"
+    {
+      "when": {
+        "facing": "west",
+        "rest": "floor",
+        "running": "false"
       },
-      "counter": {
-        "model": "csm:furniture/market/base/fountain_machine_counter"
-      },
-      "sideboard": {
-        "model": "csm:furniture/market/base/fountain_machine_sideboard"
-      },
-      "table": {
-        "model": "csm:furniture/market/base/fountain_machine_table"
-      },
-      "side_table": {
-        "model": "csm:furniture/market/base/fountain_machine_side_table"
-      },
-      "tv_stand": {
-        "model": "csm:furniture/market/base/fountain_machine_tv_stand"
-      },
-      "coffee_table": {
-        "model": "csm:furniture/market/base/fountain_machine_coffee_table"
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_floor_lamp_blue_off",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:furniture/market/base/fountain_machine_item"
-      }
-    ],
-    "running": {
-      "true": {
-        "textures": {
-          "glow": "csm:blocks/furniture/residential/lamp_blue_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "rest": "counter",
+        "running": "true"
       },
-      "false": {
-        "textures": {
-          "glow": "csm:blocks/furniture/residential/lamp_blue_off"
-        }
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_counter_lamp_blue_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_sideboard_lamp_blue_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_table_lamp_blue_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_side_table_lamp_blue_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_tv_stand_lamp_blue_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/fountain_machine_blue/fountain_machine_coffee_table_lamp_blue_off",
+        "y": 270
       }
     }
-  }
+  ]
 }

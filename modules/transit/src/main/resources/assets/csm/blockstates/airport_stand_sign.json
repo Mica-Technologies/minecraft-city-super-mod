@@ -1,147 +1,3449 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:transit/airside/airport_stand_sign"
-  },
   "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+    "inventory": {
+      "model": "csm:transit/airside/airport_stand_sign"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_17"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_18"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_19"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "a",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_20"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_17"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_18"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_19"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "b",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_20"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_17"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_18"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_19"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "c",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_20"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_17"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_18"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_19"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "letter": "d",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_20"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_1",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "2"
       },
-      "south": {
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_17",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_18",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_19",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "a",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_20",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_17",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_18",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_19",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "b",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_20",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_17",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_18",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_19",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "c",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_20",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_17",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_18",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_19",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "letter": "d",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_20",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_1",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "2"
       },
-      "west": {
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_17",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_18",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_19",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "a",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_20",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_17",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_18",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_19",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "b",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_20",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_17",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_18",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_19",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "c",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_20",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_17",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_18",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_19",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "letter": "d",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_20",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_1",
         "y": 270
       }
     },
-    "inventory": [
-      {}
-    ],
-    "letter": {
-      "a": {
-        "textures": {
-          "letter": "csm:blocks/transit/airport/gate_letter_a"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "2"
       },
-      "b": {
-        "textures": {
-          "letter": "csm:blocks/transit/airport/gate_letter_b"
-        }
-      },
-      "c": {
-        "textures": {
-          "letter": "csm:blocks/transit/airport/gate_letter_c"
-        }
-      },
-      "d": {
-        "textures": {
-          "letter": "csm:blocks/transit/airport/gate_letter_d"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_2",
+        "y": 270
       }
     },
-    "number": {
-      "1": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_1"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "3"
       },
-      "2": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_2"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "4"
       },
-      "3": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_3"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "5"
       },
-      "4": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_4"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "6"
       },
-      "5": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_5"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "7"
       },
-      "6": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_6"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "8"
       },
-      "7": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_7"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "9"
       },
-      "8": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_8"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "10"
       },
-      "9": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_9"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "11"
       },
-      "10": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_10"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "12"
       },
-      "11": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_11"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "13"
       },
-      "12": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_12"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "14"
       },
-      "13": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_13"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "15"
       },
-      "14": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_14"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "16"
       },
-      "15": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_15"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_16",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "17"
       },
-      "16": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_16"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_17",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "18"
       },
-      "17": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_17"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_18",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "19"
       },
-      "18": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_18"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_19",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "a",
+        "number": "20"
       },
-      "19": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_19"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_a_gate_number_20",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "1"
       },
-      "20": {
-        "textures": {
-          "number": "csm:blocks/transit/airport/gate_number_20"
-        }
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_16",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_17",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_18",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_19",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "b",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_b_gate_number_20",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_16",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_17",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_18",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_19",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "c",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_c_gate_number_20",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_16",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_17",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_18",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_19",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "letter": "d",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/airside/states/airport_stand_sign/airport_stand_sign_gate_letter_d_gate_number_20",
+        "y": 270
       }
     }
-  }
+  ]
 }

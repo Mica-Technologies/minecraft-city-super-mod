@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/large_flat_screen_tv_cell0_sideboard",
+  "textures": {
+    "bezel": "csm:blocks/furniture/living/tv_bezel",
+    "screen": "csm:blocks/furniture/living/tv_news"
+  }
+}

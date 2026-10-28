@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/transit/stations/station_line_bullet",
+  "textures": {
+    "face": "csm:blocks/transit/stations/bullet_8"
+  }
+}

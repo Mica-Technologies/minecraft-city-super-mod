@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/residential/base/microwave_item",
+  "textures": {
+    "shell": "csm:blocks/furniture/residential/appliance_black",
+    "door": "csm:blocks/furniture/residential/appliance_black",
+    "handle": "csm:blocks/furniture/residential/chrome",
+    "trim": "csm:blocks/furniture/residential/appliance_black_trim",
+    "glow": "csm:blocks/furniture/residential/microwave_window_off"
+  }
+}

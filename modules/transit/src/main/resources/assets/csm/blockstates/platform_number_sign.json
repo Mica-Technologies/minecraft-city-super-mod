@@ -1,125 +1,789 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:transit/platforms/platform_number_sign"
-  },
   "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+    "inventory": {
+      "model": "csm:transit/platforms/platform_number_sign"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_17"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_18"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_19"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_20"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_1",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "2"
       },
-      "south": {
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_17",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_18",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_19",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_20",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_1",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "2"
       },
-      "west": {
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "17"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_17",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "18"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_18",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "19"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_19",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "20"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_20",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_1",
         "y": 270
       }
     },
-    "inventory": [
-      {}
-    ],
-    "number": {
-      "1": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_1"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "number": "2"
       },
-      "2": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_2"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "3"
       },
-      "3": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_3"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "4"
       },
-      "4": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_4"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "5"
       },
-      "5": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_5"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "6"
       },
-      "6": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_6"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "7"
       },
-      "7": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_7"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "8"
       },
-      "8": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_8"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "9"
       },
-      "9": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_9"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "10"
       },
-      "10": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_10"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "11"
       },
-      "11": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_11"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "12"
       },
-      "12": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_12"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "13"
       },
-      "13": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_13"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "14"
       },
-      "14": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_14"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "15"
       },
-      "15": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_15"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "16"
       },
-      "16": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_16"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_16",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "17"
       },
-      "17": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_17"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_17",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "18"
       },
-      "18": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_18"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_18",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "19"
       },
-      "19": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_19"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_19",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "20"
       },
-      "20": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/number_20"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/platform_number_sign/platform_number_sign_number_20",
+        "y": 270
       }
     }
-  }
+  ]
 }

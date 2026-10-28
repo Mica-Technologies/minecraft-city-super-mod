@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/pillar_candles_sideboard",
+  "textures": {
+    "wax": "csm:blocks/furniture/living/wax_white",
+    "candle_flame": "csm:blocks/furniture/living/candle_flame"
+  }
+}
