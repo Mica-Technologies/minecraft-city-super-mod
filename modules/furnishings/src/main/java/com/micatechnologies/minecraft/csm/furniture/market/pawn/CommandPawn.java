@@ -26,7 +26,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
@@ -157,7 +160,8 @@ public class CommandPawn extends CommandBase {
     Source source = PawnValuation.baseSource(key);
     String name = stack.getDisplayName() + " (" + key + ")";
     if (!one.isAccepted()) {
-      say(sender, name + ": refused. " + one.refusal);
+      sender.sendMessage(new TextComponentTranslation("csm.pawn.msg.refused_item",
+          name, new TextComponentTranslation(one.refusal)));
       return;
     }
     say(sender, String.format(Locale.ROOT, "%s: worth %.2f each (%s)%s; pays %.2f for %d.",
@@ -216,7 +220,8 @@ public class CommandPawn extends CommandBase {
         rows.add(csv(key) + "," + csv(stack.getDisplayName()) + ","
             + (Double.isNaN(base) ? "" : String.format(Locale.ROOT, "%.4f", base)) + ","
             + (source == null ? "" : source.name().toLowerCase(Locale.ROOT)) + ","
-            + (q.isAccepted() ? String.format(Locale.ROOT, "%.2f", q.payout) : csv(q.refusal)));
+            + (q.isAccepted() ? String.format(Locale.ROOT, "%.2f", q.payout)
+                : csv(I18n.translateToLocal(q.refusal))));
       }
     }
     Collections.sort(rows);
@@ -239,8 +244,8 @@ public class CommandPawn extends CommandBase {
     if (out.messages.isEmpty()) {
       say(player, "Hold something to pawn.");
     }
-    for (String line : out.messages) {
-      say(player, line);
+    for (ITextComponent line : out.messages) {
+      player.sendMessage(line);
     }
   }
 

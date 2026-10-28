@@ -11,7 +11,9 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
 /**
@@ -19,7 +21,8 @@ import net.minecraft.util.text.TextFormatting;
  * {@code csm_furnishings} (the shops' own link, {@link ShopEconomy#SUM}), emeralds otherwise, at
  * {@code moneyPerEmerald}. In emerald mode the part of a payout that does not make a whole emerald
  * is kept in the {@link PawnLedger} and paid once it adds up to one, so small sales still count.
- * Server side only.
+ * A reselling counter is paid the same way round: money, or whole emeralds rounded up. Server
+ * side only.
  *
  * @since 2026.10
  */
@@ -33,16 +36,31 @@ public final class PawnEconomy {
     return ShopEconomy.isMoneyMode();
   }
 
-  /** {@code amount} of value as a player would be paid it now: "$1.50", "3 emeralds" or "3.76 emeralds' worth". */
-  public static String describe(double amount) {
+  /** Money as SUM shows it: "$1.50". */
+  public static String money(double amount) {
+    return CsmSumEconomy.format(ShopEconomy.SUM.currencySymbol(), amount);
+  }
+
+  /**
+   * {@code amount} of value as a player would be paid it now: "$1.50", "3 emeralds" or
+   * "3.76 emeralds' worth".
+   */
+  public static ITextComponent describe(double amount) {
     if (isMoneyMode()) {
-      return CsmSumEconomy.format(ShopEconomy.SUM.currencySymbol(), amount);
+      return new TextComponentString(money(amount));
     }
     double emeralds = amount / CsmConfig.getPawnMoneyPerEmerald();
-    if (emeralds == Math.floor(emeralds)) {
-      return CsmEmeralds.format((long) emeralds);
+    if (Math.abs(emeralds - Math.rint(emeralds)) < 1e-6) {
+      return emeralds(Math.round(emeralds));
     }
-    return String.format(Locale.ROOT, "%.2f emeralds' worth", emeralds);
+    return new TextComponentTranslation("csm.pawn.worth.emeralds_part",
+        String.format(Locale.ROOT, "%.2f", emeralds));
+  }
+
+  /** "1 emerald", "5 emeralds". */
+  static ITextComponent emeralds(long count) {
+    return count == 1 ? new TextComponentTranslation("csm.pawn.worth.emerald_one")
+        : new TextComponentTranslation("csm.pawn.worth.emeralds", count);
   }
 
   /**
@@ -68,37 +86,16 @@ public final class PawnEconomy {
     ledger.markDirty();
     long whole = (long) split[0];
     CsmEmeralds.give(player, whole);
-    String text;
+    String carried = String.format(Locale.ROOT, "%.2f", split[1] / rate);
+    ITextComponent text;
     if (whole == 0) {
-      text = String.format(Locale.ROOT, "no emerald yet, %.2f of one carried over",
-          split[1] / rate);
+      text = new TextComponentTranslation("csm.pawn.paid.none_yet", carried);
+    } else if (split[1] > 0) {
+      text = new TextComponentTranslation("csm.pawn.paid.carry", emeralds(whole), carried);
     } else {
-      text = CsmEmeralds.format(whole);
-      if (split[1] > 0) {
-        text += String.format(Locale.ROOT, ", with %.2f of the next one carried over",
-            split[1] / rate);
-      }
+      text = emeralds(whole);
     }
     return new Payment(null, text);
-  }
-
-  /** A payout: why it was refused, or what the player got. */
-  public static final class Payment {
-
-    /** Why nothing was paid, or null. */
-    @Nullable
-    public final String refusal;
-    /** What was paid: "$37.55", or "3 emeralds, with 0.76 of the next one carried over". */
-    public final String paid;
-
-    Payment(@Nullable String refusal, String paid) {
-      this.refusal = refusal;
-      this.paid = paid;
-    }
-
-    public boolean isPaid() {
-      return refusal == null;
-    }
   }
 
   /**
@@ -111,6 +108,51 @@ public final class PawnEconomy {
     double total = remainder + amount;
     long whole = (long) Math.floor(total / rate + 1e-9);
     return new double[]{whole, Math.max(0, total - whole * rate)};
+  }
+
+  /** What a resale price of {@code amount} costs in emeralds: rounded up, never free. */
+  static long emeraldPrice(double amount) {
+    return Math.max(1, (long) Math.ceil(amount / CsmConfig.getPawnMoneyPerEmerald() - 1e-9));
+  }
+
+  /** A resale price as the buyer pays it now: "$4.50" or "2 emeralds". */
+  public static ITextComponent describePrice(double amount) {
+    return isMoneyMode() ? new TextComponentString(money(amount)) : emeralds(emeraldPrice(amount));
+  }
+
+  /**
+   * Charges a buyer a resale price.
+   *
+   * @return null if paid, otherwise why not (nothing was taken)
+   */
+  @Nullable
+  static ITextComponent charge(EntityPlayerMP player, double amount, String reason) {
+    if (isMoneyMode()) {
+      String refused = ShopEconomy.SUM.spend(player, amount, reason);
+      return refused == null ? null : new TextComponentString(refused);
+    }
+    long count = emeraldPrice(amount);
+    return CsmEmeralds.take(player, (int) Math.min(Integer.MAX_VALUE, count)) ? null
+        : new TextComponentTranslation("csm.pawn.msg.cant_afford", emeralds(count));
+  }
+
+  /** A payout: why it was refused, or what the player got. */
+  public static final class Payment {
+
+    /** Why nothing was paid, or null. */
+    @Nullable
+    public final String refusal;
+    /** What was paid: "$37.55", or "3 emeralds, with 0.76 of the next one carried over". */
+    public final ITextComponent paid;
+
+    Payment(@Nullable String refusal, ITextComponent paid) {
+      this.refusal = refusal;
+      this.paid = paid;
+    }
+
+    public boolean isPaid() {
+      return refusal == null;
+    }
   }
 
   /**
@@ -143,14 +185,15 @@ public final class PawnEconomy {
     ledger.markDirty();
     Payment paid = pay(player, owed, "Pawn shop: items pawned while you were away");
     if (paid.isPaid()) {
-      player.sendMessage(new TextComponentString(TextFormatting.GREEN
-          + "A pawn shop paid you " + paid.paid + " for items pawned while you were away."));
+      ITextComponent text = new TextComponentTranslation("csm.pawn.msg.owed", paid.paid);
+      text.getStyle().setColor(TextFormatting.GREEN);
+      player.sendMessage(text);
     } else {
       e.owed = owed;
     }
   }
 
-  /** The player's emerald remainder, as value, for the counter screen. */
+  /** The player's emerald remainder, as value. */
   public static double emeraldRemainder(EntityPlayer player) {
     return PawnLedger.get(player.world).entry(player.getUniqueID()).emeraldRemainder;
   }

@@ -2367,6 +2367,7 @@ TEXTURES = {
     "case_black": lambda: noisy((40, 40, 44), 702, 16, 0.025),
     "case_white": lambda: noisy((232, 234, 234), 703, 16, 0.015),
     "liner": lambda: noisy((206, 210, 214), 704, 16, 0.02),
+    "pawn_velvet": lambda: noisy((104, 18, 34), 761, 16, 0.05),
     "steel_white": lambda: R.metal((226, 226, 222), 706),
     "steel_grey": lambda: R.metal((120, 122, 126), 707),
     "plastic_grey": lambda: noisy((168, 170, 172), 708, 16, 0.02),
@@ -4657,6 +4658,35 @@ SHOP_CASE_DISPLAY = shop_display(
     _strip_label(SHOP_CASE_RAIL))
 
 
+# The pawn counter: the shop display case's section with a velvet deck under the glass, and the
+# pawn shop's usual goods baked into it (a ring box, watches, a chain, bracelets), so it reads as
+# a pawn shop with nothing in its stock. What it is offered goes through its screen, never onto
+# its shelves: its resale stock is not drawn.
+PAWN_GOODS = [
+    # a ring box on the deck, a gold ring in its slot
+    el([2, SHOP_CASE_DECK, 4.5], [4.5, SHOP_CASE_DECK + 1.25, 7], "case", NO_DOWN),
+    el([2.75, SHOP_CASE_DECK + 1.25, 5.25], [3.75, SHOP_CASE_DECK + 1.75, 6.25], "brass",
+       NO_DOWN),
+    # a steel watch lying on its band
+    el([6.25, SHOP_CASE_DECK, 4], [7.25, SHOP_CASE_DECK + 0.25, 9], "chrome", NO_DOWN),
+    el([5.75, SHOP_CASE_DECK + 0.25, 5.75], [7.75, SHOP_CASE_DECK + 0.75, 7.25], "chrome",
+       NO_DOWN),
+    el([6.0, SHOP_CASE_DECK + 0.75, 6.0], [7.5, SHOP_CASE_DECK + 0.8, 7.0], "case", ("up",)),
+    # a gold chain laid out in a loop
+    el([10, SHOP_CASE_DECK, 4.5], [14, SHOP_CASE_DECK + 0.25, 4.8], "brass", NO_DOWN),
+    el([10, SHOP_CASE_DECK, 7.7], [14, SHOP_CASE_DECK + 0.25, 8.0], "brass", NO_DOWN),
+    el([10, SHOP_CASE_DECK, 4.8], [10.3, SHOP_CASE_DECK + 0.25, 7.7], "brass", NO_DOWN),
+    el([13.7, SHOP_CASE_DECK, 4.8], [14, SHOP_CASE_DECK + 0.25, 7.7], "brass", NO_DOWN),
+    # on the glass shelf: a gold watch and a steel bracelet
+    el([3, 13, 7.5], [5, 13.4, 9.5], "brass", NO_DOWN),
+    el([3.5, 13.4, 8.0], [4.5, 13.45, 9.0], "case", ("up",)),
+    el([9, 13, 8], [12.5, 13.3, 9.25], "chrome", NO_DOWN),
+]
+PAWN_CASE, PAWN_CASE_END, _ = service_case(9, SERVICE_SEGS, 11, SHOP_CASE_INSIDE + PAWN_GOODS,
+                                           11, SHOP_CASE_DECK)
+PAWN_TEX = dict(CASE_BLACK, liner=MT("pawn_velvet"))
+
+
 def shop_cooler():
     """The reach-in cooler with bare shelves, and a price rail across its kick grille."""
     body = reach_in_frame()
@@ -4781,6 +4811,13 @@ add("shop_vending_machine", "tall", [fin(None, VEND_TEX)],
      "java": 'new BlockShopVendingMachine("%s", new int[]{'
              + jbox(box_of(VENDING, tall=True)) + "}, " + VENDING_DISPLAY + ")"},
     "Shops", "A shop: 2 blocks tall, five trays of the item behind a lit glass front; light 9")
+add("pawn_counter", "run", [fin(None, PAWN_TEX)],
+    ("Pawn Shop Counter", "Pfandhaus-Theke", "Mostrador de casa de empeño", "Pantbanksdisk"),
+    {"body": PAWN_CASE, "end": PAWN_CASE_END, "glow": GLOW_ONLY, "particle": "shell",
+     "java": 'new BlockPawnCounter("%s", new int[]{' + jbox(box_of(PAWN_CASE)) + "})"},
+    "Shops", "Server-run: buys any item at the server's prices (money, or emeralds); placed and "
+             "broken only with csm.pawn.admin; can keep what it buys and sell it back; joins "
+             "other pawn counters; lit, redstone switches it")
 add("pallet_stack", "single",
     [fin("drinks", {"load": MT("load_drinks"), "load_top": MT("load_drinks_top")},
          "Drinks", "Getränke", "bebidas", "drycker"),

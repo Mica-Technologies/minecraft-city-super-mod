@@ -44,7 +44,7 @@ public final class PawnValuation {
   /** What a stack would fetch, or why it would not be taken. */
   public static final class Quote {
 
-    /** Why the stack is refused, or null if it is taken. */
+    /** Why the stack is refused (a lang key), or null if it is taken. */
     @Nullable
     public final String refusal;
     /** The value of one item, adjustments included. */
@@ -163,18 +163,18 @@ public final class PawnValuation {
    */
   public static Quote quote(ItemStack stack) {
     if (stack.isEmpty()) {
-      return Quote.refused("Nothing to pawn.");
+      return Quote.refused("csm.pawn.refuse.nothing");
     }
     String key = key(stack);
     if (values.isBlocked(key)) {
-      return Quote.refused("Pawn shops don't take that.");
+      return Quote.refused("csm.pawn.refuse.blocked");
     }
     if (holdsItems(stack)) {
-      return Quote.refused("Empty it first.");
+      return Quote.refused("csm.pawn.refuse.full");
     }
     double base = baseValue(key);
     if (Double.isNaN(base) || base <= 0) {
-      return Quote.refused("That isn't worth anything here.");
+      return Quote.refused("csm.pawn.refuse.worthless");
     }
     double each = base;
     if (stack.isItemStackDamageable() && stack.getMaxDamage() > 0) {
@@ -187,7 +187,7 @@ public final class PawnValuation {
     each += levels * CsmConfig.getPawnEnchantValuePerLevel();
     double payout = cents(each * stack.getCount() * CsmConfig.getPawnPayoutFraction());
     if (payout <= 0) {
-      return Quote.refused("That isn't worth anything here.");
+      return Quote.refused("csm.pawn.refuse.worthless");
     }
     return new Quote(null, each, payout, baseSource(key));
   }

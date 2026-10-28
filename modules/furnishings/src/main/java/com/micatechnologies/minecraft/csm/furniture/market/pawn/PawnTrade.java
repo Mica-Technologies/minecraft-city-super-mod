@@ -4,14 +4,17 @@ import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnValuation.Quote;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 
 /**
  * Pawning: a player hands over the stacks in some slots and is paid for the ones a pawn shop
@@ -42,8 +45,8 @@ public final class PawnTrade {
     public int taken;
     /** What was paid, in money. */
     public double paid;
-    /** What to tell the player, worst first. */
-    public final List<String> messages = new ArrayList<>();
+    /** What to tell the player: the outcome first, then why anything stayed. */
+    public final List<ITextComponent> messages = new ArrayList<>();
 
     boolean isEmpty() {
       return taken == 0;
@@ -68,11 +71,11 @@ public final class PawnTrade {
       @Nullable UnaryOperator<ItemStack> keeper) {
     Outcome out = new Outcome();
     if (!CsmConfig.isPawnEnabled()) {
-      out.messages.add("Pawn shops aren't buying right now.");
+      out.messages.add(new TextComponentTranslation("csm.pawn.msg.closed"));
       return out;
     }
     if (player.isCreative() && !CsmConfig.isPawnAllowCreative()) {
-      out.messages.add("Pawn shops don't buy from players in creative mode.");
+      out.messages.add(new TextComponentTranslation("csm.pawn.msg.creative"));
       return out;
     }
 
@@ -81,7 +84,7 @@ public final class PawnTrade {
     double allowance = ledger.allowanceToday(player.getUniqueID(), today,
         CsmConfig.getPawnMaxPayoutPerDay());
 
-    Set<String> refusals = new LinkedHashSet<>();
+    Map<String, ITextComponent> refusals = new LinkedHashMap<>();
     List<Integer> picked = new ArrayList<>();
     double total = 0;
     boolean capped = false;
@@ -92,7 +95,9 @@ public final class PawnTrade {
       }
       Quote q = PawnValuation.quote(stack);
       if (!q.isAccepted()) {
-        refusals.add(stack.getDisplayName() + ": " + q.refusal);
+        refusals.putIfAbsent(stack.getDisplayName() + "|" + q.refusal,
+            new TextComponentTranslation("csm.pawn.msg.refused_item", stack.getTextComponent(),
+                new TextComponentTranslation(q.refusal)));
         continue;
       }
       if (total + q.payout > allowance + 1e-9) {
@@ -103,11 +108,10 @@ public final class PawnTrade {
       picked.add(i);
     }
     if (capped) {
-      out.messages.add(allowance <= 0
-          ? "You've pawned all a pawn shop will take from you today."
-          : "That's more than a pawn shop will take from you today; the rest stays with you.");
+      out.messages.add(new TextComponentTranslation(allowance <= 0
+          ? "csm.pawn.msg.cap_reached" : "csm.pawn.msg.cap_partial"));
     }
-    out.messages.addAll(refusals);
+    out.messages.addAll(refusals.values());
     if (picked.isEmpty()) {
       return out;
     }
@@ -123,7 +127,7 @@ public final class PawnTrade {
         slots.setInventorySlotContents(picked.get(k), taken.get(k));
       }
       slots.markDirty();
-      out.messages.add(0, "The pawn shop couldn't pay you: " + payment.refusal);
+      out.messages.add(0, new TextComponentTranslation("csm.pawn.msg.not_paid", payment.refusal));
       return out;
     }
     slots.markDirty();
@@ -135,9 +139,14 @@ public final class PawnTrade {
       }
     }
     out.paid = PawnValuation.cents(total);
-    out.messages.add(0, "Pawned " + out.taken + (out.taken == 1 ? " item" : " items") + " for "
-        + PawnEconomy.describe(out.paid)
-        + (PawnEconomy.isMoneyMode() ? "." : ": you got " + payment.paid + "."));
+    ITextComponent items = out.taken == 1 ? new TextComponentTranslation("csm.pawn.item_one")
+        : new TextComponentTranslation("csm.pawn.items", out.taken);
+    ITextComponent done = PawnEconomy.isMoneyMode()
+        ? new TextComponentTranslation("csm.pawn.msg.pawned", items, PawnEconomy.describe(out.paid))
+        : new TextComponentTranslation("csm.pawn.msg.pawned_got", items,
+            PawnEconomy.describe(out.paid), payment.paid);
+    done.getStyle().setColor(TextFormatting.GREEN);
+    out.messages.add(0, done);
     return out;
   }
 }

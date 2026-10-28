@@ -7,7 +7,10 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.market.MarketFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.CommandPawn;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnActionPacket;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnEvents;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnGuiProvider;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnQuotePacket;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnValuation;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopActionPacket;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopEconomy;
@@ -94,6 +97,7 @@ public class CsmFurnishings {
 
     CsmGuiRegistry.register(new NoveltiesGuiProvider());
     CsmGuiRegistry.register(new ShopGuiProvider());
+    CsmGuiRegistry.register(new PawnGuiProvider());
 
     // The Residential tab is this module's own, so Core prices it through the rule it is given.
     CsmFabricatorCosts.registerRule(ResidentialFabricatorRules.TAB_ID,
@@ -141,6 +145,15 @@ public class CsmFurnishings {
     NETWORK.registerMessage(
         ShopStatusPacket.Handler.class,
         ShopStatusPacket.class,
+        Side.CLIENT);
+    // A pawn counter: a button on its screens, and the quotes the server sends back.
+    NETWORK.registerMessage(
+        PawnActionPacket.Handler.class,
+        PawnActionPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        PawnQuotePacket.Handler.class,
+        PawnQuotePacket.class,
         Side.CLIENT);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
