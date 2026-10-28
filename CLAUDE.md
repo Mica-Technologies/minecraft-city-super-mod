@@ -540,7 +540,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   server-sent HUD, `/csmhvac` and the test lab, why the old offset engine was replaced, and the
   lightweight mode (`hvac.lightweightMode`, AUTO by default past 2,000 loaded devices: no rooms,
   thermostats read their setpoint, units run a steady 30%), with what the full simulation cost on
-  the live server
+  the live server; exhaust grilles and fans and room pressure (#314)
 - `assets/docs/SURVIVAL_AND_RECIPES.md` -- Crafting parts, the CSM Fabricator, mining behavior, why there is no per-block recipe
 - `assets/docs/PERFORMANCE_AND_SECURITY.md` -- Where frame time and memory actually go (client frame time is
   most of it; the server tick is small except for work that scales with a city -- HVAC rooms at the
@@ -814,7 +814,8 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `gen_hvac_data_hall.py` -- the HVAC tab's data hall CRAC/CRAH units (`BlockHvacCrac`: downflow,
   upflow with its plenum, the chilled-water CRAH in graphite; a cabinet two blocks tall from one
   block) and the HVAC Zone Boundary strip (`BlockHvacZoneBoundary`, #305), with their lang lines
-  by key; `--check`, `--fragments`
+  by key; `--check`, `--fragments`. `gen_hvac_exhaust.py` does the same for the exhaust fans (the
+  2 x 2 lab fan as a master and parts, upblast, mushroom) and the exhaust grille (#314)
 - `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
   tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner
