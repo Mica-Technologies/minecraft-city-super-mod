@@ -452,6 +452,18 @@ around it, so the red flash read as a slightly lighter lens by day and dim by ni
 strobe's one-tick frame was not seen at all. Brightness and glow need a renderer. The tile
 entity holds nothing and never ticks, and the renderer returns at once between flashes.
 
+**The flash is drawn from eight shared lists** (`CsmSharedDisplayLists`, `obstruction_beacon`):
+each style's sleeve, hot sleeve, bloom and glow, compiled once. The sleeves sit in the block
+under the beacon's translation; the bloom and glow are discs of unit radius under the
+billboard's turn and a scale. What changes every frame, the flash's brightness, cannot ride on
+`glColor`, since the vertex colour array overrides it, so it is the blend's constant alpha
+(`glBlendColor`, `GL_CONSTANT_ALPHA`), and the disc vertices carry their colour premultiplied by
+their ring's alpha: `colour * ringAlpha * flash` is added to the screen exactly as the live draw's
+`SRC_ALPHA, ONE` added `colour * (flash * ringAlpha)` (`ObstructionBeaconListsTest`). Live, a lit
+red beacon tessellated 784 vertices a frame for the 900 ms of every 2 s cycle, 17 us
+time-averaged (43 us a lit frame); `/csm renderpass skip sharedBakesPerFrame` draws it live
+again for an A/B. The blend colour is set back to GL's default `(0, 0, 0, 0)` after the glow.
+
 A lit beacon gives a steady block light of 9 (the airside obstruction lights' level); light cannot
 flash without ticking.
 
