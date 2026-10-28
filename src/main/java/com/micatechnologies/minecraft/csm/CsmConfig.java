@@ -192,6 +192,8 @@ public class CsmConfig {
   private static boolean trimChunkBuilders = FIELD_DEFAULT_TRIM_CHUNK_BUILDERS;
   private static int chunkBuilderBudgetPercent = FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT;
   private static int chunkBuilderLimit = FIELD_DEFAULT_CHUNK_BUILDER_LIMIT;
+  private static final boolean FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS = false;
+  private static boolean shareOtherModsQuads = FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS;
 
   private static final String FIELD_KEY_PERFORMANCE_MODE = "performanceMode";
   private static final String FIELD_DESCRIPTION_PERFORMANCE_MODE =
@@ -463,6 +465,14 @@ public class CsmConfig {
             + "memory but load chunks more slowly while you travel. Never fewer than two per "
             + "build thread. Lowering it takes effect within seconds; raising it again needs a "
             + "restart.");
+    shareOtherModsQuads = config.getBoolean("shareOtherModsQuads", CATEGORY_PERFORMANCE,
+        FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS,
+        "Heap, not direct memory: after the models are baked, let every other mod's plain baked "
+            + "models share their identical quads, as CSM's own always do (each mod's only with "
+            + "its own). Some mods bake the same quad many times over, and in a large pack that "
+            + "can be a few hundred megabytes. Off by default, since it relies on those mods "
+            + "never changing a quad once it is baked, which CSM cannot check for them. Takes "
+            + "effect at the next launch or resource reload. Not affected by performanceMode.");
     customMaxRenderDistance = config.getInt("maxRenderDistance", CATEGORY_PERFORMANCE, 0, 0, 512,
         "CUSTOM only. The farthest, in blocks, that CSM's animated blocks (signals, crosswalks, "
             + "guide and street signs, message boards, beacons, cranes, ad boards) are drawn. 0 "
@@ -646,6 +656,18 @@ public class CsmConfig {
    */
   public static int getChunkBuilderLimit() {
     return chunkBuilderLimit;
+  }
+
+  /**
+   * The shareOtherModsQuads switch: whether {@code CsmQuadSharing} also shares the identical
+   * baked quads of other mods' models, each mod's among its own.
+   *
+   * @return whether to share other mods' quads
+   *
+   * @since 2026.10
+   */
+  public static boolean isShareOtherModsQuads() {
+    return shareOtherModsQuads;
   }
 
   /**

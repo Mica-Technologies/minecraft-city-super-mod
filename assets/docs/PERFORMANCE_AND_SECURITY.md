@@ -266,6 +266,20 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   write into a baked quad's `getVertexData()` array** -- it is shared by every model that has that
   quad; build a new quad instead. Code that compares quads by identity sees more equal quads as the
   same instance, never fewer.
+- **Other mods' identical quads can be shared too** (`CsmQuadSharing`,
+  `performance.shareOtherModsQuads` in `csm.cfg`, **off by default**). Other mods bake duplicates
+  as Forge's variants do: in the dev client and the Alto pack one other mod's models carry about
+  1.48 million duplicate baked quads, some 237 MB. With the switch on, the same pass walks every
+  other namespace's models after CSM's, with the same equality and the same limits: only the
+  lists of a `SimpleBakedModel` (that exact class) and quads of class `BakedQuad`; OBJ models and
+  every baked model class that is not Minecraft's or Forge's own (a custom implementation that
+  may build, cache or change its quads its own way) are skipped. Each namespace has its own map,
+  so a mod's quad is only ever replaced by an equal quad of the same mod's, and their empty lists
+  are not shared or trimmed, since another mod may still add to a list of its own after the bake.
+  It logs "Shared other mods' identical baked quads" with the counts and the namespace that gave
+  the most. It is a switch because the saving rests on the rule above, that nothing writes into a
+  baked quad's vertex data, which CSM can hold for its own code but not check for other mods'; a
+  mod that breaks it would show another of its own blocks' faces in the wrong place.
 - **Empty quad and override lists are one list** (`CsmQuadSharing`). The same pass points every
   empty face and general quad list of a `SimpleBakedModel`, and every empty item override list, at
   `Collections.emptyList()`: 1.16 million lists, 24 MiB. **Rule: never add to, or otherwise change,
