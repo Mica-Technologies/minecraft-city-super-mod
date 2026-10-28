@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/lifesafety/services/station_number_plaque",
+  "textures": {
+    "ones": "csm:blocks/lifesafety/services/digit_7",
+    "tens": "csm:blocks/lifesafety/services/digit_1"
+  }
+}
