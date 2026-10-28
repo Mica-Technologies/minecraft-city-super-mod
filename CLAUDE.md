@@ -419,6 +419,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   the item renderer and its `ShopDisplay` rows from the generator, and the optional SUM economy
   through Core's `codeutils/economy/CsmSumEconomy` (one instance per module, `csm_furnishings`
   for shops, `csm_roads` for meters; emeralds without it)
+- `assets/docs/PAWN_SHOP_SYSTEM.md` -- The Market & Store pawn shop: server-run counter, drop-off
+  bin and price kiosk that buy any item; its value from `pawn_values.json` and the cheapest
+  recipe walk (crafting, smelting, Fabricator), the payout in money or emeralds with carry-over,
+  the ledger, resale, the claimed bin's hopper payout, `/csmpawn`, the config and the traps
 - `assets/docs/STATION_ALERTING_SYSTEM.md` -- A fire station's alerting: the controller, its
   linked speakers, alert lights, relays and bay clearance lights, the dispatch sequence, and why
   the relay's redstone is how it opens bay doors, strikes the gong and preempts traffic signals
