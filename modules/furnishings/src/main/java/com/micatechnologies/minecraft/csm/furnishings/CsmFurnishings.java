@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.furnishings;
 
+import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
@@ -173,8 +174,12 @@ public class CsmFurnishings {
   @Mod.EventHandler
   public void serverStarted(FMLServerStartedEvent event) {
     ShopEconomy.SUM.acquire();
-    // Every mod's recipes are registered by now, so the pawn shop can value everything.
-    PawnValuation.rebuild();
+    // Every mod's recipes are registered by now, so the pawn shop can value everything. Not when
+    // it is disabled: the solve walks every recipe in the game, and a command or quote that does
+    // need a value solves on first use (PawnValuation.result()).
+    if (CsmConfig.isPawnEnabled()) {
+      PawnValuation.rebuild();
+    }
   }
 
   /**
