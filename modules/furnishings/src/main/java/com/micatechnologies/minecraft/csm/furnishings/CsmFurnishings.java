@@ -7,6 +7,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.market.MarketFabricatorRules;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.CommandPawn;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnEvents;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnValuation;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopActionPacket;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopEconomy;
@@ -107,6 +108,8 @@ public class CsmFurnishings {
     // Trampolines, the bounce castle and the diving board: a jump off one goes higher. Both
     // sides, since a player's movement is the client's and a mob's the server's.
     MinecraftForge.EVENT_BUS.register(new Bounce());
+    // Pays what pawn shops owe a player who was away when something was pawned in their name.
+    MinecraftForge.EVENT_BUS.register(new PawnEvents());
 
     // A sleeper in a Residential bed is laid out along it on the client (the handler touches a
     // client-only field, so a dedicated server never loads it).

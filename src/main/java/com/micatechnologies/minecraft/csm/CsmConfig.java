@@ -480,7 +480,8 @@ public class CsmConfig {
         1000000.0).getDouble();
     pawnMaxPayoutPerDay = config.get(CATEGORY_PAWN, "maxPayoutPerDay",
         FIELD_DEFAULT_PAWN_MAX_PAYOUT_PER_DAY,
-        "The most value one player may pawn in a real-time day. 0 for no limit.", 0.0,
+        "The most one player may be paid by pawn shops in a real-time day (the server's date), "
+            + "in money; an emerald payout counts at moneyPerEmerald. 0 for no limit.", 0.0,
         1000000000.0).getDouble();
     pawnAllowCreative = config.getBoolean("allowCreative", CATEGORY_PAWN,
         FIELD_DEFAULT_PAWN_ALLOW_CREATIVE,
@@ -906,7 +907,7 @@ public class CsmConfig {
     return pawnEnchantValuePerLevel;
   }
 
-  /** The most value one player may pawn a day; 0 for no limit. */
+  /** The most one player may be paid by pawn shops a day, in money; 0 for no limit. */
   public static double getPawnMaxPayoutPerDay() {
     return pawnMaxPayoutPerDay;
   }

@@ -19,6 +19,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -40,6 +41,10 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  *   <li>{@code reload} -- reads the file again and works every value out again.</li>
  *   <li>{@code dump} -- writes every item's value to {@code csm_pawn_values.csv} in the server
  *   directory.</li>
+ *   <li>{@code sell} -- pawns the held stack, as a pawn shop would (paid, capped and refused the
+ *   same way), for trying the payout without a shop.</li>
+ *   <li>{@code ledger [player]} -- a player's emerald remainder, today's payouts and what they
+ *   are owed.</li>
  * </ul>
  *
  * <p>An item is {@code modid:item} or {@code modid:item@meta}; {@code hand} is the held stack.
@@ -50,7 +55,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 public class CommandPawn extends CommandBase {
 
   private static final String[] SUBCOMMANDS =
-      {"value", "explain", "set", "block", "reload", "dump"};
+      {"value", "explain", "set", "block", "reload", "dump", "sell", "ledger"};
 
   @Override
   public String getName() {
@@ -60,7 +65,7 @@ public class CommandPawn extends CommandBase {
   @Override
   public String getUsage(ICommandSender sender) {
     return "/csmpawn <value|explain> [hand|<item>] | set <hand|item> <value|clear> | "
-        + "block <hand|item> | reload | dump";
+        + "block <hand|item> | reload | dump | sell | ledger [player]";
   }
 
   @Override
@@ -102,6 +107,13 @@ public class CommandPawn extends CommandBase {
         break;
       case "dump":
         dump(server, sender);
+        break;
+      case "sell":
+        sell(getCommandSenderAsPlayer(sender));
+        break;
+      case "ledger":
+        ledger(sender, args.length > 1 ? getPlayer(server, sender, args[1])
+            : getCommandSenderAsPlayer(sender));
         break;
       default:
         throw new WrongUsageException(getUsage(sender));
@@ -221,6 +233,28 @@ public class CommandPawn extends CommandBase {
     say(sender, "Wrote " + rows.size() + " values to " + out.getAbsolutePath());
   }
 
+  private static void sell(EntityPlayerMP player) {
+    int slot = player.inventory.currentItem;
+    PawnTrade.Outcome out = PawnTrade.pawn(player, player.inventory, slot, slot + 1, null);
+    if (out.messages.isEmpty()) {
+      say(player, "Hold something to pawn.");
+    }
+    for (String line : out.messages) {
+      say(player, line);
+    }
+  }
+
+  private static void ledger(ICommandSender sender, EntityPlayerMP player) {
+    PawnLedger.Entry e = PawnLedger.get(player.world).entry(player.getUniqueID());
+    double cap = CsmConfig.getPawnMaxPayoutPerDay();
+    say(sender, String.format(Locale.ROOT,
+        "%s: emerald remainder %.2f, paid today %.2f%s, owed %.2f. Paying %s now.",
+        player.getName(), e.emeraldRemainder, e.day == PawnTrade.today() ? e.paidToday : 0,
+        cap > 0 ? String.format(Locale.ROOT, " of %.2f", cap) : "", e.owed,
+        PawnEconomy.isMoneyMode() ? "money" : String.format(Locale.ROOT,
+            "emeralds at %.2f each", CsmConfig.getPawnMoneyPerEmerald())));
+  }
+
   private static String csv(String text) {
     return "\"" + text.replace("\"", "\"\"") + "\"";
   }
@@ -235,7 +269,11 @@ public class CommandPawn extends CommandBase {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, SUBCOMMANDS);
     }
-    if (args.length == 2 && !"reload".equals(args[0]) && !"dump".equals(args[0])) {
+    if (args.length == 2 && "ledger".equals(args[0])) {
+      return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+    }
+    if (args.length == 2 && !"reload".equals(args[0]) && !"dump".equals(args[0])
+        && !"sell".equals(args[0])) {
       List<String> names = new ArrayList<>();
       names.add("hand");
       for (ResourceLocation id : ForgeRegistries.ITEMS.getKeys()) {
