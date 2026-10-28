@@ -363,7 +363,9 @@ The magnetic door holders and the remote annunciator (`IFireAlarmPanelFollower`,
 nothing to send them, so they look. The linker stores the panel on the device's
 `TileEntityFireAlarmSensor` (`lp`), as it does for a pull station, but adds it to none of the
 panel's lists. Once a second the device asks `FireAlarmPanelRegistry` whether
-its panel is in alarm, and keeps the answer as its `alarm` block state, in metadata, so the model
+its panel is in alarm (`isFireAlarmActive`, a membership test: the snapshot
+`getActiveFireAlarmPanels` hands out is a copy, which other modules' followers, the fare gates
+every 5 ticks through Core's `CsmFireAlarmLink`, made afresh each time during an alarm), and keeps the answer as its `alarm` block state, in metadata, so the model
 and redstone read it without a tile entity lookup. Through the registry a panel in an unloaded
 chunk still answers. An unlinked device follows any fire alarm sounding near it
 (`CsmFireAlarmQuery.isFireAlarmActiveNear`).

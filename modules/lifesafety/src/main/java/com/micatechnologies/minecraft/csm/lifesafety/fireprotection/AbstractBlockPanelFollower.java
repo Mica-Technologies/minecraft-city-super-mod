@@ -114,8 +114,7 @@ public abstract class AbstractBlockPanelFollower extends BlockFireProtectionProp
     if (panel == null) {
       return CsmFireAlarmQuery.isFireAlarmActiveNear(world, pos);
     }
-    return FireAlarmPanelRegistry.getActiveFireAlarmPanels(world.provider.getDimension())
-        .contains(panel);
+    return FireAlarmPanelRegistry.isFireAlarmActive(world.provider.getDimension(), panel);
   }
 
   /**
