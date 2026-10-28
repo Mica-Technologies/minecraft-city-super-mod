@@ -25,6 +25,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTraffi
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockPreemptDetector;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockPreemptDetectorSpan;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBell;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorBelowGround;
@@ -242,6 +243,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // OverheightDetectionSensor
     initTabBlock(BlockPreemptDetector.class,
         fmlPreInitializationEvent); // PreemptDetector
+    initTabBlock(BlockPreemptDetectorSpan.class,
+        fmlPreInitializationEvent); // PreemptDetectorSpan (span wire)
     initTabBlock(BlockTrafficSignalController.class,
         fmlPreInitializationEvent); // TrafficSignalController
     initTabItem(ItemSensorZoneTool.class, fmlPreInitializationEvent); // Sensor Zone Tool

@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "103 blocks in this tab"
+!!! info "104 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -48,6 +48,7 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Polara iN2 Crosswalk Button (Black) | `csm:controllablecrosswalkbuttonmale` | 2 | 10 | pickaxe | 1 |
 | Polara iN2 Crosswalk Button (Yellow) | `csm:controllablecrosswalkbuttonautomated` | 2 | 10 | pickaxe | 1 |
 | Preemption Detector | `csm:preempt_detector` | 2 | 10 | pickaxe | 1 |
+| Preemption Detector (Span Wire Mount) | `csm:preempt_detector_span` | 2 | 10 | pickaxe | 1 |
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Left Mount) | `csm:controllablerampmeteronsignalleftmount` | 2 | 10 | pickaxe | 1 |
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Rear Mount) | `csm:controllablerampmeteronsignalmount` | 2 | 10 | pickaxe | 1 |
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Right Mount) | `csm:controllablerampmeteronsignalrightmount` | 2 | 10 | pickaxe | 1 |
