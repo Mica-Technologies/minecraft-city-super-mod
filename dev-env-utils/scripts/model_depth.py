@@ -364,6 +364,10 @@ def _movable(face):
 HAND_MAX = 0.45
 PRUNE = True  # hidden-face pruning in generators (turned on after the render diff passed)
 GEN_MAX = 0.65
+# {blockstate file name: the Forge-format blockstate it was converted from}: a blockstate
+# forge_multipart turned into a multipart one is separated as its Forge form, which names the
+# same models drawn alone, its item's included, so its models come out exactly as before
+SEPARATE_AS = {}
 
 
 def _prism_caps(a, b):
@@ -433,7 +437,8 @@ def separate(root, written, dump, hand_made=False, overlay=None):
     """
     owned = {os.path.normpath(w) for w in written}
     store = _Store(root, overlay)
-    states = [json.load(open(store.find(rel), encoding="utf-8"))
+    states = [SEPARATE_AS.get(os.path.basename(rel))
+              or json.load(open(store.find(rel), encoding="utf-8"))
               for rel in sorted(w for w in owned if w.startswith("blockstates" + os.sep))]
     units = _units(states)
     changed = set()

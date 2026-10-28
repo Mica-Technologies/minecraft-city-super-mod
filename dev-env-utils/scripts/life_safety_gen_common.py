@@ -30,6 +30,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_park_plantings as pp  # noqa: E402
 import gen_trees  # noqa: E402
+import forge_multipart  # noqa: E402
 import model_depth  # noqa: E402
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -312,6 +313,17 @@ class Catalogue(object):
         self.blocks.append({"registry": registry, "java": java, "names": names,
                             "models": models, "blockstate": blockstate, "item": item,
                             "tab": tab})
+
+    def as_multipart(self, registry):
+        """Turns an added block's Forge blockstate, whose properties only swap textures, into a
+        multipart one: one model location for every state, each texture set a child model under
+        models/block/<model_dir>/states/<registry>/ (forge_multipart)."""
+        b = next(b for b in self.blocks if b["registry"] == registry)
+        prefix = "csm:%s/" % self.model_dir
+        b["blockstate"], kids = forge_multipart.convert(b["blockstate"], prefix[:-1], registry)
+        for name, data in kids.items():
+            assert name.startswith(prefix), name
+            b["models"][name[len(prefix):]] = data
 
     def add_item(self, registry, java, names, texture, tab=None):
         """An item: its Java, names (item.<registry>.name), and the name of one of this
