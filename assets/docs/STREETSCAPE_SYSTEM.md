@@ -1,8 +1,8 @@
 # Streetscape
 
 The Streetscape tab (`CsmTabStreetscape`, order 11) in **CSM: Roads & Traffic** holds what stands
-on the sidewalk: covers, utility boxes, bollards, hydrants, news racks, mailboxes and parking
-meters. The code is in `modules/roads/.../streetscape/`. The player's guide is
+on the sidewalk: covers, utility boxes, bollards, hydrants, news racks, mailboxes, parking
+meters and EV chargers. The code is in `modules/roads/.../streetscape/`. The player's guide is
 `docs/guides/streetscape.md`.
 
 ## Scope, and what is left out on purpose
@@ -133,6 +133,62 @@ layout and writes it into the tab line, and places the stickers' decals 0.2 px p
   lifts its gate. Its owner (who placed it) or an op sneak-clicks with an empty hand to change
   the rate: 1, 2, 3, 5, 10, free. Nothing is collected for the owner (the meters' collect mode is
   not carried over).
+
+## EV charging (#315)
+
+`gen_ev_charging.py` writes the chargers and the stall markings; the signs are road signs, from
+`gen_gap_signs.py` (below). No brand: the chargers say EV and show a plug.
+
+- **Pedestal** (`ev_charger_pedestal`, `ev_charger_pedestal_dual`) and **DC fast**
+  (`ev_charger_dc_fast`) chargers are `BlockEvCharger`, a `BlockUtilityBox` two cells tall like
+  the parking meters: the root draws the charger, an invisible part fills the cell above. The
+  pedestal is a 1.6 m column with its connector holstered on the side and the cable looped to its
+  foot (the dual one has a second port, face and light on the back); the DC fast charger is a
+  1.9 m cabinet with a screen, card reader and a heavy connector on each side.
+- **Wall mount** (`ev_charger_wall`, `BlockEvChargerWall`): one block standing in the cell in
+  front of the wall, its back on the cell's far face as the Life Safety wall devices are drawn.
+  Placed against a wall it faces the player, so it hangs on the face clicked. It does not settle.
+- **Status light** (`EvChargerStatus`, the `status` property): available (green), charging
+  (blue), fault (red). Redstone picks between the first two: powered is charging. Read at the
+  root, the bottom cell, for the two-tall chargers. A right-click with an empty hand sets a fault
+  and another clears it (back to what the redstone says); while it is set redstone changes
+  nothing. The blockstate swaps the lens texture; every lens and the DC screen have an OptiFine
+  `_e` companion. No tile entity, nothing ticks: the state is worked out on a neighbour change
+  and on placing.
+- **Not done:** an "occupied" mode from an Immersive Vehicles car parked in the stall. Roads must
+  not depend on Vehicles, and seeing a parked car means scanning for entities; a vehicle module
+  hook or a detector giving redstone would be the way, as the preempt detector does it
+  (`VEHICLES_SYSTEM.md`).
+- **Stall markings** are `BlockStreetCover`s, one upward face like the covers: `ev_stall_paint`
+  (green paint, a block at a time to fill a stall), `ev_stall_marking_symbol` (the D9-11b pump
+  stencilled white on green) and `ev_stall_marking_ev_only` (EV ONLY on green). Textures are
+  stored turned 180 degrees, as the covers' are.
+- **Signs** (`CsmTabRoadSigns`, on the road sign posts): `signevcharging` (D9-11b, the EV pump,
+  from the public-domain Commons redraw of FHWA's drawing in `artwork/mutcd_d9_11b.svg`, since
+  the 2004 book predates it), `signevchargingplaque` (D9-11bP ELECTRIC VEHICLE CHARGING, the
+  official interim drawing), `signevchargingarrowleft` / `signevchargingarrowright` (wayfinding:
+  the pump and an arrow, white on blue, for lots and garages) and `signevchargingonly` (EV
+  CHARGING ONLY, green on white under the symbol, R7 style; there is no federal design).
+- **Pricing:** a charger is a control board, sheet metal and a wiring harness (DC fast: two
+  sheet metal, two harnesses); the markings are a reflective sheeting.
+
+### Placing by command
+
+Metadata is `facing | status << 2`, facing as every NSEW block stores it (0 south, 1 west,
+2 north, 3 east: the way the front faces), status 0 available, 1 charging, 2 fault. A two-tall
+charger needs its part placed in the cell above, as every utility box unit placed by command
+does; nothing carries NBT.
+
+| Block | Cells | Metadata | Notes |
+|---|---|---|---|
+| `csm:ev_charger_pedestal` | root + `csm:utility_box_part` above | `facing + 4 * status` | connector on the viewer's right |
+| `csm:ev_charger_pedestal_dual` | root + part above | `facing + 4 * status` | ports both sides, face front and back |
+| `csm:ev_charger_dc_fast` | root + part above | `facing + 4 * status` | |
+| `csm:ev_charger_wall` | one | `facing + 4 * status` | in the cell in front of the wall, facing away from it |
+| `csm:ev_stall_paint`, `csm:ev_stall_marking_symbol`, `csm:ev_stall_marking_ev_only` | one | facing (0 to 3) | the legend reads upright from the side the front faces |
+
+For example `/setblock ~ ~ ~ csm:ev_charger_pedestal 6` (facing north, charging) then
+`/setblock ~ ~1 ~ csm:utility_box_part`. Redstone and clicks change the status afterwards.
 
 ## Mailboxes
 

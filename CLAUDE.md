@@ -90,7 +90,7 @@ container per jar.
 | Module tree | Mod id | Display name | Contents |
 |---|---|---|---|
 | `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
-| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: covers, utility boxes, bollards, hydrants, news racks, working mailboxes and parking meters; see `assets/docs/STREETSCAPE_SYSTEM.md`) |
+| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: covers, utility boxes, bollards, hydrants, news racks, working mailboxes, parking meters and EV chargers; see `assets/docs/STREETSCAPE_SYSTEM.md`) |
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
@@ -679,7 +679,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   reflection in `ParkingPaymentSum`, never a build dependency); `--check`, `--fragments`
 - `gen_parking_garage.py` -- the parking garage pieces (#302): the gate arm cabinet
   (`BlockParkingGate`, its arm `TileEntityParkingGateRenderer`'s), the ticket dispenser and exit
-  pay kiosk (`BlockParkingMachine`) and the Parking Ticket sprite; `--check`, `--fragments`
+  pay kiosk (`BlockParkingMachine`) and the Parking Ticket sprite; `--check`, `--fragments`.
+  `gen_ev_charging.py` writes the EV chargers (#315: pedestal, wall mount, DC fast; status
+  light by blockstate) and the EV stall markings the same way
 - `gen_streetscape_bollards.py` -- the bollard styles external road mods lack: cast-iron
   decorative, stainless, crash-rated, pipe with a cover sleeve, flexible delineators
   (`BlockBollardFlexible`, no collision) and the red concrete sphere, a lathed OBJ written through

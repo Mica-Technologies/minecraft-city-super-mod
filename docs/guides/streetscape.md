@@ -107,3 +107,20 @@ section of the CSM config. A pay station also sets how many numbered spaces it s
 **Redstone.** A meter gives a redstone signal while any of its heads has run out, including a head
 that was never paid. Wire it to a lamp or a note block to flag expired spaces. Pay stations give
 no signal, since their spaces aren't physical.
+
+## EV charging
+
+A Level 2 **pedestal charger** (one port, or two on the dual), a **wall-mount charger** for
+garage walls and columns, and a **DC fast charger** with a screen. The pedestal and the DC fast
+charger are two blocks tall; the wall charger goes in the block in front of the wall, so place it
+by clicking the wall.
+
+**The status light.** Green is available, blue is charging, red is a fault. A charger is charging
+while it has redstone power (into its bottom block): wire a lever, a pressure plate or a detector
+to it. Right-click it with an empty hand to set a fault, and again to clear it; while it shows a
+fault, redstone leaves it alone.
+
+**Marking the stall.** EV Stall Paint fills a stall in green a block at a time; the EV symbol and
+EV ONLY markings are green too, so lay them among the paint where the legend goes. The Road Signs
+tab has the signs: the EV charging symbol (D9-11b) and its ELECTRIC VEHICLE CHARGING plaque, EV
+wayfinding arrows left and right, and EV CHARGING ONLY for the stall itself.
