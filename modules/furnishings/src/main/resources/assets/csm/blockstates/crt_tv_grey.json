@@ -1,91 +1,1815 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/living/base/crt_tv_floor",
-    "textures": {
-      "crt": "csm:blocks/furniture/living/crt_grey",
-      "screen": "csm:blocks/furniture/living/tv_off"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_item_tv_nature"
     }
   },
-  "variants": {
-    "channel": {
-      "off": {
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_off"
-        }
+  "multipart": [
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "floor"
       },
-      "news": {
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_news"
-        }
-      },
-      "sports": {
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_sports"
-        }
-      },
-      "nature": {
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_nature"
-        }
-      },
-      "bars": {
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_bars"
-        }
-      },
-      "static": {
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_static"
-        }
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_off"
       }
     },
-    "facing": {
-      "north": {},
-      "east": {
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_off"
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_off"
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_off"
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_off"
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_off"
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "north",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_off"
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_off",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "counter"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "east",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_off",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "counter"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "south",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_off",
         "y": 270
       }
     },
-    "part": {
-      "0": {},
-      "1": {}
-    },
-    "rest": {
-      "floor": {
-        "model": "csm:furniture/living/base/crt_tv_floor"
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "counter"
       },
-      "counter": {
-        "model": "csm:furniture/living/base/crt_tv_counter"
-      },
-      "sideboard": {
-        "model": "csm:furniture/living/base/crt_tv_sideboard"
-      },
-      "table": {
-        "model": "csm:furniture/living/base/crt_tv_table"
-      },
-      "side_table": {
-        "model": "csm:furniture/living/base/crt_tv_side_table"
-      },
-      "tv_stand": {
-        "model": "csm:furniture/living/base/crt_tv_tv_stand"
-      },
-      "coffee_table": {
-        "model": "csm:furniture/living/base/crt_tv_coffee_table"
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_off",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:furniture/living/base/crt_tv_item",
-        "textures": {
-          "screen": "csm:blocks/furniture/living/tv_nature"
-        }
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_off",
+        "y": 270
       }
-    ]
-  }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "off",
+        "facing": "west",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "north",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_news"
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "east",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_news",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "south",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_news",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "news",
+        "facing": "west",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_news",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "north",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_sports"
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "east",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_sports",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "south",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_sports",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "sports",
+        "facing": "west",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_sports",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "north",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_nature"
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "east",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_nature",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "south",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_nature",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "nature",
+        "facing": "west",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_nature",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "north",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_bars"
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "east",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_bars",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "south",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_bars",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "bars",
+        "facing": "west",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_bars",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "north",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_static"
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "east",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_static",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "south",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_static",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_floor_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_counter_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_sideboard_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_table_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_side_table_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_tv_stand_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "static",
+        "facing": "west",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/crt_tv_grey/crt_tv_coffee_table_tv_static",
+        "y": 270
+      }
+    }
+  ]
 }

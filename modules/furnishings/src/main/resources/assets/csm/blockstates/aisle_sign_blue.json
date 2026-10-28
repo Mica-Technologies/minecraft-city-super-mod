@@ -1,109 +1,633 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/market/base/aisle_sign",
-    "textures": {
-      "case": "csm:blocks/furniture/market/case_black",
-      "face": "csm:blocks/furniture/market/aisle_1"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_1"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "2"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_1",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "2"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_1",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "2"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_1",
         "y": 270
       }
     },
-    "number": {
-      "1": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_1"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "number": "2"
       },
-      "2": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_2"
-        }
-      },
-      "3": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_3"
-        }
-      },
-      "4": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_4"
-        }
-      },
-      "5": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_5"
-        }
-      },
-      "6": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_6"
-        }
-      },
-      "7": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_7"
-        }
-      },
-      "8": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_8"
-        }
-      },
-      "9": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_9"
-        }
-      },
-      "10": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_10"
-        }
-      },
-      "11": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_11"
-        }
-      },
-      "12": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_12"
-        }
-      },
-      "13": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_13"
-        }
-      },
-      "14": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_14"
-        }
-      },
-      "15": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_15"
-        }
-      },
-      "16": {
-        "textures": {
-          "face": "csm:blocks/furniture/market/aisle_16"
-        }
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_2",
+        "y": 270
       }
     },
-    "inventory": [
-      {}
-    ]
-  }
+    {
+      "when": {
+        "facing": "west",
+        "number": "3"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "4"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "5"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "6"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "7"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "8"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "9"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "10"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "11"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "12"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "13"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "14"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "15"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "number": "16"
+      },
+      "apply": {
+        "model": "csm:furniture/market/states/aisle_sign_blue/aisle_sign_aisle_16",
+        "y": 270
+      }
+    }
+  ]
 }

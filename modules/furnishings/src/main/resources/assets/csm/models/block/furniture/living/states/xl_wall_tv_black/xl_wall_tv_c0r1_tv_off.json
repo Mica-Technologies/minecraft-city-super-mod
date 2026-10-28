@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/xl_wall_tv_c0r1",
+  "textures": {
+    "bezel": "csm:blocks/furniture/living/tv_bezel",
+    "screen": "csm:blocks/furniture/living/tv_off"
+  }
+}

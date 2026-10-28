@@ -1,52 +1,87 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/outdoor/base/fire_pit_steel",
-    "textures": {
-      "stone": "csm:blocks/furniture/outdoor/firepit_stone",
-      "steel": "csm:blocks/furniture/outdoor/steel_rust",
-      "flame": "csm:blocks/furniture/living/clear",
-      "embers": "csm:blocks/furniture/living/embers_off"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_on_flame"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_on_flame"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_off_clear"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_on_flame",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_off_clear",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_on_flame",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_off_clear",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_on_flame",
         "y": 270
       }
     },
-    "lit": {
-      "true": {
-        "textures": {
-          "flame": "csm:blocks/furniture/living/flame",
-          "embers": "csm:blocks/furniture/living/embers_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false"
       },
-      "false": {
-        "textures": {
-          "flame": "csm:blocks/furniture/living/clear",
-          "embers": "csm:blocks/furniture/living/embers_off"
-        }
+      "apply": {
+        "model": "csm:furniture/outdoor/states/fire_pit_steel/fire_pit_steel_embers_off_clear",
+        "y": 270
       }
-    },
-    "powered": {
-      "true": {},
-      "false": {}
-    },
-    "inventory": [
-      {
-        "textures": {
-          "flame": "csm:blocks/furniture/living/flame",
-          "embers": "csm:blocks/furniture/living/embers_on"
-        }
-      }
-    ]
-  }
+    }
+  ]
 }

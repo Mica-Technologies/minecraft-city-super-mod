@@ -1,71 +1,611 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/living/base/stereo_floor",
-    "textures": {
-      "hifi": "csm:blocks/furniture/living/hifi_black",
-      "platter": "csm:blocks/furniture/living/platter_mat",
-      "glow": "csm:blocks/furniture/living/display_off"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/living/states/stereo_black/stereo_item_display_on_platter_record"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_on_platter_record"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "record": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_off_platter_mat"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_on_platter_record",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "counter"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_on_platter_record",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_on_platter_record",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_on_platter_record",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_on_platter_record",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_on_platter_record",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_on_platter_record",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "record": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_off_platter_mat",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_on_platter_record",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "counter"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_on_platter_record",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_on_platter_record",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_on_platter_record",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_on_platter_record",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_on_platter_record",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_on_platter_record",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "record": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_off_platter_mat",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_on_platter_record",
         "y": 270
       }
     },
-    "rest": {
-      "floor": {
-        "model": "csm:furniture/living/base/stereo_floor"
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "counter"
       },
-      "counter": {
-        "model": "csm:furniture/living/base/stereo_counter"
-      },
-      "sideboard": {
-        "model": "csm:furniture/living/base/stereo_sideboard"
-      },
-      "table": {
-        "model": "csm:furniture/living/base/stereo_table"
-      },
-      "side_table": {
-        "model": "csm:furniture/living/base/stereo_side_table"
-      },
-      "tv_stand": {
-        "model": "csm:furniture/living/base/stereo_tv_stand"
-      },
-      "coffee_table": {
-        "model": "csm:furniture/living/base/stereo_coffee_table"
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_on_platter_record",
+        "y": 270
       }
     },
-    "record": {
-      "true": {
-        "textures": {
-          "platter": "csm:blocks/furniture/living/platter_record",
-          "glow": "csm:blocks/furniture/living/display_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "sideboard"
       },
-      "false": {
-        "textures": {
-          "platter": "csm:blocks/furniture/living/platter_mat",
-          "glow": "csm:blocks/furniture/living/display_off"
-        }
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_on_platter_record",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:furniture/living/base/stereo_item",
-        "textures": {
-          "platter": "csm:blocks/furniture/living/platter_record",
-          "glow": "csm:blocks/furniture/living/display_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_on_platter_record",
+        "y": 270
       }
-    ]
-  }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_on_platter_record",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_on_platter_record",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_on_platter_record",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_floor_display_off_platter_mat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_counter_display_off_platter_mat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_sideboard_display_off_platter_mat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_table_display_off_platter_mat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_side_table_display_off_platter_mat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_tv_stand_display_off_platter_mat",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "record": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/stereo_black/stereo_coffee_table_display_off_platter_mat",
+        "y": 270
+      }
+    }
+  ]
 }

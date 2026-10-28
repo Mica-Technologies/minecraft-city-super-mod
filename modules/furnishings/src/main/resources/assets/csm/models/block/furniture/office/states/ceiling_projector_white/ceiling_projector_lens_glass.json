@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/office/base/ceiling_projector",
+  "textures": {
+    "shell": "csm:blocks/furniture/residential/appliance_white",
+    "trim": "csm:blocks/furniture/office/plastic_light_grey",
+    "lens": "csm:blocks/furniture/office/lens_glass"
+  }
+}

@@ -1,67 +1,611 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/residential/base/microwave_floor",
-    "textures": {
-      "shell": "csm:blocks/furniture/residential/appliance_black",
-      "door": "csm:blocks/furniture/residential/appliance_black",
-      "handle": "csm:blocks/furniture/residential/chrome",
-      "trim": "csm:blocks/furniture/residential/appliance_black_trim",
-      "glow": "csm:blocks/furniture/residential/microwave_window_off"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/residential/states/microwave_black/microwave_item_microwave_window_off"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "floor",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "counter",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_on",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "floor",
+        "running": "false"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "counter",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_on",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_on",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "floor",
+        "running": "false"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "counter",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "floor",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_on",
         "y": 270
       }
     },
-    "rest": {
-      "floor": {
-        "model": "csm:furniture/residential/base/microwave_floor"
+    {
+      "when": {
+        "facing": "west",
+        "rest": "floor",
+        "running": "false"
       },
-      "counter": {
-        "model": "csm:furniture/residential/base/microwave_counter"
-      },
-      "sideboard": {
-        "model": "csm:furniture/residential/base/microwave_sideboard"
-      },
-      "table": {
-        "model": "csm:furniture/residential/base/microwave_table"
-      },
-      "side_table": {
-        "model": "csm:furniture/residential/base/microwave_side_table"
-      },
-      "tv_stand": {
-        "model": "csm:furniture/residential/base/microwave_tv_stand"
-      },
-      "coffee_table": {
-        "model": "csm:furniture/residential/base/microwave_coffee_table"
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_floor_microwave_window_off",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:furniture/residential/base/microwave_item"
-      }
-    ],
-    "running": {
-      "true": {
-        "textures": {
-          "glow": "csm:blocks/furniture/residential/microwave_window_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "rest": "counter",
+        "running": "true"
       },
-      "false": {
-        "textures": {
-          "glow": "csm:blocks/furniture/residential/microwave_window_off"
-        }
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "counter",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_counter_microwave_window_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "sideboard",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "sideboard",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_sideboard_microwave_window_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_table_microwave_window_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "side_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "side_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_side_table_microwave_window_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "tv_stand",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "tv_stand",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_tv_stand_microwave_window_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "coffee_table",
+        "running": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "rest": "coffee_table",
+        "running": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/states/microwave_black/microwave_coffee_table_microwave_window_off",
+        "y": 270
       }
     }
-  }
+  ]
 }

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/office/base/overhead_projector_tv_stand",
+  "textures": {
+    "shell": "csm:blocks/furniture/office/plastic_light_grey",
+    "trim": "csm:blocks/furniture/office/plastic_dark_grey",
+    "glow": "csm:blocks/furniture/office/ohp_stage_on"
+  }
+}

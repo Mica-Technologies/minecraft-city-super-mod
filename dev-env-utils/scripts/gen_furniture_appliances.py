@@ -61,6 +61,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import gen_furniture_residential as R  # noqa: E402
 import gen_furniture_kitchen as K  # noqa: E402
+import forge_multipart as FM  # noqa: E402
 
 ASSETS = R.ASSETS
 SUB = R.SUB
@@ -1015,6 +1016,8 @@ def generate(assets):
             dump("models/item/%s.json" % reg,
                  {"parent": "csm:block/%s/base/%s_item" % (SUB, piece), "textures": dict(ftex)})
             state = K.multipart_state(reg, COOKTOP_RUN["rules"])
+        # a property that only swaps textures: one multipart location (forge_multipart)
+        state = FM.convert_if_texture_only(reg, state, MODEL[:-1], dump)
         dump("blockstates/%s.json" % reg, state)
     for reg, *_rest in FOODS:
         dump("models/item/%s.json" % reg,

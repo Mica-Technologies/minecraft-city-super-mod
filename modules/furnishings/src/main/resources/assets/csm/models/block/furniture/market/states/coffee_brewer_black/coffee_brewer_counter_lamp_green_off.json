@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/market/base/coffee_brewer_counter",
+  "textures": {
+    "glow": "csm:blocks/furniture/residential/lamp_green_off",
+    "shell": "csm:blocks/furniture/residential/appliance_black",
+    "trim": "csm:blocks/furniture/residential/appliance_black_trim"
+  }
+}

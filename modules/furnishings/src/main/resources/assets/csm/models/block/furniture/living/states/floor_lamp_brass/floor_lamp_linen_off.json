@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/floor_lamp",
+  "textures": {
+    "metal": "csm:blocks/furniture/residential/brass",
+    "shade": "csm:blocks/furniture/living/linen_off"
+  }
+}

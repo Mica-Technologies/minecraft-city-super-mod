@@ -58,6 +58,7 @@ import gen_furniture_residential as R  # noqa: E402
 import gen_furniture_bedroom as B  # noqa: E402
 import gen_furniture_appliances as A  # noqa: E402
 import gen_furniture_living as L  # noqa: E402
+import forge_multipart as FM  # noqa: E402
 
 ASSETS = R.ASSETS
 SUB = "furniture/outdoor"
@@ -1646,6 +1647,8 @@ def generate(assets):
                           BASE + "bounce_castle_item")
         else:
             raise ValueError(kind)
+        # a property that only swaps textures: one multipart location (forge_multipart)
+        state = FM.convert_if_texture_only(reg, state, MODEL[:-1], dump)
         dump("blockstates/%s.json" % reg, state)
     R.write_lang(os.path.join(assets, "lang"), lang_entries())
     written += ["lang/%s.lang" % loc for loc in R.LOCALES]

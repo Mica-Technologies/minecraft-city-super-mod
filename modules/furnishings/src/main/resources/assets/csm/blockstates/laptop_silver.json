@@ -1,69 +1,611 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/office/base/laptop_floor",
-    "textures": {
-      "shell": "csm:blocks/furniture/office/silver",
-      "keys": "csm:blocks/furniture/office/keys_silver",
-      "glow": "csm:blocks/furniture/office/screen_laptop"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/office/states/laptop_silver/laptop_item_screen_laptop"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_laptop"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_laptop",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "counter"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_laptop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_laptop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_laptop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_laptop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_laptop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_laptop",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_laptop",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "counter"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_laptop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_laptop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_laptop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_laptop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_laptop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_laptop",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_laptop",
         "y": 270
       }
     },
-    "rest": {
-      "floor": {
-        "model": "csm:furniture/office/base/laptop_floor"
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "counter"
       },
-      "counter": {
-        "model": "csm:furniture/office/base/laptop_counter"
-      },
-      "sideboard": {
-        "model": "csm:furniture/office/base/laptop_sideboard"
-      },
-      "table": {
-        "model": "csm:furniture/office/base/laptop_table"
-      },
-      "side_table": {
-        "model": "csm:furniture/office/base/laptop_side_table"
-      },
-      "tv_stand": {
-        "model": "csm:furniture/office/base/laptop_tv_stand"
-      },
-      "coffee_table": {
-        "model": "csm:furniture/office/base/laptop_coffee_table"
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_laptop",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:furniture/office/base/laptop_item"
-      }
-    ],
-    "lit": {
-      "true": {
-        "textures": {
-          "glow": "csm:blocks/furniture/office/screen_laptop"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "sideboard"
       },
-      "false": {
-        "textures": {
-          "glow": "csm:blocks/furniture/office/screen_off"
-        }
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_laptop",
+        "y": 270
       }
     },
-    "powered": {
-      "true": {},
-      "false": {}
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_laptop",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_laptop",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_laptop",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_laptop",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_floor_screen_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "counter"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_counter_screen_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "sideboard"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_sideboard_screen_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_table_screen_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "side_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_side_table_screen_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_tv_stand_screen_off",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "rest": "coffee_table"
+      },
+      "apply": {
+        "model": "csm:furniture/office/states/laptop_silver/laptop_coffee_table_screen_off",
+        "y": 270
+      }
     }
-  }
+  ]
 }

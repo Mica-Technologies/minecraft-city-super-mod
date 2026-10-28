@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/furniture/living/base/fireplace_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "stone": "csm:blocks/furniture/living/limestone",
+    "flame": "csm:blocks/furniture/living/flame",
+    "embers": "csm:blocks/furniture/living/embers_on"
+  }
+}

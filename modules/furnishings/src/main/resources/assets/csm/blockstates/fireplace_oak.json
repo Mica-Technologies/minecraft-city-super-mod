@@ -1,59 +1,181 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/living/base/fireplace_cell0",
-    "textures": {
-      "wood": "csm:blocks/furniture/residential/oak",
-      "wood_v": "csm:blocks/furniture/residential/oak_v",
-      "edge": "csm:blocks/furniture/residential/oak_edge",
-      "stone": "csm:blocks/furniture/living/limestone",
-      "flame": "csm:blocks/furniture/living/clear",
-      "embers": "csm:blocks/furniture/living/embers_off"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/living/states/fireplace_oak/fireplace_item_embers_on_flame"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_on_flame"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true",
+        "part": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_on_flame"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_off_clear"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false",
+        "part": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_off_clear"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_on_flame",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true",
+        "part": "1"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_on_flame",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_off_clear",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false",
+        "part": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_off_clear",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_on_flame",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true",
+        "part": "1"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_on_flame",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_off_clear",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false",
+        "part": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_off_clear",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "part": "0"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_on_flame",
         "y": 270
       }
     },
-    "part": {
-      "0": {
-        "model": "csm:furniture/living/base/fireplace_cell0"
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true",
+        "part": "1"
       },
-      "1": {
-        "model": "csm:furniture/living/base/fireplace_cell1"
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_on_flame",
+        "y": 270
       }
     },
-    "lit": {
-      "true": {
-        "textures": {
-          "flame": "csm:blocks/furniture/living/flame",
-          "embers": "csm:blocks/furniture/living/embers_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "part": "0"
       },
-      "false": {
-        "textures": {
-          "flame": "csm:blocks/furniture/living/clear",
-          "embers": "csm:blocks/furniture/living/embers_off"
-        }
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell0_embers_off_clear",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:furniture/living/base/fireplace_item",
-        "textures": {
-          "flame": "csm:blocks/furniture/living/flame",
-          "embers": "csm:blocks/furniture/living/embers_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false",
+        "part": "1"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/fireplace_oak/fireplace_cell1_embers_off_clear",
+        "y": 270
       }
-    ]
-  }
+    }
+  ]
 }

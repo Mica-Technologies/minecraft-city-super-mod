@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/office/base/laptop_floor",
+  "textures": {
+    "shell": "csm:blocks/furniture/office/silver",
+    "keys": "csm:blocks/furniture/office/keys_silver",
+    "glow": "csm:blocks/furniture/office/screen_off"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/market/base/coffee_brewer_tv_stand",
+  "textures": {
+    "glow": "csm:blocks/furniture/residential/lamp_green_off",
+    "shell": "csm:blocks/furniture/residential/stainless",
+    "trim": "csm:blocks/furniture/residential/stainless_dark"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/market/base/aisle_sign",
+  "textures": {
+    "case": "csm:blocks/furniture/market/case_black",
+    "face": "csm:blocks/furniture/market/aisle_10"
+  }
+}
