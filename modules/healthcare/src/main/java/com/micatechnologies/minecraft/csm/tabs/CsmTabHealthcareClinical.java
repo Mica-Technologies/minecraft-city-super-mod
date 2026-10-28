@@ -15,6 +15,7 @@ import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockEdTrackingBoa
 import com.micatechnologies.minecraft.csm.healthcare.clinical.BlockNurseStation;
 import com.micatechnologies.minecraft.csm.healthcare.codeblue.BlockCodeBlueAnnunciator;
 import com.micatechnologies.minecraft.csm.healthcare.codeblue.BlockCodeBlueButton;
+import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockDoorCabinetPair;
 import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockLabBench;
 import com.micatechnologies.minecraft.csm.healthcare.diagnostics.BlockMorgueCabinet;
 import com.micatechnologies.minecraft.csm.healthcare.nursecall.BlockNurseCallMasterPanel;
@@ -128,6 +129,12 @@ public class CsmTabHealthcareClinical extends CsmTab {
     initTabBlock(new BlockHealthcarePair("fume_hood", new int[]{0, 0, 0, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
     initTabBlock(new BlockHealthcarePair("biosafety_cabinet", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
     initTabBlock(new BlockHealthcarePair("blood_bank_fridge", new int[]{0, 0, 0, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockDoorCabinetPair("lab_co2_incubator", new int[]{0, 0, 0, 16, 16, 16}));
+    initTabBlock(new BlockHealthcarePair("lab_ult_freezer", new int[]{0, 0, 0, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
+    initTabBlock(new BlockHealthcare("lab_ln2_dewar", new int[]{2, 0, 2, 14, 16, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcareScreen("lab_pcr_thermocycler", new int[]{3, 0, 2, 13, 8, 14}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, true));
+    initTabBlock(new BlockHealthcare("lab_glassware_rack", new int[]{1, 1, 12, 15, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.WALL, false));
+    initTabBlock(new BlockHealthcarePair("vivarium_cage_rack", new int[]{0, 0, 1, 16, 16, 15}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));
     initTabBlock(new BlockHealthcare("specimen_pass_through", new int[]{2, 3, 12, 14, 13, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.WALL, false));
     initTabBlock(new BlockHealthcare("pneumatic_tube_station", new int[]{3, 0, 9, 13, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.WALL, false));
     initTabBlock(new BlockHealthcarePair("iv_compounding_hood", new int[]{0, 0, 1, 16, 16, 16}, HealthcareMaterial.METAL, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.TALL));

@@ -6,8 +6,8 @@ department, nursing stations, surgery support, clinics, dialysis and infusion, i
 the pharmacy, the morgue, maternity and the NICU, rehabilitation, the waiting room, teaching, the
 paediatric playroom, wayfinding and the building systems a hospital runs on (nurse call, code
 blue, medical gas, emergency power, infant security). Like every module it pins Core to its own
-exact version and registers nothing itself. It is 162 blocks (158 in two tabs and four hidden
-cells), 3,332 block states.
+exact version and registers nothing itself. It is 168 blocks (164 in two tabs and four hidden
+cells), 3,380 block states.
 
 It was asked for in GitHub #293, for the hospitals being built on the Alto server: they were
 furnished from the Hospital Mod and its Theatre Pack, which cover the operating room and little
@@ -33,7 +33,7 @@ font code); the dependency rule is about Java.
 | Tab | Id | Order | Holds |
 |---|---|---|---|
 | **CSM: Healthcare - Patient Care** | `tabhealthcarepatientcare` | 29 | Beds and everything round a bed (headwalls, monitors, IV poles, curtains, room furniture, nurse call devices and dome lights), corridor rails, wheelchairs and lifts, the exam room, dental and eye exam chairs, dialysis and infusion chairs, maternity, rehabilitation, the waiting room and its queue, the playroom, the transport stretchers, and the wayfinding panel (65) |
-| **CSM: Healthcare - Clinical** | `tabhealthcareclinical` | 30 | Nursing (the master panel, the nurses' station, medication, dispensers, carts and bins), the ICU and ED, surgery support, the dialysis and endoscopy equipment, imaging and the portable ultrasound cart, the lab, the pharmacy, the morgue, teaching models, the building systems, and the operating room (93) |
+| **CSM: Healthcare - Clinical** | `tabhealthcareclinical` | 30 | Nursing (the master panel, the nurses' station, medication, dispensers, carts and bins), the ICU and ED, surgery support, the dialysis and endoscopy equipment, imaging and the portable ultrasound cart, the lab and the research lab's equipment (CO2 incubator, ultra-low freezer, nitrogen dewar, thermocycler, glassware rack) with the vivarium's cage rack, the pharmacy, the morgue, teaching models, the building systems, and the operating room (99) |
 | Hidden | `tabhealthcarehidden` | -11 | `hospital_bed_foot`, `cubicle_curtain`, `ceiling_boom_column`, `healthcare_unit_part`: cells placed by another block, never by hand (4) |
 
 About 160 blocks are too many for one tab's page, and the split follows who reaches for them: a
@@ -167,7 +167,11 @@ tile, like the curtain track, with the motor and spreader bar hanging into the c
 
 Two-cell pieces (wide tables, tall cabinets, the headwall, the status board) are
 `BlockHealthcarePair`: both cells are the same block, the second marked by a flag, wide to the
-viewer's right (`first.offset(facing.rotateYCCW())`) or tall above.
+viewer's right (`first.offset(facing.rotateYCCW())`) or tall above. A tall cabinet with a door to
+each cell is a `BlockDoorCabinetPair`, which adds an `open` flag per cell that a click toggles:
+the morgue cabinet (a tier a cell) and the stacked CO2 incubator (a chamber a cell, its outer
+door swung square on its hinge to show the glass inner door and the flasks on its shelves). Each
+cell's model is drawn on its own, closed and open, rather than cut from a whole.
 
 The CT and MRI scanners are bigger, so they are a `BlockHealthcareUnit` **master** that draws the
 whole unit (one JSON model reaching up to a block past its cell each way, the JSON limit, the
@@ -491,6 +495,11 @@ south: +x to west, +z to north; west: +x to north, +z to east).
 | `c_arm_monitor_cart`, `chemistry_analyser`, `haematology_analyser` | floor | bits 0-1 facing, bit 2 screen on | |
 | `lab_centrifuge`, `lab_microscope` | floor (bench top) | bits 0-1 facing | in the cell above a lab bench |
 | `lab_bench`, `lab_bench_sink` | floor | bits 0-1 facing | joins any lab bench left and right; worktop at the top of the cell |
+| `lab_co2_incubator` | floor, 2 tall | bits 0-1 facing, bit 2 upper cell, bit 3 this chamber's door open | one chamber a cell; click opens or shuts that chamber's outer door, which swings into the cell in front with no collision; the display is an animated texture |
+| `lab_ult_freezer`, `vivarium_cage_rack` | floor, 2 tall | bits 0-1 facing, bit 2 upper cell | the freezer's -80 panel is an animated texture; the cage rack is double-sided, its air handling unit on top |
+| `lab_ln2_dewar` | floor | bits 0-1 facing | on its rolling dolly |
+| `lab_pcr_thermocycler` | floor (bench top) | bits 0-1 facing, bit 2 screen on | in the cell above a lab bench; click switches the screen |
+| `lab_glassware_rack` | wall | bits 0-2 facing | over a lab bench sink: in the cell above the bench, against the wall |
 | `lead_apron_rack`, `mri_zone_1_sign` .. `mri_zone_4_sign`, `radiation_warning_sign`, `specimen_pass_through`, `pneumatic_tube_station` | wall | bits 0-2 facing | |
 | `xray_in_use_light`, `mri_in_use_light` | wall, lit | `facing * 4 + state` | light 7; redstone lights it in states 0/1 |
 
@@ -559,7 +568,11 @@ written shows INFORMATION, `info`, `right`, `neutral`.
   laundry** (Residential's laundry group): `commercial_washer_stainless`,
   `commercial_dryer_stainless` (bits 0-1 facing, bit 2 running, as `washing_machine_*`).
 - **Eyewash station and decon sink** are Life Safety's (`eyewash_station`, `decon_sink`,
-  Emergency Services); **planters** are Parks', plantable (PARKS_GREENERY_SYSTEM.md).
+  Emergency Services); a lab floor's plumbed eyewashes are too, in Fire Protection:
+  `eyewash_station_wall` (wall, bits 0-1 facing, the model at the back of its cell over its own
+  bowl and drain) and `eyewash_station_deck` (bits 0-1 facing, in the cell above a lab bench
+  beside its sink, the swing arm reaching forward). **Planters** are Parks', plantable
+  (PARKS_GREENERY_SYSTEM.md).
 
 ---
 
@@ -578,7 +591,9 @@ written shows INFORMATION, `info`, `right`, `neutral`.
 | A seat with a screen (infusion recliner, dental chair) sits on a click and switches on a sneak-click | A click cannot do both; sitting is the common use |
 | The dental and refraction chairs are one block each, their post, tray and phoropter drawn just past the cell | No multi-cell bookkeeping for a chair; those parts never need collision |
 | The lead-lined door is Building's; the pharmacy adds bin shelving and a unit-dose cabinet but not Furnishings' retail pharmacy counters | No duplicates |
-| No eyewash station here | Life Safety already registers `eyewash_station`; the same name twice would crash |
+| No eyewash station here | Life Safety already registers `eyewash_station`; the same name twice would crash. The lab's wall and deck eyewashes (#313) went to Life Safety's Fire Protection tab for the same reason: an eyewash is life-safety equipment on any floor, not a hospital piece |
+| The research lab's pieces (#313) are in the Clinical tab beside the lab, with no new tab | Seven pieces are not a tab; they sit with the lab benches and blood bank fridge they are used beside |
+| The CO2 incubator opens a chamber at a time, as the morgue cabinet does (`BlockDoorCabinetPair`) | Closed, an incubator is a stainless box; the glass inner door it is known by shows only with the outer door open. The morgue's door-per-cell pair was the pattern already there |
 | Registry names `clinic_exam_light`, `clinic_step_stool`, `dialysis_ro_unit` | `exam_light` and `step_stool` are too generic for the shared `csm:` namespace |
 | Any new toy box gets a new registry name | `toyboxgirl` and `toyboxboy` are retired names (below) |
 
@@ -643,7 +658,10 @@ written shows INFORMATION, `info`, `right`, `neutral`.
 Measured 2026-10-19 in the dev client (every module, plus the IV content packs, FAWE and a
 third-party road mod's test jar in `run/mods`), `-Xmx6G`, on a machine also running a game.
 
-**Since then** (2026-10-20, counted from the block classes, not measured): the station counter
+**Since then** (counted from the block classes, not measured): GitHub #313's research lab
+(2026-10-27) added six blocks and 48 states (the incubator 16, the freezer, cage rack and
+thermocycler 8 each, the dewar and glassware rack 4), all small JSON models with 14 new textures
+of 16 and 32 px; before that (2026-10-20) the station counter
 with monitors' room lamps added 1,008 states, the operating room set nine blocks and 76
 states, and the two transport stretchers (16 head states each, 32 more on the shared foot) and
 the ultrasound cart (8) three blocks and 72 states, so the module is 162 blocks and **3,332
@@ -719,7 +737,8 @@ displays, the kiosk serving 042 and the desk console 117), a chapel (pews, altar
 lecture hall (tiered seats, a mannequin on a bed, skeleton, dissection table and torso), the
 playroom, the laundry and a rehab gym. A 9 x 9 hospital helipad with its lights and wind sock
 sits on the roof over the ED. It reads both tabs' registration lists and puts anything it did not
-place on signed plinths; nothing is missing today (158 of 158).
+place on signed plinths; it placed 158 of 158 before #313, and the six research lab pieces stand on
+plinths until the demo grows a research lab.
 
 ---
 
