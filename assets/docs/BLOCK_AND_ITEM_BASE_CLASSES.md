@@ -103,6 +103,13 @@ Every block subclass must implement these:
 > road plate.) The rotatable subclasses below all handle it, so this only bites blocks extending
 > `AbstractBlock` directly.
 
+> **`getRenderType` is asked of the block's DEFAULT state when a chunk is built**
+> (`RenderChunk.rebuildChunk`: `block.getDefaultState().getRenderType() != INVISIBLE`), not of the
+> state placed. A block that draws in some states and not others must therefore never return
+> `INVISIBLE` for its default state, or no state of it is ever drawn: return `MODEL` for all and
+> give the empty states an empty model. (The #314 lab exhaust fan's nozzle parts were invisible in
+> every world for exactly this; `ExhaustBlocksTest.partIsDrawnWhateverItsDefaultState` holds it.)
+
 ### Tile Entity Support
 
 Any block can support a tile entity by implementing `ICsmTileEntityProvider`:

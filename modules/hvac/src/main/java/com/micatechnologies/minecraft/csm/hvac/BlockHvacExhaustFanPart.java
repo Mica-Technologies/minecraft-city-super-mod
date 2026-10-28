@@ -206,13 +206,17 @@ public class BlockHvacExhaustFanPart extends AbstractBlock {
     return EnumPushReaction.BLOCK;
   }
 
-  /** Only the cells over the master draw: the nozzle and its windband. */
+  /**
+   * Always a model: only the cells over the master draw anything (the nozzle and its windband),
+   * the others' {@code none} model being empty. Never {@code INVISIBLE} for some pieces: the chunk
+   * builder asks the block's DEFAULT state ({@code RenderChunk.rebuildChunk}), and the default is
+   * {@code none}, so an invisible {@code none} hid every piece of every lab fan.
+   */
   @Override
   @Nonnull
   @SuppressWarnings("deprecation")
   public EnumBlockRenderType getRenderType(IBlockState state) {
-    return state.getValue(PIECE) == Piece.NONE ? EnumBlockRenderType.INVISIBLE
-        : EnumBlockRenderType.MODEL;
+    return EnumBlockRenderType.MODEL;
   }
 
   @Override
