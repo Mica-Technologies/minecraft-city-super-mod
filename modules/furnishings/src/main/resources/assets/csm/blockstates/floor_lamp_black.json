@@ -1,43 +1,87 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:furniture/living/base/floor_lamp",
-    "textures": {
-      "metal": "csm:blocks/furniture/residential/metal_black",
-      "shade": "csm:blocks/furniture/living/linen_on"
+  "variants": {
+    "inventory": {
+      "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_on"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_off"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_on",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "lit": "false"
       },
-      "south": {
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_off",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_on",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "lit": "false"
       },
-      "west": {
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_off",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_on",
         "y": 270
       }
     },
-    "lit": {
-      "true": {
-        "textures": {
-          "shade": "csm:blocks/furniture/living/linen_on"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "lit": "false"
       },
-      "false": {
-        "textures": {
-          "shade": "csm:blocks/furniture/living/linen_off"
-        }
+      "apply": {
+        "model": "csm:furniture/living/states/floor_lamp_black/floor_lamp_linen_off",
+        "y": 270
       }
-    },
-    "powered": {
-      "true": {},
-      "false": {}
-    },
-    "inventory": [
-      {}
-    ]
-  }
+    }
+  ]
 }

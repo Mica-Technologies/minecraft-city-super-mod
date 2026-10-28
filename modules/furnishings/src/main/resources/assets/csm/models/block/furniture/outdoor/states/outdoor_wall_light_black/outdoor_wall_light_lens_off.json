@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/outdoor_wall_light",
+  "textures": {
+    "metal": "csm:blocks/furniture/outdoor/powder_black",
+    "lens": "csm:blocks/furniture/residential/lens_off"
+  }
+}

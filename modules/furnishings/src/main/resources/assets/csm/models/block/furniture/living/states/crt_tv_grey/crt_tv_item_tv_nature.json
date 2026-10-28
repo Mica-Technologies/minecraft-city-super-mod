@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/crt_tv_item",
+  "textures": {
+    "crt": "csm:blocks/furniture/living/crt_grey",
+    "screen": "csm:blocks/furniture/living/tv_nature"
+  }
+}

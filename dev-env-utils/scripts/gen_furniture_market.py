@@ -90,6 +90,7 @@ import gen_furniture_kitchen as K  # noqa: E402
 import gen_furniture_bedroom as B  # noqa: E402
 import gen_furniture_appliances as A  # noqa: E402
 import gen_furniture_office as O  # noqa: E402
+import forge_multipart as FM  # noqa: E402
 import life_safety_gen_common as LS  # noqa: E402
 
 ASSETS = R.ASSETS
@@ -5476,6 +5477,8 @@ def generate(assets):
                                                 "false": {"textures": {"glow": off}}}
         else:
             raise ValueError(kind)
+        # a property that only swaps textures: one multipart location (forge_multipart)
+        state = FM.convert_if_texture_only(reg, state, MODEL[:-1], dump)
         dump("blockstates/%s.json" % reg, state)
     dump("blockstates/vf915.json", verifone_state())
     for name, draw in ITEM_TEXTURES.items():

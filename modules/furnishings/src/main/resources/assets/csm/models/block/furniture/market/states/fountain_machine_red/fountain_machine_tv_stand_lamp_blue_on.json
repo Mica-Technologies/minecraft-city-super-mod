@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/market/base/fountain_machine_tv_stand",
+  "textures": {
+    "glow": "csm:blocks/furniture/residential/lamp_blue_on",
+    "shell": "csm:blocks/furniture/market/plastic_red",
+    "trim": "csm:blocks/furniture/residential/stainless_dark",
+    "art": "csm:blocks/furniture/market/fountain_art_red"
+  }
+}

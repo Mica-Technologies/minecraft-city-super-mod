@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/living/base/table_lamp_coffee_table",
+  "textures": {
+    "metal": "csm:blocks/furniture/residential/brass",
+    "base": "csm:blocks/furniture/residential/brass",
+    "shade": "csm:blocks/furniture/living/linen_off"
+  }
+}

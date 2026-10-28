@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/furniture/living/base/fireplace_cell0",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/white",
+    "wood_v": "csm:blocks/furniture/residential/white_v",
+    "edge": "csm:blocks/furniture/residential/white_edge",
+    "stone": "csm:blocks/furniture/living/limestone",
+    "flame": "csm:blocks/furniture/living/clear",
+    "embers": "csm:blocks/furniture/living/embers_off"
+  }
+}

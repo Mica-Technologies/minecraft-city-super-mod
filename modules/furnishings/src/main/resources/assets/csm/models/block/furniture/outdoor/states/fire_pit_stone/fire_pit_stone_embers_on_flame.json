@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/outdoor/base/fire_pit_stone",
+  "textures": {
+    "stone": "csm:blocks/furniture/outdoor/firepit_stone",
+    "steel": "csm:blocks/furniture/outdoor/steel_rust",
+    "flame": "csm:blocks/furniture/living/flame",
+    "embers": "csm:blocks/furniture/living/embers_on"
+  }
+}

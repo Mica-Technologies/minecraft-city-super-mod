@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/furniture/living/base/stereo_tv_stand",
+  "textures": {
+    "hifi": "csm:blocks/furniture/living/hifi_black",
+    "platter": "csm:blocks/furniture/living/platter_mat",
+    "glow": "csm:blocks/furniture/living/display_off"
+  }
+}

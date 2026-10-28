@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/office/base/ring_light",
+  "textures": {
+    "metal_black": "csm:blocks/furniture/residential/metal_black",
+    "lens": "csm:blocks/furniture/residential/lens_on"
+  }
+}
