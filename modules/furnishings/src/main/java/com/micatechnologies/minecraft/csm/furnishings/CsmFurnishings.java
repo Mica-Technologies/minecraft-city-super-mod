@@ -6,6 +6,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.furniture.market.MarketFabricatorRules;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.CommandPawn;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.PawnValuation;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopActionPacket;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopEconomy;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.ShopGuiProvider;
@@ -28,6 +30,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
@@ -84,6 +87,9 @@ public class CsmFurnishings {
   public void preInit(FMLPreInitializationEvent event) {
     logger = event.getModLog();
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
+
+    // The pawn shop's values file, config/csm/pawn_values.json.
+    PawnValuation.setConfigDirectory(event.getModConfigurationDirectory());
 
     CsmGuiRegistry.register(new NoveltiesGuiProvider());
     CsmGuiRegistry.register(new ShopGuiProvider());
@@ -151,6 +157,18 @@ public class CsmFurnishings {
   @Mod.EventHandler
   public void serverStarted(FMLServerStartedEvent event) {
     ShopEconomy.SUM.acquire();
+    // Every mod's recipes are registered by now, so the pawn shop can value everything.
+    PawnValuation.rebuild();
+  }
+
+  /**
+   * Registers {@code /csmpawn}.
+   *
+   * @since 2026.10
+   */
+  @Mod.EventHandler
+  public void serverStarting(FMLServerStartingEvent event) {
+    event.registerServerCommand(new CommandPawn());
   }
 
   /**
@@ -161,6 +179,7 @@ public class CsmFurnishings {
   @Mod.EventHandler
   public void serverStopping(FMLServerStoppingEvent event) {
     ShopEconomy.SUM.release();
+    PawnValuation.clear();
   }
 
   @Mod.EventHandler

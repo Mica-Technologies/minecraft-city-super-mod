@@ -144,6 +144,25 @@ public class CsmConfig {
   private static final int FIELD_DEFAULT_SHOPS_RENDER_DISTANCE = 32;
   private static final int FIELD_DEFAULT_SHOPS_LABEL_DISTANCE = 8;
 
+  private static final String CATEGORY_PAWN = "pawn";
+  private static final String CATEGORY_PAWN_DESCRIPTION =
+      "The Market & Store tab's pawn shop: server-run blocks that buy any item a player hands "
+          + "them. An item's value is its entry in config/csm/pawn_values.json if it has one, "
+          + "else what its crafting, smelting or Fabricator recipe costs from the raw values in "
+          + "that file, else defaultValue. A player is paid payoutFraction of it: money when the "
+          + "optional economy mod is installed and allows the csm_furnishings integration, "
+          + "emeralds at moneyPerEmerald otherwise.";
+  private static final boolean FIELD_DEFAULT_PAWN_ENABLED = true;
+  private static final double FIELD_DEFAULT_PAWN_PAYOUT_FRACTION = 0.5;
+  private static final double FIELD_DEFAULT_PAWN_RESALE_MARKUP = 1.5;
+  private static final double FIELD_DEFAULT_PAWN_DEFAULT_VALUE = 1.0;
+  private static final double FIELD_DEFAULT_PAWN_MONEY_PER_EMERALD = 10.0;
+  private static final double FIELD_DEFAULT_PAWN_SMELT_FUEL_COST = 0.05;
+  private static final double FIELD_DEFAULT_PAWN_ENCHANT_VALUE_PER_LEVEL = 2.0;
+  private static final double FIELD_DEFAULT_PAWN_MAX_PAYOUT_PER_DAY = 0.0;
+  private static final boolean FIELD_DEFAULT_PAWN_ALLOW_CREATIVE = false;
+  private static final boolean FIELD_DEFAULT_PAWN_BIN_ACCEPTS_HOPPERS = true;
+
   private static final String CATEGORY_PARKS = "parks";
   private static final String CATEGORY_PARKS_DESCRIPTION =
       "Parks & Greenery (csm_parks): the tree tools.";
@@ -231,6 +250,17 @@ public class CsmConfig {
   private static int shopsMaxEmeraldPrice = FIELD_DEFAULT_SHOPS_MAX_EMERALD_PRICE;
   private static int shopsRenderDistance = FIELD_DEFAULT_SHOPS_RENDER_DISTANCE;
   private static int shopsLabelDistance = FIELD_DEFAULT_SHOPS_LABEL_DISTANCE;
+
+  private static boolean pawnEnabled = FIELD_DEFAULT_PAWN_ENABLED;
+  private static double pawnPayoutFraction = FIELD_DEFAULT_PAWN_PAYOUT_FRACTION;
+  private static double pawnResaleMarkup = FIELD_DEFAULT_PAWN_RESALE_MARKUP;
+  private static double pawnDefaultValue = FIELD_DEFAULT_PAWN_DEFAULT_VALUE;
+  private static double pawnMoneyPerEmerald = FIELD_DEFAULT_PAWN_MONEY_PER_EMERALD;
+  private static double pawnSmeltFuelCost = FIELD_DEFAULT_PAWN_SMELT_FUEL_COST;
+  private static double pawnEnchantValuePerLevel = FIELD_DEFAULT_PAWN_ENCHANT_VALUE_PER_LEVEL;
+  private static double pawnMaxPayoutPerDay = FIELD_DEFAULT_PAWN_MAX_PAYOUT_PER_DAY;
+  private static boolean pawnAllowCreative = FIELD_DEFAULT_PAWN_ALLOW_CREATIVE;
+  private static boolean pawnBinAcceptsHoppers = FIELD_DEFAULT_PAWN_BIN_ACCEPTS_HOPPERS;
 
   /**
    * The configuration field value for the enableUpdateCheck option.
@@ -420,6 +450,45 @@ public class CsmConfig {
     shopsLabelDistance = config.getInt("priceLabelDistance", CATEGORY_SHOPS,
         FIELD_DEFAULT_SHOPS_LABEL_DISTANCE, 0, 32,
         "Client: how far away, in blocks, a shop's price label is drawn. 0 draws none.");
+    config.setCategoryComment(CATEGORY_PAWN, CATEGORY_PAWN_DESCRIPTION);
+    pawnEnabled = config.getBoolean("enabled", CATEGORY_PAWN, FIELD_DEFAULT_PAWN_ENABLED,
+        "Whether the pawn shop blocks buy anything. Off, they still quote prices.");
+    pawnPayoutFraction = config.get(CATEGORY_PAWN, "payoutFraction",
+        FIELD_DEFAULT_PAWN_PAYOUT_FRACTION,
+        "The share of an item's value a pawn shop pays for it.", 0.0, 1.0).getDouble();
+    pawnResaleMarkup = config.get(CATEGORY_PAWN, "resaleMarkup",
+        FIELD_DEFAULT_PAWN_RESALE_MARKUP,
+        "A reselling pawn counter's price over an item's value. Kept above payoutFraction, so "
+            + "buying back and pawning again never makes money.", 1.0, 100.0).getDouble();
+    pawnDefaultValue = config.get(CATEGORY_PAWN, "defaultValue",
+        FIELD_DEFAULT_PAWN_DEFAULT_VALUE,
+        "The value of an item with no entry in pawn_values.json and no recipe to work one out "
+            + "from (creative-only items, other mods' raw materials). 0 refuses such items.",
+        0.0, 1000000.0).getDouble();
+    pawnMoneyPerEmerald = config.get(CATEGORY_PAWN, "moneyPerEmerald",
+        FIELD_DEFAULT_PAWN_MONEY_PER_EMERALD,
+        "Without the economy mod, how much value one emerald pays for. A remainder is kept for "
+            + "each player and paid once it reaches a whole emerald.", 0.01, 1000000.0)
+        .getDouble();
+    pawnSmeltFuelCost = config.get(CATEGORY_PAWN, "smeltFuelCost",
+        FIELD_DEFAULT_PAWN_SMELT_FUEL_COST,
+        "Value added to an item for each smelt in the cheapest way to make it.", 0.0, 1000.0)
+        .getDouble();
+    pawnEnchantValuePerLevel = config.get(CATEGORY_PAWN, "enchantValuePerLevel",
+        FIELD_DEFAULT_PAWN_ENCHANT_VALUE_PER_LEVEL,
+        "Value added to an item (or an enchanted book) per enchantment level on it.", 0.0,
+        1000000.0).getDouble();
+    pawnMaxPayoutPerDay = config.get(CATEGORY_PAWN, "maxPayoutPerDay",
+        FIELD_DEFAULT_PAWN_MAX_PAYOUT_PER_DAY,
+        "The most value one player may pawn in a real-time day. 0 for no limit.", 0.0,
+        1000000000.0).getDouble();
+    pawnAllowCreative = config.getBoolean("allowCreative", CATEGORY_PAWN,
+        FIELD_DEFAULT_PAWN_ALLOW_CREATIVE,
+        "Whether players in creative mode may pawn items. Off by default: a creative player "
+            + "could otherwise make any amount of money.");
+    pawnBinAcceptsHoppers = config.getBoolean("binAcceptsHoppers", CATEGORY_PAWN,
+        FIELD_DEFAULT_PAWN_BIN_ACCEPTS_HOPPERS,
+        "Whether a pawn drop-off bin takes items from a hopper (paying whoever placed the bin).");
     config.setCategoryComment(CATEGORY_PARKS, CATEGORY_PARKS_DESCRIPTION);
     chainsawBrushPiles = config.getString(FIELD_KEY_CHAINSAW_BRUSH_PILES, CATEGORY_PARKS,
         FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
@@ -800,6 +869,56 @@ public class CsmConfig {
   /** How far away, in blocks, a shop's price label is drawn. */
   public static int getShopsLabelDistance() {
     return shopsLabelDistance;
+  }
+
+  /** Whether the pawn shop blocks buy anything. */
+  public static boolean isPawnEnabled() {
+    return pawnEnabled;
+  }
+
+  /** The share of an item's value a pawn shop pays. */
+  public static double getPawnPayoutFraction() {
+    return pawnPayoutFraction;
+  }
+
+  /** A reselling pawn counter's price over an item's value. */
+  public static double getPawnResaleMarkup() {
+    return pawnResaleMarkup;
+  }
+
+  /** The value of an item with no configured value and no recipe. */
+  public static double getPawnDefaultValue() {
+    return pawnDefaultValue;
+  }
+
+  /** How much value one emerald pays for, without the economy mod. */
+  public static double getPawnMoneyPerEmerald() {
+    return pawnMoneyPerEmerald;
+  }
+
+  /** Value added per smelt when an item's value is worked out from its recipes. */
+  public static double getPawnSmeltFuelCost() {
+    return pawnSmeltFuelCost;
+  }
+
+  /** Value added per enchantment level. */
+  public static double getPawnEnchantValuePerLevel() {
+    return pawnEnchantValuePerLevel;
+  }
+
+  /** The most value one player may pawn a day; 0 for no limit. */
+  public static double getPawnMaxPayoutPerDay() {
+    return pawnMaxPayoutPerDay;
+  }
+
+  /** Whether creative-mode players may pawn. */
+  public static boolean isPawnAllowCreative() {
+    return pawnAllowCreative;
+  }
+
+  /** Whether a pawn drop-off bin takes hopper input. */
+  public static boolean isPawnBinAcceptsHoppers() {
+    return pawnBinAcceptsHoppers;
   }
 
   /**
