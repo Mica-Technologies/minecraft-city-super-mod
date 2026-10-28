@@ -111,7 +111,7 @@ public class RingBarrierState {
     long intervalStart = 0L;    // world tick the current vehicle interval began
     long greenStart = 0L;       // world tick green began (for max-out)
     long lastActuation = 0L;    // world tick a vehicle call last held the phase (for gap-out)
-    boolean resting = false;    // serving a coordinated rest phase (no max-out)
+    boolean resting = false;    // serving a rest phase (no force-off; max-out still applies)
     boolean pedServing = false;
     long pedStart = 0L;
     // ASC/3 DLY GRN (delayed green / leading ped interval): while delayActive, the WALK runs but
@@ -1106,7 +1106,15 @@ public class RingBarrierState {
         }
         // The coordinated phase rests in green (no max-out); it yields only to a called phase.
         // Max-out must not truncate pedestrian clearance — the walk/FDW interval finishes first.
-        boolean maxOut = !ring.resting && !isCoord && ring.maxStart >= 0L
+        //
+        // Any other phase maxes out, resting or not (issue #317). A rest phase has no max-out
+        // to give up while nothing conflicts (the timer above only runs against a conflicting
+        // call), but once a call registers MAX times against it as NEMA does. Exempting the
+        // rest flag left a FREE controller resting on its main street (the no-demand rest, or
+        // the rest phases a controller leaving flash comes up on) with only gap-out to end it:
+        // with vehicles standing in its zones the side street waited for good. Force-off keeps
+        // its rest exemption below; it is timed against the cycle, not against a call.
+        boolean maxOut = !isCoord && ring.maxStart >= 0L
             && (now - ring.maxStart) >= effMaxGreen && pedDone;
         boolean gapOut = (now - ring.lastActuation) >= effPassage;
         // Coordinated force-off: a non-coordinated phase must end at its yield point — its window
@@ -1479,8 +1487,9 @@ public class RingBarrierState {
   }
 
   /**
-   * Serves the coordinated (or soft-recall, or first active) phase in each ring at green with no
-   * max-out. Both rings rest on the <em>same</em> barrier: ring 1's choice fixes the barrier and
+   * Serves the coordinated (or soft-recall, or first active) phase in each ring at green, resting
+   * there: no force-off, and max-out only once a conflicting call registers (a coordinated phase
+   * never maxes out). Both rings rest on the <em>same</em> barrier: ring 1's choice fixes the barrier and
    * ring 2 rests on its preferred phase of that barrier (or stays dark if it has none there) —
    * two rest phases on different barriers would be conflicting movements shown green together.
    */
