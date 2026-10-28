@@ -143,6 +143,15 @@ register_textures()
 PROUD = 0.2     # a decal or lens stands this far proud of its face (model_depth.py's gap)
 
 
+def tall(frm, to, tex, faces=("north", "south", "east", "west", "up", "down")):
+    """A box taller than a block, cut at the block line: a face taller than 16 has no UV window
+    inside 0..16, and the one wbox slides it to samples the neighbouring sprite in the atlas."""
+    lower = [f for f in faces if f != "up"]
+    upper = [f for f in faces if f != "down"]
+    return [slab(frm, [to[0], 16, to[2]], tex, tuple(lower)),
+            slab([frm[0], 16, frm[2]], to, tex, tuple(upper))]
+
+
 def decal(frm, to, tex, face):
     el = slab(frm, to, tex, (face,))
     el["faces"][face]["uv"] = [0, 0, 16, 16]
@@ -173,7 +182,7 @@ def pedestal(dual):
     x0, x1, z0, z1 = 5.5, 10.5, 6.5, 9.5
     els = [
         slab([5, 0, 6], [11, 0.8, 10], "dark"),
-        slab([x0, 0.8, z0], [x1, 26, z1], "shell"),
+        *tall([x0, 0.8, z0], [x1, 26, z1], "shell"),
         slab([x0 - 0.3, 26, z0 - 0.3], [x1 + 0.3, 27, z1 + 0.3], "dark"),
         decal([x0, 15, z0 - PROUD], [x1, 24, z0], "face", "north"),
         slab([6.5, 24.4, z0 - PROUD], [9.5, 25.4, z0], "status", ("north",)),
@@ -193,8 +202,8 @@ def dc_fast():
     x0, x1, z0, z1 = 3, 13, 4, 12
     els = [
         slab([2, 0, 3.5], [14, 1, 12.5], "concrete"),
-        slab([x0, 1, z0], [x1, 29, z1], "shell", ("north", "south", "up", "down")),
-        slab([x0, 1, z0], [x1, 29, z1], "vent", ("east", "west")),
+        *tall([x0, 1, z0], [x1, 29, z1], "shell", ("north", "south", "up", "down")),
+        *tall([x0, 1, z0], [x1, 29, z1], "vent", ("east", "west")),
         slab([x0 - 0.5, 29, z0 - 0.5], [x1 + 0.5, 30.5, z1 + 0.5], "dark"),
         decal([4, 16.5, z0 - PROUD], [12, 24.5, z0], "screen", "north"),
         slab([3.5, 26, z0 - PROUD], [12.5, 27.2, z0], "status", ("north",)),
