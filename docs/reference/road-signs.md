@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "692 blocks in this tab"
+!!! info "697 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -178,6 +178,8 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Dynamic Route Marker Sign | `csm:dynamic_route_marker_sign` | 2 | 10 | pickaxe | 1 |
 | East Sign | `csm:signeast` | 2 | 10 | pickaxe | 1 |
 | Eisenhower Interstate System Sign | `csm:signeisenhower` | 2 | 10 | pickaxe | 1 |
+| Electric Vehicle Charging Sign | `csm:signevcharging` | 2 | 10 | pickaxe | 1 |
+| Electric Vehicle Charging Sign (Plaque) | `csm:signevchargingplaque` | 2 | 10 | pickaxe | 1 |
 | Emergency Parking Only Sign | `csm:signemergencyparkingonly` | 2 | 10 | pickaxe | 1 |
 | Emergency Signal Sign | `csm:signesignal` | 2 | 10 | pickaxe | 1 |
 | Emergency Stopping Only Sign | `csm:signemergencystoppingonly` | 2 | 10 | pickaxe | 1 |
@@ -194,6 +196,9 @@ The MUTCD sign set, grouped the way the manual groups it.
 | End Sign (Bike Route) | `csm:signendbikeroute` | 2 | 10 | pickaxe | 1 |
 | End Sign (Plaque) | `csm:signendplaque` | 2 | 10 | pickaxe | 1 |
 | Ends Sign (Plaque) | `csm:signendsplaque` | 2 | 10 | pickaxe | 1 |
+| EV Charging Arrow Sign (Left) | `csm:signevchargingarrowleft` | 2 | 10 | pickaxe | 1 |
+| EV Charging Arrow Sign (Right) | `csm:signevchargingarrowright` | 2 | 10 | pickaxe | 1 |
+| EV Charging Only Sign | `csm:signevchargingonly` | 2 | 10 | pickaxe | 1 |
 | Except Bicycle Sign | `csm:signexceptbicycle` | 2 | 10 | pickaxe | 1 |
 | Except Bicycle Sign (Icon) | `csm:signexceptbicycleicon` | 2 | 10 | pickaxe | 1 |
 | Except Bus and Bicycle Sign | `csm:signexceptbusbicycle` | 2 | 10 | pickaxe | 1 |

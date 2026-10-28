@@ -2,7 +2,7 @@
 
 Street fixtures between the curb and the building line: fire hydrants, bollards, delineators, manhole covers, utility lids, drainage grates, pad-mount transformers, utility pedestals, news racks, mailboxes and parking meters.
 
-!!! info "105 blocks in this tab"
+!!! info "112 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -37,6 +37,13 @@ Street fixtures between the curb and the building line: fire hydrants, bollards,
 | Delineator Post (Yellow) | `csm:delineator_post_yellow` | 0.6 | 3 | pickaxe | 0 |
 | Electric Pull Box | `csm:vault_lid_electric` | 1.5 | 10 | pickaxe | 0 |
 | Electric Pull Box (Rusted) | `csm:vault_lid_electric_rusted` | 1.5 | 10 | pickaxe | 0 |
+| EV Charger (DC Fast) | `csm:ev_charger_dc_fast` | 3 | 12 | pickaxe | 1 |
+| EV Charger (Pedestal) | `csm:ev_charger_pedestal` | 3 | 12 | pickaxe | 1 |
+| EV Charger (Pedestal, Dual Port) | `csm:ev_charger_pedestal_dual` | 3 | 12 | pickaxe | 1 |
+| EV Charger (Wall Mount) | `csm:ev_charger_wall` | 2.0 | 10.0 | pickaxe | 1 |
+| EV Stall Marking (EV Only) | `csm:ev_stall_marking_ev_only` | 1.5 | 10 | pickaxe | 0 |
+| EV Stall Marking (Symbol) | `csm:ev_stall_marking_symbol` | 1.5 | 10 | pickaxe | 0 |
+| EV Stall Paint (Green) | `csm:ev_stall_paint` | 1.5 | 10 | pickaxe | 0 |
 | Fiber Optic Handhole | `csm:vault_lid_fiber_optic` | 1.5 | 10 | pickaxe | 0 |
 | Fire Hydrant | `csm:firehydrant` | 2 | 10 | pickaxe | 1 |
 | Fire Hydrant (Red, Silver Cap) | `csm:hydrant_red_silver_cap` | 3 | 12 | pickaxe | 1 |
