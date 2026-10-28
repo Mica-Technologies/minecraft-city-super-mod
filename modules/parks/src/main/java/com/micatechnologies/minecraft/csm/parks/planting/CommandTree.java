@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -44,8 +43,10 @@ import net.minecraft.world.gen.ChunkProviderServer;
  * A spot may be the ground block or the cell above it. Chunks a tree reaches into that are not
  * loaded are loaded for the call and queued to unload after it; a chunk never generated is not
  * generated, and counts as in the way. The last line of feedback is {@code CSMTREE} and a JSON
- * summary for scripts: what was planted, trimmed or had no room, with each tree's seed and yaw so
- * a re-run can plant the same tree.</p>
+ * summary for scripts: what was planted, trimmed or had no room, with each tree's seed and yaw and
+ * its {@code spot}, the {@code x,y,z,heading,seed} that plants that same tree again (the seed and
+ * yaw alone do not: see {@link TreeBatch}). {@code best=n} tries n seeds at each spot with no seed
+ * of its own and keeps the least trimmed tree.</p>
  *
  * @since 2026.10
  */
@@ -59,7 +60,8 @@ public class CommandTree extends CommandBase {
   @Override
   public String getUsage(ICommandSender sender) {
     return "/csmtree <plant <preset> <x,y,z[,heading][,seed]>;... [clear=pattern:height,...]"
-        + " [skip=pattern,...] [seed=n] [heading=h] [dry] [cells]|plantjson {...}|presets>";
+        + " [skip=pattern,...] [seed=n] [heading=h] [best=n] [dry] [cells]"
+        + "|plantjson {...}|presets>";
   }
 
   @Override
@@ -200,13 +202,6 @@ public class CommandTree extends CommandBase {
         }
         long seed = spot.seed != null ? spot.seed
             : batch.seed != null ? TreeBatch.seedAt(batch.seed, base) : world.rand.nextLong();
-        Random rng = new Random(seed);
-        String headingSpec = spot.heading != null ? spot.heading : batch.heading;
-        Double h = TreeBatch.heading(headingSpec, base);
-        double heading = h != null ? h : rng.nextDouble() * 2 * Math.PI - Math.PI;
-        t.addProperty("seed", seed);
-        t.addProperty("yaw", TreeBatch.yawOf(heading));
-
         TreeSpace world0 = TreePlanter.space(world, base, chunks::ensure,
             at -> world.getWorldBorder().contains(at)
                 && !batch.clearance.keepsClear(at, base, ground));
@@ -220,8 +215,14 @@ public class CommandTree extends CommandBase {
           }
           return world0.at(rel);
         };
-        TreePlan plan = TreeGenerators.grow(spot.preset, heading, rng, space);
-        if (plan.hasNoRoom() || plan.parts().isEmpty()) {
+        TreeBatch.Grown grown = batch.grow(spot, base, seed, space);
+        TreePlan plan = grown.plan;
+        // The seed and yaw describe the tree; spot is what plants it again, since a heading of
+        // the spot's own is not drawn from the seed and a yaw is rounded (#320)
+        t.addProperty("seed", grown.seed);
+        t.addProperty("yaw", TreeBatch.yawOf(grown.heading));
+        t.addProperty("spot", TreeBatch.replaySpot(spot.pos, grown));
+        if (!grown.fits()) {
           t.addProperty("result", "noroom");
           noRoom.add(xyz(base));
           continue;

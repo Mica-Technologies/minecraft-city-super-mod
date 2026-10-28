@@ -425,8 +425,8 @@ from the server, many trees to a call, with the clearances as rules (issue #278)
 
 ```
 /csmtree plant <preset> <x,y,z[,heading][,seed]>;... [clear=pattern:height,...]
-               [skip=pattern,...] [seed=n] [heading=h] [dry] [cells]
-/csmtree plantjson {"preset":..,"clear":[..],"skip":[..],"seed":..,"trees":[{"x","y","z",
+               [skip=pattern,...] [seed=n] [heading=h] [best=n] [dry] [cells]
+/csmtree plantjson {"preset":..,"clear":[..],"skip":[..],"seed":..,"best":..,"trees":[{"x","y","z",
                     "preset","heading","seed"}, ..]}
 /csmtree presets
 ```
@@ -448,11 +448,23 @@ from the server, many trees to a call, with the clearances as rules (issue #278)
 - **Heading** is a compass point, a Minecraft yaw in degrees, `@x:z` to lean toward a point, or
   `-`; with none the heading is drawn from the tree's seed. **Seed**: a tree's own, else the
   call's `seed=` mixed with the trunk's position (so a re-run gives the same crowns in any order),
-  else random. Both are reported, so any tree can be replanted exactly.
+  else random. Each tree's report carries `spot`, the `x,y,z,heading,seed` that plants that very
+  tree again: paste it as the spot (any `seed=` or `heading=` left on the call is overridden).
+  The reported `seed` and `yaw` alone do **not** reproduce a tree whose heading was drawn (issue
+  #320): the drawn heading is the first number taken from the seed, so a spot given a heading
+  grows from a different point in the stream, and the yaw is rounded to whole degrees besides.
+  The replay spot gives such a tree `-` as its heading, which draws it from the seed again.
+  `TreeReplayTest` holds the replay to the same blocks.
+- **`best=n`** (1 to 32) grows each spot that has no seed of its own from n seeds and keeps the
+  tree with the fewest trimmed cells, then the most blocks, then the first. The first seed tried
+  is the one the spot has without `best`, so `best=1` changes nothing, and the next are mixed
+  from it (`TreeBatch.trySeed`), so a `best` run repeats with the same `seed=`. The pick's `spot`
+  replays it without `best`. A spot with a seed of its own is planted as given. Each try is a
+  whole tree grown, so the call costs up to n times as much.
 - **Chunks**: a chunk a tree reaches into is loaded for the call and queued to unload after it.
   One never generated is not generated; it counts as in the way, and a spot in one is reported.
 - **Output**: a human line, then `CSMTREE {json}`: `planted`, `trimmed` (`[x,y,z,cells]`),
-  `noroom`, `skippedUnloaded`, and per tree its base, seed, yaw, result, block count, trimmed
+  `noroom`, `skippedUnloaded`, and per tree its base, seed, yaw, replay `spot`, result, block count, trimmed
   count and bounding box (`cells` adds every block). Plain text, not lang keys, for scripts.
 - At most 256 trees a call, so one command cannot stall the server for long.
 
