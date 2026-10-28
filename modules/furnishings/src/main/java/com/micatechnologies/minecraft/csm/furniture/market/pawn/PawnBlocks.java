@@ -38,6 +38,12 @@ public final class PawnBlocks {
       if (!player.inventory.addItemStackToInventory(back)) {
         player.dropItem(back, false);
       }
+      // The item block takes its one AFTER this, so the server's count ends where it began and
+      // nothing tells the client, which has already shown one gone: resend the inventory at the
+      // end of this tick, once the shrink has happened.
+      if (player instanceof EntityPlayerMP) {
+        PawnEvents.resyncInventory((EntityPlayerMP) player);
+      }
     }
     player.sendMessage(new TextComponentTranslation("csm.pawn.msg.no_place"));
   }

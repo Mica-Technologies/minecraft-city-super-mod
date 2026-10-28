@@ -8,6 +8,9 @@ never depends on SUM.
 Code: `modules/furnishings/.../furniture/market/shop/`. Models: `gen_furniture_market.py`.
 The economy bridge is Core's: `src/main/.../codeutils/economy/`.
 
+The pawn shop, which buys any item at the server's price rather than selling a stocked one, is
+`PAWN_SHOP_SYSTEM.md`.
+
 ## The blocks
 
 | Registry | Class | Base it looks like |
