@@ -389,3 +389,5 @@ tile.sprinkler_upright_chrome.name=Rociador montante (cromado)
 tile.sprinkler_drop_red.name=Bajante de rociador (Roja)
 tile.sprinkler_drop_silver.name=Bajante de rociador (Plateada)
 tile.smoke_detector_photoelectric.black.name=Detector de humo fotoeléctrico (negro)
+tile.eyewash_station_wall.name=Lavaojos de pared
+tile.eyewash_station_deck.name=Lavaojos de encimera (abatible)

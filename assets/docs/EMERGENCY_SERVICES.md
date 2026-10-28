@@ -16,7 +16,7 @@ The one Life Safety tab had grown to 165 entries, 120 of them fire alarm applian
 |---|---|---|---|
 | `tablifesafety` | Fire Alarm & Detection | 3 | panel, pull stations, appliances, detectors, annunciator, linker and config tool |
 | `tabexitsemergency` | Exits & Emergency Lighting | 20 | exit and stair signs, emergency lights |
-| `tabfireprotection` | Fire Protection | 21 | extinguishers, cabinets, connectable standpipe, fire department connections, riser room, sprinklers, door holders, sign plates |
+| `tabfireprotection` | Fire Protection | 21 | extinguishers, cabinets, connectable standpipe, fire department connections, riser room, sprinklers, door holders, sign plates, the lab's plumbed eyewashes |
 | `tabemergencyservices` | Emergency Services | 22 | fire, police and EMS station fittings, sirens, call box, dispatch, the working items |
 
 The fire alarm tab kept its id, so its Fabricator rule and every reference to it still hold. Blocks
@@ -210,6 +210,23 @@ The Photoelectric Smoke Detector also comes in black (`BlockFireAlarmSmokeDetect
 is stored above the facing: metadata 0-5 is white and 6-11 is black. Detectors placed before the
 black one existed therefore stay white. The finish is also carried in the item's damage, so each
 finish is its own creative stack.
+
+## Lab eyewash stations (#313)
+
+A research lab's floors needed an eyewash at every bench, so Fire Protection has two plumbed ones
+beside Emergency Services' cabinet-style `eyewash_station` (which stays the station's): the
+**Wall-Mounted Eyewash Station** (`eyewash_station_wall`), a yellow bowl with its two capped spray
+heads, push flag, drain trap and supply into the wall under a green EYE WASH tag, and the
+**Deck-Mounted Eyewash (Swing-Down)** (`eyewash_station_deck`), a chrome column on a bench's deck
+with a swing arm carrying the two heads forward over the sink and the lever that opens it. They are
+`BlockFireProtectionProp`s like the rest of the tab: decorative, no working touch, since no other
+prop in the tab does anything and a spray that ran nowhere would read as a bug.
+
+Placing by command: both store only the facing, metadata bits 0-1 (S 0, W 1, N 2, E 3), the way
+the front faces. The wall unit's model sits at the back of its cell, so it goes in the cell in front
+of the wall, its bowl at about knee height above that cell's floor. The deck unit stands on the
+floor of its cell, so on a lab bench it goes in the cell above the bench (the Healthcare benches
+have their worktop at the top of the cell), beside the sink; it does not collide.
 
 ## Traps
 
