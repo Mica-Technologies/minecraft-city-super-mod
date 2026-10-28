@@ -636,6 +636,15 @@ Each rule below exists because breaking it once produced a confident wrong answe
   so the geometry is fullbright or the lightmap is set as GL state before the call. The emergency
   light went from 16.6 to 1.4 microseconds a light this way, with no position cache involved.
   `/csm renderpass skip sharedBakesPerFrame` draws every such renderer per frame, for an A/B.
+- **Many shared pieces a block? One list of calls to them.** When a block places dozens of shared
+  lists (a flight board's rows), the cost is the push, translate, scale, colour and call per
+  piece, not the geometry: the large flight board measured 50 µs whatever its size. A list per
+  block holding only the calls, compiled again when what it shows changes, replays them in one.
+  Two traps: a list cannot be compiled while another is open, so compile every piece it calls
+  first; and a colour it changes must be plain `glColor` (recorded), followed after the call by
+  `GlStateManager.resetColor()` so the state manager's cache, which no longer knows the colour,
+  issues the next `color()`. Key or version the list on everything it draws from
+  (`FlightBoardPage` is the example, with a test against the schedule).
 - **The cache bound is soft, and must stay soft.** `CsmDisplayListCache` trims back to 1,024
   positions per cache, but only at the start of a frame and never an entry drawn in the frame
   before. It used to evict on insert above the bound, which is a cliff rather than a limit: with

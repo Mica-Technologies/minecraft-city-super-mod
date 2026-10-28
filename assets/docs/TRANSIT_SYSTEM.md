@@ -528,6 +528,8 @@ samples in the order empty, 16, 64, empty, 64, 16, empty, eight seconds each. Th
 
 A departure board costs a little more than a flight board because it draws eight rows of four lists
 against the flight board's seven of two. Beyond 48 blocks nothing is drawn but the baked model.
+Since 2026-10-28 a flight board's heads and rows are one list of their own (see above), expected
+to bring it from about 12 µs to 4-6.
 
 ### Traps
 
@@ -926,8 +928,8 @@ the daylight cycle off stops the boards, as it stops the clocks.
 `BlockFlightBoard` is a slim landscape monitor against the back of its block: on a wall, or on two
 rods to the block above when there is no wall behind it (`hung`, actual state; not under another
 board). Its bezel and the screen's texture (the DEPARTURES or ARRIVALS header and the row bands)
-are baked. `TileEntityFlightBoardRenderer` draws the rest, a board being one quad and at most
-sixteen list calls a frame:
+are baked. `TileEntityFlightBoardRenderer` draws the rest, a board being one quad and two list
+calls a frame (its own list and the clock's):
 
 - **The screen, lit.** The same texture again, a hair in front, fullbright, one quad from the
   block atlas, so a board glows at night like a screen rather than going dark with the room.
@@ -937,7 +939,17 @@ sixteen list calls a frame:
   keyed by the flight's place in the day (at most 144 lists over both boards), each remark in its
   colour (nine), the column heads (two) and the clock in the header (one per minute of the day).
   Following "Display lists: one texture, no cached state", the lists hold geometry only; the font
-  atlas, the colours, the depth mask and the fullbright lightmap are set outside them.
+  atlas, the depth mask and the fullbright lightmap are set outside them.
+- **The board's list.** The heads and the rows are one more list per board (`CsmDisplayListCache`
+  "flight boards"): the calls to those text lists, each under its place and colour. The colour is
+  plain `glColor`, which a list records, and `GlStateManager.resetColor()` follows the call, since
+  the state manager's cache no longer knows the colour. `FlightBoardPage` (on the tile entity)
+  holds the flights and remarks last drawn and a version that moves exactly when they change: a
+  flight leaves the page, a remark changes, the page changes. The list is compiled again, in
+  place, only then; it calls the text lists rather than holding their geometry, so compiling it
+  costs next to nothing when every board in a terminal changes on the same minute. The clock,
+  which changes every game minute, is drawn outside it. `FlightBoardPageTest` checks the version
+  against the schedule minute by minute over two game days.
 - **Pages.** Boards of the same kind facing the same way side by side and stacked are a bank, read
   like text: left to right along a row, then the next row down. Each board lists seven flights
   from its page, the number of boards to its reader's left plus the whole rows above it, so a bank
@@ -994,8 +1006,19 @@ large one beside it (the small board is unchanged): `airport_flight_board_large_
   clock and the page. Geometry only, as "Display lists: one texture, no cached state" asks. The
   renderer is global (a board eight wide reaches past its controller's section) and draws to 96
   blocks.
-- **What it costs.** A non-controller cell, two block lookups a frame. A controller, one draw for
-  the screen and four list calls a row: about 55 on a 4 x 2 board.
+- **The board's lists.** Placing those pieces one by one, a push, a translation, a scale, a colour
+  and a call each (four a row, about 55 calls on a 4 x 2 board), measured about 50 µs a board
+  whatever its size (2026-10-28). So the controller holds two lists of its own
+  (`CsmDisplayListCache` "large flight boards"): the screen, compiled again when the board's size
+  or list changes or the atlas moves its sprite (the sprite's corners are kept to compare), and
+  the heads, page label and rows as calls to the shared text lists under their places and colours
+  (plain `glColor`, then `GlStateManager.resetColor()`), compiled again in place when
+  `FlightBoardPage`'s version moves: a flight leaves the page, a remark changes, the page turns,
+  the board is resized. The clock stays outside. Both lists are released with the controller's
+  tile entity (removal, chunk unload) and on disconnect, and stay two whatever the board's size,
+  well inside the cache's soft bound.
+- **What it costs.** A non-controller cell, two block lookups a frame. A controller, the rods, the
+  screen's list, the board's list and the clock's. Expected about 3-5 µs a board, from about 50.
 
 ### Check-in and the kiosk
 

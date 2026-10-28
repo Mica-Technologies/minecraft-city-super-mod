@@ -165,9 +165,22 @@ of the glass) and `size` tall.
   "shop goods"), keyed by the template stack and how many places are filled, and replayed every
   frame. The atlas and item lighting are set outside the list, under the rules in
   `TRAFFIC_SIGNAL_SYSTEM.md` ("Display lists: one texture, no cached state").
-- **What can't be cached:** an enchanted item (its glint binds another texture and cached state)
-  and a built-in renderer (a chest, a shield) are drawn item by item. Their cost is the same as
-  vanilla item frames holding them.
+- **Enchanted items** (anything with a glint: enchanted books and tools, potions) are two lists
+  in the same cache entry: the shelf's models, and the shelf's glint geometry (the same quads in
+  the glint's colour, `-8372020`). The glint's state is `RenderItem.renderEffect`'s, set around the
+  lists every frame: depth func EQUAL with the depth mask off, lighting off, blend SRC_COLOR/ONE,
+  the glint texture, and the glint list replayed twice, each under one of vanilla's two scrolling
+  texture matrices (scale 8, a 3,000 ms and a 4,873 ms scroll on `Minecraft.getSystemTime`, turned
+  -50 and 10 degrees). The matrix mode is back on the model view before each call, since the list's
+  own placing applies to whichever matrix is current. All the shelf's bases are drawn before its
+  glints, not item by item; with the EQUAL depth test each glint still lands only on its own
+  item's surface. A model whose quads switch lighting or shading as they draw (Forge's emissive
+  items) is drawn vanilla's way, every frame.
+- **What can't be cached:** a built-in renderer (a chest, a banner, a shield, a skull, another
+  mod's item renderer) is drawn item by item, once a place: it binds its own textures (a banner's
+  pattern texture is made on demand, a skull's skin arrives from the network), sets cached GL
+  state, and may compile its own model lists on first use, none of which a list can hold. Its cost
+  is the same as vanilla item frames holding it.
 - **Measured** (dev client, 64 full shop gondolas, 512 items in view, render work per frame):
 
   | Setup | Render work |
@@ -177,9 +190,12 @@ of the glass) and `size` tall.
   | Cached shelves | 1.78 ms, about 13 µs a shop |
 
   - Each price card in range costs about 37 µs (glyphs are drawn every frame).
-  - Each shop of chests or enchanted items costs about 60 µs.
-- **Distances:** items draw within `shops.itemRenderDistance` (default 32 blocks) and the price
-  card within `shops.priceLabelDistance` (8).
+  - Each shop of chests costs 25-63 µs (2026-10-28). A shop of enchanted items cost 76-190 µs
+    drawn item by item with two glint passes each, against 6-14 for plain items; from lists it is
+    expected at 10-20.
+- **Distances:** items draw within `shops.itemRenderDistance` (default 32 blocks), never past
+  the performance mode's cap (`CsmPerformance.capRenderDistanceSq`: 96 blocks on MEDIUM, 64 on
+  LOW, none on HIGH), and the price card within `shops.priceLabelDistance` (8).
 - **Syncing:** the shop syncs only when the stock changes how full the shelf looks, or whether a
   sale can be made. A trade moves stock quietly and syncs once. A sync never rebuilds the chunk
   (`getBakedModelKey` is constant), since no baked model reads the shop.

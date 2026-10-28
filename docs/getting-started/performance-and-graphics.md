@@ -34,7 +34,8 @@ levels:
 | Chunk builders trimmed over | 40% of direct memory | 30% | 25% | `chunkBuilderBudgetPercent` |
 
 ¹ Signals, crosswalks, guide and street signs, message and speed signs, beacons, arrow boards,
-barricade lights, crossing gates, cranes, sirens, ad boards, departure and flight boards, clocks.
+barricade lights, crossing gates, cranes, sirens, ad boards, departure and flight boards, clocks,
+the goods on shop shelves.
 Never farther than your own Minecraft render distance.
 
 ² `chunkBuilderLimit` also caps this on every level; see [Configuration](configuration.md#performance).

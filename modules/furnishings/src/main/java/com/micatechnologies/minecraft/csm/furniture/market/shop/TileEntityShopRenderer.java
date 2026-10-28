@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -48,7 +49,10 @@ import javax.vecmath.Point3f;
  * and clear of each other, the shelves and the glass. The item's model
  * is looked up once per change of template and kept on the tile entity, so a frame costs one
  * model draw per place shown and allocates nothing; and a plain item's whole shelf is compiled into
- * a display list, replayed until the template or the fill changes. Nothing is drawn past the configured item
+ * a display list, replayed until the template or the fill changes. An enchanted item's shelf is two
+ * lists, its models and its glint geometry, the glint's state and scrolling texture matrices set
+ * around them every frame as vanilla sets them; an item with a built-in renderer (a chest) is drawn
+ * live. Nothing is drawn past the configured item
  * distance ({@link TileEntityShop#getMaxRenderDistanceSquared()}), and the card only within its
  * own, shorter distance.</p>
  *
@@ -79,6 +83,17 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
    * every frame cost about 7 microseconds an item (3.6 ms for 64 full shops).
    */
   private static final CsmDisplayListCache CACHE = new CsmDisplayListCache("shop goods");
+
+  /** How {@link #drawPlaces} draws each item: whole, its model alone, or its glint geometry. */
+  private static final int PLAIN = 0;
+  private static final int BASE = 1;
+  private static final int GLINT = 2;
+  /** Set in a shelf's key for its glint list, beside its base list in the same cache entry. */
+  private static final long GLINT_KEY = 1L << 62;
+  /** {@code RenderItem.RES_ITEM_GLINT}, and the colour {@code renderEffect} draws it in. */
+  private static final ResourceLocation GLINT_TEXTURE =
+      new ResourceLocation("textures/misc/enchanted_item_glint.png");
+  private static final int GLINT_COLOUR = -8372020;
 
   @Override
   public void render(TileEntityShop te, double x, double y, double z, float partialTicks,
@@ -127,6 +142,7 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
       extent = measure(model);
       te.clientModel = model;
       te.clientModelExtent = extent;
+      te.clientModelPlain = isPlainGeometry(model);
       te.clientModelFor = item;
     }
     mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -140,26 +156,30 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
 
     // A plain item model is one texture and no cached GL state, so the whole shelf of it can be
     // replayed from a display list; the atlas and lighting above are set outside it every frame
-    // (TRAFFIC_SIGNAL_SYSTEM.md, "Display lists: one texture, no cached state"). A glint or a
-    // built-in renderer (a chest) binds textures and state of its own, so those draw directly.
-    if (!model.isBuiltInRenderer() && !item.hasEffect()) {
-      long key = ((long) System.identityHashCode(item) << 8) ^ shown;
-      int list = CACHE.get(te.getPos(), key);
-      if (list == CsmDisplayListCache.NO_LIST) {
-        list = CACHE.allocate(te.getPos(), key);
-        if (list != CsmDisplayListCache.NO_LIST) {
-          GL11.glNewList(list, GL11.GL_COMPILE);
-          drawPlaces(renderItem, model, extent, item, display, shown);
-          GL11.glEndList();
-        }
-      }
-      if (list != CsmDisplayListCache.NO_LIST) {
-        GL11.glCallList(list);
-      } else {
-        drawPlaces(renderItem, model, extent, item, display, shown);
-      }
+    // (TRAFFIC_SIGNAL_SYSTEM.md, "Display lists: one texture, no cached state").
+    //
+    // An enchanted item is the same model drawn twice more under the glint texture, so it is two
+    // lists: the shelf's base models, and the shelf's glint geometry (the same quads in the glint's
+    // colour), replayed twice under RenderItem.renderEffect's state and its two scrolling texture
+    // matrices, set here every frame. All the bases are drawn before all the glints rather than
+    // item by item; the glint's depth test is EQUAL, so each item's glint still lands only on its
+    // own surface and never through another item in front of it.
+    //
+    // A built-in renderer (a chest, a banner, a shield, a skull, another mod's item renderer)
+    // draws live: it binds textures of its own (a banner's pattern texture is made on demand, a
+    // skull's skin arrives from the network), sets cached GL state, and may compile its own model
+    // lists on first use, none of which a display list can hold.
+    long key = ((long) System.identityHashCode(item) << 8) ^ shown;
+    if (model.isBuiltInRenderer()) {
+      drawPlaces(renderItem, model, extent, item, display, shown, PLAIN);
+    } else if (!item.hasEffect()) {
+      replay(te, key, renderItem, model, extent, item, display, shown, PLAIN);
+    } else if (te.clientModelPlain) {
+      replay(te, key, renderItem, model, extent, item, display, shown, BASE);
+      drawGlint(mc, te, key ^ GLINT_KEY, renderItem, model, extent, item, display, shown);
     } else {
-      drawPlaces(renderItem, model, extent, item, display, shown);
+      // Quads that switch lighting or shading as they draw: vanilla's way, every frame.
+      drawPlaces(renderItem, model, extent, item, display, shown, PLAIN);
     }
 
     RenderHelper.disableStandardItemLighting();
@@ -169,12 +189,134 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
   }
 
   /**
+   * Replays the shelf's list for a key and a way of drawing, compiling it if it is missing, or
+   * draws it directly if the driver refuses a list.
+   */
+  private static void replay(TileEntityShop te, long key, RenderItem renderItem,
+      IBakedModel model, float[] extent, ItemStack item, ShopDisplay display, int shown,
+      int mode) {
+    int list = CACHE.get(te.getPos(), key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      list = CACHE.allocate(te.getPos(), key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        drawPlaces(renderItem, model, extent, item, display, shown, mode);
+        GL11.glEndList();
+      }
+    }
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      drawPlaces(renderItem, model, extent, item, display, shown, mode);
+    }
+  }
+
+  /**
+   * The enchantment glint over the shelf, as {@code RenderItem.renderEffect} draws it over each
+   * item: depth equal and unwritten, lighting off, additive, the glint texture, and the shelf's
+   * glint geometry drawn twice, each under its own scaled, scrolling and turned texture matrix on
+   * vanilla's clock. The texture matrices are set here, outside the list, and the matrix mode is
+   * back on the model view before each call, since the list's own placing (push, translate, scale)
+   * applies to whichever matrix is current when it is replayed. Vanilla's state after the glint
+   * is restored as vanilla restores it.
+   */
+  private static void drawGlint(Minecraft mc, TileEntityShop te, long key, RenderItem renderItem,
+      IBakedModel model, float[] extent, ItemStack item, ShopDisplay display, int shown) {
+    GlStateManager.depthMask(false);
+    GlStateManager.depthFunc(GL11.GL_EQUAL);
+    GlStateManager.disableLighting();
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR,
+        GlStateManager.DestFactor.ONE);
+    mc.getTextureManager().bindTexture(GLINT_TEXTURE);
+    GlStateManager.matrixMode(GL11.GL_TEXTURE);
+    GlStateManager.pushMatrix();
+    GlStateManager.scale(8.0F, 8.0F, 8.0F);
+    float f = (float) (Minecraft.getSystemTime() % 3000L) / 3000.0F / 8.0F;
+    GlStateManager.translate(f, 0.0F, 0.0F);
+    GlStateManager.rotate(-50.0F, 0.0F, 0.0F, 1.0F);
+    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+    replay(te, key, renderItem, model, extent, item, display, shown, GLINT);
+    GlStateManager.matrixMode(GL11.GL_TEXTURE);
+    GlStateManager.popMatrix();
+    GlStateManager.pushMatrix();
+    GlStateManager.scale(8.0F, 8.0F, 8.0F);
+    float f1 = (float) (Minecraft.getSystemTime() % 4873L) / 4873.0F / 8.0F;
+    GlStateManager.translate(-f1, 0.0F, 0.0F);
+    GlStateManager.rotate(10.0F, 0.0F, 0.0F, 1.0F);
+    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+    replay(te, key, renderItem, model, extent, item, display, shown, GLINT);
+    GlStateManager.matrixMode(GL11.GL_TEXTURE);
+    GlStateManager.popMatrix();
+    GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+    GlStateManager.enableLighting();
+    GlStateManager.depthFunc(GL11.GL_LEQUAL);
+    GlStateManager.depthMask(true);
+    mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+  }
+
+  /**
+   * Whether every quad of the model is plain geometry: drawn by {@code RenderItem.renderModel}
+   * with no change of lighting or shading between its quads (Forge's emissive-item path switches
+   * GL lighting and the lightmap for a quad that carries its own light or skips diffuse shading,
+   * through cached calls a display list cannot hold). Only such a model's base and glint are
+   * drawn by {@link #drawModel}; vanilla's own path draws the rest. Run once per change of
+   * template.
+   */
+  static boolean isPlainGeometry(IBakedModel model) {
+    try {
+      // The model drawn is the one the FIXED transform hands back, as in drawPlaces.
+      IBakedModel placed = model.handlePerspective(TransformType.FIXED).getLeft();
+      IBakedModel drawn = placed != null ? placed : model;
+      if (model.isBuiltInRenderer() || drawn.isBuiltInRenderer()) {
+        return false;
+      }
+      for (int f = 0; f <= EnumFacing.VALUES.length; f++) {
+        EnumFacing side = f < EnumFacing.VALUES.length ? EnumFacing.VALUES[f] : null;
+        for (BakedQuad quad : drawn.getQuads(null, side, 0L)) {
+          if (!quad.shouldApplyDiffuseLighting()
+              || (quad.getFormat() != DefaultVertexFormats.ITEM
+              && quad.getFormat().hasUvOffset(1))) {
+            return false;
+          }
+        }
+      }
+    } catch (RuntimeException e) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * A model's quads at the item's place, in one colour or (with {@code -1}) the item's own tints:
+   * {@code RenderItem.renderItem}'s half-block shift and {@code renderModel}, without the glint.
+   * Geometry only.
+   */
+  private static void drawModel(RenderItem renderItem, IBakedModel model, int colour,
+      ItemStack item) {
+    GlStateManager.pushMatrix();
+    GlStateManager.translate(-0.5F, -0.5F, -0.5F);
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
+    for (EnumFacing side : EnumFacing.VALUES) {
+      renderItem.renderQuads(buf, model.getQuads(null, side, 0L), colour, item);
+    }
+    renderItem.renderQuads(buf, model.getQuads(null, null, 0L), colour, item);
+    tess.draw();
+    GlStateManager.popMatrix();
+  }
+
+  /**
    * Draws the item at each of the first {@code shown} places, row by row: each scaled, the same
    * on every axis, to the largest size that fits its place's box less a small gap all round, then
-   * stood on the shelf (a hair above it) and centred in the box across and front to back.
+   * stood on the shelf (a hair above it) and centred in the box across and front to back. In
+   * {@link #PLAIN} each is {@code renderItem}'s whole draw; in {@link #BASE} and {@link #GLINT}
+   * the model's quads alone, in the item's colours or in the glint's.
    */
   private static void drawPlaces(RenderItem renderItem, IBakedModel model, float[] extent,
-      ItemStack item, ShopDisplay display, int shown) {
+      ItemStack item, ShopDisplay display, int shown, int mode) {
     // The item's box as an item frame places it, in sixteenths.
     float ex = Math.max((extent[3] - extent[0]) * 16.0f, MIN_EXTENT);
     float ey = Math.max((extent[4] - extent[1]) * 16.0f, MIN_EXTENT);
@@ -205,7 +347,11 @@ public class TileEntityShopRenderer extends TileEntitySpecialRenderer<TileEntity
         GlStateManager.scale(scale, scale, scale);
         IBakedModel transformed = ForgeHooksClient.handleCameraTransforms(model,
             TransformType.FIXED, false);
-        renderItem.renderItem(item, transformed);
+        if (mode == PLAIN) {
+          renderItem.renderItem(item, transformed);
+        } else {
+          drawModel(renderItem, transformed, mode == GLINT ? GLINT_COLOUR : -1, item);
+        }
         GlStateManager.popMatrix();
       }
     }

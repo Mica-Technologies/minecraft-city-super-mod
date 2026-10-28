@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market.shop;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.furniture.market.TileEntityDisplayCase;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -107,7 +108,9 @@ public class TileEntityShop extends TileEntityDisplayCase {
   /**
    * The renderer's cache: the template's item model (an {@code IBakedModel}, typed loosely so
    * the server never names a client class), the stack it was looked up for, and the box the
-   * model fills once it is placed as an item frame places it ({min x, y, z, max x, y, z}, blocks).
+   * model fills once it is placed as an item frame places it ({min x, y, z, max x, y, z}, blocks),
+   * and whether its quads are plain geometry that an enchanted item's base and glint can be
+   * compiled from ({@code TileEntityShopRenderer.isPlainGeometry}).
    */
   @Nullable
   transient Object clientModel;
@@ -115,6 +118,7 @@ public class TileEntityShop extends TileEntityDisplayCase {
   transient ItemStack clientModelFor;
   @Nullable
   transient float[] clientModelExtent;
+  transient boolean clientModelPlain;
 
   /** Set while loading, when a change of template is not news to anyone. */
   private transient boolean reading;
@@ -587,8 +591,9 @@ public class TileEntityShop extends TileEntityDisplayCase {
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
+    // The shops' own distance, capped by the performance mode as every other renderer is.
     double d = CsmConfig.getShopsRenderDistance();
-    return d * d;
+    return CsmPerformance.capRenderDistanceSq(d * d);
   }
 
   /** The stock as hoppers and pipes see it: matching items in, nothing out. */

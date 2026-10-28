@@ -126,6 +126,9 @@ every text piece from shared display lists (`CsmSharedDisplayLists`); what is le
 row and column and a countdown that changes, so there is no free fix. A board is one or two per
 station or gate, so 20 in view is a third of a millisecond. A candidate if a terminal full of them
 is ever built: one list per board keyed on the text it shows, rebuilt only when a row changes.
+Done 2026-10-28 for both flight boards, after the large board measured about 50 µs whatever its
+size (`FlightBoardPage`, "The large flight boards" in `TRANSIT_SYSTEM.md`); not yet measured
+after. The bus departure board is still drawn piece by piece.
 
 ## Busy states and moving parts, 2026-09-26
 

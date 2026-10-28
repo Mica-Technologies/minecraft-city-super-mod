@@ -72,7 +72,8 @@ public final class PawnValuation {
   }
 
   private static File file;
-  private static PawnValues values = PawnValues.defaults();
+  /** The values file as last read; null until something needs it ({@link #values()}). */
+  private static PawnValues values;
   private static Result result;
 
   private PawnValuation() {
@@ -84,16 +85,16 @@ public final class PawnValuation {
   }
 
   /**
-   * Reads the values file and solves every value. Called when the server has started, by which
-   * time every mod's recipes are registered, and by {@code /csmpawn reload}.
+   * Reads the values file and solves every value. Called when the server has started (if the
+   * pawn shop is enabled; if not, the first quote or {@code /csmpawn} command that needs a value
+   * calls it through {@link #result()}), by which time every mod's recipes are registered, and
+   * by {@code /csmpawn reload}.
    *
    * @return how long it took, in milliseconds
    */
   public static synchronized long rebuild() {
     long t0 = System.nanoTime();
-    if (file != null) {
-      values = PawnValues.load(file);
-    }
+    values = file != null ? PawnValues.load(file) : values();
     List<Recipe> recipes = collectRecipes();
     result = PawnValueSolver.solve(values.fixed(), recipes,
         CsmConfig.getPawnDefaultValue());
@@ -116,27 +117,35 @@ public final class PawnValuation {
     return result;
   }
 
-  static PawnValues values() {
+  /**
+   * The values file, read the first time anything asks. With the pawn shop disabled nothing is
+   * solved at server start, so a quote or a command may be first; reading the file here keeps
+   * them from working from the defaults, and {@link #save} from writing the defaults over it.
+   */
+  static synchronized PawnValues values() {
+    if (values == null) {
+      values = file != null ? PawnValues.load(file) : PawnValues.defaults();
+    }
     return values;
   }
 
   /** Sets (or with null clears) an override, saves the file and solves again. */
   static synchronized void setOverride(String key, @Nullable Double value) {
-    values.setOverride(key, value);
+    values().setOverride(key, value);
     save();
     rebuild();
   }
 
   /** Blocks or unblocks an item and saves the file; returns whether it is now blocked. */
   static synchronized boolean toggleBlocked(String key) {
-    boolean now = values.toggleBlocked(key);
+    boolean now = values().toggleBlocked(key);
     save();
     return now;
   }
 
   private static void save() {
     if (file != null) {
-      values.save(file);
+      values().save(file);
     }
   }
 
@@ -177,7 +186,7 @@ public final class PawnValuation {
       return Quote.refused("csm.pawn.refuse.nothing");
     }
     String key = key(stack);
-    if (values.isBlocked(key)) {
+    if (values().isBlocked(key)) {
       return Quote.refused("csm.pawn.refuse.blocked");
     }
     if (holdsItems(stack)) {
