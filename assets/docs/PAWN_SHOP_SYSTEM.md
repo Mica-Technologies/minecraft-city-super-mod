@@ -43,7 +43,9 @@ a later CSM version never rewrites it. Keys are `modid:item` (every subtype) or
 structure blocks...).
 
 **The recipe walk** runs once when the server has started (every mod's recipes are registered
-by then) and on `/csmpawn reload`. Its edges are every `IRecipe`, every furnace recipe (plus
+by then) and on `/csmpawn reload`. With the pawn shop disabled (`pawn.enabled=false`) it is
+skipped at start, and the file read and the walk wait for the first quote or `/csmpawn` command
+that needs a value. Its edges are every `IRecipe`, every furnace recipe (plus
 `smeltFuelCost`), every CSM block's Fabricator cost (`CsmFabricatorCosts.getCost`), and two
 in-world conversions with no recipe of their own (concrete from powder, dyed shulker boxes).
 
