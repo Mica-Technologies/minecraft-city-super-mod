@@ -1172,7 +1172,14 @@ A detector is called by:
   (10/20/35 degrees either side, sneak-right-click), and pointed at the detector within 45 degrees,
   so a vehicle that has passed through and drives away calls nothing. With no source registered the
   detector does not tick.
-- **redstone**, which is how a fire station's alert relay holds the road for its trucks.
+- **redstone**, which is how a fire station's alert relay holds the road for its trucks. The
+  stored flag (`pw`) is set by a neighbour change, but a standing call is checked against the
+  redstone actually reaching the detector each time the controller reads it (only while the
+  detector and its neighbours are loaded), so it ends with its source even when no block update
+  reaches the detector, and a `pw:1` written by `/blockdata` or saved with the chunk ends at the
+  next read (issue #319).
+- **a test call**: NBT `tst` in ticks (`/blockdata x y z {tst:200}`, a 10 s call) starts at the
+  controller's next read and ends by itself, like a vehicle passing; what is left of it is saved.
 
 It looks the way it faces: place it on top of the arm over the approach it serves, facing up that
 approach. Its model (`gen_preempt_detector.py`) stands in the cell above a thin traffic pole on a

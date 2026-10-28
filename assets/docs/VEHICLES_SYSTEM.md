@@ -41,7 +41,11 @@ zone, which sees a vehicle at the stop bar and counts any player. The fire stati
 `BlockPreemptDetector` (`csm:preempt_detector`) is the optical head real intersections carry on
 the mast arm (`TRAFFIC_SIGNAL_SYSTEM.md`, "The preempt detector"). It is linked to a circuit like a
 sensor, and a preempt whose **Trig MOV** is **DET** fires while any of that circuit's detectors has
-a call. Redstone calls it too, which is how the station relay now really preempts. It sits on
+a call. Redstone calls it too, which is how the station relay now really preempts; the call is
+checked against the redstone actually there whenever the controller reads it, so it cannot latch
+(issue #319). To test a preempt without a vehicle, give it a timed call:
+`/blockdata x y z {tst:200}` calls for 10 s and then ends (writing `pw:1b` now ends at the next
+read, since nothing powers the detector). It sits on
 top of the mast arm, and a preemption beacon linked to the same circuit is its confirmation
 light.
 
