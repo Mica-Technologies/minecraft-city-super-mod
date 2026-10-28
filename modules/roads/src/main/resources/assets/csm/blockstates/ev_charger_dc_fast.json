@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:streetscape/ev_charging/ev_charger_dc_fast"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:streetscape/ev_charging/ev_charger_dc_fast_inventory"
+      }
+    ],
+    "status": {
+      "available": {
+        "textures": {
+          "status": "csm:blocks/streetscape/ev_charging/status_available"
+        }
+      },
+      "charging": {
+        "textures": {
+          "status": "csm:blocks/streetscape/ev_charging/status_charging"
+        }
+      },
+      "fault": {
+        "textures": {
+          "status": "csm:blocks/streetscape/ev_charging/status_fault"
+        }
+      }
+    }
+  }
+}

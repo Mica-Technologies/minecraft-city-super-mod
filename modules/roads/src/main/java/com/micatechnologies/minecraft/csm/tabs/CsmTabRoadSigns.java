@@ -177,6 +177,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("altodwphvdangersign"));
     initTabBlock(new BlockTrafficSign("signeast"));
     initTabBlock(new BlockTrafficSign("signemergencyparkingonly"));
+    initTabBlock(new BlockTrafficSign("signevchargingonly"));
     initTabBlock(new BlockTrafficSign("signesignal"));
     initTabBlock(new BlockTrafficSign("signemergencystoppingonly"));
     initTabBlock(new BlockTrafficSign("signendspeed35"));
@@ -770,6 +771,10 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("buslanesignnohours"));
     initTabBlock(new BlockTrafficSign("signcamping"));
     initTabBlock(new BlockTrafficSign("signdiesel"));
+    initTabBlock(new BlockTrafficSign("signevcharging"));
+    initTabBlock(new BlockTrafficSign("signevchargingplaque"));
+    initTabBlock(new BlockTrafficSign("signevchargingarrowleft"));
+    initTabBlock(new BlockTrafficSign("signevchargingarrowright"));
     initTabBlock(new BlockTrafficSign("signeisenhower"));
     initTabBlock(new BlockTrafficSign("falloutsheltersign"));
     initTabBlock(new BlockTrafficSign("falloutsheltersignalt"));
