@@ -1417,6 +1417,8 @@ def gate_sign():
             names_of("Gate Sign", "Flugsteigschild", "Letrero de Puerta de Embarque",
                      "Gateskylt"),
             els, tex, display=gui_display(0.7, 1.0), extra_state=extra)
+    # the letter and number only swap textures: one model location for every state
+    C.as_multipart(reg)
 
 
 # ------------------------------------------------------------------------------------------

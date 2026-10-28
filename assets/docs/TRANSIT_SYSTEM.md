@@ -1067,7 +1067,10 @@ where a player means them to be. Not onto the X-ray, whose housing stands over i
   the letter A to D. The gate is one value 1 to 80 in the platform signs' `TileEntityPlatformSign`,
   read as two actual-state properties, `letter` and `number`, each of which swaps the texture of
   its own cell, so 24 textures make every gate. The back's cells are laid out mirrored, so it reads
-  the same from behind.
+  the same from behind. Since the letter and number only swap textures, the gate sign's, both
+  stand signs', the platform number sign's, the station name sign's and the line bullet's
+  blockstates are multipart (`forge_multipart`, PERFORMANCE_AND_SECURITY.md "Memory"): each
+  texture set a child model under `states/<block>/`, one model location a block instead of 320.
 - **Airport seating**: beam seating with upholstered seats, chrome armrests and a T leg, black or
   blue. It is `BlockPlatformBench` with its own model: the seats are in the platform bench's places
   (`SEATS`), so the bench's sitting code works unchanged, and seats side by side join the same way.

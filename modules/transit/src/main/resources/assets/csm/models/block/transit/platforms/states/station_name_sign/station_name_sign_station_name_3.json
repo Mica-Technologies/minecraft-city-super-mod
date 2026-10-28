@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/transit/platforms/station_name_sign",
+  "textures": {
+    "face": "csm:blocks/transit/platforms/station_name_3"
+  }
+}

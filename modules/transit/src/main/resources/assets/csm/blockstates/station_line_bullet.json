@@ -1,105 +1,633 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:transit/stations/station_line_bullet"
-  },
   "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+    "inventory": {
+      "model": "csm:transit/stations/station_line_bullet"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "line": "1"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "2"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_13"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "14"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_14"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "15"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_15"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "line": "16"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_16"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "1"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_1",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "2"
       },
-      "south": {
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_13",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "14"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_14",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "15"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_15",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "line": "16"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_16",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "1"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_1",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "2"
       },
-      "west": {
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "3"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "4"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "5"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "6"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "7"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "8"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "9"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "10"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "11"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "12"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "13"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_13",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "14"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_14",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "15"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_15",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "line": "16"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_16",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "1"
+      },
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_1",
         "y": 270
       }
     },
-    "inventory": [
-      {}
-    ],
-    "line": {
-      "1": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_1"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "line": "2"
       },
-      "2": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_2"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "3"
       },
-      "3": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_3"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "4"
       },
-      "4": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_4"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "5"
       },
-      "5": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_5"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "6"
       },
-      "6": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_6"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "7"
       },
-      "7": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_7"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "8"
       },
-      "8": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_8"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "9"
       },
-      "9": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_9"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "10"
       },
-      "10": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_10"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "11"
       },
-      "11": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_11"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "12"
       },
-      "12": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_12"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "13"
       },
-      "13": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_13"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_13",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "14"
       },
-      "14": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_14"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_14",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "15"
       },
-      "15": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_15"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_15",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "line": "16"
       },
-      "16": {
-        "textures": {
-          "face": "csm:blocks/transit/stations/bullet_16"
-        }
+      "apply": {
+        "model": "csm:transit/stations/states/station_line_bullet/station_line_bullet_bullet_16",
+        "y": 270
       }
     }
-  }
+  ]
 }

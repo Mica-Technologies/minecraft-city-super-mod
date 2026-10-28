@@ -1,75 +1,399 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:transit/platforms/station_name_sign"
-  },
   "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+    "inventory": {
+      "model": "csm:transit/platforms/station_name_sign"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "2"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "name": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_10"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_1",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "2"
       },
-      "south": {
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "name": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_1",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "2"
       },
-      "west": {
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "3"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "4"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "5"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "6"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "7"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "8"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "9"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "name": "10"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "1"
+      },
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_1",
         "y": 270
       }
     },
-    "inventory": [
-      {}
-    ],
-    "name": {
-      "1": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_1"
-        }
+    {
+      "when": {
+        "facing": "west",
+        "name": "2"
       },
-      "2": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_2"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "3"
       },
-      "3": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_3"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "4"
       },
-      "4": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_4"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "5"
       },
-      "5": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_5"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "6"
       },
-      "6": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_6"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "7"
       },
-      "7": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_7"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "8"
       },
-      "8": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_8"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "9"
       },
-      "9": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_9"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "name": "10"
       },
-      "10": {
-        "textures": {
-          "face": "csm:blocks/transit/platforms/station_name_10"
-        }
+      "apply": {
+        "model": "csm:transit/platforms/states/station_name_sign/station_name_sign_station_name_10",
+        "y": 270
       }
     }
-  }
+  ]
 }

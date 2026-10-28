@@ -781,6 +781,8 @@ def stand_sign(large=False):
                          "Uppställningsplatsskylt")
     C.add(reg, 'new BlockStandSign("%s", %s)' % (reg, box_java((x0, 0, 7, x1, y1, 9))),
           names, {reg: m}, lc.facing_state(C.M(reg), extra), tab=TAB)
+    # the letter and number only swap textures: one model location for every state
+    C.as_multipart(reg)
 
 
 # ------------------------------------------------------------------------------------------
