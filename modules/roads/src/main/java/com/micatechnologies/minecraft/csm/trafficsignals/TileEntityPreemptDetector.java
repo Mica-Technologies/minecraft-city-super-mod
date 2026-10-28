@@ -4,9 +4,12 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPreemptEmitter;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPreemptSources;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 /**
  * The preempt detector's state: how far and how wide it looks, and whether it has a call.
@@ -15,6 +18,10 @@ import net.minecraft.util.EnumFacing;
  * {@link CsmPreemptSources}, which a module such as CSM: Vehicles feeds). The controller reads
  * {@link #isCalled()} through the circuit the detector is linked to, as it reads a sensor; a
  * preempt whose trigger is that circuit's detectors fires while any of them is called.
+ * <p>
+ * For testing a preempt without a vehicle, NBT {@code tst} is a timed call in ticks
+ * ({@code /blockdata x y z {tst:200}} calls for 10 s, then ends by itself). Writing {@code pw}
+ * no longer works for that: the redstone call is checked against the redstone actually there.
  * <p>
  * A transit emitter (a bus) is a separate call, {@link #isTransitCalled()}, read by transit
  * signal priority and never by a preempt, as a real detector tells the two apart by the
@@ -62,6 +69,7 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
   private static final String K_RANGE = "rg";
   private static final String K_HALF_ANGLE = "ha";
   private static final String K_POWERED = "pw";
+  private static final String K_TEST = "tst";
 
   /** How far the detector sees, in blocks. */
   private int range = DEFAULT_RANGE;
@@ -69,8 +77,24 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
   /** How far either side of its facing the detector sees, in degrees. */
   private int halfAngle = DEFAULT_HALF_ANGLE;
 
-  /** Whether redstone is calling the detector. Kept from the last neighbour change. */
+  /**
+   * Whether redstone was calling the detector at the last look: set by a neighbour change, and
+   * checked against the redstone actually reaching the detector whenever the controller reads a
+   * standing call ({@link #isCalled()}), so it cannot outlive its source.
+   */
   private boolean powered = false;
+
+  /**
+   * A test call's length, in ticks, not yet started: set by NBT {@code tst} (for example
+   * {@code /blockdata x y z {tst:200}}, a 10 s call), and started at the next read.
+   */
+  private int testTicksPending = 0;
+
+  /** The world tick a started test call ends at, or -1 with no test call running. */
+  private long testUntil = -1L;
+
+  /** The world tick of the last read, to save what is left of a running test call. */
+  private long lastReadTick = 0L;
 
   /** Whether an emitter was in view at the last look. Transient: re-read within a tick. */
   private transient boolean emitterInView = false;
@@ -85,6 +109,8 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
     halfAngle = compound.hasKey(K_HALF_ANGLE)
         ? clampTo(HALF_ANGLES, compound.getInteger(K_HALF_ANGLE)) : DEFAULT_HALF_ANGLE;
     powered = compound.getBoolean(K_POWERED);
+    testTicksPending = Math.max(0, compound.getInteger(K_TEST));
+    testUntil = -1L;
   }
 
   @Override
@@ -92,6 +118,10 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
     compound.setInteger(K_RANGE, range);
     compound.setInteger(K_HALF_ANGLE, halfAngle);
     compound.setBoolean(K_POWERED, powered);
+    long testLeft = testUntil >= 0L ? testUntil - lastReadTick : testTicksPending;
+    if (testLeft > 0L) {
+      compound.setInteger(K_TEST, (int) Math.min(Integer.MAX_VALUE, testLeft));
+    }
     return compound;
   }
 
@@ -107,14 +137,48 @@ public class TileEntityPreemptDetector extends AbstractTickableTileEntity {
   }
 
   /**
-   * Whether the detector has a call: redstone, or an emergency emitter in view.
+   * Whether the detector has a call: redstone, an emergency emitter in view, or a test call.
+   * <p>
+   * A redstone call is checked against the redstone reaching the detector now. The flag alone
+   * was only ever cleared by a neighbour update, so a call written by {@code /blockdata}, saved
+   * with the chunk, or left by a source removed without an update reaching the detector held the
+   * controller's preempt dwell for good (issue #319). Only a standing call is checked, and only
+   * while the detector and its neighbours are loaded, so an idle detector costs nothing and a
+   * read never loads a chunk.
    *
    * @return whether the detector is called
    *
    * @since 1.0
    */
   public boolean isCalled() {
-    return powered || emitterInView;
+    World world = getWorld();
+    if (world == null || world.isRemote) {
+      return powered || emitterInView;
+    }
+    BlockPos pos = getPos();
+    return isCalledAt(world.getTotalWorldTime(),
+        () -> !world.isAreaLoaded(pos, 1) || world.isBlockPowered(pos));
+  }
+
+  /**
+   * {@link #isCalled()} at world tick {@code now}, with {@code redstone} saying whether redstone
+   * reaches the detector (asked only while a redstone call stands).
+   */
+  boolean isCalledAt(long now, BooleanSupplier redstone) {
+    lastReadTick = now;
+    if (powered && !redstone.getAsBoolean()) {
+      setPowered(false);
+    }
+    if (testTicksPending > 0) {
+      testUntil = now + testTicksPending;
+      testTicksPending = 0;
+    }
+    boolean testCall = testUntil >= 0L && now < testUntil;
+    if (testUntil >= 0L && !testCall) {
+      testUntil = -1L;
+      markDirty();
+    }
+    return powered || emitterInView || testCall;
   }
 
   /**
