@@ -1359,6 +1359,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
       }
     }
     for (ThermalSpace s : spaces) {
+      // the vents' and exhaust grilles' air, now every system has added its share (#314)
+      s.finishAirflow();
       s.integrate(DT);
     }
   }
