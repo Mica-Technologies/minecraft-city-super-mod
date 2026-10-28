@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "138 blocks in this tab"
+!!! info "139 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -52,6 +52,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Horizontal Traffic Signal Cover | `csm:tlhcover` |  | 10 | pickaxe | 1 |
 | Horizontal White/Black Traffic Light Border | `csm:tlhborderwhite` | 2 | 10 | pickaxe | 1 |
 | Horizontal Yellow/Black Traffic Light Border | `csm:tlhborderyellow` | 2 | 10 | pickaxe | 1 |
+| Lab Exhaust Fan | `csm:hvac_exhaust_fan_part` | 3 | 15 | pickaxe | 1 |
 | Large Ad Kiosk | `csm:ad_kiosk_large_part` | 1.5 | 10 | pickaxe | 0 |
 | Large Ad Kiosk | `csm:ad_kiosk_large_service` | 1.5 | 10 | pickaxe | 0 |
 | Light Switch Relay | `csm:switch_relay` | -1.0 | 18.0 | pickaxe | 0 |

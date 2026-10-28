@@ -24,12 +24,16 @@ public class TileEntityHvacThermostat extends TileEntityHvacThermostatBase {
   static final String NBT_LINKED_ZONES = "lZ";
   static final String LEGACY_NBT_LINKED_ZONES = "linkedZones";
   static final String NBT_SYSTEM_MODE = "sM";
+  static final String NBT_LINKED_EXHAUST_FANS = "lX";
 
   /** Positions of linked heaters/coolers. */
   private final List<BlockPos> linkedUnits = new ArrayList<>();
 
   /** Positions of linked zone thermostats. */
   private final List<BlockPos> linkedZones = new ArrayList<>();
+
+  /** Positions of linked exhaust fans (#314). */
+  private final List<BlockPos> linkedExhaustFans = new ArrayList<>();
 
   /** What the system is doing: {@link HvacStatus} mode. Saved, so a reload does not flap it. */
   int systemMode = HvacStatus.MODE_IDLE;
@@ -100,6 +104,50 @@ public class TileEntityHvacThermostat extends TileEntityHvacThermostatBase {
 
   // endregion
 
+  // region Exhaust fans
+
+  /**
+   * Links an exhaust fan (#314): it then draws air out through the exhaust grilles of this
+   * system, its own and its zones'.
+   *
+   * @return whether the link was made
+   */
+  public boolean linkExhaustFan(BlockPos fanPos) {
+    if (linkedExhaustFans.contains(fanPos)) {
+      return false;
+    }
+    if (world != null && !(world.getTileEntity(fanPos) instanceof TileEntityHvacExhaustFan)) {
+      return false;
+    }
+    linkedExhaustFans.add(fanPos.toImmutable());
+    if (world != null && !world.isRemote) {
+      markDirtySync(world, pos, true);
+    }
+    return true;
+  }
+
+  public boolean unlinkExhaustFan(BlockPos fanPos) {
+    boolean removed = linkedExhaustFans.remove(fanPos);
+    if (removed && world != null && !world.isRemote) {
+      TileEntity te = world.isBlockLoaded(fanPos) ? world.getTileEntity(fanPos) : null;
+      if (te instanceof TileEntityHvacExhaustFan) {
+        ((TileEntityHvacExhaustFan) te).applyExhaust(0.0f);
+      }
+      markDirtySync(world, pos, true);
+    }
+    return removed;
+  }
+
+  public List<BlockPos> getLinkedExhaustFans() {
+    return linkedExhaustFans;
+  }
+
+  public int getLinkedExhaustFanCount() {
+    return linkedExhaustFans.size();
+  }
+
+  // endregion
+
   // region Zones
 
   public boolean linkZone(BlockPos zonePos) {
@@ -154,6 +202,7 @@ public class TileEntityHvacThermostat extends TileEntityHvacThermostatBase {
     lastActiveMode = systemMode;
     readPosList(compound, NBT_LINKED_UNITS, LEGACY_NBT_LINKED_UNITS, linkedUnits);
     readPosList(compound, NBT_LINKED_ZONES, LEGACY_NBT_LINKED_ZONES, linkedZones);
+    readPosList(compound, NBT_LINKED_EXHAUST_FANS, NBT_LINKED_EXHAUST_FANS, linkedExhaustFans);
     compound.removeTag(LEGACY_NBT_LINKED_UNITS);
     compound.removeTag(LEGACY_NBT_LINKED_ZONES);
   }
@@ -164,6 +213,9 @@ public class TileEntityHvacThermostat extends TileEntityHvacThermostatBase {
     compound.setInteger(NBT_SYSTEM_MODE, systemMode);
     compound.setTag(NBT_LINKED_UNITS, writePosList(linkedUnits));
     compound.setTag(NBT_LINKED_ZONES, writePosList(linkedZones));
+    if (!linkedExhaustFans.isEmpty()) {
+      compound.setTag(NBT_LINKED_EXHAUST_FANS, writePosList(linkedExhaustFans));
+    }
     return compound;
   }
 

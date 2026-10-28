@@ -132,6 +132,25 @@ public final class ThermalSpace {
    */
   boolean idle;
 
+  /**
+   * Air into and out of the space (#314), cubic feet a minute: what the systems' vents and exhaust
+   * grilles are adding up this step, and the totals of the last complete step, which
+   * {@code /csmhvac} and the thermostats report. See {@link HvacAirBalance}.
+   */
+  float supplyCfm;
+  float exhaustCfm;
+  float lastSupplyCfm;
+  float lastExhaustCfm;
+
+  /** Air drawn out of each region this step, CFM; null until an exhaust grille draws here. */
+  float[] exhaustRegionCfm;
+
+  /**
+   * Conductance to the outdoors of the air drawn in to make up an exhaust the supply does not
+   * (#314), per region: null while there is none, which is every space without an exhaust grille.
+   */
+  float[] infiltrationUA;
+
   /** The last step in which a running system or unit worked in this space. */
   long activeStep = -1;
 
@@ -214,6 +233,63 @@ public final class ThermalSpace {
         ThermalScanner.unpackY(packedCell) >> 4, ThermalScanner.unpackZ(packedCell) >> 4);
   }
 
+  /** The make-up air's conductance to the outdoors for region {@code r}. */
+  private float airUA(int r) {
+    return infiltrationUA == null ? 0.0f : infiltrationUA[r];
+  }
+
+  /** Adds a vent's supply to this step's airflow. */
+  void addSupply(float cfm) {
+    supplyCfm += cfm;
+  }
+
+  /** Adds an exhaust grille's draw from region {@code r} to this step's airflow. */
+  void addExhaust(int r, float cfm) {
+    if (exhaustRegionCfm == null) {
+      exhaustRegionCfm = new float[regionCount];
+    }
+    exhaustRegionCfm[r] += cfm;
+    exhaustCfm += cfm;
+  }
+
+  /**
+   * Closes this step's airflow, after every system has run: the totals become the reported
+   * ones, and the make-up air of a shortfall is shared among the regions the air is drawn out of,
+   * as each one's draw. A frozen space keeps what it had, as it keeps its temperature.
+   */
+  void finishAirflow() {
+    if (frozen) {
+      supplyCfm = 0;
+      exhaustCfm = 0;
+      if (exhaustRegionCfm != null) {
+        java.util.Arrays.fill(exhaustRegionCfm, 0f);
+      }
+      return;
+    }
+    lastSupplyCfm = supplyCfm;
+    lastExhaustCfm = exhaustCfm;
+    float ua = HvacAirBalance.infiltrationUA(supplyCfm, exhaustCfm);
+    if (ua > 0 && exhaustRegionCfm != null) {
+      if (infiltrationUA == null) {
+        infiltrationUA = new float[regionCount];
+      }
+      for (int r = 0; r < regionCount; r++) {
+        infiltrationUA[r] = ua * exhaustRegionCfm[r] / exhaustCfm;
+      }
+    } else {
+      infiltrationUA = null;
+    }
+    supplyCfm = 0;
+    exhaustCfm = 0;
+    if (exhaustRegionCfm != null) {
+      if (lastExhaustCfm > 0) {
+        java.util.Arrays.fill(exhaustRegionCfm, 0f);
+      } else {
+        exhaustRegionCfm = null;
+      }
+    }
+  }
+
   /** Region of a cell of this space, or -1. */
   int regionOfCell(long packedCell) {
     return regionOf.getOrDefault(ThermalScanner.regionKey(ThermalScanner.unpackX(packedCell),
@@ -234,7 +310,8 @@ public final class ThermalSpace {
   void prepareLoss() {
     float tg = groundTemperature(outdoor);
     for (int r = 0; r < regionCount; r++) {
-      float outUA = exteriorUA[r] + openingUA[r] + unconditionedUA[r] * UNCONDITIONED_FACTOR;
+      float outUA = exteriorUA[r] + openingUA[r] + unconditionedUA[r] * UNCONDITIONED_FACTOR
+          + airUA(r);
       sumUA[r] = outUA + groundUA[r];
       sumUAT[r] = outUA * outdoor + groundUA[r] * tg;
     }
@@ -297,7 +374,8 @@ public final class ThermalSpace {
     float[] extUAT = new float[n];
     float tg = groundTemperature(outdoor);
     for (int r = 0; r < n; r++) {
-      float outUA = exteriorUA[r] + openingUA[r] + unconditionedUA[r] * UNCONDITIONED_FACTOR;
+      float outUA = exteriorUA[r] + openingUA[r] + unconditionedUA[r] * UNCONDITIONED_FACTOR
+          + airUA(r);
       extUA[r] = outUA + groundUA[r];
       extUAT[r] = outUA * outdoor + groundUA[r] * tg;
     }
@@ -378,7 +456,7 @@ public final class ThermalSpace {
     float ua = 0;
     for (int r = 0; r < regionCount; r++) {
       ua += exteriorUA[r] + openingUA[r] + groundUA[r]
-          + unconditionedUA[r] * UNCONDITIONED_FACTOR;
+          + unconditionedUA[r] * UNCONDITIONED_FACTOR + airUA(r);
     }
     for (float c : coupleUA) {
       ua += c;
@@ -394,7 +472,8 @@ public final class ThermalSpace {
     float tg = groundTemperature(outdoor);
     float loss = 0;
     for (int r = 0; r < regionCount; r++) {
-      float outUA = exteriorUA[r] + openingUA[r] + unconditionedUA[r] * UNCONDITIONED_FACTOR;
+      float outUA = exteriorUA[r] + openingUA[r] + unconditionedUA[r] * UNCONDITIONED_FACTOR
+          + airUA(r);
       loss += outUA * (t - outdoor) + groundUA[r] * (t - tg);
     }
     for (int i = 0; i < coupleRegion.length; i++) {

@@ -58,6 +58,13 @@ public final class HvacStatus {
    * units run at a steady part load.
    */
   public static final int FLAG_LIGHTWEIGHT = 1 << 12;
+  /**
+   * The thermostat's room has exhaust grilles drawing out more air than its vents supply: it is
+   * under negative pressure, as a lab is meant to be (#314).
+   */
+  public static final int FLAG_NEGATIVE_PRESSURE = 1 << 13;
+  /** This thermostat has exhaust grilles, but no exhaust fan in its system has power (#314). */
+  public static final int FLAG_NO_EXHAUST_FAN = 1 << 14;
 
   /** Whether a switch position lets its thermostat heat. */
   public static boolean switchHeats(int switchMode) {

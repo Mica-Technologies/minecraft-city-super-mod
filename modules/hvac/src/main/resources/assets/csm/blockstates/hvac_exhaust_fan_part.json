@@ -1,0 +1,36 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/exhaust/lab_fan_none"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "piece": {
+      "none": {
+        "model": "csm:hvac/exhaust/lab_fan_none"
+      },
+      "stack": {
+        "model": "csm:hvac/exhaust/lab_fan_stack"
+      },
+      "top": {
+        "model": "csm:hvac/exhaust/lab_fan_top"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:hvac/exhaust/lab_fan"
+      }
+    ]
+  }
+}
