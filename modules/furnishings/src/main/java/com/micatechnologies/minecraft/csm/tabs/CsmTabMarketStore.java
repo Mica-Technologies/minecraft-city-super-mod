@@ -30,6 +30,7 @@ import com.micatechnologies.minecraft.csm.furniture.market.BlockVerifoneMx915;
 import com.micatechnologies.minecraft.csm.furniture.market.StoreAppliances;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnCounter;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnDropBin;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnNeonSign;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnPriceKiosk;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopCooler;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopDisplayCase;
@@ -175,6 +176,18 @@ public class CsmTabMarketStore extends CsmTab {
 
     // Pawn Price Check Kiosk
     initTabBlock(new BlockPawnPriceKiosk("pawn_price_kiosk", new int[]{2, 0, 3, 14, 28, 15}));
+
+    // PAWN Neon Sign
+    initTabBlock(new BlockPawnNeonSign("pawn_neon_sign", new int[]{1, 0, 6, 15, 6, 10}));
+
+    // Jewellery Case
+    initTabBlock(new BlockCounterPiece("pawn_jewelry_case", new int[]{2, 0, 4, 14, 7, 12}, Material.GLASS, SoundType.GLASS, BlockRenderLayer.TRANSLUCENT));
+
+    // Guitar Wall
+    initTabBlock(new BlockBathroomFixture("pawn_guitar_wall", new int[]{0, 0, 13, 16, 16, 16}, FixtureMaterial.WOOD));
+
+    // WE BUY GOLD Sign
+    initTabBlock(new BlockBathroomFixture("we_buy_gold_sign", new int[]{0, 8, 7, 16, 16, 9}, FixtureMaterial.METAL));
 
     // ---- Merchandising ----
     // Pallet Stack

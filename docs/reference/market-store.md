@@ -2,7 +2,7 @@
 
 Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures.
 
-!!! info "145 blocks in this tab"
+!!! info "149 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -79,6 +79,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Gondola Shelving (Household) | `csm:gondola_shelf_household` | 1.5 | 3.0 | axe | 0 |
 | Gondola Shelving (Snacks) | `csm:gondola_shelf_snacks` | 1.5 | 3.0 | axe | 0 |
 | Green Apple Crate | `csm:greenapplecrate` | 2 | 10 | pickaxe | 1 |
+| Guitar Wall | `csm:pawn_guitar_wall` | 1.5 | 3.0 | axe | 0 |
 | Hanging Produce Scale (Steel) | `csm:produce_scale_steel` | 1.5 | 3.0 | axe | 0 |
 | Hot Deal Sign (Orange) | `csm:deal_sign_orange` | 1.5 | 3.0 | axe | 0 |
 | Hot Food Case (Steel) | `csm:hot_food_case_steel` | 1.5 | 3.0 | axe | 0 |
@@ -86,6 +87,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Ice Merchandiser (Blue) | `csm:ice_merchandiser_blue` | 1.5 | 3.0 | axe | 0 |
 | Ice Merchandiser (White) | `csm:ice_merchandiser_white` | 1.5 | 3.0 | axe | 0 |
 | Island Freezer (White) | `csm:island_freezer_white` | 1.5 | 3.0 | axe | 0 |
+| Jewellery Case | `csm:pawn_jewelry_case` | 1.5 | 3.0 | axe | 0 |
 | Large Crate | `csm:largecrate` | 2 | 10 | pickaxe | 1 |
 | Lettuce Crate | `csm:lettucecrate` | 2 | 10 | pickaxe | 1 |
 | Lottery Terminal (Black) | `csm:lottery_terminal_black` | 1.5 | 3.0 | axe | 0 |
@@ -101,6 +103,7 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Pallet Stack (Drinks) | `csm:pallet_stack_drinks` | 1.5 | 3.0 | axe | 0 |
 | Pallet Stack (Paper Goods) | `csm:pallet_stack_paper` | 1.5 | 3.0 | axe | 0 |
 | Pawn Drop-Off Bin | `csm:pawn_drop_bin` | 1.5 | 3.0 | axe | 0 |
+| PAWN Neon Sign | `csm:pawn_neon_sign` | 1.5 | 3.0 | axe | 0 |
 | Pawn Price Check Kiosk | `csm:pawn_price_kiosk` | 1.5 | 3.0 | axe | 0 |
 | Pawn Shop Counter | `csm:pawn_counter` | 1.5 | 3.0 | axe | 0 |
 | Pear Crate | `csm:pearcrate` | 2 | 10 | pickaxe | 1 |
@@ -156,5 +159,6 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Vending Machine (Shop) | `csm:shop_vending_machine` | 1.5 | 3.0 | axe | 0 |
 | Verifone MX915 | `csm:vf915` | 2 | 10 | pickaxe | 1 |
 | Vintage Cash Register (Brass) | `csm:cash_register_brass` | 1.5 | 3.0 | axe | 0 |
+| WE BUY GOLD Sign | `csm:we_buy_gold_sign` | 1.5 | 3.0 | axe | 0 |
 
 </div>

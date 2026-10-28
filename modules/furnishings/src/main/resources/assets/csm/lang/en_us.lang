@@ -775,3 +775,7 @@ tile.commercial_dryer_stainless.name=Commercial Tumble Dryer (Stainless Steel)
 tile.pawn_counter.name=Pawn Shop Counter
 tile.pawn_drop_bin.name=Pawn Drop-Off Bin
 tile.pawn_price_kiosk.name=Pawn Price Check Kiosk
+tile.pawn_neon_sign.name=PAWN Neon Sign
+tile.pawn_jewelry_case.name=Jewellery Case
+tile.pawn_guitar_wall.name=Guitar Wall
+tile.we_buy_gold_sign.name=WE BUY GOLD Sign

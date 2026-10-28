@@ -775,3 +775,7 @@ tile.commercial_dryer_stainless.name=Gewerbe-Wäschetrockner (Edelstahl)
 tile.pawn_counter.name=Pfandhaus-Theke
 tile.pawn_drop_bin.name=Pfandhaus-Einwurfbox
 tile.pawn_price_kiosk.name=Pfandhaus-Preisprüfer
+tile.pawn_neon_sign.name=PFANDHAUS-Leuchtschild
+tile.pawn_jewelry_case.name=Schmuckvitrine
+tile.pawn_guitar_wall.name=Gitarrenwand
+tile.we_buy_gold_sign.name=WIR KAUFEN GOLD-Schild
