@@ -99,6 +99,16 @@ class ExhaustBlocksTest {
     assertTrue(riser.getValue(BlockExposedDuct.DOWN));
   }
 
+  /**
+   * The chunk builder skips a block whose DEFAULT state is invisible, whatever state is placed,
+   * so a part that draws in some states must not report INVISIBLE for its default one.
+   */
+  @Test
+  void partIsDrawnWhateverItsDefaultState() {
+    assertEquals(net.minecraft.util.EnumBlockRenderType.MODEL,
+        part.getDefaultState().getRenderType());
+  }
+
   @Test
   void partMetadataRoundTrips() {
     for (IBlockState s : part.getBlockState().getValidStates()) {
