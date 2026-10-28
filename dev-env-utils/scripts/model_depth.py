@@ -422,7 +422,7 @@ def _near_pairs(faces_a, faces_b=None):
                 yield f1, f2
 
 
-def separate(root, written, dump, hand_made=False, overlay=None):
+def separate(root, written, dump, hand_made=False, overlay=None, keep=None):
     """Separates clashing faces among the models under ``root`` that ``written`` names.
 
     :param root:    the generator's output root (the assets tree, or a temporary copy)
@@ -433,6 +433,9 @@ def separate(root, written, dump, hand_made=False, overlay=None):
                     ``HAND_MAX`` in all -- fanning out a stack of caps would step a pole's end.
                     A generated model's faces move at most ``GEN_MAX`` in all; a clash that
                     needs more is left, since a bigger step shows more than the flicker
+    :param keep:    optional ``keep(rel, face_dict)`` that is true for a face that must not move
+                    (a lens a renderer draws over at numbers of its own); the other face of the
+                    clash is moved instead, if it can be
     :return: how many faces were moved
     """
     owned = {os.path.normpath(w) for w in written}
@@ -483,6 +486,8 @@ def separate(root, written, dump, hand_made=False, overlay=None):
                 for q in order:
                     if os.path.normpath(q.rel) not in owned or not _movable(q):
                         continue
+                    if keep is not None and keep(q.rel, q.el["faces"][q.fn]):
+                        continue
                     by = _place(q, faces)
                     if by is not None and abs(total.get((q.rel, q.idx, q.fn), 0) + by) > cap:
                         by = None
@@ -504,6 +509,50 @@ def separate(root, written, dump, hand_made=False, overlay=None):
     if PRUNE and not hand_made:
         prune(root, written, dump, overlay)
     return moved
+
+
+def separate_outputs(out, root, encode, keep=None):
+    """``separate`` for the generators that build every file in memory first, as a map of
+    absolute path to bytes (``outputs()``), and only then write it or compare it under
+    ``--check``. Writes the map's files under ``root`` (the assets tree they stand for) into a
+    temporary folder, separates and prunes there, and puts the models it changed back into the
+    map, so writing and checking both see the same result.
+
+    :param out:    {absolute path: bytes}; block models, blockstates and textures under ``root``
+                   take part, anything else (lang files) is left alone
+    :param root:   the real ``assets/csm`` folder the paths are under
+    :param encode: the generator's JSON encoder, ``encode(data) -> bytes``
+    :param keep:   as ``separate``'s
+    :return: how many faces were moved
+    """
+    import shutil
+    import tempfile
+    tmp = tempfile.mkdtemp(prefix="model_depth_")
+    try:
+        rels = {}
+        for path, data in out.items():
+            rel = os.path.relpath(path, root)
+            if rel.startswith(".."):
+                continue
+            if not (rel.endswith(".json") or rel.endswith(".png")):
+                continue
+            dst = os.path.join(tmp, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            with open(dst, "wb") as f:
+                f.write(data)
+            rels[os.path.normpath(rel)] = path
+
+        def dump(path, data):
+            with open(path, "wb") as f:
+                f.write(encode(data))
+        moved = separate(tmp, sorted(rels), dump, keep=keep)
+        for rel, path in rels.items():
+            if rel.endswith(".json"):
+                with open(os.path.join(tmp, rel), "rb") as f:
+                    out[path] = f.read()
+        return moved
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def separate_dirs(dirs, written, dump):

@@ -24,13 +24,23 @@ to the top of the cell, where the mount's drop comes down to meet it (the payloa
 above the can; the detector and the dome hang from their caps. Their lens boxes and bounding boxes
 are the `*_SPAN_*` constants in the Java, which must match SPAN_LIGHTS and the shifts below.
 
+Every model is written through model_depth.py (separate, then prune), as the other JSON-model
+generators' are: faces that z-fight move apart by at most 0.65 px and faces the model's own closed
+boxes hide are removed. The confirmation lights' lens faces are kept where they are drawn
+(`keep_lens`), so the Java lens boxes above still match.
+
 Usage:
     python gen_preempt_detector.py [--check]
 """
 import json
 import math
 import os
+import shutil
 import sys
+import tempfile
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import model_depth  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ASSETS = os.path.join(ROOT, 'modules', 'roads', 'src', 'main', 'resources', 'assets', 'csm')
@@ -304,34 +314,75 @@ def text(obj):
     return json.dumps(obj, indent=2) + '\n'
 
 
-def same(path, data):
-    if not os.path.exists(path):
+def dump(path, data):
+    """Writes a JSON file as every file here is written (model_depth.py writes back through it)."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write(text(data))
+
+
+def files():
+    """Every file this writes: path relative to the assets root, and its data."""
+    rel_models = os.path.relpath(MODELS, ASSETS)
+    out = {os.path.relpath(MODEL, ASSETS): model(),
+           os.path.relpath(BLOCKSTATE, ASSETS): blockstate(),
+           os.path.join(rel_models, 'preempt_detector_span.json'): model(detector_span_elements),
+           os.path.join('blockstates', 'preempt_detector_span.json'):
+               blockstate('preempt_detector_span')}
+    for name in list(LIGHTS) + list(SPAN_LIGHTS):
+        out[os.path.join(rel_models, name + '.json')] = light_model(name)
+        out[os.path.join('blockstates', name + '.json')] = light_blockstate(name)
+    return out
+
+
+def keep_lens(rel, face):
+    """The confirmation lights' lens faces stay where they are drawn: the beacon renderer glows
+    over each light's lens box at the numbers in BlockPreemptConfirmationLight (PAR_LENS_*,
+    DOME_LENS_*, their _SPAN_ twins), and model_depth.py would otherwise move them out by up to
+    0.6 px (the PAR lens forward of its glow, the dome's top above it). The faces they clash
+    with move instead, or stay as they were. The detector's lens has no glow and may move."""
+    return (os.path.basename(rel).startswith('preempt_confirm_')
+            and face.get('texture') == LENS)
+
+
+def generate(root):
+    """Writes every file under root, then separates the faces that z-fight and prunes the ones
+    the models' own closed boxes hide (model_depth.py), as every JSON-model generator does."""
+    written = []
+    for rel, data in sorted(files().items()):
+        dump(os.path.join(root, rel), data)
+        written.append(rel)
+    model_depth.separate(root, written, dump, keep=keep_lens)
+    return written
+
+
+def same(a, b):
+    if not os.path.exists(b):
         return False
-    with open(path, encoding='utf-8') as fh:
-        return fh.read().replace('\r\n', '\n') == data
+    with open(a, encoding='utf-8') as fa, open(b, encoding='utf-8') as fb:
+        return fa.read().replace('\r\n', '\n') == fb.read().replace('\r\n', '\n')
 
 
 def main():
     check = '--check' in sys.argv
-    files = {MODEL: text(model()), BLOCKSTATE: text(blockstate())}
-    files[os.path.join(MODELS, 'preempt_detector_span.json')] = text(
-        model(detector_span_elements))
-    files[os.path.join(ASSETS, 'blockstates', 'preempt_detector_span.json')] = text(
-        blockstate('preempt_detector_span'))
-    for name in list(LIGHTS) + list(SPAN_LIGHTS):
-        files[os.path.join(MODELS, name + '.json')] = text(light_model(name))
-        files[os.path.join(ASSETS, 'blockstates', name + '.json')] = text(light_blockstate(name))
-    drift = [p for p, d in files.items() if not same(p, d)]
-    if check:
-        if drift:
-            print('preempt detector has drifted:\n  ' + '\n  '.join(drift))
-            sys.exit(1)
-        print('preempt detector is up to date')
-        return
-    for p in drift:
-        with open(p, 'w', encoding='utf-8', newline='\n') as fh:
-            fh.write(files[p])
-        print('wrote', os.path.relpath(p, ROOT))
+    tmp = tempfile.mkdtemp(prefix='preempt_')
+    try:
+        written = generate(tmp)
+        drift = [r for r in written
+                 if not same(os.path.join(tmp, r), os.path.join(ASSETS, r))]
+        if check:
+            if drift:
+                print('preempt detector has drifted:\n  ' + '\n  '.join(drift))
+                sys.exit(1)
+            print('preempt detector is up to date')
+            return
+        for rel in drift:
+            dst = os.path.join(ASSETS, rel)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(os.path.join(tmp, rel), dst)
+            print('wrote', os.path.relpath(dst, ROOT))
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 if __name__ == '__main__':

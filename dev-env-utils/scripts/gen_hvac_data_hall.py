@@ -25,6 +25,9 @@ import sys
 
 from PIL import Image
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import model_depth  # noqa: E402
+
 REPO = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 HVAC = os.path.join(REPO, "modules", "hvac", "src", "main", "resources", "assets", "csm")
 TEX_DIR = os.path.join(HVAC, "textures", "blocks", "hvac", "datahall")
@@ -300,6 +303,9 @@ def main():
         fragments()
         return 0
     out = outputs()
+    # separate the faces that z-fight and prune the hidden ones, as every JSON-model generator
+    # does; in memory, so writing and --check see the same models
+    model_depth.separate_outputs(out, HVAC, js)
     if a.check:
         bad = []
         for p, data in out.items():
