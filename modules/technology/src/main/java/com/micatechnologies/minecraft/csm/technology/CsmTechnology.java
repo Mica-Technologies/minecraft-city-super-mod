@@ -9,7 +9,6 @@ import com.micatechnologies.minecraft.csm.technology.school.BellAnnounceHandler;
 import com.micatechnologies.minecraft.csm.technology.school.BellAnnouncePacket;
 import com.micatechnologies.minecraft.csm.technology.school.BellScheduleUpdateHandler;
 import com.micatechnologies.minecraft.csm.technology.school.BellScheduleUpdatePacket;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -102,9 +101,6 @@ public class CsmTechnology {
     // pre-initialization before it fires the sound registry event, so Core sees the complete
     // union when it creates the sound events.
     TechnologySounds.registerSounds();
-
-    // With SUM installed, the iPhones open SUM's phone (by reflection; SUM stays optional).
-    MinecraftForge.EVENT_BUS.register(new IphoneOpensSumPhone());
 
     proxy.preInit(event);
   }
