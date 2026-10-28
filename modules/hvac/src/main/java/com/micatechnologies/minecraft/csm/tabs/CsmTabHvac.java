@@ -18,6 +18,9 @@ import com.micatechnologies.minecraft.csm.hvac.BlockHvacRtuHeaterSilver;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacThermostat;
 import com.micatechnologies.minecraft.csm.hvac.BlockExposedDuct;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacCrac;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacExhaustFan;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacExhaustGrille;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacLabExhaustFan;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneBoundary;
 import com.micatechnologies.minecraft.csm.hvac.BlockExposedServiceHanger;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
@@ -146,12 +149,17 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(new BlockHvacCrac("hvac_crac_downflow")); // CRAC Unit (Downflow)
     initTabBlock(new BlockHvacCrac("hvac_crac_upflow")); // CRAC Unit (Upflow)
     initTabBlock(new BlockHvacCrac("hvac_crah")); // CRAH Unit (Chilled Water)
+    // Rooftop exhaust fans (#314; gen_hvac_exhaust.py --fragments)
+    initTabBlock(new BlockHvacLabExhaustFan("hvac_lab_exhaust_fan")); // Lab Exhaust Fan (High Plume)
+    initTabBlock(new BlockHvacExhaustFan("hvac_upblast_exhaust_fan")); // Upblast Exhaust Fan
+    initTabBlock(new BlockHvacExhaustFan("hvac_mushroom_exhaust_fan")); // Mushroom Exhaust Fan
 
     // Functional HVAC blocks — Controls and distribution
     initTabBlock(BlockHvacThermostat.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacZoneThermostat.class, fmlPreInitializationEvent);
     initTabBlock(new BlockHvacZoneBoundary()); // HVAC Zone Boundary (#305)
     initTabBlock(BlockHvacVentRelay.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockHvacExhaustGrille()); // HVAC Exhaust Grille (#314)
     initTabBlock(new BlockExposedDuct("duct_round_galvanized")); // Exposed Spiral Duct (Galvanized)
     initTabBlock(new BlockExposedDuct("duct_round_black")); // Exposed Spiral Duct (Black)
     initTabBlock(new BlockExposedDuct("duct_round_white")); // Exposed Spiral Duct (White)
