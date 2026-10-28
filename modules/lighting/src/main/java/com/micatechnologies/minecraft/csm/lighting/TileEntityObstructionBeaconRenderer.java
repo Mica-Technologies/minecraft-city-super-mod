@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.lighting;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderUtils;
+import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -16,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 /**
  * Draws a tall building beacon's flash: the lens at full brightness and a glow around it, only
@@ -34,6 +38,19 @@ import org.lwjgl.opengl.GL11;
  * bright lens, not a floodlight). The glow keeps a minimum size on screen, so a beacon on a roof a
  * hundred blocks off still reads as a point of light.</p>
  *
+ * <p><b>Shared lists.</b> Nothing in the geometry depends on where the beacon is or how bright the
+ * flash is: the sleeves are fixed in the block, the glow and bloom are discs of unit radius scaled
+ * by the matrix, and the vertex colours are the style's. So each style's four parts (sleeve, hot
+ * sleeve, bloom, glow) are compiled once into lists shared by every beacon
+ * ({@link CsmSharedDisplayLists}), replayed under the beacon's translation and the billboard's
+ * turn and scale. The flash's brightness, which changes every frame, is applied outside the lists
+ * as the blend's constant alpha ({@code glBlendColor} with {@code GL_CONSTANT_ALPHA}) rather than
+ * in the vertices: a vertex colour array overrides {@code glColor}, so the colour cannot carry it.
+ * The glow and bloom vertices carry their colour premultiplied by their ring's alpha, so
+ * {@code src * constant + dst} is exactly the {@code src * (intensity * ringAlpha) + dst} the live
+ * draw made. Drawn live, a lit red beacon tessellated 784 vertices a frame for the 900 ms of each
+ * flash. {@link CsmRenderToggles#sharedBakesPerFrame} draws it live, for comparison.</p>
+ *
  * @since 2026.9
  */
 @SideOnly(Side.CLIENT)
@@ -44,8 +61,10 @@ public class TileEntityObstructionBeaconRenderer
       new ResourceLocation("csm", "textures/blocks/white1px.png");
 
   /** How a beacon's lens sits in its block and how it flashes. */
-  private static final class Style {
+  static final class Style {
 
+    /** This style's place in the list keys. */
+    final int index;
     final float radius;
     final float y0;
     final float y1;
@@ -61,8 +80,9 @@ public class TileEntityObstructionBeaconRenderer
     /** How far the glow's core is washed toward white: a red light stays red. */
     final float whiten;
 
-    Style(float radiusPx, float y0Px, float y1Px, int rgb, long cycle, long rise, long full,
-        long fade, float glow, float bloom, float whiten) {
+    Style(int index, float radiusPx, float y0Px, float y1Px, int rgb, long cycle, long rise,
+        long full, long fade, float glow, float bloom, float whiten) {
+      this.index = index;
       this.radius = radiusPx / 16f;
       this.y0 = y0Px / 16f;
       this.y1 = y1Px / 16f;
@@ -98,9 +118,9 @@ public class TileEntityObstructionBeaconRenderer
 
   // Lens geometry matches gen_obstruction_beacons.py: red radius 3.8 px from y 3.4 to 8.6, white
   // radius 3.2 px from y 4 to 10.6, both 3 px higher on the wall bracket.
-  private static final Style RED = new Style(3.8f, 3.4f, 8.6f, 0xFF2A18, 2000, 100, 700, 100,
+  static final Style RED = new Style(0, 3.8f, 3.4f, 8.6f, 0xFF2A18, 2000, 100, 700, 100,
       1.2f, 4.0f, 0.2f);
-  private static final Style WHITE_STROBE = new Style(3.2f, 4f, 10.6f, 0xF2F6FF, 1500, 0, 100,
+  static final Style WHITE_STROBE = new Style(1, 3.2f, 4f, 10.6f, 0xF2F6FF, 1500, 0, 100,
       60, 1.5f, 6.0f, 0.6f);
 
   /** The glow's profile: alpha at each share of its radius, a hot core fading to nothing. */
@@ -118,6 +138,36 @@ public class TileEntityObstructionBeaconRenderer
   private static final int FAN = 20;
   /** Sky and block light for a vertex that ignores the light around it. */
   private static final int FULLBRIGHT = 240;
+
+  /** The coloured sleeve over the lens. */
+  static final int PART_SLEEVE = 0;
+  /** The nearly white sleeve added on top of it. */
+  static final int PART_HOT_SLEEVE = 1;
+  /** The wide bloom, a disc of unit radius. */
+  static final int PART_BLOOM = 2;
+  /** The small hot glow, a disc of unit radius. */
+  static final int PART_GLOW = 3;
+  /** Core in OpenGL 1.4 with {@code glBlendColor}; LWJGL 2 names it only in its imaging class. */
+  private static final int GL_CONSTANT_ALPHA = 0x8003;
+  private static final int GL_ONE_MINUS_CONSTANT_ALPHA = 0x8004;
+  /** How much of the hot sleeve's flash reaches the screen. */
+  private static final float HOT_SLEEVE_SHARE = 0.7f;
+
+  /** Every part of both styles: eight lists in all, whatever the number of beacons. */
+  private static final CsmSharedDisplayLists LISTS =
+      new CsmSharedDisplayLists("obstruction_beacon");
+
+  /**
+   * The shared list key for one part of one style.
+   *
+   * @param style the style's index
+   * @param part  one of the {@code PART_} constants
+   *
+   * @return the key
+   */
+  static long listKey(int style, int part) {
+    return ((long) style << 2) | (part & 3);
+  }
 
   @Override
   public void render(TileEntityObstructionBeacon te, double x, double y, double z,
@@ -166,19 +216,36 @@ public class TileEntityObstructionBeaconRenderer
     GlStateManager.disableAlpha();
     GlStateManager.shadeModel(GL11.GL_SMOOTH);
 
+    boolean live = CsmRenderToggles.sharedBakesPerFrame;
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
 
     // The lit lens: a solid fullbright sleeve just outside the baked lens, drawn over it...
-    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-        GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-    sleeve(tess, buf, cx, cz, y0, y1, style.radius + 0.01f, style.r, style.g, style.b, on);
+    if (live) {
+      GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+          GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+      sleeve(tess, buf, cx, cz, y0, y1, style.radius + 0.01f, style.r, style.g, style.b, on);
+    } else {
+      // The sleeves sit in the block: only the beacon's own offset is the matrix's.
+      GlStateManager.pushMatrix();
+      GlStateManager.translate(x, y + lift, z);
+      GlStateManager.blendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
+      GL14.glBlendColor(0f, 0f, 0f, on);
+      callPart(style, PART_SLEEVE);
+    }
     // ...and a hot, nearly white pass added on top of it, so it reads as a light, not a colour.
-    GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
-        GlStateManager.DestFactor.ONE);
-    sleeve(tess, buf, cx, cz, y0, y1, style.radius + 0.012f, 1f,
-        style.g + (1 - style.g) * style.whiten, style.b + (1 - style.b) * style.whiten,
-        on * 0.7f);
+    if (live) {
+      GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA,
+          GlStateManager.DestFactor.ONE);
+      sleeve(tess, buf, cx, cz, y0, y1, style.radius + 0.012f, 1f,
+          style.g + (1 - style.g) * style.whiten, style.b + (1 - style.b) * style.whiten,
+          on * HOT_SLEEVE_SHARE);
+    } else {
+      GlStateManager.blendFunc(GL_CONSTANT_ALPHA, GL11.GL_ONE);
+      GL14.glBlendColor(0f, 0f, 0f, on * HOT_SLEEVE_SHARE);
+      callPart(style, PART_HOT_SLEEVE);
+      GlStateManager.popMatrix();
+    }
 
     // The glow and the bloom face the camera. A disc through the lens would be cut in half by the
     // roof or pole under the beacon and by its own body, which the depth test puts in front of
@@ -188,11 +255,26 @@ public class TileEntityObstructionBeaconRenderer
     float glowR = Math.max(style.glow, minSize * 1.5f);
     float len = (float) Math.sqrt(cx * cx + cy * cy + cz * cz);
     RenderManager rm = Minecraft.getMinecraft().getRenderManager();
+    float bloomA = on * (0.4f + 0.6f * dark);
     billboard(cx, cy, cz, len, bloomR, rm);
-    radial(tess, buf, bloomR, style, on * (0.4f + 0.6f * dark), BLOOM_AT, BLOOM_ALPHA);
+    if (live) {
+      radial(tess, buf, bloomR, style, bloomA, BLOOM_AT, BLOOM_ALPHA);
+    } else {
+      GlStateManager.scale(bloomR, bloomR, bloomR);
+      GL14.glBlendColor(0f, 0f, 0f, bloomA);
+      callPart(style, PART_BLOOM);
+    }
     GlStateManager.popMatrix();
     billboard(cx, cy, cz, len, glowR, rm);
-    radial(tess, buf, glowR, style, on, GLOW_AT, GLOW_ALPHA);
+    if (live) {
+      radial(tess, buf, glowR, style, on, GLOW_AT, GLOW_ALPHA);
+    } else {
+      GlStateManager.scale(glowR, glowR, glowR);
+      GL14.glBlendColor(0f, 0f, 0f, on);
+      callPart(style, PART_GLOW);
+      // The blend colour is not GlStateManager's; leave it at GL's default for whatever follows.
+      GL14.glBlendColor(0f, 0f, 0f, 0f);
+    }
     GlStateManager.popMatrix();
 
     GlStateManager.shadeModel(GL11.GL_FLAT);
@@ -204,6 +286,57 @@ public class TileEntityObstructionBeaconRenderer
     GlStateManager.enableCull();
     GlStateManager.enableLighting();
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * Replays one part's shared list, compiling it on first use, or draws it directly if the driver
+   * refused a list name. The caller has set the matrix, the blend and its constant alpha.
+   */
+  private static void callPart(Style style, int part) {
+    long key = listKey(style.index, part);
+    int list = LISTS.get(key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      list = LISTS.allocate(key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        drawPart(style, part);
+        GL11.glEndList();
+      }
+    }
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      drawPart(style, part);
+    }
+    // The vertex colours leave GL's current colour at the last vertex's, which GlStateManager does
+    // not know about (a direct draw resets its cache afterwards; a replay does not).
+    GlStateManager.resetColor();
+  }
+
+  /**
+   * One part's geometry for a shared list, in the block's own frame (the sleeves) or as a disc of
+   * unit radius (the bloom and glow). Every vertex alpha that the live draw scales by the flash is
+   * left to the blend's constant alpha. Geometry only: the caller owns every GL state.
+   */
+  private static void drawPart(Style style, int part) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    switch (part) {
+      case PART_SLEEVE:
+        sleeve(tess, buf, 0.5f, 0.5f, style.y0, style.y1, style.radius + 0.01f, style.r,
+            style.g, style.b, 1f);
+        break;
+      case PART_HOT_SLEEVE:
+        sleeve(tess, buf, 0.5f, 0.5f, style.y0, style.y1, style.radius + 0.012f, 1f,
+            style.g + (1 - style.g) * style.whiten, style.b + (1 - style.b) * style.whiten, 1f);
+        break;
+      case PART_BLOOM:
+        premultipliedRadial(tess, buf, style, BLOOM_AT, BLOOM_ALPHA);
+        break;
+      default:
+        premultipliedRadial(tess, buf, style, GLOW_AT, GLOW_ALPHA);
+        break;
+    }
   }
 
   /** A fullbright vertex in the BLOCK format: position, colour, texture, lightmap. */
@@ -285,5 +418,58 @@ public class TileEntityObstructionBeaconRenderer
   private static void ring(BufferBuilder buf, double x, double y, Style s, float white, float a) {
     float w = white * white * s.whiten;
     vertex(buf, x, y, 0, s.r + (1 - s.r) * w, s.g + (1 - s.g) * w, s.b + (1 - s.b) * w, a);
+  }
+
+  /**
+   * The same rings at unit radius for a shared list, each vertex's colour premultiplied by its
+   * ring's alpha. Drawn with {@code GL_CONSTANT_ALPHA, GL_ONE} and the flash as the constant,
+   * {@code colour * ringAlpha * flash} is added to the screen, as the live {@code SRC_ALPHA, ONE}
+   * draw added {@code colour * (flash * ringAlpha)}.
+   */
+  private static void premultipliedRadial(Tessellator tess, BufferBuilder buf, Style s,
+      float[] at, float[] alphas) {
+    buf.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.BLOCK);
+    for (int k = 0; k + 1 < at.length; k++) {
+      float r0 = at[k];
+      float r1 = at[k + 1];
+      float[] c0v = premultiplied(s, 1f - at[k], alphas[k]);
+      float[] c1v = premultiplied(s, 1f - at[k + 1], alphas[k + 1]);
+      for (int i = 0; i < FAN; i++) {
+        double t0 = Math.PI * 2 * i / FAN;
+        double t1 = Math.PI * 2 * (i + 1) / FAN;
+        double c0 = Math.cos(t0);
+        double s0 = Math.sin(t0);
+        double c1 = Math.cos(t1);
+        double s1 = Math.sin(t1);
+        vertex(buf, c0 * r0, s0 * r0, 0, c0v[0], c0v[1], c0v[2], c0v[3]);
+        vertex(buf, c0 * r1, s0 * r1, 0, c1v[0], c1v[1], c1v[2], c1v[3]);
+        vertex(buf, c1 * r1, s1 * r1, 0, c1v[0], c1v[1], c1v[2], c1v[3]);
+        vertex(buf, c0 * r0, s0 * r0, 0, c0v[0], c0v[1], c0v[2], c0v[3]);
+        vertex(buf, c1 * r1, s1 * r1, 0, c1v[0], c1v[1], c1v[2], c1v[3]);
+        vertex(buf, c1 * r0, s1 * r0, 0, c0v[0], c0v[1], c0v[2], c0v[3]);
+      }
+    }
+    tess.draw();
+  }
+
+  /**
+   * A glow colour blended toward white by {@code white} (1 at the centre).
+   *
+   * @return red, green and blue
+   */
+  static float[] ringColour(Style s, float white) {
+    float w = white * white * s.whiten;
+    return new float[]{s.r + (1 - s.r) * w, s.g + (1 - s.g) * w, s.b + (1 - s.b) * w};
+  }
+
+  /**
+   * A shared-list glow vertex's colour: {@link #ringColour} times the ring's alpha, which also
+   * stays the vertex alpha. The blend reads only the constant alpha, never this one.
+   *
+   * @return red, green, blue and alpha
+   */
+  static float[] premultiplied(Style s, float white, float ringAlpha) {
+    float[] c = ringColour(s, white);
+    return new float[]{c[0] * ringAlpha, c[1] * ringAlpha, c[2] * ringAlpha, ringAlpha};
   }
 }
