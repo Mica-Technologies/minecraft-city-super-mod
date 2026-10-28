@@ -1,0 +1,51 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/pawn_neon_sign_floor",
+    "textures": {
+      "case": "csm:blocks/furniture/market/case_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/market/base/pawn_neon_sign_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/market/base/pawn_neon_sign_item"
+      }
+    ]
+  }
+}

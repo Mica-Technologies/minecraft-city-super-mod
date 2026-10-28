@@ -775,3 +775,7 @@ tile.commercial_dryer_stainless.name=Industritorktumlare (rostfritt stål)
 tile.pawn_counter.name=Pantbanksdisk
 tile.pawn_drop_bin.name=Pantbankens inlämningslåda
 tile.pawn_price_kiosk.name=Pantbankens priskontroll
+tile.pawn_neon_sign.name=PANTBANK-neonskylt
+tile.pawn_jewelry_case.name=Smyckesmonter
+tile.pawn_guitar_wall.name=Gitarrvägg
+tile.we_buy_gold_sign.name=VI KÖPER GULD-skylt

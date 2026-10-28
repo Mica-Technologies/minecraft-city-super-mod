@@ -4718,6 +4718,45 @@ def pawn_drop_bin():
 
 
 PAWN_BIN = pawn_drop_bin()
+# The pawn shop's dressing. The PAWN sign stands in a window or on a counter, a black board
+# printed both ways round (it is read from the street and from inside) on a low base. The
+# jewellery case is a small glass box of rings and watches on velvet for a counter top. The
+# guitar wall hangs three guitars by their heads on pegboard against a wall (+Z).
+PAWN_NEON = ([el([3, 0, 6.5], [13, 0.75, 9.5], "case"),
+              el([7.25, 0.75, 7.6], [8.75, 1.75, 8.4], "case", SIDES)]
+             + sign_panel(1.25, 14.75, 1.75, 5.125, 8, "signs_pawn", 0))
+PAWN_JEWELRY = ([el([2, 0, 4], [14, 1, 12], "case"),
+                 el([2.5, 1, 4.5], [13.5, 1.25, 11.5], "liner", ("up",)),
+                 el([3.5, 1.25, 5.5], [5.5, 2.25, 7], "case", NO_DOWN),
+                 el([4, 2.25, 6], [5, 2.6, 6.5], "brass", NO_DOWN),
+                 el([7, 1.25, 5.25], [7.75, 1.5, 9.5], "chrome", NO_DOWN),
+                 el([6.6, 1.5, 6.75], [8.15, 1.9, 8.25], "chrome", NO_DOWN),
+                 el([10, 1.25, 5.5], [12.5, 1.4, 5.75], "brass", NO_DOWN),
+                 el([10, 1.25, 8.25], [12.5, 1.4, 8.5], "brass", NO_DOWN),
+                 el([10, 1.25, 5.75], [10.25, 1.4, 8.25], "brass", NO_DOWN),
+                 el([12.25, 1.25, 5.75], [12.5, 1.4, 8.25], "brass", NO_DOWN),
+                 el([2, 1, 4], [14, 6, 4.1], "glass", ("north", "south")),
+                 el([2, 1, 11.9], [14, 6, 12], "glass", ("north", "south")),
+                 el([2, 1, 4.1], [2.1, 6, 11.9], "glass", ("west", "east")),
+                 el([13.9, 1, 4.1], [14, 6, 11.9], "glass", ("west", "east")),
+                 el([2, 6, 4], [14, 6.1, 12], "glass", ("up", "down")),
+                 el([2, 6.1, 4], [14, 6.4, 12], "case", ("north", "south", "east", "west",
+                                                        "up"))])
+
+
+def guitar(x, body, neck):
+    """A guitar hung by its head from a hook: body at the bottom, neck up to the headstock."""
+    return [el([x - 2.5, 1.5, 13.5], [x + 2.5, 7, 15], body),
+            el([x - 2, 7, 13.5], [x + 2, 8.5, 15], body),
+            el([x - 0.5, 8.5, 14], [x + 0.5, 13.5, 14.75], neck),
+            el([x - 0.75, 13.5, 14], [x + 0.75, 15, 14.75], neck),
+            el([x - 0.25, 15, 14.75], [x + 0.25, 15.5, 15.25], "chrome"),
+            el([x - 0.75, 3, 13.4], [x + 0.75, 3.5, 13.5], "case", ("north",))]
+
+
+PAWN_GUITARS = ([el([0, 0, 15.25], [16, 16, 16], "peg", ("north", "south"), {"south": "shelf"})]
+                + guitar(3, "wood", "wood_v") + guitar(8, "accent", "wood_v")
+                + guitar(13, "case", "wood_v"))
 # The price check kiosk: the coin kiosk's body, a scanner plate on its ledge where an item is
 # held up, a lit screen, and PRICE CHECK over it.
 PRICE_KIOSK = ([el([2, 0, 4], [14, 1, 14], "kick", NO_DOWN),
@@ -4870,6 +4909,31 @@ add("pawn_drop_bin", "single", [fin(None, {"trim": T("stainless_dark")})],
     "Shops", "Server-run: a click with an item pawns the stack held, no screen; a player who "
              "claims it (sneak-click) is paid for what hoppers feed it; placed and broken only "
              "with csm.pawn.admin")
+add("pawn_neon_sign", "counter", [fin(None, {})],
+    ("PAWN Neon Sign", "PFANDHAUS-Leuchtschild", "Letrero luminoso de empeño",
+     "PANTBANK-neonskylt"),
+    {"geo": PAWN_NEON, "particle": "case",
+     "java": 'new BlockPawnNeonSign("%s", new int[]{%s})'},
+    "Shops", "Decorative: PAWN in gold for a shop window or counter, read both ways; light 9")
+add("pawn_jewelry_case", "counter", [fin(None, {"liner": MT("pawn_velvet")})],
+    ("Jewellery Case", "Schmuckvitrine", "Vitrina de joyería", "Smyckesmonter"),
+    {"geo": PAWN_JEWELRY, "particle": "case",
+     "java": 'new BlockCounterPiece("%s", new int[]{%s}, Material.GLASS, SoundType.GLASS, '
+             'BlockRenderLayer.TRANSLUCENT)'},
+    "Shops", "Decorative: rings, watches and a gold chain on velvet under glass; rests on "
+             "counters")
+add("pawn_guitar_wall", "single",
+    [fin(None, {"wood": T("walnut"), "wood_v": T("oak_v"), "accent": MT("plastic_red"),
+                "shelf": MT("steel_white")})],
+    ("Guitar Wall", "Gitarrenwand", "Pared de guitarras", "Gitarrvägg"),
+    {"geo": PAWN_GUITARS, "particle": "peg",
+     "java": FIX % ("%s", jbox(box_of(PAWN_GUITARS)), "WOOD")},
+    "Shops", "Decorative: three guitars hung by their heads on pegboard against a wall")
+add("we_buy_gold_sign", "single", [fin(None, {})],
+    ("WE BUY GOLD Sign", "WIR KAUFEN GOLD-Schild", "Cartel COMPRAMOS ORO", "VI KÖPER GULD-skylt"),
+    {"geo": hanging_sign("signs_pawn", 3), "particle": "case",
+     "java": FIX % ("%s", jbox(box_of(hanging_sign("signs_pawn", 3))), "METAL")},
+    "Shops", "Hangs from the ceiling: WE BUY GOLD in gold on black, both sides")
 add("pawn_price_kiosk", "tall",
     [fin(None, {"shell": MT("plastic_blue"), "kick": MT("steel_grey"),
                 "accent": MT("plastic_yellow"), "screen": MT("screen_pawn")})],

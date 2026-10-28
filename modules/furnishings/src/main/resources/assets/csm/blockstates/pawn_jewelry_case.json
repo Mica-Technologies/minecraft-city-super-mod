@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/market/base/pawn_jewelry_case_floor",
+    "textures": {
+      "liner": "csm:blocks/furniture/market/pawn_velvet",
+      "case": "csm:blocks/furniture/market/case_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/market/base/pawn_jewelry_case_item"
+      }
+    ]
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "case": "csm:blocks/furniture/market/case_black",
+    "signs_pawn": "csm:blocks/furniture/market/store_signs_pawn",
+    "particle": "#case"
+  },
+  "elements": [
+    {
+      "from": [
+        3.0,
+        -4.0,
+        6.5
+      ],
+      "to": [
+        13.0,
+        -3.25,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            3,
+            15.25,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            3,
+            15.25,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            6.5,
+            15.25,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            6.5,
+            15.25,
+            9.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#case",
+          "uv": [
+            3,
+            6.5,
+            13,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            3,
+            6.5,
+            13,
+            9.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.25,
+        -3.25,
+        7.6
+      ],
+      "to": [
+        8.75,
+        -2.25,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            7.25,
+            14.25,
+            8.75,
+            15.25
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            7.25,
+            14.25,
+            8.75,
+            15.25
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            7.6,
+            14.25,
+            8.4,
+            15.25
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            7.6,
+            14.25,
+            8.4,
+            15.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.0,
+        -2.5,
+        7.75
+      ],
+      "to": [
+        15.0,
+        1.375,
+        8.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#case",
+          "uv": [
+            1.0,
+            10.625,
+            15.0,
+            14.5
+          ]
+        },
+        "south": {
+          "texture": "#case",
+          "uv": [
+            1.0,
+            10.625,
+            15.0,
+            14.5
+          ]
+        },
+        "east": {
+          "texture": "#case",
+          "uv": [
+            7.75,
+            10.625,
+            8.25,
+            14.5
+          ]
+        },
+        "west": {
+          "texture": "#case",
+          "uv": [
+            7.75,
+            10.625,
+            8.25,
+            14.5
+          ]
+        },
+        "up": {
+          "texture": "#case",
+          "uv": [
+            1.0,
+            7.75,
+            15.0,
+            8.25
+          ]
+        },
+        "down": {
+          "texture": "#case",
+          "uv": [
+            1.0,
+            7.75,
+            15.0,
+            8.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.25,
+        -2.25,
+        7.55
+      ],
+      "to": [
+        14.75,
+        1.125,
+        7.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#signs_pawn",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.25,
+        -2.25,
+        8.25
+      ],
+      "to": [
+        14.75,
+        1.125,
+        8.45
+      ],
+      "faces": {
+        "south": {
+          "texture": "#signs_pawn",
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ]
+        }
+      }
+    }
+  ]
+}
