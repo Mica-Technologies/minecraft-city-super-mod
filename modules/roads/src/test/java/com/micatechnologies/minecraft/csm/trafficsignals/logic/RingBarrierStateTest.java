@@ -1452,6 +1452,70 @@ class RingBarrierStateTest {
         "the phase maxes out one max-green after the conflicting call arrived");
   }
 
+  /**
+   * Issue #317: phases 2 and 6 (barrier A) rest in green with nothing calling; a side-street call
+   * on 4 then arrives while vehicles keep standing in the zones of 2 and 6. Returns the tick at
+   * which phase 2 left green, or -1 if it held green for the whole run.
+   */
+  private static long restingPhaseEndsUnderContinuousDetection(TrafficSignalRecallMode recall,
+      boolean leavingFlash) {
+    RingBarrierState rb = new RingBarrierState();
+    if (leavingFlash) {
+      rb.beginOnRestPhases(); // what the controller does when its startup flash ends
+    }
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.getCoordination().setCoordinatedPhases(new int[0]); // FREE: no coordinated phase
+    enable(plan, 2, 0);
+    enable(plan, 6, 1);
+    enable(plan, 4, 2);
+    for (int n : new int[] {2, 6, 4}) {
+      quickTiming(plan, n);
+      plan.getPhase(n).setMaxGreen(200L);
+    }
+    plan.getPhase(2).setRecallMode(recall);
+    plan.getPhase(6).setRecallMode(recall);
+    TrafficSignalControllerCircuits ckts = circuits(3);
+    Demand none = new Demand();
+    Demand mainsHeldAndSideCall = new Demand().veh(0, 1, 0, 0).veh(1, 1, 0, 0).veh(2, 1, 0, 0);
+
+    for (long t = 0; t < 300L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, none); // no demand: the controller rests in 2 + 6
+    }
+    assertEquals(2, rb.getLastServed(1).phaseNumber);
+    assertEquals(VehInterval.GREEN, rb.getLastServed(1).vehicle);
+    assertEquals(6, rb.getLastServed(2).phaseNumber);
+    for (long t = 300L; t < 2000L; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, mainsHeldAndSideCall);
+      if (rb.getLastServed(1).vehicle != VehInterval.GREEN) {
+        assertEquals(VehInterval.YELLOW, rb.getLastServed(1).vehicle);
+        assertEquals(VehInterval.YELLOW, rb.getLastServed(2).vehicle,
+            "both resting throughs max out together");
+        return t;
+      }
+    }
+    return -1L;
+  }
+
+  @Test
+  @DisplayName("#317: a FREE resting phase with continuous detection maxes out against a call")
+  void restingPhaseMaxesOutAgainstConflictingCall() {
+    // NEMA MAX times against any conflicting call, on a resting phase too. The rest flag
+    // exempted it, so with vehicles holding 2 and 6 the side street waited for good.
+    long end = restingPhaseEndsUnderContinuousDetection(TrafficSignalRecallMode.NONE, false);
+    assertTrue(end >= 0L, "the resting phase never maxed out: the call on 4 starved");
+    assertTrue(end == 500L || end == 501L, "maxed out at " + end + ", one max green after the call");
+  }
+
+  @Test
+  @DisplayName("#317: MIN recall rest phases entered from flash max out against a call")
+  void minRecallRestingPhaseMaxesOutAgainstConflictingCall() {
+    // The reporter's case: a controller leaving its startup flash (after programming) comes up on
+    // its rest phases, so MIN recall 2 + 6 were flagged resting although they are always called.
+    long end = restingPhaseEndsUnderContinuousDetection(TrafficSignalRecallMode.MINIMUM, true);
+    assertTrue(end >= 0L, "the resting phase never maxed out: the call on 4 starved");
+    assertTrue(end == 500L || end == 501L, "maxed out at " + end + ", one max green after the call");
+  }
+
   @Test
   @DisplayName("LOCK: a latched call survives the vehicle leaving and is discharged by service")
   void lockedCallSurvivesDetectionDrop() {
