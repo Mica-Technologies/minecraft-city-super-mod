@@ -490,6 +490,8 @@ Sneak+click unlinks: a vent clears its link, a zone its vents and primary, a pri
 | Rooftop heaters | `hvac_rtu_heater`, `_black`, `_silver` | `TileEntityHvacRtuHeater` | 1,200 /s, vents only |
 | Rooftop coolers | `hvac_rtu_cooler`, `_black`, `_silver` | `TileEntityHvacRtuCooler` | 1,200 /s, vents only |
 | Data hall coolers | `hvac_crac_downflow`, `hvac_crac_upflow`, `hvac_crah` | `TileEntityHvacCrac` | 900 /s |
+| Exhaust fans (#314) | `hvac_lab_exhaust_fan` (2 x 2, five tall; cells `hvac_exhaust_fan_part`), `hvac_upblast_exhaust_fan`, `hvac_mushroom_exhaust_fan` | `TileEntityHvacExhaustFan` | 10,000 / 2,500 / 1,200 CFM |
+| Exhaust grille (#314) | `hvac_exhaust_grille` | `TileEntityHvacExhaustGrille` (a vent) | up to 500 CFM out |
 | Zone boundary | `hvac_zone_boundary` | `TileEntityHvacZoneBoundary` (index only) | |
 | Thermostats | `hvac_thermostat`, `hvac_zone_thermostat` | primary / zone | |
 | Vents | `hvac_vent_relay` and 30 decorative (`art*`, `dfv*`, `lcv`, `mv*`, `pbf`, `pv`/`pvd`, `rv*`, `scv`, `sv*`/`svd*` via `BlockHvacVentFactory`) | `TileEntityHvacVentRelay` | 250 /s each |
@@ -502,15 +504,77 @@ Units run on redstone or Forge Energy (1,000 FE buffer, 100 FE/t in, up to 10 FE
 drawn in proportion to output; redstone is free). `TileEntityHvacRtuCooler` extends
 `TileEntityHvacCooler` so `instanceof` finds it as a cooler.
 
+## Exhaust and room pressure (#314)
+
+A lab building exhausts its wet labs through risers to high-plume fans on the roof, separate from
+the supply side, and keeps each lab under negative pressure so air leaks in, not out. The module
+had supply only; three things add the other half.
+
+- **Exhaust grilles** (`hvac_exhaust_grille`, `BlockHvacExhaustGrille`): a lay-in egg-crate grille
+  flush under the ceiling, the room end of an exhaust duct. Its tile entity extends the vent's, so
+  it links to a thermostat (primary or zone) with the linker exactly as a vent does, sits in the
+  thermostat's vent list (`lV`), anchors its room and saves its temperature the same way. Control
+  sorts each zone's vent list once a step into supply vents and grilles by type; a grille delivers
+  no heat and does not make the system ducted (a system with grilles and no supply vents still
+  heats from its units' own rooms). Placed over a fume hood or biosafety cabinet it stands for the
+  hood's exhaust connection; the Healthcare hoods themselves are not exhaust points (this module may
+  not name them, and linking them would need their own tile entity data).
+- **Exhaust fans** (`TileEntityHvacExhaustFan`): the high-plume lab fan (10,000 CFM), the kitchen
+  upblast fan (2,500) and the toilet-exhaust mushroom fan (1,200), linked to a **primary**
+  thermostat as a heater is (any cell of the lab fan will do) and powered the same way, by redstone
+  or Forge Energy. A fan is not an anchor and does not tick: an unlinked one, decorative, costs
+  nothing. A linked fan that is unloaded makes its system incomplete, which freezes its rooms as an
+  unloaded unit does.
+- **The book-keeping** (`HvacAirBalance`, `ThermalSpace.addSupply/addExhaust/finishAirflow`). While
+  a system runs (not switched off), each supply vent supplies 300 CFM if any unit has power and its
+  zone is not off; each grille in a room draws an equal share of the system's powered fans, at
+  most 500 CFM, whatever the units are doing. Every space adds up what the systems put through it
+  this step; after all systems have run, the totals become the space's `lastSupplyCfm` and
+  `lastExhaustCfm`. A room drawing out more than 5% (and 25 CFM) beyond its supply is **negative**.
+
+**What it costs in heat.** The vents' air is conditioned and already counted as delivered heat. The
+air a negative room draws in to make up the shortfall is taken as outdoor air leaking in: a
+conductance to the outdoors of the shortfall in blocks of air a second (CFM / 2,119), added to the
+regions the grilles draw from in proportion to each one's draw, and so seen by the controller's
+`lossAt` from the next step, the capacity percentage and `info`'s envelope UA. 500 CFM of
+imbalance adds about a quarter to a 10 x 4 x 10 room's loss. Positive pressure costs nothing.
+Supply air's own ventilation load is not modelled, as before.
+
+**What it costs to run.** Nothing for a space no grille draws from: two float additions per vent a
+step, and the per-region arrays (`exhaustRegionCfm`, `infiltrationUA`) stay null. A system with
+grilles does one more pass over them and its fans a step. The vent lists are now sorted with one
+tile entity lookup per vent a step, which replaced the lookup the served loop already made.
+**Lightweight mode** does nothing with exhaust: no rooms, so no pressure; the fans and grilles cost
+the map entry a grille anchor already did.
+
+**What the player sees.** `/csmhvac info` (and `why`) prints, for a room with any air through it,
+`air: supply 300 CFM, exhaust 500 CFM: negative pressure (-200 CFM); make-up air UA 0.09, 11/s`.
+The thermostat screen adds "Room under negative pressure" (`FLAG_NEGATIVE_PRESSURE`, from the last
+step's totals) and "Exhaust grilles, but no exhaust fan running" (`FLAG_NO_EXHAUST_FAN`).
+
+### Placing them by command
+
+| Block | Metadata | NBT |
+|---|---|---|
+| `hvac_lab_exhaust_fan` | facing, S 0, W 1, N 2, E 3 (the bypass hood's side). The master alone: when added it fills every free cell of its 2 x 2 x 5 footprint with parts, reaching +x and +z of the master when facing north (turned with the facing) | `energy` |
+| `hvac_exhaust_fan_part` | never placed by hand: bits 0-1 the unit's facing, bits 2-3 the piece (0 nothing, 1 nozzle, 2 windband) | |
+| `hvac_upblast_exhaust_fan`, `hvac_mushroom_exhaust_fan` | facing, as above | `energy` |
+| `hvac_exhaust_grille` | 0 | the vent's: `{hasLink:1b,linkX:..,linkY:..,linkZ:..}` |
+| primary thermostat | | add the grille to `lV` and the fan to `lX`, `[{x:..,y:..,z:..}]` |
+
+Both ends of a grille's link must be written (the grille's `link*` and the thermostat's `lV`), as
+for a vent. A fan is linked by the thermostat's `lX` alone.
+
 ## Saved data
 
 | Tile entity | Keys |
 |---|---|
 | both thermostats | `tLo`, `tHi` setpoints; `cT` region temperature; `cL`, `cM` calling; `bM` blocked mode; `eff` output %; `sF` flags; `cap` capacity % (-1 n/a); `pU`, `tU` units powered/total; `trH`, `trC` trims; `lV` vents; `sw` switch (0 Auto, 1 Heat, 2 Cool, 3 Off) |
-| primary | `lU` units, `lZ` zones, `sM` system mode |
+| primary | `lU` units, `lZ` zones, `lX` exhaust fans (written only when there are any), `sM` system mode |
 | zone | `hP`, `lP` primary |
 | unit | `energy`, `out` output fraction |
-| vent | `hasLink`, `linkX/Y/Z`, `sT` region temperature |
+| vent, exhaust grille | `hasLink`, `linkX/Y/Z`, `sT` region temperature |
+| exhaust fan | `energy` |
 
 Long-form keys from before the short-key change are still read. The retired ramp (`rT`/`rampTicks`)
 and vent `contribution` are dropped on load.
@@ -540,6 +604,13 @@ so parallel runs do not mat together. `rod` hangs a level segment from a solid c
 above it, or from a threaded rod hanger (`BlockExposedServiceHanger`, `exposed_service_hanger`,
 stacked under a ceiling to hang a run one or more blocks lower), with a strap round the duct
 where the run is straight. 384 states a block.
+
+**Reading the joins** (#314 asked why stacked axis-y segments placed by `/setblock ... 1` read
+`up=false, down=false`): metadata holds only the axis, so the stored state always carries `false`
+for every arm and `rod`; the joins exist only in the actual state, as for a vanilla fence. A
+server read's `state` is the stored one; MCMCP's `actualState` (or F3) shows `up=true,
+down=true` for a stacked riser, and the model is drawn from that. `ExhaustBlocksTest` holds the
+rule for risers, level runs and a tee without a world.
 
 The round sections are exact octagons, four rectangles two of them turned 45 degrees about the
 run. The vanilla multipart draws an arm to every face reached (turned by y for the level sides, by
