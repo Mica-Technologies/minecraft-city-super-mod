@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 
@@ -17,13 +18,19 @@ import net.minecraft.util.math.BlockPos;
  *
  * <p>Compact form, after {@code plant}: a preset, then the spots, {@code x,y,z[,heading][,seed]}
  * separated by {@code ;}, then options: {@code clear=pattern:height,...}, {@code skip=pattern,...},
- * {@code seed=n}, {@code heading=h}, {@code dry}, {@code cells}. JSON form, after {@code plantjson}:
- * the same options as keys ({@code clear} and {@code skip} as a string or an array), with
+ * {@code seed=n}, {@code heading=h}, {@code best=n}, {@code dry}, {@code cells}. JSON form, after
+ * {@code plantjson}: the same options as keys ({@code clear} and {@code skip} as a string or an array), with
  * {@code trees} an array of {@code {"x","y","z"[,"preset"][,"heading"][,"seed"]}}.</p>
  *
  * <p>A heading is a compass point ({@code n}, {@code ne}, ... {@code nw}), a Minecraft yaw in
  * degrees (0 south, 90 west), {@code @x:z} to lean toward a point, or {@code -} for a heading drawn
  * from the tree's seed.</p>
+ *
+ * <p>A tree's heading drawn from its seed is the first thing drawn from it, so a spot given a
+ * heading of its own grows a different tree from the same seed, and a yaw is reported in whole
+ * degrees. That is why each tree's report carries {@code spot}, the {@code x,y,z,heading,seed}
+ * that plants that very tree again ({@link #replaySpot}), with {@code -} as the heading where it
+ * was drawn (#320).</p>
  *
  * @since 2026.10
  */
@@ -61,12 +68,17 @@ public final class TreeBatch {
   public String heading;
   public boolean dry;
   public boolean cells;
+  /** Seeds tried at each spot with no seed of its own, keeping the least trimmed tree. */
+  public int best = 1;
 
   private TreeBatch() {
   }
 
   /** The most trees one command may plant, so one call cannot stall the server for long. */
   public static final int MAX_TREES = 256;
+
+  /** The most seeds {@code best=} may try a spot: each try grows a whole tree. */
+  public static final int MAX_BEST = 32;
 
   /**
    * Parses the compact form.
@@ -81,7 +93,8 @@ public final class TreeBatch {
   public static TreeBatch parseCompact(String[] args, Coordinates coords) {
     if (args.length < 2) {
       throw new IllegalArgumentException("Usage: plant <preset> <x,y,z[,heading][,seed]>;... "
-          + "[clear=pattern:height,...] [skip=pattern,...] [seed=n] [heading=h] [dry] [cells]");
+          + "[clear=pattern:height,...] [skip=pattern,...] [seed=n] [heading=h] [best=n] [dry]"
+          + " [cells]");
     }
     TreeBatch batch = new TreeBatch();
     TreePreset preset = preset(args[0]);
@@ -99,6 +112,8 @@ public final class TreeBatch {
         batch.seed = parseSeed(a.substring(5));
       } else if (lower.startsWith("heading=")) {
         batch.heading = checkHeading(a.substring(8));
+      } else if (lower.startsWith("best=")) {
+        batch.best = parseBest(a.substring(5));
       } else if (lower.equals("dry")) {
         batch.dry = true;
       } else if (lower.equals("cells")) {
@@ -148,6 +163,9 @@ public final class TreeBatch {
     }
     if (o.has("heading")) {
       batch.heading = checkHeading(string(o.get("heading")));
+    }
+    if (o.has("best")) {
+      batch.best = parseBest(string(o.get("best")));
     }
     batch.dry = o.has("dry") && o.get("dry").getAsBoolean();
     batch.cells = o.has("cells") && o.get("cells").getAsBoolean();
@@ -207,6 +225,19 @@ public final class TreeBatch {
       return sb.toString();
     }
     return e.getAsString();
+  }
+
+  private static int parseBest(String s) {
+    int n;
+    try {
+      n = Integer.parseInt(s.trim());
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("best '" + s + "' is not a whole number");
+    }
+    if (n < 1 || n > MAX_BEST) {
+      throw new IllegalArgumentException("best must be 1 to " + MAX_BEST);
+    }
+    return n;
   }
 
   private static long parseSeed(String s) {
@@ -317,5 +348,105 @@ public final class TreeBatch {
     h *= 0xFF51AFD7ED558CCDL;
     h ^= h >>> 33;
     return h;
+  }
+
+  /** A tree grown for a spot: its plan, and the seed and heading that grew it. */
+  public static final class Grown {
+
+    public final TreePlan plan;
+    public final long seed;
+    /** The heading as it is replayed: as written, or {@code -} where it was drawn. */
+    public final String headingSpec;
+    /** The heading in radians. */
+    public final double heading;
+
+    Grown(TreePlan plan, long seed, String headingSpec, double heading) {
+      this.plan = plan;
+      this.seed = seed;
+      this.headingSpec = headingSpec;
+      this.heading = heading;
+    }
+
+    /** Whether the tree has room to stand. */
+    public boolean fits() {
+      return !plan.hasNoRoom() && !plan.parts().isEmpty();
+    }
+
+    /** Whether this tree is a better pick than another: fits, less trimmed, then more blocks. */
+    boolean betterThan(Grown o) {
+      if (fits() != o.fits()) {
+        return fits();
+      }
+      if (plan.getTrimmed() != o.plan.getTrimmed()) {
+        return plan.getTrimmed() < o.plan.getTrimmed();
+      }
+      return plan.parts().size() > o.plan.parts().size();
+    }
+  }
+
+  /**
+   * Grows one tree from a seed. The heading, where none is given, is the first thing drawn from
+   * the seed, which is why a seed alone and the same seed with its reported yaw grow different
+   * trees.
+   *
+   * @param preset      the tree
+   * @param headingSpec the heading as written, or null to draw it
+   * @param base        the trunk's base cell, for a heading toward a point
+   * @param seed        the tree's seed
+   * @param space       what is around it
+   *
+   * @return the tree
+   */
+  public static Grown grow(TreePreset preset, @Nullable String headingSpec, BlockPos base,
+      long seed, TreeSpace space) {
+    Random rng = new Random(seed);
+    Double h = heading(headingSpec, base);
+    double heading = h != null ? h : rng.nextDouble() * 2 * Math.PI - Math.PI;
+    TreePlan plan = TreeGenerators.grow(preset, heading, rng, space);
+    return new Grown(plan, seed, h != null ? headingSpec.trim() : "-", heading);
+  }
+
+  /**
+   * Grows the tree for a spot: from its own seed if it has one, otherwise from {@code seed} and,
+   * with {@code best} above 1, from that many seeds, keeping the least trimmed tree (then the
+   * one with most blocks, then the first). The first seed tried is {@code seed} itself, so
+   * {@code best=1} grows what no {@code best} does.
+   *
+   * @param spot  the spot
+   * @param base  its trunk's base cell
+   * @param seed  the seed it has without {@code best}
+   * @param space what is around it
+   *
+   * @return the tree picked
+   */
+  public Grown grow(Spot spot, BlockPos base, long seed, TreeSpace space) {
+    String headingSpec = spot.heading != null ? spot.heading : heading;
+    Grown pick = grow(spot.preset, headingSpec, base, seed, space);
+    int tries = spot.seed != null ? 1 : best;
+    for (int i = 1; i < tries; i++) {
+      Grown g = grow(spot.preset, headingSpec, base, trySeed(seed, i), space);
+      if (g.betterThan(pick)) {
+        pick = g;
+      }
+    }
+    return pick;
+  }
+
+  /** The {@code i}th seed {@code best=} tries from a spot's seed; the 0th is that seed. */
+  public static long trySeed(long seed, int i) {
+    return i == 0 ? seed : seedAt(seed + i, BlockPos.ORIGIN);
+  }
+
+  /**
+   * The compact spot, {@code x,y,z,heading,seed}, that plants a grown tree again exactly.
+   *
+   * @param pos   the spot as given (the ground block or the cell above it)
+   * @param grown the tree
+   *
+   * @return the spot
+   */
+  public static String replaySpot(BlockPos pos, Grown grown) {
+    return pos.getX() + "," + pos.getY() + "," + pos.getZ() + "," + grown.headingSpec + ","
+        + grown.seed;
   }
 }
