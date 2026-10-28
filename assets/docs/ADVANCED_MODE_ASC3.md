@@ -442,7 +442,13 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   forward sequence, conditional service, or the within-barrier wrap). A left whose slot the ring
   has already passed is not served before the cross when the other barrier has demand (NEMA: it
   waits a cycle); holding it anyway flashed the arrow through the all-red and then had the output
-  clearance paint a solid yellow arrow over the cross street's green.
+  clearance paint a solid yellow arrow over the cross street's green. The wrap is only predicted
+  when no other barrier has demand even before coordination's window gate (issue #318): the
+  wrap is decided when the ring goes idle, and under coordination the cross street's call is
+  accepted just as the through's clearance ends, so a wrap predicted from the gated calls
+  mid-clearance did not happen. A plan re-sent with `/blockdata` keeps the running engine, and a
+  lead left served in FREE just before the switch into coordination was accepted again in its
+  window, which made that case show up on the first cycle after programming.
 
 - **Phase next (call commitment)** — when a phase begins terminating (green → yellow), every
   called, unserved phase that conflicts with it is latched in `committedCalls`

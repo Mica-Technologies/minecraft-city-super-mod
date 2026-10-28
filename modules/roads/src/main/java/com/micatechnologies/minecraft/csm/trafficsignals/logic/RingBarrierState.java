@@ -668,6 +668,20 @@ public class RingBarrierState {
     if (nextBarrierWithDemand(plan, called) != currentBarrier) {
       return false;
     }
+    // The wrap is decided when the ring goes idle, a whole clearance from now, and under
+    // coordination a call on another barrier only counts once its window opens -- which the
+    // coordinated yield times to happen just as that clearance ends. Predicting the wrap from
+    // this tick's gated calls held the flash through the opposing through's yellow and red, then
+    // the barrier crossed after all and the output stage showed the arrow's yellow over the
+    // cross street's green (issue #318). So predict it only when no other barrier has demand
+    // even ungated: a hold is never needed for safety, a wrong one always shows.
+    boolean[] ungated = new boolean[called.length];
+    for (int n = 1; n < called.length; n++) {
+      ungated[n] = called[n] || (n < tickRawCalled.length && tickRawCalled[n]);
+    }
+    if (nextBarrierWithDemand(plan, ungated) != currentBarrier) {
+      return false;
+    }
     for (int n : plan.getRingSequence(ringNum)) {
       TrafficSignalProgrammedPhase p = plan.getPhase(n);
       if (p != null && p.isActive() && p.getBarrier() == currentBarrier
