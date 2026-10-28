@@ -2,7 +2,7 @@
 
 Heating and cooling that actually simulates room temperature.
 
-!!! info "61 blocks in this tab"
+!!! info "65 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -45,6 +45,7 @@ Heating and cooling that actually simulates room temperature.
 | HVAC Cooler | `csm:hvac_cooler` | 3 | 15 | pickaxe | 1 |
 | HVAC Cooler (Black) | `csm:hvac_cooler_black` | 3 | 15 | pickaxe | 1 |
 | HVAC Cooler (Silver) | `csm:hvac_cooler_silver` | 3 | 15 | pickaxe | 1 |
+| HVAC Exhaust Grille | `csm:hvac_exhaust_grille` | 2 | 10 | pickaxe | 1 |
 | HVAC Heater | `csm:hvac_heater` | 3 | 15 | pickaxe | 1 |
 | HVAC Heater (Black) | `csm:hvac_heater_black` | 3 | 15 | pickaxe | 1 |
 | HVAC Heater (Silver) | `csm:hvac_heater_silver` | 3 | 15 | pickaxe | 1 |
@@ -52,12 +53,14 @@ Heating and cooling that actually simulates room temperature.
 | HVAC Vent Relay | `csm:hvac_vent_relay` | 2 | 10 | pickaxe | 1 |
 | HVAC Zone Boundary | `csm:hvac_zone_boundary` | 1 | 5 | pickaxe | 0 |
 | HVAC Zone Thermostat | `csm:hvac_zone_thermostat` | 3 | 15 | pickaxe | 1 |
+| Lab Exhaust Fan (High Plume) | `csm:hvac_lab_exhaust_fan` | 3 | 15 | pickaxe | 1 |
 | Large Circle Vent | `csm:lcv` |  |  |  |  |
 | Modular Vent 1 (Black) | `csm:mvd1` |  |  |  |  |
 | Modular Vent 1 (White) | `csm:mv1` |  |  |  |  |
 | Modular Vent 2 (Black) | `csm:mvd2` |  |  |  |  |
 | Modular Vent 2 (White) | `csm:mv2` |  |  |  |  |
 | Modular Vent 3 (White) | `csm:mv3` |  |  |  |  |
+| Mushroom Exhaust Fan | `csm:hvac_mushroom_exhaust_fan` | 3 | 15 | pickaxe | 1 |
 | Panasonic Bath Fan | `csm:pbf` |  |  |  |  |
 | Plaque Vent (Dark) | `csm:pvd` |  |  |  |  |
 | Plaque Vent (White) | `csm:pv` |  |  |  |  |
@@ -71,6 +74,7 @@ Heating and cooling that actually simulates room temperature.
 | Rooftop HVAC Heater (Silver) | `csm:hvac_rtu_heater_silver` | 3 | 15 | pickaxe | 1 |
 | Small Circle Vent | `csm:scv` |  |  |  |  |
 | Threaded Rod Hanger | `csm:exposed_service_hanger` | 1 | 5 | pickaxe | 0 |
+| Upblast Exhaust Fan | `csm:hvac_upblast_exhaust_fan` | 3 | 15 | pickaxe | 1 |
 | XL Circle Vent | `csm:xlcv` |  |  |  |  |
 
 </div>

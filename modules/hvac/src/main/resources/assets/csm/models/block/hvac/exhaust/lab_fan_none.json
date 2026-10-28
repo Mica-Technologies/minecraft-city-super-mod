@@ -1,0 +1,9 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "galv": "csm:blocks/hvac/exhaust/galv",
+    "particle": "csm:blocks/hvac/exhaust/galv"
+  },
+  "elements": [],
+  "ambientocclusion": false
+}
