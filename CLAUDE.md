@@ -990,8 +990,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
 - `model_depth.py` -- separates the coplanar faces that z-fight in JSON block models. Every
   JSON-model generator runs it at the end of `generate` / `write_all` (the furniture, novelties and
   Parks generators, the Life Safety catalogue in `life_safety_gen_common.py`, the Building
-  generators and the exit signs, via `separate_dirs` where files go to one folder per kind): it
-  takes the models a blockstate draws together (under 0.2 px apart, opaque, different pixels where
+  generators and the exit signs, via `separate_dirs` where files go to one folder per kind, and
+  `separate_outputs` where a generator builds them in memory first; `keep=` pins a face a
+  renderer draws over, such as the preempt confirmation lights' lenses): it takes the models a blockstate draws together (under 0.2 px apart, opaque, different pixels where
   they overlap, measured off the textures) and moves the smaller face along its normal by growing
   its box, in models that generator wrote only, at most 0.65 px in all. `model_depth.py <module>
   [--apply] [--models ...]` runs it once over hand-made models, writing only the numbers that move
