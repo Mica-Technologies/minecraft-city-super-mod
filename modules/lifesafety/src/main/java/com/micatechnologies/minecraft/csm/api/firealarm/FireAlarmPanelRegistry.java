@@ -79,6 +79,38 @@ public class FireAlarmPanelRegistry {
   }
 
   /**
+   * Whether a panel has an active fire alarm, without the copy {@link #getActiveFireAlarmPanels}
+   * makes: what a block that follows one panel asks, every few ticks, for as long as an alarm
+   * runs (a fare gate asked every 5 ticks, each a fresh {@code HashSet}).
+   *
+   * @param dimensionId the dimension
+   * @param panelPos    the panel
+   *
+   * @return true if that panel is in fire alarm
+   */
+  public static synchronized boolean isFireAlarmActive(int dimensionId, BlockPos panelPos) {
+    return contains(fireAlarmPanels, dimensionId, panelPos);
+  }
+
+  /**
+   * Whether a panel has an active storm alarm, without a copy.
+   *
+   * @param dimensionId the dimension
+   * @param panelPos    the panel
+   *
+   * @return true if that panel is in storm alarm
+   */
+  public static synchronized boolean isStormAlarmActive(int dimensionId, BlockPos panelPos) {
+    return contains(stormAlarmPanels, dimensionId, panelPos);
+  }
+
+  private static boolean contains(Map<Integer, Set<BlockPos>> registry, int dimensionId,
+      BlockPos panelPos) {
+    Set<BlockPos> panels = registry.get(dimensionId);
+    return panels != null && panelPos != null && panels.contains(panelPos);
+  }
+
+  /**
    * Returns an unmodifiable snapshot of panels with active storm alarms in the given dimension.
    */
   public static synchronized Set<BlockPos> getActiveStormAlarmPanels(int dimensionId) {
