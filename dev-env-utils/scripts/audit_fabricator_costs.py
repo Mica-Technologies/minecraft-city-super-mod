@@ -587,6 +587,13 @@ def cost_for(registry, info, ancestors):
         if has("AbstractBlockControllableSignal"):
             return ("LED_MODULE", "LENS_ASSEMBLY", "SHEET_METAL")
         return ("SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabstreetscape" and has("BlockEvCharger", "BlockEvChargerWall"):
+        # Mirrors StreetscapeFabricatorRules: the DC fast cabinet is twice the case and wiring.
+        if "dc_fast" in registry:
+            return ("CONTROL_BOARD", "SHEET_METAL x2", "WIRING_HARNESS x2")
+        return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
+    if tab == "tabstreetscape" and registry.startswith("ev_stall"):
+        return ("REFLECTIVE_SHEETING",)
     if tab == "tabstreetscape" and has("BlockParkingMeter"):
         # Mirrors StreetscapeFabricatorRules: electronics unless it is clockwork.
         if "mechanical" in registry:

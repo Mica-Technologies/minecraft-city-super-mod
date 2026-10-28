@@ -353,6 +353,109 @@ def BIKE_OVER(shape, lines, chapter='Regulatory', page=122):
     return make
 
 
+# --- electric vehicle charging (#315). The D9-11b symbol (the EV pump) is not in the 2004 book
+# (it came with the 2009 MUTCD) and has no interim ZIP, so it is FHWA's drawing as redrawn on
+# Wikimedia Commons ("MUTCD D9-11b.svg", public domain), kept in artwork/. Its blue is mapped
+# onto the mod's services blue; the D9-11bP plaque is the official interim drawing (SHSI).
+EV_SVG = 'mutcd_d9_11b.svg'
+EV_PALETTE = {(21, 81, 150): shs.MOD_COLOURS['blue'], (255, 255, 255): WHITE, (0, 0, 0): BLACK}
+BLUE = shs.MOD_COLOURS['blue']
+
+
+def _ev_sign(size=1024):
+    import gen_official_faces as gof
+    return shs.recolour(gof._svg_image(EV_SVG, size), EV_PALETTE)
+
+
+def _ev_pump(size=1024):
+    """The pump alone, white on clear: the symbol's white ink inside its border."""
+    import numpy as np
+    a = np.asarray(_ev_sign(size).convert('RGBA')).copy()
+    h, w = a.shape[:2]
+    m = int(w * 0.1)
+    white = (a[..., :3].min(axis=2) > 200) & (a[..., 3] > 128)
+    inner = np.zeros_like(white)
+    inner[m:h - m, m:w - m] = True
+    keep = white & inner
+    out = np.zeros_like(a)
+    out[keep] = list(WHITE[:3]) + [255]
+    # the anti-aliased edge: partly white pixels keep a partial alpha
+    soft = inner & ~keep & (a[..., 3] > 0)
+    lum = a[..., :3].astype(np.float32).mean(axis=2)
+    blue_l = float(np.mean(BLUE[:3]))
+    k = np.clip((lum - blue_l) / (245 - blue_l), 0, 1)
+    out[soft, :3] = WHITE[:3]
+    out[soft, 3] = (k[soft] * 255).astype(np.uint8)
+    img = Image.fromarray(out, 'RGBA')
+    return img.crop(img.getchannel('A').getbbox())
+
+
+def _lines_in(img, lines, x0, y0, x1, y1, colour, cap_frac=0.6):
+    """``lines`` centred in the box at the largest cap height that fits, as BIKE_OVER sets
+    its legend."""
+    n = len(lines)
+    bw, bh = x1 - x0, y1 - y0
+    cap = min(bh * cap_frac, bh / (n * 1.5 - 0.5) * 0.9)
+    while cap > 8:
+        series = shs.pick_series(lines, cap, bw, ('D', 'C', 'B'))
+        if all(shs.legend_width(t, series, cap) <= bw for t in lines):
+            break
+        cap *= 0.97
+    pitch = cap * 1.5
+    first = (y0 + y1) / 2 - (n - 1) * pitch / 2
+    for k, t in enumerate(lines):
+        shs.set_legend_line(img, t, (x0 + x1) / 2, first + k * pitch, cap, bw, colour, series)
+
+
+def EV_SYMBOL(shape):
+    """The D9-11b sign whole, fitted to the plate."""
+    return lambda: shs.fit_plate(_ev_sign(), SHAPES[shape][1], size=_size(shape))
+
+
+def EV_ONLY(shape, lines):
+    """An R7-style permissive parking sign: green legend on white under the D9-11b symbol,
+    as cities post EV CHARGING ONLY at a charging stall (the MUTCD has no federal design)."""
+    def make():
+        img = _canvas(SHAPES[shape][1])
+        _d, (x0, y0, x1, y1) = _rounded_panel(img, WHITE, GREEN)
+        bw, bh = x1 - x0, y1 - y0
+        side = int(min(bw * 0.62, bh * 0.42))
+        sym = _ev_sign(1024).resize((side, side), Image.LANCZOS)
+        img.alpha_composite(sym, (int((x0 + x1 - side) / 2), int(y0 + bh * 0.02)))
+        _lines_in(img, lines, x0, y0 + bh * 0.02 + side + bh * 0.04, x1, y1, GREEN)
+        return _finish(img, _size(shape))
+    return make
+
+
+def EV_ARROW(shape, left):
+    """An EV wayfinding sign for a lot or a garage: the D9-11b pump and a directional arrow,
+    white on the services blue, the arrow on the side it points to."""
+    def make():
+        img = _canvas(SHAPES[shape][1])
+        d, (x0, y0, x1, y1) = _rounded_panel(img, BLUE, WHITE)
+        bw, bh = x1 - x0, y1 - y0
+        pump = _ev_pump(1024)
+        ph = bh * 0.8
+        pw = pump.width * ph / pump.height
+        pump = pump.resize((int(pw), int(ph)), Image.LANCZOS)
+        half = bw * 0.46
+        pcx = x1 - half / 2 if left else x0 + half / 2
+        img.alpha_composite(pump, (int(pcx - pw / 2), int((y0 + y1 - ph) / 2)))
+        # the arrow: shaft and head in the proportions of the M6-1 auxiliary
+        ax0, ax1 = (x0 + bw * 0.04, x0 + bw * 0.5) if left else (x1 - bw * 0.5, x1 - bw * 0.04)
+        cy = (y0 + y1) / 2
+        head_l, head_h, shaft_h = (ax1 - ax0) * 0.48, bh * 0.62, bh * 0.2
+        if left:
+            tip, base, tail = ax0, ax0 + head_l, ax1
+        else:
+            tip, base, tail = ax1, ax1 - head_l, ax0
+        d.polygon([(tip, cy), (base, cy - head_h / 2), (base, cy - shaft_h / 2),
+                   (tail, cy - shaft_h / 2), (tail, cy + shaft_h / 2), (base, cy + shaft_h / 2),
+                   (base, cy + head_h / 2)], fill=WHITE)
+        return _finish(img, _size(shape))
+    return make
+
+
 def T(shape, lines, bg=YELLOW, fg=BLACK):
     return lambda: text_sign(shape, lines, bg, fg)
 
@@ -718,6 +821,31 @@ CATALOGUE = [
     # --- recreation: no golf symbol in the book, so the golfer is artwork on the RS panel
     ('signgolf', ('Golf Sign', 'Señal de Golf', 'Golf-Schild', 'Golf-Vägmärke'),
      'square', ART_SYM('golfer.png', 'brown'), 'signpicnic'),
+    # --- electric vehicle charging (#315): the D9-11b symbol and its D9-11bP plaque with the
+    # motorist services, the wayfinding arrows after them, EV CHARGING ONLY with the parking
+    # restrictions
+    ('signevcharging', ('Electric Vehicle Charging Sign', 'Señal de Carga de Vehículos Eléctricos',
+                        'Ladestation für Elektrofahrzeuge Schild', 'Laddning av Elfordon-Vägmärke'),
+     'square', EV_SYMBOL('square'), 'signdiesel'),
+    ('signevchargingplaque', ('Electric Vehicle Charging Sign (Plaque)',
+                              'Señal de Carga de Vehículos Eléctricos (Placa)',
+                              'Ladestation für Elektrofahrzeuge Schild (Zusatzschild)',
+                              'Laddning av Elfordon-Vägmärke (Tilläggsskylt)'),
+     'wide', SHSI('wide', 'd09_11bp', '24x18'), 'signevcharging'),
+    ('signevchargingarrowleft', ('EV Charging Arrow Sign (Left)',
+                                 'Señal de Flecha de Carga de Vehículos Eléctricos (Izquierda)',
+                                 'Ladestation Pfeil Schild (Links)',
+                                 'Laddstation Pil-Vägmärke (Vänster)'),
+     'wide', EV_ARROW('wide', True), 'signevchargingplaque'),
+    ('signevchargingarrowright', ('EV Charging Arrow Sign (Right)',
+                                  'Señal de Flecha de Carga de Vehículos Eléctricos (Derecha)',
+                                  'Ladestation Pfeil Schild (Rechts)',
+                                  'Laddstation Pil-Vägmärke (Höger)'),
+     'wide', EV_ARROW('wide', False), 'signevchargingarrowleft'),
+    ('signevchargingonly', ('EV Charging Only Sign', 'Señal de Solo Carga de Vehículos Eléctricos',
+                            'Nur Laden von Elektrofahrzeugen Schild',
+                            'Endast Laddning av Elfordon-Vägmärke'),
+     'portrait', EV_ONLY('portrait', ['EV CHARGING', 'ONLY']), 'signemergencyparkingonly'),
 ]
 for _mph, _after in ((10, 'signaddright'), (15, 'signadvisoryspeed10'), (20, 'signadvisoryspeed15'),
                      (25, 'signadvisoryspeed20'), (30, 'signadvisoryspeed25'), (35, 'signadvisoryspeed30'),

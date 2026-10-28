@@ -739,7 +739,11 @@ and both have a `--check` that fails when a texture no longer matches the script
    `SHS_PANEL_COLOUR` (a book sign on another panel colour when its symbol shares the panel's
    yellow).
 3. **A public-domain MUTCD SVG** in `dev-env-utils/scripts/artwork/` (`SVG_SIGN`, `_svg_ink`), for a
-   symbol the 2004 book does not draw (W5-2a narrow bridge, California W82 streetcar).
+   symbol the 2004 book does not draw (W5-2a narrow bridge, California W82 streetcar, and the
+   D9-11b EV charging pump of #315, which `gen_gap_signs.py` uses whole (`EV_SYMBOL`), as the
+   white pump alone on its own panel with an arrow (`EV_ARROW`, the EV wayfinding arrows) and
+   above an R7-style green EV CHARGING ONLY legend (`EV_ONLY`); its D9-11bP plaque is the interim
+   drawing `d09_11bp`).
 4. **Drawn from a photograph or the original texture**: `PANEL` / `PANEL_LINES` panels and the named
    drawers (`STATE_PROPERTY`, `BUS_LANE`, `FALLOUT_SHELTER`, `LA_NO_STOPPING`, `HV_DANGER`, ...),
    with book symbols lifted off their pages where one fits (`_ink_symbol`, `_book_stop`), or a
