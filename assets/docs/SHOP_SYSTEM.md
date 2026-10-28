@@ -178,8 +178,9 @@ of the glass) and `size` tall.
 
   - Each price card in range costs about 37 µs (glyphs are drawn every frame).
   - Each shop of chests or enchanted items costs about 60 µs.
-- **Distances:** items draw within `shops.itemRenderDistance` (default 32 blocks) and the price
-  card within `shops.priceLabelDistance` (8).
+- **Distances:** items draw within `shops.itemRenderDistance` (default 32 blocks), never past
+  the performance mode's cap (`CsmPerformance.capRenderDistanceSq`: 96 blocks on MEDIUM, 64 on
+  LOW, none on HIGH), and the price card within `shops.priceLabelDistance` (8).
 - **Syncing:** the shop syncs only when the stock changes how full the shelf looks, or whether a
   sale can be made. A trade moves stock quietly and syncs once. A sync never rebuilds the chunk
   (`getBakedModelKey` is constant), since no baked model reads the shop.

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.furniture.market.shop;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.furniture.market.TileEntityDisplayCase;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -587,8 +588,9 @@ public class TileEntityShop extends TileEntityDisplayCase {
   @Override
   @SideOnly(Side.CLIENT)
   public double getMaxRenderDistanceSquared() {
+    // The shops' own distance, capped by the performance mode as every other renderer is.
     double d = CsmConfig.getShopsRenderDistance();
-    return d * d;
+    return CsmPerformance.capRenderDistanceSq(d * d);
   }
 
   /** The stock as hoppers and pipes see it: matching items in, nothing out. */
