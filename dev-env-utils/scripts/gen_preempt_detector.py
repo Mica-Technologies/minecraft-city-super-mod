@@ -17,6 +17,13 @@ looking up the approach as the detector's does, and a 360 degree dome beacon (re
 the traffic beacon renderer's, which needs each lens box in BlockPreemptConfirmationLight's
 subclasses to match LIGHTS below.
 
+Each also has a span wire version (`<name>_span`, #321), hung in the cell under a span wire mount:
+the same device with no stub, raised so its top is at HANG_TOP, and a collar and pipe from there
+to the top of the cell, where the mount's drop comes down to meet it (the payload's
+`getSpanHangerTopY`, the top of its cell). The PAR lamp hangs in its yoke turned over, the yoke
+above the can; the detector and the dome hang from their caps. Their lens boxes and bounding boxes
+are the `*_SPAN_*` constants in the Java, which must match SPAN_LIGHTS and the shifts below.
+
 Usage:
     python gen_preempt_detector.py [--check]
 """
@@ -134,8 +141,82 @@ LIGHTS = {
 }
 
 
+# --- span wire versions ----------------------------------------------------------------------
+
+# Where a hung device's top sits; its hanger runs from here to the top of the cell (y 16).
+HANG_TOP = 11.8
+
+
+def top_of(els):
+    return max(e['to'][1] for e in els)
+
+
+def shift_y(els, dy):
+    """Moves elements up by dy, rotation origins with them (a can's turned boxes rotate about z)."""
+    out = []
+    for e in els:
+        e = json.loads(json.dumps(e))
+        e['from'][1] = r(e['from'][1] + dy)
+        e['to'][1] = r(e['to'][1] + dy)
+        if 'rotation' in e:
+            e['rotation']['origin'][1] = r(e['rotation']['origin'][1] + dy)
+        # recompute the side faces' uv windows for the new height, as box() would
+        x0, y0, z0 = e['from']
+        x1, y1, z1 = e['to']
+        fresh = box((x0, y0, z0), (x1, y1, z1), BODY)['faces']
+        for f, face in e['faces'].items():
+            if face['uv'] != [0, 0, 16, 16] and f in ('north', 'south', 'east', 'west'):
+                face['uv'] = fresh[f]['uv']
+        out.append(e)
+    return out
+
+
+def hanger(top):
+    """The span wire hanger: a collar on the device's top and a pipe from it to the top of the
+    cell, where the mount's drop meets it."""
+    els = octagon(1.1, top, top + 0.5, tex=METAL)
+    els.append(box((7.3, top + 0.5, 7.3), (8.7, 16.0, 8.7), METAL, faces='nsew'))
+    return els
+
+
+def hung(els):
+    """A device without its stub, raised so its top is at HANG_TOP, on the hanger."""
+    return shift_y(els, HANG_TOP - top_of(els)) + hanger(HANG_TOP)
+
+
+def par_span_elements():
+    """The PAR lamp hung from the span: its yoke turned over, the base on top and the arms
+    reaching down to the can's trunnions, so it hangs in the yoke facing the approach."""
+    cy = 5.8
+    els = octagon_z(2.9, 5.2, 10.8, cy=cy)                                   # the can
+    els += octagon_z(3.2, 4.8, 5.2, cy=cy)                                   # its front ring
+    els += octagon_z(2.5, 4.7, 4.8, tex=LENS, cy=cy, lens_face='n')          # the lens
+    els.append(box((4.6, cy - 0.8, 7.2), (5.2, HANG_TOP - 0.8, 8.8), METAL))  # yoke arms
+    els.append(box((10.8, cy - 0.8, 7.2), (11.4, HANG_TOP - 0.8, 8.8), METAL))
+    els.append(box((4.6, HANG_TOP - 0.8, 7.2), (11.4, HANG_TOP, 8.8), METAL))  # yoke base
+    return els + hanger(HANG_TOP)
+
+
+def dome_span_elements():
+    """The dome hung from the span by its cap."""
+    return hung(dome_elements()[2:])
+
+
+def detector_span_elements():
+    """The detector hung from the span by its lens housing's cap."""
+    return hung(elements()[2:])
+
+
+SPAN_LIGHTS = {
+    'preempt_confirm_par_white_span': (par_span_elements, LIGHTS['preempt_confirm_par_white'][1]),
+    'preempt_confirm_par_blue_span': (par_span_elements, LIGHTS['preempt_confirm_par_blue'][1]),
+    'preempt_confirm_dome_red_span': (dome_span_elements,
+                                      LIGHTS['preempt_confirm_dome_red'][1]),
+}
+
+
 def light_model(name):
-    build, lens = LIGHTS[name]
+    build, lens = LIGHTS[name] if name in LIGHTS else SPAN_LIGHTS[name]
     return {
         'parent': 'block/block',
         'textures': {'particle': TEX + 'metal_black', 'body': TEX + 'metal_black',
@@ -198,19 +279,19 @@ def elements():
     return els
 
 
-def model():
+def model(build=elements):
     return {
         'parent': 'block/block',
         'textures': {'particle': TEX + 'metal_black', 'body': TEX + 'metal_black',
                      'metal': TEX + 'metal_silver', 'lens': TEX + 'camera_lens'},
-        'elements': elements(),
+        'elements': build(),
     }
 
 
-def blockstate():
+def blockstate(name='preempt_detector'):
     return {
         'forge_marker': 1,
-        'defaults': {'model': 'csm:trafficsignals/shared_models/preempt_detector'},
+        'defaults': {'model': 'csm:trafficsignals/shared_models/' + name},
         'variants': {
             'facing': {'north': {}, 'east': {'y': 90}, 'south': {'y': 180},
                        'west': {'y': 270}},
@@ -233,7 +314,11 @@ def same(path, data):
 def main():
     check = '--check' in sys.argv
     files = {MODEL: text(model()), BLOCKSTATE: text(blockstate())}
-    for name in LIGHTS:
+    files[os.path.join(MODELS, 'preempt_detector_span.json')] = text(
+        model(detector_span_elements))
+    files[os.path.join(ASSETS, 'blockstates', 'preempt_detector_span.json')] = text(
+        blockstate('preempt_detector_span'))
+    for name in list(LIGHTS) + list(SPAN_LIGHTS):
         files[os.path.join(MODELS, name + '.json')] = text(light_model(name))
         files[os.path.join(ASSETS, 'blockstates', name + '.json')] = text(light_blockstate(name))
     drift = [p for p, d in files.items() if not same(p, d)]

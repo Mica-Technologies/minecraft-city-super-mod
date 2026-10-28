@@ -1418,7 +1418,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   head (octagon body, lens in a bezel, cable connector, stepped sun-shield fin) on a mount stub
   reaching down to a thin traffic pole in the cell below, so it sits on top of a mast arm; and on
   the same stub the arm-mounted confirmation lights (white and blue PAR lamps in a yoke, a red 360 degree
-  dome), whose lens boxes `BlockPreemptConfirmationLight` must match; `--check`
+  dome), whose lens boxes `BlockPreemptConfirmationLight` must match; and the span wire versions
+  of all four (`<name>_span`, #321): the device without its stub, hung on a collar and pipe from
+  the top of the cell under a span wire mount; `--check`
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
   tapered base with its access door and the clamp bracket as OBJ, and emits the five
   blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script

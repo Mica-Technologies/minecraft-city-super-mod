@@ -184,6 +184,7 @@ Three different mechanisms, because three different kinds of block can hang:
 |---|---|---|
 | Signal heads | Sub-block vertical offset via `getSignalYOffset`, cached on the head's tile entity on a 20-tick refresh | Fully TESR-drawn, so it can move a fraction of a block. The hitbox follows for free through `TrafficSignalBoundingBoxHelper`, and covers and mount kits follow because they read the same hook |
 | Signs | The existing **setback** mode, triggered by `hangsFromSpan` | A sign is a plain block model and *cannot* take a sub-block offset. Setback was built for wall and pole mounting, but the shift it produces is exactly what a span needs. One change in `AbstractBlockSign` covers all 472 signs |
+| Preempt detector and confirmation lights (`*_span`, #321) | As a sign: whole-block height, the drop down to `getSpanHangerTopY` (the top of the cell, where each device's own hanger pipe ends) | Plain block models like a sign, but powered, so the mount keeps its conductor coil. `IPreemptSpanHung` in `trafficaccessories`; see `TRAFFIC_SIGNAL_SYSTEM.md`, "Span wire versions" |
 | Boxes and anything new | A strap drawn from the mount, via `ISpanWireHangable.needsSpanHangerStrap()` | Nothing of its own to line up; the strap is what stops it reading as floating |
 
 **The sign's span check runs in front of its setback cache, not behind it.** `AbstractBlockSign`

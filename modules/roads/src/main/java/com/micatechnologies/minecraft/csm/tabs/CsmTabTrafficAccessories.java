@@ -10,8 +10,11 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockEnforcementCam
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmDomeRed;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmDomeRedSpan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParBlueSpan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParWhiteSpan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplateFitted;
@@ -576,6 +579,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockPreemptConfirmParWhite.class, fmlPreInitializationEvent);
     initTabBlock(BlockPreemptConfirmParBlue.class, fmlPreInitializationEvent);
     initTabBlock(BlockPreemptConfirmDomeRed.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPreemptConfirmParWhiteSpan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPreemptConfirmParBlueSpan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPreemptConfirmDomeRedSpan.class, fmlPreInitializationEvent);
     initTabBlock(BlockSnowBeacon.class, fmlPreInitializationEvent);
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRailroadCrossingFlasher.class,
         fmlPreInitializationEvent);
