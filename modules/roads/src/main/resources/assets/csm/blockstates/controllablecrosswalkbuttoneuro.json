@@ -1,57 +1,87 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:trafficsignals/euro_push_button",
-    "textures": {
-      "front": "csm:blocks/trafficsignals/shared_textures/euro_button_front_pedestrian",
-      "side": "csm:blocks/trafficsignals/shared_textures/euro_button_side",
-      "cap": "csm:blocks/trafficsignals/shared_textures/euro_button_cap",
-      "back": "csm:blocks/trafficsignals/shared_textures/euro_button_back",
-      "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_off",
-      "particle": "csm:blocks/trafficsignals/shared_textures/euro_button_side"
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_on"
     }
   },
-  "variants": {
-    "inventory": [
-      {
-        "textures": {
-          "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_on"
-        }
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "requested": "false"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_off"
       }
-    ],
-    "facing": {
-      "north": {
-        "y": 0
+    },
+    {
+      "when": {
+        "facing": "north",
+        "requested": "true"
       },
-      "south": {
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_on"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "requested": "false"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_off",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "requested": "true"
       },
-      "west": {
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_on",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "requested": "false"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_off",
         "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "requested": "true"
       },
-      "east": {
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_on",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "requested": "false"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_off",
         "y": 90
       }
     },
-    "color": {
-      "0": {},
-      "1": {},
-      "2": {},
-      "3": {}
-    },
-    "arrowdir": {
-      "0": {},
-      "1": {},
-      "2": {},
-      "3": {}
-    },
-    "requested": {
-      "false": {},
-      "true": {
-        "textures": {
-          "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_on"
-        }
+    {
+      "when": {
+        "facing": "east",
+        "requested": "true"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/states/controllablecrosswalkbuttoneuro/euro_push_button_euro_button_lamp_on",
+        "y": 90
       }
     }
-  }
+  ]
 }

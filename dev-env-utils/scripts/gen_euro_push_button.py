@@ -23,6 +23,9 @@ import json
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import forge_multipart as FM  # noqa: E402
+
 from PIL import Image, ImageDraw
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -254,7 +257,12 @@ def outputs():
 
     js(os.path.join(ASSETS, 'models', 'block', MODEL + '.json'), model())
     for reg, kind in BLOCKS.items():
-        js(os.path.join(ASSETS, 'blockstates', reg + '.json'), blockstate(kind))
+        # the request lamp only swaps a texture: one multipart location for every state, the
+        # lit lamp a child model (forge_multipart)
+        state, kids = FM.convert(blockstate(kind), 'csm:' + MODEL.rsplit('/', 1)[0], reg)
+        for name, data in sorted(kids.items()):
+            js(os.path.join(ASSETS, 'models', 'block', name.split(':', 1)[1] + '.json'), data)
+        js(os.path.join(ASSETS, 'blockstates', reg + '.json'), state)
     return out
 
 

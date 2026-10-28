@@ -521,6 +521,7 @@ def number_plaque():
     C.add(reg, 'new BlockStationNumberPlaque("%s", %s)' % (reg, B(2, 2, 15, 14, 14, 16)),
           ("Station Number Plaque", "Wachennummernschild", "Placa con número de estación",
            "Stationsnummerskylt"), {reg: m}, state, tab=ES)
+    C.as_multipart(reg)  # the digits only swap textures: one model location for every state
 
 
 number_plaque()

@@ -1,0 +1,11 @@
+{
+  "parent": "csm:block/trafficsignals/euro_push_button",
+  "textures": {
+    "front": "csm:blocks/trafficsignals/shared_textures/euro_button_front_pedestrian",
+    "side": "csm:blocks/trafficsignals/shared_textures/euro_button_side",
+    "cap": "csm:blocks/trafficsignals/shared_textures/euro_button_cap",
+    "back": "csm:blocks/trafficsignals/shared_textures/euro_button_back",
+    "lamp": "csm:blocks/trafficsignals/shared_textures/euro_button_lamp_on",
+    "particle": "csm:blocks/trafficsignals/shared_textures/euro_button_side"
+  }
+}
