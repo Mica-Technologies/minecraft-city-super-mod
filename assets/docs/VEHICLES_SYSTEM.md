@@ -43,7 +43,9 @@ the mast arm (`TRAFFIC_SIGNAL_SYSTEM.md`, "The preempt detector"). It is linked 
 sensor, and a preempt whose **Trig MOV** is **DET** fires while any of that circuit's detectors has
 a call. Redstone calls it too, which is how the station relay now really preempts. It sits on
 top of the mast arm, and a preemption beacon linked to the same circuit is its confirmation
-light.
+light. A junction on span wire takes the span versions instead (`csm:preempt_detector_span` and
+the three `preempt_confirm_*_span` lights, #321): the same blocks hung in the cell under a span
+wire mount (`TRAFFIC_SIGNAL_SYSTEM.md`, "Span wire versions").
 
 ### The source service (Core)
 

@@ -1198,6 +1198,32 @@ detector's mount stub on top of a thin pole (`gen_preempt_detector.py` writes th
 boxes the class's must match) and face the player placing them, never up, though they are placed
 onto the top of an arm.
 
+**Span wire versions (#321).** A junction strung on span wire has no arm to stand them on, so
+each of the four has a version that hangs from the wire: `preempt_detector_span`
+(`BlockPreemptDetectorSpan`, Traffic Signals tab) and `preempt_confirm_par_white_span`,
+`preempt_confirm_par_blue_span`, `preempt_confirm_dome_red_span`
+(`BlockPreemptConfirm*Span`, Traffic Accessories, beside the arm ones). Each is a subclass of the
+arm-mounted block, so the tile entity, linking, detection, flash and lighting are the arm one's
+code, unchanged. All they add is `IPreemptSpanHung` (an `ISpanWireHangable`), their own model and
+box, and, for the lights, their own lens boxes (`*_SPAN_*` in `BlockPreemptConfirmationLight`).
+They hang the way a sign does (`SPAN_WIRE_SYSTEM.md`, "How a payload hangs"): placed in the cell
+directly under a span wire mount (`tlitevertwiremount` or `tlitehorzwiremount`), at whole-block
+height, with the mount's drop coming down to the top of their cell (`getSpanHangerTopY`). Their
+models (`gen_preempt_detector.py`, `<name>_span`) are the arm devices without the stub, raised so
+the top is at 11.8 px, on a collar and a pipe up to the top of the cell; the PAR lamp hangs in its
+yoke turned over, the detector and the dome from their caps. They are powered, so the mount shows
+its conductor coil. Facing is as on the arm: the detector looks the way it faces and the lights
+face the player placing them.
+
+By command, under a mount at `x y+1 z` (detector metadata is the horizontal index, south 0, west
+1, north 2, east 3; the lights' is the facing index, north 2, south 3, west 4, east 5):
+
+```
+/setblock x y z csm:preempt_detector_span 2
+/setblock x y z csm:preempt_confirm_par_white_span 2
+/setblock x y z csm:preempt_confirm_dome_red_span 2
+```
+
 **The red ones answer every approach.** The beacon and the red dome
 (`BlockPreemptBeacon.isLitForAnyEmergencyPreempt`, true for both, false for the white and blue PAR
 lamps) are also lit while an emergency-vehicle preempt triggered from *any* of the controller's
