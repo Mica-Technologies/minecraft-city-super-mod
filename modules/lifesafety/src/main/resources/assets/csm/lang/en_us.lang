@@ -389,3 +389,5 @@ tile.sprinkler_upright_chrome.name=Upright Sprinkler Head (Chrome)
 tile.sprinkler_drop_red.name=Sprinkler Drop (Red)
 tile.sprinkler_drop_silver.name=Sprinkler Drop (Silver)
 tile.smoke_detector_photoelectric.black.name=Photoelectric Smoke Detector (Black)
+tile.eyewash_station_wall.name=Wall-Mounted Eyewash Station
+tile.eyewash_station_deck.name=Deck-Mounted Eyewash (Swing-Down)

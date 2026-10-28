@@ -1039,6 +1039,77 @@ fp_prop("in_case_of_fire_sign", (1, 3, 15, 15, 13, 16), False,
             [box(list(PLACARD[0]), list(PLACARD[1]), "wood", per={"north": "face"})])},
         facing_state(M("in_case_of_fire_sign")))
 
+# --- eyewash stations for the lab floors (GitHub #313) ----------------------------------------
+# The plumbed eyewash a lab bench or a corridor wall carries. Emergency Services' cabinet-style
+# eyewash_station is the station's; these two are the lab's: one on the wall over its own bowl,
+# one on a bench's deck that swings over the sink. Generic, nothing named.
+flat("eyewash_green", GREEN, seed=191, grain=3)
+flat("eyewash_bowl_in", shade(YELLOW, 0.8), seed=192, grain=2)
+
+
+@C.texture("eyewash_tag")
+def _eyewash_tag():
+    """The green tag plate, drawn whole: EYE WASH in white, and the eye-and-water mark."""
+    img = fill(GREEN, size=32, grain=2, seed=193)
+    frame(img, 0, 0, 32, 32, shade(GREEN, 0.72), 1)
+    draw_text_centred(img, "EYE", 16, 4, WHITE, scale=2)
+    draw_text_centred(img, "WASH", 16, 17, WHITE)
+    for k in range(3):
+        rect(img, 10 + k * 5, 25, 12 + k * 5, 28, WHITE)
+    return img
+
+
+fp_prop("eyewash_station_wall", (2, 2, 4, 13, 16, 16), True,
+        ("Wall-Mounted Eyewash Station", "Augendusche (Wandmontage)", "Lavaojos de pared",
+         "Ögondusch (väggmonterad)"),
+        {"eyewash_station_wall": model(
+            {"chrome": T("chrome"), "yellow": T("yellow"), "bowl": T("eyewash_bowl_in"),
+             "cap": T("eyewash_green"), "green": T("eyewash_green"), "tag": T("eyewash_tag"),
+             "particle": T("yellow")},
+            [box([5, 11.5, 15.5], [11, 15.5, 16], "green", per={"north": "tag"})]
+            + post(8, 9, 4, 8, 10, "yellow")
+            + post(8, 9, 3.4, 10, 10.2, "bowl", bottom=False)
+            + post(6.5, 9, 0.7, 10.2, 11.2, "chrome", bottom=False)
+            + post(9.5, 9, 0.7, 10.2, 11.2, "chrome", bottom=False)
+            + post(6.5, 9, 0.9, 11.2, 11.8, "cap")
+            + post(9.5, 9, 0.9, 11.2, 11.8, "cap")
+            # the drain under the bowl and its trap back into the wall
+            + post(8, 9, 0.6, 2.6, 8, "chrome", top=False)
+            + pipe_z(8, 2.6, 0.6, 8.4, 16, "chrome", front=False)
+            # the tempered supply, up into the bowl's back
+            + pipe_z(11, 6, 0.5, 11.5, 16, "chrome", front=False)
+            + post(11, 12, 0.5, 6, 8.2, "chrome", top=False)
+            # the push flag on the right as you face it, and its arm into the valve
+            + [box([2.2, 8.5, 7.5], [2.9, 12.5, 10.5], "yellow"),
+               box([2.9, 9.2, 8.6], [4.4, 9.8, 9.4], "chrome")])},
+        facing_state(M("eyewash_station_wall")))
+C.blocks[-1]["models"]["eyewash_station_wall"]["elements"][0]["faces"]["north"]["uv"] = \
+    [0, 0, 16, 16]
+
+fp_prop("eyewash_station_deck", (5, 0, 4, 15, 10, 15), False,
+        ("Deck-Mounted Eyewash (Swing-Down)", "Augendusche (Tischmontage, schwenkbar)",
+         "Lavaojos de encimera (abatible)", "Ögondusch (bänkmonterad, nedfällbar)"),
+        {"eyewash_station_deck": model(
+            {"chrome": T("chrome"), "yellow": T("yellow"), "cap": T("eyewash_green"),
+             "green": T("eyewash_green"), "tag": T("eyewash_tag"), "particle": T("chrome")},
+            post(11, 12, 1.6, 0, 0.4, "chrome", bottom=False)
+            + post(11, 12, 0.8, 0.4, 7.6, "chrome", bottom=False)
+            # the swing arm out over the sink, and the yoke carrying the two heads
+            + pipe_z(11, 7.2, 0.6, 6, 11.2, "chrome")
+            + pipe_x(7.2, 6, 0.55, 6.5, 11.6, "chrome")
+            + post(7.5, 6, 0.7, 7.75, 8.6, "chrome", bottom=False)
+            + post(10.5, 6, 0.7, 7.75, 8.6, "chrome", bottom=False)
+            + post(7.5, 6, 0.9, 8.6, 9.2, "cap")
+            + post(10.5, 6, 0.9, 8.6, 9.2, "cap")
+            # the yellow lever that opens the valve as the arm is swung down, and the tag
+            + [box([11.8, 3.6, 11.4], [14.6, 4.4, 12.6], "yellow"),
+               box([14, 2.2, 11.3], [14.8, 4.4, 12.7], "yellow"),
+               box([10, 2, 10.9], [12, 5.5, 11.1], "green", per={"north": "tag"})])},
+        facing_state(M("eyewash_station_deck")))
+for _e in C.blocks[-1]["models"]["eyewash_station_deck"]["elements"]:
+    if _e["faces"].get("north", {}).get("texture") == "#tag":
+        _e["faces"]["north"]["uv"] = [0, 0, 16, 16]
+
 # --- detection (Fire Alarm & Detection tab) --------------------------------------------------
 def detector(reg, bbox, names, textures, elements):
     C.add(reg, 'new BlockFireAlarmDetectorFactory("%s", %s)' % (reg, aabb(*bbox)), names,

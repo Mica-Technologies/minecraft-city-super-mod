@@ -2,7 +2,7 @@
 
 Sprinklers and the rest of what a building fights a fire with besides its alarm.
 
-!!! info "65 blocks in this tab"
+!!! info "67 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -16,6 +16,7 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | AED Sign | `csm:aed_sign` | 2.0 | 6.0 | pickaxe | 0 |
 | Class K Fire Extinguisher | `csm:fire_extinguisher_k` | 2.0 | 6.0 | pickaxe | 0 |
 | CO2 Fire Extinguisher | `csm:fire_extinguisher_co2` | 2.0 | 6.0 | pickaxe | 0 |
+| Deck-Mounted Eyewash (Swing-Down) | `csm:eyewash_station_deck` | 2.0 | 6.0 | pickaxe | 0 |
 | Fire Department Connection (Brass) | `csm:fdc_siamese_brass` | 2.0 | 6.0 | pickaxe | 0 |
 | Fire Department Connection (Chrome) | `csm:fdc_siamese_chrome` | 2.0 | 6.0 | pickaxe | 0 |
 | Fire Department Connection Sign | `csm:fdc_sign` | 2.0 | 6.0 | pickaxe | 0 |
@@ -73,6 +74,7 @@ Sprinklers and the rest of what a building fights a fire with besides its alarm.
 | Upright Sprinkler Head (Black) | `csm:sprinkler_upright_black` | 2 | 10 | pickaxe | 1 |
 | Upright Sprinkler Head (Chrome) | `csm:sprinkler_upright_chrome` | 2 | 10 | pickaxe | 1 |
 | Upright Sprinkler Head (White) | `csm:sprinkler_upright_white` | 2 | 10 | pickaxe | 1 |
+| Wall-Mounted Eyewash Station | `csm:eyewash_station_wall` | 2.0 | 6.0 | pickaxe | 0 |
 | Water Fire Extinguisher | `csm:fire_extinguisher_water` | 2.0 | 6.0 | pickaxe | 0 |
 | Water Motor Gong | `csm:water_motor_gong` | 2 | 10 | pickaxe | 1 |
 | What To Do in Case of Fire Sign | `csm:in_case_of_fire_sign` | 2.0 | 6.0 | pickaxe | 0 |

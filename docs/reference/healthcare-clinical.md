@@ -2,7 +2,7 @@
 
 The clinical side of a hospital: the nurse call master panel, wall dispensers, infection control carts and bins, linen, medical gas outlets and the eyewash station.
 
-!!! info "87 blocks in this tab"
+!!! info "93 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -28,6 +28,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Centrifuge (Bench-Top) | `csm:lab_centrifuge` |  |  |  |  |
 | Chemistry Analyser | `csm:chemistry_analyser` |  |  |  |  |
 | Clean Linen Cart | `csm:clean_linen_cart` |  |  |  |  |
+| CO2 Incubator (Stacked Pair) | `csm:lab_co2_incubator` |  |  |  |  |
 | Code Blue Annunciator (Strobe and Chime) | `csm:code_blue_annunciator` |  |  |  |  |
 | Code Blue Button | `csm:code_blue_button` |  |  |  |  |
 | Crash Cart | `csm:crash_cart` |  |  |  |  |
@@ -39,6 +40,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Dissection Table | `csm:dissection_table` |  |  |  |  |
 | Endoscopy Tower | `csm:endoscopy_tower` |  |  |  |  |
 | Fume Hood | `csm:fume_hood` |  |  |  |  |
+| Glassware Drying Rack | `csm:lab_glassware_rack` |  |  |  |  |
 | Glove Box Dispenser | `csm:glove_box_dispenser` |  |  |  |  |
 | Haematology Analyser (Bench-Top) | `csm:haematology_analyser` |  |  |  |  |
 | Hand Sanitizer Dispenser | `csm:hand_sanitizer_dispenser` |  |  |  |  |
@@ -52,6 +54,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Lab Bench with Reagent Shelf | `csm:lab_bench` |  |  |  |  |
 | Lab Bench with Sink | `csm:lab_bench_sink` |  |  |  |  |
 | Lead Apron Rack | `csm:lead_apron_rack` |  |  |  |  |
+| Liquid Nitrogen Dewar | `csm:lab_ln2_dewar` |  |  |  |  |
 | Mammography Unit | `csm:mammography_unit` |  |  |  |  |
 | Mayo Stand (Instrument Tray) | `csm:or_mayo_stand` |  |  |  |  |
 | Medical Gas Master Alarm Panel | `csm:medical_gas_master_alarm` | 1.5 | 3.0 | pickaxe | 0 |
@@ -73,6 +76,7 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Operating Table | `csm:or_table` |  |  |  |  |
 | OR Supply Cabinet | `csm:or_supply_cabinet` |  |  |  |  |
 | Patient Status Board | `csm:patient_status_board` |  |  |  |  |
+| PCR Thermocycler (Bench-Top) | `csm:lab_pcr_thermocycler` |  |  |  |  |
 | Pneumatic Tube Station | `csm:pneumatic_tube_station` |  |  |  |  |
 | Portable Ultrasound Cart | `csm:ultrasound_cart` |  |  |  |  |
 | Power Outlet (Emergency Power, Red) | `csm:hospital_outlet_emergency` |  |  |  |  |
@@ -94,6 +98,8 @@ The clinical side of a hospital: the nurse call master panel, wall dispensers, i
 | Surgical Scrub Sink | `csm:or_scrub_sink` |  |  |  |  |
 | Trauma Bay Exam Light | `csm:trauma_exam_light` | 1.0 | 2.0 | pickaxe | 0 |
 | Triage Desk | `csm:triage_desk` |  |  |  |  |
+| Ultra-Low Freezer (-80 °C) | `csm:lab_ult_freezer` |  |  |  |  |
+| Ventilated Cage Rack (Vivarium) | `csm:vivarium_cage_rack` |  |  |  |  |
 | Wall Bucky Stand | `csm:xray_wall_bucky` |  |  |  |  |
 | Workstation on Wheels | `csm:workstation_on_wheels` |  |  |  |  |
 | X-Ray In Use Warning Light | `csm:xray_in_use_light` | 1.0 | 2.0 | pickaxe | 0 |

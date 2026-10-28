@@ -1153,8 +1153,10 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   lines), the ceiling X-ray tube, X-ray table, bucky, C-arm and cart, mammography, lead apron
   rack, reading workstation, IN USE lights, MRI zone and radiation signs; joining lab benches,
   analysers, centrifuge, microscope, fume hood, biosafety cabinet, blood bank fridge, specimen
-  pass-through, pneumatic tube station; compounding hood, bin shelving, unit-dose cabinet; the
-  morgue cabinet, autopsy table and body cart; `--check`, `--fragments`
+  pass-through, pneumatic tube station; the research lab (CO2 incubator, -80 freezer, nitrogen
+  dewar, thermocycler, glassware rack) and the vivarium cage rack; compounding hood, bin
+  shelving, unit-dose cabinet; the morgue cabinet, autopsy table and body cart; `--check`,
+  `--fragments`
 - `gen_healthcare_patient_areas.py` -- maternity, rehab, waiting room, teaching and playroom
   (Healthcare): infant warmer, bassinet, incubator, parallel bars, treatment plinth, exercise
   stairs, beam seating, check-in kiosk, call console and the now-serving display (layout numbers
@@ -1340,7 +1342,7 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   rectangles, two turned 45 degrees, since a square plus the same square turned 45 is a star
 - `gen_fire_protection.py` -- the Fire Protection tab (extinguishers, cabinets with doors that
   open, standpipe, fire department connections, riser room valves, the water motor gong, door
-  holders, sign plates) and the new detectors and remote annunciator in Fire Alarm & Detection;
+  holders, sign plates, the lab's wall and deck eyewashes) and the new detectors and remote annunciator in Fire Alarm & Detection;
   `--check`, `--fragments`
 - `gen_standpipe_system.py` -- the connectable dry standpipe in Fire Protection: free-standing
   (`BlockStandpipePipe`, six-way) and wall-run (`BlockStandpipeWallPipe`, axis set back to the
