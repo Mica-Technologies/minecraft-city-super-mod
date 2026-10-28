@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -62,8 +63,19 @@ import org.lwjgl.opengl.GL11;
  * place in the day), its city (and by the room it has, in steps of eight units), its gate, its
  * remark, the two halves of the column heads, the clock and the page. Following "Display lists:
  * one texture, no cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}, the lists hold geometry only:
- * the font atlas, the colours, the depth mask and the fullbright lightmap are set outside them,
- * every frame.</p>
+ * the font atlas, the depth mask and the fullbright lightmap are set outside them, every
+ * frame.</p>
+ *
+ * <p><b>The board's lists.</b> Drawing those pieces one by one cost about 50 microseconds a
+ * board whatever its size (a push, a translation, a scale, a colour and a call per row and
+ * column). So each board also has two lists of its own ({@link #BOARDS}, on its controller): the
+ * screen, compiled again when the board's size or list changes or the atlas moves its sprite;
+ * and its heads, page label and rows as calls to the shared text lists, each under its place and
+ * colour (plain {@code glColor}, which a list records, and {@code GlStateManager.resetColor()}
+ * after it, since the state manager no longer knows the colour), compiled again in place only
+ * when {@link FlightBoardPage}'s version moves: a flight leaves the page, a remark changes, the
+ * page turns. The clock, which changes every game minute, is drawn outside them. The lists are
+ * released with the controller's tile entity (removal and chunk unload) and on disconnect.</p>
  *
  * @since 2026.10
  */
@@ -125,8 +137,27 @@ public class TileEntityFlightBoardLargeRenderer
   private static final int KIND_CLOCK = 6;
   private static final int KIND_PAGE = 7;
 
-  /** The flights being drawn, an array for each number of rows: scratch, render thread only. */
-  private static final long[][] SLOTS = new long[MAX_ROWS + 1][];
+  /**
+   * Each board's two lists, on its controller: its screen ({@link #SCREEN_KEY}) and its heads,
+   * page and rows ({@link #TEXT_KEY}), a list of calls to the shared text lists above. Each is
+   * compiled again in place when what it shows changes, so a board holds two lists whatever its
+   * size; compiling the text list costs next to nothing, which matters because every board in a
+   * terminal changes on the same game minute.
+   */
+  private static final CsmDisplayListCache BOARDS =
+      new CsmDisplayListCache("large flight boards");
+  private static final long TEXT_KEY = 0L;
+  private static final long SCREEN_KEY = 1L;
+
+  /** How {@link #text} draws: directly, compiling the pieces, or calling them. */
+  private static final int TEXT_PER_FRAME = 0;
+  private static final int TEXT_COMPILE_PIECES = 1;
+  private static final int TEXT_CALL_PIECES = 2;
+
+  private static final String DEPARTURES_SPRITE = "csm:blocks/transit/airport/fids_departures";
+  private static final String ARRIVALS_SPRITE = "csm:blocks/transit/airport/fids_arrivals";
+
+  private static final FlightSchedule.Status[] STATUSES = FlightSchedule.Status.values();
 
   @Override
   public boolean isGlobalRenderer(TileEntityFlightBoardLarge te) {
@@ -153,18 +184,15 @@ public class TileEntityFlightBoardLargeRenderer
 
     // the screen, in sixteenths
     float sw = 16f * width - 2 * INSET;
-    float sh = 16f * height - 2 * INSET;
     float k = scale(width, height);
     float header = HEADER * k;
-    float colhead = COLHEAD * k;
     int rows = rows(width, height);
-    float pitch = (sh - header - colhead) / rows;
     int pages = pages(rows);
     long total = te.getWorld().getTotalWorldTime();
     int page = pages <= 1 ? 0 : (int) ((total / PAGE_TICKS) % pages);
     long now = FlightSchedule.minuteOf(te.getWorld().getWorldTime());
-    long[] slots = slots(rows);
-    int count = FlightSchedule.list(arrivals, now, page * rows, slots);
+    FlightBoardPage shown = te.clientPage;
+    shown.update(arrivals, now, page * rows, rows, layoutKey(width, height, page, pages));
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y, z + 0.5);
@@ -189,7 +217,37 @@ public class TileEntityFlightBoardLargeRenderer
     GlStateManager.scale(1 / 16.0, -1 / 16.0, 1 / 16.0);
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240f, 240f);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-    screen(arrivals, sw, header, colhead, rows, pitch);
+    // The screen: one list a board, compiled again when its size or list changes, or when the
+    // atlas is stitched again and moves its texture.
+    TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks()
+        .getAtlasSprite(arrivals ? ARRIVALS_SPRITE : DEPARTURES_SPRITE);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      screen(sprite, width, height);
+    } else {
+      long screenKey = layoutKey(width, height, arrivals ? 1 : 0, 0);
+      float[] uv = te.clientScreenUv;
+      int list = BOARDS.get(te.getPos(), SCREEN_KEY);
+      if (list == CsmDisplayListCache.NO_LIST || te.clientScreenLayout != screenKey
+          || uv[0] != sprite.getMinU() || uv[1] != sprite.getMinV()
+          || uv[2] != sprite.getMaxU() || uv[3] != sprite.getMaxV()) {
+        list = BOARDS.allocate(te.getPos(), SCREEN_KEY);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          screen(sprite, width, height);
+          GL11.glEndList();
+          te.clientScreenLayout = screenKey;
+          uv[0] = sprite.getMinU();
+          uv[1] = sprite.getMinV();
+          uv[2] = sprite.getMaxU();
+          uv[3] = sprite.getMaxV();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        screen(sprite, width, height);
+      }
+    }
 
     GlStateManager.enableBlend();
     GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -197,6 +255,79 @@ public class TileEntityFlightBoardLargeRenderer
     fr.bindAtlas();
     GlStateManager.translate(0, 0, SCREEN_LIFT + TEXT_LIFT);
 
+    // The heads, the page and the rows: one list per board, calling the shared text lists under
+    // their colours and places, compiled again only when a row, a remark or the page changes.
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      text(TEXT_PER_FRAME, fr, shown, arrivals, width, height, page, pages);
+    } else {
+      int list = BOARDS.get(te.getPos(), TEXT_KEY);
+      if (list == CsmDisplayListCache.NO_LIST
+          || te.clientCompiledVersion != shown.getVersion()) {
+        // every text list the board's calls first, since a list cannot be compiled inside another
+        text(TEXT_COMPILE_PIECES, fr, shown, arrivals, width, height, page, pages);
+        list = BOARDS.allocate(te.getPos(), TEXT_KEY);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          text(TEXT_CALL_PIECES, fr, shown, arrivals, width, height, page, pages);
+          GL11.glEndList();
+          te.clientCompiledVersion = shown.getVersion();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        text(TEXT_CALL_PIECES, fr, shown, arrivals, width, height, page, pages);
+      }
+    }
+    // The board's colours were set by plain glColor (a list cannot hold GlStateManager's), so
+    // its cache no longer knows the colour: make the next color() call reach GL.
+    GlStateManager.resetColor();
+
+    // The clock, which changes every game minute, outside the board's list.
+    colour(CLOCK_COLOUR);
+    int minuteOfDay = (int) Math.floorMod(now, 24L * 60L);
+    float clockScale = TileEntityFlightBoardRenderer.clockScale * k;
+    at(sw - EDGE * k, (header - CLOCK_TEXT_H * k) / 2, clockScale);
+    draw(CLOCK_LISTS, minuteOfDay, fr, KIND_CLOCK, minuteOfDay, false, 0);
+    GlStateManager.popMatrix();
+
+    GlStateManager.depthMask(true);
+    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    GlStateManager.enableCull();
+    GlStateManager.disableBlend();
+    GlStateManager.enableLighting();
+    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
+    GlStateManager.popMatrix();
+  }
+
+  /**
+   * What a board's text list is drawn from besides its rows, packed: its size, the page shown and
+   * how many there are (the page label). {@link FlightBoardPage} moves its version when it changes.
+   */
+  static long layoutKey(int width, int height, int page, int pages) {
+    return (width & 0xFFFFL) | (height & 0xFFFFL) << 16 | (page & 0xFFFFL) << 32
+        | (pages & 0xFFFFL) << 48;
+  }
+
+  /**
+   * The column heads, the page label and the rows, in their places and colours, in one of three
+   * ways: every piece drawn directly ({@link #TEXT_PER_FRAME}); every shared text list a board's
+   * list calls compiled if it is missing ({@link #TEXT_COMPILE_PIECES}, before the board's list is
+   * opened, since a list cannot be compiled inside another); or every piece its shared list's call
+   * ({@link #TEXT_CALL_PIECES}, what the board's list is compiled from). Colours are plain
+   * {@code glColor} and the places plain matrix calls, which a list records.
+   */
+  private static void text(int mode, CsmFontRenderer fr, FlightBoardPage shown, boolean arrivals,
+      int width, int height, int page, int pages) {
+    // the layout, worked out as the frame's own was before the board had a list
+    float sw = 16f * width - 2 * INSET;
+    float sh = 16f * height - 2 * INSET;
+    float k = scale(width, height);
+    float header = HEADER * k;
+    float colhead = COLHEAD * k;
+    int rows = rows(width, height);
+    float pitch = (sh - header - colhead) / rows;
     // the columns, in sixteenths: the left ones as the small board's, the right ones as far from
     // the right edge as the small board's are from its
     float xTime = TileEntityFlightBoardRenderer.xTime * k;
@@ -210,71 +341,77 @@ public class TileEntityFlightBoardLargeRenderer
     int cityUnits = Math.max(8, Math.min(4088,
         (int) ((xGate - GAP * k - xCity) / rowScale) / 8 * 8));
 
-    colour(HEAD_COLOUR);
+    TileEntityFlightBoardRenderer.glColour(HEAD_COLOUR);
     float headY = header + (colhead - HEAD_TEXT_H * k) / 2;
     at(xTime, headY, headScale);
-    draw(HEAD_LISTS, arrivals ? 1 : 0, fr, KIND_HEAD_LEFT, arrivals ? 1 : 0, false, 0);
+    piece(mode, HEAD_LISTS, arrivals ? 1 : 0, fr, KIND_HEAD_LEFT, arrivals ? 1 : 0, false, 0);
     GlStateManager.popMatrix();
     at(xGate, headY, headScale);
-    draw(HEAD_LISTS, 2, fr, KIND_HEAD_RIGHT, 0, false, 0);
+    piece(mode, HEAD_LISTS, 2, fr, KIND_HEAD_RIGHT, 0, false, 0);
     GlStateManager.popMatrix();
 
-    colour(CLOCK_COLOUR);
-    int minuteOfDay = (int) Math.floorMod(now, 24L * 60L);
-    float clockRight = sw - EDGE * k;
-    at(clockRight, (header - CLOCK_TEXT_H * k) / 2, clockScale);
-    draw(CLOCK_LISTS, minuteOfDay, fr, KIND_CLOCK, minuteOfDay, false, 0);
-    GlStateManager.popMatrix();
     if (pages > 1) {
-      colour(HEAD_COLOUR);
+      float clockRight = sw - EDGE * k;
       float clockWidth = fr.getStringWidth("00:00") * clockScale;
       at(clockRight - clockWidth - 4 * EDGE * k, (header - HEAD_TEXT_H * k) / 2, headScale);
       int key = page * 64 + pages;
-      draw(PAGE_LISTS, key, fr, KIND_PAGE, key, false, 0);
+      piece(mode, PAGE_LISTS, key, fr, KIND_PAGE, key, false, 0);
       GlStateManager.popMatrix();
     }
 
-    for (int i = 0; i < count; i++) {
-      long slot = slots[i];
+    for (int i = 0; i < shown.getCount(); i++) {
+      long slot = shown.getSlot(i);
       int daily = FlightSchedule.dailyOf(slot);
-      FlightSchedule.Status status = FlightSchedule.status(slot, arrivals, now);
+      int remark = shown.getRemark(i);
       float rowY = header + colhead + i * pitch + (pitch - TEXT_H * k) / 2;
       int flight = (arrivals ? 1000 : 0) + daily;
-      colour(ROW_COLOUR);
+      TileEntityFlightBoardRenderer.glColour(ROW_COLOUR);
       at(xTime, rowY, rowScale);
-      draw(LEFT_LISTS, flight, fr, KIND_LEFT, daily, arrivals, 0);
+      piece(mode, LEFT_LISTS, flight, fr, KIND_LEFT, daily, arrivals, 0);
       GlStateManager.popMatrix();
       at(xCity, rowY, rowScale);
-      draw(CITY_LISTS, (long) flight * 4096 + cityUnits, fr, KIND_CITY, daily, arrivals,
+      piece(mode, CITY_LISTS, (long) flight * 4096 + cityUnits, fr, KIND_CITY, daily, arrivals,
           cityUnits);
       GlStateManager.popMatrix();
       int gate = FlightSchedule.gateValue(slot, arrivals);
       at(xGate, rowY, rowScale);
-      draw(GATE_LISTS, gate, fr, KIND_GATE, gate, arrivals, 0);
+      piece(mode, GATE_LISTS, gate, fr, KIND_GATE, gate, arrivals, 0);
       GlStateManager.popMatrix();
-      colour(status.getColour());
+      TileEntityFlightBoardRenderer.glColour(STATUSES[remark].getColour());
       at(xRemark, rowY, rowScale);
-      draw(STATUS_LISTS, status.ordinal(), fr, KIND_STATUS, status.ordinal(), arrivals, 0);
+      piece(mode, STATUS_LISTS, remark, fr, KIND_STATUS, remark, arrivals, 0);
       GlStateManager.popMatrix();
     }
-
-    GlStateManager.depthMask(true);
-    GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
-    GlStateManager.enableCull();
-    GlStateManager.disableBlend();
-    GlStateManager.enableLighting();
-    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
-    GlStateManager.popMatrix();
   }
 
-  /** A scratch array of exactly this many flights. Render thread only. */
-  private static long[] slots(int rows) {
-    long[] slots = SLOTS[rows];
-    if (slots == null) {
-      slots = new long[rows];
-      SLOTS[rows] = slots;
+  /** One piece of text, as {@link #text}'s mode says. */
+  private static void piece(int mode, CsmSharedDisplayLists lists, long key, CsmFontRenderer fr,
+      int kind, int value, boolean arrivals, int room) {
+    if (mode == TEXT_PER_FRAME) {
+      add(fr, kind, value, arrivals, room);
+      return;
     }
-    return slots;
+    int list = lists.get(key);
+    if (mode == TEXT_COMPILE_PIECES) {
+      if (list == CsmDisplayListCache.NO_LIST) {
+        list = lists.allocate(key);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          add(fr, kind, value, arrivals, room);
+          GL11.glEndList();
+        }
+      }
+    } else if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      // no list for this piece (the driver refused one): its geometry instead
+      add(fr, kind, value, arrivals, room);
+    }
+  }
+
+  /** Releases a board's lists, when a cell's tile entity goes. */
+  public static void release(BlockPos pos) {
+    BOARDS.invalidate(pos);
   }
 
   /**
@@ -316,10 +453,14 @@ public class TileEntityFlightBoardLargeRenderer
    * The screen: the small board's texture cut into its bands, fullbright, one quad a band, in
    * sixteenths with y down the screen, {@link #SCREEN_LIFT} in front of the slab.
    */
-  private void screen(boolean arrivals, float sw, float header, float colhead, int rows,
-      float pitch) {
-    TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(
-        "csm:blocks/transit/airport/" + (arrivals ? "fids_arrivals" : "fids_departures"));
+  private static void screen(TextureAtlasSprite sprite, int width, int height) {
+    float sw = 16f * width - 2 * INSET;
+    float sh = 16f * height - 2 * INSET;
+    float k = scale(width, height);
+    float header = HEADER * k;
+    float colhead = COLHEAD * k;
+    int rows = rows(width, height);
+    float pitch = (sh - header - colhead) / rows;
     Tessellator tess = Tessellator.getInstance();
     BufferBuilder buf = tess.getBuffer();
     buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);

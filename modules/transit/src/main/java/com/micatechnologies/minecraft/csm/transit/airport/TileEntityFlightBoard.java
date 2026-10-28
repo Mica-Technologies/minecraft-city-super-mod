@@ -33,6 +33,13 @@ public class TileEntityFlightBoard extends AbstractTileEntity {
   private boolean arrivals;
 
   /**
+   * Client only, never saved: the rows last drawn, and the version of them the board's text list
+   * was compiled for ({@link TileEntityFlightBoardRenderer}).
+   */
+  final transient FlightBoardPage clientPage = new FlightBoardPage();
+  transient int clientCompiledVersion;
+
+  /**
    * Looks the facing and the page up again if the last answer is older than a second. The
    * renderer calls this every frame, before reading them.
    */
@@ -101,6 +108,24 @@ public class TileEntityFlightBoard extends AbstractTileEntity {
   @Override
   public double getMaxRenderDistanceSquared() {
     return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
+  }
+
+  /** Releases the board's text list when it is removed. */
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityFlightBoardRenderer.release(pos);
+    }
+  }
+
+  /** And when its chunk unloads. */
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityFlightBoardRenderer.release(pos);
+    }
   }
 
   /** Nothing a baked model draws comes from here. */
