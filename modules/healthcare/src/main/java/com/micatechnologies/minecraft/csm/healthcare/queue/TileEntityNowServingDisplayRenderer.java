@@ -4,7 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
-import net.minecraft.client.Minecraft;
+import com.micatechnologies.minecraft.csm.healthcare.HealthcareScreenSprites;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -121,8 +121,8 @@ public class TileEntityNowServingDisplayRenderer
   /** The screen's texture, one quad a hair in front of the baked one, fullbright. */
   private void screen() {
     bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-    TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(
-        "csm:blocks/healthcare/patient/now_serving_screen");
+    // Looked up once a stitch, not by name every frame.
+    TextureAtlasSprite sprite = HealthcareScreenSprites.nowServing();
     float u0 = sprite.getMinU();
     float u1 = sprite.getMaxU();
     float v0 = sprite.getMinV();
