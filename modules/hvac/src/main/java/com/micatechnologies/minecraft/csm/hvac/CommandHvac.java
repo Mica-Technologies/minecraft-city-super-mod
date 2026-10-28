@@ -171,6 +171,12 @@ public class CommandHvac extends CommandBase {
       max = Math.max(max, t);
     }
     say(sender, String.format("  regions %.1fF .. %.1fF", min, max));
+    if (s.lastSupplyCfm > 0 || s.lastExhaustCfm > 0) {
+      float makeUp = HvacAirBalance.infiltrationUA(s.lastSupplyCfm, s.lastExhaustCfm);
+      say(sender, "  " + HvacAirBalance.describe(s.lastSupplyCfm, s.lastExhaustCfm)
+          + (makeUp > 0 ? String.format("; make-up air UA %.2f, %.0f/s", makeUp,
+          makeUp * (mean - s.outdoor)) : ""));
+    }
   }
 
   /** Why the cell at {@code at} has no room, from the anchor there (#280). */

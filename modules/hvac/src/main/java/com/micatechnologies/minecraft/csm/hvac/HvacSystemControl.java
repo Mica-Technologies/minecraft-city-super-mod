@@ -170,6 +170,9 @@ final class HvacSystemControl {
   private static final class Zone {
     final TileEntityHvacThermostatBase tstat;
     final ThermalAnchor anchor;
+    /** Its loaded supply vents and exhaust grilles, sorted from its vent list this step. */
+    final List<BlockPos> supplies = new ArrayList<>();
+    final List<TileEntityHvacExhaustGrille> grilles = new ArrayList<>(0);
     int vents;
     boolean servesOwnSpace;
     boolean wantsHeat;
@@ -303,9 +306,13 @@ final class HvacSystemControl {
       unit.claimStep = w.stepId;
       units.add(unit);
     }
+    List<TileEntityHvacExhaustFan> fans = exhaustFans(world, primary);
     // Switched off at the primary: nothing runs, and the rooms it serves sleep (neither stepped
     // nor rescanned) unless something else is working in them.
     if (primary.getSwitchMode() == HvacStatus.SWITCH_OFF) {
+      for (TileEntityHvacExhaustFan f : fans) {
+        f.applyExhaust(0.0f);
+      }
       int poweredOff = 0;
       for (TileEntityHvacHeater u : units) {
         poweredOff += u.hasPower() ? 1 : 0;
@@ -331,7 +338,8 @@ final class HvacSystemControl {
     // A system with any member unloaded (a zone, a unit, a vent) cannot know what it would do,
     // so it does nothing and holds every room it touches exactly as it is until it is whole.
     boolean complete = zones.size() == 1 + primary.getLinkedZones().size()
-        && units.size() == primary.getLinkedUnits().size();
+        && units.size() == primary.getLinkedUnits().size()
+        && fans.size() == primary.getLinkedExhaustFans().size();
     for (Zone z : zones) {
       for (BlockPos vp : z.tstat.getLinkedVents()) {
         complete &= world.isBlockLoaded(vp);
@@ -372,28 +380,36 @@ final class HvacSystemControl {
       }
     }
 
-    // Where the system delivers: its vents' regions, or with no vents at all, the units' own.
+    // The zones' vents, sorted into supply vents and exhaust grilles (#314). Exhaust grilles sit
+    // in the vent lists, so only a supply vent makes the system ducted.
     boolean hasDucts = false;
     for (Zone z : zones) {
-      if (!z.tstat.getLinkedVents().isEmpty()) {
-        hasDucts = true;
-        break;
+      for (Iterator<BlockPos> it = z.tstat.getLinkedVents().iterator(); it.hasNext(); ) {
+        BlockPos vp = it.next();
+        if (!world.isBlockLoaded(vp)) {
+          continue;
+        }
+        TileEntity vte = world.getTileEntity(vp);
+        if (!(vte instanceof TileEntityHvacVentRelay)) {
+          it.remove();
+          continue;
+        }
+        if (vte instanceof TileEntityHvacExhaustGrille) {
+          z.grilles.add((TileEntityHvacExhaustGrille) vte);
+        } else {
+          z.supplies.add(vp);
+          hasDucts = true;
+        }
       }
     }
+
+    // Where the system delivers: its vents' regions, or with no vents at all, the units' own.
     Map<Long, Served> served = new LinkedHashMap<>();
     boolean unitsUnconnected = false;
     if (hasDucts) {
       for (int zi = 0; zi < zones.size(); zi++) {
         Zone z = zones.get(zi);
-        for (Iterator<BlockPos> it = z.tstat.getLinkedVents().iterator(); it.hasNext(); ) {
-          BlockPos vp = it.next();
-          if (!world.isBlockLoaded(vp)) {
-            continue;
-          }
-          if (!(world.getTileEntity(vp) instanceof TileEntityHvacVentRelay)) {
-            it.remove();
-            continue;
-          }
+        for (BlockPos vp : z.supplies) {
           ThermalAnchor va = w.anchor(vp);
           if (va == null || va.space == null || va.region < 0) {
             continue; // a vent blowing into the open, or into a space still loading
@@ -517,6 +533,9 @@ final class HvacSystemControl {
       u.applyOutput(running && u.hasPower() ? fraction : 0.0f);
     }
 
+    // Air (#314): what the vents bring in and the exhaust grilles draw out.
+    boolean grillesWithoutFan = accountAirflow(w, zones, fans, powered > 0);
+
     // Trim: nudge each zone's vent-region target until its own thermostat reads the setpoint,
     // but only once those regions have reached the target they are being given.
     float[] gap = new float[zones.size()];
@@ -614,6 +633,14 @@ final class HvacSystemControl {
       if (capacityLimited && (z.delivered > 0 || systemView)) {
         flags |= HvacStatus.FLAG_CAPACITY_LIMITED;
       }
+      ThermalSpace zs = z.space();
+      if (zs != null && zs.lastExhaustCfm > 0 && HvacAirBalance.pressure(zs.lastSupplyCfm,
+          zs.lastExhaustCfm) == HvacAirBalance.NEGATIVE) {
+        flags |= HvacStatus.FLAG_NEGATIVE_PRESSURE;
+      }
+      if (grillesWithoutFan && !z.grilles.isEmpty()) {
+        flags |= HvacStatus.FLAG_NO_EXHAUST_FAN;
+      }
       int calling = z.delivered > 0.5f ? mode : HvacStatus.MODE_IDLE;
       if (zi == 0 && z.vents == 0 && zones.size() > 1) {
         // A primary with no vents of its own runs the equipment for its zones.
@@ -628,6 +655,83 @@ final class HvacSystemControl {
       z.tstat.applyControl(display(w, z.anchor, z.tstat.getPos()), calling, blocked,
           outputPercent, flags, zi == 0 ? capacityPercent : -1, powered, units.size());
     }
+  }
+
+  /** A primary's loaded exhaust fans; links to anything else are dropped. */
+  private static List<TileEntityHvacExhaustFan> exhaustFans(World world,
+      TileEntityHvacThermostat primary) {
+    List<BlockPos> linked = primary.getLinkedExhaustFans();
+    if (linked.isEmpty()) {
+      return java.util.Collections.emptyList();
+    }
+    List<TileEntityHvacExhaustFan> fans = new ArrayList<>(linked.size());
+    for (Iterator<BlockPos> it = linked.iterator(); it.hasNext(); ) {
+      BlockPos fp = it.next();
+      if (!world.isBlockLoaded(fp)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(fp);
+      if (!(te instanceof TileEntityHvacExhaustFan)) {
+        it.remove();
+        continue;
+      }
+      fans.add((TileEntityHvacExhaustFan) te);
+    }
+    return fans;
+  }
+
+  /**
+   * Adds a running system's air to the rooms it serves (#314): {@link HvacAirBalance#VENT_CFM}
+   * from each supply vent while a unit has power and the vent's zone is not switched off, and an
+   * equal share of the powered exhaust fans' capacity drawn out through each exhaust grille in a
+   * room, whatever the units are doing (a lab's exhaust runs day and night). A system with no
+   * grilles does nothing but count its vents.
+   *
+   * @param unitsPowered whether any of the system's units has power, which runs its supply fan
+   *
+   * @return whether the system has grilles in rooms but no powered exhaust fan
+   */
+  private static boolean accountAirflow(HvacThermalWorld w, List<Zone> zones,
+      List<TileEntityHvacExhaustFan> fans, boolean unitsPowered) {
+    int grilles = 0;
+    for (Zone z : zones) {
+      for (TileEntityHvacExhaustGrille g : z.grilles) {
+        ThermalAnchor a = w.anchor(g.getPos());
+        if (a != null && a.space != null && a.region >= 0) {
+          grilles++;
+        }
+      }
+      if (unitsPowered && z.tstat.getSwitchMode() != HvacStatus.SWITCH_OFF) {
+        for (BlockPos vp : z.supplies) {
+          ThermalAnchor a = w.anchor(vp);
+          if (a != null && a.space != null) {
+            a.space.addSupply(HvacAirBalance.VENT_CFM);
+          }
+        }
+      }
+    }
+    float fanCfm = 0;
+    for (TileEntityHvacExhaustFan f : fans) {
+      fanCfm += f.hasPower() ? f.getCapacityCfm() : 0;
+    }
+    float each = HvacAirBalance.grilleCfm(fanCfm, grilles);
+    float drawn = 0;
+    for (Zone z : zones) {
+      for (TileEntityHvacExhaustGrille g : z.grilles) {
+        ThermalAnchor a = w.anchor(g.getPos());
+        boolean inRoom = a != null && a.space != null && a.region >= 0;
+        g.exhaustCfm = inRoom ? each : 0;
+        if (inRoom && each > 0) {
+          a.space.addExhaust(a.region, each);
+          wake(w, a.space);
+          drawn += each;
+        }
+      }
+    }
+    for (TileEntityHvacExhaustFan f : fans) {
+      f.applyExhaust(fanCfm > 0 && f.hasPower() ? drawn * f.getCapacityCfm() / fanCfm : 0);
+    }
+    return grilles > 0 && fanCfm <= 0;
   }
 
   /**

@@ -18,7 +18,10 @@ import net.minecraft.world.World;
  * <ul>
  *   <li><b>Click thermostat</b> — Select it as the linking source</li>
  *   <li><b>Then click heater/cooler</b> — Links the unit to the thermostat for auto control</li>
- *   <li><b>Then click vent relay</b> — Links the vent to the thermostat for distribution</li>
+ *   <li><b>Then click vent relay</b> — Links the vent to the thermostat for distribution; an
+ *   exhaust grille is a vent and links the same way</li>
+ *   <li><b>Then click exhaust fan</b> — Links the fan to a primary thermostat; it draws air out
+ *   through the system's exhaust grilles (#314). Any cell of a lab exhaust fan will do</li>
  *   <li><b>Click zone thermostat</b> — If primary selected and zone not yet linked, links zone to primary. If already linked (or no primary selected), selects zone as vent-linking source.</li>
  *   <li><b>Sneak+click</b> thermostat, zone, or vent — Clear all links</li>
  * </ul>
@@ -44,6 +47,14 @@ public class ItemHvacLinker extends AbstractItem {
       float hitY,
       float hitZ) {
     TileEntity te = worldIn.getTileEntity(pos);
+    if (te == null && worldIn.getBlockState(pos).getBlock() instanceof BlockHvacExhaustFanPart) {
+      // a lab exhaust fan's other cells: the fan is its master's
+      BlockPos master = BlockHvacLabExhaustFan.findMaster(worldIn, pos);
+      if (master != null) {
+        pos = master;
+        te = worldIn.getTileEntity(master);
+      }
+    }
 
     // === Sneak+click: clear links ===
     if (player.isSneaking()) {
@@ -80,6 +91,10 @@ public class ItemHvacLinker extends AbstractItem {
         int unitCount = thermostat.getLinkedUnitCount();
         int ventCount = thermostat.getLinkedVentCount();
         int zoneCount = thermostat.getLinkedZoneCount();
+        int fanCount = thermostat.getLinkedExhaustFanCount();
+        for (BlockPos fanPos : new java.util.ArrayList<>(thermostat.getLinkedExhaustFans())) {
+          thermostat.unlinkExhaustFan(fanPos);
+        }
         for (BlockPos unitPos : new java.util.ArrayList<>(thermostat.getLinkedUnits())) {
           thermostat.unlinkUnit(unitPos);
         }
@@ -91,8 +106,8 @@ public class ItemHvacLinker extends AbstractItem {
         }
         if (!worldIn.isRemote) {
           player.sendMessage(new TextComponentString(
-              "\u00A7aCleared " + unitCount + " unit(s), " + ventCount + " vent(s), and "
-                  + zoneCount + " zone(s)"));
+              "\u00A7aCleared " + unitCount + " unit(s), " + ventCount + " vent(s), "
+                  + fanCount + " exhaust fan(s) and " + zoneCount + " zone(s)"));
         }
         return EnumActionResult.SUCCESS;
       }
@@ -146,6 +161,30 @@ public class ItemHvacLinker extends AbstractItem {
         player.sendMessage(new TextComponentString(
             "\u00A7bSelected zone thermostat (" + zone.getLinkedVentCount()
                 + " vents). Click vent relays to link them to this zone."));
+      }
+      return EnumActionResult.SUCCESS;
+    }
+
+    // === Click exhaust fan: link to primary thermostat (#314) ===
+    if (te instanceof TileEntityHvacExhaustFan) {
+      TileEntity thermostatTe = thermostatPos == null ? null
+          : worldIn.getTileEntity(thermostatPos);
+      if (!(thermostatTe instanceof TileEntityHvacThermostat)) {
+        if (!worldIn.isRemote) {
+          player.sendMessage(new TextComponentString(thermostatTe instanceof
+              TileEntityHvacZoneThermostat
+              ? "\u00A7cExhaust fans link to a primary thermostat, not a zone."
+              : "\u00A7eClick a primary thermostat first to start linking."));
+        }
+        return EnumActionResult.FAIL;
+      }
+      TileEntityHvacThermostat thermostat = (TileEntityHvacThermostat) thermostatTe;
+      boolean success = thermostat.linkExhaustFan(pos);
+      if (!worldIn.isRemote) {
+        player.sendMessage(new TextComponentString(success
+            ? "\u00A7aLinked exhaust fan to thermostat (" + thermostat.getLinkedExhaustFanCount()
+                + " total). It draws air out through the system's exhaust grilles."
+            : "\u00A7cExhaust fan already linked to this thermostat"));
       }
       return EnumActionResult.SUCCESS;
     }
@@ -263,6 +302,7 @@ public class ItemHvacLinker extends AbstractItem {
     list.add("Link HVAC components to a thermostat");
     list.add("\u00A77Click thermostat \u2192 heater/cooler (auto control)");
     list.add("\u00A77Click thermostat \u2192 vent relay (primary zone vents)");
+    list.add("\u00A77Click thermostat \u2192 exhaust grille / exhaust fan");
     list.add("\u00A77Click thermostat \u2192 zone thermostat \u2192 zone thermostat \u2192 vent relay");
     list.add("\u00A77  (links zone, then selects it for vent linking)");
     list.add("\u00A77Sneak+click to clear links");

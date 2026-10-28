@@ -108,6 +108,13 @@ final class HvacStatusText {
       out.add(new Line("⚠ Rooftop units need vents", COLOR_WARN));
     }
 
+    if ((flags & HvacStatus.FLAG_NO_EXHAUST_FAN) != 0) {
+      out.add(new Line("⚠ Exhaust grilles, but no exhaust fan running", COLOR_WARN));
+    }
+    if ((flags & HvacStatus.FLAG_NEGATIVE_PRESSURE) != 0) {
+      out.add(new Line("Room under negative pressure", COLOR_INFO));
+    }
+
     if ((flags & HvacStatus.FLAG_LIGHTWEIGHT) != 0) {
       out.add(new Line("Simplified HVAC (server setting)", COLOR_INFO));
     }
