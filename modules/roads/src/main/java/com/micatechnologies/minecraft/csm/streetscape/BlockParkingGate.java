@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -33,21 +32,24 @@ import net.minecraft.world.World;
  *   <li>Right-click with an empty hand: the next arm length, 3 to 6 blocks.</li>
  * </ul>
  *
- * <p>Stored: the facing and {@code open}, the server's answer to whether the arm should be up
- * (metadata bit 2), which the client swings the arm toward. Redstone always lifts it.</p>
+ * <p>Stored: the facing (metadata bits 0-1). Whether the arm should be up is the tile entity's
+ * ({@link TileEntityParkingGate#isOpen}). It was an {@code open} block property in metadata bit
+ * 2 until 2026-10, which no model read: it doubled the baked variants, and every open and close
+ * was a block change that rebuilt the client's chunk section, twice for each car. A world saved
+ * then still has the bit in its metadata; {@link #getStateFromMeta} ignores it (the facing is
+ * the low two bits either way) and the server decides again within five ticks, as it did after
+ * any load. Redstone always lifts the arm. The gate gives out no redstone or comparator
+ * signal.</p>
  *
  * @since 2026.10
  */
 public class BlockParkingGate extends AbstractBlockRotatableNSEW implements ICsmTileEntityProvider {
-
-  public static final PropertyBool OPEN = PropertyBool.create("open");
 
   private static final AxisAlignedBB BOX = new AxisAlignedBB(3 / 16.0, 0, 4 / 16.0, 13 / 16.0,
       1, 12 / 16.0);
 
   public BlockParkingGate() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 3.0F, 10.0F, 0F, 0);
-    setDefaultState(getDefaultState().withProperty(OPEN, false));
   }
 
   @Override
@@ -63,18 +65,35 @@ public class BlockParkingGate extends AbstractBlockRotatableNSEW implements ICsm
   @Nonnull
   @Override
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, FACING, OPEN);
+    return new CsmBlockStateContainer(this, FACING);
   }
 
+  /** Metadata is the facing alone: bits 0-1, as before. */
   @Override
   public int getMetaFromState(IBlockState state) {
-    return super.getMetaFromState(state) | (state.getValue(OPEN) ? 4 : 0);
+    return super.getMetaFromState(state);
   }
 
+  /**
+   * The facing from bits 0-1. Bit 2 was the old {@code open} property: a world saved before it
+   * moved to the tile entity still has it set on a gate that was up, and it is dropped here rather
+   * than read through the base class, which would take 4 and 5 for its legacy west and east.
+   */
   @Nonnull
   @Override
   public IBlockState getStateFromMeta(int meta) {
-    return super.getStateFromMeta(meta & 3).withProperty(OPEN, (meta & 4) != 0);
+    return super.getStateFromMeta(facingMeta(meta));
+  }
+
+  /**
+   * The facing bits of a gate's metadata, old or new.
+   *
+   * @param meta the metadata, 0-15
+   *
+   * @return its facing bits, 0-3
+   */
+  static int facingMeta(int meta) {
+    return meta & 3;
   }
 
   @Override

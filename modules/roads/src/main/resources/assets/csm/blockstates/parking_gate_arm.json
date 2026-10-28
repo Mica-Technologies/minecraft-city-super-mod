@@ -18,10 +18,6 @@
     },
     "inventory": [
       {}
-    ],
-    "open": {
-      "true": {},
-      "false": {}
-    }
+    ]
   }
 }

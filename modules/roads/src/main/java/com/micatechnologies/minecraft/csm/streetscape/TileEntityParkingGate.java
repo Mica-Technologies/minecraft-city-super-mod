@@ -19,15 +19,24 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * A parking gate's arm and its rules (#302).
  *
- * <p>The server decides, every five ticks, whether the arm should be up, and puts the answer in
- * the block's {@code open} property: redstone always lifts it; in {@link Mode#AUTO} anything at
+ * <p>The server decides, every five ticks, whether the arm should be up, and keeps the answer in
+ * {@link #isOpen}, sent to the client in a tile entity packet when it changes: redstone always
+ * lifts it; in {@link Mode#AUTO} anything at
  * the gate (a player, a mob, a vehicle) lifts it; a ticket issued or paid at a machine beside it
  * ({@link #grant}) lifts it in any mode. Once up it stays up while the lane is occupied and for
  * {@link #HOLD_TICKS} after it clears. The client walks the arm's angle toward {@code open} for
  * {@link TileEntityParkingGateRenderer}, as the railroad crossing gate does: visual state, never
  * saved, set straight to its target on the first tick after load.</p>
  *
- * <p>Saved: {@code md} the mode, {@code al} the arm's length in blocks (3 to 6).</p>
+ * <p>{@code open} was a block property until 2026-10. No model read it, and as a block change
+ * every open and close rebuilt the client's chunk section, twice for each car; as tile entity data
+ * it is one small packet, and {@link #getBakedModelKey} keeps that from rebuilding anything. A
+ * world saved before has no {@code op} here and loads with the arm down, then the server decides
+ * within five ticks, as it always did after a load (the hold times are not saved, so the old bit
+ * was only ever kept by redstone).</p>
+ *
+ * <p>Saved: {@code md} the mode, {@code al} the arm's length in blocks (3 to 6), {@code op} whether
+ * the arm is up (only when it is), so the client's first look at a chunk has it.</p>
  *
  * @since 2026.10
  */
@@ -67,10 +76,16 @@ public class TileEntityParkingGate extends AbstractTickableTileEntity {
   private long holdUntil = Long.MIN_VALUE;
   private long grantUntil = Long.MIN_VALUE;
 
+  // server: the answer; client: what the server last said
+  private boolean open;
+
   // client: the arm's angle
   private float angle = LOWERED;
   private float prevAngle = LOWERED;
   private boolean settled;
+  // client: what the renderer needs from the world, read once a tick rather than every frame
+  private EnumFacing armDirection;
+  private int armLight;
 
   public Mode getMode() {
     return mode;
@@ -88,6 +103,11 @@ public class TileEntityParkingGate extends AbstractTickableTileEntity {
   public void setArmLength(int armLength) {
     this.armLength = Math.max(MIN_LENGTH, Math.min(MAX_LENGTH, armLength));
     markDirtySync(world, pos, true);
+  }
+
+  /** Whether the server wants the arm up: on the client, what it last said. */
+  public boolean isOpen() {
+    return open;
   }
 
   /** Lifts the arm for a ticket issued or paid at a machine beside the gate. */
@@ -123,7 +143,8 @@ public class TileEntityParkingGate extends AbstractTickableTileEntity {
       return;
     }
     if (world.isRemote) {
-      animate(state.getValue(BlockParkingGate.OPEN));
+      readView(state);
+      animate(open);
       return;
     }
     long now = world.getTotalWorldTime();
@@ -134,10 +155,38 @@ public class TileEntityParkingGate extends AbstractTickableTileEntity {
     if ((mode == Mode.AUTO && occupied) || (occupied && now < grantUntil + HOLD_TICKS)) {
       holdUntil = Math.max(holdUntil, now + HOLD_TICKS);
     }
-    boolean open = world.isBlockPowered(pos) || now < holdUntil;
-    if (open != state.getValue(BlockParkingGate.OPEN)) {
-      world.setBlockState(pos, state.withProperty(BlockParkingGate.OPEN, open), 3);
+    boolean up = world.isBlockPowered(pos) || now < holdUntil;
+    if (up != open) {
+      open = up;
+      markDirtySync(world, pos, true);
     }
+  }
+
+  /** Reads the arm's direction and the light it is drawn at, for the renderer. Client only. */
+  private void readView(IBlockState state) {
+    armDirection = BlockParkingGate.armDirection(state);
+    armLight = world.getCombinedLight(pos.up(), 0);
+  }
+
+  /**
+   * The way the arm reaches, as of this tick, or null before the first client tick (then the
+   * renderer reads it itself, once).
+   */
+  @SideOnly(Side.CLIENT)
+  public EnumFacing getArmDirection() {
+    if (armDirection == null && world != null) {
+      IBlockState state = world.getBlockState(pos);
+      if (state.getBlock() instanceof BlockParkingGate) {
+        readView(state);
+      }
+    }
+    return armDirection;
+  }
+
+  /** The combined light above the cabinet, as of this tick: the arm is drawn at it. */
+  @SideOnly(Side.CLIENT)
+  public int getArmLight() {
+    return armLight;
   }
 
   private void animate(boolean open) {
@@ -194,6 +243,8 @@ public class TileEntityParkingGate extends AbstractTickableTileEntity {
     mode = m >= 0 && m < Mode.values().length ? Mode.values()[m] : Mode.AUTO;
     armLength = compound.hasKey("al")
         ? Math.max(MIN_LENGTH, Math.min(MAX_LENGTH, compound.getByte("al"))) : 4;
+    // absent in a world saved while open was a block property, and whenever the arm is down
+    open = compound.getBoolean("op");
   }
 
   @Override
@@ -202,10 +253,13 @@ public class TileEntityParkingGate extends AbstractTickableTileEntity {
       compound.setByte("md", (byte) mode.ordinal());
     }
     compound.setByte("al", (byte) armLength);
+    if (open) {
+      compound.setBoolean("op", true);
+    }
     return compound;
   }
 
-  /** The arm's length is drawn; the mode is not. */
+  /** The arm's length and whether it is up are drawn by the renderer; no baked model reads either. */
   @Override
   protected long getBakedModelKey() {
     return 0L;

@@ -113,9 +113,21 @@ layout and writes it into the tab line, and places the stickers' decals 0.2 px p
 - **Gate arm** (`BlockParkingGate`, `parking_gate_arm`): a cabinet whose striped arm closes the
   lane to its right as a driver facing it sees it (`armDirection`: the facing turned
   anticlockwise). The arm is `TileEntityParkingGateRenderer`'s, a few dozen coloured quads with
-  the world's light, pivoting on the cabinet's side; it swings up in 1.5 s and down in 2 s.
-  Stored: the facing and `open` (bit 2), the server's answer, which the client swings toward, as
-  the railroad crossing gate's arm does. Saved on the tile entity: `md` the mode, `al` the arm
+  the world's light, pivoting on the cabinet's side; it swings up in 1.5 s and down in 2 s. The
+  quads are one shared display list per arm length (`parking_gate_arm`), drawn without a lightmap
+  under the gate's light as GL state, with the facing and swing as the matrix; the tile entity
+  reads the light above the cabinet and the arm's direction once a client tick. Live it was some
+  80 quads a frame, about 10 us a gate.
+  Stored in metadata: the facing (bits 0-1). Whether the arm should be up, the server's answer
+  that the client swings toward as the railroad crossing gate's arm does, is the tile entity's
+  (`op`, saved only when up, sent in a tile entity packet when it changes). It was an `open`
+  block property in bit 2 until 2026-10: no model read it, it doubled the baked variants, and
+  each open and close was a block change that rebuilt the client's chunk section, twice a car. A
+  world saved then still has bit 2 set on a gate that was up; `getStateFromMeta` keeps only the
+  low two bits, so the gate loads facing the same way with its arm down, and the server decides
+  within five ticks, as it always did after a load (the hold times were never saved, so the old
+  bit only ever outlived a load under redstone, which lifts it again at once). The gate gives out
+  no redstone or comparator signal. Saved on the tile entity: `md` the mode, `al` the arm
   length (3 to 6 blocks). A click with an empty hand cycles the length, a sneak-click the mode:
   - **Automatic**: lifts for anything in the lane (the arm's cells and a block either side, two
     high): a player, a mob, a vehicle; holds 3 s after it clears.
