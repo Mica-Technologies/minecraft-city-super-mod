@@ -19,7 +19,6 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.RowAlignment;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightMode;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.SignLightType;
-import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.BlockHorizontal;
@@ -92,14 +91,11 @@ public class TileEntityDynamicGuideSignRenderer
   /** A truss hanger bracket's width and depth, and the clamp at its top. */
   private static final float HANGER_WIDTH = 1.5f;
   private static final float HANGER_DEPTH = 0.6f;
-  /** Furthest the renderer looks above and below the sign for the truss it hangs from, blocks. */
-  private static final int TRUSS_LOOK_UP = 8;
-  private static final int TRUSS_LOOK_DOWN = 4;
-
   /**
    * Where the hanger brackets of a {@link PostType#TRUSS} sign reach to, in the sign's pixel
    * space: the top of the truss behind it, or {@code NaN} with none there (the brackets then stop
-   * at the sign's top). Set per sign in {@link #render} before it is drawn.
+   * at the sign's top). Set per sign in {@link #render} before it is drawn, from the tile
+   * entity's cached look ({@link TileEntityDynamicGuideSign#getTrussTop}).
    */
   private float trussTop = Float.NaN;
   /** How far behind the sign's block face that truss's front chords are, set with trussTop. */
@@ -286,8 +282,13 @@ public class TileEntityDynamicGuideSignRenderer
     lightOn = resolveLightOn(data, te);
 
     EnumFacing facing = blockState.getValue(BlockHorizontal.FACING);
-    trussTop = data.getPostType() == PostType.TRUSS
-        ? trussTopBehind(te.getWorld(), te.getPos(), facing) : Float.NaN;
+    if (data.getPostType() == PostType.TRUSS) {
+      // cached on the tile entity: up to 13 block reads, at most once a second
+      trussTop = te.getTrussTop(facing);
+      trussInset = te.getTrussInset();
+    } else {
+      trussTop = Float.NaN;
+    }
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x, y, z);
@@ -1272,28 +1273,6 @@ public class TileEntityDynamicGuideSignRenderer
     RenderHelper.addBoxesToBufferLit(divider, buf, legendR, legendG, legendB, 1.0f, 0, 0, 0,
         worldSkyLight, worldBlockLight);
     LEGEND_LISTS.draw(tess);
-  }
-
-  /**
-   * The top of the overhead sign truss behind a sign, in the sign's pixel space (16 a block, 0 the
-   * bottom of its own block), or {@code NaN} with none within reach. The panel sits on the side
-   * opposite the way the sign faces, so the truss is in the block behind it that way.
-   */
-  private float trussTopBehind(net.minecraft.world.World world, BlockPos pos,
-      EnumFacing facing) {
-    BlockPos behind = pos.offset(facing.getOpposite());
-    for (int dy = TRUSS_LOOK_UP; dy >= -TRUSS_LOOK_DOWN; dy--) {
-      net.minecraft.block.state.IBlockState s = world.getBlockState(behind.up(dy));
-      if (s.getBlock() instanceof ISignTruss) {
-        ISignTruss truss = (ISignTruss) s.getBlock();
-        float top = truss.getSignTrussTop(s);
-        if (top >= 0) {
-          trussInset = truss.getSignTrussFrontInset(s);
-          return dy * 16.0f + top;
-        }
-      }
-    }
-    return Float.NaN;
   }
 
   private void renderPost(PostType postType, float signLeft, float signBottom,
