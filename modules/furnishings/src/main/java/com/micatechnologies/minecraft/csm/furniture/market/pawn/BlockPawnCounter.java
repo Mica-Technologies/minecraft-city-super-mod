@@ -8,13 +8,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
@@ -34,9 +32,6 @@ public class BlockPawnCounter extends BlockDisplayCase {
   public static final int GUI_PAWN = 60;
   /** The resale screen. */
   public static final int GUI_RESALE = 61;
-
-  /** As the shops': a server's counter should outlast a creeper. */
-  private static final float RESISTANCE = 2000.0F;
 
   public BlockPawnCounter(String registryName, int[] box) {
     super(registryName, box);
@@ -64,45 +59,28 @@ public class BlockPawnCounter extends BlockDisplayCase {
   public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state,
       EntityLivingBase placer, ItemStack stack) {
     super.onBlockPlacedBy(world, pos, state, placer, stack);
-    if (world.isRemote || !(placer instanceof EntityPlayer)
-        || PawnPermissions.isAdmin((EntityPlayer) placer)) {
-      return;
-    }
-    EntityPlayer player = (EntityPlayer) placer;
-    world.setBlockToAir(pos);
-    if (!player.capabilities.isCreativeMode) {
-      ItemStack back = new ItemStack(this);
-      if (!player.inventory.addItemStackToInventory(back)) {
-        player.dropItem(back, false);
-      }
-    }
-    player.sendMessage(new TextComponentTranslation("csm.pawn.msg.no_place"));
+    PawnBlocks.placed(world, pos, this, placer);
   }
 
   @Override
   public boolean removedByPlayer(@Nonnull IBlockState state, World world, @Nonnull BlockPos pos,
       @Nonnull EntityPlayer player, boolean willHarvest) {
-    if (!PawnPermissions.isAdmin(player)) {
-      if (!world.isRemote && player instanceof EntityPlayerMP) {
-        player.sendMessage(new TextComponentTranslation("csm.pawn.msg.no_break"));
-      }
-      return false;
-    }
-    return super.removedByPlayer(state, world, pos, player, willHarvest);
+    return PawnBlocks.mayBreak(world, player)
+        && super.removedByPlayer(state, world, pos, player, willHarvest);
   }
 
   @Override
   @SuppressWarnings("deprecation")
   public float getPlayerRelativeBlockHardness(@Nonnull IBlockState state,
       @Nonnull EntityPlayer player, @Nonnull World world, @Nonnull BlockPos pos) {
-    return PawnPermissions.isAdmin(player)
+    return PawnBlocks.mayDig(player)
         ? super.getPlayerRelativeBlockHardness(state, player, world, pos) : 0.0F;
   }
 
   @Override
   public float getExplosionResistance(World world, BlockPos pos, @Nullable Entity exploder,
       Explosion explosion) {
-    return RESISTANCE;
+    return PawnBlocks.RESISTANCE;
   }
 
   @Override

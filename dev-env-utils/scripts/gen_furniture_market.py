@@ -1720,7 +1720,7 @@ def kiosk_screen(kind, size=16):
     img = noisy((230, 234, 240), hash_seed(kind), size, 0.01)
     px = img.load()
     head = {"coins": (36, 86, 170), "photo": (226, 110, 30), "movies": (70, 36, 110),
-            "lotto": (84, 40, 140)}[kind]
+            "lotto": (84, 40, 140), "pawn": (36, 86, 170)}[kind]
     for y in range(size):
         for x in range(size):
             col = None
@@ -1748,6 +1748,10 @@ def kiosk_screen(kind, size=16):
                 px[x, y] = tuple(clamp(col)) + (255,)
     if kind == "coins":
         LS.draw_text_centred(img, "9.75", 8, 5, (30, 34, 40))
+    if kind == "pawn":
+        LS.draw_text_centred(img, "PAY", 8, 5, (30, 34, 40))
+        for x in range(4, 12):
+            px[x, 12] = (60, 170, 80, 255)
     return img
 
 
@@ -2120,6 +2124,19 @@ def store_cards():
     return img
 
 
+# The pawn shop's signs: PAWN (on the neon sign), PRICE CHECK (the kiosk), PAWN DROP OFF (the
+# bin) and WE BUY GOLD (the jewellery case), gold on black where the trade is gold.
+PAWN_GOLD = (240, 196, 60)
+SIGNS["store_signs_pawn"] = [
+    (["PAWN"], (20, 20, 22), PAWN_GOLD,
+     [("coin", 5, 6, PAWN_GOLD), ("coin", 54, 6, PAWN_GOLD)], True),
+    (["PRICE", "CHECK"], (36, 86, 170), WHITE_SIGN, [], True),
+    (["PAWN", "DROP OFF"], (120, 24, 36), WHITE_SIGN, [], True),
+    (["WE BUY", "GOLD"], (20, 20, 22), PAWN_GOLD,
+     [("star", 5, 5, PAWN_GOLD), ("star", 54, 5, PAWN_GOLD)], True),
+]
+
+
 # Department and merchandising signs: four more 64 px sheets of four bands each (a 4:1 panel
 # per band). The PHARMACY department reuses store_signs_a's band 0. The seasonal tables'
 # signs are band 3 of sheets d, e and f, so the table's one model takes any of them by
@@ -2368,6 +2385,7 @@ TEXTURES = {
     "case_white": lambda: noisy((232, 234, 234), 703, 16, 0.015),
     "liner": lambda: noisy((206, 210, 214), 704, 16, 0.02),
     "pawn_velvet": lambda: noisy((104, 18, 34), 761, 16, 0.05),
+    "screen_pawn": lambda: kiosk_screen("pawn"),
     "steel_white": lambda: R.metal((226, 226, 222), 706),
     "steel_grey": lambda: R.metal((120, 122, 126), 707),
     "plastic_grey": lambda: noisy((168, 170, 172), 708, 16, 0.02),
@@ -2514,7 +2532,7 @@ DEFAULT_TEX.update({
     "cups": MT("cup_stack"), "white": MT("case_white"),
     # the front of the store
     "signs_a": MT("store_signs_a"), "signs_b": MT("store_signs_b"),
-    "signs_c": MT("store_signs_c"), "tickets": MT("lottery_tickets"),
+    "signs_c": MT("store_signs_c"), "signs_pawn": MT("store_signs_pawn"), "tickets": MT("lottery_tickets"),
     "door": MT("ice_door_white"), "tank": MT("plastic_grey"), "bark": MT("firewood_bark"),
     "ends": MT("firewood_ends"), "accent": MT("plastic_yellow"), "coins": MT("coin_tray"),
     "posters": MT("movie_posters"),
@@ -4687,6 +4705,32 @@ PAWN_CASE, PAWN_CASE_END, _ = service_case(9, SERVICE_SEGS, 11, SHOP_CASE_INSIDE
 PAWN_TEX = dict(CASE_BLACK, liner=MT("pawn_velvet"))
 
 
+def pawn_drop_bin():
+    """The drop-off bin: a steel box with a pull-down chute on its front and a slot in its lid,
+    PAWN DROP OFF on its face."""
+    return ([el([2, 0, 3.5], [14, 1, 13], "kick", NO_DOWN),
+             el([2.25, 1, 3.75], [13.75, 14, 12.75], "shell", NO_DOWN),
+             el([2, 14, 3.5], [14, 14.75, 13], "shell"),
+             el([5, 14.75, 6.5], [11, 14.8, 8], "rubber", ("up",)),
+             el([4, 9.5, 3.5], [12, 12.5, 3.75], "trim", NO_BACK),
+             el([4.5, 10.5, 3.45], [11.5, 11, 3.5], "rubber", ("north",)),
+             sign_print(2.5, 13.5, 4.5, 7.25, 3.75, "signs_pawn", 2)])
+
+
+PAWN_BIN = pawn_drop_bin()
+# The price check kiosk: the coin kiosk's body, a scanner plate on its ledge where an item is
+# held up, a lit screen, and PRICE CHECK over it.
+PRICE_KIOSK = ([el([2, 0, 4], [14, 1, 14], "kick", NO_DOWN),
+                el([2.5, 1, 4.5], [13.5, 13, 14], "shell", NO_DOWN),
+                el([2.5, 9.25, 4.4], [13.5, 10.25, 4.5], "accent", ("north", "east", "west")),
+                el([2.25, 13, 3.25], [13.75, 14, 10], "shell"),
+                ALL_UV(el([4.5, 14, 4.5], [11.5, 14.05, 8.5], "scanner", ("up",)), ["up"]),
+                el([2.5, 14, 9.5], [13.5, 24, 14], "shell", NO_DOWN),
+                ALL_UV(el([4, 16, 9.4], [12, 22, 9.5], "screen", ("north",)), ["north"]),
+                el([2, 24, 9], [14, 24.5, 14.5], "shell")]
+               + sign_panel(2.5, 13.5, 24.75, 27.5, 9.75, "signs_pawn", 1, both=False))
+
+
 def shop_cooler():
     """The reach-in cooler with bare shelves, and a price rail across its kick grille."""
     body = reach_in_frame()
@@ -4818,6 +4862,24 @@ add("pawn_counter", "run", [fin(None, PAWN_TEX)],
     "Shops", "Server-run: buys any item at the server's prices (money, or emeralds); placed and "
              "broken only with csm.pawn.admin; can keep what it buys and sell it back; joins "
              "other pawn counters; lit, redstone switches it")
+add("pawn_drop_bin", "single", [fin(None, {"trim": T("stainless_dark")})],
+    ("Pawn Drop-Off Bin", "Pfandhaus-Einwurfbox", "Buzón de casa de empeño",
+     "Pantbankens inlämningslåda"),
+    {"geo": PAWN_BIN, "particle": "shell",
+     "java": 'new BlockPawnDropBin("%s", new int[]{' + jbox(box_of(PAWN_BIN)) + "})"},
+    "Shops", "Server-run: a click with an item pawns the stack held, no screen; a player who "
+             "claims it (sneak-click) is paid for what hoppers feed it; placed and broken only "
+             "with csm.pawn.admin")
+add("pawn_price_kiosk", "tall",
+    [fin(None, {"shell": MT("plastic_blue"), "kick": MT("steel_grey"),
+                "accent": MT("plastic_yellow"), "screen": MT("screen_pawn")})],
+    ("Pawn Price Check Kiosk", "Pfandhaus-Preisprüfer", "Quiosco de tasación",
+     "Pantbankens priskontroll"),
+    {"geo": PRICE_KIOSK, "particle": "shell",
+     "java": 'new BlockPawnPriceKiosk("%s", new int[]{' + jbox(box_of(PRICE_KIOSK, tall=True))
+             + "})"},
+    "Shops", "2 blocks tall: click with an item to see what a pawn shop pays for it; buys nothing, "
+             "so anyone may place it; lit screen (light 7)")
 add("pallet_stack", "single",
     [fin("drinks", {"load": MT("load_drinks"), "load_top": MT("load_drinks_top")},
          "Drinks", "Getränke", "bebidas", "drycker"),

@@ -2,7 +2,7 @@
 
 Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures.
 
-!!! info "143 blocks in this tab"
+!!! info "145 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -100,6 +100,8 @@ Grocery stores and shops: stocked refrigerated displays, gondola shelving, produ
 | Pallet Stack (Bottled Water) | `csm:pallet_stack_water` | 1.5 | 3.0 | axe | 0 |
 | Pallet Stack (Drinks) | `csm:pallet_stack_drinks` | 1.5 | 3.0 | axe | 0 |
 | Pallet Stack (Paper Goods) | `csm:pallet_stack_paper` | 1.5 | 3.0 | axe | 0 |
+| Pawn Drop-Off Bin | `csm:pawn_drop_bin` | 1.5 | 3.0 | axe | 0 |
+| Pawn Price Check Kiosk | `csm:pawn_price_kiosk` | 1.5 | 3.0 | axe | 0 |
 | Pawn Shop Counter | `csm:pawn_counter` | 1.5 | 3.0 | axe | 0 |
 | Pear Crate | `csm:pearcrate` | 2 | 10 | pickaxe | 1 |
 | Pharmacy Drop-Off Counter (Teal) | `csm:pharmacy_dropoff_teal` | 1.5 | 3.0 | axe | 0 |

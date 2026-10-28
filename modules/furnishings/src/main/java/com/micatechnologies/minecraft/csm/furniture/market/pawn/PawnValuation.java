@@ -162,6 +162,17 @@ public final class PawnValuation {
    * @param stack the stack offered; its count is how many
    */
   public static Quote quote(ItemStack stack) {
+    return quote(stack, false);
+  }
+
+  /**
+   * What a stack fetches.
+   *
+   * @param stack      the stack offered; its count is how many
+   * @param fractional take it even when it pays less than a cent, its payout unrounded: for a
+   *                   drop-off bin fed one item at a time, which saves up the fractions
+   */
+  public static Quote quote(ItemStack stack, boolean fractional) {
     if (stack.isEmpty()) {
       return Quote.refused("csm.pawn.refuse.nothing");
     }
@@ -185,7 +196,8 @@ public final class PawnValuation {
       levels += level;
     }
     each += levels * CsmConfig.getPawnEnchantValuePerLevel();
-    double payout = cents(each * stack.getCount() * CsmConfig.getPawnPayoutFraction());
+    double exact = each * stack.getCount() * CsmConfig.getPawnPayoutFraction();
+    double payout = fractional ? exact : cents(exact);
     if (payout <= 0) {
       return Quote.refused("csm.pawn.refuse.worthless");
     }

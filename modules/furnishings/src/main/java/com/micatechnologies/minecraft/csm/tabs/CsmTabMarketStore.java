@@ -29,6 +29,8 @@ import com.micatechnologies.minecraft.csm.furniture.market.BlockMarketTall;
 import com.micatechnologies.minecraft.csm.furniture.market.BlockVerifoneMx915;
 import com.micatechnologies.minecraft.csm.furniture.market.StoreAppliances;
 import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnCounter;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnDropBin;
+import com.micatechnologies.minecraft.csm.furniture.market.pawn.BlockPawnPriceKiosk;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopCooler;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopDisplayCase;
 import com.micatechnologies.minecraft.csm.furniture.market.shop.BlockShopGondola;
@@ -167,6 +169,12 @@ public class CsmTabMarketStore extends CsmTab {
 
     // Pawn Shop Counter
     initTabBlock(new BlockPawnCounter("pawn_counter", new int[]{0, 0, 2, 16, 19, 16}));
+
+    // Pawn Drop-Off Bin
+    initTabBlock(new BlockPawnDropBin("pawn_drop_bin", new int[]{2, 0, 3, 14, 15, 13}));
+
+    // Pawn Price Check Kiosk
+    initTabBlock(new BlockPawnPriceKiosk("pawn_price_kiosk", new int[]{2, 0, 3, 14, 28, 15}));
 
     // ---- Merchandising ----
     // Pallet Stack
