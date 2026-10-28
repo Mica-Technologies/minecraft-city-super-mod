@@ -24,8 +24,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
  * exactly as decorative as they were.</p>
  *
  * <p>An event handler rather than a new item class so the items, their registrations and the
- * catalogue built from them are unchanged. It touches no client-only class: the phone itself is
- * opened by SUM, on the client side of the right-click only.</p>
+ * catalogue built from them are unchanged. It is registered from the client proxy only:
+ * {@link ItemTooltipEvent} refers to client-only classes, so subscribing to it on a dedicated
+ * server crashes the boot, and the phone is opened on the client side of the right-click
+ * anyway.</p>
  *
  * @since 2026.10
  */
