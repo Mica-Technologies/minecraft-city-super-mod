@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/airside/airport_stand_sign",
+  "textures": {
+    "letter": "csm:blocks/transit/airport/gate_letter_b",
+    "number": "csm:blocks/transit/airport/gate_number_16"
+  }
+}

@@ -705,6 +705,7 @@ def line_bullet():
     C.add(reg, 'new BlockStationLineBullet("%s", %s)' % (reg, box_java(gp_box)),
           names_of("Line Bullet", "Liniensymbol", "Símbolo de Línea", "Linjesymbol"),
           {reg: m}, lc.facing_state(C.M(reg), {"line": lines}), tab=TAB)
+    C.as_multipart(reg)  # the line only swaps the face: one model location
 
 
 # ------------------------------------------------------------------------------------------
