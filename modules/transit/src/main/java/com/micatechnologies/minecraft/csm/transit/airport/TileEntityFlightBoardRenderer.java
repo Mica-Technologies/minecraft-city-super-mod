@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -32,11 +33,17 @@ import org.lwjgl.opengl.GL11;
  * ({@link CsmSharedDisplayLists}), compiled once and laid out in its place across the screen in
  * the font's units: a row's white part (time, flight, city, gate) keyed by the flight's place in
  * the day, so there are at most 144 of them over both lists; each remark, nine; the column heads,
- * two; the clock, keyed by the minute of the day. A board's frame is one quad and at most
- * sixteen list calls, each under its own translation. Following "Display lists: one texture, no
+ * two; the clock, keyed by the minute of the day. Following "Display lists: one texture, no
  * cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}, the lists hold geometry only: the font
- * atlas, the colours, the depth mask and the fullbright lightmap are set outside them, every
- * frame.</p>
+ * atlas, the depth mask and the fullbright lightmap are set outside them, every frame.</p>
+ *
+ * <p><b>The board's list.</b> The heads and the rows are one more list per board
+ * ({@link #BOARDS}): the calls to those text lists, each under its place and its colour (plain
+ * {@code glColor}, which a list records, then {@code GlStateManager.resetColor()} after it, since
+ * the state manager's cache no longer knows the colour). It is compiled again, in place, only when
+ * {@link FlightBoardPage}'s version moves: a flight leaves the page, a remark changes, the page
+ * changes. A board's frame is then one quad, the board's list and the clock's, which changes
+ * every game minute and stays outside it.</p>
  *
  * <p>The screen's place and the row bands are {@code gen_transit_airport.py}'s ({@code SCREEN_*},
  * {@code HEADER_H}, {@code COLHEAD_H}, {@code ROW_PITCH}, {@code ROWS}, and the texture's window,
@@ -94,8 +101,15 @@ public class TileEntityFlightBoardRenderer
   private static final int KIND_HEAD = 2;
   private static final int KIND_CLOCK = 3;
 
-  /** The flights being drawn: scratch, render thread only. */
-  private static final long[] SLOTS = new long[ROWS];
+  /**
+   * Each board's heads and rows as one list of calls to the shared text lists above, at key 0,
+   * compiled again in place when {@link FlightBoardPage}'s version moves. A list of list calls,
+   * so compiling it costs next to nothing: every board in a terminal changes on the same game
+   * minute.
+   */
+  private static final CsmDisplayListCache BOARDS = new CsmDisplayListCache("flight boards");
+
+  private static final FlightSchedule.Status[] STATUSES = FlightSchedule.Status.values();
 
   /** The layout, in the font's units at each text height, worked out once the font exists. */
   static float rowScale;
@@ -120,7 +134,8 @@ public class TileEntityFlightBoardRenderer
     layout(fr);
     boolean arrivals = te.isArrivals();
     long now = FlightSchedule.minuteOf(te.getWorld().getWorldTime());
-    int count = FlightSchedule.list(arrivals, now, te.getPage() * ROWS, SLOTS);
+    FlightBoardPage rows = te.clientPage;
+    rows.update(arrivals, now, te.getPage() * ROWS, ROWS, 0L);
 
     GlStateManager.pushMatrix();
     GlStateManager.translate(x + 0.5, y, z + 0.5);
@@ -148,28 +163,41 @@ public class TileEntityFlightBoardRenderer
     fr.bindAtlas();
     GlStateManager.translate(0, 0, SCREEN_LIFT + TEXT_LIFT);
 
-    colour(HEAD_COLOUR);
-    at(0, HEADER + (COLHEAD - HEAD_TEXT_H) / 2, headScale);
-    draw(HEAD_LISTS, arrivals ? 1 : 0, fr, KIND_HEAD, arrivals ? 1 : 0, false);
-    GlStateManager.popMatrix();
+    // The column heads and the rows: one list per board, calling the shared text lists under
+    // their colours and places, compiled again only when a row or its remark changes (a flight
+    // leaves the page, a flight boards), not every frame or game minute.
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      text(fr, rows, arrivals, true);
+    } else {
+      int list = BOARDS.get(te.getPos(), 0L);
+      if (list == CsmDisplayListCache.NO_LIST || te.clientCompiledVersion != rows.getVersion()) {
+        // every text list the board's calls first, since a list cannot be compiled inside another
+        compileText(fr, rows, arrivals);
+        list = BOARDS.allocate(te.getPos(), 0L);
+        if (list != CsmDisplayListCache.NO_LIST) {
+          GL11.glNewList(list, GL11.GL_COMPILE);
+          text(fr, rows, arrivals, false);
+          GL11.glEndList();
+          te.clientCompiledVersion = rows.getVersion();
+        }
+      }
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(list);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        text(fr, rows, arrivals, false);
+      }
+    }
+    // The board's colours were set by plain glColor (a list cannot hold GlStateManager's), so
+    // its cache no longer knows the colour: make the next color() call reach GL.
+    GlStateManager.resetColor();
 
+    // The clock, which changes every game minute, outside the board's list.
     colour(CLOCK_COLOUR);
     int minuteOfDay = (int) Math.floorMod(now, 24L * 60L);
     at(0, (HEADER - CLOCK_TEXT_H) / 2, clockScale);
     draw(CLOCK_LISTS, minuteOfDay, fr, KIND_CLOCK, minuteOfDay, false);
     GlStateManager.popMatrix();
-
-    for (int i = 0; i < count; i++) {
-      long slot = SLOTS[i];
-      int daily = FlightSchedule.dailyOf(slot);
-      FlightSchedule.Status status = FlightSchedule.status(slot, arrivals, now);
-      at(0, HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2, rowScale);
-      colour(ROW_COLOUR);
-      draw(ROW_LISTS, (arrivals ? 1000 : 0) + daily, fr, KIND_ROW, daily, arrivals);
-      colour(status.getColour());
-      draw(STATUS_LISTS, status.ordinal(), fr, KIND_STATUS, status.ordinal(), arrivals);
-      GlStateManager.popMatrix();
-    }
 
     GlStateManager.depthMask(true);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -178,6 +206,75 @@ public class TileEntityFlightBoardRenderer
     GlStateManager.enableLighting();
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lastX, lastY);
     GlStateManager.popMatrix();
+  }
+
+  /**
+   * The column heads and the rows, each piece of text the shared list compiled for it (or, with
+   * {@code perFrame}, drawn directly), under its colour and in its place. Colours are plain
+   * {@code glColor} and the places plain matrix calls, so it can be compiled into a board's list.
+   */
+  private static void text(CsmFontRenderer fr, FlightBoardPage rows, boolean arrivals,
+      boolean perFrame) {
+    glColour(HEAD_COLOUR);
+    at(0, HEADER + (COLHEAD - HEAD_TEXT_H) / 2, headScale);
+    piece(HEAD_LISTS, arrivals ? 1 : 0, fr, KIND_HEAD, arrivals ? 1 : 0, false, perFrame);
+    GlStateManager.popMatrix();
+    for (int i = 0; i < rows.getCount(); i++) {
+      int daily = FlightSchedule.dailyOf(rows.getSlot(i));
+      int remark = rows.getRemark(i);
+      at(0, HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2, rowScale);
+      glColour(ROW_COLOUR);
+      piece(ROW_LISTS, (arrivals ? 1000 : 0) + daily, fr, KIND_ROW, daily, arrivals, perFrame);
+      glColour(STATUSES[remark].getColour());
+      piece(STATUS_LISTS, remark, fr, KIND_STATUS, remark, arrivals, perFrame);
+      GlStateManager.popMatrix();
+    }
+  }
+
+  /** Compiles every shared text list {@link #text} calls that does not exist yet. */
+  private static void compileText(CsmFontRenderer fr, FlightBoardPage rows, boolean arrivals) {
+    compile(HEAD_LISTS, arrivals ? 1 : 0, fr, KIND_HEAD, arrivals ? 1 : 0, false);
+    for (int i = 0; i < rows.getCount(); i++) {
+      int daily = FlightSchedule.dailyOf(rows.getSlot(i));
+      int remark = rows.getRemark(i);
+      compile(ROW_LISTS, (arrivals ? 1000 : 0) + daily, fr, KIND_ROW, daily, arrivals);
+      compile(STATUS_LISTS, remark, fr, KIND_STATUS, remark, arrivals);
+    }
+  }
+
+  /** Compiles a shared text list if it does not exist yet. */
+  private static void compile(CsmSharedDisplayLists lists, long key, CsmFontRenderer fr,
+      int kind, int value, boolean arrivals) {
+    if (lists.get(key) == CsmDisplayListCache.NO_LIST) {
+      int list = lists.allocate(key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        add(fr, kind, value, arrivals);
+        GL11.glEndList();
+      }
+    }
+  }
+
+  /** Calls a shared text list, or draws its text if it has none (or per frame). */
+  private static void piece(CsmSharedDisplayLists lists, long key, CsmFontRenderer fr, int kind,
+      int value, boolean arrivals, boolean perFrame) {
+    int list = perFrame ? CsmDisplayListCache.NO_LIST : lists.get(key);
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      add(fr, kind, value, arrivals);
+    }
+  }
+
+  /** A colour as plain {@code glColor}, which a display list records. */
+  static void glColour(int rgb) {
+    GL11.glColor4f(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f,
+        (rgb & 0xFF) / 255f, 1.0f);
+  }
+
+  /** Releases a board's list, when its tile entity goes. */
+  public static void release(BlockPos pos) {
+    BOARDS.invalidate(pos);
   }
 
   /** The screen's texture, one quad a hair in front of the baked one. */
