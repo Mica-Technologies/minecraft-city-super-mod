@@ -45,7 +45,7 @@ GuideSignData                 (root: color, post, border, corner style, min widt
 | `BannerPosition` | Where the banner sits | ABOVE (default; reserves `BANNER_AREA_HEIGHT` over the row), LEFT, RIGHT (beside the shield, vertically centered, widening the element instead). Stored as `bannerPosition` ordinal on `GuideSignElement`; absent in old JSON → ABOVE. |
 | `GuideSignArrowType` | Directional arrow | 10 values (UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT, UP_LEFT_RIGHT, LEFT_RIGHT). Each carries its `(atlasCol, atlasRow)` within the arrow block. |
 | `ExitTabData` | Exit number tab | `POS_LEFT=0 / POS_CENTER=1 / POS_RIGHT=2` (default RIGHT), `text` (default "EXIT"), `color`, `toll` flag, `wide` flag (extra horizontal padding, `EXIT_TAB_PADDING_WIDE = 9` vs `3`; absent in old JSON → narrow). |
-| `PostType` | Mounting post layout | LEFT, RIGHT, CENTER, OVERHEAD (no posts), RURAL (two posts), TRUSS (hung on an overhead sign truss: galvanized hanger brackets on the sign's back up to the top of the truss behind it, `trussTopBehind`, with a clamp over its front chord; a sign placed against a truss starts as TRUSS). Saved by ordinal, so new types go last. |
+| `PostType` | Mounting post layout | LEFT, RIGHT, CENTER, OVERHEAD (no posts), RURAL (two posts), TRUSS (hung on an overhead sign truss: galvanized hanger brackets on the sign's back up to the top of the truss behind it, `TileEntityDynamicGuideSign.getTrussTop`, with a clamp over its front chord; a sign placed against a truss starts as TRUSS). Saved by ordinal, so new types go last. |
 | `CornerStyle` | Sign corner shape | ROUND (chamfered) or SHARP. |
 | `SignLightType` | How the sign is illuminated | NONE (retroreflective only), BOTTOM (luminaires on a bracket below, aimed up), TOP (brackets above, aimed down), INTERNAL (no fixtures; the face itself is lit). `hasFixtures()` is true for BOTTOM/TOP. **Append-only: ordinals are serialized.** |
 | `SignLightMode` | When the lighting is energized | OFF, ON, REDSTONE (follows power at the block), NIGHT (photocell). **Append-only: ordinals are serialized.** |
@@ -392,9 +392,15 @@ assets from `gen_sign_truss.py`) are what a guide sign hangs from over a road.
   below its signs. Facing is the outer, railed side; side-by-side catwalks of one facing join,
   with railings across open ends. Its railings collide at a fence's height.
 - **Hanging a sign**: `PostType.TRUSS` draws hanger brackets on the sign's back up to the top
-  of the truss in the block behind it (`trussTopBehind`, looking 8 blocks up and 4 down), with a
-  clamp over the truss's front chord. A sign placed against a truss starts as TRUSS. The truss
-  top is part of the hardware display list's key, so a truss built after the sign is picked up.
+  of the truss in the block behind it (`TileEntityDynamicGuideSign.getTrussTop`, looking 8
+  blocks up and 4 down), with a clamp over the truss's front chord. A sign placed against a truss
+  starts as TRUSS. The truss top is part of the hardware display list's key, so a truss built
+  after the sign is picked up. The look is up to 13 block reads, so the tile entity caches it
+  (with the chord inset) for 20 ticks rather than the renderer taking it every frame; the server
+  syncs a TRUSS sign when the cell behind it changes (`BlockDynamicGuideSign.neighborChanged`,
+  deferred behind the block change), and the sync's `readNBT` drops the cache, so a truss built
+  or broken right behind shows at once and one further up the column within a second
+  (`NeighbourLookExpiryTest`).
 - **Road signs**: an `AbstractBlockSign` facing square away from a truss span behind it takes
   the setback shift (`getBlockIsInFrontOfSignTruss`, beside the signal arm case), which puts its
   own post against the truss as the hanger. Nothing is added to the signs' 686 blockstates; the

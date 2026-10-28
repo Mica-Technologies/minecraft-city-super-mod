@@ -3,8 +3,12 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.GuideSignData;
+import com.micatechnologies.minecraft.csm.trafficaccessories.truss.ISignTruss;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -25,11 +29,28 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
   // this common class never names a client-only renderer type.
   private transient Object renderCache = null;
 
+  /** Furthest the sign looks above and below itself for the truss it hangs from, blocks. */
+  static final int TRUSS_LOOK_UP = 8;
+  static final int TRUSS_LOOK_DOWN = 4;
+  /** How long {@link #getTrussTop} trusts its last look, in ticks. */
+  static final long TRUSS_RECHECK_TICKS = 20L;
+
+  // The truss behind a TRUSS sign, looked up at most once a second rather than every frame
+  // (up to 13 block reads); dropped by a sync, which the server sends when the cell behind
+  // changes (BlockDynamicGuideSign#neighborChanged).
+  private final transient NeighbourLookExpiry trussLook =
+      new NeighbourLookExpiry(TRUSS_RECHECK_TICKS);
+  private transient float trussTop = Float.NaN;
+  private transient float trussInset = 0.5f;
+
   public TileEntityDynamicGuideSign() {
   }
 
   @Override
   public void readNBT(NBTTagCompound compound) {
+    // A sync also arrives when the cell behind changed (see the block's neighborChanged), so
+    // the cached truss behind is out of date.
+    trussLook.invalidate();
     signDataJson = compound.getString(NBT_KEY);
     powered = compound.getBoolean(NBT_KEY_POWERED);
     cachedData = null;
@@ -112,6 +133,60 @@ public class TileEntityDynamicGuideSign extends AbstractTileEntity {
 
   public void setRenderCache(Object renderCache) {
     this.renderCache = renderCache;
+  }
+
+  /**
+   * The top of the overhead sign truss behind this sign, in the sign's pixel space (16 a block, 0
+   * the bottom of its own block), or {@code NaN} with none within reach. The panel sits on the
+   * side opposite the way the sign faces, so the truss is in the column behind it that way.
+   *
+   * <p>Cached for {@link #TRUSS_RECHECK_TICKS}: the renderer asks every frame, and the look is up
+   * to 13 block reads. The client never hears {@code neighborChanged}, so the server syncs a truss
+   * sign when the cell behind it changes and {@link #readNBT} drops the cache; the expiry covers
+   * the rest of the column and a truss whose chunk loads after the sign was first drawn.</p>
+   *
+   * @param facing the way the sign faces
+   *
+   * @return the truss's top, or {@code NaN}
+   */
+  public float getTrussTop(EnumFacing facing) {
+    long now = world != null ? world.getTotalWorldTime() : 0L;
+    if (trussLook.isStale(now, facing)) {
+      lookForTruss(facing);
+      trussLook.looked(now, facing);
+    }
+    return trussTop;
+  }
+
+  /**
+   * How far behind the sign's block face the front chords of the truss {@link #getTrussTop} found
+   * are; 0.5 with none.
+   */
+  public float getTrussInset() {
+    return trussInset;
+  }
+
+  private void lookForTruss(EnumFacing facing) {
+    trussTop = Float.NaN;
+    trussInset = 0.5f;
+    if (world == null) {
+      return;
+    }
+    BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+    BlockPos behind = pos.offset(facing.getOpposite());
+    for (int dy = TRUSS_LOOK_UP; dy >= -TRUSS_LOOK_DOWN; dy--) {
+      at.setPos(behind.getX(), behind.getY() + dy, behind.getZ());
+      IBlockState s = world.getBlockState(at);
+      if (s.getBlock() instanceof ISignTruss) {
+        ISignTruss truss = (ISignTruss) s.getBlock();
+        float top = truss.getSignTrussTop(s);
+        if (top >= 0) {
+          trussInset = truss.getSignTrussFrontInset(s);
+          trussTop = dy * 16.0f + top;
+          return;
+        }
+      }
+    }
   }
 
   @Override

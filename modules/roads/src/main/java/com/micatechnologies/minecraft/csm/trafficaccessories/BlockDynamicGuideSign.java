@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
+import com.micatechnologies.minecraft.csm.codeutils.CsmDeferredSync;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
@@ -145,6 +146,19 @@ public class BlockDynamicGuideSign extends AbstractBlockRotatableNSEW
       BlockPos fromPos) {
     super.neighborChanged(state, world, pos, blockIn, fromPos);
     updatePoweredState(world, pos);
+    // A truss sign's renderer caches the truss behind it (TileEntityDynamicGuideSign#getTrussTop),
+    // and the client never gets neighborChanged, so tell it: the sync's readNBT drops the cache.
+    // Only the cell behind, and only for a sign hung on a truss, costs a packet.
+    if (!world.isRemote
+        && fromPos.equals(pos.offset(state.getValue(BlockHorizontal.FACING).getOpposite()))) {
+      TileEntity te = world.getTileEntity(pos);
+      if (te instanceof TileEntityDynamicGuideSign
+          && ((TileEntityDynamicGuideSign) te).getSignData().getPostType()
+          == com.micatechnologies.minecraft.csm.trafficaccessories.guidesign.PostType.TRUSS) {
+        // At the end of the tick, behind the block change that caused this.
+        CsmDeferredSync.syncAfterBlockChanges((TileEntityDynamicGuideSign) te);
+      }
+    }
   }
 
   @Override
