@@ -1209,6 +1209,410 @@ pair_block("blood_bank_fridge",
            pair_java("blood_bank_fridge", (0, 0, 0, 16, 16, 16), "METAL", "FLOOR", "TALL"), CL,
            item_display=ITEM_TALL)
 
+# ==========================================================================================
+# The research lab (GitHub #313): the CO2 incubator, the ultra-low freezer, the liquid nitrogen
+# dewar, the PCR thermocycler, the glassware drying rack and the vivarium's ventilated cage rack
+# ==========================================================================================
+@C.texture("incubator_door")
+def _incubator_door():
+    """The incubator's outer door, drawn as the door's front: brushed stainless, the display's
+    bezel at the top (the animated display is its own face in front of it), a vent strip."""
+    img = hc.brushed(hc.STAINLESS, 6400, size=32)
+    frame(img, 0, 0, 32, 32, (150, 154, 158))
+    rect(img, 8, 2, 24, 9, (52, 56, 62))
+    for x in range(6, 26, 3):
+        rect(img, x, 27, x + 2, 28, (120, 124, 130))
+    return img
+
+
+@C.texture("incubator_door_in")
+def _incubator_door_in():
+    """The door's inside: the heated panel inside its grey gasket."""
+    img = fill((220, 222, 222), size=32, grain=1, seed=6401)
+    frame(img, 0, 0, 32, 32, (96, 100, 106), width=2)
+    frame(img, 4, 4, 28, 28, (196, 198, 200))
+    return img
+
+
+@C.texture("incubator_inner")
+def _incubator_inner():
+    """Through the glass inner door: the chamber's two perforated shelves of culture flasks
+    (pink medium, white caps), the glass's frame and latch, a few streaks of glare."""
+    img = fill((150, 156, 160), size=32, grain=1, seed=6402)
+    rect(img, 2, 2, 30, 30, (118, 126, 132))
+    for sy in (14, 26):
+        rect(img, 2, sy, 30, sy + 1, (196, 200, 204))
+        for k in range(4):
+            x0 = 4 + k * 6 + (sy % 4)
+            rect(img, x0, sy - 6, x0 + 4, sy, (214, 120, 146))
+            rect(img, x0, sy - 6, x0 + 4, sy - 5, (236, 236, 232))
+            rect(img, x0 + 1, sy - 8, x0 + 3, sy - 6, (246, 246, 240))
+    px = img.load()
+    for k in range(7):
+        px[6 + k, 22 - k * 2] = (226, 236, 242, 255)
+        px[7 + k, 22 - k * 2] = (226, 236, 242, 255)
+    frame(img, 0, 0, 32, 32, (206, 210, 212), width=2)
+    rect(img, 3, 13, 5, 19, (90, 94, 100))
+    return img
+
+
+def incubator_display(i):
+    """The incubator's display: the chamber temperature and the CO2 level, the CO2 line
+    flickering between the reading and its label as a controller's does."""
+    def f():
+        img = fill((14, 22, 28), grain=1, seed=6403)
+        draw_text(img, "37.0", 1, 2, (120, 220, 240))
+        if i % 2 == 0:
+            draw_text(img, "5.0", 1, 9, (130, 230, 150))
+        else:
+            draw_text(img, "CO2", 1, 9, (130, 230, 150))
+        rect(img, 14, 2, 15, 3, (90, 220, 120) if i < 3 else (40, 70, 50))
+        return img
+    return f
+
+
+hc.animation(C, "incubator_display", [incubator_display(i) for i in range(4)], 30)
+
+INCUBATOR_TEX = {"body": STEEL, "door": T("incubator_door"), "door_in": T("incubator_door_in"),
+                 "inner": T("incubator_inner"), "screen": T("incubator_display"),
+                 "grey": GREY, "dark": CHAR, "rubber": RUBBER, "particle": STEEL}
+
+
+def incubator_cell(upper, open_):
+    """One chamber of the stacked pair, drawn on its own (no cut), closed or open. The lower
+    chamber stands on the roller base; open, the outer door stands square to the front on its
+    hinge (the viewer's left, model +x), and the glass inner door shows the shelves."""
+    b0, b1 = (0, 15.5) if upper else (2, 16)
+    lo, hi = b0 + 0.5, b1 - 0.5
+    els = [el([0.5, b0, 1], [15.5, b1, 16], "body", faces=("south", "east", "west", "up",
+                                                           "down"))]
+    if not upper:
+        els += [el([0.5, 0.8, 1.5], [15.5, 2, 15.5], "grey")]
+        els += casters([(1.5, 2.5), (14.5, 2.5), (1.5, 14.5), (14.5, 14.5)])
+    if not open_:
+        els.append(el([0.5, b0, 1], [15.5, b1, 1], "body", faces=("north",)))
+        els.append(el([1, lo, 0.2], [15, hi, 1], "body",
+                      faces=("north", "east", "west", "up", "down"), per={"north": "door"},
+                      uv={"north": FULL}))
+        els.append(screen([5, hi - 4.5, -0.1], [11, hi - 1, -0.1], "screen"))
+        els.append(el([1.4, lo + 3, -0.6], [2.2, hi - 3, 0.2], "grey"))
+    else:
+        els += [el([0.5, b0, 0.5], [1, b1, 1], "grey"), el([15, b0, 0.5], [15.5, b1, 1], "grey"),
+                el([1, b0, 0.5], [15, lo, 1], "grey"), el([1, hi, 0.5], [15, b1, 1], "grey"),
+                el([1, lo, 1.4], [15, hi, 1.4], "inner", faces=("north",), uv={"north": FULL}),
+                el([1, lo, 1], [1, hi, 1.4], "dark", faces=("east",)),
+                el([15, lo, 1], [15, hi, 1.4], "dark", faces=("west",)),
+                el([15, lo, -13.8], [15.8, hi, 0.2], "body", per={"east": "door", "west": "door_in"},
+                   uv={"east": FULL, "west": FULL})]
+    return els
+
+
+_IC = {}
+for _u in (False, True):
+    for _o in (False, True):
+        _IC["lab_co2_incubator_%s_%s" % ("upper" if _u else "lower",
+                                         "open" if _o else "closed")] = \
+            model(INCUBATOR_TEX, incubator_cell(_u, _o))
+_IC["lab_co2_incubator_item"] = model(INCUBATOR_TEX, incubator_cell(False, False)
+                                      + shift(incubator_cell(True, False), dy=16),
+                                      display=ITEM_TALL)
+_ics = hc.keyed_state([("facing", list(hc.ROT_Y)), ("second", ["false", "true"]),
+                       ("open", ["false", "true"])],
+                      lambda v: {"model": M("lab_co2_incubator_%s_%s" % (
+                          "upper" if v["second"] == "true" else "lower",
+                          "open" if v["open"] == "true" else "closed")),
+                          "y": hc.ROT_Y[v["facing"]]})
+_ics["variants"]["inventory"] = [{"model": M("lab_co2_incubator_item")}]
+C.add("lab_co2_incubator",
+      'new BlockDoorCabinetPair("lab_co2_incubator", %s)' % B(0, 0, 0, 16, 16, 16),
+      ("CO2 Incubator (Stacked Pair)", "CO2-Inkubator (Doppelstapel)",
+       "Incubadora de CO2 (doble apilada)", "CO2-inkubator (dubbelstaplad)"),
+      _IC, _ics, tab=CL)
+
+
+# --- the ultra-low freezer -----------------------------------------------------------------
+def ult_door(upper):
+    """The freezer's door, drawn as the door's front (each half its own texture): white, the
+    panel's bezel at the top of the upper half, the gasket's shadow at its edges."""
+    def f():
+        img = fill((236, 238, 236), size=32, grain=1, seed=6410 + upper)
+        if upper:
+            rect(img, 0, 0, 32, 1, (196, 198, 198))
+        else:
+            rect(img, 0, 31, 32, 32, (196, 198, 198))
+        rect(img, 0, 0, 1, 32, (206, 208, 208))
+        rect(img, 31, 0, 32, 32, (206, 208, 208))
+        if upper:
+            rect(img, 14, 2, 29, 9, (60, 64, 70))
+            rect(img, 15, 11, 28, 13, (40, 90, 160))
+        return img
+    return f
+
+
+tex("ult_door_lo", ult_door(0))
+tex("ult_door_hi", ult_door(1))
+
+
+@C.texture("ult_grille")
+def _ult_grille():
+    """The compressor's intake grille under the door."""
+    img = fill((206, 208, 208), size=32, grain=1, seed=6412)
+    for y in range(4, 30, 3):
+        rect(img, 2, y, 30, y + 1, (70, 74, 80))
+    frame(img, 0, 0, 32, 32, (176, 178, 180))
+    return img
+
+
+def ult_display(i):
+    """The freezer's panel: the cabinet temperature in red-orange digits and the status lamp."""
+    def f():
+        img = fill((18, 14, 12), grain=1, seed=6413)
+        draw_text(img, "-80", 2, 3, (250, 110, 40))
+        draw_text(img, "C", 2, 9, (200, 90, 40))
+        rect(img, 12, 10, 14, 12, (90, 220, 120) if i % 2 == 0 else (40, 80, 50))
+        return img
+    return f
+
+
+hc.animation(C, "ult_display", [ult_display(i) for i in range(2)], 20)
+
+ULT = [el([0.5, 0, 1.5], [15.5, 31.5, 16], "body"),
+       el([0.5, 0, 1.2], [15.5, 1, 1.5], "dark"),
+       el([1, 1.5, 1.2], [15, 6, 1.5], "body", per={"north": "grille"}, uv={"north": FULL}),
+       el([1, 6.5, 0.6], [15, 16, 1.5], "body", per={"north": "door_lo"}, uv={"north": FULL}),
+       el([1, 16, 0.6], [15, 30.5, 1.5], "body", per={"north": "door_hi"}, uv={"north": FULL}),
+       el([1.5, 12, -0.3], [2.5, 22, 0.6], "grey"),
+       el([1.3, 16.5, -1], [2.7, 18.5, -0.3], "grey"),
+       screen([8, 26.5, 0.3], [13.5, 29.5, 0.3], "screen")]
+pair_block("lab_ult_freezer",
+           ("Ultra-Low Freezer (-80 °C)", "Ultratiefkühlschrank (-80 °C)",
+            "Ultracongelador (-80 °C)", "Ultrafrys (-80 °C)"),
+           ULT, 1,
+           {"body": WHITE, "door_lo": T("ult_door_lo"), "door_hi": T("ult_door_hi"),
+            "grille": T("ult_grille"), "screen": T("ult_display"), "grey": GREY, "dark": CHAR,
+            "particle": WHITE},
+           pair_java("lab_ult_freezer", (0, 0, 0, 16, 16, 16), "METAL", "FLOOR", "TALL"), CL,
+           item_display=ITEM_TALL)
+
+
+# --- the liquid nitrogen dewar -------------------------------------------------------------
+@C.texture("ln2_body")
+def _ln2_body():
+    """The dewar's brushed shell with its contents label wrapped round it (white, a blue rule,
+    fine print), so every side of the octagon reads the same."""
+    img = hc.brushed(hc.STAINLESS, 6420)
+    rect(img, 0, 5, 16, 9, (240, 240, 236))
+    rect(img, 0, 5, 16, 6, (40, 90, 170))
+    for x in range(1, 16, 3):
+        rect(img, x, 7, x + 2, 8, (70, 74, 80))
+    return img
+
+
+@C.texture("ln2_gauge")
+def _ln2_gauge():
+    img = fill((236, 236, 232), grain=1, seed=6421)
+    disc(img, 8, 8, 7, (40, 44, 50))
+    disc(img, 8, 8, 6, (246, 246, 242))
+    rect(img, 8, 4, 9, 9, (200, 40, 40))
+    return img
+
+
+DEWAR = (casters([(3, 3), (13, 3), (3, 13), (13, 13)])
+         + [el([2.5, 0.8, 2.5], [13.5, 1.6, 13.5], "dark")]
+         + octo(8, 8, 5, 1.6, 12.5, "shell")
+         + octo(8, 8, 3.6, 12.5, 13.5, "metal")
+         + octo(8, 8, 1.6, 13.5, 15, "metal")
+         + [el([6.8, 13.6, 4.4], [9.2, 15.8, 5.6], "metal", per={"north": "gauge"},
+               uv={"north": FULL}),
+            el([7.6, 14.3, 5.6], [8.4, 15.1, 6.6], "metal"),
+            el([3.4, 12.5, 7.4], [4.2, 15.8, 8.6], "metal"),
+            el([11.8, 12.5, 7.4], [12.6, 15.8, 8.6], "metal"),
+            el([3.4, 15.8, 7.4], [12.6, 16, 8.6], "metal"),
+            el([9.6, 13.8, 9.6], [11, 14.6, 11], "blue")])
+prop("lab_ln2_dewar", (2, 0, 2, 14, 16, 14), "METAL", "FLOOR", True,
+     ("Liquid Nitrogen Dewar", "Flüssigstickstoff-Dewargefäß", "Dewar de nitrógeno líquido",
+      "Dewarkärl för flytande kväve"),
+     {"shell": T("ln2_body"), "metal": STEEL, "gauge": T("ln2_gauge"), "dark": CHAR,
+      "rubber": RUBBER, "blue": T("bin_blue"), "particle": STEEL},
+     DEWAR, CL, display=ITEM_TALL)
+
+
+# --- the PCR thermocycler ------------------------------------------------------------------
+@C.texture("pcr_front")
+def _pcr_front():
+    """The thermocycler's front: the screen's bezel (its screen a face of its own), the power
+    lamp and the vent slots."""
+    img = fill((232, 234, 232), grain=1, seed=6430)
+    frame(img, 0, 0, 16, 16, (196, 198, 196))
+    for x in range(10, 15, 2):
+        rect(img, x, 4, x + 1, 12, (150, 154, 160))
+    disc(img, 12.5, 13.5, 1, (60, 170, 90))
+    return img
+
+
+@C.texture("pcr_lid")
+def _pcr_lid():
+    """Looking down on the heated lid: its seam and the knob's dial."""
+    img = fill((90, 96, 104), grain=1, seed=6431)
+    frame(img, 0, 0, 16, 16, (70, 74, 80))
+    disc(img, 8, 8, 3, (150, 156, 160))
+    rect(img, 8, 5, 9, 8, (40, 44, 50))
+    return img
+
+
+def pcr_frame(i):
+    """The thermocycler's screen: the run's temperature profile (denature, anneal, extend) with
+    the step lit, and the cycle count."""
+    def f():
+        img = fill((236, 240, 244), grain=1, seed=6432)
+        rect(img, 0, 0, 16, 3, (40, 90, 160))
+        steps = ((1, 4, 5), (5, 9, 10), (9, 13, 8))
+        for k, (x0, x1, y) in enumerate(steps):
+            rect(img, x0, y, x1, y + 1, (200, 60, 50) if k == i % 3 else (90, 96, 104))
+        rect(img, 1, 13, 1 + 2 * (i + 1), 15, (60, 120, 210))
+        return img
+    return f
+
+
+hc.animation(C, "pcr_screen", [pcr_frame(i) for i in range(6)], 30)
+
+PCR = [front([3, 0, 3], [13, 5.5, 13.5], "body", "front"),
+       el([3.5, 5.5, 3.5], [12.5, 6.8, 12.5], "lid", per={"up": "lid_top"}, uv={"up": FULL}),
+       el([7, 6.8, 6], [9, 7.4, 8], "grey"),
+       el([3, 0, 2.6], [13, 0.5, 3], "dark"),
+       el([3.6, 1, 2.6], [9.4, 4.6, 3], "dark"),
+       screen([3.9, 1.3, 2.3], [9.1, 4.3, 2.3], "screen")]
+screen_prop("lab_pcr_thermocycler", (3, 0, 2, 13, 8, 14), "METAL", "FLOOR", True,
+            ("PCR Thermocycler (Bench-Top)", "PCR-Thermocycler (Tischgerät)",
+             "Termociclador de PCR (de sobremesa)", "PCR-termocykler (bänk)"),
+            {"body": WHITE, "front": T("pcr_front"), "lid": GREY, "lid_top": T("pcr_lid"),
+             "grey": STEEL, "dark": CHAR, "screen": W("screen_off"), "particle": WHITE},
+            PCR, CL, T("pcr_screen"))
+
+
+# --- the glassware drying rack -------------------------------------------------------------
+@C.texture("pegboard")
+def _pegboard():
+    """The rack's epoxy-coated board: a grid of peg holes."""
+    img = fill((232, 234, 230), size=32, grain=1, seed=6440)
+    for y in range(2, 32, 4):
+        for x in range(2, 32, 4):
+            rect(img, x, y, x + 1, y + 1, (150, 154, 156))
+    frame(img, 0, 0, 32, 32, (200, 202, 200))
+    return img
+
+
+@C.texture("lab_glass")
+def _lab_glass():
+    """Clear lab glass, drawn opaque (the module draws in the cutout layer): a pale blue-grey
+    with the bright streaks that make it read as glass."""
+    img = fill((196, 222, 228), grain=1, seed=6441)
+    px = img.load()
+    for y in range(2, 14):
+        px[3, y] = (240, 248, 250, 255)
+        px[11, y] = (226, 238, 242, 255)
+    return img
+
+
+GLASS_RACK = [el([1, 2, 15], [15, 15.5, 16], "board", per={"north": "board_face"},
+                 uv={"north": FULL}),
+              el([1, 0.8, 12.5], [15, 2, 16], "metal"),
+              el([1, 2, 12.5], [15, 2.6, 13], "metal")]
+for _y, _items in ((14.2, ("flask", "beaker", "cyl", "flask")),
+                   (9.6, ("beaker", "flask", "flask", "cyl")),
+                   (5.0, ("cyl", "beaker", "beaker", "flask"))):
+    for _k, _kind in enumerate(_items):
+        _x = 3 + _k * 3.4
+        GLASS_RACK.append(el([_x - 0.3, _y - 0.3, 13.2], [_x + 0.3, _y + 0.3, 15], "metal"))
+        if _kind == "flask":
+            GLASS_RACK += [el([_x - 0.5, _y - 1, 12.6], [_x + 0.5, _y + 0.5, 13.8], "glass"),
+                           el([_x - 1.3, _y - 3.4, 12.0], [_x + 1.3, _y - 1, 14.4], "glass")]
+        elif _kind == "beaker":
+            GLASS_RACK.append(el([_x - 1.1, _y - 2.8, 12.2], [_x + 1.1, _y + 0.5, 14.4],
+                                 "glass"))
+        else:
+            GLASS_RACK += [el([_x - 0.6, _y - 3.4, 13.0], [_x + 0.6, _y + 0.5, 14.2], "glass"),
+                           el([_x - 1, _y - 3.6, 12.6], [_x + 1, _y - 3.4, 14.6], "glass")]
+prop("lab_glassware_rack", (1, 1, 12, 15, 16, 16), "METAL", "WALL", False,
+     ("Glassware Drying Rack", "Abtropfgestell für Laborglas",
+      "Escurridor de material de vidrio", "Torkställ för laboratorieglas"),
+     {"board": WHITE, "board_face": T("pegboard"), "metal": STEEL, "glass": T("lab_glass"),
+      "particle": T("pegboard")},
+     GLASS_RACK, CL)
+
+
+# --- the vivarium's ventilated cage rack ---------------------------------------------------
+@C.texture("cage_front")
+def _cage_front():
+    """A row of three cages' fronts, drawn at the row's shape: clear polycarbonate over the
+    bedding, the card holder, the wire lid's line and the air valve at the top."""
+    img = Image.new("RGBA", (66, 20), (150, 160, 168, 255))
+    for k in range(3):
+        x0 = k * 22 + 1
+        rect(img, x0, 2, x0 + 20, 20, (196, 214, 222))
+        rect(img, x0, 14, x0 + 20, 20, (214, 190, 140))
+        rect(img, x0, 2, x0 + 20, 3, (110, 116, 122))
+        rect(img, x0 + 2, 5, x0 + 8, 10, (246, 246, 240))
+        rect(img, x0 + 3, 7, x0 + 7, 8, (90, 94, 100))
+        rect(img, x0 + 15, 4, x0 + 18, 6, (190, 194, 198))
+        rect(img, x0 + 12, 6, x0 + 13, 13, (232, 240, 244))
+    return squash(img, 32)
+
+
+@C.texture("cage_side")
+def _cage_side():
+    img = fill((196, 214, 222), grain=1, seed=6450)
+    rect(img, 0, 10, 16, 16, (214, 190, 140))
+    rect(img, 0, 0, 16, 1, (110, 116, 122))
+    return img
+
+
+@C.texture("ivc_plenum")
+def _ivc_plenum():
+    """The supply and exhaust plenum's face: the row of air ports a cage docks to."""
+    img = hc.brushed(hc.STAINLESS, 6451)
+    for y in range(1, 16, 4):
+        disc(img, 8, y + 1.5, 1.4, (70, 74, 80))
+    return img
+
+
+@C.texture("ivc_blower")
+def _ivc_blower():
+    """The air handling unit on the rack's top: the intake grille, its display and lamps,
+    drawn at the unit's shape."""
+    img = Image.new("RGBA", (60, 12), (220, 222, 222, 255))
+    for x in range(3, 30, 2):
+        rect(img, x, 2, x + 1, 10, (90, 94, 100))
+    rect(img, 36, 3, 50, 9, (20, 26, 30))
+    draw_text(img, "60", 38, 4, (130, 230, 150))
+    disc(img, 54, 6, 1.5, (90, 220, 120))
+    frame(img, 0, 0, 60, 12, (176, 178, 180))
+    return squash(img, 32)
+
+
+RACK = (casters([(1.5, 2), (14.5, 2), (1.5, 14), (14.5, 14)])
+        + [el([0.5, 0.8, 1], [15.5, 2, 15], "metal"),
+           el([0.5, 2, 1], [2.2, 30, 15], "metal", per={"north": "plenum", "south": "plenum"}),
+           el([13.8, 2, 1], [15.5, 30, 15], "metal", per={"north": "plenum", "south": "plenum"}),
+           el([0.5, 30, 1.5], [15.5, 32, 14.5], "white",
+              per={"north": "blower", "south": "blower"},
+              uv={"north": FULL, "south": FULL})])
+for _k in range(7):
+    _y = 2.6 + _k * 3.9
+    RACK.append(el([2.2, _y - 0.4, 1.2], [13.8, _y, 14.8], "metal"))
+    RACK.append(el([2.4, _y, 1.6], [13.6, _y + 3.3, 14.4], "cage",
+                   per={"north": "cages", "south": "cages"},
+                   uv={"north": FULL, "south": FULL}))
+pair_block("vivarium_cage_rack",
+           ("Ventilated Cage Rack (Vivarium)", "Belüftetes Käfigregal (Tierhaltung)",
+            "Rack de jaulas ventiladas (bioterio)", "Ventilerat burställ (djuravdelning)"),
+           RACK, 1,
+           {"metal": STEEL, "plenum": T("ivc_plenum"), "white": WHITE,
+            "blower": T("ivc_blower"), "cage": T("cage_side"), "cages": T("cage_front"),
+            "rubber": RUBBER, "particle": STEEL},
+           pair_java("vivarium_cage_rack", (0, 0, 1, 16, 16, 15), "METAL", "FLOOR", "TALL"),
+           CL, item_display=ITEM_TALL)
+
 prop("specimen_pass_through", (2, 3, 12, 14, 13, 16), "METAL", "WALL", False,
      ("Specimen Pass-Through", "Probendurchreiche", "Ventanilla de paso de muestras",
       "Provgenomlämning"),

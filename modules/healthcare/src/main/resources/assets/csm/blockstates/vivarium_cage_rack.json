@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:healthcare/diagnostics/vivarium_cage_rack_first"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:healthcare/diagnostics/vivarium_cage_rack_item"
+      }
+    ],
+    "second": {
+      "false": {},
+      "true": {
+        "model": "csm:healthcare/diagnostics/vivarium_cage_rack_second"
+      }
+    }
+  }
+}
