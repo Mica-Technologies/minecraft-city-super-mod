@@ -281,6 +281,17 @@ the flight boards do; nothing links them. The page is looked up from where the b
 its bank once a second, not every frame. The screen's place and bands are the generator's
 (`ED_W`, `ED_H`, `ED_SCREEN_Z`, `ED_HEADER`, `ED_COLHEAD`, `ED_PITCH`): change one, change both.
 
+What a board shows changes only with the world's minute (every 16 or 17 ticks) and its page, so
+each board keeps its whole page of text in one list of its own as well (`CsmDisplayListCache`
+`ed_board_page`, keyed on the minute, the page and the bed count; `EdBoardPageKeyTest`), compiled
+from the same pieces with their colours as plain `glColor` calls (a list records those; the
+cached `GlStateManager.color` could be left out) and replayed with one `glCallList`. Replaying
+the forty-odd shared lists one by one, each under its own matrix, was 16-24 us a board. A change
+of `seed` or `beds` through NBT releases the board's lists, since the seed is not in the key. The
+screen quad stays outside, on the block atlas, one texture a list; its sprite, and the
+now-serving display's, is looked up once a stitch (`HealthcareScreenSprites`), not by name every
+frame. `/csm renderpass skip sharedBakesPerFrame` draws the text as the pieces again.
+
 ## The waiting room queue
 
 A **queue** belongs to a controller, the check-in kiosk or a desk's call console, and holds one

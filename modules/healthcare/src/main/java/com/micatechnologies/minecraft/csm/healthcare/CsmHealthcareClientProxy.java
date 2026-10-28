@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.healthcare.clinical.TileEntityEdTracki
 import com.micatechnologies.minecraft.csm.healthcare.clinical.TileEntityEdTrackingBoardRenderer;
 import com.micatechnologies.minecraft.csm.healthcare.queue.TileEntityNowServingDisplay;
 import com.micatechnologies.minecraft.csm.healthcare.queue.TileEntityNowServingDisplayRenderer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
@@ -24,5 +25,6 @@ public class CsmHealthcareClientProxy extends CsmHealthcareCommonProxy {
         new TileEntityEdTrackingBoardRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityNowServingDisplay.class,
         new TileEntityNowServingDisplayRenderer());
+    MinecraftForge.EVENT_BUS.register(new HealthcareScreenSprites.Events());
   }
 }

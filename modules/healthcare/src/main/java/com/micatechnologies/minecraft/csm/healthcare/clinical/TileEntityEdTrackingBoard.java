@@ -88,9 +88,33 @@ public class TileEntityEdTrackingBoard extends AbstractTileEntity {
 
   @Override
   public void readNBT(NBTTagCompound compound) {
+    int oldBeds = beds;
+    int oldSeed = seed;
     beds = compound.hasKey(KEY_BEDS) ? Math.max(1, Math.min(EdTrackingSchedule.MAX_BEDS,
         compound.getInteger(KEY_BEDS))) : EdTrackingSchedule.DEFAULT_BEDS;
     seed = compound.getInteger(KEY_SEED);
+    if ((beds != oldBeds || seed != oldSeed) && world != null && world.isRemote) {
+      // The renderer's page list keys on the minute and page, not the seed.
+      TileEntityEdTrackingBoardRenderer.release(pos);
+    }
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    releaseLists();
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    releaseLists();
+  }
+
+  private void releaseLists() {
+    if (world != null && world.isRemote) {
+      TileEntityEdTrackingBoardRenderer.release(pos);
+    }
   }
 
   @Override
