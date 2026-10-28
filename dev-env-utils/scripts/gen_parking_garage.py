@@ -190,7 +190,8 @@ BLOCKS = {
         "new BlockParkingGate()",
         ("Parking Gate Arm", "Barrera de Aparcamiento", "Parkhausschranke",
          "Parkeringsbom"),
-        {"open": {"true": {}, "false": {}}}),
+        # The arm's open/closed is the tile entity's, not a block property: no model reads it.
+        None),
     "parking_ticket_dispenser": (
         "ticket_dispenser", lambda: machine("face"),
         {"pedestal": "pedestal", "machine": "machine", "face": "dispenser_face", "cap": "cap"},
