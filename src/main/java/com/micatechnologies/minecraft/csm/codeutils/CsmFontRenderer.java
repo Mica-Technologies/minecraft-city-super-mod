@@ -378,4 +378,63 @@ public final class CsmFontRenderer {
       curX += dw;
     }
   }
+
+  /**
+   * Adds {@code text}'s quads already placed and coloured, for a caller that puts many pieces of
+   * text, each at its own place, scale and colour, into one draw (and so one flat display list):
+   * the quads {@link #addString(BufferBuilder, String, int, int)} adds at ({@code x}, {@code y})
+   * font units, scaled by {@code scale} about the origin and moved to ({@code ox}, {@code oy}),
+   * which is what drawing them under {@code translate(ox, oy, 0); scale(scale, scale, 1)} did,
+   * with the colour on every vertex rather than in {@code glColor}. No texture bind, no draw.
+   *
+   * @param buf   the buffer, begun as {@code GL_QUADS} in {@code POSITION_TEX_COLOR}
+   * @param text  the text to add
+   * @param x     left edge, in font units
+   * @param y     top edge, in font units
+   * @param ox    where font unit 0 lands, in the caller's units
+   * @param oy    where font unit 0 lands, in the caller's units
+   * @param scale the caller's units per font unit
+   * @param rgb   the colour, {@code 0xRRGGBB}, opaque
+   */
+  public void addString(BufferBuilder buf, String text, int x, int y, float ox, float oy,
+      float scale, int rgb) {
+    if (text == null || text.isEmpty()) return;
+
+    int r = (rgb >> 16) & 0xFF;
+    int g = (rgb >> 8) & 0xFF;
+    int b = rgb & 0xFF;
+    float top = oy + y * scale;
+    float bottom = oy + (y + FONT_HEIGHT) * scale;
+    float curX = x;
+    for (int i = 0; i < text.length(); i++) {
+      int c = text.charAt(i);
+      if (c < 32 || c >= 127) {
+        curX += displayWidths[' '];
+        continue;
+      }
+      if (atlasCharWidths[c] == 0) {
+        curX += displayWidths[' '];
+        continue;
+      }
+
+      int col = c % 16;
+      int row = c / 16;
+
+      float u1 = (float) (col * cellW + 1) / atlasW;
+      float v1 = (float) (row * cellH + 1) / atlasH;
+      float u2 = u1 + atlasCharWidths[c] / atlasW;
+      float v2 = (float) ((row + 1) * cellH) / atlasH;
+
+      float dw = displayWidths[c];
+      float left = ox + curX * scale;
+      float right = ox + (curX + dw) * scale;
+
+      buf.pos(left, top, 0).tex(u1, v1).color(r, g, b, 255).endVertex();
+      buf.pos(right, top, 0).tex(u2, v1).color(r, g, b, 255).endVertex();
+      buf.pos(right, bottom, 0).tex(u2, v2).color(r, g, b, 255).endVertex();
+      buf.pos(left, bottom, 0).tex(u1, v2).color(r, g, b, 255).endVertex();
+
+      curX += dw;
+    }
+  }
 }
