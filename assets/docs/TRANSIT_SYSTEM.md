@@ -536,8 +536,8 @@ A departure board cost a little more than a flight board because it drew eight r
 against the flight board's seven of two. Beyond 48 blocks nothing is drawn but the baked model.
 Since 2026-10-28 a flight board's heads and rows are one list of their own (see above), which
 measured 13 µs while that list called the shared pieces; since 2026-10-29 the flight boards' and
-the departure board's lists hold the glyph quads themselves, one draw each, expected under 5 µs a
-board for both (not yet measured).
+the departure board's lists hold the glyph quads themselves, one draw each: measured 2026-10-29
+at 4.6 µs a small flight board (34 drawn live) and 5.2 µs a departure board (21 live).
 
 ### Traps
 
@@ -1035,8 +1035,9 @@ large one beside it (the small board is unchanged): `airport_flight_board_large_
   100 µs a board in 2026-10; a board list holding those calls, about 45 µs, nearly all of it the
   driver replaying the nested calls inside `glCallList`. The flat list draws in one command.
 - **What it costs.** A non-controller cell, two block lookups a frame. A controller, the rods, the
-  screen's list, the text list and the clock's. Expected under 10 µs a board whatever its size
-  (not yet measured); a compile, a hundred-odd microseconds for a big board, once a page turn.
+  screen's list, the text list and the clock's. Measured 2026-10-29 at 5.1 to 6.5 µs a board,
+  1 x 1 to 4 x 2 (57 drawn live); a compile, 80 to 400 µs, once a minute or a page turn, spread
+  over frames by `CsmCompileBudget`.
 
 ### Check-in and the kiosk
 

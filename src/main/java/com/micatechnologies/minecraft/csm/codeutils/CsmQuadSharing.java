@@ -430,7 +430,7 @@ public final class CsmQuadSharing {
             + "(about {} MB), {} distinct kept ({} model classes skipped; most replaced: {}, {}), "
             + "{} ms",
         p.isLive() ? ", live" : "", p.getQuads(), p.getModels(), p.getNamespaces(),
-        p.getReplaced(), p.getBytes() / (1024 * 1024), p.getDistinct(), p.getSkippedModels(),
+        p.getReplaced(), Math.round(p.getBytes() / (1024.0 * 1024.0)), p.getDistinct(), p.getSkippedModels(),
         p.getMost(), p.getMostReplaced(), p.getMillis());
   }
 
