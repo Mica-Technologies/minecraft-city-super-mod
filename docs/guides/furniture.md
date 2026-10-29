@@ -135,8 +135,11 @@ the ironing board and hisses and puffs steam when clicked.
 ## TV, stereo and piano
 
 - **TVs** (flat screens on a stand or the wall, one or two blocks wide, and a tube TV): right-click
-  to change channel through off, news, sports, nature, colour bars and snow. On a two-block TV,
-  clicking either half changes both.
+  to change channel through off, news, sports, nature, colour bars, snow, and then two restaurant
+  menu boards: a food menu (burgers, sandwiches, sides, salads and wraps) and a drinks menu
+  (sodas, lemonade, iced tea, coffee, shakes and smoothies in small, medium and large). Each
+  turns between two pages with a highlight moving down the items, so a wall of TVs over a counter
+  makes a fast-food menu. On a two-block TV, clicking either half changes both.
 - **The stereo**: right-click with a **music disc** to put it on the turntable and play it, as a
   jukebox does. Right-click again to take it out. A comparator reads the disc as it would a
   jukebox's.

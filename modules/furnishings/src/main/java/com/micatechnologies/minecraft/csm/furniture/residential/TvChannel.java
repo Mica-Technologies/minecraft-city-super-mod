@@ -23,7 +23,17 @@ public enum TvChannel implements IStringSerializable {
   /** A colour-bar test card. */
   BARS,
   /** No signal: snow. */
-  STATIC;
+  STATIC,
+  /**
+   * A fast-casual restaurant's food menu board (the invented Stack Shack): two pages of burgers,
+   * sandwiches, sides, salads and wraps with their prices, a highlight stepping down the items.
+   */
+  MENU_FOOD,
+  /**
+   * The same restaurant's drinks board: invented sodas, lemonade, iced tea, coffee, shakes and
+   * smoothies, each priced small, medium and large.
+   */
+  MENU_DRINKS;
 
   private static final TvChannel[] VALUES = values();
 

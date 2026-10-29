@@ -238,6 +238,84 @@
         "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_static",
         "y": 270
       }
+    },
+    {
+      "when": {
+        "channel": "menu_food",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_food",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_food",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_food",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_drinks",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_drinks",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_drinks",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "channel": "menu_drinks",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/wall_tv_black/wall_tv_tv_menu_drinks",
+        "y": 270
+      }
     }
   ]
 }
