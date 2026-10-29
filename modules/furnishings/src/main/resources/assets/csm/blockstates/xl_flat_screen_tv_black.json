@@ -571,6 +571,194 @@
     },
     {
       "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_floor_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "0",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r0_tv_stand_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "cell": "1",
         "channel": "off",
         "facing": "east",
@@ -1130,6 +1318,194 @@
       },
       "apply": {
         "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_floor_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "1",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r0_tv_stand_tv_menu_drinks",
         "y": 270
       }
     },
@@ -1699,6 +2075,194 @@
     },
     {
       "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_floor_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "2",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r0_tv_stand_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "cell": "3",
         "channel": "off",
         "facing": "east",
@@ -2258,6 +2822,194 @@
       },
       "apply": {
         "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_floor_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "3",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c0r1_tv_stand_tv_menu_drinks",
         "y": 270
       }
     },
@@ -2827,6 +3579,194 @@
     },
     {
       "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_floor_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "4",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c1r1_tv_stand_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
         "cell": "5",
         "channel": "off",
         "facing": "east",
@@ -3386,6 +4326,194 @@
       },
       "apply": {
         "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_static",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_food",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_food"
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_food",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_food",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_food",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "east",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_drinks",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "north",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_drinks"
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "south",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_drinks",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "floor"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_floor_tv_menu_drinks",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "cell": "5",
+        "channel": "menu_drinks",
+        "facing": "west",
+        "rest": "tv_stand"
+      },
+      "apply": {
+        "model": "csm:furniture/living/states/xl_flat_screen_tv_black/xl_flat_screen_tv_c2r1_tv_stand_tv_menu_drinks",
         "y": 270
       }
     }

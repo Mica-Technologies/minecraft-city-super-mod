@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/living/base/giant_flat_screen_tv_c1r1_floor",
+  "textures": {
+    "bezel": "csm:blocks/furniture/living/tv_bezel",
+    "screen": "csm:blocks/furniture/living/tv_menu_food"
+  }
+}

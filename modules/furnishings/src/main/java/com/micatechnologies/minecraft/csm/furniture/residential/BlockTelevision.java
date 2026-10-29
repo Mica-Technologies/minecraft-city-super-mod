@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 /**
  * A TV: a flat screen on its stand, a flat screen hung on the wall, either one block or two
  * wide, or an old tube TV. Right-click changes the channel ({@link TvChannel}: off, news, sports,
- * nature, the colour bars, snow), each an animated texture the blockstate picks for the screen;
+ * nature, the colour bars, snow, a food menu board and a drinks menu board), each an animated texture the blockstate picks for the screen;
  * the channel is kept by a {@link TileEntityTelevision} in each of its blocks, and a click on
  * either block of a two-block TV changes both.
  *

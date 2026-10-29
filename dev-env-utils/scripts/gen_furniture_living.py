@@ -14,7 +14,8 @@ displays (all imported, not copied), and writes, under
 modules/furnishings/src/main/resources/assets/csm:
 
   * textures/blocks/furniture/living/*.png  the TV channels (animated, with their .mcmeta: news,
-    sports, nature, colour bars, snow and the dark screen), the hi-fi's front, display and
+    sports, nature, colour bars, snow, the food and drinks menu boards and the dark screen), the
+    hi-fi's front, display and
     turntable, speaker fronts, the piano's keys and lacquer, the fireplace's stone, firebrick,
     logs and animated flame, the clock dial, photos and artworks, house plant leaves, pots,
     lamp shades, wax, coir, and the rest
@@ -59,6 +60,8 @@ import gen_furniture_residential as R  # noqa: E402
 import gen_furniture_bedroom as B  # noqa: E402
 import gen_furniture_appliances as A  # noqa: E402
 import forge_multipart as FM  # noqa: E402
+import life_safety_gen_common as LS  # noqa: E402
+import gen_healthcare_common as HC  # noqa: E402
 
 ASSETS = R.ASSETS
 SUB = "furniture/living"
@@ -353,6 +356,344 @@ def tv_news():
                     px[x, y] = (236, 236, 240, 255)
         frames.append(img)
     return strip(frames)
+
+
+# --- the menu boards: a fast-casual restaurant's food and drinks screens. Drawn at 128 px, twice
+# --- the other channels, since a menu is text and the 3 x 5 font needs the room; 128 x 72 shows
+# --- on a flat screen (rows 28 to 100). The text sits in the middle 96 columns (16 to 112),
+# --- all a tube TV's 4:3 crop shows, and the pictures in the side strips it cuts. Two pages,
+# --- each with a highlight bar stepping down three of its items, every frame 2.5 s. The
+# --- restaurant (Stack Shack) and every drink are invented.
+MN = 128
+MY = 28              # the first row a flat screen shows
+MENU_X0, MENU_X1 = 16, 112
+
+
+def menu_text(img, text, x, y, colour):
+    """The Life Safety 3 x 5 font, with a one-texel full stop so a price stays narrow."""
+    px = img.load()
+    for ch in text.upper():
+        if ch == ".":
+            px[x, y + 4] = colour + (255,)
+            x += 2
+            continue
+        for gy, row in enumerate(LS._GLYPHS.get(ch, LS._GLYPHS[" "])):
+            for gx, bit in enumerate(row):
+                if bit == "1":
+                    px[x + gx, y + gy] = colour + (255,)
+        x += 4
+
+
+def menu_width(text):
+    return sum(2 if ch == "." else 4 for ch in text) - 1
+
+
+def menu_text_right(img, text, x1, y, colour):
+    menu_text(img, text, x1 - menu_width(text), y, colour)
+
+
+def menu_legend(img, text, cx, y, colour, cap_h, series="D", max_w=None, left=None):
+    """A heading in the committed highway font (gen_healthcare_common.legend_mask)."""
+    mask = HC.legend_mask(text, cap_h, series, max_w)
+    x = left if left is not None else int(round(cx - mask.width / 2.0))
+    img.paste(Image.new("RGBA", mask.size, tuple(colour) + (255,)), (x, y), mask)
+
+
+def rect(img, x0, y0, x1, y1, colour):
+    """Fills x0 <= x < x1, y0 <= y < y1."""
+    px = img.load()
+    for y in range(max(0, y0), min(img.height, y1)):
+        for x in range(max(0, x0), min(img.width, x1)):
+            px[x, y] = colour + (255,)
+
+
+def sprite_at(img, rows, pal, x, y):
+    px = img.load()
+    for dy, row in enumerate(rows):
+        for dx, ch in enumerate(row):
+            if ch != ".":
+                px[x + dx, y + dy] = pal[ch] + (255,)
+
+
+# The pictures, 14 wide or less, on the side strips.
+FOOD_PAL = {"b": (222, 152, 66), "s": (250, 236, 196), "g": (92, 176, 64),
+            "c": (252, 200, 48), "r": (214, 56, 44), "m": (110, 62, 36), "M": (84, 46, 28),
+            "B": (200, 132, 56), "y": (252, 210, 70), "Y": (230, 170, 40), "R": (200, 30, 36),
+            "w": (250, 246, 236), "t": (232, 206, 150), "T": (204, 176, 120),
+            "k": (150, 100, 60), "o": (240, 240, 236), "O": (200, 200, 196),
+            "l": (150, 200, 80), "p": (120, 70, 140), "e": (236, 220, 180)}
+BURGER = ["....bbbbbb....",
+          "..bbsbbbbsbb..",
+          ".bbbbbbsbbbbb.",
+          ".bsbbbbbbbbsb.",
+          "gglgglgglggglg",
+          ".cccccccccccc.",
+          ".mMmmMmmmMmmm.",
+          ".mmmmmmMmmmMm.",
+          "..rrrrrrrrrr..",
+          ".BBBBBBBBBBBB.",
+          "..BBBBBBBBBB.."]
+FRIES = [".y..y.y..y.",
+         ".yy.y.yy.y.",
+         "..yYy.yYyy.",
+         ".yyyyyyyyyy",
+         "RRRRRRRRRRR",
+         "RRRRwwwRRRR",
+         ".RRRwRwRRR.",
+         ".RRRwwwRRR.",
+         ".RRRRRRRRR.",
+         "..RRRRRRR..",
+         "..RRRRRRR.."]
+SUB_SANDWICH = ["...tttttttt...",
+                ".ttttttttttttt",
+                "tTttttTtttttTt",
+                "ggllgglgglgglg",
+                "rrrcrrcrrcrrrc",
+                "kkkkkkkkkkkkkk",
+                ".TTTTTTTTTTTT."]
+WRAP = ["....eeee..",
+        "..eegllge.",
+        ".eglrgcrle",
+        ".egrlglgre",
+        "eeglglrlee",
+        "eeeeeeeee.",
+        "eeeeeeee..",
+        ".eeeeee...",
+        "..eeee...."]
+SALAD = [".l.g.r.l.g.r",
+         "glgrlglgclgl",
+         "lglglrglglgl",
+         "oooooooooooo",
+         ".oooooooooo.",
+         ".OOOOOOOOOO.",
+         "..OOOOOOOO..",
+         "....OOOO...."]
+NUGGETS = ["..bb..bb...",
+           ".bbbbbbbb..",
+           ".bbBbbbBbb.",
+           "..bbb.bbb..",
+           "RRRRRRRRRRR",
+           "RRwwwwwwwRR",
+           ".RRRRRRRRR.",
+           ".RRRRRRRRR.",
+           "..RRRRRRR.."]
+
+DRINK_PAL = {"w": (246, 246, 244), "r": (206, 40, 44), "R": (160, 26, 32),
+             "s": (236, 236, 240), "S": (196, 30, 40), "l": (250, 226, 90),
+             "L": (226, 190, 40), "g": (190, 220, 236), "G": (150, 190, 214),
+             "y": (252, 240, 140), "a": (196, 120, 40), "A": (160, 90, 24),
+             "i": (230, 240, 248), "m": (240, 236, 228), "M": (200, 196, 188),
+             "c": (100, 60, 34), "C": (70, 40, 22), "p": (246, 160, 186),
+             "P": (226, 120, 150), "h": (252, 252, 246), "k": (210, 30, 40),
+             "u": (130, 70, 170), "U": (100, 50, 140), "o": (252, 160, 50),
+             "t": (220, 236, 244), "e": (200, 200, 200)}
+SODA_CUP = ["......S...",
+            ".....S....",
+            "..wwwSwww.",
+            ".wwwwwwwww",
+            "..rrrrrrr.",
+            "..rwwrwwr.",
+            "..rrwwwrr.",
+            "..rrrrrrr.",
+            "...rrrrr..",
+            "...rrrrr..",
+            "...RRRRR.."]
+LEMONADE = ["........ll",
+            ".g.....lLl",
+            ".gyyyyyyll",
+            ".gyiyyiyg.",
+            ".gyyyyyyg.",
+            ".gyyiyyyg.",
+            ".gyyyyyyg.",
+            ".gyyyyyyg.",
+            "..gyyyyg..",
+            "..gggggg.."]
+ICED_TEA = ["......k...",
+            ".g....k...",
+            ".gaaaakaag",
+            ".gaiaaaiag",
+            ".gaaaiaaag",
+            ".gaaaaaaag",
+            ".gAaaaaaAg",
+            ".gAAaaaAAg",
+            "..gAAAAAg.",
+            "..gggggg.."]
+COFFEE = ["..m..m..",
+          "...m..m.",
+          "..m..m..",
+          "..........",
+          "wwwwwwww..",
+          "wCCCCCCw..",
+          "wwwwwwwwww",
+          "wwwwwwww.w",
+          "wwwwwwww.w",
+          "wwwwwwwwww",
+          ".wwwwww...",
+          "MMMMMMMM.."]
+SHAKE = ["....k.....",
+         "...hhh....",
+         "..hhhhh...",
+         ".hhhhhhh..",
+         ".gppppppg.",
+         ".gpPppPpg.",
+         ".gppppppg.",
+         "..gpPppg..",
+         "...gppg...",
+         "....gg....",
+         "...gggg..."]
+SMOOTHIE = ["......S...",
+            "..tttStt..",
+            ".tttttttt.",
+            ".uuuuuuuu.",
+            ".uUuuuuUu.",
+            "..uuuuuu..",
+            "..oooooo..",
+            "..oowwoo..",
+            "...oooo...",
+            "...oooo..."]
+
+
+def menu_board(pal, header, sides, body, highlight):
+    """One page of a menu board: the background, the header band, the side strips with their
+    pictures, then body(img, highlight) for the middle."""
+    bg, strip_col, line_col = pal["bg"], pal["strip"], pal["line"]
+    img = blank(MN)
+    px = img.load()
+    for y in range(MN):
+        for x in range(MN):
+            k = 1.0 - 0.12 * max(0.0, min(1.0, (y - MY) / 72.0))
+            c = strip_col if (x < MENU_X0 or x >= MENU_X1) else bg
+            if (x + y) % 4 == 0:
+                k += 0.03
+            px[x, y] = shade(c, k) + (255,)
+    for y in range(MN):
+        px[MENU_X0, y] = line_col + (255,)
+        px[MENU_X1 - 1, y] = line_col + (255,)
+    header(img)
+    for (rows, pal_s), (x, y) in sides:
+        sprite_at(img, rows, pal_s, x, y)
+    body(img, highlight)
+    return img
+
+
+FOOD = {"bg": (30, 24, 24), "strip": (54, 40, 34), "line": (230, 170, 40),
+        "band": (172, 30, 34), "brand": (255, 210, 70), "head": (255, 184, 48),
+        "item": (240, 236, 228), "price": (255, 214, 96), "hl": (255, 204, 52),
+        "hl_text": (110, 20, 22)}
+FOOD_PAGES = [
+    (("BURGERS", [("CLASSIC", "5.49"), ("CHEESE", "5.99"), ("BACON", "6.79"),
+                  ("DOUBLE", "7.49"), ("SPICY", "6.49"), ("VEGGIE", "5.79")]),
+     ("SANDWICHES", [("CHICKEN", "6.29"), ("CLUB", "6.99"), ("BLT", "5.49"),
+                     ("TURKEY", "5.99"), ("MELT", "5.29"), ("STEAK", "7.99")]),
+     ("MAKE IT A COMBO", "+3.29"), [(0, 0), (1, 3), (0, 3)]),
+    (("SIDES", [("FRIES", "1.99"), ("RINGS", "2.49"), ("TOTS", "2.29"),
+                ("NUGGETS", "3.49"), ("SLAW", "1.49"), ("CHILI", "2.99")]),
+     ("SALAD/WRAP", [("GARDEN", "5.49"), ("CAESAR", "6.29"), ("COBB", "6.99"),
+                         ("CHICKEN", "6.49"), ("VEGGIE", "5.99"), ("BLT", "5.79")]),
+     ("BURGER+FRIES+DRINK", "8.99"), [(1, 1), (0, 0), (1, 4)])]
+FOOD_SIDES = [((BURGER, FOOD_PAL), (1, MY + 15)), ((FRIES, FOOD_PAL), (3, MY + 34)),
+              ((NUGGETS, FOOD_PAL), (3, MY + 54)),
+              ((SUB_SANDWICH, FOOD_PAL), (113, MY + 17)), ((WRAP, FOOD_PAL), (115, MY + 34)),
+              ((SALAD, FOOD_PAL), (114, MY + 56))]
+COLS = [(19, 61), (67, 109)]
+
+
+def food_header(img):
+    rect(img, 0, MY, MN, MY + 12, FOOD["band"])
+    rect(img, 0, MY + 12, MN, MY + 13, FOOD["line"])
+    menu_legend(img, "STACK SHACK", 64, MY + 2, FOOD["brand"], 8, "D")
+
+
+def food_page(page, step):
+    left, right, combo, lights = FOOD_PAGES[page]
+
+    def body(img, hl):
+        hcol, hrow = lights[hl]
+        for ci, (title, items) in enumerate((left, right)):
+            x0, x1 = COLS[ci]
+            menu_text(img, title, int(round((x0 + x1 + 1 - menu_width(title)) / 2.0)),
+                      MY + 15, FOOD["head"])
+            rect(img, x0, MY + 21, x1 + 1, MY + 22, FOOD["line"])
+            for ri, (name, price) in enumerate(items):
+                y = MY + 24 + ri * 7
+                if ci == hcol and ri == hrow:
+                    rect(img, x0 - 2, y - 1, x1 + 2, y + 6, FOOD["hl"])
+                    menu_text(img, name, x0, y, FOOD["hl_text"])
+                    menu_text_right(img, price, x1 + 1, y, FOOD["hl_text"])
+                else:
+                    menu_text(img, name, x0, y, FOOD["item"])
+                    menu_text_right(img, price, x1 + 1, y, FOOD["price"])
+        rect(img, 64, MY + 15, 65, MY + 65, shade(FOOD["line"], 0.45))
+        rect(img, MENU_X0 + 1, MY + 66, MENU_X1 - 1, MY + 72, FOOD["band"])
+        label, price = combo
+        w = menu_width(label) + 4 + menu_width(price)
+        x = int(64 - w / 2)
+        menu_text(img, label, x, MY + 67, (255, 255, 255))
+        menu_text(img, price, x + menu_width(label) + 4, MY + 67, FOOD["brand"])
+    return menu_board(FOOD, food_header, FOOD_SIDES, body, step)
+
+
+def tv_menu_food():
+    return strip([food_page(p, s) for p in range(2) for s in range(3)])
+
+
+DRINKS = {"bg": (16, 28, 48), "strip": (26, 44, 70), "line": (70, 200, 220),
+          "band": (18, 112, 140), "brand": (255, 255, 255), "head": (110, 220, 236),
+          "item": (238, 240, 244), "price": (255, 222, 110), "hl": (255, 214, 64),
+          "hl_text": (20, 36, 64)}
+# Rows: a heading (price None) or a drink and its small, medium and large prices.
+DRINK_PAGES = [
+    ([("SOFT DRINKS", None), ("FIZZ COLA", ("1.49", "1.89", "2.29")),
+      ("DIET FIZZ", ("1.49", "1.89", "2.29")), ("LEMON ZING", ("1.49", "1.89", "2.29")),
+      ("ROOT BEER", ("1.49", "1.89", "2.29")), ("LEMONADE & TEA", None),
+      ("LEMONADE", ("1.99", "2.49", "2.99")), ("ICED TEA", ("1.79", "2.19", "2.59"))],
+     [1, 6, 7]),
+    ([("COFFEE", None), ("HOT COFFEE", ("1.29", "1.59", "1.89")),
+      ("ICED LATTE", ("2.79", "3.29", "3.79")), ("SHAKES & SMOOTHIES", None),
+      ("VANILLA", ("2.99", "3.69", "4.29")), ("CHOCOLATE", ("2.99", "3.69", "4.29")),
+      ("BERRY MIX", ("3.49", "4.19", "4.79")), ("MANGO SUN", ("3.49", "4.19", "4.79"))],
+     [2, 4, 6])]
+DRINK_SIDES = [((SODA_CUP, DRINK_PAL), (3, MY + 15)), ((LEMONADE, DRINK_PAL), (3, MY + 35)),
+               ((ICED_TEA, DRINK_PAL), (3, MY + 55)),
+               ((COFFEE, DRINK_PAL), (114, MY + 14)), ((SHAKE, DRINK_PAL), (115, MY + 34)),
+               ((SMOOTHIE, DRINK_PAL), (115, MY + 56))]
+SIZE_COLS = [77, 93, 109]      # the right edge of each size's prices
+SIZE_CUPS = [3, 4, 5]          # the little cup over each column, taller for a larger size
+
+
+def drinks_header(img):
+    rect(img, 0, MY, MN, MY + 12, DRINKS["band"])
+    rect(img, 0, MY + 12, MN, MY + 13, DRINKS["line"])
+    menu_legend(img, "DRINKS", 0, MY + 2, DRINKS["brand"], 8, "D", left=19)
+    for (x1, h), size in zip(zip(SIZE_COLS, SIZE_CUPS), "SML"):
+        cx = x1 - 6
+        rect(img, cx - 5, MY + 10 - h, cx - 1, MY + 10, (246, 246, 244))
+        rect(img, cx - 5, MY + 10 - h, cx - 1, MY + 11 - h, (206, 40, 44))
+        menu_text(img, size, cx + 1, MY + 4, (255, 236, 120))
+
+
+def drinks_page(page, step):
+    rows, lights = DRINK_PAGES[page]
+
+    def body(img, hl):
+        for ri, (name, prices) in enumerate(rows):
+            y = MY + 15 + ri * 7
+            if prices is None:
+                menu_text(img, name, 19, y, DRINKS["head"])
+                x = 19 + menu_width(name) + 3
+                rect(img, x, y + 2, MENU_X1 - 2, y + 3, shade(DRINKS["line"], 0.6))
+                continue
+            on = lights[hl] == ri
+            if on:
+                rect(img, 17, y - 1, MENU_X1 - 1, y + 6, DRINKS["hl"])
+            menu_text(img, name, 19, y, DRINKS["hl_text"] if on else DRINKS["item"])
+            for x1, p in zip(SIZE_COLS, prices):
+                menu_text_right(img, p, x1, y, DRINKS["hl_text"] if on else DRINKS["price"])
+    return menu_board(DRINKS, drinks_header, DRINK_SIDES, body, step)
+
+
+def tv_menu_drinks():
+    return strip([drinks_page(p, s) for p in range(2) for s in range(3)])
 
 
 # --- the tube TV, the hi-fi and speakers --------------------------------------------------
@@ -966,6 +1307,8 @@ TEXTURES = {
     "tv_nature": (tv_nature, 6),
     "tv_sports": (tv_sports, 3),
     "tv_news": (tv_news, 4),
+    "tv_menu_food": (tv_menu_food, 50),
+    "tv_menu_drinks": (tv_menu_drinks, 50),
     "crt_grey": (lambda: solid((150, 150, 146), 903, grain=2), None),
     "crt_dark": (lambda: solid((60, 60, 62), 904, grain=2), None),
     "crt_panel": (crt_panel, None),
@@ -1890,7 +2233,8 @@ def base_models():
 # ------------------------------------------------------------------------------------------
 # Blockstates
 # ------------------------------------------------------------------------------------------
-CHANNELS = ["off", "news", "sports", "nature", "bars", "static"]
+CHANNELS = ["off", "news", "sports", "nature", "bars", "static", "menu_food",
+            "menu_drinks"]
 
 
 def facing_variants():

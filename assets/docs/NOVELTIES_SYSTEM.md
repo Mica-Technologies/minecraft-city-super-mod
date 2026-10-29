@@ -447,8 +447,16 @@ The living room's extras follow, drawn by `gen_furniture_living.py` (textures an
 
 - **TVs** (`BlockTelevision`): a flat screen on its stand or on the wall, one block or two wide,
   and an old tube TV. Right-click steps the channel through `TvChannel` (off, news, sports,
-  nature, colour bars, snow), each an animated 64 px texture the blockstate swaps onto the screen
-  (a flat screen shows its 16:9 band, the tube TV crops it to 4:3). The channel lives in a
+  nature, colour bars, snow, food menu, drinks menu), each an animated texture the blockstate
+  swaps onto the screen (a flat screen shows its 16:9 band, the tube TV crops it to 4:3). The
+  pictures are 64 px; the two menu boards (`tv_menu_food`, `tv_menu_drinks`, the invented Stack
+  Shack) are 128 px, since a menu is text and the Life Safety 3 x 5 font needs the room (a
+  one-texel full stop keeps a price narrow; the restaurant's name is in the committed highway
+  font). Their text sits in the middle 96 columns, which is all the tube TV's 4:3 crop shows, and
+  the food and drink pictures in the side strips the crop cuts, so every TV, the tube TV
+  included, shares the one channel list. Each board is six 2.5 s frames: two pages, a highlight
+  bar stepping down three items on each. Channels are saved by ordinal, so a new one goes at the
+  end of `TvChannel` and of `CHANNELS` in the generator. The channel lives in a
   `TileEntityTelevision` (the metadata is full), read by `getActualState`; the tile entity's
   baked-model key is the channel, so only a change of channel rebuilds the section. A standing TV
   rests on what is under it (`SurfaceRest`), a wall TV ignores it. A two-block TV keeps the
@@ -474,7 +482,7 @@ The living room's extras follow, drawn by `gen_furniture_living.py` (textures an
   the channel in every block's `TileEntityTelevision`. A stand TV reads the rest under its
   pedestal's column (`(cols - 1) / 2`) for all its blocks, so the picture never tears, and is
   drawn for two rests only, the floor and a TV stand (anything else draws as the floor): its
-  blockstate is written out in full keys (cell x channel x facing x rest), 288 and 384 states,
+  blockstate is written out in full keys (cell x channel x facing x rest), 384 and 512 states,
   each a multipart rule naming its cell's model with the channel's screen (one model location);
   the wall TVs pick the model by `cell` alone. The panel stands set back (z 10.25) so the
   pedestal sits on a TV stand run's top.
