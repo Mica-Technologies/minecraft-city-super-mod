@@ -478,14 +478,20 @@ Both follow the flight board. The **departure board** is a slim landscape monito
 of its block, on a wall or on two rods to the block above (`hung`, actual state: no solid face
 behind and no board above). The screen's texture (a header band with a bus pictogram on amber, the
 column heads' band and the rows' bands) is baked, and `TileEntityBusDepartureBoardRenderer` draws it
-again a hair in front, fullbright, so the board glows at night, and every word on it from display
-lists shared by every board (`CsmSharedDisplayLists`, one cache, `bus_board_text`): route numbers,
-destinations, bays, minute readings, the five titles, the column heads, the set count and the two
-empty-board notices ("NO BUS STOPS NEARBY", "NO DEPARTURES LISTED"), each laid out in its column in
-the font's units when compiled. A row is one translation and four list calls, the route in its
-agency's colour (`BusAgency.getTextColour`), the minutes in amber and DUE in green. The lists hold
-geometry only; the font atlas, the colours, the depth mask and the lightmap are set outside them,
-every frame ("Display lists: one texture, no cached state").
+again a hair in front, fullbright, so the board glows at night, and every word on it from one flat
+display list per board (`CsmDisplayListCache` "bus boards"): the title, the set count, the column
+heads and the rows, or one of the two empty-board notices ("NO BUS STOPS NEARBY", "NO DEPARTURES
+LISTED"), every glyph quad placed in its column and coloured per vertex in one draw, the route in
+its agency's colour (`BusAgency.getTextColour`), the minutes in amber and DUE in green. What the
+list was compiled for (the filter, the set, the notice, each row's agency, route, bay and minutes)
+is kept on the tile entity, and the list is compiled again in place when that changes: once a game
+minute at most, as the minutes count down. Every board changes on the same minute, so an
+out-of-date list waits its turn in `CsmCompileBudget` (1 ms of compiling a frame) and is drawn as
+it was until then. The list holds the font atlas's geometry only; the atlas, the depth mask and the
+lightmap are set outside it, every frame, and `GlStateManager.resetColor()` follows it ("Display
+lists: one texture, no cached state"). It is released with the tile entity (removal, chunk unload)
+and on disconnect. Until 2026-10-29 each word was a shared list called one by one, a translation
+and four calls a row.
 
 The **bay display** is a black case with NEXT BUSES printed over a dark LED screen under a hood,
 hung on rods or on a wall. It lists the stop nearest it, a flag within four blocks across and six
@@ -526,10 +532,12 @@ samples in the order empty, 16, 64, empty, 64, 16, empty, eight seconds each. Th
 | Flight information board (for comparison) | 1.39 / 1.45 ms | 2.00 / 2.07 ms | 12-13 µs | 12.0 µs |
 | Bus bay display | 1.27 / 1.30 ms | 1.48 / 1.58 ms | 4-6 µs | 3.5-4.6 µs |
 
-A departure board costs a little more than a flight board because it draws eight rows of four lists
+A departure board cost a little more than a flight board because it drew eight rows of four lists
 against the flight board's seven of two. Beyond 48 blocks nothing is drawn but the baked model.
-Since 2026-10-28 a flight board's heads and rows are one list of their own (see above), expected
-to bring it from about 12 µs to 4-6.
+Since 2026-10-28 a flight board's heads and rows are one list of their own (see above), which
+measured 13 µs while that list called the shared pieces; since 2026-10-29 the flight boards' and
+the departure board's lists hold the glyph quads themselves, one draw each, expected under 5 µs a
+board for both (not yet measured).
 
 ### Traps
 
@@ -934,22 +942,28 @@ calls a frame (its own list and the clock's):
 - **The screen, lit.** The same texture again, a hair in front, fullbright, one quad from the
   block atlas, so a board glows at night like a screen rather than going dark with the room.
   Beyond the renderer's range (48 blocks) only the baked screen shows.
-- **The text**, all display lists shared by every board (`CsmSharedDisplayLists`), laid out in
-  their columns in the font's units when compiled: a row's white part (time, flight, city, gate)
-  keyed by the flight's place in the day (at most 144 lists over both boards), each remark in its
-  colour (nine), the column heads (two) and the clock in the header (one per minute of the day).
-  Following "Display lists: one texture, no cached state", the lists hold geometry only; the font
-  atlas, the depth mask and the fullbright lightmap are set outside them.
-- **The board's list.** The heads and the rows are one more list per board (`CsmDisplayListCache`
-  "flight boards"): the calls to those text lists, each under its place and colour. The colour is
-  plain `glColor`, which a list records, and `GlStateManager.resetColor()` follows the call, since
-  the state manager's cache no longer knows the colour. `FlightBoardPage` (on the tile entity)
-  holds the flights and remarks last drawn and a version that moves exactly when they change: a
-  flight leaves the page, a remark changes, the page changes. The list is compiled again, in
-  place, only then; it calls the text lists rather than holding their geometry, so compiling it
-  costs next to nothing when every board in a terminal changes on the same minute. The clock,
-  which changes every game minute, is drawn outside it. `FlightBoardPageTest` checks the version
-  against the schedule minute by minute over two game days.
+- **The board's list.** The column heads and the rows are one flat display list per board
+  (`CsmDisplayListCache` "flight boards"): every glyph quad of every piece of text (a row's time,
+  flight, city and gate in white, its remark in its colour, the heads), placed in its column and
+  scaled into the screen's sixteenths and coloured per vertex, in one draw
+  (`CsmFontRenderer.addString(buf, text, x, y, ox, oy, scale, rgb)`). Following "Display lists:
+  one texture, no cached state", it holds the font atlas's geometry only; the atlas, the depth
+  mask and the fullbright lightmap are set outside it, and `GlStateManager.resetColor()` follows
+  the call, since its vertex colours leave GL's current colour where the state manager's cache
+  does not know it. `FlightBoardPage` (on the tile entity) holds the flights and remarks last
+  drawn and a version that moves exactly when they change: a flight leaves the page, a remark
+  changes, the page changes. The list is compiled again, in place, only then. Every board in a
+  terminal changes on the same minute, so an out-of-date list asks `CsmCompileBudget` (1 ms of
+  compiling a frame, the first always allowed) and is drawn as it was until its turn, a frame or
+  two later; a board with no list compiles at once. The clock, which changes every game minute,
+  is a list shared by every board, one per minute of the day, drawn outside the board's.
+  `FlightBoardPageTest` checks the version against the schedule minute by minute over two game
+  days.
+- **Why flat.** Until 2026-10-29 the board's list held calls to lists shared by every board (a
+  row's white part keyed by the flight's place in the day, each remark, the heads), which cost
+  next to nothing to compile but 13 µs a board to draw, nearly all of it the driver replaying the
+  nested calls inside `glCallList`. A flat list costs a compile (tens of microseconds) and draws
+  in one command.
 - **Pages.** Boards of the same kind facing the same way side by side and stacked are a bank, read
   like text: left to right along a row, then the next row down. Each board lists seven flights
   from its page, the number of boards to its reader's left plus the whole rows above it, so a bank
@@ -999,26 +1013,30 @@ large one beside it (the small board is unchanged): `airport_flight_board_large_
   bands rather than stretched whole: the header's left part (the plane and the title) at its own
   proportions, the rest of the header, the column heads' band and the two zebra row bands stretched
   across, fullbright, one draw. No texture is added.
-- **The text.** Display lists shared by every large board, each compiled in the font's units from
-  x = 0 and placed and scaled outside, so one list serves every size: a row's time and flight
-  (keyed by the flight's place in the day), its city (and by its room, in steps of eight font
-  units, as the city is cut to fit), its gate, its remark, the two halves of the column heads, the
-  clock and the page. Geometry only, as "Display lists: one texture, no cached state" asks. The
-  renderer is global (a board eight wide reaches past its controller's section) and draws to 96
-  blocks.
-- **The board's lists.** Placing those pieces one by one, a push, a translation, a scale, a colour
-  and a call each (four a row, about 55 calls on a 4 x 2 board), measured about 50 µs a board
-  whatever its size (2026-10-28). So the controller holds two lists of its own
-  (`CsmDisplayListCache` "large flight boards"): the screen, compiled again when the board's size
-  or list changes or the atlas moves its sprite (the sprite's corners are kept to compare), and
-  the heads, page label and rows as calls to the shared text lists under their places and colours
-  (plain `glColor`, then `GlStateManager.resetColor()`), compiled again in place when
-  `FlightBoardPage`'s version moves: a flight leaves the page, a remark changes, the page turns,
-  the board is resized. The clock stays outside. Both lists are released with the controller's
-  tile entity (removal, chunk unload) and on disconnect, and stay two whatever the board's size,
-  well inside the cache's soft bound.
+- **The text.** The heads, the page label and the rows: a row's time and flight, its city (cut to
+  the room the board's width gives it, in steps of eight font units), its gate and its remark, each
+  set in the font's units at the board's scale with the small board's gaps between its words. The
+  clock is a list shared by every large board, one per minute of the day, placed and scaled
+  outside. The renderer is global (a board eight wide reaches past its controller's section) and
+  draws to 96 blocks.
+- **The board's lists.** The controller holds two lists of its own (`CsmDisplayListCache` "large
+  flight boards"), one texture each: the screen, on the block atlas, compiled again when the
+  board's size or list changes or the atlas moves its sprite (the sprite's corners are kept to
+  compare); and the text, on the font atlas, one flat list of every glyph quad placed and scaled
+  into the screen's sixteenths and coloured per vertex, in one draw, then
+  `GlStateManager.resetColor()`. The text list is compiled again in place when
+  `FlightBoardPage`'s version moves (a flight leaves the page, a remark changes, the page turns,
+  the board is resized), waiting its turn in `CsmCompileBudget` as the small board's does: every
+  paged board turns on the same tick. The clock stays outside. Both lists are released with the
+  controller's tile entity (removal, chunk unload) and on disconnect, and stay two whatever the
+  board's size, well inside the cache's soft bound.
+- **What it cost, and why flat.** Placing the text one shared list at a time, a push, a
+  translation, a scale, a colour and a call each (about 55 calls on a 4 x 2 board), measured about
+  100 µs a board in 2026-10; a board list holding those calls, about 45 µs, nearly all of it the
+  driver replaying the nested calls inside `glCallList`. The flat list draws in one command.
 - **What it costs.** A non-controller cell, two block lookups a frame. A controller, the rods, the
-  screen's list, the board's list and the clock's. Expected about 3-5 µs a board, from about 50.
+  screen's list, the text list and the clock's. Expected under 10 µs a board whatever its size
+  (not yet measured); a compile, a hundred-odd microseconds for a big board, once a page turn.
 
 ### Check-in and the kiosk
 

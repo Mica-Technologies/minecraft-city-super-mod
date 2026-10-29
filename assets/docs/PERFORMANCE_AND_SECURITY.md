@@ -678,15 +678,30 @@ Each rule below exists because breaking it once produced a confident wrong answe
   so the geometry is fullbright or the lightmap is set as GL state before the call. The emergency
   light went from 16.6 to 1.4 microseconds a light this way, with no position cache involved.
   `/csm renderpass skip sharedBakesPerFrame` draws every such renderer per frame, for an A/B.
-- **Many shared pieces a block? One list of calls to them.** When a block places dozens of shared
-  lists (a flight board's rows), the cost is the push, translate, scale, colour and call per
-  piece, not the geometry: the large flight board measured 50 µs whatever its size. A list per
-  block holding only the calls, compiled again when what it shows changes, replays them in one.
-  Two traps: a list cannot be compiled while another is open, so compile every piece it calls
-  first; and a colour it changes must be plain `glColor` (recorded), followed after the call by
-  `GlStateManager.resetColor()` so the state manager's cache, which no longer knows the colour,
-  issues the next `color()`. Key or version the list on everything it draws from
-  (`FlightBoardPage` is the example, with a test against the schedule).
+- **Many pieces of text a block? One flat list holding their geometry, not calls to them.** When
+  a block places dozens of shared lists (a flight board's rows), the cost is the push, translate,
+  scale, colour and call per piece, not the geometry: the large flight board measured about
+  100 µs drawn piece by piece. A list per block holding only the calls to the shared pieces
+  helped less than it looked (45 µs; the small flight board 13): a CPU sample put nearly all of
+  what was left in `glCallList`, the driver replaying a list of dozens of nested calls, each with
+  its own matrix and colour commands. The ED board's page list, holding its forty pieces as forty
+  separate draws each under its own matrix and `glColor`, was no better at 11 µs. **Nested calls,
+  and commands between draws, cost per command on the driver**, so the list holds the glyph quads
+  themselves in one draw instead: every piece tessellated into
+  one `POSITION_TEX_COLOR` draw at compile time, its place and scale applied to the vertices and
+  its colour on each vertex (`CsmFontRenderer.addString(buf, text, x, y, ox, oy, scale, rgb)`).
+  One texture (the font atlas), one draw, no matrix or colour commands in the list. The vertex
+  colours leave GL's current colour where the state manager's cache does not know it, so
+  `GlStateManager.resetColor()` follows the call. Key or version the list on everything it draws
+  from (`FlightBoardPage` is the example, with a test against the schedule).
+- **A flat list costs a compile; spread the compiles with `CsmCompileBudget`.** The list of
+  calls compiled for next to nothing; the flat list tessellates every glyph and the driver copies
+  them, tens to a hundred-odd microseconds a board. Boards change together (every flight and ED
+  board on the same game minute, every paged board on the same tick), so a board whose list
+  exists but is out of date asks `CsmCompileBudget.mayRecompile()` and draws its old list until
+  its turn: 1 ms of compiling a frame, the first compile of a frame always allowed, a board with
+  no list at all compiled at once (never draw nothing). Time each compile with `begin()`/`end()`;
+  `/csm displaylists` prints the compiles' mean, maximum, the busiest frame and the deferrals.
 - **The cache bound is soft, and must stay soft.** `CsmDisplayListCache` trims back to 1,024
   positions per cache, but only at the start of a frame and never an entry drawn in the frame
   before. It used to evict on insert above the bound, which is a cliff rather than a limit: with
