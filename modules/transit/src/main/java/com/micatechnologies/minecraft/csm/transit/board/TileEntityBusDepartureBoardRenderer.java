@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmCompileBudget;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
-import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.transit.stop.BusAgency;
 import com.micatechnologies.minecraft.csm.transit.stop.BusDepartures;
 import net.minecraft.client.Minecraft;
@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -29,14 +30,20 @@ import org.lwjgl.opengl.GL11;
  * texture lit by the world, and this draws it again a hair in front, fullbright, one quad from the
  * block atlas, so a board glows at night. Beyond the render range only the baked screen shows.</p>
  *
- * <p><b>The text.</b> Every piece is a display list shared by every board
- * ({@link CsmSharedDisplayLists}), laid out in its column across the screen in the font's units
- * when compiled: route numbers (99), destinations (16), bays (16), minute readings (33), the
- * title for each filter (5), the column heads, the page count and the two empty-board notices.
- * A row is one translation and four list calls, a frame one quad and at most 36 list calls.
- * Following "Display lists: one texture, no cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md},
- * the lists hold geometry only: the font atlas, the colours, the depth mask and the fullbright
- * lightmap are set outside them, every frame.</p>
+ * <p><b>The text.</b> One flat display list per board ({@link #BOARDS}): the title, the page
+ * count, the column heads and the rows, every glyph quad placed and scaled into the screen's
+ * sixteenths and coloured per vertex ({@link CsmFontRenderer#addString(BufferBuilder, String,
+ * int, int, float, float, float, int)}), in one draw. It replaced a shared list per piece of text
+ * called one by one, each under its own matrix and colour: at most 36 calls a frame, the pattern
+ * that cost the flight boards about 30 us each. What the board shows is kept on the tile entity
+ * ({@link TileEntityBusDepartureBoard#clientShown}) and the list is compiled again in place when
+ * it changes: the minutes count down once a game minute, a bus leaves, the bank turns its set.
+ * Every board changes on the same game minute, so an out-of-date list waits for
+ * {@link CsmCompileBudget} and is drawn as it was until its turn. Following "Display lists: one
+ * texture, no cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}, the list holds the font atlas's
+ * geometry only: the atlas, the depth mask and the fullbright lightmap are set outside it, every
+ * frame, and {@code GlStateManager.resetColor()} follows it. The list is released with the tile
+ * entity (removal and chunk unload) and on disconnect.</p>
  *
  * <p><b>Pages.</b> The bank shows the list page after page, left to right and then down; if the
  * list is longer than the bank, the whole bank turns to the next set every {@link #CYCLE_TICKS}
@@ -93,17 +100,17 @@ public class TileEntityBusDepartureBoardRenderer
   private static final int DUE_COLOUR = 0x6AE08A;
   private static final int EMPTY_COLOUR = 0x8A929E;
 
-  private static final CsmSharedDisplayLists LISTS = new CsmSharedDisplayLists("bus_board_text");
+  /** Each board's text as one flat list of glyph quads, at key 0. */
+  private static final CsmDisplayListCache BOARDS = new CsmDisplayListCache("bus boards");
 
-  /** Kinds of text; a list's key is its kind times 4096 plus its value. */
-  private static final int KIND_ROUTE = 0;
-  private static final int KIND_DESTINATION = 1;
-  private static final int KIND_BAY = 2;
-  private static final int KIND_MINUTES = 3;
-  private static final int KIND_TITLE = 4;
-  private static final int KIND_HEAD = 5;
-  private static final int KIND_CYCLE = 6;
-  private static final int KIND_EMPTY = 7;
+  /**
+   * What a board shows, packed as {@link #shown} packs it: four values and four a row. The length
+   * of {@link TileEntityBusDepartureBoard#clientShown}.
+   */
+  static final int SHOWN_LENGTH = 4 + 4 * ROWS;
+
+  /** What the board being drawn shows: scratch, render thread only. */
+  private static final int[] SHOWN = new int[SHOWN_LENGTH];
 
   /** The layout, in the font's units at each text height, worked out once the font exists. */
   private static float rowScale;
@@ -160,41 +167,36 @@ public class TileEntityBusDepartureBoardRenderer
     fr.bindAtlas();
     GlStateManager.translate(0, 0, SCREEN_LIFT + TEXT_LIFT);
 
-    colour(TITLE_COLOUR);
-    at(0, (HEADER - TITLE_TEXT_H) / 2, titleScale);
-    draw(KIND_TITLE, filter, fr);
-    if (cycles > 1) {
-      draw(KIND_CYCLE, cycle * 16 + cycles, fr);
-    }
-    GlStateManager.popMatrix();
-
-    colour(HEAD_COLOUR);
-    at(0, HEADER + (COLHEAD - HEAD_TEXT_H) / 2, headScale);
-    draw(KIND_HEAD, 0, fr);
-    GlStateManager.popMatrix();
-
-    if (list.count() == 0) {
-      if (te.getPage() == 0) {
-        colour(EMPTY_COLOUR);
-        at(0, HEADER + COLHEAD + (PITCH - TEXT_H) / 2, rowScale);
-        draw(KIND_EMPTY, station.bays() == 0 ? 0 : 1, fr);
-        GlStateManager.popMatrix();
-      }
+    int length = shown(station, list, filter, te.getPage(), first, cycle, cycles, SHOWN);
+    if (CsmRenderToggles.sharedBakesPerFrame) {
+      text(fr, SHOWN);
     } else {
-      for (int i = 0; i < ROWS && first + i < list.count(); i++) {
-        int n = first + i;
-        at(0, HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2, rowScale);
-        colour(BusAgency.values()[list.agency(n)].getTextColour());
-        draw(KIND_ROUTE, list.route(n), fr);
-        colour(ROW_COLOUR);
-        draw(KIND_DESTINATION, BusDepartures.destinationOf(list.route(n)), fr);
-        draw(KIND_BAY, list.bay(n), fr);
-        int minutes = Math.min(list.minutes(n), BusDepartures.MAX_MINUTES);
-        colour(minutes == 0 ? DUE_COLOUR : MINUTES_COLOUR);
-        draw(KIND_MINUTES, minutes, fr);
-        GlStateManager.popMatrix();
+      // One flat list per board, compiled again when what it shows changes (once a game minute
+      // at most, as the minutes count down), and then only when this frame's budget allows.
+      int boardList = BOARDS.get(te.getPos(), 0L);
+      boolean stale = !same(te, SHOWN, length);
+      if (boardList == CsmDisplayListCache.NO_LIST || stale && CsmCompileBudget.mayRecompile()) {
+        boardList = BOARDS.allocate(te.getPos(), 0L);
+        if (boardList != CsmDisplayListCache.NO_LIST) {
+          long started = CsmCompileBudget.begin();
+          GL11.glNewList(boardList, GL11.GL_COMPILE);
+          text(fr, SHOWN);
+          GL11.glEndList();
+          CsmCompileBudget.end(started);
+          System.arraycopy(SHOWN, 0, te.clientShown, 0, length);
+          te.clientShownLength = length;
+        }
+      }
+      if (boardList != CsmDisplayListCache.NO_LIST) {
+        GL11.glCallList(boardList);
+      } else {
+        // The driver refused a list name: draw directly rather than calling list 0.
+        text(fr, SHOWN);
       }
     }
+    // The text's colours are per vertex, which leaves GL's current colour where the state
+    // manager's cache does not know it: make the next color() call reach GL.
+    GlStateManager.resetColor();
 
     GlStateManager.depthMask(true);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -224,16 +226,105 @@ public class TileEntityBusDepartureBoardRenderer
     tess.draw();
   }
 
-  /** Pushes a frame at (x, y) sixteenths, in font units at a text height's scale. */
-  private static void at(float x, float y, float scale) {
-    GlStateManager.pushMatrix();
-    GlStateManager.translate(x, y, 0);
-    GlStateManager.scale(scale, scale, 1);
+  /**
+   * Packs what a board shows into {@code out}: the filter (the title), the set shown and how many
+   * there are (0 when there is one, as no count is drawn), the empty-board notice (-1 for none,
+   * else which), the row count, then each row's agency, route, bay and minutes.
+   *
+   * @return how many values were written
+   */
+  private static int shown(BusStation station, BusStation.Departures list, int filter, int page,
+      int first, int cycle, int cycles, int[] out) {
+    out[0] = filter;
+    out[1] = cycles > 1 ? cycle * 16 + cycles : 0;
+    int rows = 0;
+    if (list.count() == 0) {
+      out[2] = page == 0 ? (station.bays() == 0 ? 0 : 1) : -1;
+    } else {
+      out[2] = -1;
+      for (int i = 0; i < ROWS && first + i < list.count(); i++) {
+        int n = first + i;
+        out[4 + 4 * i] = list.agency(n);
+        out[5 + 4 * i] = list.route(n);
+        out[6 + 4 * i] = list.bay(n);
+        out[7 + 4 * i] = Math.min(list.minutes(n), BusDepartures.MAX_MINUTES);
+        rows++;
+      }
+    }
+    out[3] = rows;
+    return 4 + 4 * rows;
   }
 
-  private static void colour(int rgb) {
-    GlStateManager.color(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f,
-        (rgb & 0xFF) / 255f, 1.0f);
+  /** Whether the board's list was compiled for what it shows now. */
+  private static boolean same(TileEntityBusDepartureBoard te, int[] shown, int length) {
+    if (te.clientShownLength != length) {
+      return false;
+    }
+    int[] was = te.clientShown;
+    for (int i = 0; i < length; i++) {
+      if (was[i] != shown[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * The title, the set count, the column heads and the rows (or the empty-board notice), every
+   * glyph placed in the screen's sixteenths and coloured per vertex, in one draw: the geometry of
+   * a board's flat list, or drawn directly.
+   */
+  private static void text(CsmFontRenderer fr, int[] shown) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+
+    float t = titleScale;
+    float y = (HEADER - TITLE_TEXT_H) / 2;
+    String title = shown[0] == 0 ? "BUS DEPARTURES"
+        : TileEntityBusDepartureBoard.agencyTitle(shown[0]) + " DEPARTURES";
+    fr.addString(buf, title, u(TITLE_X, t), 0, 0, y, t, TITLE_COLOUR);
+    if (shown[1] != 0) {
+      String text = (shown[1] / 16 + 1) + "/" + (shown[1] % 16);
+      fr.addString(buf, text, u(WIDTH - EDGE, t) - fr.getStringWidth(text), 0, 0, y, t,
+          TITLE_COLOUR);
+    }
+
+    float h = headScale;
+    y = HEADER + (COLHEAD - HEAD_TEXT_H) / 2;
+    fr.addString(buf, "ROUTE", u(xRoute, h), 0, 0, y, h, HEAD_COLOUR);
+    fr.addString(buf, "DESTINATION", u(xDestination, h), 0, 0, y, h, HEAD_COLOUR);
+    fr.addString(buf, "BAY", u(xBay, h), 0, 0, y, h, HEAD_COLOUR);
+    fr.addString(buf, "DEPARTS", u(xMinutesRight, h) - fr.getStringWidth("DEPARTS"), 0, 0, y, h,
+        HEAD_COLOUR);
+
+    float s = rowScale;
+    if (shown[2] >= 0) {
+      y = HEADER + COLHEAD + (PITCH - TEXT_H) / 2;
+      fr.addString(buf, shown[2] == 0 ? "NO BUS STOPS NEARBY" : "NO DEPARTURES LISTED",
+          u(xDestination, s), 0, 0, y, s, EMPTY_COLOUR);
+    }
+    for (int i = 0; i < shown[3]; i++) {
+      int agency = shown[4 + 4 * i];
+      int route = shown[5 + 4 * i];
+      int bay = shown[6 + 4 * i];
+      int minutes = shown[7 + 4 * i];
+      y = HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2;
+      fr.addString(buf, Integer.toString(route), u(xRoute, s), 0, 0, y, s,
+          BusAgency.values()[agency].getTextColour());
+      fr.addString(buf, fit(fr, BusDepartures.DESTINATIONS[BusDepartures.destinationOf(route)],
+          destinationWidth / s), u(xDestination, s), 0, 0, y, s, ROW_COLOUR);
+      fr.addString(buf, Integer.toString(bay), u(xBay, s), 0, 0, y, s, ROW_COLOUR);
+      String reading = minutes == 0 ? "DUE" : minutes + " MIN";
+      fr.addString(buf, reading, u(xMinutesRight, s) - fr.getStringWidth(reading), 0, 0, y, s,
+          minutes == 0 ? DUE_COLOUR : MINUTES_COLOUR);
+    }
+    tess.draw();
+  }
+
+  /** Releases a board's list, when its tile entity goes. */
+  public static void release(BlockPos pos) {
+    BOARDS.invalidate(pos);
   }
 
   private static void layout(CsmFontRenderer fr) {
@@ -254,81 +345,6 @@ public class TileEntityBusDepartureBoardRenderer
     headScale = h;
     titleScale = TITLE_TEXT_H / fr.FONT_HEIGHT;
     rowScale = s;
-  }
-
-  /** Replays a text's list, compiling it the first time. */
-  private static void draw(int kind, int value, CsmFontRenderer fr) {
-    if (CsmRenderToggles.sharedBakesPerFrame) {
-      add(fr, kind, value);
-      return;
-    }
-    long key = kind * 4096L + value;
-    int list = LISTS.get(key);
-    if (list == CsmDisplayListCache.NO_LIST) {
-      list = LISTS.allocate(key);
-      if (list != CsmDisplayListCache.NO_LIST) {
-        GL11.glNewList(list, GL11.GL_COMPILE);
-        add(fr, kind, value);
-        GL11.glEndList();
-      }
-    }
-    if (list != CsmDisplayListCache.NO_LIST) {
-      GL11.glCallList(list);
-    } else {
-      // The driver refused a list name: draw directly rather than calling list 0.
-      add(fr, kind, value);
-    }
-  }
-
-  /**
-   * One piece of text, laid out in its place across the screen in the font's units at its
-   * height. Geometry only.
-   */
-  private static void add(CsmFontRenderer fr, int kind, int value) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-    switch (kind) {
-      case KIND_ROUTE:
-        fr.addString(buf, Integer.toString(value), u(xRoute, rowScale), 0);
-        break;
-      case KIND_DESTINATION:
-        fr.addString(buf, fit(fr, BusDepartures.DESTINATIONS[value],
-            destinationWidth / rowScale), u(xDestination, rowScale), 0);
-        break;
-      case KIND_BAY:
-        fr.addString(buf, Integer.toString(value), u(xBay, rowScale), 0);
-        break;
-      case KIND_MINUTES: {
-        String text = value == 0 ? "DUE" : value + " MIN";
-        fr.addString(buf, text, u(xMinutesRight, rowScale) - fr.getStringWidth(text), 0);
-        break;
-      }
-      case KIND_TITLE: {
-        String text = value == 0 ? "BUS DEPARTURES"
-            : TileEntityBusDepartureBoard.agencyTitle(value) + " DEPARTURES";
-        fr.addString(buf, text, u(TITLE_X, titleScale), 0);
-        break;
-      }
-      case KIND_HEAD: {
-        float h = headScale;
-        fr.addString(buf, "ROUTE", u(xRoute, h), 0);
-        fr.addString(buf, "DESTINATION", u(xDestination, h), 0);
-        fr.addString(buf, "BAY", u(xBay, h), 0);
-        fr.addString(buf, "DEPARTS", u(xMinutesRight, h) - fr.getStringWidth("DEPARTS"), 0);
-        break;
-      }
-      case KIND_CYCLE: {
-        String text = (value / 16 + 1) + "/" + (value % 16);
-        fr.addString(buf, text, u(WIDTH - EDGE, titleScale) - fr.getStringWidth(text), 0);
-        break;
-      }
-      default:
-        fr.addString(buf, value == 0 ? "NO BUS STOPS NEARBY" : "NO DEPARTURES LISTED",
-            u(xDestination, rowScale), 0);
-        break;
-    }
-    tess.draw();
   }
 
   /** Sixteenths as whole font units at a scale. */

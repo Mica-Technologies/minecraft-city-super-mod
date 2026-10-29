@@ -45,6 +45,13 @@ public class TileEntityBusDepartureBoard extends AbstractTileEntity {
   private EnumFacing facing = EnumFacing.NORTH;
 
   /**
+   * Client only: what the board's text list was last compiled for, packed by its renderer, and
+   * how much of the array that is (-1 before the first compile).
+   */
+  final transient int[] clientShown = new int[TileEntityBusDepartureBoardRenderer.SHOWN_LENGTH];
+  transient int clientShownLength = -1;
+
+  /**
    * The agency's name a filter lists, for the action bar and the board's title.
    *
    * @param filter 1 to 4
@@ -187,6 +194,24 @@ public class TileEntityBusDepartureBoard extends AbstractTileEntity {
   @Override
   public double getMaxRenderDistanceSquared() {
     return CsmPerformance.capRenderDistanceSq(48.0 * 48.0);
+  }
+
+  /** Releases the board's text list when it is removed. */
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityBusDepartureBoardRenderer.release(pos);
+    }
+  }
+
+  /** And when its chunk unloads. */
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityBusDepartureBoardRenderer.release(pos);
+    }
   }
 
   /** Nothing a baked model draws comes from here: the filter and the title are the renderer's. */
