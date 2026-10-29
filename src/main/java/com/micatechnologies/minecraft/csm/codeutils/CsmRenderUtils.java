@@ -76,6 +76,7 @@ public final class CsmRenderUtils {
       if (event.phase == TickEvent.Phase.START) {
         frameWallMillis = System.currentTimeMillis();
         CsmDisplayListCache.onFrameStart();
+        CsmCompileBudget.onFrameStart();
       }
     }
   }

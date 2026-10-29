@@ -42,6 +42,7 @@ public class CsmClientLifecycleHandler {
       // render thread that owns the GL context.
       CsmDisplayListCache.clearAll();
       CsmSharedDisplayLists.clearAll();
+      CsmCompileBudget.reset();
     });
   }
 }
