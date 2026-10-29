@@ -14,6 +14,10 @@ copyright: >-
 exclude_docs: |
   agent_progress/
 
+# Pages kept only so old links land somewhere: each says where its content moved.
+not_in_nav: |
+  getting-started/performance-and-graphics.md
+
 theme:
   name: material
   language: en
@@ -102,7 +106,13 @@ nav:
       - Player & Developer Safety: getting-started/safety.md
       - Configuration: getting-started/configuration.md
       - Commands: getting-started/commands.md
-      - Performance & Graphics: getting-started/performance-and-graphics.md
+  - Performance:
+      - performance/index.md
+      - Performance Mode: performance/performance-mode.md
+      - Memory: performance/memory.md
+      - Frame Rate: performance/frame-rate.md
+      - On a Server: performance/servers.md
+      - Finding What Is Slow: performance/diagnostics.md
   - Guides:
       - guides/index.md
       - Survival & Crafting: guides/survival-and-crafting.md

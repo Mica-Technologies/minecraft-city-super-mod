@@ -25,8 +25,9 @@ And three to keep handy once it is running:
 -   **[Commands](commands.md)** — the operator commands, from reloading the config to wiring a
     building's fire alarm in one go.
 
--   **[Performance & Graphics](performance-and-graphics.md)** — how much memory and video memory
-    CSM needs, and the settings that make it lighter to run.
+-   **[Performance](../performance/index.md)** — how much memory and video memory CSM needs, the
+    performance mode and the other settings that make it lighter to run, and how to find what is
+    slow.
 
 </div>
 

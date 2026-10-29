@@ -95,12 +95,14 @@ In `dev-env-utils/scripts/`, run directly. Pillow required for the image ones.
 /csm chunkbuffers [trim]
 /csmclient chunkbuffers [trim]
 /csmclient performance [high|medium|low|custom]
+/csmclient quadsharing [on|off|status]
 ```
 
 Every command is described in [Commands](../getting-started/commands.md). `memstats` reports what
 each block costs in memory, `chunkbuffers` the direct memory held by Minecraft's chunk builders,
-and `/csmclient performance` the [performance mode](../getting-started/performance-and-graphics.md#performance-mode),
-which also sets how far renderers draw. A renderer's distance and optional effects come from
+and `/csmclient performance` the [performance mode](../performance/performance-mode.md),
+which also sets how far renderers draw; `/csmclient quadsharing` switches
+[sharing other mods' quads](../performance/memory.md#sharing-other-mods-quads) (`CsmQuadSharing`). A renderer's distance and optional effects come from
 `CsmPerformance`; see "Rules for render code" in `assets/docs/PERFORMANCE_AND_SECURITY.md`.
 
 `renderpass` turns an individual render pass off mid-session. Attributing **inside** a renderer this
