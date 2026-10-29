@@ -50,11 +50,12 @@ each; a curtain cloth; a sign a sign blank; the rest sheet metal and fittings.
 The module's rule, kept in every phase: **baked models, nothing ticking, and a renderer only where
 nothing else will do.**
 
-- **Two renderers in the whole module**, the ED tracking board and the now-serving display. Both
-  are built like the Transit flight board's: every piece of text is a display list shared by every
-  board (`CsmSharedDisplayLists`), keyed by a bounded value, with the font atlas, colours, depth
-  mask and lightmap set outside the lists every frame ("Display lists: one texture, no cached
-  state" in TRAFFIC_SIGNAL_SYSTEM.md), and a render range (32 blocks for the board, 48 for the
+- **Two renderers in the whole module**, the ED tracking board and the now-serving display. The
+  board keeps its whole page of text in one flat display list of its own, as the Transit flight
+  boards do; the display draws its three lines from display lists shared by every display
+  (`CsmSharedDisplayLists`), keyed by a bounded value. Both set the font atlas, depth mask and
+  lightmap outside the lists every frame ("Display lists: one texture, no cached state" in
+  TRAFFIC_SIGNAL_SYSTEM.md), and have a render range (32 blocks for the board, 48 for the
   display). The wayfinding panel is baked, by Core's engine (WAYFINDING_PANELS.md).
 - **Every screen is an animated texture** (`.mcmeta`): monitors, pumps, analysers, the dialysis
   and endoscopy screens, the kiosk, the code blue strobe, the gas alarm's flashing lamp, the
@@ -282,15 +283,22 @@ its bank once a second, not every frame. The screen's place and bands are the ge
 (`ED_W`, `ED_H`, `ED_SCREEN_Z`, `ED_HEADER`, `ED_COLHEAD`, `ED_PITCH`): change one, change both.
 
 What a board shows changes only with the world's minute (every 16 or 17 ticks) and its page, so
-each board keeps its whole page of text in one list of its own as well (`CsmDisplayListCache`
-`ed_board_page`, keyed on the minute, the page and the bed count; `EdBoardPageKeyTest`), compiled
-from the same pieces with their colours as plain `glColor` calls (a list records those; the
-cached `GlStateManager.color` could be left out) and replayed with one `glCallList`. Replaying
-the forty-odd shared lists one by one, each under its own matrix, was 16-24 us a board. A change
-of `seed` or `beds` through NBT releases the board's lists, since the seed is not in the key. The
+each board keeps its whole page of text, the clock included, in one flat display list of its own
+(`CsmDisplayListCache` `ed_board_page`, one a board): every glyph quad placed and scaled into the
+screen's sixteenths and coloured per vertex, in one draw, then `GlStateManager.resetColor()`,
+since the vertex colours leave GL's current colour where the state manager's cache does not know
+it. The tile entity keeps the page key the list was compiled for (the minute, the page and the bed
+count; `EdBoardPageKeyTest`), and the list is compiled again in place when the key moves. Every
+board in the world moves to the next minute on the same tick, so an out-of-date list waits its
+turn in `CsmCompileBudget` (1 ms of compiling a frame) and is drawn as it was until then, a frame
+or two later. Replaying the forty-odd shared lists one by one, each under its own matrix, was
+16-24 us a board; a page list holding the pieces as forty draws, each under its own matrix and
+`glColor`, about 11 us, the driver paying per command; one draw is expected under 5 us. A change
+of `seed` or `beds` through NBT releases the board's list, since the seed is not in the key. The
 screen quad stays outside, on the block atlas, one texture a list; its sprite, and the
 now-serving display's, is looked up once a stitch (`HealthcareScreenSprites`), not by name every
-frame. `/csm renderpass skip sharedBakesPerFrame` draws the text as the pieces again.
+frame. `/csm renderpass skip sharedBakesPerFrame` tessellates the same text every frame instead,
+with no list.
 
 ## The waiting room queue
 
