@@ -1,9 +1,9 @@
 package com.micatechnologies.minecraft.csm.healthcare.clinical;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmCompileBudget;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
-import com.micatechnologies.minecraft.csm.codeutils.CsmSharedDisplayLists;
 import com.micatechnologies.minecraft.csm.healthcare.HealthcareScreenSprites;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -23,23 +23,26 @@ import org.lwjgl.opengl.GL11;
  * the column heads and {@link #ROWS} beds (bed, patient initials, status, time in the department,
  * nurse) from {@link EdTrackingSchedule}, starting at the board's page.
  *
- * <p>Built as the Transit flight board's renderer is: every piece of text is a display list
- * shared by every board ({@link CsmSharedDisplayLists}), compiled once and keyed by a bounded
- * value (a bed's label, a patient, a nurse, a status, an elapsed minute, the minute of the day),
- * and laid out in its place across the screen in the font's units. Following "Display lists: one
- * texture, no cached state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}, the lists hold geometry only:
- * the font atlas, the colours, the depth mask and the fullbright lightmap are set outside them,
- * every frame. The tile entity's render range stops it past 32 blocks
+ * <p><b>The board's list.</b> What a board shows changes only with the world's minute (about
+ * every 17 ticks) and its page, so each board keeps its whole page of text, the clock included,
+ * in one flat display list ({@link CsmDisplayListCache}, one a board): every glyph quad placed
+ * and scaled into the screen's sixteenths and coloured per vertex
+ * ({@link CsmFontRenderer#addString(BufferBuilder, String, int, int, float, float, float, int)}),
+ * in one draw. Replaying some forty shared lists a board, each under its own matrix and colour,
+ * was about 20 us a board; a page list holding those pieces as forty draws, each under its own
+ * matrix and {@code glColor}, about 11 us. Following "Display lists: one texture, no cached
+ * state" in {@code TRAFFIC_SIGNAL_SYSTEM.md}, the list holds the font atlas's geometry only: the
+ * atlas, the depth mask and the fullbright lightmap are set outside it, every frame, and
+ * {@code GlStateManager.resetColor()} follows it. The screen quad stays outside it, on the block
+ * atlas: one texture a list. The screen's sprite is looked up once a stitch
+ * ({@link HealthcareScreenSprites}). The tile entity's render range stops it past 32 blocks
  * ({@link TileEntityEdTrackingBoard#getMaxRenderDistanceSquared}).</p>
  *
- * <p>Replaying some forty shared lists a board, each under its own matrix and colour, was still
- * about 20 us a board. What a board shows changes only with the world's minute (about every 17
- * ticks) and its page, so each board also keeps its whole page of text in one list of its own
- * ({@link CsmDisplayListCache}, keyed on {@link #pageKey}), compiled from the same pieces with
- * their colours as plain {@code glColor} calls and replayed with one {@code glCallList}. The
- * screen quad stays outside it, on the block atlas: one texture a list. The screen's sprite is
- * looked up once a stitch ({@link HealthcareScreenSprites}).
- * {@link CsmRenderToggles#sharedBakesPerFrame} draws from the shared lists alone, as before.</p>
+ * <p>The list is compiled again in place when {@link #pageKey} moves. Every board in the world
+ * moves to the next minute on the same tick, so a board whose list is out of date asks
+ * {@link CsmCompileBudget} first and draws its old list until its turn comes, a frame or two
+ * later. {@link CsmRenderToggles#sharedBakesPerFrame} draws the same geometry every frame
+ * instead, with no list.</p>
  *
  * <p>The screen's place and bands are {@code gen_healthcare_clinical.py}'s ({@code ED_W},
  * {@code ED_H}, {@code ED_SCREEN_Z}, {@code ED_HEADER}, {@code ED_COLHEAD}, {@code ED_PITCH}):
@@ -75,19 +78,11 @@ public class TileEntityEdTrackingBoardRenderer
   static final int CLOCK_COLOUR = 0xFFC830;
   static final int ROW_COLOUR = 0xF2F4F8;
 
-  private static final CsmSharedDisplayLists LISTS = new CsmSharedDisplayLists("ed_board_text");
-
-  /** Each board's whole page of text, one list a board, keyed on {@link #pageKey}. */
+  /**
+   * Each board's whole page of text, one flat list a board at key 0, compiled again in place when
+   * its {@link #pageKey} moves (the key it was compiled for is on the tile entity).
+   */
   private static final CsmDisplayListCache PAGES = new CsmDisplayListCache("ed_board_page");
-
-  // list kinds, packed into a key with their value
-  private static final int KIND_HEAD = 0;
-  private static final int KIND_CLOCK = 1;
-  private static final int KIND_BED = 2;
-  private static final int KIND_PATIENT = 3;
-  private static final int KIND_STATUS = 4;
-  private static final int KIND_TIME = 5;
-  private static final int KIND_NURSE = 6;
 
   private static final EdTrackingSchedule.Line LINE = new EdTrackingSchedule.Line();
 
@@ -135,28 +130,34 @@ public class TileEntityEdTrackingBoardRenderer
     GlStateManager.translate(0, 0, SCREEN_LIFT + TEXT_LIFT);
 
     if (CsmRenderToggles.sharedBakesPerFrame) {
-      text(fr, te, now, false);
+      text(fr, te, now);
     } else {
-      // The whole page in one list for this board, rebuilt when the minute or the page changes.
+      // The whole page in one list for this board, rebuilt when the minute or the page changes,
+      // and then only when this frame's compile budget allows.
       long key = pageKey(now, te.getPage(), te.getBeds());
-      int list = PAGES.get(te.getPos(), key);
-      if (list == CsmDisplayListCache.NO_LIST) {
-        list = PAGES.allocate(te.getPos(), key);
+      int list = PAGES.get(te.getPos(), 0L);
+      boolean stale = te.clientPageKey != key;
+      if (list == CsmDisplayListCache.NO_LIST || stale && CsmCompileBudget.mayRecompile()) {
+        list = PAGES.allocate(te.getPos(), 0L);
         if (list != CsmDisplayListCache.NO_LIST) {
+          long started = CsmCompileBudget.begin();
           GL11.glNewList(list, GL11.GL_COMPILE);
-          text(fr, te, now, true);
+          text(fr, te, now);
           GL11.glEndList();
+          CsmCompileBudget.end(started);
+          te.clientPageKey = key;
         }
       }
       if (list != CsmDisplayListCache.NO_LIST) {
         GL11.glCallList(list);
-        // The list sets the colour with glColor, which GlStateManager does not see.
-        GlStateManager.resetColor();
       } else {
-        // The driver refused a list name: draw from the shared lists rather than calling list 0.
-        text(fr, te, now, false);
+        // The driver refused a list name: draw directly rather than calling list 0.
+        text(fr, te, now);
       }
     }
+    // The text's colours are per vertex, which leaves GL's current colour where the state
+    // manager's cache does not know it: make the next color() call reach GL.
+    GlStateManager.resetColor();
 
     GlStateManager.depthMask(true);
     GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -168,44 +169,48 @@ public class TileEntityEdTrackingBoardRenderer
   }
 
   /**
-   * The text: title, column heads, clock and the page's rows. Drawn into a board's page list
-   * ({@code inline}), every piece is tessellated in place and every colour is a plain
-   * {@code glColor}, which a list records: {@code GlStateManager.color} is cached, so it could be
-   * left out of the list, and a list cannot compile the shared lists inside itself. Otherwise each
-   * piece replays its shared list ({@link #draw}) under {@code GlStateManager} colours.
+   * The text: title, column heads, clock and the page's rows, every glyph placed in the screen's
+   * sixteenths and coloured per vertex, in one draw: the geometry of a board's page list, or drawn
+   * directly.
    */
-  private static void text(CsmFontRenderer fr, TileEntityEdTrackingBoard te, long now,
-      boolean inline) {
-    colour(TITLE_COLOUR, inline);
-    at(0, (HEADER - TITLE_TEXT_H) / 2, titleScale);
-    piece(fr, KIND_HEAD, 0, inline);
-    GlStateManager.popMatrix();
-    colour(HEAD_COLOUR, inline);
-    at(0, HEADER + (COLHEAD - HEAD_TEXT_H) / 2, headScale);
-    piece(fr, KIND_HEAD, 1, inline);
-    GlStateManager.popMatrix();
-    colour(CLOCK_COLOUR, inline);
-    at(0, (HEADER - TITLE_TEXT_H) / 2, titleScale);
-    piece(fr, KIND_CLOCK, (int) Math.floorMod(now, 24L * 60L), inline);
-    GlStateManager.popMatrix();
+  private static void text(CsmFontRenderer fr, TileEntityEdTrackingBoard te, long now) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+    float titleY = (HEADER - TITLE_TEXT_H) / 2;
+    fr.addString(buf, "EMERGENCY DEPARTMENT", u(EDGE, titleScale), 0, 0, titleY, titleScale,
+        TITLE_COLOUR);
+    float h = headScale;
+    float headY = HEADER + (COLHEAD - HEAD_TEXT_H) / 2;
+    fr.addString(buf, "BED", u(xBed, h), 0, 0, headY, h, HEAD_COLOUR);
+    fr.addString(buf, "PATIENT", u(xPatient, h), 0, 0, headY, h, HEAD_COLOUR);
+    fr.addString(buf, "STATUS", u(xStatus, h), 0, 0, headY, h, HEAD_COLOUR);
+    fr.addString(buf, "TIME", u(xTime, h), 0, 0, headY, h, HEAD_COLOUR);
+    fr.addString(buf, "RN", u(xNurse, h), 0, 0, headY, h, HEAD_COLOUR);
+    String clock = EdTrackingSchedule.clock((int) Math.floorMod(now, 24L * 60L));
+    fr.addString(buf, clock, u(WIDTH - EDGE, titleScale) - fr.getStringWidth(clock), 0, 0,
+        titleY, titleScale, CLOCK_COLOUR);
 
+    float s = rowScale;
     int first = te.getPage() * ROWS;
     int beds = te.getBeds();
     for (int i = 0; i < ROWS && first + i < beds; i++) {
       int bed = first + i;
       EdTrackingSchedule.line(bed, te.getSeed(), now, LINE);
-      at(0, HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2, rowScale);
-      colour(ROW_COLOUR, inline);
-      piece(fr, KIND_BED, bed, inline);
-      piece(fr, KIND_NURSE, LINE.nurse, inline);
+      float y = HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2;
+      fr.addString(buf, EdTrackingSchedule.bedLabel(bed), u(xBed, s), 0, 0, y, s, ROW_COLOUR);
+      fr.addString(buf, EdTrackingSchedule.nurse(LINE.nurse), u(xNurse, s), 0, 0, y, s,
+          ROW_COLOUR);
       if (LINE.status.occupied()) {
-        piece(fr, KIND_PATIENT, LINE.patient, inline);
-        piece(fr, KIND_TIME, LINE.minutes, inline);
+        fr.addString(buf, EdTrackingSchedule.initials(LINE.patient), u(xPatient, s), 0, 0, y, s,
+            ROW_COLOUR);
+        fr.addString(buf, EdTrackingSchedule.elapsed(LINE.minutes), u(xTime, s), 0, 0, y, s,
+            ROW_COLOUR);
       }
-      colour(LINE.status.getColour(), inline);
-      piece(fr, KIND_STATUS, LINE.status.ordinal(), inline);
-      GlStateManager.popMatrix();
+      fr.addString(buf, LINE.status.getText(), u(xStatus, s), 0, 0, y, s,
+          LINE.status.getColour());
     }
+    tess.draw();
   }
 
   /**
@@ -233,15 +238,6 @@ public class TileEntityEdTrackingBoardRenderer
     PAGES.invalidate(pos);
   }
 
-  /** One piece of text: tessellated in place for a page list, else its shared list. */
-  private static void piece(CsmFontRenderer fr, int kind, int value, boolean inline) {
-    if (inline) {
-      add(fr, kind, value);
-    } else {
-      draw(fr, kind, value);
-    }
-  }
-
   /** The screen's texture, one quad a hair in front of the baked one, fullbright. */
   private void screen() {
     bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -260,23 +256,6 @@ public class TileEntityEdTrackingBoardRenderer
     tess.draw();
   }
 
-  private static void at(float x, float y, float scale) {
-    GlStateManager.pushMatrix();
-    GlStateManager.translate(x, y, 0);
-    GlStateManager.scale(scale, scale, 1);
-  }
-
-  private static void colour(int rgb, boolean inline) {
-    float r = ((rgb >> 16) & 0xFF) / 255f;
-    float g = ((rgb >> 8) & 0xFF) / 255f;
-    float b = (rgb & 0xFF) / 255f;
-    if (inline) {
-      GL11.glColor4f(r, g, b, 1.0f);
-    } else {
-      GlStateManager.color(r, g, b, 1.0f);
-    }
-  }
-
   private static void layout(CsmFontRenderer fr) {
     if (rowScale != 0) {
       return;
@@ -290,72 +269,6 @@ public class TileEntityEdTrackingBoardRenderer
     headScale = HEAD_TEXT_H / fr.FONT_HEIGHT;
     titleScale = TITLE_TEXT_H / fr.FONT_HEIGHT;
     rowScale = s;
-  }
-
-  /** Replays a text's list, compiling it the first time. */
-  private static void draw(CsmFontRenderer fr, int kind, int value) {
-    if (CsmRenderToggles.sharedBakesPerFrame) {
-      add(fr, kind, value);
-      return;
-    }
-    long key = ((long) kind << 32) | (value & 0xFFFFFFFFL);
-    int list = LISTS.get(key);
-    if (list == CsmDisplayListCache.NO_LIST) {
-      list = LISTS.allocate(key);
-      if (list != CsmDisplayListCache.NO_LIST) {
-        GL11.glNewList(list, GL11.GL_COMPILE);
-        add(fr, kind, value);
-        GL11.glEndList();
-      }
-    }
-    if (list != CsmDisplayListCache.NO_LIST) {
-      GL11.glCallList(list);
-    } else {
-      add(fr, kind, value);
-    }
-  }
-
-  /** One piece of text in its place, in the font's units at its height. Geometry only. */
-  private static void add(CsmFontRenderer fr, int kind, int value) {
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-    float s = rowScale;
-    switch (kind) {
-      case KIND_HEAD:
-        if (value == 0) {
-          fr.addString(buf, "EMERGENCY DEPARTMENT", u(EDGE, titleScale), 0);
-        } else {
-          float h = headScale;
-          fr.addString(buf, "BED", u(xBed, h), 0);
-          fr.addString(buf, "PATIENT", u(xPatient, h), 0);
-          fr.addString(buf, "STATUS", u(xStatus, h), 0);
-          fr.addString(buf, "TIME", u(xTime, h), 0);
-          fr.addString(buf, "RN", u(xNurse, h), 0);
-        }
-        break;
-      case KIND_CLOCK: {
-        String text = EdTrackingSchedule.clock(value);
-        fr.addString(buf, text, u(WIDTH - EDGE, titleScale) - fr.getStringWidth(text), 0);
-        break;
-      }
-      case KIND_BED:
-        fr.addString(buf, EdTrackingSchedule.bedLabel(value), u(xBed, s), 0);
-        break;
-      case KIND_PATIENT:
-        fr.addString(buf, EdTrackingSchedule.initials(value), u(xPatient, s), 0);
-        break;
-      case KIND_STATUS:
-        fr.addString(buf, EdTrackingSchedule.Status.values()[value].getText(), u(xStatus, s), 0);
-        break;
-      case KIND_TIME:
-        fr.addString(buf, EdTrackingSchedule.elapsed(value), u(xTime, s), 0);
-        break;
-      default:
-        fr.addString(buf, EdTrackingSchedule.nurse(value), u(xNurse, s), 0);
-        break;
-    }
-    tess.draw();
   }
 
   private static int u(float sixteenths, float scale) {

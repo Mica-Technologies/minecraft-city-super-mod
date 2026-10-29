@@ -31,6 +31,12 @@ public class TileEntityEdTrackingBoard extends AbstractTileEntity {
   private int page;
   private EnumFacing facing = EnumFacing.NORTH;
 
+  /**
+   * Client only: the page key ({@link TileEntityEdTrackingBoardRenderer#pageKey}) the board's text
+   * list was last compiled for, so the renderer knows when it is out of date.
+   */
+  transient long clientPageKey = Long.MIN_VALUE;
+
   /** Looks the facing and the page up again if the last answer is older than a second. */
   public void refreshView() {
     if (world == null) {
