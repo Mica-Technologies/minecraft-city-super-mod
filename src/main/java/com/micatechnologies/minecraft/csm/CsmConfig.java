@@ -211,6 +211,15 @@ public class CsmConfig {
   private static boolean trimChunkBuilders = FIELD_DEFAULT_TRIM_CHUNK_BUILDERS;
   private static int chunkBuilderBudgetPercent = FIELD_DEFAULT_CHUNK_BUILDER_BUDGET_PERCENT;
   private static int chunkBuilderLimit = FIELD_DEFAULT_CHUNK_BUILDER_LIMIT;
+  private static final String FIELD_KEY_SHARE_OTHER_MODS_QUADS = "shareOtherModsQuads";
+  private static final String FIELD_DESCRIPTION_SHARE_OTHER_MODS_QUADS =
+      "Heap, not direct memory: after the models are baked, let every other mod's plain baked "
+          + "models share their identical quads, as CSM's own always do (each mod's only with "
+          + "its own). Some mods bake the same quad many times over, and in a large pack that "
+          + "can be a few hundred megabytes. Off by default, since it relies on those mods "
+          + "never changing a quad once it is baked, which CSM cannot check for them. Takes "
+          + "effect at the next launch or resource reload, or at once with /csmclient "
+          + "quadsharing on. Not affected by performanceMode.";
   private static final boolean FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS = false;
   private static boolean shareOtherModsQuads = FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS;
 
@@ -535,14 +544,9 @@ public class CsmConfig {
             + "memory but load chunks more slowly while you travel. Never fewer than two per "
             + "build thread. Lowering it takes effect within seconds; raising it again needs a "
             + "restart.");
-    shareOtherModsQuads = config.getBoolean("shareOtherModsQuads", CATEGORY_PERFORMANCE,
-        FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS,
-        "Heap, not direct memory: after the models are baked, let every other mod's plain baked "
-            + "models share their identical quads, as CSM's own always do (each mod's only with "
-            + "its own). Some mods bake the same quad many times over, and in a large pack that "
-            + "can be a few hundred megabytes. Off by default, since it relies on those mods "
-            + "never changing a quad once it is baked, which CSM cannot check for them. Takes "
-            + "effect at the next launch or resource reload. Not affected by performanceMode.");
+    shareOtherModsQuads = config.getBoolean(FIELD_KEY_SHARE_OTHER_MODS_QUADS,
+        CATEGORY_PERFORMANCE, FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS,
+        FIELD_DESCRIPTION_SHARE_OTHER_MODS_QUADS);
     customMaxRenderDistance = config.getInt("maxRenderDistance", CATEGORY_PERFORMANCE, 0, 0, 512,
         "CUSTOM only. The farthest, in blocks, that CSM's animated blocks (signals, crosswalks, "
             + "guide and street signs, message boards, beacons, cranes, ad boards) are drawn. 0 "
@@ -738,6 +742,28 @@ public class CsmConfig {
    */
   public static boolean isShareOtherModsQuads() {
     return shareOtherModsQuads;
+  }
+
+  /**
+   * Sets the shareOtherModsQuads switch and saves it to the file, as {@code /csmclient
+   * quadsharing} does. Only the value: running the pass over the live models is the caller's.
+   *
+   * @param on whether to share other mods' quads
+   *
+   * @return false if the configuration has not been loaded yet
+   *
+   * @since 2026.10
+   */
+  public static synchronized boolean setShareOtherModsQuads(boolean on) {
+    if (config == null) {
+      return false;
+    }
+    config.get(CATEGORY_PERFORMANCE, FIELD_KEY_SHARE_OTHER_MODS_QUADS,
+        FIELD_DEFAULT_SHARE_OTHER_MODS_QUADS, FIELD_DESCRIPTION_SHARE_OTHER_MODS_QUADS).set(on);
+    shareOtherModsQuads = on;
+    configVersion++;
+    config.save();
+    return true;
   }
 
   /**

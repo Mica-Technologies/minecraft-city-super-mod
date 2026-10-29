@@ -17,9 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.util.EnumFacing;
@@ -86,6 +89,19 @@ import org.apache.commons.lang3.tuple.Pair;
  * quad many times over (one model set in the dev client and the Alto pack holds about 1.5
  * million duplicates, some 240 MB).</p>
  *
+ * <p><b>Turned on in game</b> ({@code /csmclient quadsharing on}, {@link #shareOtherModsNow()}),
+ * the other mods' pass runs at once over the live models, on the client thread, while the chunk
+ * builder threads may be reading the same lists. That is safe without stopping them, because the
+ * other mods' pass only ever does one thing to a list: {@code ArrayList.set} at an index the list
+ * already has. That is not a structural change (no resize, no {@code modCount} change, so no
+ * iterator throws); a reference write is atomic, so a reader sees the old quad or the new one,
+ * and the two are equal in every field; and every field of a {@link BakedQuad} is final, so the
+ * shared quad is seen whole on every thread (and was built at the bake, before the builders were
+ * handed any work). It never trims a list, never swaps a list for the shared empty one and never
+ * writes a model's field: those are CSM-only, done at the bake. Turning the switch off cannot
+ * un-share, and need not, since a shared quad is equal to the one it replaced: the next launch or
+ * resource reload bakes the models afresh and leaves other mods' quads alone.</p>
+ *
  * <p>The dedup maps live only for the pass. A resource reload bakes new models and posts the
  * event again, so the pass reruns on them.</p>
  *
@@ -129,6 +145,108 @@ public final class CsmQuadSharing {
   /** The one empty list every empty quad list and override list is pointed at. */
   private static final List<Object> EMPTY = Collections.emptyList();
 
+  /** About what a {@link BakedQuad} costs besides its vertex array: header and six fields. */
+  private static final int QUAD_OBJECT_BYTES = 40;
+
+  /** The last other mods' pass this session, at a bake or from the command; null if none. */
+  private static volatile OtherModsPass lastOtherModsPass;
+
+  /** Whether the models baked last have had the other mods' pass, at the bake or since. */
+  private static volatile boolean otherModsShared;
+
+  /** What one pass over other mods' models did. */
+  public static final class OtherModsPass {
+
+    private final boolean live;
+    private final long quads;
+    private final int models;
+    private final int namespaces;
+    private final long replaced;
+    private final long distinct;
+    private final long skippedModels;
+    private final String most;
+    private final long mostReplaced;
+    private final long bytes;
+    private final long millis;
+
+    OtherModsPass(boolean live, long quads, int models, int namespaces, long replaced,
+        long distinct, long skippedModels, String most, long mostReplaced, long bytes,
+        long millis) {
+      this.live = live;
+      this.quads = quads;
+      this.models = models;
+      this.namespaces = namespaces;
+      this.replaced = replaced;
+      this.distinct = distinct;
+      this.skippedModels = skippedModels;
+      this.most = most;
+      this.mostReplaced = mostReplaced;
+      this.bytes = bytes;
+      this.millis = millis;
+    }
+
+    /** @return true if it ran from the command over live models, false if at a bake */
+    public boolean isLive() {
+      return live;
+    }
+
+    /** @return the quads looked at */
+    public long getQuads() {
+      return quads;
+    }
+
+    /** @return the models walked */
+    public int getModels() {
+      return models;
+    }
+
+    /** @return the namespaces (mods) walked */
+    public int getNamespaces() {
+      return namespaces;
+    }
+
+    /** @return the quads replaced by an equal quad of the same mod's */
+    public long getReplaced() {
+      return replaced;
+    }
+
+    /** @return the distinct quads kept */
+    public long getDistinct() {
+      return distinct;
+    }
+
+    /** @return the baked model classes skipped as custom implementations */
+    public long getSkippedModels() {
+      return skippedModels;
+    }
+
+    /** @return the namespace with the most quads replaced, or null if none were */
+    @Nullable
+    public String getMost() {
+      return most;
+    }
+
+    /** @return how many quads were replaced in {@link #getMost()} */
+    public long getMostReplaced() {
+      return mostReplaced;
+    }
+
+    /**
+     * About how much heap the replaced quads held: each one's vertex array and object. An upper
+     * bound, since a replaced quad something else still holds is not freed.
+     *
+     * @return bytes
+     */
+    public long getBytes() {
+      return bytes;
+    }
+
+    /** @return how long the pass took, in milliseconds */
+    public long getMillis() {
+      return millis;
+    }
+  }
+
   private final Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
   private final Map<Class<?>, Boolean> modelHelpers = new HashMap<>();
   private Field generalQuadsField;
@@ -142,6 +260,77 @@ public final class CsmQuadSharing {
   private long seen;
   private long replaced;
   private long skippedModels;
+  private long replacedBytes;
+
+  /** @return the last other mods' pass this session, or null if none has run */
+  @Nullable
+  public static OtherModsPass lastOtherModsPass() {
+    return lastOtherModsPass;
+  }
+
+  /** @return whether the models baked last have had the other mods' pass */
+  public static boolean isOtherModsShared() {
+    return otherModsShared;
+  }
+
+  /**
+   * Runs the other mods' pass now over the live baked models, as {@code /csmclient quadsharing
+   * on} does. Call it on the client thread, so it cannot overlap a resource reload; the chunk
+   * builder threads may keep running (see the class comment for why that is safe).
+   *
+   * @return what it did; null if it could not reach the model registry
+   */
+  @Nullable
+  public static OtherModsPass shareOtherModsNow() {
+    IRegistry<ModelResourceLocation, IBakedModel> registry;
+    try {
+      ModelManager manager =
+          Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes()
+              .getModelManager();
+      registry = ObfuscationReflectionHelper.getPrivateValue(ModelManager.class, manager,
+          "field_174958_a");
+    } catch (Throwable t) {
+      Csm.getLogger().warn("Could not reach the baked model registry to share quads", t);
+      return null;
+    }
+    if (registry == null) {
+      return null;
+    }
+    OtherModsPass pass;
+    try {
+      pass = new CsmQuadSharing().runOtherMods(registry, true);
+    } catch (Throwable t) {
+      // Quads already replaced are equal to the ones they replaced.
+      Csm.getLogger().warn("Sharing other mods' baked quads stopped early; models are unaffected",
+          t);
+      return null;
+    }
+    log(pass);
+    lastOtherModsPass = pass;
+    otherModsShared = true;
+    return pass;
+  }
+
+  /**
+   * The other mods' pass over a registry on its own, for {@link #shareOtherModsNow()} and tests.
+   *
+   * @param registry the baked models
+   * @param live     whether the models are already in use
+   *
+   * @return what it did
+   */
+  OtherModsPass runOtherMods(IRegistry<ModelResourceLocation, IBakedModel> registry,
+      boolean live) {
+    visited = new ReferenceOpenHashSet<>(1 << 16);
+    try {
+      return shareOtherMods(registry, live);
+    } finally {
+      canonical = null;
+      visited = null;
+      fieldCache.clear();
+      modelHelpers.clear();
+    }
+  }
 
   /**
    * Runs the pass on the freshly baked registry.
@@ -151,6 +340,7 @@ public final class CsmQuadSharing {
   @SubscribeEvent(priority = EventPriority.LOWEST)
   public void onModelBake(ModelBakeEvent event) {
     long start = System.nanoTime();
+    otherModsShared = false;
     canonical = new Object2ObjectOpenCustomHashMap<>(1 << 20, CONTENT);
     visited = new ReferenceOpenHashSet<>(1 << 19);
     seen = 0;
@@ -177,7 +367,10 @@ public final class CsmQuadSharing {
           seen, visited.size(), replaced, canonical.size(), skippedModels, emptied,
           (System.nanoTime() - start) / 1_000_000L);
       if (CsmConfig.isShareOtherModsQuads()) {
-        shareOtherMods(registry);
+        OtherModsPass pass = shareOtherMods(registry, false);
+        log(pass);
+        lastOtherModsPass = pass;
+        otherModsShared = true;
       }
     } catch (Throwable t) {
       // Sharing is only a saving; a model class this does not understand must never stop the
@@ -195,8 +388,10 @@ public final class CsmQuadSharing {
    * The same pass over every other namespace's models, each namespace with a map of its own,
    * leaving their lists where they are ({@code performance.shareOtherModsQuads}).
    */
-  private void shareOtherMods(IRegistry<ModelResourceLocation, IBakedModel> registry) {
+  private OtherModsPass shareOtherMods(IRegistry<ModelResourceLocation, IBakedModel> registry,
+      boolean live) {
     long start = System.nanoTime();
+    replacedBytes = 0;
     Map<String, List<ModelResourceLocation>> byNamespace = new HashMap<>();
     for (ModelResourceLocation key : registry.getKeys()) {
       if (!CsmConstants.MOD_NAMESPACE.equals(key.getNamespace())) {
@@ -223,13 +418,20 @@ public final class CsmQuadSharing {
         most = e.getKey();
       }
     }
+    return new OtherModsPass(live, seen - seenBefore, visited.size() - modelsBefore,
+        byNamespace.size(), replaced - replacedBefore, distinct, skippedModels - skippedBefore,
+        most, mostReplaced, replacedBytes, (System.nanoTime() - start) / 1_000_000L);
+  }
+
+  private static void log(OtherModsPass p) {
     Csm.getLogger().info(
-        "Shared other mods' identical baked quads (performance.shareOtherModsQuads): {} quads in "
-            + "{} models of {} namespaces, {} replaced by an equal quad of the same mod's, {} "
-            + "distinct kept ({} model classes skipped; most replaced: {}, {}), {} ms",
-        seen - seenBefore, visited.size() - modelsBefore, byNamespace.size(),
-        replaced - replacedBefore, distinct, skippedModels - skippedBefore, most, mostReplaced,
-        (System.nanoTime() - start) / 1_000_000L);
+        "Shared other mods' identical baked quads (performance.shareOtherModsQuads{}): {} quads "
+            + "in {} models of {} namespaces, {} replaced by an equal quad of the same mod's "
+            + "(about {} MB), {} distinct kept ({} model classes skipped; most replaced: {}, {}), "
+            + "{} ms",
+        p.isLive() ? ", live" : "", p.getQuads(), p.getModels(), p.getNamespaces(),
+        p.getReplaced(), p.getBytes() / (1024 * 1024), p.getDistinct(), p.getSkippedModels(),
+        p.getMost(), p.getMostReplaced(), p.getMillis());
   }
 
   private void visit(Object model, int depth) {
@@ -375,8 +577,10 @@ public final class CsmQuadSharing {
       if (first == null) {
         canonical.put(q, q);
       } else if (first != q) {
+        // Not a structural change: safe while the chunk builders read the list (class comment).
         list.set(i, first);
         replaced++;
+        replacedBytes += QUAD_OBJECT_BYTES + 16L + 4L * q.getVertexData().length;
       }
     }
     if (ownModels) {
