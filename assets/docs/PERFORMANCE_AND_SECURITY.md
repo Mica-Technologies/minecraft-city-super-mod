@@ -280,6 +280,24 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   the most. It is a switch because the saving rests on the rule above, that nothing writes into a
   baked quad's vertex data, which CSM can hold for its own code but not check for other mods'; a
   mod that breaks it would show another of its own blocks' faces in the wrong place.
+  **`/csmclient quadsharing [on|off|status]`** sets and saves the switch in game (any player, no
+  operator rights; the guidebook's Performance pages are the player-facing account). `on` also
+  runs the pass at once over the live models (`CsmQuadSharing.shareOtherModsNow`, on the client
+  thread so it cannot overlap a resource reload) and reports the quads replaced, about how many
+  MB they held (an upper bound: a replaced quad something else holds is not freed) and the time;
+  if the loaded models already had it (the switch was on at the bake, or `on` already ran) it
+  says so and does not walk them again. It needs no pause of the chunk builder threads, which
+  read the same lists: **the other mods' pass only ever calls `ArrayList.set` at an index the list
+  already has** -- no resize or `modCount` change, so no iterator throws; an atomic reference
+  write, so a reader gets the old quad or the new one, equal in every field; and `BakedQuad`'s
+  fields are all final, so the shared quad is published whole. **Keep it that way: never trim,
+  swap or resize another mod's list, or write a model's field, in that pass** (those stay CSM-only
+  and bake-time). `off` only saves: a shared quad cannot be un-shared and need not be, and the next
+  launch or resource reload bakes the models again without the pass (and so uses that memory
+  again). `status` shows the switch, whether the loaded models are shared, and the last pass's
+  numbers (at the bake or from the command). `/csm reloadconfig` re-reads the value and runs
+  nothing; it applies at the next bake. `CsmQuadSharingTest` holds the pass to these rules
+  offline.
 - **Empty quad and override lists are one list** (`CsmQuadSharing`). The same pass points every
   empty face and general quad list of a `SimpleBakedModel`, and every empty item override list, at
   `Collections.emptyList()`: 1.16 million lists, 24 MiB. **Rule: never add to, or otherwise change,
