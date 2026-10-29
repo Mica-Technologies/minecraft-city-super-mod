@@ -56,14 +56,25 @@ public class TileEntityNowServingDisplay extends AbstractTileEntity {
     }
   }
 
-  /** The way the screen faces, looked up once. */
+  /**
+   * The way the screen faces, looked up once. Not cached while the block is not there yet (a
+   * client can make the tile entity before the block arrives), and forgotten when the block's
+   * state changes in place.
+   */
   public EnumFacing getFacing() {
     if (facing == null && world != null) {
       IBlockState s = world.getBlockState(pos);
-      facing = s.getBlock() instanceof BlockNowServingDisplay ? s.getValue(BlockHealthcare.FACING)
-          : EnumFacing.NORTH;
+      if (s.getBlock() instanceof BlockNowServingDisplay) {
+        facing = s.getValue(BlockHealthcare.FACING);
+      }
     }
     return facing == null ? EnumFacing.NORTH : facing;
+  }
+
+  @Override
+  public void updateContainingBlockInfo() {
+    super.updateContainingBlockInfo();
+    facing = null;
   }
 
   /** A linked display left behind while its chunk was unloaded takes up its queue's number. */
