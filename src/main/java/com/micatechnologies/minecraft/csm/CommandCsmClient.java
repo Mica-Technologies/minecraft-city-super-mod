@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmChunkBuilderBuffers;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
+import com.micatechnologies.minecraft.csm.codeutils.CsmQuadSharing;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -12,6 +13,7 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -19,7 +21,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * {@code /csmclient}: commands that act on the player's own game rather than the server, so they
  * work on any server and need no operator rights. {@code /csm chunkbuffers} runs on the server,
- * which on a multiplayer server has no chunk builders to report.
+ * which on a multiplayer server has no chunk builders to report. {@code /csmclient quadsharing}
+ * turns {@code performance.shareOtherModsQuads} on or off, and on runs it over the loaded models.
  *
  * @author Mica Technologies
  * @since 2026.10
@@ -28,7 +31,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CommandCsmClient extends CommandBase {
 
   private static final String USAGE =
-      "/csmclient <performance [high|medium|low|custom]|chunkbuffers [trim]>";
+      "/csmclient <performance [high|medium|low|custom]|quadsharing [on|off|status]"
+          + "|chunkbuffers [trim]>";
+  private static final String QUAD_SHARING_USAGE = "/csmclient quadsharing <on|off|status>";
 
   @Override
   public String getName() {
@@ -55,6 +60,10 @@ public class CommandCsmClient extends CommandBase {
       throws WrongUsageException {
     if (args.length > 0 && "performance".equalsIgnoreCase(args[0])) {
       performance(sender, args);
+      return;
+    }
+    if (args.length > 0 && "quadsharing".equalsIgnoreCase(args[0])) {
+      quadSharing(sender, args);
       return;
     }
     if (args.length == 0 || !"chunkbuffers".equalsIgnoreCase(args[0])) {
@@ -113,6 +122,79 @@ public class CommandCsmClient extends CommandBase {
         + (CsmPerformance.trimChunkBuilders() ? "" : " (trimming off)"));
   }
 
+  /**
+   * {@code /csmclient quadsharing [on|off|status]}: sets and saves
+   * {@code performance.shareOtherModsQuads}. {@code on} also runs the pass over the models loaded
+   * now, on this (the client) thread; {@code off} only saves, since sharing cannot be undone and
+   * need not be (a shared quad is equal to the one it replaced). With no argument, the status.
+   */
+  private static void quadSharing(ICommandSender sender, String[] args)
+      throws WrongUsageException {
+    String action = args.length > 1 ? args[1].toLowerCase(Locale.ROOT) : "status";
+    switch (action) {
+      case "on":
+        if (!CsmConfig.setShareOtherModsQuads(true)) {
+          throw new WrongUsageException(QUAD_SHARING_USAGE);
+        }
+        if (CsmQuadSharing.isOtherModsShared()) {
+          sayKey(sender, "csm.quadsharing.already");
+          return;
+        }
+        CsmQuadSharing.OtherModsPass pass = CsmQuadSharing.shareOtherModsNow();
+        if (pass == null) {
+          sayKey(sender, "csm.quadsharing.failed");
+          return;
+        }
+        sayKey(sender, "csm.quadsharing.applied", pass.getReplaced(), pass.getQuads(),
+            pass.getModels(), pass.getNamespaces(), megabytes(pass.getBytes()),
+            pass.getMillis());
+        return;
+      case "off":
+        if (!CsmConfig.setShareOtherModsQuads(false)) {
+          throw new WrongUsageException(QUAD_SHARING_USAGE);
+        }
+        sayKey(sender, CsmQuadSharing.isOtherModsShared() ? "csm.quadsharing.off.shared"
+            : "csm.quadsharing.off.saved");
+        return;
+      case "status":
+        quadSharingStatus(sender);
+        return;
+      default:
+        throw new WrongUsageException(QUAD_SHARING_USAGE);
+    }
+  }
+
+  private static void quadSharingStatus(ICommandSender sender) {
+    sayKey(sender, "csm.quadsharing.state", new TextComponentTranslation(
+        CsmConfig.isShareOtherModsQuads() ? "csm.quadsharing.value.on"
+            : "csm.quadsharing.value.off"));
+    sayKey(sender, CsmQuadSharing.isOtherModsShared() ? "csm.quadsharing.loaded.shared"
+        : "csm.quadsharing.loaded.unshared");
+    CsmQuadSharing.OtherModsPass last = CsmQuadSharing.lastOtherModsPass();
+    if (last == null) {
+      sayKey(sender, "csm.quadsharing.none");
+      return;
+    }
+    sayKey(sender, "csm.quadsharing.last", new TextComponentTranslation(last.isLive()
+            ? "csm.quadsharing.when.live" : "csm.quadsharing.when.bake"), last.getReplaced(),
+        last.getQuads(), last.getModels(), last.getNamespaces(), megabytes(last.getBytes()),
+        last.getMillis());
+    if (last.getMost() != null) {
+      sayKey(sender, "csm.quadsharing.most", last.getMost(), last.getMostReplaced());
+    }
+  }
+
+  private static String megabytes(long bytes) {
+    return String.format(Locale.ROOT, "%.0f", bytes / (1024.0 * 1024.0));
+  }
+
+  private static void sayKey(ICommandSender sender, String key, Object... args) {
+    TextComponentString text = new TextComponentString("[CSM] ");
+    text.appendSibling(new TextComponentTranslation(key, args));
+    text.getStyle().setColor(TextFormatting.GREEN);
+    sender.sendMessage(text);
+  }
+
   private static String blocks(double d) {
     return Math.round(d) + " blocks";
   }
@@ -131,10 +213,14 @@ public class CommandCsmClient extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "performance", "chunkbuffers");
+      return getListOfStringsMatchingLastWord(args, "performance", "quadsharing",
+          "chunkbuffers");
     }
     if (args.length == 2 && "performance".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "high", "medium", "low", "custom");
+    }
+    if (args.length == 2 && "quadsharing".equalsIgnoreCase(args[0])) {
+      return getListOfStringsMatchingLastWord(args, "on", "off", "status");
     }
     if (args.length == 2 && "chunkbuffers".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "trim");

@@ -19,6 +19,15 @@ across a building, street lights that switch, a road sign set drawn from the MUT
 
     [:octicons-arrow-right-24: Getting started](getting-started/index.md)
 
+-   :material-speedometer:{ .lg .middle } **Run it smoothly**
+
+    ---
+
+    How much memory it needs, the one setting that makes it lighter, and how to find what is
+    slow — for players, modpacks and servers.
+
+    [:octicons-arrow-right-24: Performance](performance/index.md)
+
 -   :material-book-open-variant:{ .lg .middle } **Learn a system**
 
     ---

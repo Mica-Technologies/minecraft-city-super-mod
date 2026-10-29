@@ -10,7 +10,7 @@ to be an op. `/csmclient` runs in your own game and anyone can use it.
 | [`/csmfirealarm`](#csmfirealarm) | Life Safety | Wiring a whole building to a fire alarm panel at once, and checking a panel |
 | [`/csmhvac`](#csmhvac) | HVAC | Inspecting and testing the room temperature simulation |
 | [`/csmlighting`](#csmlighting) | Lighting | Repairing the light a lamp throws |
-| [`/csmclient`](#csmclient) | Core | Your own game: the performance mode, and its chunk builder memory, on any server |
+| [`/csmclient`](#csmclient) | Core | Your own game: the performance mode, sharing other mods' quads, and the chunk builder memory, on any server |
 
 Each command shows its own usage if you type it with no arguments, and tab completes its
 subcommands and coordinates. Coordinates take `~` like vanilla commands.
@@ -47,7 +47,8 @@ each player's game draws arms from its own list.
 `/csm` also carries the tools the mod's developers use to measure frame time and memory. They
 are safe to run, but some draw the game wrongly on purpose, and they exist to answer "where is the
 time going?" rather than to change how the game looks. **Nothing they change is saved**: a
-restart puts everything back.
+restart puts everything back. Which one to reach for, and how to read what it says, is in
+[Finding what is slow](../performance/diagnostics.md).
 
 These subcommands act on the game they run in, and most of them affect drawing. Use them in single
 player, or on a LAN world you host. On a dedicated server they would only change the server, which
@@ -65,10 +66,10 @@ draws nothing.
 | `memstats variants` | Counts the model variants and baked parts that repeat |
 | `chunkbuffers` | Reports the direct (off-heap) memory held by Minecraft's chunk builders: how many there are, how much each render layer holds, and how many have grown past their starting size |
 | `chunkbuffers trim` | Gives back what the chunk builders grew: each idle builder's oversized buffers are replaced at their starting size and the memory freed at once |
+| `statecheck` | Checks every CSM block's states against how vanilla would build them, and reports any difference. Read only |
 
 On a multiplayer server `/csm` runs on the server, which has no chunk builders. Use
 [`/csmclient chunkbuffers`](#csmclient) instead.
-| `statecheck` | Checks every CSM block's states against how vanilla would build them, and reports any difference. Read only |
 
 **Render passes.** Each pass is one piece of an expensive renderer, such as the bulbs of a signal
 head, a crosswalk signal's countdown or a guide sign's lighting. To find what a busy intersection
@@ -78,7 +79,7 @@ with `draw`. A pass that is off is simply missing from the world until you `draw
 !!! warning "Not a graphics setting"
     Skipping a pass makes blocks render incorrectly: bodies without bulbs, signs without legends.
     It is meant for measuring. To make CSM lighter to run, see
-    [Performance & Graphics](performance-and-graphics.md).
+    [Performance](../performance/index.md).
 
 `memstats` and `statecheck` print to chat and to the game log. `memstats` only reads: it never
 builds a model just to measure it.
@@ -87,13 +88,14 @@ builds a model just to measure it.
 
 ```
 /csmclient performance [high|medium|low|custom]
+/csmclient quadsharing [on|off|status]
 /csmclient chunkbuffers [trim]
 ```
 
 Commands that act on **your own game**, not the server. They work in single player and on any
 multiplayer server, need no operator rights, and change nothing for other players.
 
-**`/csmclient performance`** shows your [performance mode](performance-and-graphics.md#performance-mode)
+**`/csmclient performance`** shows your [performance mode](../performance/performance-mode.md)
 and what it is doing now: how far animated blocks are drawn, sign detail, strobes, thermostats,
 door swing and the chunk builder settings. Add a level to change it:
 
@@ -104,10 +106,22 @@ door swing and the chunk builder settings. Add a level to change it:
 The new level applies at once, with no restart, and is saved to your `config/csm.cfg` for next
 time. `custom` uses the *CUSTOM only* entries in the [configuration](configuration.md#performance).
 
+**`/csmclient quadsharing`** turns [sharing other mods' quads](../performance/memory.md#sharing-other-mods-quads)
+on or off, and saves it as [`shareOtherModsQuads`](configuration.md#shareothermodsquads) in your
+`config/csm.cfg`. It is off by default.
+
+- **`on`** also shares the models loaded now, at once, and reports how many quads it replaced,
+  about how many MB they held and how long it took. From then on it runs whenever the game loads
+  its models.
+- **`off`** only saves the setting. Quads already shared stay shared, and look the same, until
+  the next launch or resource reload.
+- **`status`**, or no argument, shows the setting, whether the models loaded now are shared, and
+  what the last pass did.
+
 **`/csmclient chunkbuffers`** reports the direct (off-heap) memory held by Minecraft's chunk
 builders, the same report as `/csm chunkbuffers` but from your own game. Add `trim` to give back
 what they grew at once. You do not normally need to: CSM trims them automatically when they hold
-too much (see [Running out of memory after a while](performance-and-graphics.md#running-out-of-memory-after-a-while)).
+too much (see [Running out of memory after a while](../performance/memory.md#running-out-of-memory-after-a-while)).
 
 ## `/csmfirealarm`
 
@@ -139,6 +153,7 @@ commands: see [Fire Alarm Systems](../guides/fire-alarms.md#a-whole-building-at-
 
 ```
 /csmhvac info [x y z]
+/csmhvac why [x y z]
 /csmhvac spaces
 /csmhvac settemp <F>
 /csmhvac ff <seconds>
@@ -152,11 +167,12 @@ coordinates, each one acts on the room you are standing in.
 | Subcommand | What it does |
 |---|---|
 | `info [x y z]` | The room's size, regions, openings, the systems serving it and its temperatures. Outdoors, the outdoor temperature. |
+| `why [x y z]` | `info`, plus what the simulation counts each neighbouring cell as and whether the spot is open to the sky: why a space is, or is not, a room |
 | `spaces` | Every room the simulation knows in this dimension, with its size, mean and outdoor temperature |
 | `settemp <F>` | Sets the whole room to a temperature in °F, to test how a system recovers |
 | `ff <seconds>` | Runs the simulation forward this many seconds at once (at most 36,000, ten hours), then prints `info` |
 | `rescan` | Measures the room again now, instead of waiting for its next scan, and says how long that took |
-| `perf [reset]` | The simulation's running cost on this server, and `reset` to start the count again |
+| `perf [reset]` | The simulation's running cost on this server, and whether it is running lightweight; `reset` starts the count again. See [HVAC lightweight mode](../performance/servers.md#hvac-lightweight-mode) |
 
 ## `/csmlighting`
 

@@ -7,7 +7,7 @@ a server owner edits, and what each entry does.
 
 | File | Written by | Holds |
 |---|---|---|
-| `config/csm.cfg` | Core | The general options, plus the parking meter and Parks tool settings, whichever modules you installed |
+| `config/csm.cfg` | Core | The general and performance options, plus the parking meter, shop, HVAC and Parks tool settings, whichever modules you installed |
 | `config/csm_signage.cfg` | CSM: Signage & Advertising | Whether a server offers its own ads, and whether a client takes them |
 | `config/csm/ads/` | You | A folder of PNG images a server shows on the advertising boards (see [Advertising](../guides/advertising.md)) |
 | `config/csm_pack.cfg` | A modpack, optionally | Limits a pack sets for its players without touching their `csm.cfg` (see [csm_pack.cfg](#csm_packcfg-for-modpacks)) |
@@ -18,9 +18,10 @@ above it. You only need to edit a file to change something. Delete it to go back
 the next launch writes it again.
 
 !!! note "Modules don't add their own files"
-    The parking settings are used only by CSM: Roads & Traffic, and the chainsaw setting only by
-    CSM: Parks & Greenery. Both still live in Core's `csm.cfg`, and Core writes them whether or not
-    those modules are installed. An entry for a module you don't have does nothing.
+    The parking settings are used only by CSM: Roads & Traffic, the shop settings only by CSM:
+    Furniture & Novelties, the HVAC settings only by CSM: HVAC, and the chainsaw setting only by
+    CSM: Parks & Greenery. They all still live in Core's `csm.cfg`, and Core writes them whether or
+    not those modules are installed. An entry for a module you don't have does nothing.
 
 ### Reading the format
 
@@ -140,7 +141,8 @@ for example in a modpack that manages its own versions or on a machine with no i
 
 **Client.** How much CSM draws, and how much memory it lets Minecraft keep. Each player's own
 setting applies, on any server. What each level does, and why, is in
-[Performance & Graphics](performance-and-graphics.md#performance-mode).
+[Performance mode](../performance/performance-mode.md); the whole picture, memory and frame rate
+included, is in the [Performance](../performance/index.md) section.
 
 #### `performanceMode`
 
@@ -167,6 +169,7 @@ their own.
 | `adBoardTransitions` | `B:` | `true` | | *CUSTOM only.* Whether advertising boards fade or scroll between ads, rather than cutting |
 | `chunkBuilderLimit` | `I:` | `0` | 0–1024 | **Every level.** The most chunk builders to keep; it can only lower the level's own number. `0` adds no limit. Fewer use less memory but load chunks more slowly while you travel. Never fewer than two per chunk build thread. Lowering it takes effect within seconds; raising it again needs a restart. |
 | `chunkBuilderBudgetPercent` | `I:` | `40` | 10–90 | *CUSTOM only.* How much of the direct memory limit the chunk builders may hold before some is given back |
+| [`shareOtherModsQuads`](#shareothermodsquads) | `B:` | `false` | | **Every level.** Lets other mods' identical baked quads share memory, as CSM's own always do |
 
 The *CUSTOM only* defaults are the `HIGH` values, so switching to `CUSTOM` changes nothing until you
 edit them.
@@ -175,6 +178,23 @@ edit them.
 builders. With OptiFine, chunks are built by only a few builders, so a limit of about twice your
 chunk build threads (20 is typical) gives back hundreds of megabytes without changing how anything
 looks. A modpack can ship it in its `csm.cfg`.
+
+#### `shareOtherModsQuads`
+
+`B:` · default `false` · **client**
+
+Heap memory, not direct memory. After the game bakes its block models, every quad (a textured face)
+of another mod's plain baked models that is identical to one already seen in the same mod is
+replaced by that one, so the copies are freed. CSM always does this for its own models. In a large
+modpack it can free a few hundred megabytes; with small mods, little or nothing.
+
+It is off by default because it relies on those mods never changing a quad after baking it, which
+CSM cannot check for them. The [performance mode](#performancemode) does not change it.
+
+Turn it on or off in game with [`/csmclient quadsharing`](commands.md#csmclient), which saves it
+here; `on` also applies it at once. An edit to the file applies at the next launch or resource
+reload. What it saves, and what to watch for, is in
+[Sharing other mods' quads](../performance/memory.md#sharing-other-mods-quads).
 
 ### trafficpoles
 
@@ -241,6 +261,38 @@ If a default is above its cap, a new meter starts at the cap instead. Changing t
 not reprice meters that already exist. Each one keeps its rates until its owner next saves its
 settings, and only then do the caps apply to it.
 
+### shops
+
+**Server**, except the two distances. The Market & Store tab's working shops from CSM: Furniture &
+Novelties: shop shelves, cases, coolers and vending machines that sell one item and may buy it
+back. Prices are money when the optional SUM economy is
+installed and allows the `csm_furnishings` integration (see
+[Compatibility](compatibility.md#known-interactions)), emeralds otherwise.
+
+| Entry | Side | Type | Default | Range | What it does |
+|---|---|---|---|---|---|
+| `decorativeOnly` | Server | `B:` | `false` | | Every shop is decorative: it shows its item and price, but nothing can be bought or sold. An owner can also make a single shop decorative. |
+| `maxMoneyPrice` | Server | `D:` | `1000000.0` | 0.01–1000000000 | The most money a shop may ask or pay per trade |
+| `maxEmeraldPrice` | Server | `I:` | `576` | 1–2304 | The most emeralds a shop may ask or pay per trade |
+| `itemRenderDistance` | Client | `I:` | `32` | 0–128 | How far away, in blocks, a shop's goods are drawn on its shelves. `0` draws none. |
+| `priceLabelDistance` | Client | `I:` | `8` | 0–32 | How far away, in blocks, a shop's price label is drawn. `0` draws none. |
+
+The two distances are each player's own, and lowering them is one of the
+[frame rate](../performance/frame-rate.md#csms-own-options) options.
+
+### hvac
+
+**Server.** The HVAC module's room temperature simulation. What lightweight mode does, and when to
+use it, is in [On a server](../performance/servers.md#hvac-lightweight-mode).
+
+| Entry | Type | Default | Range | What it does |
+|---|---|---|---|---|
+| `lightweightMode` | `S:` | `AUTO` | `OFF`, `ON`, `AUTO` | `OFF` always runs the full simulation and `ON` always runs lightweight: no rooms, thermostats read their set point, units run at a steady part load. `AUTO` runs lightweight while at least `lightweightAutoDevices` HVAC devices are loaded, and the full simulation again once fewer than three quarters of that number have been loaded for five minutes. |
+| `lightweightAutoDevices` | `I:` | `2000` | 1–1000000 | With `AUTO`, how many loaded HVAC devices (thermostats, heaters, coolers and linked vents, in one dimension) switch the simulation to lightweight |
+| `maxRoomCells` | `I:` | `40000` | 1000–262144 | The largest enclosed air space, in cells, that HVAC treats as a room; anything bigger (a cave, the underside of a canopy) cannot be conditioned. 40,000 is a 50 × 50 × 16 hall. A room is measured again whenever a block in it changes, at about 10 ms per 40,000 cells, so a larger limit makes every change in a large room cost more. HVAC Zone Boundary blocks split a big open floor into rooms under the limit without a wall. |
+
+All three apply on [`/csm reloadconfig`](commands.md#csm-reloadconfig) without a restart.
+
 ### parks
 
 #### `chainsawBrushPiles`
@@ -292,7 +344,7 @@ performance {
 **Why a pack would set it.** With OptiFine, chunks are built by only a few of Minecraft's chunk
 builders, and the rest sit unused, each holding about 10 MB of direct memory. A limit of about twice
 the chunk build threads, typically 20, gives that memory back without changing how anything looks.
-See [Running out of memory after a while](performance-and-graphics.md#running-out-of-memory-after-a-while).
+See [Running out of memory after a while](../performance/memory.md#running-out-of-memory-after-a-while).
 
 The file is read at startup and by `/csm reloadconfig`.
 [`/csmclient performance`](commands.md#csmclient) shows a pack's limit as "(modpack)".
@@ -323,7 +375,7 @@ Some things you might look for here are set somewhere else:
 - **Each block's own setup** (signal timing, sign text, a meter's rate, a thermostat's set point)
   is saved with that block in the world, through its screen. It is not in any config file.
 - **How far away CSM's animated blocks are drawn, and Fancy or Fast leaves on Parks trees**, follow
-  your Minecraft video settings. [Performance & Graphics](performance-and-graphics.md) covers which
-  ones matter.
+  your Minecraft video settings. [Frame rate](../performance/frame-rate.md) covers which ones
+  matter.
 - **Diagnostic switches** such as `/csm renderpass` and `/csm incandescent` last only until you
   restart, and are not saved. See [Commands](commands.md#diagnostics).
