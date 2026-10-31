@@ -147,7 +147,14 @@ marking anchors (radius 12) that painted cells find; the mowing tone and the end
 tints the painted cell takes from the plain turf and end zone beside it, split under each 5 yard
 line, so 173 + 81 pictures serve any mowing and colour; goal posts, goals, sideline pieces, end
 zone lettering and the football and soccer scoreboards; stadium light heads aimed by an `aim`
-NBT offset); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
+NBT offset), then ten-pin bowling (`venues.bowling`: lanes two blocks wide, the centre on the
+block edge between a lane's halves, laid end to end to any length, that mark themselves from
+their place along the lane (foul line, dots, arrows, range finders, pin deck and pit; the
+approach's locator dots) as actual state, with bumpers raised by a sneak-click; lathed pins a
+click knocks down; the pinsetter and masking unit for a pair with four lit graphics, the ball
+return, settees joining round curved corners, the scorer's console, the overhead scoring
+monitors scoring ten frames from score sheet notation, the ball rack, shoe counter, cubbies
+and spray); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab, the Bowling tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -614,7 +621,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   (pictures to the texel, the mowing tone and end zone colour as tints split under the yard
   lines), the anchors, worked layouts and the fixtures they place, the goals, the sideline, the
   end zone lettering's and the scoreboards' NBT, aiming light heads (`aim`) and a field lit by
-  six towers, the state counts (1,196), costs and traps
+  six towers, the state counts (1,196), costs and traps; bowling: the two-block lane and its
+  scale, lanes and approaches that mark themselves from their place along the lane, every
+  block's metadata and NBT, the scoring monitor's notation and NBT, a worked eight-lane centre,
+  the state counts (392), measured costs and traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1357,6 +1367,16 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   pieces, end zone lettering and scoreboards. `--layout football|soccer` prints a field's blocks
   (checked as the Java finds them), `--commands X Y Z [--east] [--zone N]` as an mcfunction's
   lines; `--doc`, `--check`, `--fragments`
+- `gen_venues_bowling.py` -- the Bowling tab (Sports & Venues): the lane and approach pictures
+  (every board, the foul line, dots, arrows, range finders, pin spots, tail plank, drawn three
+  samples a texel where they fall, a 64 px half lane each, the right half the left mirrored),
+  the lane, deck and approach geometry and their multipart blockstates by actual `mark`, the
+  bumpers, lathed OBJ pins standing and fallen, the pinsetter and masking unit (four invented
+  graphics with `_e` companions), the ball return, the settee and its curved corner (OBJ), the
+  console, the scoring monitors' casing (its face shared with
+  `TileEntityBowlingMonitorRenderer`), ball rack, shoe counter, cubbies and spray.
+  `--layout [--lanes N]` prints a whole centre, `--commands X Y Z` as an mcfunction's lines;
+  `--check`, `--fragments`. `gen_venues_sounds.py` synthesises the ball's roll and the strike
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under

@@ -28,6 +28,7 @@ from fixed numbers rather than from a Building block.
 | Sports & Venues - Concourse (`tabvenuesconcourse`) | 36 | concession stands and their machines, menu boards, the beer kiosk, turnstiles and the ticket scanner, suite fixtures, the team store, and the arena's outside and entry: the marquee board and its pylon, the wayfinding blades and their bracket, the box office window (below) |
 | Sports & Venues - Ballpark (`tabvenuesballpark`) | 37 | baseball and softball: the field's surfaces, edges and chalk lines, the marking anchors and painted cells, the mound, plate, bases and rubber, the dugout, nets, the outfield wall, markers and foul pole, the line score and count boards, a pitching machine (below) |
 | Sports & Venues - Football & Soccer (`tabvenuesfootball`) | 38 | American football and soccer: the field's turf, paint, surround and end zone colour, the marking anchors and painted cells that draw every line where it really falls, goals, the sideline, end zone lettering and the scoreboards (below) |
+| Sports & Venues - Bowling (`tabvenuesbowling`) | 39 | a ten-pin bowling centre: lanes and approaches that mark themselves, the pins, the pinsetter and masking unit, the ball return, settees and the scorer's console, the overhead scoring monitors, the house ball rack, the shoe counter, cubbies and shoe spray (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
@@ -35,7 +36,6 @@ tab for every block family. Planned, in the order they land:
 
 | Tab | Holds |
 |---|---|
-| Bowling | the lane built to length, pinsetter, ball return, scoring monitor, the counter and settees |
 | Courts, Track & Pool | tennis and pickleball, volleyball, track and field, swimming, golf and mini-golf, skate park basics |
 
 A piece used by more than one sport (a stadium light tower, a bleacher, a press box) goes in
@@ -1399,6 +1399,179 @@ heads cost what unaimed heads do (Field lighting).
   it (the first placed keeps it, and hands it over when it goes dark).
 - **A sprite must be square** (the fourth official's board once showed the missing texture: its
   32 x 16 face read as a broken animation).
+- **A change to `football_field.py` moves which cells are pictures.** The anchors' tables follow
+  it, but a field already laid keeps plain turf where a picture now falls (and painted cells
+  where one no longer does): lay it again from `--layout`. When the yard numbers were turned to
+  read from their own sideline, "Venues Arena Test" showed pieces of numbers until it was.
+
+## Bowling (Bowling tab)
+
+A ten-pin bowling centre at one block a metre. Written by
+`dev-env-utils/scripts/gen_venues_bowling.py` (`--check`, `--fragments`; `--layout [--lanes N]`
+prints a centre's blocks as JSON, and with `--commands X Y Z` as `/fill` and `/setblock` lines
+for an mcfunction). Java in `venues.bowling`.
+
+### The scale
+
+A real lane is 41.5 in (1.054 m) between 9.25 in gutters, 1.52 m in all, and lanes stand about
+1.75 m apart, centre to centre. Here **a lane is two blocks wide**: its centre is the block edge
+between its two columns, so each block is one half of a lane (the capping it shares with the next
+lane, its gutter and half the bed), and the right half is the left half mirrored. The bed, the
+gutters and the 39 boards (1.06 in each, drawn where they fall in a 64 px picture) are to scale;
+only the capping is wider than most (0.48 m between gutters), which is where the extra quarter
+metre of the 2 m pitch goes. Along the lane it is one block a metre: the foul line is the edge
+where the approach meets the lane, the head pin is 60 ft (18.29 m) on, in the 19th lane block,
+and the pit is at the end of the 20th. The approach is five blocks (15 ft and a bit).
+
+### Lanes that mark themselves
+
+`bowling_lane`, `bowling_lane_synthetic`, `bowling_approach`, `bowling_approach_synthetic` are
+the floor: laid in the floor's own layer, end to end towards the pins. A block works out what it
+shows from its place along the lane (`mark`, actual state; no stored kind, no anchor):
+
+| Lane block (lane blocks behind it) | Shows |
+|---|---|
+| 1st (0) | the foul line along its bowler's edge, across the capping and gutter too |
+| 3rd (2) | the dots at 7 ft on boards 3, 5, 8, 11 and 14 |
+| 5th (4) | the targeting arrows on boards 5, 10, 15, 20 (and 25-35 on the other half), board 20's tip at 16 ft, the others stepping 8 in nearer: a chevron pointing down the lane |
+| 13th (12) | the range finders on boards 10 and 30, about 40 to 42 ft |
+| the last but one | the pin deck: three rows of pin spots, the head pin's at 60 ft |
+| the last | the back row's spots, the tail plank, the pit (sunk 7 px) and the wall under the pit curtain |
+
+| Approach block (counted back from the lane) | Shows |
+|---|---|
+| 1st | locator dots 3 in behind the foul line on boards 3, 5, 8, 11, 14 and the centre |
+| 4th | the 12 ft dots |
+| 5th | the 15 ft dots |
+
+So a lane can be any length: the deck is always its last two blocks, and a short lane loses the
+marks it is too short for. A lane block reads at most 24 blocks behind it and two ahead, an
+approach block at most six ahead, and only when its chunk section is built.
+
+The plain block is most of a lane (15 of its 20 blocks): one picture per finish, mirrored for the
+right half. A picture repeats every block along the lane (the grain is periodic), so plain blocks
+laid end to end meet unseen. Maple has more board-to-board contrast and grain; synthetic is
+lighter, cooler and plainer, with a near-white deck.
+
+| Block | Metadata |
+|---|---|
+| `bowling_lane`, `bowling_lane_synthetic` | bits 0-1 the facing, towards the pins (S 0, W 1, N 2, E 3); bit 2 the right half (looking down the lane); bit 3 the bumpers up |
+| `bowling_approach`, `bowling_approach_synthetic` | bits 0-1 the facing; bit 2 the right half |
+
+Placed by hand a block faces the way the player looks and takes its half from the block behind or
+ahead of it in the same column, or else is a right half if the block to its left is a left half.
+A sneak-click with an empty hand on any lane block raises or lowers the **bumpers** on every block
+of that lane, both halves (a padded rail standing in each gutter; none on the deck). The capping
+between lanes is part of every lane block, not a block of its own.
+
+### The rest
+
+| Block | Metadata / NBT | Notes |
+|---|---|---|
+| `bowling_pins` | `facing`, bit 2 `right`, bit 3 `fallen` | The ten pins in their triangle (12 in apart, rows 10.39 in, 15 in tall, lathed OBJ), in the air cell over the left half's front deck block (`right` 0) or the right half's (`right` 1): one block draws all ten, reaching into the other half. A click plays the ball's roll and 34 ticks later knocks them down with a strike (one scheduled tick, no tile entity); a click on fallen pins stands them again. No collision. Placed by hand it copies the lane block under it |
+| `bowling_pinsetter` | `facing`, bits 2-3 the graphic; facing towards the bowlers | A unit for a **pair** of lanes, four blocks wide: the cabinet two blocks deep over the pit (the black curtain on its front), the kickbacks beside both decks, and the masking panel a metre over the front deck blocks (so the pins under it stay free) with its graphic: 0 starburst, 1 cosmic, 2 retro, 3 neon waves (invented; `_e` companions glow under OptiFine). The master is the cabinet's bottom cell over the back deck block of the bowlers' right-hand lane's right half. A sneak-click with an empty hand steps the graphic. Light 7 |
+| `bowling_ball_return` | facing, towards the settee | A unit two blocks wide centred on the seam between a pair's lanes: the hood (closed at the back) over the track, the hand dryer's grille, and the rack with balls falling to its stop. Facing south (the settee to the south), the master is the east one of the pair's middle two blocks |
+| `bowling_settee` | facing, the way a sitter faces | Vinyl on a chrome plinth with a high back; joins side by side, an arm where the run stops (`end_l`, `end_r`, actual); any settee piece beside it counts as joined. A click sits on it |
+| `bowling_settee_corner` | facing | A quarter round of settee: facing north it joins a straight to its east and one to its north (facing east), the curve's inside its north-east corner. Turn it for the other corners of a horseshoe |
+| `bowling_scorer_console` | facing, the screen towards the settee | A pedestal with a tilted touch screen |
+| `bowling_scoring_monitor` | facing, towards the reader; NBT below | A hung unit four blocks wide and two tall: two screens on a bar, one a lane |
+| `bowling_ball_rack` | facing | A run (`BlockArenaRun`): three shelves of four balls in eight swirled colours, end panels where it stops |
+| `bowling_shoe_counter` | facing, towards the customer | A run, its top at a metre, end panels where it stops |
+| `bowling_shoe_cubbies` | facing | Twelve pigeonholes of two-tone rental shoes; stack them for a wall |
+| `bowling_shoe_spray` | facing | Two cans and a card on a tray, for a counter top |
+
+Optional pieces left out: there is no oil sheen (a lane's picture is the same oiled or dry), and
+the bumpers are one height.
+
+### The scoring monitor
+
+Each screen shows a lane: a header in the screens' colour with LANE n and the frame numbers, then
+a row for each of up to three bowlers: the name, ten frames with their marks in the small boxes
+(two, three in the tenth: X, /, -, F, pins) and the running total under them once it can be
+known (a strike waits for two more balls, a spare for one), and the total. The bowler up has an
+amber name and the frame they are in lit; an empty lane says OPEN LANE. The scoring is
+`BowlingScore` (plain Java, `BowlingScoreTest`).
+
+A click opens the venue text editor: a line a bowler, three for the left lane and three for the
+right, each `NAME: rolls` in score sheet notation (`ALEX: X 9/ 8- X 72`; spaces ignored; a ball
+that would knock down more pins than are standing is cut to what is), the left lane's number, and
+three buttons: the screens' colour and who is up on each lane.
+
+| NBT | Meaning |
+|---|---|
+| `b0`, `b1`, `b2` | the left lane's bowlers, `NAME: rolls`, up to 40 characters |
+| `b3`, `b4`, `b5` | the right lane's |
+| `ln` | the left lane's number, 1-98 (the right is the next) |
+| `c` | the screens' colour, a venue colour (royal blue 1) |
+| `ua`, `ub` | the bowler up on the left and right lane: 0 none, 1-3 |
+
+```
+/blockdata 323 6 181 {ln:1,c:1,ua:1,ub:2,b0:"ALEX: X 9/ 8- X X 72 9/ X",b3:"SAM: X X X 9- 8/ X 7"}
+```
+
+### A worked eight-lane centre
+
+```
+py -3 dev-env-utils/scripts/gen_venues_bowling.py --layout --commands 320 3 180 > bowling.mcfunction
+```
+
+(The foul line's west end at (320, 180), the floor at y 3.) In the canonical frame (lane 1 the
+westmost, columns x 0 and 1; the pins to the north; the foul line on the block edge z = 0; the
+floor level dy 0, everything else above it):
+
+| What | Where |
+|---|---|
+| Approaches | x 0..15, z 0..4: lanes 1-4 maple, 5-8 synthetic; meta 2 (left halves) and 6 (right halves) |
+| Lanes | x 0..15, z -1..-20 (the deck z -19, -20); lane 3 with its bumpers up (meta 10, 14) |
+| Pins | (2L, 1, -19) for lane L from 0, meta 2 |
+| Pinsetters | pair P from 0: master (4P + 3, 1, -20), meta `P << 2` (facing south, a graphic each); black concrete under the cabinets at z -21, -22 |
+| Ball returns | (4P + 2, 1, 5), meta 0 |
+| Settees | a horseshoe a pair: corners (4P, 1, 8) meta 2 and (4P + 3, 1, 8) meta 1, straights (4P + 1, 1, 8) and (4P + 2, 1, 8) meta 2, arms (4P, 1, 7) meta 3 and (4P + 3, 1, 7) meta 1; the console (4P + 1, 1, 6) meta 0 |
+| Monitors | (4P + 3, 3, 1), meta 0, with demo scores; hung from a beam at dy 5 on two columns |
+| The back | floor (blue wool) z 5..14, the back wall z 14, ball racks x 0..5 at z 13, the shoe counter x 9..13 at z 11, cubbies two high behind it at z 13, the spray on the counter |
+
+In "Venues Arena Test" it is laid at (320, 3, 180), roofless: `data/functions/csm/bowling.mcfunction`
+in the save, 664 commands.
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `bowling_lane`, `bowling_lane_synthetic` | facing, right, bumpers | mark (7) | 112 each, 224 |
+| `bowling_approach`, `bowling_approach_synthetic` | facing, right | mark (4) | 32 each, 64 |
+| `bowling_pins` | facing, right, fallen | | 16 |
+| `bowling_pinsetter` | facing, design (4) | | 16 |
+| `bowling_settee`, `bowling_ball_rack`, `bowling_shoe_counter` | facing | end_l, end_r | 16 each, 48 |
+| `bowling_ball_return`, `bowling_settee_corner`, `bowling_scorer_console`, `bowling_scoring_monitor`, `bowling_shoe_cubbies`, `bowling_shoe_spray` | facing | | 4 each, 24 |
+
+**392 states.** The lane pictures are 22 sprites of 64 px (14 lane, 8 approach), the masking
+graphics 16 of 64 px (and their 16 `_e` companions); under 1 MB of atlas in all.
+
+### Costs
+
+A lane is chunk geometry: a plain block is a body and four top faces; the pins (ten lathes, about
+650 quads a lane) and the pinsetter are the heaviest. A lane block reads at most 26 blocks and an
+approach block 6, only when its section is built. The monitors are the one renderer (toggle
+`venueBowling`): a few dozen coloured quads a screen a frame and one display list of words a
+monitor, compiled when the scores change. The pins' knock is one scheduled tick.
+Measured in "Venues Arena Test" from the settee, all four monitors in view: 3.5 to 16 us a
+monitor a frame (more bowlers, more words), 34.5 us for the four.
+
+### Traps
+
+- **A lane block's markings are read only when its section is built.** Lengthening a lane at its
+  bowler's end moves every mark along it; a section the change is not in keeps its old marks
+  until it is built again. Lay a lane whole (`--layout` does).
+- **The pins belong to one half.** `bowling_pins` with `right` 0 sits over a left half; placed by
+  hand over a lane block it copies that block's half, but a `/setblock` over the wrong half draws
+  the triangle centred on the wrong edge.
+- **The pinsetter's master is at the bowlers' right.** Facing south, the unit reaches three blocks
+  west of its master, two back (north), and its panel one forward over the decks: the master is
+  the pair's east column, over the back deck block.
+- **An approach's ends cull, a lane's do not**: a lane's end is open at the gutter, so it is hidden
+  only against another lane block. Against anything else (the approach, the pit's cabinet) it
+  draws its end, which is what closes the gutter at the foul line.
+
 
 ## Brands
 
@@ -1411,7 +1584,7 @@ is a generic machine with no maker's name; the scorer's table plays an abstract 
 ballpark's line score says AWAY and HOME until typed into; its helmets, bats, water cooler and
 pitching machine carry no maker's name. The football and soccer scoreboards say HOME and AWAY,
 the end zones HOME and AWAY until typed into; the goals, heater, fan and boards carry no maker's
-name.
+name. The bowling centre's masking graphics are invented (a starburst, a cosmic scene, retro boomerangs, neon waves), its scoring monitors show the names typed into them, and the ball return, settees, console and shoe spray carry no maker's name.
 
 ## Traps
 
