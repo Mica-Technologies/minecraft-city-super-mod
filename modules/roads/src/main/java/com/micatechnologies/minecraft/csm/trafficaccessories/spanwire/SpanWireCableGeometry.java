@@ -59,6 +59,22 @@ public final class SpanWireCableGeometry {
   }
 
   /**
+   * Picks the colour of one facet of a tube, for a tube that is not one flat colour: a striped
+   * bridge cable. Span wire never needs it; its own methods pass a constant.
+   */
+  public interface FacetColour {
+
+    /**
+     * Writes the facet's base colour, before shading, into {@code out} as red, green, blue.
+     *
+     * @param segment which stretch of the path, from 0 at its first point
+     * @param side    which side of the prism, from 0
+     * @param out     three floats to fill
+     */
+    void colour(int segment, int side, float[] out);
+  }
+
+  /**
    * Emits the tube for the piece of a cable between two positions along it.
    *
    * @param buffer   the buffer, already begun in {@code GL_QUADS} with the {@code BLOCK} format
@@ -178,6 +194,37 @@ public final class SpanWireCableGeometry {
     }
   }
 
+  /**
+   * Emits an open tube along a path with any number of sides and a colour per facet: the general
+   * form of {@link #emitTubePath} that the bridge cables draw with, at thicknesses where six sides
+   * would show, and with sheath stripes. Same ring construction and facet shading as the span
+   * wire, so the two kinds of cable are lit alike.
+   *
+   * @param points     at least two points along the centreline, in world coordinates
+   * @param sides      sides on the prism, at least three
+   * @param colour     the base colour of each facet
+   * @param skyLight   lightmap sky component
+   * @param blockLight lightmap block component
+   */
+  public static void emitTubePath(BufferBuilder buffer, List<Vec3d> points, Vec3d origin,
+      double radius, int sides, FacetColour colour, int skyLight, int blockLight) {
+    final int count = points.size();
+    if (count < 2 || sides < 3) {
+      return;
+    }
+    final double[][] rings = new double[count][sides * 3];
+    for (int i = 0; i < count; i++) {
+      buildRingAt(points.get(i), pathDirection(points, i, false), origin, radius, sides,
+          rings[i]);
+    }
+    final float[] rgb = new float[3];
+    for (int i = 0; i < count - 1; i++) {
+      final int segment = i;
+      stitch(buffer, rings[i], rings[i + 1], sides, (side, out) -> colour.colour(segment, side,
+          out), rgb, skyLight, blockLight);
+    }
+  }
+
   /** The centreline direction at one point of a path, by central difference where possible. */
   private static Vec3d pathDirection(List<Vec3d> points, int index, boolean closed) {
     final int count = points.size();
@@ -219,6 +266,12 @@ public final class SpanWireCableGeometry {
    */
   private static void buildRingAt(Vec3d point, Vec3d direction, Vec3d origin, double radius,
       double[] out) {
+    buildRingAt(point, direction, origin, radius, SIDES, out);
+  }
+
+  /** {@link #buildRingAt(Vec3d, Vec3d, Vec3d, double, double[])} with any number of sides. */
+  private static void buildRingAt(Vec3d point, Vec3d direction, Vec3d origin, double radius,
+      int sides, double[] out) {
     Vec3d tangent = direction;
     if (lengthSquared(tangent) < 1.0e-18) {
       tangent = new Vec3d(1.0, 0.0, 0.0);
@@ -238,8 +291,8 @@ public final class SpanWireCableGeometry {
     final double oy = point.y - origin.y;
     final double oz = point.z - origin.z;
 
-    for (int k = 0; k < SIDES; k++) {
-      final double angle = 2.0 * Math.PI * k / SIDES;
+    for (int k = 0; k < sides; k++) {
+      final double angle = 2.0 * Math.PI * k / sides;
       final double ca = Math.cos(angle) * radius;
       final double sa = Math.sin(angle) * radius;
       out[k * 3] = ox + across.x * ca + upward.x * sa;
@@ -251,14 +304,36 @@ public final class SpanWireCableGeometry {
   /** Stitches two rings together with one quad per side. */
   private static void stitch(BufferBuilder buffer, double[] a, double[] b,
       float red, float green, float blue, int skyLight, int blockLight) {
-    for (int k = 0; k < SIDES; k++) {
-      final int k0 = k * 3;
-      final int k1 = ((k + 1) % SIDES) * 3;
+    stitch(buffer, a, b, SIDES, (side, out) -> {
+      out[0] = red;
+      out[1] = green;
+      out[2] = blue;
+    }, new float[3], skyLight, blockLight);
+  }
 
+  /** A side's base colour, for {@link #stitch(BufferBuilder, double[], double[], int,
+   * SideColour, float[], int, int)}. */
+  private interface SideColour {
+
+    void colour(int side, float[] out);
+  }
+
+  /**
+   * Stitches two rings of any number of sides, colouring each facet on its own. Shaded colours
+   * are held to 1: a light cable's top facet would otherwise pass full brightness, and the
+   * buffer stores a colour as a byte, so it would wrap round to black.
+   */
+  private static void stitch(BufferBuilder buffer, double[] a, double[] b, int sides,
+      SideColour colour, float[] rgb, int skyLight, int blockLight) {
+    for (int k = 0; k < sides; k++) {
+      final int k0 = k * 3;
+      final int k1 = ((k + 1) % sides) * 3;
+
+      colour.colour(k, rgb);
       final float shade = facetShade(a, b, k0, k1);
-      final float r = red * shade;
-      final float g = green * shade;
-      final float bl = blue * shade;
+      final float r = Math.min(1.0f, rgb[0] * shade);
+      final float g = Math.min(1.0f, rgb[1] * shade);
+      final float bl = Math.min(1.0f, rgb[2] * shade);
 
       vertex(buffer, a[k0], a[k0 + 1], a[k0 + 2], r, g, bl, skyLight, blockLight);
       vertex(buffer, a[k1], a[k1 + 1], a[k1 + 2], r, g, bl, skyLight, blockLight);
