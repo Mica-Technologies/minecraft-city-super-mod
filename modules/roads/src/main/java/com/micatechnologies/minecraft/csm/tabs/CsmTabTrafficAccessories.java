@@ -400,6 +400,13 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockSpanWireAnchor());
     initTabBlock(new BlockSpanWireGuyAnchor());
     initTabItem(ItemSpanWireTool.class, fmlPreInitializationEvent); // Span Wire Tool
+    // Bridge cables: an anchor owns and draws cables to other anchors or blocks
+    // (assets/docs/BRIDGE_CABLE_SYSTEM.md)
+    initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.BlockBridgeCableAnchor("bridge_cable_socket"));
+    initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.BlockBridgeCableAnchor("bridge_cable_clevis"));
+    initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.BlockBridgeCableAnchor("bridge_cable_saddle"));
+    initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.BlockBridgeCableAnchor("bridge_cable_deck_anchor"));
+    initTabItem(com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.ItemBridgeCableTool.class, fmlPreInitializationEvent);
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmunpainted", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- NSEWUD factory blocks: Traffic Pole Bases ---

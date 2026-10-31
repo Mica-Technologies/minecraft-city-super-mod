@@ -90,7 +90,7 @@ container per jar.
 | Module tree | Mod id | Display name | Contents |
 |---|---|---|---|
 | `src/main` | `csm` | CSM: Core | base classes, registration, tabs machinery, config, parts + Fabricator, shared assets |
-| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: covers, utility boxes, bollards, hydrants, news racks, working mailboxes, parking meters and EV chargers; see `assets/docs/STREETSCAPE_SYSTEM.md`) |
+| `modules/roads` | `csm_roads` | CSM: Roads & Traffic | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` (the Streetscape tab: covers, utility boxes, bollards, hydrants, news racks, working mailboxes, parking meters and EV chargers; see `assets/docs/STREETSCAPE_SYSTEM.md`); bridge cables (`trafficaccessories.bridgecable`: stay, main, hanger and rope cables drawn from socket, clevis, saddle and deck anchors, set by `/blockdata`; see `assets/docs/BRIDGE_CABLE_SYSTEM.md`) |
 | `modules/lifesafety` | `csm_lifesafety` | CSM: Life Safety | `lifesafety`, `api/firealarm`; four tabs — Fire Alarm & Detection, Exits & Emergency Lighting, Fire Protection, Emergency Services |
 | `modules/hvac` | `csm_hvac` | CSM: HVAC | `hvac` |
 | `modules/lighting` | `csm_lighting` | CSM: Lighting | `lighting` |
@@ -465,6 +465,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/DYNAMIC_STREET_SIGN_SYSTEM.md` -- Street name blades: fixed-slot data model, hanging vs flat mount, double-sided rendering, civic logo atlas rows
 - `assets/docs/SPAN_WIRE_SYSTEM.md` -- Wire-span signal mounting: the catenary solver, why mounts
   go below the cable, the three different ways a payload hangs, box span tether clearance
+- `assets/docs/BRIDGE_CABLE_SYSTEM.md` -- Bridge cables (#323): stay, main, hanger and rope
+  cables an anchor (socket, clevis, saddle, deck anchor) owns and draws to another anchor or any
+  block; the NBT a bridge generator writes (one cable per `/blockdata`, added or replaced by
+  target, saved as offsets) with examples, the parabola main cable and the span wire's catenary
+  for rope, hangers dropped every N blocks to whatever is below, guide pipes drawn at the cable's
+  angle, one display list per anchor as a global renderer with a whole-cable box, the traps
 - `assets/docs/MAST_ARM_CURVE_SYSTEM.md` -- Realistically scaled signal mast arm upsweeps: why they are multi-block, the parabolic sweep, oblique end clipping
 - `assets/docs/WORK_ZONE_ACCESSORIES.md` -- Cones, drums, channelizers, barricades and the arrow board: how a device settles onto the road below it with no dependency on whatever built that road, barricade runs and their mounted signs, the animated arrow board
 - `assets/docs/GUARDRAIL_SYSTEM.md` -- Four rail families, their end treatments, the W-to-thrie transition and the crash cushion: why a run joins on the RAIL rather than on block identity, why the slope is read off where the rails actually are rather than off block positions, and why the end treatments are chiral
@@ -1433,6 +1439,11 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   frames) and the catwalk (`BlockTrussCatwalk`): textures, part models and multipart
   blockstates; see "Overhead Sign Trusses" in `DYNAMIC_GUIDE_SIGN_SYSTEM.md`;
   `--check`, `--fragments`
+- `gen_bridge_cables.py` -- the bridge cable anchors (Roads, `BlockBridgeCableAnchor`: socket,
+  clevis, saddle, deck anchor) drawn in the sign trusses' textures, their blockstates (six
+  facings for the wall-mounted two, four for the others), the Bridge Cable Tool's sprite and
+  model, and the four languages' lang lines; the cable is the renderer's, and each anchor's
+  attach point and hitbox are shared with `BridgeCableAnchorKind.java`; `--check`, `--fragments`
 - `gen_mast_arm_curves.py` -- the realistically scaled mast arm upsweeps: sweeps a tapered
   parabolic tube, splits it across the block cells it passes through, and emits one OBJ per
   cell plus all 30 blockstates AND the Java enum holding the cell layout, so the placement code

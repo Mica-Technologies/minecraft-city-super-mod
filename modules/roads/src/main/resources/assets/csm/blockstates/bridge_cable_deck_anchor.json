@@ -1,0 +1,25 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/bridgecable/bridge_cable_deck_anchor"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {},
+      "down": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}
