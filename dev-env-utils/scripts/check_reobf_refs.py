@@ -154,6 +154,14 @@ def collect(javap, jars, label):
     return refs
 
 
+# Members Forge patches into a Minecraft class. They are in no MCP-to-SRG table, so the owner
+# lookup below finds nothing and the name lookup would match an unrelated renamed member of the
+# same name and descriptor (TileEntity.onLoad against Chunk.onLoad, func_76631_c).
+FORGE_ADDED = {
+    ("net/minecraft/tileentity/TileEntity", "onLoad", "()V"),
+}
+
+
 def is_renamed(owner, name, uses, renamed):
     """Whether the mappings rename this member, so its plain name in a release jar is a gap.
 
@@ -165,6 +173,8 @@ def is_renamed(owner, name, uses, renamed):
     for kind, desc in uses:
         if kind == "Field" and declared.get((owner, name), name in fields):
             return True
+        if kind != "Field" and (owner, name, desc) in FORGE_ADDED:
+            continue
         if kind != "Field" and declared.get((owner, name, desc), (name, desc) in methods):
             return True
     return False
