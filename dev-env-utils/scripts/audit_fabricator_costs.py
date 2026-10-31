@@ -635,6 +635,32 @@ def cost_for(registry, info, ancestors):
         if registry.endswith("_sign"):
             return ("SIGN_BLANK",)
         return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabvenuesarena":
+        # Mirrors VenuesFabricatorRules.arena (Sports & Venues module).
+        arena = {
+            "rink_ice": ("ice",),
+            "rink_ice_line": ("ice", "dye"), "rink_ice_spot": ("ice", "dye"),
+            "rink_ice_painted": ("ice", "dye"),
+            "rink_rubber_floor": ("carpet",),
+            "court_maple": ("planks",),
+            "court_line": ("planks", "dye"), "court_floor_anchor": ("planks", "dye"),
+            "court_painted": ("planks", "dye"),
+            "hockey_goal": ("iron_ingot x2", "string x2"),
+            "basketball_stanchion": ("SHEET_METAL x4", "glass_pane x2", "LED_MODULE",
+                                     "CONTROL_BOARD"),
+            "ice_resurfacer": ("SHEET_METAL x6", "WIRING_HARNESS x2", "CONTROL_BOARD"),
+            "ice_plant": ("ENCLOSURE_SHELL x2", "DUCTING", "CONTROL_BOARD"),
+            "scorers_table": ("SHEET_METAL x2", "LED_MODULE x2", "CONTROL_BOARD"),
+            "player_bench": ("SHEET_METAL", "wool"), "penalty_bench": ("SHEET_METAL", "wool"),
+        }
+        if registry in arena:
+            return arena[registry]
+        if registry.startswith("dasher_glass"):
+            return ("glass_pane x2", "SHEET_METAL")
+        if registry == "dasher_penalty_door":
+            return ("SHEET_METAL", "glass_pane x2", "FASTENER_KIT")
+        if registry.startswith("dasher_"):
+            return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabvenuesseating":
         # Mirrors VenuesFabricatorRules (Sports & Venues module).
         if registry.endswith("_sign"):

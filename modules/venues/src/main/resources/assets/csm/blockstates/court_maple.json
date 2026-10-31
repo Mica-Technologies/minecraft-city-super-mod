@@ -1,0 +1,113 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/arena/maple_0",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/maple_0",
+        "y": 270
+      },
+      {
+        "model": "csm:venues/arena/maple_1",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/maple_1",
+        "y": 270
+      },
+      {
+        "model": "csm:venues/arena/maple_2",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/maple_2",
+        "y": 270
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/arena/maple_0"
+      },
+      {
+        "model": "csm:venues/arena/maple_0",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/maple_1"
+      },
+      {
+        "model": "csm:venues/arena/maple_1",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/maple_2"
+      },
+      {
+        "model": "csm:venues/arena/maple_2",
+        "y": 180
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/arena/maple_navy",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/maple_navy",
+        "y": 270
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/arena/maple_navy"
+      },
+      {
+        "model": "csm:venues/arena/maple_navy",
+        "y": 180
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/arena/maple_crimson",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/maple_crimson",
+        "y": 270
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/arena/maple_crimson"
+      },
+      {
+        "model": "csm:venues/arena/maple_crimson",
+        "y": 180
+      }
+    ],
+    "variant=6": [
+      {
+        "model": "csm:venues/arena/maple_grey",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/maple_grey",
+        "y": 270
+      }
+    ],
+    "variant=7": [
+      {
+        "model": "csm:venues/arena/maple_grey"
+      },
+      {
+        "model": "csm:venues/arena/maple_grey",
+        "y": 180
+      }
+    ],
+    "inventory": {
+      "model": "csm:venues/arena/maple_0"
+    }
+  }
+}

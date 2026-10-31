@@ -1,0 +1,102 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,kind=0": [
+      {
+        "model": "csm:venues/arena/court_cell_002"
+      }
+    ],
+    "facing=east,kind=0": [
+      {
+        "model": "csm:venues/arena/court_cell_002",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=0": [
+      {
+        "model": "csm:venues/arena/court_cell_002",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=0": [
+      {
+        "model": "csm:venues/arena/court_cell_002",
+        "y": 270
+      }
+    ],
+    "facing=north,kind=1": [
+      {
+        "model": "csm:venues/arena/court_cell_067"
+      }
+    ],
+    "facing=east,kind=1": [
+      {
+        "model": "csm:venues/arena/court_cell_067",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=1": [
+      {
+        "model": "csm:venues/arena/court_cell_067",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=1": [
+      {
+        "model": "csm:venues/arena/court_cell_067",
+        "y": 270
+      }
+    ],
+    "facing=north,kind=2": [
+      {
+        "model": "csm:venues/arena/court_cell_091"
+      }
+    ],
+    "facing=east,kind=2": [
+      {
+        "model": "csm:venues/arena/court_cell_091",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=2": [
+      {
+        "model": "csm:venues/arena/court_cell_091",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=2": [
+      {
+        "model": "csm:venues/arena/court_cell_091",
+        "y": 270
+      }
+    ],
+    "facing=north,kind=3": [
+      {
+        "model": "csm:venues/arena/court_cell_126"
+      }
+    ],
+    "facing=east,kind=3": [
+      {
+        "model": "csm:venues/arena/court_cell_126",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=3": [
+      {
+        "model": "csm:venues/arena/court_cell_126",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=3": [
+      {
+        "model": "csm:venues/arena/court_cell_126",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/arena/court_cell_002"
+      }
+    ]
+  }
+}

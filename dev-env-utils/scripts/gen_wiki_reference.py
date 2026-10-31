@@ -191,6 +191,13 @@ TABS = {
                          "companion seat and wheelchair space, aisle step lights and "
                          "handrails, glass guards for tier and suite fronts, and the "
                          "section and portal signs over the vomitories."),
+    "tabvenuesarena": ("venues-arena", "Sports & Venues - Arena",
+                       "An arena's event floor: rink ice and its lines, the painted circles, "
+                       "crease and spots laid round their anchors, dasher boards and glass "
+                       "(straights, 45 degree corners, the true curve of a rink's corner, the "
+                       "bench gate and penalty box door), the hockey goal, benches, the "
+                       "scorer's table, the ice resurfacer and ice plant; the maple court, its "
+                       "lines and painted keys, and the portable basketball stanchion."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
                               "Poles, mounts, mast arms, span wire hardware, backplates and "
                               "cameras."),
@@ -229,7 +236,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
-              "tabtreesplants", "tabutilities", "tabvenuesseating",
+              "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
               "tabnone"]
 
 

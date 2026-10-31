@@ -1,0 +1,64 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/arena/curve_board_00.obj",
+    "custom": {
+      "ambient": false
+    },
+    "y": 270
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:venues/arena/curve_board_00.obj"
+      },
+      "1": {
+        "model": "csm:venues/arena/curve_board_01.obj"
+      },
+      "2": {
+        "model": "csm:venues/arena/curve_board_02.obj"
+      },
+      "3": {
+        "model": "csm:venues/arena/curve_board_03.obj"
+      },
+      "4": {
+        "model": "csm:venues/arena/curve_board_04.obj"
+      },
+      "5": {
+        "model": "csm:venues/arena/curve_board_05.obj"
+      },
+      "6": {
+        "model": "csm:venues/arena/curve_board_06.obj"
+      },
+      "7": {
+        "model": "csm:venues/arena/curve_board_07.obj"
+      },
+      "8": {
+        "model": "csm:venues/arena/curve_board_08.obj"
+      },
+      "9": {
+        "model": "csm:venues/arena/curve_board_09.obj"
+      },
+      "10": {
+        "model": "csm:venues/arena/curve_board_10.obj"
+      },
+      "11": {
+        "model": "csm:venues/arena/curve_board_11.obj"
+      },
+      "12": {
+        "model": "csm:venues/arena/curve_board_12.obj"
+      },
+      "13": {
+        "model": "csm:venues/arena/curve_board_13.obj"
+      },
+      "14": {
+        "model": "csm:venues/arena/curve_board_14.obj"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/arena/corner_item_board"
+      }
+    ]
+  }
+}

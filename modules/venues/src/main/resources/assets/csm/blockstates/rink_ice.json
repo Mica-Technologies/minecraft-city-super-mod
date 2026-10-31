@@ -1,0 +1,105 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/arena/ice_0"
+      },
+      {
+        "model": "csm:venues/arena/ice_0",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_0",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/ice_0",
+        "y": 270
+      },
+      {
+        "model": "csm:venues/arena/ice_1"
+      },
+      {
+        "model": "csm:venues/arena/ice_1",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_1",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/ice_1",
+        "y": 270
+      },
+      {
+        "model": "csm:venues/arena/ice_2"
+      },
+      {
+        "model": "csm:venues/arena/ice_2",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_2",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/ice_2",
+        "y": 270
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/arena/ice_red"
+      },
+      {
+        "model": "csm:venues/arena/ice_red",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_red",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/ice_red",
+        "y": 270
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/arena/ice_blue"
+      },
+      {
+        "model": "csm:venues/arena/ice_blue",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_blue",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/ice_blue",
+        "y": 270
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/arena/ice_crease"
+      },
+      {
+        "model": "csm:venues/arena/ice_crease",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_crease",
+        "y": 180
+      },
+      {
+        "model": "csm:venues/arena/ice_crease",
+        "y": 270
+      }
+    ],
+    "inventory": {
+      "model": "csm:venues/arena/ice_0"
+    }
+  }
+}

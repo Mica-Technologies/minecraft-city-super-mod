@@ -1,0 +1,56 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "board": "csm:blocks/venues/arena/board",
+    "back": "csm:blocks/venues/arena/board_back",
+    "cap": "csm:blocks/venues/arena/cap",
+    "post": "csm:blocks/venues/arena/post",
+    "glass": "csm:blocks/venues/arena/glass",
+    "latch": "csm:blocks/venues/arena/latch",
+    "particle": "csm:blocks/venues/arena/board"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1.75
+      ],
+      "to": [
+        16,
+        16,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            1.75,
+            16,
+            2.5
+          ]
+        }
+      }
+    }
+  ]
+}

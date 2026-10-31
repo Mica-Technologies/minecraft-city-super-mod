@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "139 blocks in this tab"
+!!! info "140 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -96,6 +96,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Unpainted Angled Thin Traffic Pole w/ 2 Mounts | `csm:trafficpolehorizontalanglemount2unpainted` |  | 10 | pickaxe | 1 |
 | Unpainted Angled Thin Traffic Pole w/ 4 Mounts | `csm:trafficpolehorizontalanglemount3unpainted` |  | 10 | pickaxe | 1 |
 | Utility Box (Part) | `csm:utility_box_part` | 3 | 12 | pickaxe | 1 |
+| Venue Unit Part | `csm:venue_unit_part` | 2 | 4 | pickaxe | 0 |
 | Vertical Ahead Signal (Gray) | `csm:controllableverticalaheadsignalgray` |  |  |  |  |
 | Vertical Bike Signal (Gray) | `csm:controllableverticalbikesignalgray` |  |  |  |  |
 | Vertical FYA Left Add-On Signal (Gray) | `csm:controllableverticalleftaddonfyasignalgray` |  |  |  |  |

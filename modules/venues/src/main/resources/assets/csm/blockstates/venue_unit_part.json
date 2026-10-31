@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/arena/unit_part"
+  },
+  "variants": {
+    "toward": {
+      "down": {},
+      "up": {},
+      "north": {},
+      "south": {},
+      "west": {},
+      "east": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

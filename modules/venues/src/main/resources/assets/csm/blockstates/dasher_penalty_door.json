@@ -1,0 +1,102 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,open=false,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_left"
+      }
+    ],
+    "facing=north,open=false,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_right"
+      }
+    ],
+    "facing=north,open=true,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_left"
+      }
+    ],
+    "facing=north,open=true,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_right"
+      }
+    ],
+    "facing=east,open=false,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_left",
+        "y": 90
+      }
+    ],
+    "facing=east,open=false,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_right",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_left",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_right",
+        "y": 90
+      }
+    ],
+    "facing=south,open=false,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_left",
+        "y": 180
+      }
+    ],
+    "facing=south,open=false,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_right",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_left",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_right",
+        "y": 180
+      }
+    ],
+    "facing=west,open=false,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_left",
+        "y": 270
+      }
+    ],
+    "facing=west,open=false,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_right",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,right=false": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_left",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,right=true": [
+      {
+        "model": "csm:venues/arena/penalty_door_open_right",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/arena/penalty_door_closed_left"
+      }
+    ]
+  }
+}

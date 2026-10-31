@@ -1,0 +1,76 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/arena/court_line_edge",
+        "y": 180
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/arena/court_line_edge",
+        "y": 270
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/arena/court_line_edge"
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/arena/court_line_edge",
+        "y": 90
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/arena/court_line_corner",
+        "y": 180
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/arena/court_line_corner",
+        "y": 270
+      }
+    ],
+    "variant=6": [
+      {
+        "model": "csm:venues/arena/court_line_corner"
+      }
+    ],
+    "variant=7": [
+      {
+        "model": "csm:venues/arena/court_line_corner",
+        "y": 90
+      }
+    ],
+    "variant=8": [
+      {
+        "model": "csm:venues/arena/court_line_centre",
+        "y": 180
+      }
+    ],
+    "variant=9": [
+      {
+        "model": "csm:venues/arena/court_line_centre",
+        "y": 270
+      }
+    ],
+    "variant=10": [
+      {
+        "model": "csm:venues/arena/court_line_centre"
+      }
+    ],
+    "variant=11": [
+      {
+        "model": "csm:venues/arena/court_line_centre",
+        "y": 90
+      }
+    ],
+    "inventory": {
+      "model": "csm:venues/arena/court_line_edge"
+    }
+  }
+}

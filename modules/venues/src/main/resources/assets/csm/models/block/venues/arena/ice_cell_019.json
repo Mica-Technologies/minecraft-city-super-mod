@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "csm:blocks/venues/arena/ice_0",
+    "down": "csm:blocks/venues/arena/ice_0",
+    "up": "csm:blocks/venues/arena/ice_cell_019",
+    "north": "csm:blocks/venues/arena/ice_0",
+    "south": "csm:blocks/venues/arena/ice_0",
+    "east": "csm:blocks/venues/arena/ice_0",
+    "west": "csm:blocks/venues/arena/ice_0"
+  }
+}

@@ -1,0 +1,142 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "board": "csm:blocks/venues/arena/board",
+    "back": "csm:blocks/venues/arena/board_back",
+    "cap": "csm:blocks/venues/arena/cap",
+    "post": "csm:blocks/venues/arena/post",
+    "glass": "csm:blocks/venues/arena/glass",
+    "latch": "csm:blocks/venues/arena/latch",
+    "particle": "csm:blocks/venues/arena/board"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        -0.2,
+        0,
+        0
+      ],
+      "to": [
+        16.2,
+        15,
+        4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#board",
+          "uv": [
+            0,
+            1,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#back",
+          "uv": [
+            0,
+            1,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#back",
+          "uv": [
+            12,
+            1,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            0,
+            1,
+            4,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#board",
+          "uv": [
+            0,
+            12,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        15,
+        -0.25
+      ],
+      "to": [
+        16.2,
+        16,
+        4.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            16,
+            4.25
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            11.75,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            11.75,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            4.25,
+            1
+          ]
+        }
+      }
+    }
+  ]
+}

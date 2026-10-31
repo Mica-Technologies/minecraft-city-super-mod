@@ -296,3 +296,69 @@ def check_json(paths):
         if p.endswith(".json") or p.endswith(".mcmeta"):
             with open(p, encoding="utf-8") as fh:
                 json.load(fh)
+
+
+# ------------------------------------------------------------------------------------------
+# Shared by the event floor and later generators
+# ------------------------------------------------------------------------------------------
+ROT_Y = {"north": 0, "east": 90, "south": 180, "west": 270}
+
+
+def animation(cat, name, frames, frametime, interpolate=False):
+    """Registers an animated texture: ``frames`` is a list of functions drawing one square frame
+    each; the texture is their vertical strip, and its .mcmeta goes into the catalogue's extra
+    files, so the game plays it with nothing ticking."""
+    def draw():
+        imgs = [f() for f in frames]
+        w = imgs[0].width
+        strip = Image.new("RGBA", (w, w * len(imgs)))
+        for i, im in enumerate(imgs):
+            strip.paste(im, (0, i * w))
+        return strip
+    cat.textures[name] = draw
+    meta = {"animation": {"frametime": frametime}}
+    if interpolate:
+        meta["animation"]["interpolate"] = True
+    rel = "textures/blocks/%s/%s.png.mcmeta" % (cat.tex_dir, name)
+    cat.extra[rel] = json.dumps(meta, indent=2) + "\n"
+
+
+def keyed_state(props, choose, inventory=None):
+    """A Forge blockstate listing every combination of ``props`` (an ordered list of
+    (name, [values])) as a full variant key; ``choose(values_dict)`` returns the variant body.
+    Used where two properties together pick the geometry."""
+    variants = {}
+
+    def walk(i, acc):
+        if i == len(props):
+            key = ",".join("%s=%s" % (n, acc[n]) for n in sorted(acc))
+            variants[key] = [choose(dict(acc))]
+            return
+        name, values = props[i]
+        for v in values:
+            acc[name] = v
+            walk(i + 1, acc)
+        del acc[name]
+    walk(0, {})
+    if inventory is not None:
+        variants["inventory"] = [inventory]
+    return {"forge_marker": 1, "variants": variants}
+
+
+def ovquad(p0, p1, y0, y1, mat, outward, v_of=None):
+    """A vertical quad from the plan point p0 to p1 (x, z in pixels), y0 to y1, facing
+    ``outward`` (a plan vector). u runs 0..1 along it; v is (16 - y) / 16 unless ``v_of`` maps
+    a height to v, so a texture's rows land at the heights a JSON box would put them."""
+    if v_of is None:
+        v_of = (lambda y: (16.0 - y) / 16.0)
+    pts = [(p0[0], y0, p0[1]), (p1[0], y0, p1[1]), (p1[0], y1, p1[1]), (p0[0], y1, p0[1])]
+    uvs = [(0, v_of(y0)), (1, v_of(y0)), (1, v_of(y1)), (0, v_of(y1))]
+    return Poly(pts, mat, (outward[0], 0, outward[1]), uvs)
+
+
+def ohpoly(pts2, y, mat, up=True):
+    """A horizontal convex polygon at height y from plan points (x, z), facing up or down, its
+    uv the plan position (x / 16, z / 16)."""
+    pts = [(p[0], y, p[1]) for p in pts2]
+    uvs = [(p[0] / 16.0, p[1] / 16.0) for p in pts2]
+    return Poly(pts, mat, (0, 1 if up else -1, 0), uvs)

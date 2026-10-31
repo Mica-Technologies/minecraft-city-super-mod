@@ -1,0 +1,65 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/arena/ice_line_red",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_line_red",
+        "y": 270
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/arena/ice_line_red"
+      },
+      {
+        "model": "csm:venues/arena/ice_line_red",
+        "y": 180
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/arena/ice_line_blue",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_line_blue",
+        "y": 270
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/arena/ice_line_blue"
+      },
+      {
+        "model": "csm:venues/arena/ice_line_blue",
+        "y": 180
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/arena/ice_line_goal",
+        "y": 90
+      },
+      {
+        "model": "csm:venues/arena/ice_line_goal",
+        "y": 270
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/arena/ice_line_goal"
+      },
+      {
+        "model": "csm:venues/arena/ice_line_goal",
+        "y": 180
+      }
+    ],
+    "inventory": {
+      "model": "csm:venues/arena/ice_line_red",
+      "y": 90
+    }
+  }
+}

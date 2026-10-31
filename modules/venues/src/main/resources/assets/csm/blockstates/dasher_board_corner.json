@@ -1,0 +1,28 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/arena/corner_board.obj",
+    "custom": {
+      "ambient": false
+    }
+  },
+  "variants": {
+    "facing": {
+      "east": {},
+      "south": {
+        "y": 90
+      },
+      "west": {
+        "y": 180
+      },
+      "north": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/arena/corner_item_board"
+      }
+    ]
+  }
+}

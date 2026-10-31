@@ -1,0 +1,64 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/arena/curve_glass_00.obj",
+    "custom": {
+      "ambient": false
+    },
+    "y": 180
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:venues/arena/curve_glass_00.obj"
+      },
+      "1": {
+        "model": "csm:venues/arena/curve_glass_01.obj"
+      },
+      "2": {
+        "model": "csm:venues/arena/curve_glass_02.obj"
+      },
+      "3": {
+        "model": "csm:venues/arena/curve_glass_03.obj"
+      },
+      "4": {
+        "model": "csm:venues/arena/curve_glass_04.obj"
+      },
+      "5": {
+        "model": "csm:venues/arena/curve_glass_05.obj"
+      },
+      "6": {
+        "model": "csm:venues/arena/curve_glass_06.obj"
+      },
+      "7": {
+        "model": "csm:venues/arena/curve_glass_07.obj"
+      },
+      "8": {
+        "model": "csm:venues/arena/curve_glass_08.obj"
+      },
+      "9": {
+        "model": "csm:venues/arena/curve_glass_09.obj"
+      },
+      "10": {
+        "model": "csm:venues/arena/curve_glass_10.obj"
+      },
+      "11": {
+        "model": "csm:venues/arena/curve_glass_11.obj"
+      },
+      "12": {
+        "model": "csm:venues/arena/curve_glass_12.obj"
+      },
+      "13": {
+        "model": "csm:venues/arena/curve_glass_13.obj"
+      },
+      "14": {
+        "model": "csm:venues/arena/curve_glass_14.obj"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/arena/corner_item_glass"
+      }
+    ]
+  }
+}

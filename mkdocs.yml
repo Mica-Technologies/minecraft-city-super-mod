@@ -179,6 +179,7 @@ nav:
       - Trees & Plants: reference/trees-and-plants.md
       - Utilities: reference/utilities.md
       - Sports & Venues - Seating & Venue: reference/venues-seating.md
+      - Sports & Venues - Arena: reference/venues-arena.md
       - Unlisted: reference/unlisted.md
   - Developer:
       - developer/index.md

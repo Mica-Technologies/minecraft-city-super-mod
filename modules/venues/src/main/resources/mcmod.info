@@ -2,7 +2,7 @@
   {
     "modid": "${modid}",
     "name": "${modname}",
-    "description": "Sports venues for the City Super Mod: arenas, stadiums, ballparks, fields, courts and alleys, starting with the seating bowl (stadium seats in ten colours, aisle-end standards with row letters, aisle step lights and handrails, glass guards, wheelchair spaces, and section and portal signs), with event floors, scoreboards, concourses and the other sports to come. Requires CSM: Core.",
+    "description": "Sports venues for the City Super Mod: arenas, stadiums, ballparks, fields, courts and alleys, starting with the seating bowl (stadium seats in ten colours, aisle-end standards with row letters, aisle step lights and handrails, glass guards, wheelchair spaces, and section and portal signs) and an arena's event floor (dasher boards and glass with true curved corners, rink ice and its markings, a maple court with painted keys, hockey goals, basketball stanchions, benches, the scorer's table, the ice resurfacer and ice plant), with scoreboards, concourses and the other sports to come. Requires CSM: Core.",
     "version": "${version}",
     "mcversion": "${mcversion}",
     "credits": "Alex H, Brandon H (Mica Technologies)",

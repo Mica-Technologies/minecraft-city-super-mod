@@ -61,6 +61,8 @@ public class CsmVenues {
     // when a Fabricator GUI is opened, both after every mod's pre-initialization.
     CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_SEATING,
         VenuesFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_ARENA,
+        VenuesFabricatorRules::price);
 
     proxy.preInit(event);
   }
