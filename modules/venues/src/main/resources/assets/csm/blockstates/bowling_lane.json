@@ -1,0 +1,700 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_none_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_foul_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_dots_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_arrows_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_range_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "5"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_front_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "6"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/lane_maple_deck_back_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "bumpers": "true",
+        "mark": "0|1|2|3|4"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/bumper_r",
+        "y": 270
+      }
+    }
+  ]
+}

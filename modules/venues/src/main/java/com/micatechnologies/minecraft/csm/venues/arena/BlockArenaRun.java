@@ -22,7 +22,8 @@ import net.minecraft.world.World;
  * a steel frame, no back: the boards behind the players are the back), the penalty box bench (a
  * padded seat and back) and the scorer's table (a counter whose front is an LED panel, an
  * animated texture, so nothing ticks); and a ballpark's dugout bench, dugout rail and dugout
- * canopy; a football team bench and a soccer substitutes' shelter. Each block draws its own
+ * canopy; a football team bench and a soccer substitutes' shelter; a bowling centre's house ball
+ * rack and shoe counter. Each block draws its own
  * length; where the run stops it
  * draws an end frame or end panel ({@code end_l}, {@code end_r}, actual state).
  *
@@ -51,7 +52,11 @@ public class BlockArenaRun extends BlockVenue {
     TEAM_BENCH(BlockVenueBox.of(0, 0, 4, 16, 17, 14.75), 8.5 / 16.0),
     /** A soccer substitutes' shelter: seats against a back panel under a clear roof, two blocks
      * tall (the roof has no collision). */
-    SUB_SHELTER(BlockVenueBox.of(0, 0, 6, 16, 16, 16), 9.0 / 16.0);
+    SUB_SHELTER(BlockVenueBox.of(0, 0, 6, 16, 16, 16), 9.0 / 16.0),
+    /** A bowling centre's house ball rack: three sloped shelves of balls. */
+    BALL_RACK(BlockVenueBox.of(0, 0, 2, 16, 16, 14), -1),
+    /** A bowling centre's shoe counter, its top at a metre. */
+    SHOE_COUNTER(BlockVenueBox.of(0, 0, 0, 16, 16, 16), -1);
 
     final AxisAlignedBB box;
     final double seatTop;
@@ -76,11 +81,15 @@ public class BlockArenaRun extends BlockVenue {
    * @param kind         which piece
    */
   public BlockArenaRun(String registryName, Kind kind) {
-    super(registryName, kind == Kind.SCORERS_TABLE ? Material.WOOD : Material.IRON,
-        kind == Kind.SCORERS_TABLE ? SoundType.WOOD : SoundType.METAL, 1.5F);
+    super(registryName, wooden(kind) ? Material.WOOD : Material.IRON,
+        wooden(kind) ? SoundType.WOOD : SoundType.METAL, 1.5F);
     this.kind = kind;
     setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH)
         .withProperty(END_L, true).withProperty(END_R, true));
+  }
+
+  private static boolean wooden(Kind kind) {
+    return kind == Kind.SCORERS_TABLE || kind == Kind.SHOE_COUNTER;
   }
 
   @Override

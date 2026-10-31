@@ -1,0 +1,348 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "false",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "0"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_none_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "1"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_foul_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "2"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_12_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "right": "true",
+        "mark": "3"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/approach_synthetic_dots_15_r",
+        "y": 270
+      }
+    }
+  ]
+}

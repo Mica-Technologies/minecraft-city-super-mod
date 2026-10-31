@@ -1,0 +1,79 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "f": "csm:blocks/venues/bowling/counter_front",
+    "t": "csm:blocks/venues/bowling/counter_top",
+    "k": "csm:blocks/venues/bowling/counter_back",
+    "particle": "csm:blocks/venues/bowling/counter_front"
+  },
+  "elements": [
+    {
+      "from": [
+        15.4,
+        -0.4,
+        1.8
+      ],
+      "to": [
+        16,
+        15.2,
+        15.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#f",
+          "uv": [
+            0,
+            1,
+            0.6,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#f",
+          "uv": [
+            15.4,
+            1,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#f",
+          "uv": [
+            15.4,
+            2,
+            16,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#f",
+          "uv": [
+            15.4,
+            0.5,
+            16,
+            14
+          ]
+        },
+        "west": {
+          "texture": "#f",
+          "uv": [
+            0.5,
+            1,
+            14,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#f",
+          "uv": [
+            2,
+            1,
+            15.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

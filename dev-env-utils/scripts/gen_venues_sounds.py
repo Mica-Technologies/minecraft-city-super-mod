@@ -102,10 +102,62 @@ def venue_turnstile():
     return total
 
 
+def lowpass(x, cutoff):
+    """A one-pole low-pass, enough to darken noise into a rumble."""
+    a = np.exp(-2 * np.pi * cutoff / RATE)
+    out = np.zeros_like(x)
+    acc = 0.0
+    for i, v in enumerate(x):
+        acc = (1 - a) * v + a * acc
+        out[i] = acc
+    return out
+
+
+def bowling_roll():
+    """A bowling ball rolling 60 ft down a wooden lane: a low rumble that swells as it gathers
+    speed and thins out as it goes away, with the slow knock of the ball turning over the boards.
+    1.8 s, so the crash the pins make follows it."""
+    rng = np.random.default_rng(41)
+    t = t_of(1.8)
+    n = lowpass(lowpass(rng.standard_normal(len(t)), 180.0), 260.0)
+    hum = 0.5 * np.sin(2 * np.pi * (52 + 10 * t) * t) + 0.3 * np.sin(2 * np.pi * 97 * t)
+    knock = 0.35 * (np.sin(2 * np.pi * 7.5 * t) > 0.92) * np.sin(2 * np.pi * 140 * t)
+    env = np.minimum(1, t / 0.25) * np.exp(-np.maximum(0, t - 0.9) / 0.5)
+    out = (n * 6 + hum + knock) * env
+    r = int(RATE * 0.05)
+    out[-r:] *= np.linspace(1, 0, r)
+    return out
+
+
+def bowling_strike():
+    """The pins going down: the ball's hard hit on the head pin, then a scatter of wooden
+    clacks as pins strike each other and the kickbacks, over a short rumble into the pit.
+    About 1.4 s."""
+    rng = np.random.default_rng(42)
+    total = np.zeros(int(RATE * 1.45))
+    mix_at(total, 1.4 * click(0.25, 900.0, 0.05, noise=1.2, seed=50), 0.0)
+    for i in range(26):
+        at = 0.02 + rng.exponential(0.16)
+        if at > 1.1:
+            continue
+        f = rng.uniform(700.0, 1900.0)
+        lvl = rng.uniform(0.3, 0.9) * np.exp(-at / 0.6)
+        mix_at(total, lvl * click(0.12, f, rng.uniform(0.012, 0.03), noise=0.8,
+                                  seed=60 + i), at)
+    t = t_of(1.45)
+    rum = lowpass(rng.standard_normal(len(t)), 220.0) * 5 * np.exp(-t / 0.45)
+    total += rum
+    r = int(RATE * 0.05)
+    total[-r:] *= np.linspace(1, 0, r)
+    return total
+
+
 SOUNDS = {
     'venue_scanner_accept': (venue_scanner_accept, 4600),
     'venue_scanner_deny': (venue_scanner_deny, 4200),
     'venue_turnstile': (venue_turnstile, 5000),
+    'bowling_roll': (bowling_roll, 4200),
+    'bowling_strike': (bowling_strike, 5600),
 }
 
 

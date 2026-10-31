@@ -6,7 +6,8 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 /**
  * The sounds shipped by the CSM: Sports &amp; Venues module, all synthesised by
  * {@code dev-env-utils/scripts/gen_venues_sounds.py}: the ticket scanner's accept and reject
- * tones and the stadium turnstile's ratchet as its arms index round.
+ * tones, the stadium turnstile's ratchet as its arms index round, and a bowling ball's roll down
+ * the lane and the strike it ends in.
  *
  * <p>Each constant's name is the sound's {@code sounds.json} key and the path of its registry
  * name, so a sound event is {@code csm:&lt;key&gt;}.</p>
@@ -16,7 +17,9 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmSound;
 public enum VenuesSounds implements ICsmSound {
   VENUE_SCANNER_ACCEPT("venue_scanner_accept"),
   VENUE_SCANNER_DENY("venue_scanner_deny"),
-  VENUE_TURNSTILE("venue_turnstile");
+  VENUE_TURNSTILE("venue_turnstile"),
+  BOWLING_ROLL("bowling_roll"),
+  BOWLING_STRIKE("bowling_strike");
 
   private final String soundName;
 

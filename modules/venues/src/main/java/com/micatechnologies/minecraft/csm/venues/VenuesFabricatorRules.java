@@ -30,7 +30,12 @@ import net.minecraft.block.Block;
  * football or soccer field: turf is dirt and seed, a painted cell, an anchor or the end zone adds
  * dye; the goal posts and goals iron (a soccer goal's net string); a pylon or a corner flag wool;
  * the benches, the heater, the fan, the shelter (with its glass) sheet metal; the chain iron bars;
- * the boards enclosures and LED modules.
+ * the boards enclosures and LED modules. At a bowling centre: a maple lane or approach block is
+ * planks (a synthetic one planks and dye), the pins planks and dye, the pinsetter enclosures,
+ * wiring, a control board and LED modules for its masking graphic, the ball return sheet metal
+ * and its blower's wiring, a settee wool on sheet metal, the console a control board behind
+ * glass, the monitors enclosures and LED modules, the ball rack sheet metal and dye, the shoe
+ * counter planks, the cubbies planks and leather, the shoe spray sheet metal.
  * {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
@@ -47,6 +52,8 @@ public final class VenuesFabricatorRules {
   public static final String TAB_BALLPARK = "tabvenuesballpark";
   /** The Football & Soccer tab. */
   public static final String TAB_FOOTBALL = "tabvenuesfootball";
+  /** The Bowling tab. */
+  public static final String TAB_BOWLING = "tabvenuesbowling";
 
   private VenuesFabricatorRules() {
   }
@@ -80,6 +87,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> field = football(registryName);
     if (field != null) {
       return field;
+    }
+    List<FabricatorIngredient> bowl = bowling(registryName);
+    if (bowl != null) {
+      return bowl;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -392,6 +403,56 @@ public final class VenuesFabricatorRules {
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 4),
             FabricatorIngredient.part(CsmParts.LED_MODULE, 4),
             FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      default:
+        return null;
+    }
+  }
+
+  /** The Bowling tab's pieces, or null for a registry name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> bowling(String registryName) {
+    switch (registryName) {
+      case "bowling_lane":
+      case "bowling_approach":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2));
+      case "bowling_lane_synthetic":
+      case "bowling_approach_synthetic":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "bowling_pins":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "bowling_pinsetter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 4),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 2));
+      case "bowling_ball_return":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "bowling_settee":
+      case "bowling_settee_corner":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "bowling_scorer_console":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any("minecraft:glass_pane", 1));
+      case "bowling_scoring_monitor":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 4),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "bowling_ball_rack":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "bowling_shoe_counter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "bowling_shoe_cubbies":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2),
+            FabricatorIngredient.any("minecraft:leather", 2));
+      case "bowling_shoe_spray":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
       default:
         return null;
     }

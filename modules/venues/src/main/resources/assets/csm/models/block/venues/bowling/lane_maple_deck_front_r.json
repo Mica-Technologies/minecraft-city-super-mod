@@ -1,0 +1,12 @@
+{
+  "parent": "csm:block/venues/bowling/lane_geo_r",
+  "textures": {
+    "top": "csm:blocks/venues/bowling/lane_maple_deck_front",
+    "side": "csm:blocks/venues/bowling/lane_side",
+    "edge": "csm:blocks/venues/bowling/lane_edge",
+    "cap": "csm:blocks/venues/bowling/capping_maple",
+    "pit": "csm:blocks/venues/bowling/pit",
+    "curtain": "csm:blocks/venues/bowling/curtain",
+    "particle": "csm:blocks/venues/bowling/lane_maple_none"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/venues/bowling/rack_steel",
+    "c": "csm:blocks/venues/bowling/chrome",
+    "particle": "csm:blocks/venues/bowling/rack_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        2.4
+      ],
+      "to": [
+        0.8,
+        15,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            15.2,
+            1,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            1,
+            0.8,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            2,
+            1,
+            13.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2.5,
+            1,
+            14,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2.5,
+            0.8,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2,
+            0.8,
+            13.5
+          ]
+        }
+      }
+    }
+  ]
+}

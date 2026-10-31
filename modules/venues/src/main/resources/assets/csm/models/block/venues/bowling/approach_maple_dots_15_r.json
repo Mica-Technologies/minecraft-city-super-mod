@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/venues/bowling/approach_geo_r",
+  "textures": {
+    "top": "csm:blocks/venues/bowling/approach_maple_dots_15",
+    "side": "csm:blocks/venues/bowling/lane_side",
+    "particle": "csm:blocks/venues/bowling/approach_maple_none"
+  }
+}

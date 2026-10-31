@@ -25,5 +25,23 @@
         "stream": false
       }
     ]
+  },
+  "bowling_roll": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bowling_roll",
+        "stream": false
+      }
+    ]
+  },
+  "bowling_strike": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:bowling_strike",
+        "stream": false
+      }
+    ]
   }
 }

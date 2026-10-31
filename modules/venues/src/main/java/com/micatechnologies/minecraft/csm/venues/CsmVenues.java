@@ -81,6 +81,8 @@ public class CsmVenues {
         VenuesFabricatorRules::price);
     CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_FOOTBALL,
         VenuesFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_BOWLING,
+        VenuesFabricatorRules::price);
     VenuesSounds.registerSounds();
 
     CsmGuiRegistry.register(new VenuesGuiProvider());

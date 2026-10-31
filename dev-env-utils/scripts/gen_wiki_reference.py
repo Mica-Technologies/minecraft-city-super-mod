@@ -219,6 +219,17 @@ TABS = {
                           "sideline heater and fan, the down box and chain set, corner flags, "
                           "the substitutes' shelter and the fourth official's board; and the "
                           "football and soccer scoreboards."),
+    "tabvenuesbowling": ("venues-bowling", "Sports & Venues - Bowling",
+                         "A ten-pin bowling centre, one block a metre: lanes and approaches in "
+                         "maple or synthetic laid end to end to any length, a lane two blocks "
+                         "wide, that mark themselves (the foul line, the dots, the targeting "
+                         "arrows, the range finders, the pin deck and the pit) and raise bumpers "
+                         "on a sneak-click; the ten pins, knocked down by a click; the "
+                         "pinsetter and masking unit with four lit graphics; the ball return; "
+                         "settees that join round curved corners and the scorer's console; the "
+                         "overhead scoring monitors with a full ten-frame score for every "
+                         "bowler; the house ball rack; the shoe counter, cubbies and shoe "
+                         "spray."),
     "tabvenuesconcourse": ("venues-concourse", "Sports & Venues - Concourse",
                            "An arena's concourse and premium spaces: concession counters "
                            "(straight, outside corner and back counter in four finishes), the lit "
@@ -267,7 +278,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
-              "tabvenuesconcourse", "tabvenuesballpark", "tabvenuesfootball",
+              "tabvenuesconcourse", "tabvenuesballpark", "tabvenuesfootball", "tabvenuesbowling",
               "tabnone"]
 
 

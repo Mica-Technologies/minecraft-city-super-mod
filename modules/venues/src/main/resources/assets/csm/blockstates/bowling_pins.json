@@ -1,0 +1,102 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,fallen=false,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_standing_l.obj"
+      }
+    ],
+    "facing=north,fallen=false,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_standing_r.obj"
+      }
+    ],
+    "facing=north,fallen=true,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_l.obj"
+      }
+    ],
+    "facing=north,fallen=true,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_r.obj"
+      }
+    ],
+    "facing=east,fallen=false,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_standing_l.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,fallen=false,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_standing_r.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,fallen=true,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_l.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,fallen=true,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_r.obj",
+        "y": 90
+      }
+    ],
+    "facing=south,fallen=false,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_standing_l.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,fallen=false,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_standing_r.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,fallen=true,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_l.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,fallen=true,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_r.obj",
+        "y": 180
+      }
+    ],
+    "facing=west,fallen=false,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_standing_l.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,fallen=false,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_standing_r.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,fallen=true,right=false": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_l.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,fallen=true,right=true": [
+      {
+        "model": "csm:venues/bowling/pins_fallen_r.obj",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/bowling/pins_item"
+      }
+    ]
+  }
+}

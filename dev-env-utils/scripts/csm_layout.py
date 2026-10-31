@@ -84,6 +84,7 @@ MODULE_OF_TAB = {
     "tabvenuesconcourse": "venues",
     "tabvenuesballpark": "venues",
     "tabvenuesfootball": "venues",
+    "tabvenuesbowling": "venues",
     "tabvenueshidden": "venues",
     "tabmaterials": CORE,
 }

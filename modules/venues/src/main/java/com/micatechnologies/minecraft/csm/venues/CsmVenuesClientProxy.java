@@ -12,6 +12,8 @@ import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityBallparkScor
 import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityBallparkScoreboardRenderer;
 import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityOutfieldMarker;
 import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityOutfieldMarkerRenderer;
+import com.micatechnologies.minecraft.csm.venues.bowling.TileEntityBowlingMonitor;
+import com.micatechnologies.minecraft.csm.venues.bowling.TileEntityBowlingMonitorRenderer;
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
 import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
 import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarquee;
@@ -37,10 +39,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
- * The venues module's proxy on the client. It binds the eight renderers (the scoreboard's
+ * The venues module's proxy on the client. It binds the nine renderers (the scoreboard's
  * screens, the ribbon board's scrolling text, the banners' lettering, the exterior marquee's
  * picture, the ballpark scoreboards' line score and count, the outfield distance markers, the
- * football and soccer scoreboards, the end zone lettering) and
+ * football and soccer scoreboards, the end zone lettering, the bowling scoring monitors) and
  * registers the colour
  * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
  * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
@@ -71,6 +73,8 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
         new TileEntityFieldScoreboardRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityEndZoneLettering.class,
         new TileEntityEndZoneLetteringRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBowlingMonitor.class,
+        new TileEntityBowlingMonitorRenderer());
     seatColours();
     bannerColours();
     storeColours();

@@ -750,6 +750,28 @@ def cost_for(registry, info, ancestors):
         if registry in fieldp:
             return fieldp[registry]
         return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabvenuesbowling":
+        # Mirrors VenuesFabricatorRules.bowling (Sports & Venues module).
+        bowl = {
+            "bowling_lane": ("planks x2",), "bowling_approach": ("planks x2",),
+            "bowling_lane_synthetic": ("planks", "dye"),
+            "bowling_approach_synthetic": ("planks", "dye"),
+            "bowling_pins": ("planks x2", "dye"),
+            "bowling_pinsetter": ("ENCLOSURE_SHELL x4", "WIRING_HARNESS x2", "CONTROL_BOARD",
+                                  "LED_MODULE x2"),
+            "bowling_ball_return": ("SHEET_METAL x2", "WIRING_HARNESS"),
+            "bowling_settee": ("wool x2", "SHEET_METAL"),
+            "bowling_settee_corner": ("wool x2", "SHEET_METAL"),
+            "bowling_scorer_console": ("CONTROL_BOARD", "SHEET_METAL", "glass_pane"),
+            "bowling_scoring_monitor": ("ENCLOSURE_SHELL x2", "LED_MODULE x4", "CONTROL_BOARD"),
+            "bowling_ball_rack": ("SHEET_METAL x2", "dye"),
+            "bowling_shoe_counter": ("planks x2", "FASTENER_KIT"),
+            "bowling_shoe_cubbies": ("planks x2", "leather x2"),
+            "bowling_shoe_spray": ("SHEET_METAL",),
+        }
+        if registry in bowl:
+            return bowl[registry]
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab in ("tabvenuesconcourse", "tabvenuesseating") and registry in exterior:
         # Mirrors VenuesFabricatorRules.exterior (Sports & Venues module).
         return exterior[registry]

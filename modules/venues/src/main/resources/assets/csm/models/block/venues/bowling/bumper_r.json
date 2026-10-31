@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "b": "csm:blocks/venues/bowling/bumper",
+    "particle": "csm:blocks/venues/bowling/bumper"
+  },
+  "elements": [
+    {
+      "from": [
+        10.592,
+        14.6,
+        0
+      ],
+      "to": [
+        11.992,
+        17.0,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#b",
+          "uv": [
+            5.408,
+            0,
+            4.008,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#b",
+          "uv": [
+            0,
+            0,
+            16,
+            1.4
+          ]
+        }
+      }
+    }
+  ]
+}

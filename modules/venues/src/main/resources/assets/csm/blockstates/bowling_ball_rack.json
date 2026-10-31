@@ -1,0 +1,152 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack"
+      }
+    },
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_balls.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_balls.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_balls.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_balls.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/bowling/rack_end_r",
+        "y": 270
+      }
+    }
+  ]
+}
