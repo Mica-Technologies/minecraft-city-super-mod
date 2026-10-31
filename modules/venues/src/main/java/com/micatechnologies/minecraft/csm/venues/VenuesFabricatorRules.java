@@ -26,7 +26,11 @@ import net.minecraft.block.Block;
  * is dirt and seed, clay is clay, an edge both, a chalk line or a painted marking adds dye; home
  * plate and the rubber are quartz, a base wool; the dugout's pieces sheet metal (the bat rack
  * planks, the cooler a bucket); a net is string; the outfield wall concrete under wool padding
- * (its marker adds dye); the foul pole iron; the scoreboards enclosures and LED modules.
+ * (its marker adds dye); the foul pole iron; the scoreboards enclosures and LED modules. On a
+ * football or soccer field: turf is dirt and seed, a painted cell, an anchor or the end zone adds
+ * dye; the goal posts and goals iron (a soccer goal's net string); a pylon or a corner flag wool;
+ * the benches, the heater, the fan, the shelter (with its glass) sheet metal; the chain iron bars;
+ * the boards enclosures and LED modules.
  * {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
@@ -41,6 +45,8 @@ public final class VenuesFabricatorRules {
   public static final String TAB_CONCOURSE = "tabvenuesconcourse";
   /** The Ballpark tab. */
   public static final String TAB_BALLPARK = "tabvenuesballpark";
+  /** The Football & Soccer tab. */
+  public static final String TAB_FOOTBALL = "tabvenuesfootball";
 
   private VenuesFabricatorRules() {
   }
@@ -70,6 +76,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> park = ballpark(registryName);
     if (park != null) {
       return park;
+    }
+    List<FabricatorIngredient> field = football(registryName);
+    if (field != null) {
+      return field;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -325,6 +335,66 @@ public final class VenuesFabricatorRules {
           FabricatorIngredient.any("minecraft:dye", 1));
     }
     return null;
+  }
+
+  /** The Football & Soccer tab's pieces, or null for a registry name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> football(String registryName) {
+    switch (registryName) {
+      case "field_turf":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:dirt", 1),
+            FabricatorIngredient.any("minecraft:wheat_seeds", 1));
+      case "football_end_zone":
+      case "football_marking_anchor":
+      case "football_marking_anchor_2":
+      case "football_painted":
+      case "soccer_marking_anchor":
+      case "soccer_marking_anchor_2":
+      case "soccer_painted":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:dirt", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "football_end_zone_lettering":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:dye", 2));
+      case "football_goal_post":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 4),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "soccer_goal":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 3),
+            FabricatorIngredient.any("minecraft:string", 4));
+      case "soccer_goal_small":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 1),
+            FabricatorIngredient.any("minecraft:string", 2));
+      case "end_zone_pylon":
+      case "soccer_corner_flag":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 1));
+      case "football_down_box":
+      case "football_chain_stake":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "football_chain":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_bars", 1));
+      case "football_team_bench":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+      case "sideline_heater":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "sideline_fan":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "soccer_substitutes_shelter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.any("minecraft:glass_pane", 2));
+      case "fourth_official_board":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "football_scoreboard":
+      case "soccer_scoreboard":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 4),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 4),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      default:
+        return null;
+    }
   }
 
   /** The exterior and the shared outdoor pieces, or null for a name that is not one of them. */

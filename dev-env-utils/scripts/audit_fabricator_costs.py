@@ -724,6 +724,32 @@ def cost_for(registry, info, ancestors):
         if registry.endswith("_anchor") or registry.endswith("_anchor_third"):
             return ("clay_ball", "dye")
         return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabvenuesfootball":
+        # Mirrors VenuesFabricatorRules.football (Sports & Venues module).
+        fieldp = {
+            "field_turf": ("dirt", "wheat_seeds"),
+            "football_end_zone": ("dirt", "dye"), "football_marking_anchor": ("dirt", "dye"),
+            "football_marking_anchor_2": ("dirt", "dye"), "football_painted": ("dirt", "dye"),
+            "soccer_marking_anchor": ("dirt", "dye"), "soccer_marking_anchor_2": ("dirt", "dye"),
+            "soccer_painted": ("dirt", "dye"),
+            "football_end_zone_lettering": ("dye x2",),
+            "football_goal_post": ("iron_ingot x4", "dye"),
+            "soccer_goal": ("iron_ingot x3", "string x4"),
+            "soccer_goal_small": ("iron_ingot", "string x2"),
+            "end_zone_pylon": ("wool",), "soccer_corner_flag": ("wool",),
+            "football_down_box": ("SHEET_METAL", "dye"), "football_chain_stake": ("SHEET_METAL", "dye"),
+            "football_chain": ("iron_bars",),
+            "football_team_bench": ("SHEET_METAL x2",),
+            "sideline_heater": ("SHEET_METAL x2", "WIRING_HARNESS"),
+            "sideline_fan": ("SHEET_METAL", "WIRING_HARNESS"),
+            "soccer_substitutes_shelter": ("SHEET_METAL x2", "glass_pane x2"),
+            "fourth_official_board": ("LED_MODULE", "SHEET_METAL"),
+            "football_scoreboard": ("ENCLOSURE_SHELL x4", "LED_MODULE x4", "CONTROL_BOARD"),
+            "soccer_scoreboard": ("ENCLOSURE_SHELL x4", "LED_MODULE x4", "CONTROL_BOARD"),
+        }
+        if registry in fieldp:
+            return fieldp[registry]
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab in ("tabvenuesconcourse", "tabvenuesseating") and registry in exterior:
         # Mirrors VenuesFabricatorRules.exterior (Sports & Venues module).
         return exterior[registry]

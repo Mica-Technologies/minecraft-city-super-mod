@@ -1,0 +1,94 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "csm:blocks/venues/football/fb_pic_013",
+    "pic": "csm:blocks/venues/football/fb_pic_013",
+    "side": "csm:blocks/venues/football/soil"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        },
+        "down": {
+          "texture": "#side",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0.0,
+        0,
+        0.0
+      ],
+      "to": [
+        5.5,
+        16,
+        16.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#pic",
+          "uv": [
+            0.0,
+            0.0,
+            5.5,
+            16.0
+          ],
+          "cullface": "up",
+          "tintindex": 1
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        0,
+        0.0
+      ],
+      "to": [
+        16.0,
+        16,
+        16.0
+      ],
+      "faces": {
+        "up": {
+          "texture": "#pic",
+          "uv": [
+            5.5,
+            0.0,
+            16.0,
+            16.0
+          ],
+          "cullface": "up",
+          "tintindex": 2
+        }
+      }
+    }
+  ]
+}

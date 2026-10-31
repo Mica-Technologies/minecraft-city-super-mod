@@ -1,0 +1,88 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "east=false,kind=0": [
+      {
+        "model": "csm:venues/football/fb_cell_092"
+      }
+    ],
+    "east=true,kind=0": [
+      {
+        "model": "csm:venues/football/fb_cell_092",
+        "y": 90
+      }
+    ],
+    "east=false,kind=1": [
+      {
+        "model": "csm:venues/football/fb_cell_142"
+      }
+    ],
+    "east=true,kind=1": [
+      {
+        "model": "csm:venues/football/fb_cell_142",
+        "y": 90
+      }
+    ],
+    "east=false,kind=2": [
+      {
+        "model": "csm:venues/football/fb_cell_007"
+      }
+    ],
+    "east=true,kind=2": [
+      {
+        "model": "csm:venues/football/fb_cell_007",
+        "y": 90
+      }
+    ],
+    "east=false,kind=3": [
+      {
+        "model": "csm:venues/football/fb_cell_055",
+        "y": 180
+      }
+    ],
+    "east=true,kind=3": [
+      {
+        "model": "csm:venues/football/fb_cell_055",
+        "y": 270
+      }
+    ],
+    "east=false,kind=4": [
+      {
+        "model": "csm:venues/football/fb_cell_092"
+      }
+    ],
+    "east=true,kind=4": [
+      {
+        "model": "csm:venues/football/fb_cell_092",
+        "y": 90
+      }
+    ],
+    "east=false,kind=5": [
+      {
+        "model": "csm:venues/football/fb_cell_092"
+      }
+    ],
+    "east=true,kind=5": [
+      {
+        "model": "csm:venues/football/fb_cell_092",
+        "y": 90
+      }
+    ],
+    "east=false,kind=6": [
+      {
+        "model": "csm:venues/football/fb_cell_142"
+      }
+    ],
+    "east=true,kind=6": [
+      {
+        "model": "csm:venues/football/fb_cell_142",
+        "y": 90
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/football/fb_cell_092"
+      }
+    ]
+  }
+}

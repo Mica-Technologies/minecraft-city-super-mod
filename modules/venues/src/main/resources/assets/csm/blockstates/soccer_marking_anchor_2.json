@@ -1,0 +1,87 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "east=false,kind=0": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=0": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "east=false,kind=1": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=1": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "east=false,kind=2": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=2": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "east=false,kind=3": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=3": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "east=false,kind=4": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=4": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "east=false,kind=5": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=5": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "east=false,kind=6": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ],
+    "east=true,kind=6": [
+      {
+        "model": "csm:venues/football/sc_cell_005",
+        "y": 90
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/football/sc_cell_005"
+      }
+    ]
+  }
+}

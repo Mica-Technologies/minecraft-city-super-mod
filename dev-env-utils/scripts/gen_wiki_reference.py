@@ -209,6 +209,16 @@ TABS = {
                           "water cooler; backstop and batting cage nets; the outfield wall with "
                           "its distance markers and the foul pole; the line score scoreboard, "
                           "the count board and a pitching machine."),
+    "tabvenuesfootball": ("venues-football", "Sports & Venues - Football & Soccer",
+                          "American football and soccer at full size, one block a metre: field "
+                          "turf in two mowing tones, white paint and the surround, the end zone "
+                          "in any team colour, and the marking anchors and painted cells that "
+                          "draw every yard line, hash mark, number, arrow and pitch line where it "
+                          "really falls; the end zone lettering; the football goal post, the "
+                          "soccer goal and a small-sided goal; end zone pylons, team benches, a "
+                          "sideline heater and fan, the down box and chain set, corner flags, "
+                          "the substitutes' shelter and the fourth official's board; and the "
+                          "football and soccer scoreboards."),
     "tabvenuesconcourse": ("venues-concourse", "Sports & Venues - Concourse",
                            "An arena's concourse and premium spaces: concession counters "
                            "(straight, outside corner and back counter in four finishes), the lit "
@@ -257,7 +267,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
-              "tabvenuesconcourse", "tabvenuesballpark",
+              "tabvenuesconcourse", "tabvenuesballpark", "tabvenuesfootball",
               "tabnone"]
 
 

@@ -10,14 +10,14 @@ import net.minecraft.world.World;
  * The tile entity of a {@link BlockArenaFloorAnchor}: no data, no ticking, no renderer. On the
  * client it asks for the painted cells round its anchor to be drawn again whenever the anchor
  * is loaded, changed or removed, since a block change only redraws its own chunk section and a
- * picture reaches up to nine blocks into the next one.
+ * picture reaches up to twelve blocks into the next one.
  *
  * @since 2026.10
  */
 public class TileEntityArenaFloorAnchor extends TileEntity {
 
-  /** Further than any picture reaches from its anchor. */
-  private static final int REACH = 10;
+  /** Further than any picture reaches from its anchor (a football field's, 12). */
+  private static final int REACH = 13;
 
   @Override
   public void onLoad() {

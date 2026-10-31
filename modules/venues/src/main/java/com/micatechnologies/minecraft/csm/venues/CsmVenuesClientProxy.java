@@ -15,6 +15,9 @@ import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityOutfieldMark
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
 import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
 import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarquee;
+import com.micatechnologies.minecraft.csm.venues.field.BlockFieldTurf;
+import com.micatechnologies.minecraft.csm.venues.field.FieldTint;
+import com.micatechnologies.minecraft.csm.venues.field.IFieldCell;
 import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarqueeRenderer;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumCompanionSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumSeat;
@@ -62,6 +65,43 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
     seatColours();
     bannerColours();
     storeColours();
+    fieldColours();
+  }
+
+  /**
+   * A football or soccer field's tints ({@link FieldTint}): the plain turf's dark stripe and the
+   * end zone's colour from their metadata, a painted cell's parts from the turf and end zone
+   * beside it.
+   */
+  private static void fieldColours() {
+    List<Block> plain = new ArrayList<>();
+    List<Block> cells = new ArrayList<>();
+    for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+      if (block instanceof BlockFieldTurf) {
+        plain.add(block);
+      } else if (block instanceof IFieldCell) {
+        cells.add(block);
+      }
+    }
+    Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(
+        (state, world, pos, tintIndex) -> tintIndex == 0 ? FieldTint.plain(state) : -1,
+        plain.toArray(new Block[0]));
+    Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(
+        FieldTint::cell, cells.toArray(new Block[0]));
+    List<Item> items = new ArrayList<>();
+    for (Block block : plain) {
+      items.add(Item.getItemFromBlock(block));
+    }
+    for (Block block : cells) {
+      items.add(Item.getItemFromBlock(block));
+    }
+    Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+      Block block = Block.getBlockFromItem(stack.getItem());
+      if (block instanceof BlockFieldTurf) {
+        return tintIndex == 0 ? FieldTint.plain(block.getDefaultState()) : -1;
+      }
+      return FieldTint.cell(block.getDefaultState(), null, null, tintIndex);
+    }, items.toArray(new Item[0]));
   }
 
   private static void storeColours() {

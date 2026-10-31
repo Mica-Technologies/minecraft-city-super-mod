@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/football/turf_light"
+  },
+  "variants": {
+    "kind": {
+      "0": {
+        "model": "csm:venues/football/turf_light"
+      },
+      "1": {
+        "model": "csm:venues/football/turf_dark"
+      },
+      "2": {
+        "model": "csm:venues/football/paint_white"
+      },
+      "3": {
+        "model": "csm:venues/football/turf_surround"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/football/turf_light"
+      }
+    ]
+  }
+}
