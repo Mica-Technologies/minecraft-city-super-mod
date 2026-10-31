@@ -1173,7 +1173,7 @@ label canvas three samples a texel, and every cell's picture cut from it.
 | Size | 120 x 53 1/3 yd (109.7 x 48.8 m), a 6 ft white border round it | 105 x 68 m, inside the lines |
 | Centre (canonical frame) | the middle of cell (0, 0): the 50 yard line runs north-south through column 0, the field's length east-west | (0.5, 0.0): the halfway line through column 0, the touchlines on the block edges z = -34 and 34, the goal lines on x = -52 and 53 |
 | Lines | 4 in (drawn 4 texels), goal lines 8 in, in the end zone | 12 cm |
-| Markings | yard lines every 5 yd; hash marks every yard 70 ft 9 in from the sidelines (2 ft long); 2 ft yard ticks 8 in inside the sidelines; numbers every 10 yd, 6 ft x 4 ft, tops 9 yd from the sideline, upright to a reader beyond the far sideline (tops towards the nearer sideline), with direction arrows towards the nearer goal; the 2 yard marks; the end zones in the end zone colour; the midfield logo area left plain | halfway line, centre circle (9.15 m) and spot, penalty areas (16.5 x 40.32 m), goal areas (5.5 x 18.32 m), penalty spots (11 m) and arcs, corner arcs (1 m), to the Laws of the Game |
+| Markings | yard lines every 5 yd; hash marks every yard 70 ft 9 in from the sidelines (2 ft long); 2 ft yard ticks 8 in inside the sidelines; numbers every 10 yd, 6 ft x 4 ft, each row read from the sideline nearest it (bottoms 7 yd in from it, tops 9 yd, towards the middle), with direction arrows beside the tops pointing to the nearer goal; the 2 yard marks; the end zones in the end zone colour; the midfield logo area left plain | halfway line, centre circle (9.15 m) and spot, penalty areas (16.5 x 40.32 m), goal areas (5.5 x 18.32 m), penalty spots (11 m) and arcs, corner arcs (1 m), to the Laws of the Game |
 | Mowing | 5 yd stripes from goal line to goal line, each edge under a yard line; end zones light | 5 m stripes across the pitch on block edges, the middle one centred on the halfway line, the goal line and halfway columns light |
 | Extent laid | cells x -57..58, z -26..27 | cells x -54..55, z -36..36 |
 
@@ -1206,7 +1206,7 @@ tint class, each a window of the one texture, and the tints come from the blocks
 So the white lines in a dark stripe are a little darker, as painted grass is, a picture serves
 both stripes and any of the sixteen end zone colours, and the cell under a yard line takes each
 stripe's tone on its own side of the line. Pictures that are a half turn of one another are stored
-once (the turn is in the anchor's table): **164 football pictures and 81 soccer pictures**.
+once (the turn is in the anchor's table): **173 football pictures and 81 soccer pictures**.
 Pictures are only stored unturned or turned 180 degrees, never a quarter, so a stored picture's
 stripe edges always run along its own north-south axis, the axis its tint looks along.
 
@@ -1247,7 +1247,7 @@ py -3 dev-env-utils/scripts/gen_venues_football.py --layout soccer --commands 20
 anchors' bit 0 set and every fixture's facing turned; `--zone 9` makes the end zones crimson.)
 Copy them to `<save>/data/functions/csm/`, `/reload`, raise `maxCommandChainLength` above the
 football field's 2,308 commands, and `/function csm:football` with the chunks loaded.
-The football field is 1,937 painted cells, 3,563 `field_turf`, 749 end zone cells and 15
+The football field is 1,950 painted cells, 3,550 `field_turf`, 749 end zone cells and 15
 anchors; the soccer pitch 736 painted cells and 7,279 turf. The fixtures it places, in the
 canonical frame (centre cell (0, 0), one block over the ground):
 
@@ -1289,7 +1289,7 @@ The nets are a 32 px mesh texture in the cutout layer, cut into a quad a block s
 | `soccer_corner_flag` | facing: the way the flag flies | A 1.5 m post and a red and yellow flag; no collision |
 | `soccer_substitutes_shelter` | facing | A run two blocks tall: seats against a back panel under a clear roof, clear end panels where the run stops; sat on with a click |
 | `fourth_official_board` | facing | The board on a stand, +3 lit; decor |
-| `football_end_zone_lettering` | facing: towards the field | A marker in the air cell over the end zone's middle; its renderer paints the words flat across the end zone, the letters' bottoms towards the goal line, lit as the air over the field (the stadium lights light them). No model in the world |
+| `football_end_zone_lettering` | facing: towards the field | A marker in the air cell over the end zone's middle; its renderer paints the words flat across the end zone, the letters' bottoms towards the goal line (read from the field of play, as most real end zones are; the yard numbers instead read from their nearer sideline), lit as the air over the field (the stadium lights light them). No model in the world |
 
 **End zone lettering NBT**: `txt` (24 characters, HOME), `h` the letters' height in blocks (1-9,
 5), `w` the widest they may run (4-48, 40; they shrink to fit), `fc` their colour, `oc` an
@@ -1356,7 +1356,7 @@ lightfootprints`, re-aiming all twelve at once).
 | `football_end_zone` | colour (16) | | 16 |
 | `football_marking_anchor`, `soccer_marking_anchor` | east, kind (8) | | 16 each, 32 |
 | `football_marking_anchor_2`, `soccer_marking_anchor_2` | east, kind (7) | | 14 each, 28 |
-| `football_painted` | | cell (164), rot (4) | 656 |
+| `football_painted` | | cell (173), rot (4) | 692 |
 | `soccer_painted` | | cell (81), rot (4) | 324 |
 | `football_goal_post`, `soccer_goal`, `soccer_goal_small` | facing | | 4 each, 12 |
 | `end_zone_pylon`, `football_chain_stake`, `football_chain`, `sideline_heater`, `sideline_fan`, `soccer_corner_flag`, `fourth_official_board` | facing | | 4 each, 28 |
@@ -1365,9 +1365,9 @@ lightfootprints`, re-aiming all twelve at once).
 | `football_end_zone_lettering` | facing | | 4 |
 | `football_scoreboard`, `soccer_scoreboard` | facing | | 4 each, 8 |
 
-**1,160 states**, of which the painted cells are 980: fewer than the ballpark's 1,316 for two
+**1,196 states**, of which the painted cells are 1,016: fewer than the ballpark's 1,316 for two
 whole fields, because the tone and the end zone colour are tints (drawn into the pictures they
-would have about tripled them) and a half turn is free. The pictures cost 245 small sprites
+would have about tripled them) and a half turn is free. The pictures cost 254 small sprites
 (32 px, about 1 MB of atlas) and a few quads a cell.
 
 ### Costs

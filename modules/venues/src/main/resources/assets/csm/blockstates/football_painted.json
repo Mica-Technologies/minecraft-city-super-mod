@@ -496,6 +496,33 @@
       },
       "163": {
         "model": "csm:venues/football/fb_cell_163"
+      },
+      "164": {
+        "model": "csm:venues/football/fb_cell_164"
+      },
+      "165": {
+        "model": "csm:venues/football/fb_cell_165"
+      },
+      "166": {
+        "model": "csm:venues/football/fb_cell_166"
+      },
+      "167": {
+        "model": "csm:venues/football/fb_cell_167"
+      },
+      "168": {
+        "model": "csm:venues/football/fb_cell_168"
+      },
+      "169": {
+        "model": "csm:venues/football/fb_cell_169"
+      },
+      "170": {
+        "model": "csm:venues/football/fb_cell_170"
+      },
+      "171": {
+        "model": "csm:venues/football/fb_cell_171"
+      },
+      "172": {
+        "model": "csm:venues/football/fb_cell_172"
       }
     },
     "rot": {

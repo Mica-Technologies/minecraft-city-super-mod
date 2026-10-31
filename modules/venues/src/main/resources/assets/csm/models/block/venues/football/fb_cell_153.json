@@ -60,8 +60,7 @@
             16.0,
             16.0
           ],
-          "cullface": "up",
-          "tintindex": 0
+          "cullface": "up"
         }
       }
     }

@@ -145,7 +145,7 @@ a 105 x 68 m pitch, one block a metre, from one geometry, `football_field.py`; e
 number and arc drawn where it really falls in its cell, to the texel, as pictures round a grid of
 marking anchors (radius 12) that painted cells find; the mowing tone and the end zone colour are
 tints the painted cell takes from the plain turf and end zone beside it, split under each 5 yard
-line, so 164 + 81 pictures serve any mowing and colour; goal posts, goals, sideline pieces, end
+line, so 173 + 81 pictures serve any mowing and colour; goal posts, goals, sideline pieces, end
 zone lettering and the football and soccer scoreboards; stadium light heads aimed by an `aim`
 NBT offset); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
@@ -614,7 +614,7 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   (pictures to the texel, the mowing tone and end zone colour as tints split under the yard
   lines), the anchors, worked layouts and the fixtures they place, the goals, the sideline, the
   end zone lettering's and the scoreboards' NBT, aiming light heads (`aim`) and a field lit by
-  six towers, the state counts (1,160), costs and traps
+  six towers, the state counts (1,196), costs and traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and

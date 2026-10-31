@@ -27,8 +27,9 @@ The canonical frames (x east, z south, blocks):
 
   * football: the field's centre at (0.5, 0.5), the middle of cell (0, 0); the 50 yard line runs
     north-south through the middle of column 0; the field's length runs east-west; the home (press
-    box) sideline is the south one. Numbers read upright from the far sideline, their tops
-    towards the nearer sideline, as on a real field.
+    box) sideline is the south one. Each row of numbers reads upright from the sideline nearest
+    it: the digits' bottoms 7 yards in from it and their tops 9 yards in, towards the middle of
+    the field, as on a real field.
   * soccer: the centre spot at (0.5, 0.0); the halfway line through the middle of column 0, the
     pitch's long axis east-west; the touchlines on block edges (z = -34 and 34), the goal lines
     on block edges (x = -52 and 53): a 105 x 68 pitch.
@@ -253,13 +254,13 @@ class FootballField(object):
         return out
 
     def _frame(self, near):
-        """A number's frame: its baseline row and its top; ``right`` and ``down`` the digit's x
-        and y axes in the world, reading it from beyond its near sideline."""
-        if near:            # the south (home) half: tops towards the south sideline
+        """A number's frame: its top row and the digit's x and y axes (``right``, ``down``) in the
+        world, read standing on its near sideline facing the field."""
+        if near:            # the south (home) half: read from the south sideline, bottoms to it
             top = self.sz[1] - self.number_top
-            return top, (-1, 0), (0, -1)
+            return top, (1, 0), (0, 1)
         top = self.sz[0] + self.number_top
-        return top, (1, 0), (0, 1)
+        return top, (-1, 0), (0, -1)
 
     def _number(self, x, label, near):
         top, right, down = self._frame(near)
