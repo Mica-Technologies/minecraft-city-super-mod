@@ -118,7 +118,17 @@ warmer, nacho station, soft serve) switched on and off with their moving parts a
 textures, the beer kiosk unit, a one-way tripod turnstile, free or ticketed, with a ticket
 scanner and the Venue Ticket item, the suite bar counter and drink rail, and team store fixtures
 tinted in any team's colours from a tile entity; what Furnishings, Life Safety and Transit
-already make is reused, not copied); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
+already make is reused, not copied), then the exterior and the outdoor pieces every sport shares
+(`venues.exterior`: an LED marquee board built to size from one-block cabinets, single-sided on a
+wall or double-sided on a clad pylon, its event text and video drawn once across it by its
+controller's renderer; gate and section wayfinding blades on Core's wayfinding panel, hung from a
+wall bracket; the box office window, a two-block unit joining into a run under lit headers;
+`venues.outdoor`: aluminium bleachers, a deck a cell with its seat plank or aisle step above,
+rows one or two deep closing themselves with end and back rails by actual state, and their
+understructure; press box window and wall modules with outward-leaning glass turning outside
+corners; the ticket booth; stadium light towers, a monopole or lattice shaft stacked to height
+under an OBJ head of floodlights, lit but not lighting the field, since Lighting's light
+projection is not Core's); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -565,7 +575,10 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   editor and NBT, the ribbon board's phase, corners and scrolling text, banners, the measured
   costs; the concourse: the existing blocks (Furnishings, Life Safety, Transit) an arena builder
   should use instead, every concourse block's metadata and NBT, the one-way turnstile and the
-  ticket, the team colours, and the traps
+  ticket, the team colours, and the traps; the exterior and shared outdoor pieces: the marquee
+  built to size and where its controller goes, its NBT and measured cost, the blades on Core's
+  wayfinding panel, the box office window, how bleacher rows are laid, the press box clockwise
+  round its corners, the booth, the light towers and why they do not light the field
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1278,6 +1291,15 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   1; unit footprints written into the tab lines from their boxes; `--check`, `--fragments`.
   `gen_venues_sounds.py` synthesises the scanner's accept and refuse tones and the turnstile's
   ratchet (numpy to ffmpeg to OGG)
+- `gen_venues_exterior.py` -- the arena's exterior and the outdoor pieces every sport shares
+  (Sports & Venues): the marquee cabinet's body and frame edges, single and double-sided
+  (multipart by actual state; the screen depths `MARQUEE_*` shared with
+  `TileEntityMarqueeRenderer`), the pylon, the blades' icons (the blades are Core's wayfinding
+  panel) and their bracket, the box office window with its four lit headers (64 px legends on
+  explicit UVs), the bleacher deck, seat plank, aisle step, end and back rails and understructure,
+  the press box modules (glass and mullions turned 22.5 degrees, tall elements cut at the block
+  lines by `tall()`), and the ticket booth and the light heads (lit and dark) as OBJ; unit
+  footprints written into the tab lines from their boxes; `--check`, `--fragments`
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under

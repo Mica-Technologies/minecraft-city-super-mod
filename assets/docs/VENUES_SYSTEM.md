@@ -23,9 +23,9 @@ from fixed numbers rather than from a Building block.
 
 | Tab | Order | Holds |
 |---|---|---|
-| Sports & Venues - Seating & Venue (`tabvenuesseating`) | 34 | what every venue shares: the seating bowl (below), later bleachers, press boxes and venue signs |
+| Sports & Venues - Seating & Venue (`tabvenuesseating`) | 34 | what every venue shares: the seating bowl, aluminium bleachers, the press box, the ticket booth and stadium light towers (below) |
 | Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor and, over it, the centre-hung scoreboard, ribbon boards, banners and AV (below) |
-| Sports & Venues - Concourse (`tabvenuesconcourse`) | 36 | concession stands and their machines, menu boards, the beer kiosk, turnstiles and the ticket scanner, suite fixtures, the team store (below) |
+| Sports & Venues - Concourse (`tabvenuesconcourse`) | 36 | concession stands and their machines, menu boards, the beer kiosk, turnstiles and the ticket scanner, suite fixtures, the team store, and the arena's outside and entry: the marquee board and its pylon, the wayfinding blades and their bracket, the box office window (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
@@ -33,14 +33,15 @@ tab for every block family. Planned, in the order they land:
 
 | Tab | Holds |
 |---|---|
-| Exterior (or in Concourse) | the box office, the marquee board and the wayfinding blades |
 | Ballpark | baseball and softball: bases, mound, the infield and warning track palettes, dugouts, backstop, foul poles, outfield wall |
 | Football & Soccer | the turf palette and its lines, goal posts and goals, pylons, sideline benches, chains |
 | Bowling | the lane built to length, pinsetter, ball return, scoring monitor, the counter and settees |
 | Courts, Track & Pool | tennis and pickleball, volleyball, track and field, swimming, golf and mini-golf, skate park basics |
 
 A piece used by more than one sport (a stadium light tower, a bleacher, a press box) goes in
-Seating & Venue rather than in the first sport that needed it.
+Seating & Venue rather than in the first sport that needed it. The exterior did not get a tab of
+its own: an arena's outside is not a kind of venue, and its entry pieces (the box office, the
+blades) sit with the turnstiles in Concourse.
 
 ## Performance rules
 
@@ -703,12 +704,152 @@ entity. A team store fixture's colour change rebuilds its chunk section, once.
 - **The machines are translucent-layer blocks** (glass and sneeze guards), so they sort with the
   world's other translucent faces. A concourse of hundreds of them is still small.
 
+## The exterior and the shared outdoor pieces
+
+Written by `dev-env-utils/scripts/gen_venues_exterior.py` (`--check`, `--fragments`). The arena's
+outside and entry (the marquee, the blades, the box office) are in the Concourse tab, after the
+concourse; the pieces every outdoor venue shares (bleachers, the press box, the ticket booth, the
+stadium light towers) in Seating & Venue, after the bowl. Everything is baked models; the one
+renderer is the marquee's, one per board. Nothing ticks.
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `marquee_board`, `marquee_board_controller` | facing, double | left, right, up, down | 128 each, 256 |
+| `marquee_pylon` | facing | up, down | 16 |
+| `venue_gate_blade`, `venue_section_blade` | facing | (wayfinding face, unlisted) | 4 each, 8 |
+| `venue_blade_bracket` | facing | plate, tip | 16 |
+| `box_office_window` | facing, legend (4) | end_l, end_r | 64 |
+| `aluminium_bleacher`, `aluminium_bleacher_aisle` | facing, seat | end_l, end_r, back | 64 each, 128 |
+| `aluminium_bleacher_frame` | facing | post_l, post_r | 16 |
+| `press_box_module` | facing, wall, corner | end_l, end_r | 64 |
+| `ticket_booth` | facing | | 4 |
+| `stadium_light_pole`, `stadium_light_lattice` | facing | base | 8 each, 16 |
+| `stadium_light_head`, `_small` | facing, lit | | 8 each, 16 |
+
+604 states. The aisle block carries the seat property it never sets (it is the same class), so
+half its 64 are never reached.
+
+### Placing (metadata and NBT)
+
+Facing is bits 0-1, **S 0, W 1, N 2, E 3**: towards the reader, the customer or the field; every
+model's back is at +z.
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `marquee_board` | `facing \| double << 2` | One cabinet cell of a board built to any size up to 48 x 24. Single-sided (bit 2 clear) the cabinet is on the back of its cell, its screen 7 px out from the wall; double-sided it is centred in its cell with a screen on each face, for a pylon. Cells of the same facing and sidedness side by side and stacked are one board, framed round the outside only. By hand: faces the placer, double-sided if sneaking |
+| `marquee_board_controller` | as the board | The board's **bottom-left cell as the front's reader sees it**: the board is as wide as the cells running to the reader's right of it, as tall as the cells running up from it. A click opens the editor (three lines, the mode, the text and background colours) |
+| `marquee_pylon` | facing | A 10 px deep clad slab centred in its cell, under a double-sided board; a plinth where no pylon is below, a cap where none is above. Stack it and set it side by side |
+| `venue_gate_blade`, `venue_section_blade` | facing (along the wall, for a projecting blade) | Core's wayfinding panel, lit, double-sided and hung by default: GATE / A, and SECTIONS / 101 - 112 with an arrow up. Presets: gates A-F, BOX OFFICE, WILL CALL, TEAM STORE, ENTRY; section ranges, SUITES / CLUB LEVEL, ALL GATES, ACCESSIBLE SEATING |
+| `venue_blade_bracket` | facing: the way the arm reaches out from the wall | Put it in the cell over a blade's top cell, so the blade's rods reach it; a blade two cells out takes two brackets in a line. The cell against the wall draws the plate and knee brace, the outer end a cap. By hand, clicked on a wall it reaches away from it |
+| `box_office_window` | `facing \| legend << 2`; legend 0 BOX OFFICE, 1 WILL CALL, 2 TICKETS, 3 blank | A unit two blocks tall set into a wall: the master is the lower block (panel and counter ledge with the deal tray), the part above it the glass with a speaking grille under a lit header (light 7 unless blank). Windows side by side are a run with end jambs only at its ends. A sneak-click with an empty hand steps the header. For one header across a run, set the windows blank and hang a `concession_sign` (presets BOX OFFICE, WILL CALL, TICKETS) above |
+| `aluminium_bleacher` | `facing \| seat << 2` | The row's deck filling its cell (planks over a closed riser); with bit 2 its seat plank in the cell above, at the back, half a block over the deck. Bit 2 clear is a plain deck: the front cell of a 2-deep row |
+| `aluminium_bleacher_aisle` | facing | A deck with a half step at the back of the cell above, the aisle's tread between rows. It continues a row, so rows beside it stay open |
+| `aluminium_bleacher_frame` | facing | The understructure: fill every cell under the rows down to the ground. A ledger under each riser, and a post with a diagonal brace every third cell and at each end |
+| `press_box_module` | `facing \| wall << 2 \| corner << 3` | A unit two blocks tall on the front edge of its cells (the master below). Window: siding to desk height, a writing ledge inside, tinted glass leaning out, a fascia; wall: siding up to the fascia. A corner also walls its left side looking the way it faces: build the box clockwise, each corner facing the run that leaves it (north-west corner faces north, north-east east, south-east south, south-west west). A slab roof on top closes it. By hand: a window, a wall if sneaking |
+| `ticket_booth` | facing: its window | A unit 2 x 2 x 3 (OBJ): the master is the front cell on the customer's right; the booth reaches a block to the customer's left and a block back. Light 7 (its TICKETS band) |
+| `stadium_light_pole`, `stadium_light_lattice` | facing (the head's; the monopole's step bolts are on its back) | Stack as tall as wanted; the bottom cell stands on a concrete pier |
+| `stadium_light_head`, `_small` | `facing \| lit << 2` | A unit on top of the shaft: the master is the bottom middle cell, in the cell over the shaft's top; the head is 5 wide and 3 tall (20 floodlights) or 3 wide and 2 tall (6). Facing is the way the floodlights aim, tipped 20 degrees down. A click with an empty hand switches it; by hand it is lit and aims at the placer |
+
+**Bleacher rows** rise a block at a time, as the bowl's do. With the bleacher facing north and
+its front row at `z`: a **2-deep row** is a plain deck (meta 2) at `z` and a seat block (meta 6)
+at `z + 1`, the next row starting a block up at `z + 2`; a **1-deep row** is one line of seat
+blocks, each row a block up and a block back. The aisle column takes `aluminium_bleacher_aisle`
+in the seat cells (a plain deck in a 2-deep row's front cell). Fill the cells under every row
+with frame blocks. The planks are the steps a bleacher is climbed by (the plank is 0.5 block
+over the deck, the next deck 1); a click with an empty hand on a seat block's deck sits on its
+plank (Core's seat entity).
+
+**Marquee NBT** (`/blockdata` on the controller):
+
+| Key | Meaning |
+|---|---|
+| `l1`, `l2`, `l3` | the lines: printable ASCII, 32, 32 and 48 characters; the first biggest, an empty line leaves no gap |
+| `mode` | 0 text and video in turn, eight seconds each (default), 1 text only, 2 video only |
+| `fg`, `bg` | text and background colours, `VenueColours` indices (the scoreboard's list) |
+
+```
+/fill -36 8 51 -23 12 51 csm:marquee_board 0
+/setblock -36 8 51 csm:marquee_board_controller 0
+/blockdata -36 8 51 {l1:"TONIGHT 7PM",l2:"WOLVES VS BIRDS",l3:"TICKETS AT THE BOX OFFICE",fg:6,bg:0}
+```
+
+That is the "Venues Arena Test" entry's board: 14 x 5 on the south face of the wall at `z 50`,
+facing south, so its reader looks north and the controller is its west end. The plaza's board
+on a pylon is double-sided (meta 4): `marquee_pylon` meta 0 at `x -37..-32, y 4..6`, then
+`marquee_board` meta 4 over `x -38..-31, y 7..9` with the controller at `(-38, 7, 60)`.
+
+The other placements in that world: `box_office_window` meta 4, 0, 0, 8 at `x -40..-37, y 4,
+z 50` (WILL CALL, two BOX OFFICE, TICKETS); a gate blade meta 3 at `(-19, 8..9, 51)` under a
+`venue_blade_bracket` meta 0 at `(-19, 10, 51)`, and a two-cell section blade meta 3 at
+`(-17, 9, 51..52)` under two brackets; and the field corner south of the arena, a bleacher of
+two 2-deep and four 1-deep rows facing north at `x -6..8, z 100..107` with its aisle at `x 1`,
+the press box on a platform behind it, a `ticket_booth` meta 2 at `(12, 4, 100)`, and a monopole
+at `(-10, 4..23, 104)` and a lattice tower at `(14, 4..23, 106)`, each with a
+`stadium_light_head` meta 6 on top.
+
+### The marquee's picture
+
+`TileEntityMarqueeRenderer` draws the board's picture once, as one quad (and the text's one
+display list) across the board inside the frame's lip, fullbright, with a second face for a
+double-sided board, within 192 blocks plus the board's size (capped by the performance mode).
+The **text** is the three lines centred between two thin rules on the background colour, each
+line shrunk to fit across; the **video** is the centre-hung scoreboard's idle video
+(`textures/blocks/venues/av/scoreboard_video.png`, 32 frames of 128 x 64), cropped to the
+board's shape from its middle. In the cycle the switch is on world time, so every board in the
+world turns over together. The controller finds the board's size by walking its bottom row and
+left column, at most once a second.
+
+### Costs
+
+Measured 2026-10-31 in "Venues Arena Test" (dev client, all modules, 854 x 480, render
+distance 12, frame cap lifted), standing in the plaza with both boards in view, the arena's
+scoreboards behind them:
+
+| What | How | Cost |
+|---|---|---|
+| a 14 x 5 single-sided marquee, video | `client_profile_rendering`, 6 s warm-up | 5.2 us a frame |
+| an 8 x 3 double-sided marquee, text | the same | 7.0 us a frame |
+| both, frame level | `/csm renderpass skip venueMarquee`, A/B/A | render work 1.02 / 1.02 / 1.00 ms: below what a frame measure resolves |
+
+A board costs a quad or two and one list call whatever its size, a fifth of a centre-hung
+scoreboard. The bleachers, press box, booth, poles and heads are chunk geometry: a head is the
+heaviest model (its OBJ is a few hundred quads), drawn once per tower. Toggle for A/B:
+`venueMarquee`.
+
+### Traps
+
+- **The stadium light heads do not light the field.** Lighting's light-up air projection is
+  Lighting's alone, and Sports & Venues depends on Core only. A lit head gives light 15 at its
+  master and its lenses glow (OptiFine `_e`), so it reads lit at night, but the field under a
+  20-block tower stays dark: light it with Lighting's fixtures or glowstone under the turf.
+- **The marquee's controller is the bottom-left as the front's reader sees it**, which on a
+  board facing south is its west end and facing north its east end. A controller anywhere else
+  draws a picture on the cells to its right and above it only.
+- **A ragged board** (a cell outside the controller's row and column rectangle) is a dark
+  cabinet with its own frame; only the rectangle shows the picture.
+- **The gate blade's letter is fitted with GATE**: Core's panel scales every line together to
+  the widest, so on a one-block blade the letter is about a third of a block. A two-wide blade
+  gives a letter twice the size.
+- **The press box and box office window are units two blocks tall**, the master below: a
+  `/setblock` of the master fills the part above if it is free, and the item will not place one
+  under a block. A press box corner's return wall has no collision above the master.
+- **The press box glass leans out past its cell** (to z -6.5 at the fascia), so a block directly
+  in front of a module's upper half shows through it.
+- **The bleacher's plank and rails reach into the cell above** (collision up to 1.9 blocks), as
+  a fence's does; a block placed in that cell overlaps them.
+- **The booth's TICKETS band and the box office headers are 64 px textures with the legend in
+  their top rows**, mapped by explicit UVs (`SIGN_ROWS`, `HEADER_UV`); change the drawing and the
+  mapping together.
+
 ## Brands
 
 None. Team, league and sponsor names are what players type into the signs, the scoreboard and
 the banners (HOME and AWAY by default). The idle video is an invented intro and a noise meter;
 the ribbon's crawl reads LET'S GO. The concourse's signs say what is sold (HOT DOGS,
-COLD BEER, DRAFTS, SOFT SERVE), never whose. The ice resurfacer
+COLD BEER, DRAFTS, SOFT SERVE), never whose; the box office headers say BOX OFFICE, WILL CALL
+and TICKETS, and the marquee shows what is typed into it. The ice resurfacer
 is a generic machine with no maker's name; the scorer's table plays an abstract pattern.
 
 ## Traps
