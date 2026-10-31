@@ -1,7 +1,8 @@
 # CSM: Sports & Venues
 
 Sports venues of every kind: arenas, stadiums, ballparks, football and soccer fields, bowling
-alleys, tennis and pickleball courts, tracks and pools. GitHub #324 (a hockey and basketball
+alleys, tennis and pickleball courts, tracks and pools, golf courses, driving ranges, mini-golf
+and skate parks. GitHub #324 (a hockey and basketball
 arena) started it: the seating bowl first, then the arena's event floor, scoreboard and AV, the
 concourse and the exterior, then the other sports and what they share (bleachers, press boxes,
 stadium light towers). Mod id `csm_venues`, tree `modules/venues`,
@@ -29,12 +30,15 @@ from fixed numbers rather than from a Building block.
 | Sports & Venues - Ballpark (`tabvenuesballpark`) | 37 | baseball and softball: the field's surfaces, edges and chalk lines, the marking anchors and painted cells, the mound, plate, bases and rubber, the dugout, nets, the outfield wall, markers and foul pole, the line score and count boards, a pitching machine (below) |
 | Sports & Venues - Football & Soccer (`tabvenuesfootball`) | 38 | American football and soccer: the field's turf, paint, surround and end zone colour, the marking anchors and painted cells that draw every line where it really falls, goals, the sideline, end zone lettering and the scoreboards (below) |
 | Sports & Venues - Bowling (`tabvenuesbowling`) | 39 | a ten-pin bowling centre: lanes and approaches that mark themselves, the pins, the pinsetter and masking unit, the ball return, settees and the scorer's console, the overhead scoring monitors, the house ball rack, the shoe counter, cubbies and shoe spray (below) |
-| Sports & Venues - Courts, Track & Pool (`tabvenuescourts`) | 40 | outdoor hard courts (tennis, pickleball, basketball, volleyball, sand volleyball) with their nets, fixtures and scoreboard, and a 400 m track with its field events and equipment, every line drawn where it falls by the line art engine (below); swimming, golf and skate park pieces join it later |
+| Sports & Venues - Courts, Track & Pool (`tabvenuescourts`) | 40 | outdoor hard courts (tennis, pickleball, basketball, volleyball, sand volleyball) with their nets, fixtures and scoreboard, a 400 m track with its field events and equipment, every line drawn where it falls by the line art engine, and a competition pool and diving well with their fittings (below) |
+| Sports & Venues - Golf (`tabvenuesgolf`) | 41 | the golf course's turf, cup, flag, bunker, tee and yardage markers, tee sign, ball washer, bench and cart path; the driving range; mini-golf (below) |
+| Sports & Venues - Skate Park (`tabvenuesskate`) | 42 | quarter pipes, the bowl corner, kicker, bank and box, grind rail and ledge (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
-tab for every block family. Swimming, golf and mini-golf and skate park basics are planned for the
-Courts, Track & Pool tab.
+tab for every block family. The pool joined Courts, Track & Pool (its name already promised it);
+golf (with the range and mini-golf) and the skate park are kinds of venue of their own and got
+tabs of their own.
 
 A piece used by more than one sport (a stadium light tower, a bleacher, a press box) goes in
 Seating & Venue rather than in the first sport that needed it. The exterior did not get a tab of
@@ -1579,7 +1583,7 @@ engine's materials) and `gen_venues_track.py` (the track and field events), both
 `--doc`. The geometry is `court_layouts.py` and `track_layout.py`; the engine that paints it is
 `venues_lines.py` in Python and `venues.lines` in Java, step for step the same
 (`LinePainterTest` holds the Java to samples the generators write, `CourtSamples` and
-`TrackSamples`). Swimming, golf and the skate park join this tab later.
+`TrackSamples`). The pool shares this tab (below); golf and the skate park have their own.
 
 ### Line art: lines as geometry, not pictures
 
@@ -1821,6 +1825,203 @@ the atlas, which was already past 8192 x 4096).
   the acrylic court's blocks are `court_acrylic_anchor` and `court_acrylic_painted`.
 
 
+## The pool (Courts, Track & Pool tab)
+
+A competition pool built from blocks round real water, one block a metre. Written by
+`dev-env-utils/scripts/gen_venues_pool.py` (`--check`, `--fragments`, `--layout NAME
+[--commands X Y Z [--rot R]]`, `--preview DIR`, `--doc`). The floor's lane lines are a third
+line art family (`pool`, `PoolLayouts.java`, held by `LinePainterTest` to `PoolSamples`); every
+other piece is a baked model.
+
+### How a pool goes together
+
+The deck is level with the water: the water fills the pool's footprint from the deck's level
+down (its surface 2 px under the deck's top), `pool_gutter` rings it at the deck's level, tile
+walls go down from under the gutter to the floor, and the deck is round the gutter. A 25 m
+pool's water is three blocks deep (2.9 m), the diving well's five. Nothing stands in the water:
+a block in a water cell leaves a hole in the water and a box of water faces round it, so the
+lane ropes, ladders and boards stand in the air above and reach down into the water by drawing
+past their own block.
+
+**Lanes.** 2.5 m lanes on a 1 m grid put a lane's middle a quarter of the way across a block,
+from one side or the other in turn. An 8-lane pool is 21 m wide (lanes 1-8 with 0.5 m outside
+them) and a 10-lane pool 25 m (lanes 0-9): lane n is in the same place from the side walls in
+both, so an odd lane's middle is always a quarter of a block from the lower-coordinate edge of
+its block and an even lane's three quarters, provided the swimmers at the start end face north
+or east. `--layout` lays the start end that way (`--rot` 2 and 3 are the same pools as 0 and 1
+with the ends swapped); every quarter-block offset below rests on it.
+
+### Placing (metadata and NBT)
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `pool_tile` | the colour, 0-15 (`SurfaceColours`; 15 light grey, the default) | Glazed 25 cm tile for walls and floor, tinted |
+| `pool_deck` | the colour (8 tan by default) | Non-slip deck tile |
+| `pool_gutter` | 0 | The deck-level gutter: a white grate on top |
+| `pool_floor_anchor` | 0-3, the layout's quarter turns | NBT `lay` (0 `pool_25m`, 1 `pool_50m`, 2 `diving_well`), `ax`, `az`, `cc`, `lc` (the line colour, default black). As the courts' anchors |
+| `pool_floor_painted` | 0 | A floor cell with its piece of the lane lines: 25 cm black lines down each lane's middle ending 2 m from each end wall in a 1 m T |
+| `pool_wall_target` | facing (into the pool) bits 0-1; bit 2 the stem 12 px from the left as a swimmer sees the wall rather than 4; bit 3 the top tile (cross bar 50 cm across, then the stem) | A full wall tile with the lane's target, 25 cm wide |
+| `pool_touchpad` | facing; bits 2-3 the piece as the swimmer sees it: 0 whole, 1 a 10 cm gap in the middle, 2 a gap at the left edge, 3 at the right edge | A full wall tile carrying the touch pad: black, yellow edged. Pads are 2.4 m on 2.5 m lanes, so each gap falls in a block's middle or at its edge; a pad ending in a 0.5 m side space is drawn as piece 1, its far half over the space |
+| `pool_lane_rope` | the facing names where it runs: north along z through the block's middle, east along x through the middle, south along z on the west edge, west along x on the north edge; bits 2-3 the colour (0 blue, 1 green, 2 yellow, 3 red), stepped by a sneak-click | Floats at the water line, in the air block over the water. No collision |
+| `pool_backstroke_flags` | facing | A run across the pool 5 m from each end, in the block two over the deck: pennants on a line 1.8 m over the water on the block's back edge (so the line falls on the 5 m mark from a block edge), a pole from each end of the run down to the deck. No collision |
+| `pool_starting_block` | the lane number, 0-9 | Stands on the gutter at an end, faces the water (read from the world, not stored) and sits in its block where its lane's middle is, from the number alone (above). Numbered front and sides |
+| `pool_ladder` | facing (into the pool); bit 2 the grab rails alone | OBJ from the block over the gutter, down 2.75 m into the water. Decor: swim up |
+| `pool_lifeguard_chair` | facing | A unit three blocks tall with its umbrella |
+| `pool_springboard_1m`, `pool_springboard_3m` | facing (towards the water) | Units: a 4.88 m board 1 m / 3 m over the water, its tip 1.5 m past the pool's edge with the master on the gutter |
+| `pool_dive_platform` | facing | A 5 m platform 2 m wide and 6 m long on a column, tip 2.25 m in front of the master (1.25 m past the edge with the master a block back from the gutter), a ladder at the back. Needs a 3.7 m deep well: the diving well layout is 5 blocks |
+| `pool_pace_clock` | facing; bit 2 on a stand rather than a wall | A 60 second dial: red sweep hand once a minute, black hand once an hour, from the world's total time, so every clock agrees. Hands by `TileEntityPaceClockRenderer` |
+| `pool_scoreboard` | facing | A board 4 x 2 blocks on two posts (OBJ). Text engine (`BlockVenueSign`, style `POOL_BOARD`): `l0` the event, `l1` the heat, `l2` the swimmers by lane separated by commas, `l3` their times and `l4` their places separated by spaces, `l5` the race clock, `col` the header colour. The winner's row is amber. Facing south it runs from a block east of its master to three west |
+
+```
+/blockdata X Y Z {l0:"WOMEN 100 FREE",l1:"FINAL",l2:"OKAFOR,LINDQVIST,MORENO,TANAKA,BAUER,SILVA,NOVAK,REYES",l3:"55.12 54.87 53.94 54.02 54.66 55.40 55.98 56.31",l4:"6 4 1 2 3 7 5 8",l5:"0:53.94"}
+```
+
+### Worked layouts
+
+```
+py -3 dev-env-utils/scripts/gen_venues_pool.py --layout pool_25m --commands X Y Z [--rot 1]
+```
+
+`X Y Z` is the pool's north-west water cell at the deck's level. The commands clear the air
+over the deck, lay the floor (anchors and painted cells), the water, the walls with targets at
+the turn end and pads over targets at the start end, the gutter ring and a 3-block deck, then
+the ropes (red within 5 m of each end, yellow, blue and green outwards from the middle), flags,
+numbered blocks at both ends, four ladders, the lifeguard chair, the pace clock on its stand and
+the scoreboard over the turn end's deck. `diving_well` (12 x 12, five deep) has the two
+springboards on its south side and the platform on its north.
+
+| Layout | Size | Painted floor cells | Anchors | Commands |
+|---|---|---|---|---|
+| `pool_25m` | 21 x 25, 8 lanes | 184 | 1 | 1,022 |
+| `pool_50m` | 25 x 50, 10 lanes | 480 | 2 | 2,158 |
+| `diving_well` | 12 x 12 | 0 | 0 | 273 |
+
+In "Venues Arena Test" (`data/functions/csm/pool.mcfunction`): the 25 m pool's deck at y 6,
+its water x 690..710, z -20..4; the diving well x 720..731, z -20..-9.
+
+## Golf (Golf tab)
+
+`dev-env-utils/scripts/gen_venues_golf.py` (`--check`, `--fragments`, `--layout green|range|
+minigolf --commands X Y Z [--rot R]`). Decor first: nothing simulates a ball.
+
+### Placing
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `golf_turf` | bits 0-2 the cut: 0 putting green, 1 collar, 2 fairway, 3 rough, 4 tee, 5 green with the cup; bit 3 the mower ran east-west | Mown stripes as actual state from the block's position (a block wide on a green, collar and cup, two on a fairway and tee, none in the rough), so neighbouring blocks with the same cut and direction make one pattern whatever order they were placed in |
+| `golf_bunker_sand`, `golf_cart_path` | 0 | Raked sand; broom-finished concrete |
+| `golf_cart_path_curb`, `minigolf_border` | the sides with a rail: north 1, east 2, south 4, west 8 | `BlockEdgeRail`: a low rail along any of its block's sides, standing on the surface in the block above it; corners overlap into a post. A click with an empty hand on a side toggles it (the last one stays) |
+| `golf_flagstick` | facing; bits 2-3 the flag: 0 red (front), 1 white (middle), 2 blue (back), 3 yellow | In the block over the cup, its foot in the hole. Sneak-click steps the flag |
+| `golf_tee_marker` | facing; bits 2-3 0 red, 1 white, 2 blue, 3 gold | One marker; lay two |
+| `golf_yardage_marker` | facing; bits 2-3 100 (red), 150 (white), 200 (blue), 250 yd (yellow) | A post with the number both sides |
+| `golf_hole_sign` | facing | The tee sign, a unit two blocks tall. Text engine (style `GOLF_HOLE`): `l0` the hole, `l1` its par, `l2` the yards from each tee separated by spaces (back tee first, up to three, each under a blue, white or red square), `l3` a line under them; `col` the header colour (dark green). Also a mini-golf hole's number |
+| `golf_ball_washer`, `golf_bench` | facing | The bench is a run, sat on with a click |
+| `driving_range_mat`, `range_tee_divider`, `range_ball_bucket` | facing | A bay is a mat with a divider each side and a bucket |
+| `range_ball_dispenser` | facing | A unit two blocks tall |
+| `range_target_flag` | facing; bits 2-3 50, 100, 150, 200 yd | A 2 m pole and flag with the distance board at its foot |
+| `minigolf_carpet`, `minigolf_cup` | the colour (`SurfaceColours`, 0 green) | Carpet, tinted; the cup is the same with a hole |
+| `minigolf_ramp`, `minigolf_scorecard_stand` | facing | A carpeted hump across the lane; the scorecard and pencil stand |
+| `minigolf_windmill`, `minigolf_loop` | facing | Units (OBJ): a windmill three blocks tall with its sails on its front; a loop-the-loop on the lane |
+
+```
+/blockdata X Y Z {l0:"7",l1:"4",l2:"412 388 341",l3:"HCP 5"}
+```
+
+### Worked layouts
+
+`green` (origin the middle of the green): an oval green 13 x 10 with its collar, the cup and a
+red flag, a bunker, fairway striped in from the south, rough round them, a tee box with markers,
+the tee sign and a ball washer, a yardage marker, a bench and the cart path with its curb (833
+commands). `range`: four bays facing north with dividers, buckets and the dispenser, and flags
+on the range at a quarter of their distances (1,042). `minigolf`: an L-shaped hole with a ramp
+and a straight one past the windmill and through the loop, borders worked out from the carpet's
+edges, cups, a scorecard stand and a hole sign (137). In "Venues Arena Test"
+(`data/functions/csm/golf.mcfunction`, `minigolf.mcfunction`): the green at (700, 3, 40), the
+range at (740, 3, 80), mini-golf at (720, 3, 40).
+
+## The skate park (Skate Park tab)
+
+`dev-env-utils/scripts/gen_venues_skate.py` (`--check`, `--fragments`, `--layout park
+--commands X Y Z [--rot R]`). Smooth concrete, every curve drawn true.
+
+### Placing
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `skate_concrete` | 0 | Smooth trowelled concrete, for the flat and the deck |
+| `skate_quarter_pipe` | facing (the way the riding surface faces); bits 2-3 the piece: 0 the 1 m quarter pipe, 1-3 the 2 m one's front, back and top blocks (the back behind the front, the top over the back) | Sneak-click steps the piece. A half pipe is two facing each other with flat between |
+| `skate_bowl_corner` | facing | The 1 m transition turned a quarter about the block's inside corner: in model terms, the corner of a north-facing quarter pipe to its west and a west-facing one to its north |
+| `skate_ramp` | facing (the way it faces: it rises away); bits 2-3 0 kicker (0.375 m), 1 bank's lower half, 2 bank's upper half, 3 box top (0.5 m, steel edges) | A funbox is a bank's lower half, box tops and another lower half facing the other way |
+| `skate_grind_rail`, `skate_ledge` | facing | Runs: a round rail 30 cm up on posts; a concrete ledge with a steel edge |
+
+### How the curves and collision are made
+
+A quarter pipe is the solid under a circle of radius 1 m (or 2 m) swept along its block, cut
+into OBJ quads a sixteenth of the radius apart (`swept()`): riding surface, flat top, sides and
+back, coping a steel tube along the lip. The 2 m one is the same circle cut at the block lines
+into three blocks, so the pieces meet exactly. The bowl corner is the 1 m transition as a
+surface of revolution (8 rings x 8 sectors) about the corner, flat there and vertical along the
+quarter circle, with the coping as eight straight lengths; its edges are the straight quarter
+pipe's profile, so it meets its neighbours exactly.
+
+Collision is a staircase: a box a 2 px column (a 4 x 4 px cell in the bowl corner) under the
+curve, as high as the curve at the column's middle (`BlockSkateElement`, boxes written into the
+tab line). Steps are under 4 px but the last one at the lip of a transition (6 px on the 1 m
+quarter pipe), under a player's step height, so a player walks up a quarter pipe and onto the
+deck behind it (checked in game: walking into the half pipe climbs it and drops off the back).
+Nothing rides, slides or grinds.
+
+`park` (16 x 12): a 1 m half pipe, a 2 m quarter pipe with its deck, a bowl's inside corner, a
+funbox, a kicker, a ledge and a rail (256 commands); in "Venues Arena Test" at (760, 3, -20).
+
+## Pool, golf and skate park: state counts, costs, traps
+
+| Block | States |
+|---|---|
+| `pool_tile`, `pool_deck` | 16 each |
+| `pool_gutter`, `pool_floor_painted` | 1 each |
+| `pool_floor_anchor` | 4 |
+| `pool_wall_target`, `pool_touchpad`, `pool_lane_rope`, `pool_backstroke_flags` | 16 each |
+| `pool_starting_block` | 40 (10 numbers x 4 facings, the facing actual) |
+| `pool_ladder`, `pool_pace_clock` | 8 each |
+| the four pool units and `pool_scoreboard` | 4 each |
+| `golf_turf` | 24 (6 cuts x direction x stripe) |
+| `golf_flagstick`, `golf_tee_marker`, `golf_yardage_marker`, `range_target_flag`, `golf_bench`, `minigolf_border`, `golf_cart_path_curb`, `minigolf_carpet`, `minigolf_cup` | 16 each |
+| the other golf blocks | 1 or 4 each |
+| `skate_quarter_pipe`, `skate_ramp`, `skate_grind_rail`, `skate_ledge` | 16 each |
+| `skate_bowl_corner` 4, `skate_concrete` 1 | |
+
+**477 states** for 50 blocks (pool 178, golf 230, skate 69). **Atlas**: 99 sprites, 56,064
+texels (0.06 Mpx; the atlas was already past 8192 x 4096). **Frame cost**: the pool floor is
+line art (chunk geometry, as the courts); the renderers are the pool scoreboard and the tee
+signs (a few coloured quads and one display list each) and the pace clock (four quads a
+frame), all under the `venueCourts` render toggle. Nothing ticks.
+
+**Costs** are one table, `VenuesFabricatorRules.POOL_GOLF_SKATE`, which
+`audit_fabricator_costs.py` reads rather than repeats: tile hardened clay, painted or marked
+tile and a touch pad a dye or a wiring harness more; ropes string and dye; starting blocks and
+ladders iron; boards planks and iron, the 3 m board and the platform concrete mix; the clock
+and the scoreboard enclosures, LED modules and a control board; turf dirt and seeds; carpet
+wool and dye; the windmill bricks, planks and wool; skate pieces concrete mix and iron.
+
+### Traps
+
+- **Nothing in the water.** A block in a water cell is a hole in the water with water faces
+  round it; a fixture over the water stands in the air above it and draws down into it (the
+  rope floats dip 2 px into the water block, the ladder reaches 2.75 m down as OBJ, since a
+  JSON element stops a block below its own).
+- **The start end faces north or east.** Starting blocks place themselves from their number on
+  that rule; `--layout` keeps it by folding `--rot` 2 and 3 into 0 and 1.
+- **Wall tiles are not tinted.** Targets, pads and the gutter use the tile drawn in colour 15
+  (`pool_tile_white`); lay the walls in `pool_tile` colour 15 to match.
+- **A texture must be square.** The pennant strip was 32 x 16 and drew as the missing texture.
+- **The flagstick and range flag end at 31.9 px**: the octagon helper staggers its boxes and a
+  pole to 32 fails to load (as the stanchion trap above).
+- **The scoreboard is OBJ** because it is wider than a JSON element may reach.
+- **Skate collision is per block**, not per unit: a 2 m quarter pipe is three blocks each with
+  its own staircase, so it is pieces of one block (`BlockSkateElement`), not a `BlockVenueUnit`,
+  whose cells each take one box.
+
 ## Brands
 
 None. Team, league and sponsor names are what players type into the signs, the scoreboard and
@@ -1832,7 +2033,7 @@ is a generic machine with no maker's name; the scorer's table plays an abstract 
 ballpark's line score says AWAY and HOME until typed into; its helmets, bats, water cooler and
 pitching machine carry no maker's name. The football and soccer scoreboards say HOME and AWAY,
 the end zones HOME and AWAY until typed into; the goals, heater, fan and boards carry no maker's
-name. The bowling centre's masking graphics are invented (a starburst, a cosmic scene, retro boomerangs, neon waves), its scoring monitors show the names typed into them, and the ball return, settees, console and shoe spray carry no maker's name. The court scoreboard says HOME and AWAY until typed into; the nets, ball machine, hoop, hurdles, blocks, mats, cage and timing camera carry no maker's name.
+name. The bowling centre's masking graphics are invented (a starburst, a cosmic scene, retro boomerangs, neon waves), its scoring monitors show the names typed into them, and the ball return, settees, console and shoe spray carry no maker's name. The court scoreboard says HOME and AWAY until typed into; the nets, ball machine, hoop, hurdles, blocks, mats, cage and timing camera carry no maker's name. The pool scoreboard and tee signs say what is typed into them; the pool, golf and skate park pieces carry no maker's name.
 
 ## Traps
 

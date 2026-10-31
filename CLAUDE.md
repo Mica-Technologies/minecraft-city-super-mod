@@ -103,7 +103,7 @@ container per jar.
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities, and plantable planters, raised beds and troughs (`parks.planters`: a plant's baked quads merged onto the soil, no TESR; `/csmparks planter fill`); two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, a walk-through jet bridge, and a helipad: its marking, laid by `/csmtransit helipad`, and lights; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 | `modules/healthcare` | `csm_healthcare` | CSM: Healthcare | `healthcare`: the hospital fit-out of GitHub #293: patient rooms and wards (beds as a head and a shared foot, headwalls, monitors, IV poles, cubicle curtains filled from a ceiling track, room furniture, dispensers and carts), a linked nurse call network, the ICU, the ED (its tracking board one of the module's two renderers), the nurses' station (its monitors showing the master panel's calls), surgery support, an operating room set (table, anaesthesia machine, twin surgical light, scrub sink, back table, Mayo stand, kick bucket, supply cabinet, drape trolley), ceiling-hung pendants and lights on a drop column, clinics, dialysis and infusion, imaging (the CT and MRI as a master and invisible parts), the lab, pharmacy and morgue, maternity and the NICU, rehab, the waiting room (a queue with a now-serving display, the other renderer), teaching (a mannequin that lies on a bed or table), the playroom, a baked wayfinding panel that is a drop-in for Transit's airport one, code blue, medical gas, emergency power and infant security; everything settable by `/setblock` and `/blockdata`, wired by `/csmhealthcare`; two tabs, Healthcare - Patient Care and Healthcare - Clinical, and a hidden tab; Core only (the hospital doors and finishes are Building's, the helipad Transit's, the pews and laundry Furnishings'); see `assets/docs/HEALTHCARE_SYSTEM.md` |
-| `modules/venues` | `csm_venues` | CSM: Sports & Venues | `venues`: sports venues (GitHub #324: an arena first, then ballparks, football and soccer, bowling, courts, track and pool), the seating bowl first (`venues.seating`: stadium seats in ten colours as one tinted set of baked models with no tile entity, 2-deep and 1-deep, folding, rows closing themselves with end standards by actual state; aisle-end seats whose metadata is the row letter and everything else read from the seat beside; companion seat and wheelchair space; aisle step lights; the centre-of-aisle handrail and glass guards following the aisle's nosing line, level, 1 in 1 and 1 in 2, as OBJ; section and portal signs that are Core's wayfinding panel; sitting through Core's `EntityCsmSeat` on click), then the arena's event floor (`venues.arena`: dasher boards and stacked glass, straights closing their runs with end posts by actual state, 45 degree corners and a true radius-8 curve in fifteen OBJ cells a corner, the bench gate and penalty box door opened by a click; rink ice, ice lines and maple court floors set by metadata; the circles, crease and keys as pictures round an anchor block that painted floor blocks find nearby and show their piece of, with no stored state; the hockey goal, a real-size basketball stanchion, the ice resurfacer and ice plant as master-and-parts units (`BlockVenueUnit`); benches and the scorer's table joining into runs), then the arena's scoreboard and AV
+| `modules/venues` | `csm_venues` | CSM: Sports & Venues | `venues`: sports venues (GitHub #324: an arena first, then ballparks, football and soccer, bowling, courts, track and pool, golf and a skate park), the seating bowl first (`venues.seating`: stadium seats in ten colours as one tinted set of baked models with no tile entity, 2-deep and 1-deep, folding, rows closing themselves with end standards by actual state; aisle-end seats whose metadata is the row letter and everything else read from the seat beside; companion seat and wheelchair space; aisle step lights; the centre-of-aisle handrail and glass guards following the aisle's nosing line, level, 1 in 1 and 1 in 2, as OBJ; section and portal signs that are Core's wayfinding panel; sitting through Core's `EntityCsmSeat` on click), then the arena's event floor (`venues.arena`: dasher boards and stacked glass, straights closing their runs with end posts by actual state, 45 degree corners and a true radius-8 curve in fifteen OBJ cells a corner, the bench gate and penalty box door opened by a click; rink ice, ice lines and maple court floors set by metadata; the circles, crease and keys as pictures round an anchor block that painted floor blocks find nearby and show their piece of, with no stored state; the hockey goal, a real-size basketball stanchion, the ice resurfacer and ice plant as master-and-parts units (`BlockVenueUnit`); benches and the scorer's table joining into runs), then the arena's scoreboard and AV
 (`venues.av`: the centre-hung scoreboard in two sizes, a hung unit whose baked OBJ is the casing,
 rings and dark screens and whose renderer draws the score, the clock (worked out from world time,
 never ticked, started by click or redstone) and an idle video, edited in a GUI or by NBT; LED
@@ -162,7 +162,14 @@ colours, one-state painted cells, plain acrylic and polyurethane in sixteen colo
 `venues.courts`: tennis, pickleball and volleyball nets as runs, the umpire chair, chain-link
 fence with windscreen and divider curtain, ball machine, hurdles and other one-block fixtures,
 the courtside scoreboard and the lap counter with its bell; the hoop, landing areas, cage,
-camera tower and barrier as units); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab, the Bowling tab, the Courts, Track & Pool tab and a hidden tab; see `assets/docs/VENUES_SYSTEM.md` |
+camera tower and barrier as units; every painted band drawn at least 12.5 cm wide so it stays
+continuous at a distance), then a pool, golf and a skate park (`venues.pool`: a third line art
+family for the pool floor's lane lines, wall target and touch pad tiles, lane ropes at the
+water line from the air above it, numbered starting blocks that place themselves from the lane
+number, the pace clock (hands by renderer from world time) and `BlockVenueSign`, the shared text
+engine of the pool scoreboard and golf tee sign; `venues.golf`: turf mown in stripes from each
+block's position, `BlockEdgeRail` for mini-golf borders and cart path curbs; `venues.skate`:
+`BlockSkateElement`, OBJ curves over a staircase of collision boxes); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab, the Bowling tab, the Courts, Track & Pool tab, the Golf tab, the Skate Park tab and a hidden tab; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -231,7 +238,9 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    end zone lettering, scoreboards), bowling/, lines/ (the courts' and
 │                    track's line art engine: layouts, painter, anchors, painted cells, the
 │                    baked model), courts/ (nets, fences, fixtures, the court scoreboard and
-│                    lap counter); the multi-block unit (hung or
+│                    lap counter), pool/ (starting block, pace clock, the venue sign text
+│                    engine), golf/ (turf, edge rail), skate/ (skate element); the
+│                    multi-block unit (hung or
 │                    standing) and its part, and the module's sounds, at the package root
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
@@ -641,7 +650,13 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   vertex colours), anchors and painted cells with their NBT, every court's dimensions and
   defaults, the nets, fences and fixtures, the 400 m track's markings (staggers, relay zones,
   hurdle marks, lane numbers) and field events, the equipment, worked layouts, state and atlas
-  costs and traps
+  costs and traps, and why every painted line is drawn at least 12.5 cm wide; the pool (a
+  deck-level pool round real water, why nothing stands in the water, lanes a quarter block off
+  the grid and the start-end rule that lets a starting block place itself, every block's
+  metadata and NBT, the scoreboard's lines, worked 25 m and 50 m pools and a diving well), golf
+  (mown stripes from position, the edge rail, the tee sign, the range and mini-golf, worked
+  layouts) and the skate park (OBJ curves, staircase collision a player can walk up, a worked
+  park), with their state counts (477), atlas, costs and traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1401,7 +1416,9 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   lattice within reach of every painted cell, painted numerals, previews, and the Java tables
   (`LineArtMaterials`, the layouts as short literals). `court_layouts.py` and
   `track_layout.py` are the geometry (ITF, pickleball, FIBA, FIVB; the World Athletics 400 m
-  track and its field events); `venues_units.py` the fixtures' OBJ and unit helpers
+  track and its field events); `venues_units.py` the fixtures' OBJ and unit helpers. Every
+  paint band under `MIN_LINE` (12.5 cm) is widened about its centre as a layout is built
+  (`legible()`), since a geometry line under a pixel breaks into dashes at a distance
 - `gen_venues_courts.py` -- the Courts, Track & Pool tab's courts (Sports & Venues): the surface
   sprites both families share, the plain, anchor and painted cell blocks, the tennis,
   pickleball and volleyball nets (runs; the volleyball net OBJ), the umpire chair, players'
@@ -1417,6 +1434,23 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   barrier (OBJ units). `--layout track_400m|long_jump|pole_vault --commands X Y Z [--rot R]`;
   `--preview`, `--doc`, `--check`, `--fragments`. `gen_venues_sounds.py` synthesises the lap
   counter's bell
+- `gen_venues_pool.py` -- the same tab's pool (Sports & Venues): tile, deck and gutter, the pool
+  floor's line art family (`PoolLayouts.java`, `PoolSamples`: 25 m and 50 m pools and a diving
+  well), wall target and touch pad tiles placed by where each lane's middle falls in its block,
+  lane ropes, backstroke flags, numbered starting blocks, ladders (OBJ reaching into the water),
+  the lifeguard chair, springboards and platform, the pace clock (dial shared with
+  `TileEntityPaceClockRenderer`) and the scoreboard (face shared with
+  `TileEntityVenueSignRenderer`). `--layout pool_25m|pool_50m|diving_well --commands X Y Z
+  [--rot R]` lays a whole pool round real water; `--preview`, `--doc`, `--check`, `--fragments`
+- `gen_venues_golf.py` -- the Golf tab: turf in five cuts with stripe textures, the cup,
+  flagstick, bunker, tee and yardage markers, the tee sign (text engine), ball washer, bench,
+  cart path and curb, the driving range, mini-golf (carpet, cup, border, ramp, OBJ windmill and
+  loop, scorecard stand). `--layout green|range|minigolf --commands X Y Z [--rot R]`; `--check`,
+  `--fragments`
+- `gen_venues_skate.py` -- the Skate Park tab: quarter pipes and the bowl corner as OBJ swept
+  and revolved from the transition's circle, their staircase collision boxes written into the
+  tab line, kicker, bank and box, grind rail and ledge. `--layout park --commands X Y Z`;
+  `--check`, `--fragments`
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under
