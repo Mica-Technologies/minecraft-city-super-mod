@@ -8,6 +8,8 @@ import com.micatechnologies.minecraft.csm.venues.av.TileEntityScoreboardRenderer
 import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBanner;
 import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBannerRenderer;
 import com.micatechnologies.minecraft.csm.venues.av.VenueColours;
+import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
+import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumCompanionSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.IStadiumSeat;
@@ -27,7 +29,8 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
  * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
  * seat beside it, so ten colours cost one set of models; a banner's cloth (tint 0) and trim (1)
- * take its tile entity's colours.
+ * take its tile entity's colours, and so do a team store fixture's garments (tint 0 the team
+ * colour, 1 the trim).
  *
  * @since 2026.10
  */
@@ -44,6 +47,37 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
         new TileEntityVenueBannerRenderer());
     seatColours();
     bannerColours();
+    storeColours();
+  }
+
+  private static void storeColours() {
+    List<Block> fixtures = new ArrayList<>();
+    for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+      if (block instanceof BlockTeamStoreFixture) {
+        fixtures.add(block);
+      }
+    }
+    Block[] blocks = fixtures.toArray(new Block[0]);
+    Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(
+        (state, world, pos, tintIndex) -> {
+          if (tintIndex < 0 || tintIndex > 1) {
+            return -1;
+          }
+          TileEntity te = world == null || pos == null ? null : world.getTileEntity(pos);
+          if (te instanceof TileEntityTeamColour) {
+            TileEntityTeamColour c = (TileEntityTeamColour) te;
+            return VenueColours.rgb(tintIndex == 0 ? c.getColour() : c.getTrim());
+          }
+          return VenueColours.rgb(tintIndex == 0 ? VenueColours.NAVY : VenueColours.WHITE);
+        }, blocks);
+    List<Item> items = new ArrayList<>();
+    for (Block block : blocks) {
+      items.add(Item.getItemFromBlock(block));
+    }
+    Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) ->
+            tintIndex < 0 || tintIndex > 1 ? -1
+                : VenueColours.rgb(tintIndex == 0 ? VenueColours.NAVY : VenueColours.WHITE),
+        items.toArray(new Item[0]));
   }
 
   private static void seatColours() {

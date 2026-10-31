@@ -75,6 +75,9 @@ public class CsmVenues {
         VenuesFabricatorRules::price);
     CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_ARENA,
         VenuesFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_CONCOURSE,
+        VenuesFabricatorRules::price);
+    VenuesSounds.registerSounds();
 
     CsmGuiRegistry.register(new VenuesGuiProvider());
     // The packet order here fixes this channel's discriminators; only append to it.

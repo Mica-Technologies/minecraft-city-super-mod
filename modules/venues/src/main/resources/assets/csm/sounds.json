@@ -1,0 +1,29 @@
+{
+  "venue_scanner_accept": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:venue_scanner_accept",
+        "stream": false
+      }
+    ]
+  },
+  "venue_scanner_deny": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:venue_scanner_deny",
+        "stream": false
+      }
+    ]
+  },
+  "venue_turnstile": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:venue_turnstile",
+        "stream": false
+      }
+    ]
+  }
+}

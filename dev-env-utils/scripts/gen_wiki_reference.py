@@ -198,6 +198,15 @@ TABS = {
                        "bench gate and penalty box door), the hockey goal, benches, the "
                        "scorer's table, the ice resurfacer and ice plant; the maple court, its "
                        "lines and painted keys, and the portable basketball stanchion."),
+    "tabvenuesconcourse": ("venues-concourse", "Sports & Venues - Concourse",
+                           "An arena's concourse and premium spaces: concession counters "
+                           "(straight, outside corner and back counter in four finishes), the lit "
+                           "concession sign over a stand, the digital menu board, the hot dog "
+                           "roller grill, popcorn machine, pretzel warmer, nacho station and "
+                           "soft-serve machine, the portable beer kiosk, the stadium turnstile and "
+                           "ticket scanner with the Venue Ticket, the suite bar counter and drink "
+                           "rail, and the team store's jersey rack, hat wall, apparel table and "
+                           "jersey mannequin in any team's colours."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
                               "Poles, mounts, mast arms, span wire hardware, backplates and "
                               "cameras."),
@@ -237,6 +246,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
+              "tabvenuesconcourse",
               "tabnone"]
 
 

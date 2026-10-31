@@ -1,0 +1,87 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/venues/concourse/steel",
+    "steel_dark": "csm:blocks/venues/concourse/steel_dark",
+    "doors": "csm:blocks/venues/concourse/doors",
+    "kick": "csm:blocks/venues/concourse/kick",
+    "walnut": "csm:blocks/venues/concourse/walnut",
+    "stone": "csm:blocks/venues/concourse/stone",
+    "led": "csm:blocks/venues/concourse/led",
+    "brass": "csm:blocks/venues/concourse/brass",
+    "black": "csm:blocks/venues/concourse/black",
+    "oak": "csm:blocks/venues/concourse/oak",
+    "panel": "csm:blocks/venues/concourse/rail_panel",
+    "particle": "csm:blocks/venues/concourse/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        2
+      ],
+      "to": [
+        1,
+        15,
+        16.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#walnut",
+          "uv": [
+            15,
+            1,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#walnut",
+          "uv": [
+            0,
+            1,
+            1,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#walnut",
+          "uv": [
+            0,
+            1,
+            14,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#walnut",
+          "uv": [
+            2,
+            1,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#walnut",
+          "uv": [
+            0,
+            2,
+            1,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#walnut",
+          "uv": [
+            0,
+            0,
+            1,
+            14
+          ]
+        }
+      }
+    }
+  ]
+}

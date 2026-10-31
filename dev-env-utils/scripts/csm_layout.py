@@ -81,6 +81,7 @@ MODULE_OF_TAB = {
     "tabhealthcarehidden": "healthcare",
     "tabvenuesseating": "venues",
     "tabvenuesarena": "venues",
+    "tabvenuesconcourse": "venues",
     "tabvenueshidden": "venues",
     "tabmaterials": CORE,
 }

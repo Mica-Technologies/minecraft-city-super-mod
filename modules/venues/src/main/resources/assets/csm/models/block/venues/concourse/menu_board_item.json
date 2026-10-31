@@ -1,0 +1,101 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/venues/concourse/board_frame",
+    "screen": "csm:blocks/venues/concourse/menu_0",
+    "particle": "csm:blocks/venues/concourse/board_frame"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        3,
+        14
+      ],
+      "to": [
+        16,
+        13.7,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            2.3,
+            16,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            2.3,
+            16,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            2.3,
+            2,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            14,
+            2.3,
+            16,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            14,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0.5,
+        3.5,
+        13.9
+      ],
+      "to": [
+        15.5,
+        13.2,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen",
+          "uv": [
+            0,
+            0,
+            16,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

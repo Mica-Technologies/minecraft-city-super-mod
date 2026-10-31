@@ -1,0 +1,82 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "top": "csm:blocks/venues/concourse/top",
+    "front": "csm:blocks/venues/concourse/front_crimson",
+    "led": "csm:blocks/venues/concourse/led",
+    "kick": "csm:blocks/venues/concourse/kick",
+    "shelf": "csm:blocks/venues/concourse/steel_dark",
+    "steel": "csm:blocks/venues/concourse/steel",
+    "particle": "csm:blocks/venues/concourse/front_crimson"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        1,
+        15,
+        16.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            15,
+            1,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#front",
+          "uv": [
+            0,
+            1,
+            1,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#front",
+          "uv": [
+            0,
+            1,
+            15,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#front",
+          "uv": [
+            1,
+            1,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#front",
+          "uv": [
+            0,
+            1,
+            1,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#front",
+          "uv": [
+            0,
+            0,
+            1,
+            15
+          ]
+        }
+      }
+    }
+  ]
+}

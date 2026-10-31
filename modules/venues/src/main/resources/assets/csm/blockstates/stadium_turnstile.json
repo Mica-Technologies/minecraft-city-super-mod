@@ -1,0 +1,108 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,open=false,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_green.obj"
+      }
+    ],
+    "facing=north,open=true,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj"
+      }
+    ],
+    "facing=north,open=false,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_red.obj"
+      }
+    ],
+    "facing=north,open=true,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj"
+      }
+    ],
+    "facing=east,open=false,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_green.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,open=false,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_red.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,open=true,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj",
+        "y": 90
+      }
+    ],
+    "facing=south,open=false,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_green.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,open=false,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_red.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,open=true,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj",
+        "y": 180
+      }
+    ],
+    "facing=west,open=false,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_green.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,ticketed=false": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,open=false,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_rest_red.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,open=true,ticketed=true": [
+      {
+        "model": "csm:venues/concourse/turnstile_turned_green.obj",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/concourse/turnstile_item",
+        "custom": {}
+      }
+    ]
+  },
+  "defaults": {
+    "custom": {
+      "ambient": false
+    }
+  }
+}

@@ -674,6 +674,31 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL", "glass_pane x2", "FASTENER_KIT")
         if registry.startswith("dasher_"):
             return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabvenuesconcourse":
+        # Mirrors VenuesFabricatorRules.concourse (Sports & Venues module).
+        machine = ("SHEET_METAL x2", "WIRING_HARNESS", "glass_pane")
+        concourse = {
+            "concession_counter": ("SHEET_METAL x2", "FASTENER_KIT"),
+            "concession_counter_corner": ("SHEET_METAL x2", "FASTENER_KIT"),
+            "concession_back_counter": ("SHEET_METAL x2", "FASTENER_KIT"),
+            "concession_sign": ("SIGN_BLANK", "LED_MODULE"),
+            "concession_menu_board": ("ENCLOSURE_SHELL", "LED_MODULE x2", "CONTROL_BOARD"),
+            "hot_dog_roller_grill": machine, "popcorn_machine": machine,
+            "pretzel_warmer": machine, "nacho_cheese_dispenser": machine,
+            "soft_serve_machine": ("SHEET_METAL x2", "WIRING_HARNESS", "CONTROL_BOARD"),
+            "beer_kiosk": ("SHEET_METAL x3", "LED_MODULE", "FASTENER_KIT"),
+            "stadium_turnstile": ("SHEET_METAL x2", "CONTROL_BOARD", "FASTENER_KIT"),
+            "stadium_ticket_scanner": ("OPTICAL_SENSOR", "CONTROL_BOARD", "SHEET_METAL"),
+            "suite_bar_counter": ("planks x2", "FASTENER_KIT"),
+            "suite_drink_rail": ("planks",),
+            "jersey_wall_rack": ("wool x2", "SHEET_METAL"),
+            "jersey_mannequin": ("wool x2", "SHEET_METAL"),
+            "hat_wall": ("wool x2", "planks"),
+            "team_apparel_table": ("wool x2", "planks"),
+        }
+        if registry in concourse:
+            return concourse[registry]
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabvenuesseating":
         # Mirrors VenuesFabricatorRules (Sports & Venues module).
         if registry.endswith("_sign"):

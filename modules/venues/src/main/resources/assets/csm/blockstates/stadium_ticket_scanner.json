@@ -1,0 +1,121 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "result": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "result": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "result": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "result": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "result": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "result": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "result": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "result": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "result": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "result": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "result": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "result": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/scanner_2",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -14,6 +14,7 @@ import com.micatechnologies.minecraft.csm.parks.ParksSounds;
 import com.micatechnologies.minecraft.csm.technology.TechnologySounds;
 import com.micatechnologies.minecraft.csm.trafficsignals.RoadsSounds;
 import com.micatechnologies.minecraft.csm.transit.TransitSounds;
+import com.micatechnologies.minecraft.csm.venues.VenuesSounds;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,6 +57,7 @@ class CsmSoundsTest {
     MODULE_SOUNDS.put("Transit", TransitSounds.values());
     MODULE_SOUNDS.put("Parks & Greenery", ParksSounds.values());
     MODULE_SOUNDS.put("Healthcare", HealthcareSounds.values());
+    MODULE_SOUNDS.put("Sports & Venues", VenuesSounds.values());
   }
 
   /**

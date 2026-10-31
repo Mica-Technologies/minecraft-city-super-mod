@@ -1,0 +1,22 @@
+{
+  "type": "forge:ore_shapeless",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_venues"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:paper"
+    },
+    {
+      "type": "forge:ore_dict",
+      "ore": "dye"
+    }
+  ],
+  "result": {
+    "item": "csm:venue_ticket",
+    "count": 4
+  }
+}

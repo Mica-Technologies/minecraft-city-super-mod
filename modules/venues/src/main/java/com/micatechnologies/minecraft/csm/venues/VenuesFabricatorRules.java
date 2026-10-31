@@ -15,8 +15,11 @@ import net.minecraft.block.Block;
  * planks (a painted cell or a line adds dye), a board is sheet metal, its glass is glass, and the
  * machines (the stanchion, the resurfacer, the ice plant) are priced as the machines they are.
  * Over the floor: a scoreboard is enclosures and LED modules, a ribbon board an LED module on
- * sheet metal, a banner wool and dye, the speakers drivers, the camera a lens and a sensor. {@code audit_fabricator_costs.py} mirrors these
- * branches.
+ * sheet metal, a banner wool and dye, the speakers drivers, the camera a lens and a sensor.
+ * On the concourse: counters are sheet metal (a suite's bar and rail wood), a concession machine
+ * sheet metal and wiring behind its glass, a menu board an enclosure of LED modules, the
+ * turnstile and scanner sheet metal round a control board (the scanner a sensor), the team store's
+ * garments wool. {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
  */
@@ -26,6 +29,8 @@ public final class VenuesFabricatorRules {
   public static final String TAB_SEATING = "tabvenuesseating";
   /** The Arena tab. */
   public static final String TAB_ARENA = "tabvenuesarena";
+  /** The Concourse tab. */
+  public static final String TAB_CONCOURSE = "tabvenuesconcourse";
 
   private VenuesFabricatorRules() {
   }
@@ -43,6 +48,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> arena = arena(registryName);
     if (arena != null) {
       return arena;
+    }
+    List<FabricatorIngredient> concourse = concourse(registryName);
+    if (concourse != null) {
+      return concourse;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -163,5 +172,62 @@ public final class VenuesFabricatorRules {
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
     }
     return null;
+  }
+
+  /** The Concourse tab's pieces, or null for a registry name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> concourse(String registryName) {
+    switch (registryName) {
+      case "concession_counter":
+      case "concession_counter_corner":
+      case "concession_back_counter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "concession_sign":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+      case "concession_menu_board":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "hot_dog_roller_grill":
+      case "popcorn_machine":
+      case "pretzel_warmer":
+      case "nacho_cheese_dispenser":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+            FabricatorIngredient.any("minecraft:glass_pane", 1));
+      case "soft_serve_machine":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "beer_kiosk":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "stadium_turnstile":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "stadium_ticket_scanner":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "suite_bar_counter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "suite_drink_rail":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 1));
+      case "jersey_wall_rack":
+      case "jersey_mannequin":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "hat_wall":
+      case "team_apparel_table":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2),
+            FabricatorIngredient.any("minecraft:planks", 1));
+      default:
+        return null;
+    }
   }
 }

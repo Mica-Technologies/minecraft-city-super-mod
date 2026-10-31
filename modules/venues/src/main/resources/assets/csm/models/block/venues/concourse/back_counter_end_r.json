@@ -1,0 +1,119 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/venues/concourse/steel",
+    "steel_dark": "csm:blocks/venues/concourse/steel_dark",
+    "doors": "csm:blocks/venues/concourse/doors",
+    "kick": "csm:blocks/venues/concourse/kick",
+    "walnut": "csm:blocks/venues/concourse/walnut",
+    "stone": "csm:blocks/venues/concourse/stone",
+    "led": "csm:blocks/venues/concourse/led",
+    "brass": "csm:blocks/venues/concourse/brass",
+    "black": "csm:blocks/venues/concourse/black",
+    "oak": "csm:blocks/venues/concourse/oak",
+    "panel": "csm:blocks/venues/concourse/rail_panel",
+    "particle": "csm:blocks/venues/concourse/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        15.25,
+        0,
+        0.8
+      ],
+      "to": [
+        16,
+        15,
+        16.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            1,
+            0.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            15.25,
+            1,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            15.25,
+            1,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            15.25,
+            0,
+            16,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            1,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            1,
+            1,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15.25,
+        16,
+        15
+      ],
+      "to": [
+        16,
+        20,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            1,
+            0.01
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            0,
+            16,
+            0.01
+          ]
+        }
+      }
+    }
+  ]
+}

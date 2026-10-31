@@ -1,0 +1,160 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "finish": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_stainless"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "finish": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_navy"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "finish": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_crimson"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "finish": "3"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_black"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "finish": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_stainless",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "finish": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_navy",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "finish": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_crimson",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "finish": "3"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_black",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "finish": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_stainless",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "finish": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_navy",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "finish": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_crimson",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "finish": "3"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_black",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "finish": "0"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_stainless",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "finish": "1"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_navy",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "finish": "2"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_crimson",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "finish": "3"
+      },
+      "apply": {
+        "model": "csm:venues/concourse/counter_corner_black",
+        "y": 270
+      }
+    }
+  ]
+}

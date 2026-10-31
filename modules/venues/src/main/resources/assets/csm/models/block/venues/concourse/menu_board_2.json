@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/venues/concourse/menu_board",
+  "textures": {
+    "screen": "csm:blocks/venues/concourse/menu_2"
+  }
+}
