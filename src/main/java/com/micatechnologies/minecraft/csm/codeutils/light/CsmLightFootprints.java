@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils.light;
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -30,7 +31,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
  *
  * <p><b>Never loads a chunk.</b> A column in an unloaded chunk is skipped (the light's next heal
  * fills it); a placed cell in one is kept on the light's list and removed when the light next
- * asks.</p>
+ * asks. A light whose own chunk unloads has its work dropped, since its list was saved with the
+ * chunk: it asks again when it loads.</p>
  *
  * <p><b>Ownership.</b> The light-up air stores no owner, so each light keeps the cells it placed.
  * A column that already holds a light-up air (a street light's, or another head's) is left as it
@@ -94,7 +96,8 @@ public final class CsmLightFootprints {
    * @param light the light
    */
   public static void request(AbstractLightFootprintTileEntity light) {
-    if (light.getWorld() == null || light.getWorld().isRemote || light.isInvalid()) {
+    if (light.getWorld() == null || light.getWorld().isRemote || light.isInvalid()
+        || light.isUnloaded()) {
       return;
     }
     Job job = PENDING.get(light);
@@ -106,6 +109,40 @@ public final class CsmLightFootprints {
     job.start(light.isFootprintLit());
     PENDING.put(light, job);
     JOBS.addLast(job);
+  }
+
+  /**
+   * Brings a light's footprint in line after its columns changed (a stadium light head aimed
+   * somewhere else): the cells it placed outside its new columns are given up (handed on, left to
+   * a fixture or removed, as {@link #released} does), and the new columns are filled if it is lit.
+   * The cells still inside the new footprint stay, so re-aiming a little leaves no gap.
+   *
+   * @param light the light
+   */
+  public static void reshaped(AbstractLightFootprintTileEntity light) {
+    World world = light.getWorld();
+    if (world == null || world.isRemote || light.isInvalid() || light.isUnloaded()) {
+      return;
+    }
+    LongSet placed = light.placed();
+    LongArrayList drop = new LongArrayList();
+    for (long cell : placed) {
+      BlockPos p = BlockPos.fromLong(cell);
+      if (!light.hasFootprintColumn(p.getX(), p.getZ())) {
+        drop.add(cell);
+      }
+    }
+    if (!drop.isEmpty()) {
+      for (int i = 0; i < drop.size(); i++) {
+        placed.remove(drop.getLong(i));
+      }
+      light.markDirty();
+      Job job = new Job(world, null);
+      job.items = drop.toLongArray();
+      job.clearing = true;
+      JOBS.addLast(job);
+    }
+    request(light);
   }
 
   /**
@@ -189,7 +226,7 @@ public final class CsmLightFootprints {
       }
       AbstractLightFootprintTileEntity light = job.light;
       if (light != null) {
-        if (light.isInvalid() || light.getWorld() != job.world) {
+        if (light.isInvalid() || light.isUnloaded() || light.getWorld() != job.world) {
           PENDING.remove(light);
           continue;
         }

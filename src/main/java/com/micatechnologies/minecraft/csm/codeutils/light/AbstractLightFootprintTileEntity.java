@@ -26,6 +26,18 @@ public abstract class AbstractLightFootprintTileEntity extends AbstractTileEntit
   private final LongOpenHashSet placed = new LongOpenHashSet();
 
   /**
+   * Set when the light's chunk unloads. A tile entity is not invalidated when its chunk unloads,
+   * and its saved list is already written by then, so work done for it afterwards would leave
+   * light-up air nobody owns: {@link CsmLightFootprints} drops its jobs instead.
+   */
+  private boolean unloaded;
+
+  /** Whether the light's chunk has unloaded, so no more work may be done for it. */
+  boolean isUnloaded() {
+    return unloaded;
+  }
+
+  /**
    * Whether the light is lit, from its block state.
    *
    * @return {@code true} if its footprint should be lit
@@ -125,6 +137,7 @@ public abstract class AbstractLightFootprintTileEntity extends AbstractTileEntit
   @Override
   public void onChunkUnload() {
     super.onChunkUnload();
+    unloaded = true;
     CsmLightFootprints.untrack(this);
   }
 

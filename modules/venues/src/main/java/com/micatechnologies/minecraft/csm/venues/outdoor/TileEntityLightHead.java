@@ -2,9 +2,13 @@ package com.micatechnologies.minecraft.csm.venues.outdoor;
 
 import com.micatechnologies.minecraft.csm.codeutils.light.AbstractLightFootprintTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.light.CsmLightFootprints;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * A stadium light head's tile entity, on its master: the field it lights and the light-up air it
@@ -18,18 +22,40 @@ import net.minecraft.util.EnumFacing;
  * whichever comes first, up to 64 blocks down. Nothing ticks: Core places and removes the cells a
  * few a tick, and the head asks again when it is switched, loaded or random-ticked.</p>
  *
- * <p>Saved: Core's {@code lpa} list and {@code pw}, whether the master was powered last time a
- * neighbour changed, so redstone switches the head on its edges only and a click still works.</p>
+ * <p><b>Aiming.</b> By default the grid lies square to the head's facing, centred straight ahead.
+ * {@code aim} (NBT, two whole numbers: {@code /blockdata x y z {aim:[I;20,-30]}} or
+ * {@code {aim:[20,-30]}}) moves the grid's centre to that many blocks east and south of the head
+ * and turns the grid to face along that line, so a corner tower can light the middle of the field:
+ * the columns are the same {@code n x n} grid every {@link BlockLightHead#GRID_SPACING} blocks,
+ * turned to any angle and each rounded to the nearest block. {@code aim:[I;0,0]} goes back to
+ * straight ahead. Re-aiming gives up the cells outside the new grid and fills the new ones
+ * (Core's {@code CsmLightFootprints.reshaped}). The head's model still turns only four ways.</p>
+ *
+ * <p>Saved: Core's {@code lpa} list, {@code aim} if set, and {@code pw}, whether the master was
+ * powered last time a neighbour changed, so redstone switches the head on its edges only and a
+ * click still works.</p>
  *
  * @since 2026.10
  */
 public class TileEntityLightHead extends AbstractLightFootprintTileEntity {
 
   private static final String KEY_POWERED = "pw";
+  private static final String KEY_AIM = "aim";
 
   private boolean powered;
+  /** The grid's centre, blocks east and south of the master; both 0 for straight ahead. */
+  private int aimX;
+  private int aimZ;
+  /** Set once the tile entity is in the world, so an aim read later is a re-aim. */
+  private boolean live;
   private EnumFacing cachedFacing;
   private long[] cachedColumns;
+  private final LongOpenHashSet cachedSet = new LongOpenHashSet();
+
+  /** Whether the head is aimed somewhere other than straight ahead. */
+  public boolean isAimed() {
+    return aimX != 0 || aimZ != 0;
+  }
 
   /** Whether the master was powered when a neighbour last changed. */
   boolean wasPowered() {
@@ -71,20 +97,35 @@ public class TileEntityLightHead extends AbstractLightFootprintTileEntity {
       int n = head.gridCount();
       int half = n / 2;
       int s = BlockLightHead.GRID_SPACING;
-      EnumFacing right = facing.rotateY();
-      int cx = pos.getX() + facing.getXOffset() * head.gridDistance();
-      int cz = pos.getZ() + facing.getZOffset() * head.gridDistance();
+      // the grid's forward and right, unit vectors; its centre
+      double fx = facing.getXOffset();
+      double fz = facing.getZOffset();
+      double cx = pos.getX() + fx * head.gridDistance();
+      double cz = pos.getZ() + fz * head.gridDistance();
+      if (isAimed()) {
+        double len = Math.sqrt((double) aimX * aimX + (double) aimZ * aimZ);
+        fx = aimX / len;
+        fz = aimZ / len;
+        cx = pos.getX() + aimX;
+        cz = pos.getZ() + aimZ;
+      }
+      double rx = -fz;
+      double rz = fx;
       long[] columns = new long[n * n];
+      cachedSet.clear();
       int k = 0;
       // Near row first, so the light comes on from the tower outwards
       for (int j = -half; j <= half; j++) {
         for (int i = -half; i <= half; i++) {
-          int x = cx + right.getXOffset() * i * s + facing.getXOffset() * j * s;
-          int z = cz + right.getZOffset() * i * s + facing.getZOffset() * j * s;
-          columns[k++] = CsmLightFootprints.column(x, z);
+          int x = (int) Math.round(cx + (rx * i + fx * j) * s);
+          int z = (int) Math.round(cz + (rz * i + fz * j) * s);
+          long c = CsmLightFootprints.column(x, z);
+          if (cachedSet.add(c)) {
+            columns[k++] = c;
+          }
         }
       }
-      cachedColumns = columns;
+      cachedColumns = k == columns.length ? columns : java.util.Arrays.copyOf(columns, k);
       cachedFacing = facing;
     }
     return cachedColumns;
@@ -92,19 +133,14 @@ public class TileEntityLightHead extends AbstractLightFootprintTileEntity {
 
   @Override
   public boolean hasFootprintColumn(int x, int z) {
-    BlockLightHead head = head();
-    if (head == null) {
-      return false;
-    }
-    EnumFacing facing = facing();
-    int s = BlockLightHead.GRID_SPACING;
-    int half = head.gridCount() / 2;
-    int dx = x - (pos.getX() + facing.getXOffset() * head.gridDistance());
-    int dz = z - (pos.getZ() + facing.getZOffset() * head.gridDistance());
-    if (Math.floorMod(dx, s) != 0 || Math.floorMod(dz, s) != 0) {
-      return false;
-    }
-    return Math.abs(dx) <= half * s && Math.abs(dz) <= half * s;
+    footprintColumns();
+    return cachedSet.contains(CsmLightFootprints.column(x, z));
+  }
+
+  @Override
+  public void onLoad() {
+    live = true;
+    super.onLoad();
   }
 
   @Override
@@ -116,6 +152,35 @@ public class TileEntityLightHead extends AbstractLightFootprintTileEntity {
   public void readNBT(NBTTagCompound compound) {
     super.readNBT(compound);
     powered = compound.getBoolean(KEY_POWERED);
+    int[] aim = readAim(compound);
+    if (aim[0] != aimX || aim[1] != aimZ) {
+      aimX = aim[0];
+      aimZ = aim[1];
+      cachedColumns = null;
+      if (live && world != null && !world.isRemote) {
+        CsmLightFootprints.reshaped(this);
+      }
+    }
+  }
+
+  /** The aim in a compound: an int array or a list of two ints; {0, 0} if absent or odd. */
+  private static int[] readAim(NBTTagCompound compound) {
+    int[] out = {0, 0};
+    if (compound.hasKey(KEY_AIM, Constants.NBT.TAG_INT_ARRAY)) {
+      int[] a = compound.getIntArray(KEY_AIM);
+      if (a.length == 2) {
+        out = a;
+      }
+    } else if (compound.hasKey(KEY_AIM, Constants.NBT.TAG_LIST)) {
+      NBTTagList list = compound.getTagList(KEY_AIM, Constants.NBT.TAG_INT);
+      if (list.tagCount() == 2) {
+        out = new int[]{list.getIntAt(0), list.getIntAt(1)};
+      }
+    }
+    // a footprint further than 96 blocks off could not be handed over between heads
+    out[0] = Math.max(-96, Math.min(96, out[0]));
+    out[1] = Math.max(-96, Math.min(96, out[1]));
+    return out;
   }
 
   @Override
@@ -123,6 +188,9 @@ public class TileEntityLightHead extends AbstractLightFootprintTileEntity {
     super.writeNBT(compound);
     if (powered) {
       compound.setBoolean(KEY_POWERED, true);
+    }
+    if (isAimed()) {
+      compound.setTag(KEY_AIM, new NBTTagIntArray(new int[]{aimX, aimZ}));
     }
     return compound;
   }
