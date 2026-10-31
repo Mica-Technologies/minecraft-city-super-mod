@@ -149,6 +149,15 @@ public final class CsmRenderToggles {
    */
   public static boolean spanWireCablePerFrame = false;
 
+  /** Skip the bridge cables entirely. Measurement only. */
+  public static boolean skipBridgeCable = false;
+
+  /**
+   * Draw the bridge cables per frame instead of replaying their display lists. Kept so the two can
+   * be measured inside one session; the baked path ships.
+   */
+  public static boolean bridgeCablePerFrame = false;
+
   /**
    * Draw every renderer that replays a list shared by appearance ({@link CsmSharedDisplayLists})
    * per frame instead, the way each was drawn before it was baked. One switch for the whole family
@@ -198,6 +207,8 @@ public final class CsmRenderToggles {
     values.put("crosswalkCountdownPerFrame", crosswalkCountdownPerFrame);
     values.put("spanWireCable", skipSpanWireCable);
     values.put("spanWireCablePerFrame", spanWireCablePerFrame);
+    values.put("bridgeCable", skipBridgeCable);
+    values.put("bridgeCablePerFrame", bridgeCablePerFrame);
     values.put("sharedBakesPerFrame", sharedBakesPerFrame);
     values.put("signalLayoutPerFrame", signalLayoutPerFrame);
     return values;
@@ -260,6 +271,10 @@ public final class CsmRenderToggles {
       skipSpanWireCable = skipped;
     } else if ("spanWireCablePerFrame".equalsIgnoreCase(name)) {
       spanWireCablePerFrame = skipped;
+    } else if ("bridgeCable".equalsIgnoreCase(name)) {
+      skipBridgeCable = skipped;
+    } else if ("bridgeCablePerFrame".equalsIgnoreCase(name)) {
+      bridgeCablePerFrame = skipped;
     } else if ("sharedBakesPerFrame".equalsIgnoreCase(name)) {
       sharedBakesPerFrame = skipped;
     } else if ("signalLayoutPerFrame".equalsIgnoreCase(name)) {
@@ -296,6 +311,8 @@ public final class CsmRenderToggles {
     crosswalkCountdownPerFrame = false;
     skipSpanWireCable = false;
     spanWireCablePerFrame = false;
+    skipBridgeCable = false;
+    bridgeCablePerFrame = false;
     sharedBakesPerFrame = false;
     signalLayoutPerFrame = false;
   }

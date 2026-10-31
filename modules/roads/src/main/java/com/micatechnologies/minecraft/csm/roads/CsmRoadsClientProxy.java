@@ -69,6 +69,9 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireDisconnectBox.class,
         new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.TileEntitySpanWireHangerRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(
+        com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.TileEntityBridgeCableAnchor.class,
+        new com.micatechnologies.minecraft.csm.trafficaccessories.bridgecable.TileEntityBridgeCableAnchorRenderer());
 
     ClientRegistry.bindTileEntitySpecialRenderer(
         com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficLightMountKit.class,

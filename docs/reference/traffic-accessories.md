@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "396 blocks in this tab"
+!!! info "400 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -37,6 +37,9 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Box Beam Guardrail (Stacked) | `csm:box_beam_guardrail_stacked` | 1.2 | 6 | pickaxe | 0 |
 | Box Beam Guardrail (Stacked, Double Sided) | `csm:box_beam_guardrail_stacked_double` | 1.2 | 6 | pickaxe | 0 |
 | Box Beam Guardrail End (Bullnose) | `csm:guardrail_end_bullnose_box` | 1.2 | 6 | pickaxe | 0 |
+| Bridge Cable Clevis | `csm:bridge_cable_clevis` | 3.0 | 12.0 | pickaxe | 1 |
+| Bridge Cable Deck Anchor | `csm:bridge_cable_deck_anchor` | 3.0 | 12.0 | pickaxe | 1 |
+| Bridge Cable Socket | `csm:bridge_cable_socket` | 3.0 | 12.0 | pickaxe | 1 |
 | Cable Barrier | `csm:cable_barrier` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier Anchor | `csm:cable_barrier_anchor` | 1.2 | 6 | pickaxe | 0 |
@@ -193,6 +196,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Street Name Sign | `csm:trafficstreetnamesign` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign (Double) | `csm:trafficstreetnamesigndouble` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign Mount | `csm:trafficstreetnamesignmount` | 2 | 10 | pickaxe | 1 |
+| Suspension Cable Saddle | `csm:bridge_cable_saddle` | 3.0 | 12.0 | pickaxe | 1 |
 | Tan Angled Thin Traffic Pole | `csm:trafficpolehorizontalangletan` | 2 | 10 | pickaxe | 1 |
 | Tan Double Horizontal Traffic Pole | `csm:trafficpolehorzdbltan` |  | 10 | pickaxe | 1 |
 | Tan Double Vertical Traffic Pole | `csm:trafficpolevertdbltan` |  | 10 | pickaxe | 1 |
