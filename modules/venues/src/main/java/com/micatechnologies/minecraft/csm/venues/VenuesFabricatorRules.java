@@ -19,7 +19,11 @@ import net.minecraft.block.Block;
  * On the concourse: counters are sheet metal (a suite's bar and rail wood), a concession machine
  * sheet metal and wiring behind its glass, a menu board an enclosure of LED modules, the
  * turnstile and scanner sheet metal round a control board (the scanner a sensor), the team store's
- * garments wool. {@code audit_fabricator_costs.py} mirrors these branches.
+ * garments wool. Outside: a marquee cell is an LED module on sheet metal (its controller adds a
+ * control board), the pylon stone, the blades sign blanks, the box office window glass on
+ * sheet metal; a bleacher is sheet metal, the press box sheet metal and glass, the ticket booth
+ * enclosures and glass, a light tower's shaft iron, its head LED modules.
+ * {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
  */
@@ -52,6 +56,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> concourse = concourse(registryName);
     if (concourse != null) {
       return concourse;
+    }
+    List<FabricatorIngredient> outside = exterior(registryName);
+    if (outside != null) {
+      return outside;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -226,6 +234,59 @@ public final class VenuesFabricatorRules {
       case "team_apparel_table":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2),
             FabricatorIngredient.any("minecraft:planks", 1));
+      default:
+        return null;
+    }
+  }
+
+  /** The exterior and the shared outdoor pieces, or null for a name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> exterior(String registryName) {
+    switch (registryName) {
+      case "marquee_board":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "marquee_board_controller":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "marquee_pylon":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:stone", 2),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "venue_gate_blade":
+      case "venue_section_blade":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+      case "venue_blade_bracket":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 1),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "box_office_window":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.any("minecraft:glass_pane", 2),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+      case "aluminium_bleacher":
+      case "aluminium_bleacher_aisle":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+      case "aluminium_bleacher_frame":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "press_box_module":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.any("minecraft:glass_pane", 2));
+      case "ticket_booth":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2),
+            FabricatorIngredient.any("minecraft:glass_pane", 4),
+            FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+      case "stadium_light_pole":
+      case "stadium_light_lattice":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 2));
+      case "stadium_light_head":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 6),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "stadium_light_head_small":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 3),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
       default:
         return null;
     }

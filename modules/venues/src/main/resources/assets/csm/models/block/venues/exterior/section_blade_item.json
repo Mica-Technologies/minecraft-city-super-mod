@@ -1,0 +1,101 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/venues/exterior/blade_section_icon",
+    "back": "csm:blocks/venues/exterior/steel_dark",
+    "particle": "csm:blocks/venues/exterior/blade_section_icon"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        4,
+        7
+      ],
+      "to": [
+        16,
+        12,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#back",
+          "uv": [
+            0,
+            4,
+            16,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#back",
+          "uv": [
+            0,
+            4,
+            16,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#back",
+          "uv": [
+            7,
+            4,
+            9,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#back",
+          "uv": [
+            7,
+            4,
+            9,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#back",
+          "uv": [
+            0,
+            7,
+            16,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#back",
+          "uv": [
+            0,
+            7,
+            16,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        4,
+        6.8
+      ],
+      "to": [
+        16,
+        12,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            4,
+            16,
+            12
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "siding": "csm:blocks/venues/exterior/pb_siding",
+    "fascia": "csm:blocks/venues/exterior/pb_fascia",
+    "glass": "csm:blocks/venues/exterior/glass_tint",
+    "desk": "csm:blocks/venues/exterior/pb_desk",
+    "bronze": "csm:blocks/venues/exterior/bronze",
+    "particle": "csm:blocks/venues/exterior/pb_siding"
+  },
+  "elements": [
+    {
+      "from": [
+        15,
+        10,
+        -6.5
+      ],
+      "to": [
+        16,
+        16.0,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0.0,
+            1,
+            6
+          ]
+        },
+        "west": {
+          "texture": "#siding",
+          "uv": [
+            6.5,
+            0.0,
+            16,
+            6
+          ]
+        },
+        "east": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0.0,
+            9.5,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        16.0,
+        -6.7
+      ],
+      "to": [
+        16,
+        27.5,
+        3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0,
+            1,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#siding",
+          "uv": [
+            6.5,
+            0,
+            16,
+            11.5
+          ]
+        },
+        "east": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0,
+            9.5,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        10,
+        3
+      ],
+      "faces": {
+        "east": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            6,
+            3,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

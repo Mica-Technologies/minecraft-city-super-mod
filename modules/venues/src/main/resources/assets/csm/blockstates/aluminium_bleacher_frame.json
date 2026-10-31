@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_ledger"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "post_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "post_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_ledger",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "post_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "post_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_ledger",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "post_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "post_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_ledger",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "post_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "post_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/frame_post_r",
+        "y": 270
+      }
+    }
+  ]
+}

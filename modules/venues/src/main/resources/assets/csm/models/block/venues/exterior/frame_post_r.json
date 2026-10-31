@@ -1,0 +1,59 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/venues/exterior/steel_dark",
+    "particle": "csm:blocks/venues/exterior/steel_dark"
+  },
+  "elements": [
+    {
+      "from": [
+        14.25,
+        0,
+        0.75
+      ],
+      "to": [
+        16,
+        14,
+        2.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            2,
+            1.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            14.25,
+            2,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            13.5,
+            2,
+            15.25,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0.75,
+            2,
+            2.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

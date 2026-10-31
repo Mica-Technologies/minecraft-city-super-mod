@@ -1,0 +1,131 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "siding": "csm:blocks/venues/exterior/pb_siding",
+    "fascia": "csm:blocks/venues/exterior/pb_fascia",
+    "glass": "csm:blocks/venues/exterior/glass_tint",
+    "desk": "csm:blocks/venues/exterior/pb_desk",
+    "bronze": "csm:blocks/venues/exterior/bronze",
+    "particle": "csm:blocks/venues/exterior/pb_siding"
+  },
+  "elements": [
+    {
+      "from": [
+        14.8,
+        11,
+        0.6
+      ],
+      "to": [
+        16.2,
+        16.0,
+        2.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bronze",
+          "uv": [
+            0,
+            0.0,
+            1,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#bronze",
+          "uv": [
+            15,
+            0.0,
+            16,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#bronze",
+          "uv": [
+            13.6,
+            0.0,
+            15.4,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#bronze",
+          "uv": [
+            0.6,
+            0.0,
+            2.4,
+            5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          11,
+          1.5
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    },
+    {
+      "from": [
+        14.8,
+        16.0,
+        0.6
+      ],
+      "to": [
+        16.2,
+        28.5,
+        2.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bronze",
+          "uv": [
+            0,
+            0,
+            1,
+            12.5
+          ]
+        },
+        "south": {
+          "texture": "#bronze",
+          "uv": [
+            15,
+            0,
+            16,
+            12.5
+          ]
+        },
+        "west": {
+          "texture": "#bronze",
+          "uv": [
+            13.6,
+            0,
+            15.4,
+            12.5
+          ]
+        },
+        "east": {
+          "texture": "#bronze",
+          "uv": [
+            0.6,
+            0,
+            2.4,
+            12.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          11,
+          1.5
+        ],
+        "axis": "x",
+        "angle": -22.5
+      }
+    }
+  ]
+}

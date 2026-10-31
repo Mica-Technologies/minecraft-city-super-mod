@@ -1,0 +1,154 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "siding": "csm:blocks/venues/exterior/pb_siding",
+    "fascia": "csm:blocks/venues/exterior/pb_fascia",
+    "glass": "csm:blocks/venues/exterior/glass_tint",
+    "desk": "csm:blocks/venues/exterior/pb_desk",
+    "bronze": "csm:blocks/venues/exterior/bronze",
+    "particle": "csm:blocks/venues/exterior/pb_siding"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        3,
+        16.0,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0.0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0.0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0.0,
+            3,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        16.0,
+        0
+      ],
+      "to": [
+        3,
+        27.5,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0,
+            16,
+            11.5
+          ]
+        },
+        "east": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0,
+            16,
+            11.5
+          ]
+        },
+        "south": {
+          "texture": "#siding",
+          "uv": [
+            0,
+            0,
+            3,
+            11.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -6.5,
+        27.5,
+        -6.7
+      ],
+      "to": [
+        3,
+        32,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#fascia",
+          "uv": [
+            -6.5,
+            0,
+            16,
+            4.5
+          ]
+        },
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            6.5,
+            0,
+            16,
+            4.5
+          ]
+        },
+        "up": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            -6.5,
+            9.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            -6.5,
+            9.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#fascia",
+          "uv": [
+            0,
+            0,
+            9.5,
+            4.5
+          ]
+        }
+      }
+    }
+  ]
+}

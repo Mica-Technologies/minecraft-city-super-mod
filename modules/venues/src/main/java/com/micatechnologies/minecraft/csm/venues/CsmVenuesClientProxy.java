@@ -10,6 +10,8 @@ import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBannerRendere
 import com.micatechnologies.minecraft.csm.venues.av.VenueColours;
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
 import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
+import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarquee;
+import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarqueeRenderer;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumCompanionSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.IStadiumSeat;
@@ -24,8 +26,9 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
- * The venues module's proxy on the client. It binds the three renderers (the scoreboard's
- * screens, the ribbon board's scrolling text, the banners' lettering) and registers the colour
+ * The venues module's proxy on the client. It binds the four renderers (the scoreboard's
+ * screens, the ribbon board's scrolling text, the banners' lettering, the exterior marquee's
+ * picture) and registers the colour
  * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
  * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
  * seat beside it, so ten colours cost one set of models; a banner's cloth (tint 0) and trim (1)
@@ -45,6 +48,8 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
         new TileEntityRibbonTextRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVenueBanner.class,
         new TileEntityVenueBannerRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMarquee.class,
+        new TileEntityMarqueeRenderer());
     seatColours();
     bannerColours();
     storeColours();

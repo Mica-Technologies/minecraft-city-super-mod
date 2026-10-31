@@ -1,0 +1,43 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "screen": "csm:blocks/venues/exterior/marquee_screen",
+    "frame": "csm:blocks/venues/exterior/anodised",
+    "back": "csm:blocks/venues/exterior/marquee_back",
+    "particle": "csm:blocks/venues/exterior/anodised"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        1,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -40,7 +40,7 @@ import org.lwjgl.opengl.GL11;
 public class TileEntityScoreboardRenderer extends TileEntitySpecialRenderer<TileEntityScoreboard> {
 
   /** The idle video: 32 frames of 128 x 64 on a 512 sheet, four across. */
-  static final ResourceLocation VIDEO = new ResourceLocation("csm",
+  public static final ResourceLocation VIDEO = new ResourceLocation("csm",
       "textures/blocks/venues/av/scoreboard_video.png");
   private static final int VIDEO_FRAMES = 32;
   private static final long VIDEO_FRAME_MS = 250;
@@ -295,8 +295,8 @@ public class TileEntityScoreboardRenderer extends TileEntitySpecialRenderer<Tile
    * One line of text, its glyphs placed and coloured: {@code height} pixels tall, shrunk to fit
    * {@code maxW}, centred on {@code x} (align 0), starting at it (-1) or ending at it (1).
    */
-  static void line(BufferBuilder buf, CsmFontRenderer fr, String text, float x, float top,
-      float height, float maxW, int rgb, int align) {
+  public static void line(BufferBuilder buf, CsmFontRenderer fr, String text, float x,
+      float top, float height, float maxW, int rgb, int align) {
     if (text == null || text.isEmpty()) {
       return;
     }

@@ -1,0 +1,250 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "wall": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_window"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wall": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_wall"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wall": "false",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_mullion_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "corner": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_corner"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wall": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_window",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wall": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_wall",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wall": "false",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_mullion_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "corner": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_corner",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wall": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_window",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wall": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_wall",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wall": "false",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_mullion_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "corner": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_corner",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wall": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_window",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wall": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_wall",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wall": "false",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_end_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wall": "false",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_mullion_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "corner": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/press_corner",
+        "y": 270
+      }
+    }
+  ]
+}

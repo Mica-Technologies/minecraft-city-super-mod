@@ -2,7 +2,7 @@
 
 What every sports venue shares, starting with the seating bowl: stadium seats in ten colours, aisle-end standards with their row letters, the companion seat and wheelchair space, aisle step lights and handrails, glass guards for tier and suite fronts, and the section and portal signs over the vomitories.
 
-!!! info "21 blocks in this tab"
+!!! info "30 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -13,11 +13,19 @@ What every sports venue shares, starting with the seating bowl: stadium seats in
 |---|---|---|---|---|---|
 | Aisle Handrail | `csm:stadium_aisle_handrail` |  |  | pickaxe | 0 |
 | Aisle Step Light | `csm:stadium_aisle_step_light` |  |  | pickaxe | 0 |
+| Aluminium Bleacher | `csm:aluminium_bleacher` |  |  | pickaxe | 0 |
+| Aluminium Bleacher (Aisle) | `csm:aluminium_bleacher_aisle` |  |  | pickaxe | 0 |
+| Aluminium Bleacher Frame | `csm:aluminium_bleacher_frame` |  |  | pickaxe | 0 |
 | Glass Guard | `csm:stadium_glass_guard` |  |  | pickaxe | 0 |
 | Glass Guard (1:1 Slope) | `csm:stadium_glass_guard_steep` |  |  | pickaxe | 0 |
 | Glass Guard (1:2 Slope) | `csm:stadium_glass_guard_slope` |  |  | pickaxe | 0 |
+| Press Box Module | `csm:press_box_module` |  |  | pickaxe | 0 |
 | Section Number Sign | `csm:stadium_section_sign` | 2.0 | 6.0 | pickaxe | 1 |
 | Stadium Companion Seat | `csm:stadium_companion_seat` |  |  | pickaxe | 0 |
+| Stadium Light Head | `csm:stadium_light_head` |  |  | pickaxe | 0 |
+| Stadium Light Head (Small) | `csm:stadium_light_head_small` |  |  | pickaxe | 0 |
+| Stadium Light Pole (Monopole) | `csm:stadium_light_pole` |  |  | pickaxe | 0 |
+| Stadium Light Tower (Lattice) | `csm:stadium_light_lattice` |  |  | pickaxe | 0 |
 | Stadium Seat (Black) | `csm:stadium_seat_black` |  |  | pickaxe | 0 |
 | Stadium Seat (Charcoal) | `csm:stadium_seat_charcoal` |  |  | pickaxe | 0 |
 | Stadium Seat (Crimson) | `csm:stadium_seat_crimson` |  |  | pickaxe | 0 |
@@ -30,6 +38,7 @@ What every sports venue shares, starting with the seating bowl: stadium seats in
 | Stadium Seat (White) | `csm:stadium_seat_white` |  |  | pickaxe | 0 |
 | Stadium Seat, Aisle End (A-P) | `csm:stadium_seat_aisle_end` |  |  | pickaxe | 0 |
 | Stadium Seat, Aisle End (Q-FF) | `csm:stadium_seat_aisle_end_2` |  |  | pickaxe | 0 |
+| Ticket Booth | `csm:ticket_booth` |  |  | pickaxe | 0 |
 | Vomitory Portal Sign | `csm:stadium_portal_sign` | 2.0 | 6.0 | pickaxe | 1 |
 | Wheelchair Space Marking | `csm:stadium_wheelchair_space` |  |  | pickaxe | 0 |
 

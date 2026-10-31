@@ -1,0 +1,426 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "double": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_up"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "false",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_down"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_body"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "true",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_up"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "double": "true",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_down"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_up",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "false",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "true",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_up",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "double": "true",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_up",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "false",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "true",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_up",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "double": "true",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "false"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "false",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_up",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "false",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_single_down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "true",
+        "left": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_up",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "double": "true",
+        "down": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/marquee_double_down",
+        "y": 270
+      }
+    }
+  ]
+}

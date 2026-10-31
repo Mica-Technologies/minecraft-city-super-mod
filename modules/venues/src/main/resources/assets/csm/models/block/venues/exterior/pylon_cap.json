@@ -1,0 +1,79 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "clad": "csm:blocks/venues/exterior/pylon_cladding",
+    "concrete": "csm:blocks/venues/exterior/concrete",
+    "cap": "csm:blocks/venues/exterior/aluminium",
+    "particle": "csm:blocks/venues/exterior/pylon_cladding"
+  },
+  "elements": [
+    {
+      "from": [
+        -0.2,
+        15,
+        2.5
+      ],
+      "to": [
+        16.2,
+        16,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            2.5,
+            0,
+            13.5,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            2.5,
+            16,
+            13.5
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            2.5,
+            16,
+            13.5
+          ]
+        }
+      }
+    }
+  ]
+}

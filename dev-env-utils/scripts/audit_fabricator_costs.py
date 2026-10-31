@@ -674,6 +674,27 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL", "glass_pane x2", "FASTENER_KIT")
         if registry.startswith("dasher_"):
             return ("SHEET_METAL", "FASTENER_KIT")
+    exterior = {
+        "marquee_board": ("LED_MODULE", "SHEET_METAL"),
+        "marquee_board_controller": ("LED_MODULE", "SHEET_METAL", "CONTROL_BOARD"),
+        "marquee_pylon": ("stone x2", "SHEET_METAL"),
+        "venue_gate_blade": ("SIGN_BLANK", "LED_MODULE"),
+        "venue_section_blade": ("SIGN_BLANK", "LED_MODULE"),
+        "venue_blade_bracket": ("iron_ingot", "FASTENER_KIT"),
+        "box_office_window": ("SHEET_METAL x2", "glass_pane x2", "LED_MODULE"),
+        "aluminium_bleacher": ("SHEET_METAL x2",),
+        "aluminium_bleacher_aisle": ("SHEET_METAL x2",),
+        "aluminium_bleacher_frame": ("SHEET_METAL",),
+        "press_box_module": ("SHEET_METAL x2", "glass_pane x2"),
+        "ticket_booth": ("ENCLOSURE_SHELL x2", "glass_pane x4", "FASTENER_KIT"),
+        "stadium_light_pole": ("iron_ingot x2",),
+        "stadium_light_lattice": ("iron_ingot x2",),
+        "stadium_light_head": ("LED_MODULE x6", "SHEET_METAL x2", "WIRING_HARNESS"),
+        "stadium_light_head_small": ("LED_MODULE x3", "SHEET_METAL", "WIRING_HARNESS"),
+    }
+    if tab in ("tabvenuesconcourse", "tabvenuesseating") and registry in exterior:
+        # Mirrors VenuesFabricatorRules.exterior (Sports & Venues module).
+        return exterior[registry]
     if tab == "tabvenuesconcourse":
         # Mirrors VenuesFabricatorRules.concourse (Sports & Venues module).
         machine = ("SHEET_METAL x2", "WIRING_HARNESS", "glass_pane")

@@ -35,6 +35,12 @@ public final class ConcourseSignPresets {
           WayfindingScheme.NEUTRAL),
       new WayfindingPreset("TEAM STORE", "", WayfindingIcon.SHOP, WayfindingArrow.NONE,
           WayfindingScheme.INPATIENT),
+      new WayfindingPreset("BOX OFFICE", "", WayfindingIcon.TICKET, WayfindingArrow.NONE,
+          WayfindingScheme.METRO),
+      new WayfindingPreset("WILL CALL", "", WayfindingIcon.TICKET, WayfindingArrow.NONE,
+          WayfindingScheme.METRO),
+      new WayfindingPreset("TICKETS", "", WayfindingIcon.TICKET, WayfindingArrow.NONE,
+          WayfindingScheme.METRO),
   };
 
   /** A new sign: HOT DOGS, centred, lit, on the wall or hung as the panel decides. */

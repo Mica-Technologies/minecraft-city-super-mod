@@ -1,0 +1,117 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_arm"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "tip": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_tip"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "plate": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_plate"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_arm",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "tip": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_tip",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "plate": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_plate",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_arm",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "tip": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_tip",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "plate": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_plate",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_arm",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "tip": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_tip",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "plate": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/bracket_plate",
+        "y": 270
+      }
+    }
+  ]
+}

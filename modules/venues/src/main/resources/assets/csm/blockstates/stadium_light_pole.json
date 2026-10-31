@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/exterior/monopole"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "base": {
+      "true": {
+        "model": "csm:venues/exterior/monopole_base"
+      },
+      "false": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/exterior/monopole_base"
+      }
+    ]
+  }
+}

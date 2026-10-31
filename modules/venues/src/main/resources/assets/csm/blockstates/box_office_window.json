@@ -1,0 +1,238 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "legend": "0"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "legend": "1"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "legend": "0"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "legend": "1"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "legend": "0"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "legend": "1"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "legend": "0"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "legend": "1"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "legend": "2"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "legend": "3"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_l": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/exterior/window_end_r",
+        "y": 270
+      }
+    }
+  ]
+}

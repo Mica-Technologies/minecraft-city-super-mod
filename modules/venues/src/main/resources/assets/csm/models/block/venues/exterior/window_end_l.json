@@ -1,0 +1,107 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "panel": "csm:blocks/venues/exterior/granite",
+    "steel": "csm:blocks/venues/exterior/steel",
+    "glass": "csm:blocks/venues/exterior/glass",
+    "bronze": "csm:blocks/venues/exterior/bronze",
+    "black": "csm:blocks/venues/exterior/black",
+    "grille": "csm:blocks/venues/exterior/grille",
+    "head": "csm:blocks/venues/exterior/header_0",
+    "navy": "csm:blocks/venues/exterior/header_3",
+    "particle": "csm:blocks/venues/exterior/granite"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        5
+      ],
+      "to": [
+        1,
+        16,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bronze",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#bronze",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bronze",
+          "uv": [
+            5,
+            0,
+            10.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        16,
+        5
+      ],
+      "to": [
+        1,
+        31.8,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#bronze",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#bronze",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#bronze",
+          "uv": [
+            5,
+            0,
+            10.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#bronze",
+          "uv": [
+            0,
+            5,
+            1,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

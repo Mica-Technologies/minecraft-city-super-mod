@@ -301,7 +301,7 @@ public class TileEntityScoreboard extends AbstractTileEntity {
   }
 
   /** Printable ASCII only (the screens' font has nothing else), trimmed and cut to length. */
-  static String clean(String s, int max) {
+  public static String clean(String s, int max) {
     if (s == null) {
       return "";
     }

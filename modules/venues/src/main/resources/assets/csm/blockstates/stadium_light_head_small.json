@@ -1,0 +1,35 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/exterior/head_small_on.obj",
+    "custom": {
+      "ambient": false
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "lit": {
+      "true": {},
+      "false": {
+        "model": "csm:venues/exterior/head_small_off.obj"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/exterior/head_small_item",
+        "custom": {}
+      }
+    ]
+  }
+}

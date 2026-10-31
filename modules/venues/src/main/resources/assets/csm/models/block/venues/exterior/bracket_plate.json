@@ -1,0 +1,136 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "steel": "csm:blocks/venues/exterior/black",
+    "particle": "csm:blocks/venues/exterior/black"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        0,
+        15.25
+      ],
+      "to": [
+        11,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            2,
+            11,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            2,
+            11,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2,
+            0.75,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            15.25,
+            2,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            15.25,
+            11,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            0,
+            11,
+            0.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.25,
+        7.25,
+        2.1
+      ],
+      "to": [
+        8.75,
+        8.75,
+        15.9
+      ],
+      "faces": {
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0.1,
+            7.25,
+            13.9,
+            8.75
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            2.1,
+            7.25,
+            15.9,
+            8.75
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            7.25,
+            2.1,
+            8.75,
+            15.9
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.25,
+            0.1,
+            8.75,
+            13.9
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          9
+        ],
+        "axis": "x",
+        "angle": -45
+      }
+    }
+  ]
+}

@@ -14,6 +14,12 @@ import com.micatechnologies.minecraft.csm.venues.concourse.BlockStadiumTurnstile
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTicketScanner;
 import com.micatechnologies.minecraft.csm.venues.concourse.ItemVenueTicket;
+import com.micatechnologies.minecraft.csm.venues.exterior.BlockBladeBracket;
+import com.micatechnologies.minecraft.csm.venues.exterior.BlockBoxOfficeWindow;
+import com.micatechnologies.minecraft.csm.venues.exterior.BlockMarqueeBoard;
+import com.micatechnologies.minecraft.csm.venues.exterior.BlockMarqueeController;
+import com.micatechnologies.minecraft.csm.venues.exterior.BlockMarqueePylon;
+import com.micatechnologies.minecraft.csm.venues.exterior.BlockVenueBlade;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -24,8 +30,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * counter), the lit concession sign and the digital menu board, the hot dog roller grill, popcorn
  * machine, pretzel warmer, nacho station and soft-serve machine, the portable beer kiosk, the
  * stadium turnstile with its ticket scanner and the Venue Ticket, the suite bar counter and drink
- * rail, and the team store's jersey rack, cap wall, apparel table and jersey mannequin. The
- * coolers, registers, fountain drinks, bar stools, TVs, metal detector and queue stanchions a
+ * rail, and the team store's jersey rack, cap wall, apparel table and jersey mannequin; and the
+ * arena's outside and entry: the exterior marquee board built to size, its pylon, the gate and
+ * section wayfinding blades with their bracket, and the box office window. The coolers, registers, fountain drinks, bar stools, TVs, metal detector and queue stanchions a
  * concourse also uses are Furnishings', Life Safety's and Transit's (see
  * {@code VENUES_SYSTEM.md}).
  *
@@ -78,6 +85,14 @@ public class CsmTabVenuesConcourse extends CsmTab {
     initTabBlock(new BlockTeamStoreFixture("hat_wall", BlockTeamStoreFixture.Kind.HAT_WALL));
     initTabBlock(new BlockTeamStoreFixture("team_apparel_table", BlockTeamStoreFixture.Kind.APPAREL_TABLE));
     initTabBlock(new BlockTeamStoreFixture("jersey_mannequin", BlockTeamStoreFixture.Kind.MANNEQUIN));
+    // --- Sports & Venues - Concourse (gen_venues_exterior.py --fragments) ---
+    initTabBlock(new BlockMarqueeBoard("marquee_board"));
+    initTabBlock(new BlockMarqueeController("marquee_board_controller"));
+    initTabBlock(new BlockMarqueePylon("marquee_pylon"));
+    initTabBlock(new BlockVenueBlade("venue_gate_blade", true));
+    initTabBlock(new BlockVenueBlade("venue_section_blade", false));
+    initTabBlock(new BlockBladeBracket("venue_blade_bracket"));
+    initTabBlock(new BlockBoxOfficeWindow("box_office_window", new int[]{0, 1, 0}, new int[]{0, 0, 6, 16, 32, 16, 0, 13, 1, 16, 15, 6}));
     initTabItem(new ItemVenueTicket());
   }
 }
