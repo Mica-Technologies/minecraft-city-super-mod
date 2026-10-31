@@ -30,11 +30,12 @@ import org.apache.logging.log4j.Logger;
  * <p>Each {@link CsmTab} subclass is annotated with {@code @CsmTab.Load(order = N)}. The complete
  * order list is:</p>
  * <pre>
+ *   Order -16 = CsmTabCoreHidden        (hidden, Core: light-up air)
  *   Order -15 = CsmTabHvacHidden        (hidden: the lab exhaust fan's cells)
  *   Order -12 = CsmTabVenuesHidden      (hidden: Sports &amp; Venues' unit cells)
  *   Order -11 = CsmTabHealthcareHidden  (hidden: a hospital bed's foot cell)
  *   Order -10 = CsmTabRoadsHidden       (hidden: retired road/signal blocks)
- *   Order  -9 = CsmTabLightingHidden    (hidden: light-up air)
+ *   Order  -9 = CsmTabLightingHidden    (hidden: the retiring concrete pole pieces)
  *   Order  -8 = CsmTabSignageHidden     (hidden: advertising board parts)
  *   Order  1 = CsmTabBuildingMaterials
  *   Order  2 = CsmTabHvac

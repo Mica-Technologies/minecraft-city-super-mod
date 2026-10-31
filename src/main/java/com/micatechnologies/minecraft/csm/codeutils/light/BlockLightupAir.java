@@ -1,4 +1,4 @@
-package com.micatechnologies.minecraft.csm.lighting;
+package com.micatechnologies.minecraft.csm.codeutils.light;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
 import javax.annotation.Nonnull;
@@ -13,10 +13,36 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
+/**
+ * The light-up air ({@code csm:lightupair}): an invisible, passable, replaceable block giving
+ * light level 15, which a lit light places where its light should fall, since a fixture high up
+ * cannot light the ground from its own cell. Core's, so every module may use it: Lighting's
+ * fixtures put one in the column below them ({@link CsmLightupAir#projectColumn}), Sports &amp;
+ * Venues' stadium light heads a grid of them over the field ({@link CsmLightFootprints}).
+ *
+ * <p>It stores nothing about which light placed it. Who may remove one is the placing code's
+ * business; see {@link CsmLightupAir} and {@link CsmLightFootprints}.</p>
+ *
+ * <p>Registered from Core's hidden tab ({@code CsmTabCoreHidden}), so it exists whichever modules
+ * are installed.</p>
+ */
 public class BlockLightupAir extends AbstractBlockRotatableNSEWUD {
+
+  /** The registered instance, set by its constructor (Core's hidden tab builds exactly one). */
+  private static BlockLightupAir instance;
 
   public BlockLightupAir() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 1F, 0);
+    instance = this;
+  }
+
+  /**
+   * The registered light-up air block.
+   *
+   * @return the block, or {@code null} before Core's hidden tab has built it
+   */
+  public static BlockLightupAir get() {
+    return instance;
   }
 
   @Override

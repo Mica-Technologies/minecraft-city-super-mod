@@ -150,3 +150,4 @@ item.part_sounder_driver.name=Signalgeber-Treiber
 item.part_wiring_harness.name=Kabelbaum
 itemGroup.tabmaterials=CSM: Materialien
 tile.csm_fabricator.name=CSM Fabricator
+tile.lightupair.name=MCLAGlowAir

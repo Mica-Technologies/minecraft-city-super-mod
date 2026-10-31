@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.lighting;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEW;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.light.CsmLightupAir;
+import com.micatechnologies.minecraft.csm.codeutils.light.ICsmLightupAirSource;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,19 +22,14 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
+public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW implements
+    ICsmLightupAirSource {
 
   public static final PropertyInteger STATE = PropertyInteger.create("state", 0, 3);
   private static final int STATE_RS_OFF = 0;
   private static final int STATE_RS_ON = 1;
   private static final int STATE_MAN_OFF = 2;
   private static final int STATE_MAN_ON = 3;
-
-  /**
-   * Cached reference to the lightupair block, initialized on first use to avoid repeated registry
-   * lookups.
-   */
-  private static Block cachedLightupAirBlock = null;
 
   public AbstractBrightLight() {
     super(Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, false);
@@ -133,17 +130,6 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
   }
 
   /**
-   * Returns the cached lightupair block reference, initializing it on first call via the block
-   * registry. Returns null if the block is not yet registered (e.g., during early init).
-   */
-  private static Block getLightupAirBlock() {
-    if (cachedLightupAirBlock == null) {
-      cachedLightupAirBlock = Block.getBlockFromName("csm:lightupair");
-    }
-    return cachedLightupAirBlock;
-  }
-
-  /**
    * Places this light's lightupair if it is missing, which is what a light that arrived already
    * lit (setblock, fill, clone, a structure, a WorldEdit or FAWE paste) needs. Does nothing if the
    * column below already holds one, so it is safe to call as often as the ticks come.
@@ -157,62 +143,31 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW {
     return handleAirLightBlock(true, world, pos);
   }
 
+  /**
+   * Places or removes this light's light-up air: Core's column projection
+   * ({@link CsmLightupAir#projectColumn}), in the column under this light shifted by its offsets.
+   *
+   * @return {@code true} if a light-up air was placed
+   */
   protected boolean handleAirLightBlock(boolean on, World world, BlockPos pos) {
-    Block lightupAir = getLightupAirBlock();
-    if (lightupAir == null) {
+    return CsmLightupAir.projectColumn(on, world, pos, getBrightLightXOffset(),
+        getBrightLightZOffset());
+  }
+
+  /**
+   * Whether this light, lit, relies on the light-up air at {@code air}: the first light-up air in
+   * its own column, met before anything solid. Asked by code that removes light-up air another
+   * light placed (the stadium light footprints), so a street light under a stadium head keeps its
+   * light when the head turns off.
+   */
+  @Override
+  public boolean claimsLightupAir(World world, BlockPos pos, IBlockState state, BlockPos air) {
+    if (!isLit(state) || air.getX() != pos.getX() + getBrightLightXOffset()
+        || air.getZ() != pos.getZ() + getBrightLightZOffset()) {
       return false;
     }
-    final int xWithOffset = pos.getX() + getBrightLightXOffset();
-    final int zWithOffset = pos.getZ() + getBrightLightZOffset();
-    // Add light
-    if (on) {
-      BlockPos doAddAt = null;
-      for (int findy = -1; findy >= -16; findy--) {
-        final int yWithOffset = pos.getY() + findy;
-        BlockPos test = new BlockPos(xWithOffset, yWithOffset, zWithOffset);
-        // An offset column can reach into a neighbouring chunk; never load one to light it
-        if (!world.isBlockLoaded(test)) {
-          return false;
-        }
-        // Already lit: a lightupair is not air, so without this the scan would stop on it and
-        // place a second one in the cell above, and every later call another
-        if (world.getBlockState(test).getBlock() == lightupAir) {
-          return false;
-        }
-        // found block that is not air
-        if (world.isAirBlock(test)) {
-          // dont add light if block is right below street light
-          if (findy < -1) {
-            doAddAt = test;
-          }
-        } else {
-          break;
-        }
-      }
-      // add if marked for add
-      if (doAddAt != null) {
-        world.setBlockState(doAddAt, lightupAir.getDefaultState(), 3);
-        return true;
-      }
-    }
-    // Remove light
-    else {
-      for (int findy = -1; findy >= -16; findy--) {
-        final int yWithOffset = pos.getY() + findy;
-        BlockPos test = new BlockPos(xWithOffset, yWithOffset, zWithOffset);
-        // Verify the position is in a loaded chunk before accessing block state
-        if (!world.isBlockLoaded(test)) {
-          continue;
-        }
-        IBlockState bs = world.getBlockState(test);
-        // stop removing light once hit block
-        if (bs.getBlock() == lightupAir) {
-          world.setBlockToAir(test);
-          break;
-        }
-      }
-    }
-    return false;
+    return air.equals(CsmLightupAir.firstBelow(world, air.getX(), pos.getY() - 1, air.getZ(),
+        CsmLightupAir.COLUMN_DEPTH));
   }
 
   abstract public int getBrightLightXOffset();

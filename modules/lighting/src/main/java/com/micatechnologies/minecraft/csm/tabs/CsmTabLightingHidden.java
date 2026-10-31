@@ -1,7 +1,6 @@
 package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
-import com.micatechnologies.minecraft.csm.lighting.BlockLightupAir;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPB;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPM;
 import com.micatechnologies.minecraft.csm.lighting.BlockOCPT;
@@ -13,9 +12,9 @@ import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
- * The hidden tab holding the Lighting blocks that never belong in the creative inventory:
- * the light-up air block a lit fixture projects into the space in front of it, and the legacy
- * concrete pole pieces while they retire.
+ * The hidden tab holding the Lighting blocks that never belong in the creative inventory: the
+ * legacy concrete pole pieces while they retire. (The light-up air a lit fixture projects is
+ * Core's, registered from {@code CsmTabCoreHidden}, so Sports &amp; Venues can place it too.)
  *
  * <p>Hidden tabs have no creative-inventory presence at all: {@link CsmTab} gives them a
  * {@code null} {@code CreativeTabs}, which is also what keeps their blocks out of the
@@ -84,8 +83,6 @@ public class CsmTabLightingHidden extends CsmTab {
    */
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
-    initTabBlock(BlockLightupAir.class, fmlPreInitializationEvent); // Lightup Air
-
     // The hand-placed concrete pole pieces, retiring into the concrete poles in the Traffic
     // Accessories tab (BlockTrafficPoleConcrete), which draw their own base and top.
     initTabBlock(BlockOCPB.class, fmlPreInitializationEvent);

@@ -150,3 +150,4 @@ item.part_sounder_driver.name=Sounder Driver
 item.part_wiring_harness.name=Wiring Harness
 itemGroup.tabmaterials=CSM: Materials
 tile.csm_fabricator.name=CSM Fabricator
+tile.lightupair.name=MCLAGlowAir

@@ -150,3 +150,4 @@ item.part_sounder_driver.name=Controlador de Sonorizador
 item.part_wiring_harness.name=Mazo de Cables
 itemGroup.tabmaterials=CSM: Materiales
 tile.csm_fabricator.name=Fabricador CSM
+tile.lightupair.name=MCLAGlowAir
