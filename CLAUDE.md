@@ -140,7 +140,14 @@ blocks, each anchor with a third base side twin drawing mirrored; the pitcher's 
 heightfield OBJ cells round the rubber's; bases placed off their cell's middle to the diamond;
 dugout runs, nets, the outfield wall straight and 45 degree with distance markers drawn by a
 renderer, the foul pole; the line score and count boards, their words a renderer's, edited in the
-venue text editor); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
+venue text editor), then American football and soccer (`venues.field`: a pro football field and
+a 105 x 68 m pitch, one block a metre, from one geometry, `football_field.py`; every line, hash,
+number and arc drawn where it really falls in its cell, to the texel, as pictures round a grid of
+marking anchors (radius 12) that painted cells find; the mowing tone and the end zone colour are
+tints the painted cell takes from the plain turf and end zone beside it, split under each 5 yard
+line, so 164 + 81 pictures serve any mowing and colour; goal posts, goals, sideline pieces, end
+zone lettering and the football and soccer scoreboards; stadium light heads aimed by an `aim`
+NBT offset); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -204,7 +211,9 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    concession sign, menu board, machines, beer kiosk, turnstile, scanner,
 │                    ticket, suite bar and rail, team store), ballpark/ (field anchors,
 │                    painted cells and their layout table, mound, fixtures, nets, outfield
-│                    wall and markers, foul pole, scoreboards); the multi-block unit (hung or
+│                    wall and markers, foul pole, scoreboards), field/ (football and soccer:
+│                    turf, anchors, painted cells, their tint and layout table, fixtures,
+│                    end zone lettering, scoreboards); the multi-block unit (hung or
 │                    standing) and its part, and the module's sounds, at the package root
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
@@ -600,7 +609,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   sit on half-integer diagonals, the surfaces and standard pieces, the anchors and painted
   cells (and why the arc is three anchors a side: a painted cell's reach against the render
   cache's), the mound, every fixture's metadata and NBT, the scoreboards' NBT, a worked baseball
-  and softball diamond (where each base, plate, mound, line, box and anchor goes), costs and traps
+  and softball diamond (where each base, plate, mound, line, box and anchor goes), costs and traps;
+  football and soccer: the two fields' dimensions and frames, how the sub-block lines work
+  (pictures to the texel, the mowing tone and end zone colour as tints split under the yard
+  lines), the anchors, worked layouts and the fixtures they place, the goals, the sideline, the
+  end zone lettering's and the scoreboards' NBT, aiming light heads (`aim`) and a field lit by
+  six towers, the state counts (1,160), costs and traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1333,6 +1347,16 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   past its cell), pole, scoreboards and machine. `--layout baseball|softball` prints a field's
   blocks (and checks every painted cell shows the drawing through its anchors as the Java finds
   them), `--doc` the anchors and offsets; `--check`, `--fragments`
+- `gen_venues_football.py` -- the Football & Soccer tab (Sports & Venues), from the field geometry
+  in `football_field.py` (a pro football field and a soccer pitch painted onto a label canvas,
+  every edge snapped to the texel, hash marks to every second texel from the centre): every cell
+  a plain surface or a picture, pictures stored once per half turn with their tint classes (off
+  the field, one tone, the west and east of a stripe edge, the end zone) cut into rectangles of
+  one picture texture; anchors on a grid each owning the picture cells nearest it within 12;
+  `FieldLayouts.java`; the goal post (gooseneck OBJ at real size), goals and nets, sideline
+  pieces, end zone lettering and scoreboards. `--layout football|soccer` prints a field's blocks
+  (checked as the Java finds them), `--commands X Y Z [--east] [--zone N]` as an mcfunction's
+  lines; `--doc`, `--check`, `--fragments`
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under

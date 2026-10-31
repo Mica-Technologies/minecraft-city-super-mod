@@ -27,6 +27,7 @@ from fixed numbers rather than from a Building block.
 | Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor and, over it, the centre-hung scoreboard, ribbon boards, banners and AV (below) |
 | Sports & Venues - Concourse (`tabvenuesconcourse`) | 36 | concession stands and their machines, menu boards, the beer kiosk, turnstiles and the ticket scanner, suite fixtures, the team store, and the arena's outside and entry: the marquee board and its pylon, the wayfinding blades and their bracket, the box office window (below) |
 | Sports & Venues - Ballpark (`tabvenuesballpark`) | 37 | baseball and softball: the field's surfaces, edges and chalk lines, the marking anchors and painted cells, the mound, plate, bases and rubber, the dugout, nets, the outfield wall, markers and foul pole, the line score and count boards, a pitching machine (below) |
+| Sports & Venues - Football & Soccer (`tabvenuesfootball`) | 38 | American football and soccer: the field's turf, paint, surround and end zone colour, the marking anchors and painted cells that draw every line where it really falls, goals, the sideline, end zone lettering and the scoreboards (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
@@ -34,7 +35,6 @@ tab for every block family. Planned, in the order they land:
 
 | Tab | Holds |
 |---|---|
-| Football & Soccer | the turf palette and its lines, goal posts and goals, pylons, sideline benches, chains |
 | Bowling | the lane built to length, pinsetter, ball return, scoring monitor, the counter and settees |
 | Courts, Track & Pool | tennis and pickleball, volleyball, track and field, swimming, golf and mini-golf, skate park basics |
 
@@ -836,6 +836,24 @@ when its chunk loads (the tile entity's `onLoad`; worlds with heads placed befor
 entity existed get one from Core's backfill and light up as they load), when it is placed
 (`onBlockAdded`, a tick late) and on random ticks, the same heal Lighting's fixtures have.
 
+**Aiming.** By default a head's grid lies square to its facing, centred straight ahead. The
+master's tile entity takes an `aim` (NBT, two whole numbers, blocks east and south of the head):
+the grid's centre moves there and the grid turns to face along the line from the head to it, still
+`n x n` columns every 3 blocks, each rounded to the nearest block. `aim:[I;0,0]` is straight
+ahead again; each part is clamped to 96.
+
+```
+/blockdata 146 24 70 {aim:[I;13,18]}
+/blockdata 146 24 70 {aim:[13,18]}
+```
+
+(Either form reads.) Re-aiming gives up the cells outside the new grid, through Core's
+`CsmLightFootprints.reshaped` (handed on, left to a fixture or removed, as a broken head's are),
+keeps the ones still in it and fills the new columns. The head's model still turns only four ways:
+give it the facing nearest its aim. Two heads can be stacked on one tower, the second's master
+three over the first's. "Lighting a field: aimed heads" under Football and soccer lights a whole
+football field with six towers.
+
 **Ownership.** The light-up air stores no owner, so a head only ever removes cells it placed.
 Giving a cell up (switched off or broken), it hands it to another loaded, lit head whose own
 column scan meets that cell (overlapping grids on the same 3-block lattice), leaves it to a lit
@@ -879,9 +897,12 @@ heaviest model (its OBJ is a few hundred quads), drawn once per tower. Toggle fo
 
 ### Traps
 
-- **A head's footprint is square to its facing**, so a tower can only light the field straight
-  ahead of it. Stand towers beside the field facing across it rather than at the corners facing
-  the middle; a corner tower facing along a foul line lights the line, not the infield.
+- **An unaimed head's footprint is square to its facing**, so it lights the field straight ahead
+  of it. A corner tower needs an `aim` to light the middle.
+- **A footprint light's chunk unloading does not invalidate its tile entity**, and its list is
+  saved with the chunk: work done for it afterwards left light-up air nobody owned (seen when a
+  build command loaded the towers' chunks only for its own run). Core drops such a light's work;
+  it asks again when it loads.
 - **Switching a head is itself a light update.** The master's own light 15 at the top of a
   20-block tower relights a large volume: about 4.5 ms of server tick a head, at once, whatever
   the footprint does. That was so before the footprint; eight heads on one redstone line cost
@@ -1134,6 +1155,251 @@ toggle `venueBallpark` for A/B.
 - **The scoreboard's text is in front of its squares by 0.03 px** towards the reader; flip the
   sign and the numbers vanish behind the squares.
 
+## Football and soccer (Football & Soccer tab)
+
+American football and soccer at full size, one block a metre. Written by
+`dev-env-utils/scripts/gen_venues_football.py` (`--check` holds `FieldLayouts.java` too;
+`--fragments` prints the tab; `--layout football|soccer` prints a whole field's blocks as JSON,
+and with `--commands X Y Z [--east] [--zone N]` as `/fill` and `/setblock` lines for an
+mcfunction; `--doc` dumps the anchors and the block census). The fields themselves are one
+geometry, `dev-env-utils/scripts/football_field.py` (`--analyse`), which borrows
+`ballpark_field.py`'s resolution and picture key: every line, number, arrow and arc painted onto a
+label canvas three samples a texel, and every cell's picture cut from it.
+
+### The two fields
+
+| | Football (pro) | Soccer |
+|---|---|---|
+| Size | 120 x 53 1/3 yd (109.7 x 48.8 m), a 6 ft white border round it | 105 x 68 m, inside the lines |
+| Centre (canonical frame) | the middle of cell (0, 0): the 50 yard line runs north-south through column 0, the field's length east-west | (0.5, 0.0): the halfway line through column 0, the touchlines on the block edges z = -34 and 34, the goal lines on x = -52 and 53 |
+| Lines | 4 in (drawn 4 texels), goal lines 8 in, in the end zone | 12 cm |
+| Markings | yard lines every 5 yd; hash marks every yard 70 ft 9 in from the sidelines (2 ft long); 2 ft yard ticks 8 in inside the sidelines; numbers every 10 yd, 6 ft x 4 ft, tops 9 yd from the sideline, upright to a reader beyond the far sideline (tops towards the nearer sideline), with direction arrows towards the nearer goal; the 2 yard marks; the end zones in the end zone colour; the midfield logo area left plain | halfway line, centre circle (9.15 m) and spot, penalty areas (16.5 x 40.32 m), goal areas (5.5 x 18.32 m), penalty spots (11 m) and arcs, corner arcs (1 m), to the Laws of the Game |
+| Mowing | 5 yd stripes from goal line to goal line, each edge under a yard line; end zones light | 5 m stripes across the pitch on block edges, the middle one centred on the halfway line, the goal line and halfway columns light |
+| Extent laid | cells x -57..58, z -26..27 | cells x -54..55, z -36..36 |
+
+Both are 180 degree symmetric about their centre, which is what lets one goal post model and one
+soccer goal model serve both ends.
+
+### How the sub-block lines work
+
+Five yards are 4.572 m, so a football field's lines do not fall on block edges; a soccer pitch's
+.5 and .16 m offsets do not either. Rather than line blocks with an offset kind (which would need a
+block, an offset and an axis for every combination of line, hash and number edge in a cell), every
+cell that is not one plain surface is a **picture**: its 32 x 32 coverage of turf, white paint and
+end zone, drawn where everything really falls, snapped only to the texel (1/32 of a block, 3 cm).
+A cell can hold a yard line and a hash a yard away, a line and the edge of a number, the corner of
+the border: the census simply finds each distinct picture. Hash marks and yard ticks are drawn
+with their centres on every second texel from the field's centre (a texel out at most), which
+halves their pictures and keeps the far side's the near side's turned.
+
+The pictures are drawn **once, in the light tone**. A picture's top is cut into rectangles by
+tint class, each a window of the one texture, and the tints come from the blocks beside it
+(`FieldTint`):
+
+| Tint index | Part | Colour |
+|---|---|---|
+| none | off the field: the border, the surround | as drawn |
+| 0 | on the field, one tone | the nearest `field_turf` 0 or 1 along the stripe (the picture's north-south axis turned with the cell, up to 24 cells each way): light as drawn, dark a multiplier |
+| 1, 2 | on the field in a cell a stripe edge crosses (under a 5 yard line): the parts west and east of the edge, in the picture's frame | the tone found along the stripe in the column beside the cell on that side |
+| 3 | the end zone | the colour of a `football_end_zone` among the cell's eight neighbours (grass if none) |
+
+So the white lines in a dark stripe are a little darker, as painted grass is, a picture serves
+both stripes and any of the sixteen end zone colours, and the cell under a yard line takes each
+stripe's tone on its own side of the line. Pictures that are a half turn of one another are stored
+once (the turn is in the anchor's table): **164 football pictures and 81 soccer pictures**.
+Pictures are only stored unturned or turned 180 degrees, never a quarter, so a stored picture's
+stripe edges always run along its own north-south axis, the axis its tint looks along.
+
+### Anchors and painted cells
+
+As on the ballpark, a **painted cell** (`football_painted`, `soccer_painted`, metadata 0) looks
+round itself, nearest ring first, for a **marking anchor** of its sport on the same level and shows
+the picture the anchor's table gives at its offset, turned with the anchor. Each field has
+**15 anchors on a regular grid**, each owning the picture cells nearest it within **12 cells**
+(the tables are disjoint, so only the owner draws a cell); every anchor is a kind of its own:
+
+| Block | Kinds | Metadata |
+|---|---|---|
+| `football_marking_anchor` | 0-7 | bit 0: the field runs north-south (the anchor's forward east rather than north); bits 1-3 the kind |
+| `football_marking_anchor_2` | 8-14 | as above, kind - 8 |
+| `soccer_marking_anchor`, `soccer_marking_anchor_2` | 0-7, 8-14 | as above |
+
+`--layout` places them; a sneak-click with an empty hand steps the kind (the action bar says
+which). The anchor's tile entity is the arena anchor's, its redraw reach widened to 13 for these.
+
+### Plain blocks
+
+| Block | Metadata |
+|---|---|
+| `field_turf` | 0 light stripe, 1 dark stripe (a tint), 2 white paint (the football border), 3 the surround: the same light turf, but a painted cell never takes its tone from it, so a touchline's cells take the field's stripe rather than the grass beyond. Lay it outside the lines |
+| `football_end_zone` | the end zone's colour, a venue colour 0-15 (navy 0, the scoreboard's list) |
+
+A sneak-click with an empty hand steps either.
+
+### Worked layouts
+
+```
+py -3 dev-env-utils/scripts/gen_venues_football.py --layout football --commands 200 3 100 > football.mcfunction
+py -3 dev-env-utils/scripts/gen_venues_football.py --layout soccer --commands 200 3 250 > soccer.mcfunction
+```
+
+(The centre cell's position, at the ground's level; `--east` lays the field north-south, the
+anchors' bit 0 set and every fixture's facing turned; `--zone 9` makes the end zones crimson.)
+Copy them to `<save>/data/functions/csm/`, `/reload`, raise `maxCommandChainLength` above the
+football field's 2,308 commands, and `/function csm:football` with the chunks loaded.
+The football field is 1,937 painted cells, 3,563 `field_turf`, 749 end zone cells and 15
+anchors; the soccer pitch 736 painted cells and 7,279 turf. The fixtures it places, in the
+canonical frame (centre cell (0, 0), one block over the ground):
+
+| What | Football | Soccer |
+|---|---|---|
+| Goals | `football_goal_post` 3 at (-57, 0) and 1 at (57, 0) | `soccer_goal` 3 at (-52, 0) and 1 at (52, -1) |
+| Corners | `end_zone_pylon` at the four corners of each end zone, outside the sidelines | `soccer_corner_flag` 3 / 1 at (-52, -34), (52, -34), (-52, 33), (52, 33) |
+| Sideline | `football_team_bench` 2, x -17..-5 and 6..18 at z 32, a heater at (-18, 32) and a fan at (19, 32) | `soccer_substitutes_shelter` 2, x -14..-5 and 6..15 at z 37; `fourth_official_board` 2 at (0, 36) |
+| Chain crew | north sideline, z -27: stakes 0 on the home 35 and 45, the chain 1 between, the down box 8 (third down) | |
+| End zone | `football_end_zone_lettering` 3 HOME at (-50, 0), 1 AWAY at (50, 0) | |
+
+In "Venues Arena Test" the football field's centre cell is (200, 3, 100) and the soccer pitch's
+(200, 3, 250), each with its scoreboard behind the east end (`football_scoreboard` 1 at
+(262, 4, 95), `soccer_scoreboard` 1 at (262, 4, 245)), and the football field is lit by six
+lattice towers, two heads each (below).
+
+### Goals
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `football_goal_post` | facing: towards the field | A unit, OBJ: the base post (padded to 6 ft) 6 ft behind the uprights' plane, rising and curving forward as a gooseneck to the crossbar's middle; crossbar 10 ft up, 18 ft 6 in between the uprights' insides, uprights 35 ft over the bar (13.7 m to the top) with wind ribbons. The master is the base post's cell; on the canonical field it is cell x -57 (the base 0.81 into it), which puts the uprights' inside on the end line's inner edge. Parts: the post, the gooseneck, the crossbar and both uprights' columns (32 cells) |
+| `soccer_goal` | facing: towards the pitch | A unit, OBJ: 12 cm posts and bar, 7.32 x 2.44 m inside, the posts on the goal line (the line's 12 cm), the net's roof 1 m back and its foot 2 m back on a ground frame. Its middle is the master cell's west edge in its own frame, a block edge: on the canonical pitch the west goal's master is (-52, 0) facing east, the east goal's (52, -1) facing west |
+| `soccer_goal_small` | facing | A portable small-sided goal, 12 x 6 ft, centred on its master, the posts at its front edge |
+
+The nets are a 32 px mesh texture in the cutout layer, cut into a quad a block so it repeats
+(an OBJ's uv may not leave 0..1).
+
+### The sideline
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `end_zone_pylon` | facing | 4 in x 18 in orange foam; no collision |
+| `football_team_bench` | facing (the way the players face) | A run, as the dugout bench: aluminium planks and a backrest; sat on with a click |
+| `sideline_heater` | facing | A propane cylinder, mast, burner and reflector, 1.9 blocks tall |
+| `sideline_fan` | facing | A misting drum fan on a wheeled stand |
+| `football_down_box` | `facing \| (down - 1) << 2` | The down on a box on a pole; a sneak-click steps the down |
+| `football_chain_stake` | facing | A pole with a red head |
+| `football_chain` | facing: the chain runs along its axis | Lying on the ground, no collision |
+| `soccer_corner_flag` | facing: the way the flag flies | A 1.5 m post and a red and yellow flag; no collision |
+| `soccer_substitutes_shelter` | facing | A run two blocks tall: seats against a back panel under a clear roof, clear end panels where the run stops; sat on with a click |
+| `fourth_official_board` | facing | The board on a stand, +3 lit; decor |
+| `football_end_zone_lettering` | facing: towards the field | A marker in the air cell over the end zone's middle; its renderer paints the words flat across the end zone, the letters' bottoms towards the goal line, lit as the air over the field (the stadium lights light them). No model in the world |
+
+**End zone lettering NBT**: `txt` (24 characters, HOME), `h` the letters' height in blocks (1-9,
+5), `w` the widest they may run (4-48, 40; they shrink to fit), `fc` their colour, `oc` an
+outline's (16 none). A click opens the venue text editor.
+
+```
+/setblock 150 4 100 csm:football_end_zone_lettering 3
+/blockdata 150 4 100 {txt:"WOLVES",h:6,fc:14,oc:6}
+```
+
+### The scoreboards
+
+`football_scoreboard`, `soccer_scoreboard`: the ballpark line score's casing (12 x 5 on two legs
+3 tall, the master the left leg's foot, looking at the board; metadata the facing, towards the
+reader), its own layout: each team's name on a bar of its colour and its score in amber, the clock
+in a panel in the middle with QTR or HALF under it; football adds three time-out lamps under each
+score, a possession lamp beside the team with the ball and DOWN, TO GO and BALL ON along the foot;
+soccer adds ADDED TIME +n. A click opens the venue text editor (the teams, the score, the period,
+the clock, down/distance/ball on or the added minutes, time-outs, colours, possession); a
+sneak-click with an empty hand starts or stops the clock, as does a rising redstone edge at any
+of its cells. The clock never ticks: football's counts down, soccer's up, from the world's time, as
+the centre-hung board's does. A running clock is not set from the editor (stop it first).
+
+| Key | Meaning |
+|---|---|
+| `home`, `away` | up to 10 characters |
+| `hs`, `as` | scores, 0-999 |
+| `per` | the quarter or half, 3 characters |
+| `clk` | tenths: football's time left (default 9000, 15:00), soccer's time played (0) |
+| `run`, `t0` | running (set without `t0` it starts now), the world time it started |
+| `dn`, `dist`, `ball` | football: the down 0-4 (0 none), the distance (5 characters: `10`, `GOAL`), the ball on (6: `35`, `OWN 20`) |
+| `hto`, `ato`, `pos` | football: time-outs left 0-3, possession 0 none 1 home 2 away |
+| `add` | soccer: added minutes 0-30 |
+| `hc`, `ac` | team colours (navy, crimson) |
+
+```
+/blockdata 262 4 95 {home:"WOLVES",away:"BIRDS",hs:21,as:17,per:"3",clk:4235,dn:3,dist:"7",ball:"35",hto:2,ato:3,pos:1}
+/blockdata 262 4 245 {home:"CITY",away:"ROVERS",hs:2,as:1,per:"2",clk:43800,add:4,hc:4,ac:12,run:1b}
+```
+
+### Lighting a field: aimed heads
+
+A stadium light head's footprint can be aimed (Field lighting, above: `aim`). The football field
+in "Venues Arena Test" is lit by six `stadium_light_lattice` towers 20 high, three each side 30
+blocks out from the middle of the sidelines' borders, each with two `stadium_light_head`s, the
+second stacked on the first (its master three over the first's, on its top row):
+
+| Tower | Heads (meta) | `aim` of the lower head, the upper |
+|---|---|---|
+| (146, 4, 70), (200, 4, 70), (254, 4, 70) | 4 (facing south, lit) | (13, 18), (40, 30); (-13, 18), (14, 18); (-12, 18), (-40, 30) |
+| (146, 4, 131), (200, 4, 131), (254, 4, 131) | 6 (facing north, lit) | the same with z negated |
+
+The corner towers' lower heads light their end of the field diagonally, their upper heads the
+middle from the corner; the middle towers split their half between two heads. Twelve heads light
+the whole field and its end zones: 940 light-up air for about 6,600 square metres, placed over
+127 server ticks (about six seconds), the worst tick spending 5.7 ms on it (`/csm
+lightfootprints`, re-aiming all twelve at once).
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `field_turf` | kind (4) | | 4 |
+| `football_end_zone` | colour (16) | | 16 |
+| `football_marking_anchor`, `soccer_marking_anchor` | east, kind (8) | | 16 each, 32 |
+| `football_marking_anchor_2`, `soccer_marking_anchor_2` | east, kind (7) | | 14 each, 28 |
+| `football_painted` | | cell (164), rot (4) | 656 |
+| `soccer_painted` | | cell (81), rot (4) | 324 |
+| `football_goal_post`, `soccer_goal`, `soccer_goal_small` | facing | | 4 each, 12 |
+| `end_zone_pylon`, `football_chain_stake`, `football_chain`, `sideline_heater`, `sideline_fan`, `soccer_corner_flag`, `fourth_official_board` | facing | | 4 each, 28 |
+| `football_down_box` | facing, down (4) | | 16 |
+| `football_team_bench`, `soccer_substitutes_shelter` | facing | end_l, end_r | 16 each, 32 |
+| `football_end_zone_lettering` | facing | | 4 |
+| `football_scoreboard`, `soccer_scoreboard` | facing | | 4 each, 8 |
+
+**1,160 states**, of which the painted cells are 980: fewer than the ballpark's 1,316 for two
+whole fields, because the tone and the end zone colour are tints (drawn into the pictures they
+would have about tripled them) and a half turn is free. The pictures cost 245 small sprites
+(32 px, about 1 MB of atlas) and a few quads a cell.
+
+### Costs
+
+The fields are chunk geometry: a plain cell is a cube, a painted cell a soil body and one to
+three tinted top faces. A painted cell reads at most 625 blocks to find its anchor (radius 12;
+most find it within six rings, about 170 reads), and up to 49 for each tinted part's tone (most
+find turf a block or two away), only when its chunk section is built. The renderers are the two
+scoreboards (a list call, a few dozen quads and the clock's few glyphs a frame) and the end zone
+lettering (two to nine copies of a short string a frame); toggle `venueField` for A/B. The aimed
+heads cost what unaimed heads do (Field lighting).
+
+### Traps
+
+- **Lay the surround as `field_turf` 3, not 0.** A touchline or sideline cell looks along the
+  stripe both ways for its tone; light turf off the field would be found as soon as the stripe.
+- **A painted cell's tone is read only when its section is built.** Changing a stripe's turf
+  redraws its own section and the cells next to it; a painted cell further along the stripe in
+  another section keeps its old tone until that section is built again.
+- **The football field's centre is a cell's middle, the soccer pitch's a cell's west edge.**
+  `--layout` gives every cell; the goals' masters follow from it (the soccer goals are not mirror
+  images on the grid: (-52, 0) and (52, -1)).
+- **The goal post is drawn by its master**, 13.7 blocks up and 1.8 back: with the master's chunk
+  section out of view (looking straight up at the uprights from beside the base across a section
+  line) the whole post is culled with it, as the basketball stanchion is.
+- **The heads' models still turn only four ways.** Aim a head whose facing is nearest the line
+  to its target; the light follows `aim`, the floodlights' look does not.
+- **Stacked heads overlap**: two heads on one tower placing light-up air in the same column share
+  it (the first placed keeps it, and hands it over when it goes dark).
+- **A sprite must be square** (the fourth official's board once showed the missing texture: its
+  32 x 16 face read as a broken animation).
+
 ## Brands
 
 None. Team, league and sponsor names are what players type into the signs, the scoreboard and
@@ -1143,7 +1409,9 @@ COLD BEER, DRAFTS, SOFT SERVE), never whose; the box office headers say BOX OFFI
 and TICKETS, and the marquee shows what is typed into it. The ice resurfacer
 is a generic machine with no maker's name; the scorer's table plays an abstract pattern. The
 ballpark's line score says AWAY and HOME until typed into; its helmets, bats, water cooler and
-pitching machine carry no maker's name.
+pitching machine carry no maker's name. The football and soccer scoreboards say HOME and AWAY,
+the end zones HOME and AWAY until typed into; the goals, heater, fan and boards carry no maker's
+name.
 
 ## Traps
 
