@@ -25,6 +25,7 @@ from fixed numbers rather than from a Building block.
 |---|---|---|
 | Sports & Venues - Seating & Venue (`tabvenuesseating`) | 34 | what every venue shares: the seating bowl (below), later bleachers, press boxes and venue signs |
 | Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor and, over it, the centre-hung scoreboard, ribbon boards, banners and AV (below) |
+| Sports & Venues - Concourse (`tabvenuesconcourse`) | 36 | concession stands and their machines, menu boards, the beer kiosk, turnstiles and the ticket scanner, suite fixtures, the team store (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
@@ -32,7 +33,7 @@ tab for every block family. Planned, in the order they land:
 
 | Tab | Holds |
 |---|---|
-| Concourse | concession counters and appliances, menu boards, turnstiles, suites, the team store, box office and marquee |
+| Exterior (or in Concourse) | the box office, the marquee board and the wayfinding blades |
 | Ballpark | baseball and softball: bases, mound, the infield and warning track palettes, dugouts, backstop, foul poles, outfield wall |
 | Football & Soccer | the turf palette and its lines, goal posts and goals, pylons, sideline benches, chains |
 | Bowling | the lane built to length, pinsetter, ball return, scoring monitor, the counter and settees |
@@ -593,11 +594,121 @@ A/B: `venueScoreboard`, `venueRibbonText`, `venueBanners`.
 - **The scoreboard GUI sends the clock only if it was edited**, or opening the editor during play
   would set a running clock back to the moment the screen opened.
 
+## The concourse and premium spaces (Concourse tab)
+
+Written by `dev-env-utils/scripts/gen_venues_concourse.py` (`--check`, `--fragments`); the
+scanner and turnstile sounds by `gen_venues_sounds.py` (synthesised, no `--check`). Everything
+is baked models: no renderer, nothing ticks. The only tile entities are the concession sign's
+(Core's wayfinding panel) and the team store fixtures' two colours.
+
+### Use these existing blocks
+
+A concourse shares a lot with a supermarket, a kitchen, a bar and a station, and CSM already has
+those. Venues requires none of their modules, so nothing here is copied from them: build with
+these where the module is installed.
+
+| Need | Block (registry name) | Module |
+|---|---|---|
+| Fountain drinks | `fountain_machine_red`, `fountain_machine_blue` | Furnishings (Market & Store) |
+| Bottled drinks, beer | `reach_in_cooler_black`, `_white`; `ice_cream_case_white`; `ice_merchandiser_*` | Furnishings (Market & Store) |
+| Hot food, rotisserie | `hot_food_case_steel`, `rotisserie_oven_steel` | Furnishings (Market & Store) |
+| Registers and card readers on the counter | `pos_terminal_black`, `card_terminal_stand_black`, `cash_register_brass` | Furnishings (Market & Store) |
+| Cups and lids, condiments | `cup_counter_grey`, `_walnut`; `coffee_bar_grey` | Furnishings (Market & Store) |
+| Draught beer at a bar | `beertap`, `beerrack` | Furnishings (Furniture) |
+| Suite and bar stools | `bar_stool_oak`, `_walnut`, `_white` (seat at 12 px: right for the drink rail and the suite bar) | Furnishings (Residential) |
+| Suite and concourse TVs | `wall_tv_black`, `large_wall_tv_black`, `xl_wall_tv_black`, `giant_wall_tv_black` (the sports channel; the food and drinks menu channels are a restaurant's) | Furnishings (Residential) |
+| Team store rails, tables, mannequins | `clothing_rail_chrome`, `round_rack_chrome`, `apparel_table_oak`, `_white`, `mannequin_black`, `_white`, `dress_form_*`, `security_gate_grey`, `shop_*` (working shops) | Furnishings (Market & Store) |
+| Entry security | `metal_detector` (Walk-Through Metal Detector) | Life Safety (Emergency Services) |
+| Bag check | `airport_xray_scanner`, `airport_security_roller`, `airport_security_trays` | Transit |
+| Queue lines | `airport_queue_stanchion_black`, `_blue` | Transit |
+| Restrooms | toilets, urinals, `trough_sink_*`, hand dryers, toilet partitions | Furnishings (Residential) |
+
+Not built for that reason: a security arch (Life Safety's), coolers, a fountain machine,
+registers, stools and TVs. What the stadium has and those do not is below.
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `concession_counter` | facing, finish (16) | end_l, end_r | 64 |
+| `concession_counter_corner` | facing, finish (16) | | 16 |
+| `concession_back_counter`, `suite_bar_counter`, `suite_drink_rail` | facing | end_l, end_r | 16 each, 48 |
+| `concession_sign` | facing | (wayfinding face, unlisted) | 4 |
+| `concession_menu_board` | facing, layout (16) | | 16 |
+| `hot_dog_roller_grill`, `popcorn_machine`, `pretzel_warmer`, `nacho_cheese_dispenser`, `soft_serve_machine` | facing, on | | 8 each, 40 |
+| `beer_kiosk` | facing | | 4 |
+| `stadium_turnstile` | facing, ticketed, open | | 16 |
+| `stadium_ticket_scanner` | facing, result (3) | | 12 |
+| `jersey_wall_rack` | facing, numbered | | 8 |
+| `hat_wall`, `team_apparel_table`, `jersey_mannequin` | facing | (colours in the tile entity) | 4 each, 12 |
+
+240 states. Facing is always bits 0-1, **S 0, W 1, N 2, E 3**, towards the customer, reader or
+shopper; every model's back is at +z.
+
+### Placing (metadata and NBT)
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `concession_counter` | `facing \| finish << 2`; finish 0 stainless, 1 navy, 2 crimson, 3 black | A block-high counter (top at 16 px, so a terminal set on it stands at its cell's floor); the front panel faces the customers, an open shelf behind. Side by side they join; a run's ends draw end panels. A sneak-click with an empty hand steps the finish |
+| `concession_counter_corner` | as the counter | The **outside** corner: fronts on its facing and the side a quarter turn to its left (looking that way). At a stand's north-west corner it faces north; the north run joins it on its east side, the west run (facing west) on its south side, and neither draws an end panel there. No inside corner |
+| `concession_back_counter` | facing (towards the server, its doors) | Stainless cabinets, worktop, a 4 px backsplash rising into the cell above. Joins as the counter does |
+| `concession_sign` | facing | Core's wayfinding panel (`WAYFINDING_PANELS.md`): cells side by side and stacked are one sign, lit by default. Presets: HOT DOGS (red), BEER (black and gold), PIZZA (orange), SNACKS (blue), GRILL (black), SWEETS (pink), DRINKS (teal), CONCESSIONS, TEAM STORE. A price list is four lines typed in its editor. `/blockdata x y z {l1:"PIZZA",s:"laboratory",al:"c",m:"wall"}` |
+| `concession_menu_board` | `facing \| layout << 2`; 0 hot dogs and grill, 1 beer and drinks, 2 pizza and snacks, 3 sweets | A unit 3 wide x 2 tall on the back of its cells (against the wall). The master is the **bottom middle** cell; `/setblock` it and it fills its five parts. A sneak-click steps the menu |
+| `hot_dog_roller_grill`, `popcorn_machine`, `pretzel_warmer`, `nacho_cheese_dispenser`, `soft_serve_machine` | `facing \| on << 2` | Countertop machines standing at their cell's floor: put them on a counter. A click switches one on or off (light 6, 10, 8, 6 and 4 on). On, the sausages glisten, the kettle pops, the warmer and the cheese pump glow, the soft-serve display reads ready |
+| `beer_kiosk` | facing | A unit 2 wide x 1 deep x 3 tall: a counter with four taps on a T-bar, a DRAFTS price board behind, a lit COLD BEER canopy on two posts. Its other cells are at +x of the master, which is the viewer's **right** cell looking at its front. A click pours (a sound) |
+| `stadium_turnstile` | `facing \| ticketed << 2 \| open << 3` | People pass from its front (the end with the green arrow, the way it faces) to its back. Free (bit 2 clear): walking in from the front the arms index a third of a turn and let you through; from the back the arm is a barrier. Ticketed: locked both ways (red cross) until a ticket is scanned on it or at a scanner within two blocks, then open one way for 3 s or until the person is through. Leave bit 3 clear: the server sets and clears it. A creative player's sneak-click with an empty hand switches free and ticketed |
+| `stadium_ticket_scanner` | `facing \| result << 2`; leave result 0 | A click with an unscanned Venue Ticket opens the nearest shut ticketed turnstile within two blocks on its level (green ring, a chirp) and marks the ticket scanned; a stub or no ticket is refused (red ring, a buzz) |
+| `suite_bar_counter` | facing (towards the guests) | Walnut front, stone bar top (16 px), LED under the lip, a brass foot rail, the server's work surface behind. Joins |
+| `suite_drink_rail` | facing (towards the event floor) | An oak ledge at 16 px reaching 8.5 px back over the guests' side, on a slim panel, with a foot bar. Put bar stools in the cells behind it. Joins |
+| `jersey_wall_rack` | `facing \| numbered << 2` | On the wall behind it: a waterfall arm with three jerseys, the front one numbered 19 when bit 2 is set (placed by hand: numbered, or blank if placed while sneaking) |
+| `hat_wall`, `team_apparel_table`, `jersey_mannequin` | facing | Nine caps on slatwall (on the wall behind); folded tees in stacks on a nesting table; a mannequin in a jersey with the number on its back |
+
+**Team colours.** The four team store fixtures share one grey set of models: the garments carry
+tint 0 (the team colour) and tint 1 (the trim: cuffs, hem stripes, collar, numbers, a cap's
+brim and logo). Their tile entity (`TileEntityTeamColour`, `tileentityvenueteamcolour`) keeps
+`c` and `t`, `VenueColours` indices (0 navy ... 14 white; the scoreboard's list), default navy
+and white. A click with an empty hand steps the team colour, a sneak-click the trim, and the
+action bar names it. `/blockdata x y z {c:9,t:6}` is crimson and gold.
+
+**Venue Ticket** (`venue_ticket`, item): ADMIT ONE, stacks to 16. Crafted four at a time from
+paper and any dye (Core's recipes, conditional on `csm_venues`). Scanning splits one ticket off
+as a stub (NBT `scanned:1b`); a creative player's tickets are not used up.
+
+### Costs
+
+Every concourse block is chunk geometry and atlas textures. The four menu pictures are the
+largest textures (256 px each, with `_e` copies for OptiFine's emissive layer: about 1 MB of
+atlas); the popping and sausage animations are 16 px strips. The turnstile's
+`open` change and the scanner's ring are one block update each, scheduled, never a ticking tile
+entity. A team store fixture's colour change rebuilds its chunk section, once.
+
+### Traps
+
+- **The counter tops are a block high on purpose.** Furnishings' countertop pieces read only
+  Furnishings' own counters for their drop (`SurfaceRest`); on anything else they stand at the
+  floor of their cell. A 16 px top is where they then sit, and so do this tab's machines.
+- **The corner joins only an outside corner.** Two straights meeting at an inside corner each
+  draw an end panel; build an L stand round its outside.
+- **The turnstile's one way is collision by where you stand.** The arm's box is added only for an
+  entity whose middle is past the cell's middle and that does not already overlap the arm (or
+  always, while locked). The overlap test is not optional: the server sends a player back when a
+  move ends inside a collision box they were not inside before, so an arm that appeared the tick
+  their middle crossed it stopped every player dead in the lane (found in game). A mob or item has
+  no "from", so a locked turnstile stops everything and a free one stops only what is behind it.
+- **Who closes the turnstile:** a scheduled update that reschedules itself every 5 ticks while a
+  living entity is in the cell. Do not set bit 3 in a `/setblock`: without the scheduled update
+  it stays open until something walks through.
+- **The menu board's master is in the middle**, unlike the kiosk's (an end cell). A `/setblock`
+  names the master; its parts are `venue_unit_part`.
+- **The machines are translucent-layer blocks** (glass and sneeze guards), so they sort with the
+  world's other translucent faces. A concourse of hundreds of them is still small.
+
 ## Brands
 
 None. Team, league and sponsor names are what players type into the signs, the scoreboard and
 the banners (HOME and AWAY by default). The idle video is an invented intro and a noise meter;
-the ribbon's crawl reads LET'S GO. The ice resurfacer
+the ribbon's crawl reads LET'S GO. The concourse's signs say what is sold (HOT DOGS,
+COLD BEER, DRAFTS, SOFT SERVE), never whose. The ice resurfacer
 is a generic machine with no maker's name; the scorer's table plays an abstract pattern.
 
 ## Traps

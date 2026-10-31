@@ -110,7 +110,15 @@ never ticked, started by click or redstone) and an idle video, edited in a GUI o
 ribbon boards, straights and 45 degree corners whose patterns are one animated texture shown a
 quarter a block by position, with no tile entity, and a scrolling-text piece drawing its text
 once across the run; championship and retired-number banners tinted from their tile entity;
-the line-array speaker, broadcast camera platform and catwalk grating); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab and a hidden tab, later Concourse and per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
+the line-array speaker, broadcast camera platform and catwalk grating), then the concourse and
+premium spaces (`venues.concourse`: concession counters in four finishes joining into runs with an
+outside corner, a back counter, the lit concession sign that is Core's wayfinding panel, a baked
+3 x 2 digital menu board in four menus, countertop machines (hot dog roller, popcorn, pretzel
+warmer, nacho station, soft serve) switched on and off with their moving parts as animated
+textures, the beer kiosk unit, a one-way tripod turnstile, free or ticketed, with a ticket
+scanner and the Venue Ticket item, the suite bar counter and drink rail, and team store fixtures
+tinted in any team's colours from a tile entity; what Furnishings, Life Safety and Transit
+already make is reused, not copied); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -169,8 +177,10 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    handrail, glass guards, section and portal signs), arena/ (dasher boards,
 │                    glass, curves, doors, the floors and painted markings, benches, table),
 │                    av/ (centre-hung scoreboard, ribbon boards, banners, speakers, camera,
-│                    catwalk; their renderers, editors and packets); the multi-block unit
-│                    (hung or standing) and its part at the package root
+│                    catwalk; their renderers, editors and packets), concourse/ (counters,
+│                    concession sign, menu board, machines, beer kiosk, turnstile, scanner,
+│                    ticket, suite bar and rail, team store); the multi-block unit (hung or
+│                    standing) and its part, and the module's sounds, at the package root
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -553,7 +563,9 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   radius-8 curves (a worked example), the court, the units' footprints and the traps; the
   scoreboard and AV: hung units and where their master goes, the scoreboard's screens, clock,
   editor and NBT, the ribbon board's phase, corners and scrolling text, banners, the measured
-  costs
+  costs; the concourse: the existing blocks (Furnishings, Life Safety, Transit) an arena builder
+  should use instead, every concourse block's metadata and NBT, the one-way turnstile and the
+  ticket, the team colours, and the traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1255,6 +1267,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   its straight and OBJ 45 degree corner; banners (tinted cloth and trim), the line-array speaker
   (OBJ, cabinets curled in a J), the camera platform and the catwalk multipart; the colour,
   pattern and editor lang; `--check` (the Java too), `--fragments`
+- `gen_venues_concourse.py` -- the arena's concourse and premium spaces (Sports & Venues):
+  concession counters, corner and back counter (multipart, a model per finish, end panels by
+  actual state), the concession sign's icon (the sign is Core's wayfinding panel), the digital
+  menu board's four 256 px menus with their food pictograms and prices, the five countertop
+  machines as a model on and off (popping, glistening sausages, glowing warmers as animated
+  textures), the beer kiosk and the tripod turnstile as OBJ (arms mutually square on a hub
+  tilted 54.7 degrees, at rest and indexed 60 degrees), the ticket scanner, the Venue Ticket's
+  sprite, the suite bar and drink rail, and the team store fixtures with garments on tint 0 and
+  1; unit footprints written into the tab lines from their boxes; `--check`, `--fragments`.
+  `gen_venues_sounds.py` synthesises the scanner's accept and refuse tones and the turnstile's
+  ratchet (numpy to ffmpeg to OGG)
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under
