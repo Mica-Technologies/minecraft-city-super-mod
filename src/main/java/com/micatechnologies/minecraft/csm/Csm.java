@@ -24,7 +24,9 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.materials.MaterialsGuiProvider;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -226,17 +228,20 @@ public class Csm {
     ProgressManager.ProgressBar progressBar = ProgressManager.push("City Super Mod (Init)", 4);
 
     try {
-      // Register the mod's tile entities. Dedup on BOTH the registry name AND the TE class:
-      // two blocks may legitimately share one TileEntity class (e.g. several speakers or
-      // beacons backed by the same TE), each providing the same TE name — but a few pairs
-      // historically supplied DIFFERENT names for the same class, which slips past the
-      // name-based dedup and crashes inside GameRegistry's class-based bimap. The
-      // additional class check keeps both forms harmless.
+      // Register the mod's tile entities, each once. Many blocks share one TileEntity class
+      // under one name (several speakers or beacons backed by the same TE, both arena floor
+      // marking anchors): the first registers it and the rest are skipped without a word. A few
+      // pairs historically supplied DIFFERENT names for the same class, which slips past a
+      // name-based dedup and crashes inside GameRegistry's class-based bimap, so the class is
+      // checked too, and a name or class arriving with a different partner is still warned
+      // about.
       logger.info("Registering tile entities");
       Set<String> registeredTileEntities = new HashSet<>();
       Set<String> warnedTileEntities = new HashSet<>();
       Set<Class<? extends net.minecraft.tileentity.TileEntity>> registeredTileEntityClasses =
           new HashSet<>();
+      Map<String, Class<? extends net.minecraft.tileentity.TileEntity>> classByName =
+          new HashMap<>();
       CsmRegistry.getTileEntityProviders().forEach(tileEntityProvider -> {
         try {
           String tileEntityName = CsmConstants.MOD_NAMESPACE +
@@ -247,6 +252,9 @@ public class Csm {
 
           if (registeredTileEntities.contains(tileEntityName)
               || registeredTileEntityClasses.contains(tileEntityClass)) {
+            if (classByName.get(tileEntityName) == tileEntityClass) {
+              return; // the same pair again: already registered, as it should be
+            }
             if (!warnedTileEntities.contains(tileEntityName)) {
               logger.warn("Attempted to register tile entity with name: {} more than once "
                   + "(or class already registered under a different name).", tileEntityName);
@@ -258,6 +266,7 @@ public class Csm {
           GameRegistry.registerTileEntity(tileEntityClass, tileEntityName);
           registeredTileEntities.add(tileEntityName);
           registeredTileEntityClasses.add(tileEntityClass);
+          classByName.put(tileEntityName, tileEntityClass);
         } catch (Exception e) {
           logger.error("Failed to register tile entity for block: {}", tileEntityProvider, e);
         }
