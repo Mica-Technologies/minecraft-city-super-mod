@@ -24,14 +24,14 @@ from fixed numbers rather than from a Building block.
 | Tab | Order | Holds |
 |---|---|---|
 | Sports & Venues - Seating & Venue (`tabvenuesseating`) | 34 | what every venue shares: the seating bowl (below), later bleachers, press boxes and venue signs |
-| hidden (`CsmTabVenuesHidden`) | −12 | empty so far: multi-block cells and retiring blocks will go here |
+| Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor (below); later the centre-hung scoreboard, ribbon boards, banners and AV |
+| hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
 tab for every block family. Planned, in the order they land:
 
 | Tab | Holds |
 |---|---|
-| Arena | the event floor (dasher boards and glass, goals, the ice and hardwood palettes, benches, the scorer's table, the ice resurfacer), the centre-hung scoreboard, ribbon boards, banners and AV |
 | Concourse | concession counters and appliances, menu boards, turnstiles, suites, the team store, box office and marquee |
 | Ballpark | baseball and softball: bases, mound, the infield and warning track palettes, dugouts, backstop, foul poles, outfield wall |
 | Football & Soccer | the turf palette and its lines, goal posts and goals, pylons, sideline benches, chains |
@@ -202,9 +202,192 @@ defaults to `101` centred in navy on a 1 px plate flat on the wall; the portal s
 
 A two-block-tall section sign gives a number about 0.9 blocks high.
 
+## The event floor (Arena tab)
+
+Written by `dev-env-utils/scripts/gen_venues_arena.py` (`--check` holds the Java it writes too,
+`--fragments` prints the tab, `--doc` dumps the layout and curve tables as JSON). Everything is
+baked models; the only tile entity is the floor marking anchor's (below), and nothing ticks.
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `rink_ice` | paint (4) | | 4 |
+| `rink_rubber_floor` | | | 1 |
+| `rink_ice_line` | kind x axis (6) | | 6 |
+| `rink_ice_spot` | facing, kind (16) | | 16 |
+| `rink_ice_painted` | | cell (114), rot (4) | 456 |
+| `court_maple` | finish x axis (8) | | 8 |
+| `court_line` | facing, kind (12) | | 12 |
+| `court_floor_anchor` | facing, kind (16) | | 16 |
+| `court_painted` | | cell (138), rot (4) | 552 |
+| `dasher_board`, `dasher_glass` | facing | end_l, end_r | 16 each |
+| `dasher_board_corner`, `dasher_glass_corner` | facing | | 4 each |
+| `dasher_{board,glass}_curve_{nw,ne,se,sw}` x 8 | cell (15) | | 15 each, 120 |
+| `dasher_bench_gate`, `dasher_penalty_door` | facing, open, right | | 16 each |
+| `hockey_goal`, `basketball_stanchion`, `ice_resurfacer`, `ice_plant` | facing | | 4 each |
+| `venue_unit_part` (hidden) | toward | | 6 |
+| `player_bench`, `penalty_bench`, `scorers_table` | facing | end_l, end_r | 16 each |
+
+1,333 states in all. The painted blocks carry most of them: one state per distinct 32 px cell
+picture and turn, each a plain cube with one top texture, so they cost a texture each (250 small
+sprites) and no geometry worth counting.
+
+### Floors
+
+Full opaque blocks at the floor level; everything else stands on them. Ice (all the `rink_ice*`
+blocks) is as slippery as vanilla ice.
+
+| Block | Metadata |
+|---|---|
+| `rink_ice` | 0 white (three drawings, turned at random by position), 1 red, 2 blue, 3 crease blue: solid paint for anything the markings below do not draw |
+| `rink_rubber_floor` | 0 only: black rubber matting for behind the boards, the benches and the corners outside the curve |
+| `rink_ice_line` | `kind * 2 + axis`; kind 0 red centre line (12 in), 1 blue line (12 in), 2 goal line (2 in); axis 0 the line runs along x (east-west), 1 along z. So a line across a rink running north-south is 0 (red), 2 (blue), 4 (goal) |
+| `court_maple` | `finish * 2 + axis`; finish 0 natural (three drawings), 1 navy, 2 crimson, 3 grey (an apron); axis as above, the way the boards run: lay a court's boards along its length |
+| `court_line` | `facing \| kind << 2`; kind 0 a boundary line along the edge the facing points at, 1 a corner (that edge and the one to its left, looking that way), 2 a centre line across the block; facing S 0, W 1, N 2, E 3 |
+
+### Painted markings: anchors and painted blocks
+
+The circles, the crease and the keys are pictures laid out round an **anchor**
+(`rink_ice_spot`, `court_floor_anchor`). An anchor is a floor block showing the middle of its
+picture; a **painted block** (`rink_ice_painted`, `court_painted`, metadata 0) shows the piece
+of the nearest anchor's picture that falls on it, turned with the anchor. Fill the area round an
+anchor with painted blocks, by hand or with `/fill`, and the marking appears; where the picture
+has nothing, a painted block is plain ice or maple.
+
+Anchor metadata is `facing | kind << 2`, facing S 0, W 1, N 2, E 3: the picture's *forward*.
+A painted cell is found by `i` (cells to the anchor's right, looking forward) and `j` (cells
+forward). Only cells on the same level are searched (five cells round on the rink, nine on the
+court), nearest ring first; where two pictures could reach a cell, the nearest anchor with
+something drawn there wins.
+
+| Family / kind | Picture | Centred on | Cells to fill (i, j) |
+|---|---|---|---|
+| ice 0 | end zone face-off: 15 ft circle, hash marks, the L marks, the spot | the anchor's middle | -5..5, -5..5 |
+| ice 1 | neutral zone spot | the anchor's middle | the anchor alone |
+| ice 2 | centre ice: the red line across, the blue 15 ft circle and blue spot | the anchor's **left edge** (looking forward), its row's middle | -5..4, -5..5 |
+| ice 3 | goal line, crease (6 ft radius, 8 ft wide) and the trapezoid behind the goal to the end boards | the anchor's **left edge**; forward is towards centre ice, the end boards 3.5 blocks behind | -5..4, -3..2 |
+| court 0, 1, 2 | a basket end: baseline (along the anchor's back edge), sidelines at i = ±7, the key (natural, navy or crimson; its lines white where painted), free throw circle (dashed inside), restricted arc, three-point line (22 ft corners, 23 ft 9 in arc), lane marks | the anchor's middle; forward is into the court | -7..7, 0..8 |
+| court 3 | centre court: the half-court line, the 6 ft and 2 ft circles, the sidelines | the anchor's middle | -7..7, -2..2 |
+
+The two rink pictures centred on an edge are what a 26 wide rink needs: its middle is a block
+line. `ArenaFloorLayouts.java` lists every non-plain cell `(i, j, cell)`; a generator may fill
+just those, or the whole box (a plain painted block only costs its search).
+
+Placed by hand, an anchor faces the way the placer looks; a sneak-click with an empty hand steps
+the kind (and says which). The line blocks run the way the placer looks and step their kind the
+same way.
+
+### Dasher boards and glass
+
+A board is one block high on the floor's level, 4 px thick on the **ice side** of its cell,
+white with a yellow kick plate and a grey cap; the glass is a block of its own stacked on the
+board, as many high as wanted (two along the sides, three at the ends). Facing is towards the
+ice: a rink running north-south has its west boards facing east (meta 3), east boards west (1),
+north boards south (0), south boards north (2).
+
+| Block | Metadata |
+|---|---|
+| `dasher_board`, `dasher_glass` | facing. A run closes itself: where there is nothing of its layer beside it (or an open door), a straight draws an end post (an aluminium end cap on a board, a stanchion on glass) |
+| `dasher_board_corner`, `dasher_glass_corner` | 45 degrees across a cell, mitred into the straights diagonally beside it. Facing: the board faces between that facing and the next clockwise; at a rink's NW corner 3, NE 0, SE 1, SW 2 |
+| `dasher_board_curve_<corner>`, `dasher_glass_curve_<corner>` | the cell along the curve, 0-14 (table below); a sneak-click steps it |
+| `dasher_bench_gate` | bits 0-1 facing, bit 2 open, bit 3 hinge on the right (looking at the ice from behind the board). Board height; benches have no glass |
+| `dasher_penalty_door` | as the gate, with a glass leaf a block higher (the door draws translucent). A glass block above it is a fixed transom |
+
+A click opens or shuts a door; it swings a quarter turn away from the ice. The glass beside the
+cell above a penalty door ends with a post, as a frame's stanchion does.
+
+### The curve, and laying a 61 x 26 rink
+
+The corner is a true quarter circle of radius 8 blocks round a centre 8 blocks in from both
+boards. Its ice face crosses fifteen cells, all inside the ice rectangle's 8 x 8 corner square;
+each draws its stretch (the board's back reaches a quarter block into the cell outside, where
+the straight's back does). Drawn as the **north-west** corner, cell `k` sits at offset
+`(dx, dz)` from the ice's corner cell (the first ice cell in from the west and north boards):
+
+| k | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| (dx, dz) | 0,7 | 0,6 | 0,5 | 0,4 | 1,4 | 1,3 | 1,2 | 2,2 | 2,1 | 3,1 | 4,1 | 4,0 | 5,0 | 6,0 | 7,0 |
+
+The other corners are the same cells turned: with the ice spanning `x0..x0+25`, `z0..z0+60`,
+
+| Corner block | Cell k at |
+|---|---|
+| `_nw` | `(x0 + dx, z0 + dz)` |
+| `_ne` | `(x0 + 25 - dz, z0 + dx)` |
+| `_se` | `(x0 + 25 - dx, z0 + 60 - dz)` |
+| `_sw` | `(x0 + dz, z0 + 60 - dx)` |
+
+**Worked example** (the "Venues Arena Test" build, floor at y 3, everything else at y 4): ice
+`x 0..25, z 0..60`.
+
+- Floor: `rink_ice` over the rectangle, then `rink_rubber_floor` on every corner-square cell
+  whose nearest point to the curve's centre (8, 8 from the corner) is 8 or more blocks away
+  (the cells wholly outside the curve); rubber round the outside.
+- Straights: west `x -1, z 8..52` meta 3; east `x 26, z 8..52` meta 1; north `z -1, x 8..17`
+  meta 0; south `z 61, x 8..17` meta 2. Curves: the fifteen cells of each corner block, meta k.
+- Glass: `dasher_glass` (same meta) two high on the sides (y 5, 6), three on the end straights
+  (y 5-7); `dasher_glass_curve_<corner>` two high on the curves. The third row on an end
+  straight ends in a stanchion beside the curve by itself.
+- Benches (east side): no glass over `z 23..28` and `32..37`, gates at each end of each stretch
+  (`dasher_bench_gate` meta 1 at the north end, 9 at the south end), and `player_bench` meta 1
+  at `x 28`. Penalty boxes (west): `dasher_penalty_door` meta 3 at `z 27` and 11 at `z 33`
+  (air above), `penalty_bench` meta 3 at `x -3`, `scorers_table` meta 3 between.
+- Lines: red centre row `z 30` (meta 0) outside the centre picture, blue rows `z 22`, `z 38`
+  (meta 2), goal lines rows `z 3`, `z 57` (meta 4) on ice outside the goal pictures.
+- Anchors (`rink_ice_spot`): centre `(13, 30)` meta 10 (north, kind 2); goals `(12, 3)` meta 12
+  (south, kind 3: its left edge, looking south, is the x = 13 line) and `(13, 57)` meta 14
+  (north); end zone face-offs `(6, 9)`, `(19, 9)` meta 0 and `(6, 51)`, `(19, 51)` meta 2;
+  neutral spots `(6, 24)`, `(19, 24)`, `(6, 36)`, `(19, 36)` meta 4. Then `rink_ice_painted` on
+  each picture's cells.
+- Goals: `hockey_goal` meta 0 at `(13, 4, 3)` and meta 2 at `(12, 4, 57)` (posts on the goal
+  line, 2 blocks wide astride x = 13).
+
+The distances are NHL's to the nearest half block: goal lines 3.5 blocks in from the end boards,
+blue lines 22.5 from the ends, end zone spots 6.5 off the middle and 6 out from the goal line.
+
+A 45 degree chamfer approximates the curve if a builder wants fewer pieces: five
+`dasher_board_corner` on the line `dx + dz = 4` (cells 0,4 to 4,0) cut the corner as an
+octagon, the straights then starting at `dz = 5` and `dx = 5`.
+
+### The court (29 x 15)
+
+`court_maple` along the length, lines navy. With the court on `x c..c+14, z c'..c'+28` running
+north-south: `court_floor_anchor` at the middle of each baseline row (`(c + 7, c')` facing south,
+`(c + 7, c' + 28)` facing north; kinds 0-2 for the key) and at centre court
+(`(c + 7, c' + 14)`, kind 3); `court_painted` over rows 0-8 and 12-16 from each end as the
+table above says; `court_line` edge pieces (facing outward) for the sidelines in rows 9-11 and
+17-19; natural maple (meta 1) everywhere else, a grey apron (meta 7) round it. Each
+`basketball_stanchion` stands in the second row beyond its baseline, on column `c + 7`, facing
+the court.
+
+### Units
+
+Drawn whole by their master; `/setblock` the master alone and it fills its footprint with
+`venue_unit_part` cells where they are free (cells offset in the model frame, facing north, +x
+east, +z away from the front):
+
+| Block | Metadata | Footprint | Where |
+|---|---|---|---|
+| `hockey_goal` | facing: the mouth | 2 x 2: the master, +x, and the row behind | the master on the goal line row; posts on the line (the middle of the row), 2 blocks wide on +x |
+| `basketball_stanchion` | facing: towards the court | 11 cells, 5 high (OBJ: rim at 10 ft, 72 x 42 in glass backboard, a shot clock counting 24 to 0) | the master in the **second** row behind the baseline, on the court's middle column; the backboard's face is 1.22 blocks inside the baseline |
+| `ice_resurfacer` | facing: its front | 2 wide x 3 long x 2 high; the master is the left-middle cell | parked |
+| `ice_plant` | facing: its front | 2 wide x 1 deep x 2 high | back of house |
+
+The stanchion is real size rather than the two or three blocks first asked for: the rim has to
+be 10 ft over a real size court.
+
+### Benches and the scorer's table
+
+`player_bench` (a padded seat, no back), `penalty_bench` (seat and back) and `scorers_table`
+(an LED front, an animated texture with an OptiFine `_e`): metadata the facing, the way the
+sitter or scorer faces. Side by side they join; a run's ends are drawn by actual state. A click
+sits on a bench (Core's seat entity, one a block).
+
 ## Brands
 
-None. Team, league and sponsor names are what players type into the signs.
+None. Team, league and sponsor names are what players type into the signs. The ice resurfacer
+is a generic machine with no maker's name; the scorer's table plays an abstract pattern.
 
 ## Traps
 
@@ -213,3 +396,18 @@ None. Team, league and sponsor names are what players type into the signs.
   two never ask each other for their facing in a loop.
 - **The seat shell is grey on purpose.** Its colour is the tint; a texture with colour in it
   would be multiplied twice.
+- **A painted floor block reads its anchor only when its section is drawn.** The client redraws
+  only the chunk section a block change is in, so the anchor has a tile entity (no data, no tick)
+  whose load, update and removal ask for the cells within ten blocks to be drawn again. Without
+  it, painted cells across a section line from a newly placed anchor stay plain.
+- **Two rink pictures are centred on a block line** (centre ice and the goal crease), on their
+  anchor's left edge looking forward: on a rink of odd width they sit half a block off.
+- **A model reaching past its cell is drawn with that cell's chunk section.** The stanchion's
+  backboard is four blocks over its master: with the master's section out of view (looking
+  straight up at the rim across a section line) the whole stanchion is culled with it.
+- **Boards are drawn without ambient occlusion** (the OBJ corners and curves through
+  `"custom": {"ambient": false}`), or the floor darkens their white face from the foot up.
+- **A unit's footprint is written into its tab line** by the generator from its boxes; a box
+  reaching less than 6 px into a cell does not claim it, and has no collision there.
+- **A JSON element may not reach 32 exactly plus an epsilon.** The octagon helpers stagger
+  their four boxes by 0.004 px, so a round part ending at 32 fails to load; end it at 31.9.
