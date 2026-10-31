@@ -410,6 +410,60 @@ def numeral(text, ox, oz, height, ux, uz, mat, stroke=None):
 # ------------------------------------------------------------------------------------------
 REACH = 12          # how far a painted cell looks for its anchor (Chebyshev): LineArtFamily.REACH
 
+# ------------------------------------------------------------------------------------------
+# Legibility: the drawn width of a painted line. A line is geometry, not a mipmapped texture,
+# so a 5 cm line is under a screen pixel past about 50 m and breaks up into dashes rather than
+# fading. Every paint material's band thinner than MIN_LINE is drawn MIN_LINE wide, centred on
+# where the true line falls (a line measured to its outer edge keeps its centre, not its edge).
+# Applied here, as each layout is built, so the Java tables the game paints from carry the drawn
+# widths and LinePainter.java needs no rule of its own.
+# ------------------------------------------------------------------------------------------
+MIN_LINE = 0.125
+PAINTS = {MAT[m] for m in ("LINE", "OVERLAY", "TAPE", "WHITE", "YELLOW", "BLUE", "GREEN",
+                           "RED", "BLACK")}
+
+
+def _grow_convex(cv):
+    """The convex set grown by g on every side if it is a band thinner than MIN_LINE (two of
+    its half-planes facing apart closer than that); otherwise itself."""
+    thin = None
+    for p in range(len(cv.hps)):
+        for q in range(p + 1, len(cv.hps)):
+            a, b = cv.hps[p], cv.hps[q]
+            na, nb = math.hypot(a.a, a.b), math.hypot(b.a, b.b)
+            if na < EPS or nb < EPS:
+                continue
+            if (a.a * b.a + a.b * b.b) / (na * nb) > -1 + 1e-9:
+                continue
+            w = a.c / na + b.c / nb
+            if w < MIN_LINE - 1e-9 and (thin is None or w < thin):
+                thin = w
+    if thin is None:
+        return cv
+    g = (MIN_LINE - thin) / 2.0
+    return Convex([HP(h.a, h.b, h.c + g * math.hypot(h.a, h.b)) for h in cv.hps])
+
+
+def legible(op):
+    """``op`` with every band of paint thinner than MIN_LINE widened to it about its centre:
+    a thin convex band grown on every side, an annulus (a disc less a concentric disc) grown
+    both ways. Anything else, and anything not paint, is returned as it is."""
+    if op.mat not in PAINTS:
+        return op
+    pos = [_grow_convex(s) if isinstance(s, Convex) else s for s in op.pos]
+    neg = list(op.neg)
+    for pi, s in enumerate(pos):
+        if not isinstance(s, Disc):
+            continue
+        for ni, t in enumerate(neg):
+            if (isinstance(t, Disc) and abs(t.cx - s.cx) < 1e-9 and abs(t.cz - s.cz) < 1e-9
+                    and s.r - t.r < MIN_LINE - 1e-9):
+                g = (MIN_LINE - (s.r - t.r)) / 2.0
+                pos[pi] = Disc(s.cx, s.cz, s.r + g)
+                neg[ni] = Disc(t.cx, t.cz, t.r - g)
+                break
+    return Op(op.mat, pos, neg)
+
 
 class Layout(object):
     """One court or track: its id, base material, operations, the cells it may paint (inclusive
@@ -418,7 +472,7 @@ class Layout(object):
     def __init__(self, name, base, ops, extent, colours):
         self.name = name
         self.base = MAT[base]
-        self.ops = ops
+        self.ops = [legible(op) for op in ops]
         self.extent = extent
         self.colours = colours
         self._census = None

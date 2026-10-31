@@ -1584,7 +1584,7 @@ engine's materials) and `gen_venues_track.py` (the track and field events), both
 ### Line art: lines as geometry, not pictures
 
 Football and the ballpark draw each distinct cell as a 32 px picture. That is fine for a field
-whose lines repeat (173 pictures); a 400 m track's bends make every cell different (about 5,700
+whose lines repeat (173 pictures); a 400 m track's bends make every cell different (about 5,800
 painted cells, few of them alike, more with staggers and relay marks), so pictures would cost
 thousands of sprites and states. The courts and the track instead **compute each cell's top
 from the geometry** and bake it as quads:
@@ -1615,6 +1615,20 @@ from the geometry** and bake it as quads:
   `sc`), `LINE` and `OVERLAY` (paint in `lc` and `oc`, venue colours), `TAPE` (a beach court's
   tape in `lc`), `GRASS` (the football turf sprite, so it matches `field_turf`), `SAND`, `KERB`,
   `CONCRETE`, `STEEL`, and fixed `WHITE`, `YELLOW`, `BLUE`, `GREEN`, `RED`, `BLACK` paint.
+
+**Drawn width.** A painted band thinner than 1/8 block (12.5 cm) is drawn 12.5 cm wide,
+centred on where the true line's centre falls (`venues_lines.MIN_LINE`, applied by `legible()`
+as each layout is built: a thin convex band grows on every side, an annulus both ways). The
+rules' 5 cm lines are under a screen pixel past about 50 m, and since a line is geometry rather
+than a mipmapped texture it does not fade there: it breaks into dashes, worst round a bend. At
+12.5 cm a lane line reads continuous from the stands across the whole track (about 150 m) and
+from 50 m straight above. The deviation: every line, tape, hurdle mark and numeral stroke under
+12.5 cm is 3.75 cm wider each side than the rules (a 10 cm baseline 1.25 cm), so a line measured
+to its outer edge now reaches 3.75 cm past it, and a court's boundary line on a block edge
+reaches into the next cell (which is why a court's extent and painted cells grew). The Java
+tables are generated from the widened layouts, so `LinePainter` needs no rule of its own and
+`LinePainterTest` holds it to the same samples. The football and ballpark lines are pictures,
+mipmapped, and fade with distance rather than breaking up: they keep their true widths.
 
 **State cost**: a painted cell has one state (metadata 0, the key an unlisted property), an
 anchor four. **Atlas cost**: the shared sprites only (acrylic, polyurethane, paint, tape, sand,
@@ -1708,7 +1722,7 @@ javelin runway; grass elsewhere), the raised inner kerb, the lane lines, then th
 **The curve scheme and its cost.** Each bend's lines are discs about the bend's centre drawn
 as the grid-crossing polygon above, so a line is continuous across every cell edge, at its true
 radius, exact to 4 mm; a stagger or relay line is a strip square to the lane at the lane's own
-measured distance. A painted cell is one state; the track is 5,729 painted cells (32 anchors),
+measured distance. A painted cell is one state; the track is 5,833 painted cells (32 anchors),
 which bake to a few quads each when first drawn (about 6 quads a cell on average, under 1 MB of
 cached quads for the whole track) and cost no sprite.
 
@@ -1752,7 +1766,7 @@ mat, the toe board and the cage; the pole vault pit). Run them as an mcfunction 
 build script.
 
 In "Venues Arena Test" (`data/functions/csm/courts.mcfunction` and `track.mcfunction` in the
-save, 461 and 962 commands; raise `maxCommandChainLength` first): tennis with pickleball at
+save, 457 and 927 commands; raise `maxCommandChainLength` first): tennis with pickleball at
 (450, 3, -30), basketball at (480, 3, -30), sand volleyball at (510, 3, -30), the track's centre
 cell at (530, 3, 60), the jumps runway's cell (0, 0) at (470, 3, 6) and the pole vault's at
 (540, 3, -4); a chain-link fence with windscreens, a divider curtain, a ball machine, a portable
@@ -1760,12 +1774,12 @@ pickleball net and a court scoreboard (441, 4, -14) round the tennis court.
 
 | What | Painted cells | Anchors | Commands |
 |---|---|---|---|
-| `tennis` / `tennis_pickleball` | 139 / 183 | 2 | |
+| `tennis` / `tennis_pickleball` | 139 / 183 | 1 | |
 | `pickleball` | 58 | 1 | |
-| `basketball` / `basketball_half` | 223 / 134 | 2 / 1 | |
-| `volleyball` / `sand_volleyball` | 81 / 46 | 1 | |
-| `track_400m` | 5,729 | 32 | 899 with its fixtures |
-| `long_jump` / `pole_vault` | 134 / 114 | 3 / 3 | |
+| `basketball` / `basketball_half` | 291 / 169 | 2 / 1 | |
+| `volleyball` / `sand_volleyball` | 115 / 80 | 1 | |
+| `track_400m` | 5,833 | 32 | 864 with its fixtures |
+| `long_jump` / `pole_vault` | 136 / 120 | 3 / 3 | |
 
 ### Costs
 
@@ -1793,7 +1807,9 @@ the atlas, which was already past 8192 x 4096).
   `/blockdata` on an anchor (a colour) shows at once; a painted cell placed after a section was
   built is drawn with it.
 - **Lines are geometry, so they alias.** A 5 cm line is under a pixel beyond about 50 m and
-  shimmers rather than fading as a mipmapped texture would; true widths were kept.
+  breaks into dashes rather than fading as a mipmapped texture would, so every paint band is
+  drawn at least 12.5 cm wide (`MIN_LINE`, above). A new layout gets this for nothing; lower
+  `MIN_LINE` only after looking from 150 m in game.
 - **Vertex colours.** The pieces' colours are in the vertex colour (no tint index), which both
   lighting pipelines multiply in; a shader pack that ignores vertex colour draws them grey.
 - **The ops tables are text.** As an array initializer a track's 20,000 numbers would pass a
