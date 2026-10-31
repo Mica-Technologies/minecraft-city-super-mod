@@ -1,0 +1,147 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rail": "csm:blocks/venues/skate/rail",
+    "concrete": "csm:blocks/venues/skate/concrete",
+    "coping": "csm:blocks/venues/skate/coping",
+    "particle": "csm:blocks/venues/skate/rail"
+  },
+  "elements": [
+    {
+      "from": [
+        0.6,
+        0,
+        7.4
+      ],
+      "to": [
+        1.8,
+        5.8,
+        8.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            14.2,
+            10.2,
+            15.4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            0.6,
+            10.2,
+            1.8,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            7.4,
+            10.2,
+            8.6,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            7.4,
+            10.2,
+            8.6,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0.6,
+            7.4,
+            1.8,
+            8.6
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0.6,
+            7.4,
+            1.8,
+            8.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        6.6
+      ],
+      "to": [
+        2.4,
+        0.4,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            13.6,
+            15.6,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.6,
+            2.4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#rail",
+          "uv": [
+            6.6,
+            15.6,
+            9.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#rail",
+          "uv": [
+            6.6,
+            15.6,
+            9.4,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            6.6,
+            2.4,
+            9.4
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            6.6,
+            2.4,
+            9.4
+          ]
+        }
+      }
+    }
+  ]
+}

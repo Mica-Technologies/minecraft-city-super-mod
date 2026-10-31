@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/golf/tee_marker"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "variant": {
+      "0": {
+        "textures": {
+          "ball": "csm:blocks/venues/golf/red",
+          "particle": "csm:blocks/venues/golf/red"
+        }
+      },
+      "1": {
+        "textures": {
+          "ball": "csm:blocks/venues/golf/white",
+          "particle": "csm:blocks/venues/golf/white"
+        }
+      },
+      "2": {
+        "textures": {
+          "ball": "csm:blocks/venues/golf/blue",
+          "particle": "csm:blocks/venues/golf/blue"
+        }
+      },
+      "3": {
+        "textures": {
+          "ball": "csm:blocks/venues/golf/gold",
+          "particle": "csm:blocks/venues/golf/gold"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

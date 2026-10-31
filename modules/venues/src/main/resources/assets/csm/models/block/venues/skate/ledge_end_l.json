@@ -1,0 +1,43 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "rail": "csm:blocks/venues/skate/rail",
+    "concrete": "csm:blocks/venues/skate/concrete",
+    "coping": "csm:blocks/venues/skate/coping",
+    "particle": "csm:blocks/venues/skate/rail"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        6.2,
+        0
+      ],
+      "to": [
+        0.4,
+        7.2,
+        9
+      ],
+      "faces": {
+        "west": {
+          "texture": "#coping",
+          "uv": [
+            0,
+            9,
+            9,
+            9.8
+          ]
+        },
+        "up": {
+          "texture": "#coping",
+          "uv": [
+            0,
+            0,
+            0.4,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}

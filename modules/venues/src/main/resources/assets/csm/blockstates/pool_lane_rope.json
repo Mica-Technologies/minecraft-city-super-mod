@@ -1,0 +1,52 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/pool/lane_rope_mid"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "model": "csm:venues/pool/lane_rope_edge"
+      },
+      "west": {
+        "model": "csm:venues/pool/lane_rope_edge",
+        "y": 90
+      }
+    },
+    "variant": {
+      "0": {
+        "textures": {
+          "float": "csm:blocks/venues/pool/blue",
+          "particle": "csm:blocks/venues/pool/blue"
+        }
+      },
+      "1": {
+        "textures": {
+          "float": "csm:blocks/venues/pool/green",
+          "particle": "csm:blocks/venues/pool/green"
+        }
+      },
+      "2": {
+        "textures": {
+          "float": "csm:blocks/venues/pool/yellow",
+          "particle": "csm:blocks/venues/pool/yellow"
+        }
+      },
+      "3": {
+        "textures": {
+          "float": "csm:blocks/venues/pool/red",
+          "particle": "csm:blocks/venues/pool/red"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/pool/lane_rope_item"
+      }
+    ]
+  }
+}

@@ -18,7 +18,7 @@ class LinePainterTest {
 
   @Test
   void piecesCoverEveryCell() {
-    for (LineArtFamily fam : new LineArtFamily[]{LineArtFamily.COURTS, LineArtFamily.TRACK}) {
+    for (LineArtFamily fam : LineArtFamily.ALL) {
       for (int k = 0; k < fam.layoutCount(); k++) {
         LineArtLayout lay = fam.layout(k);
         int step = lay.extent[2] - lay.extent[0] > 60 ? 3 : 1;
@@ -41,6 +41,7 @@ class LinePainterTest {
   void matchesTheGenerator() {
     check(CourtSamples.FAMILY, CourtSamples.CELLS);
     check(TrackSamples.FAMILY, TrackSamples.CELLS);
+    check(PoolSamples.FAMILY, PoolSamples.CELLS);
   }
 
   private static void check(LineArtFamily fam, double[][] cells) {

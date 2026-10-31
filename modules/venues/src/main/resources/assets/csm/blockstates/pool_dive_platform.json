@@ -1,0 +1,187 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/pool/platform_5m.obj"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              {
+                "x": 30
+              },
+              {
+                "y": 225
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0.0,
+              -0.3,
+              0.3
+            ],
+            "scale": [
+              0.06,
+              0.06,
+              0.06
+            ]
+          },
+          "ground": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 0
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.2,
+              0
+            ],
+            "scale": [
+              0.03,
+              0.03,
+              0.03
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 180
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0.0,
+              -0.3,
+              0.3
+            ],
+            "scale": [
+              0.06,
+              0.06,
+              0.06
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              {
+                "x": 75
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.15,
+              0
+            ],
+            "scale": [
+              0.036,
+              0.036,
+              0.036
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              {
+                "x": 75
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.15,
+              0
+            ],
+            "scale": [
+              0.036,
+              0.036,
+              0.036
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.1,
+              0
+            ],
+            "scale": [
+              0.041999999999999996,
+              0.041999999999999996,
+              0.041999999999999996
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 225
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.1,
+              0
+            ],
+            "scale": [
+              0.041999999999999996,
+              0.041999999999999996,
+              0.041999999999999996
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

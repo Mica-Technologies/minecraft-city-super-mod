@@ -1,0 +1,49 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "top": "csm:blocks/venues/pool/floor_anchor_icon",
+    "side": "csm:blocks/venues/pool/pool_tile_white",
+    "bottom": "csm:blocks/venues/pool/pool_tile_white",
+    "particle": "csm:blocks/venues/pool/floor_anchor_icon"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#top",
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#bottom",
+          "cullface": "down"
+        },
+        "north": {
+          "texture": "#side",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        }
+      }
+    }
+  ]
+}

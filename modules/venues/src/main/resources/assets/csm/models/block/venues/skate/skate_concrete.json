@@ -1,0 +1,49 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "top": "csm:blocks/venues/skate/concrete",
+    "side": "csm:blocks/venues/skate/concrete",
+    "bottom": "csm:blocks/venues/skate/concrete",
+    "particle": "csm:blocks/venues/skate/concrete"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#top",
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#bottom",
+          "cullface": "down"
+        },
+        "north": {
+          "texture": "#side",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        }
+      }
+    }
+  ]
+}

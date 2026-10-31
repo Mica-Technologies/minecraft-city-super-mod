@@ -42,7 +42,13 @@ public abstract class BlockArenaFloorBase extends AbstractBlock {
     /** A track's polyurethane. */
     POLYURETHANE(Material.ROCK, SoundType.CLOTH, "pickaxe", 1.0F, false),
     /** Sand: a beach court, a jumping pit. */
-    SAND(Material.SAND, SoundType.SAND, "shovel", 0.5F, false);
+    SAND(Material.SAND, SoundType.SAND, "shovel", 0.5F, false),
+    /** Glazed or non-slip ceramic tile: a pool's walls, floor and deck. */
+    TILE(Material.ROCK, SoundType.STONE, "pickaxe", 1.5F, false),
+    /** Synthetic carpet: a mini-golf green. */
+    CARPET(Material.CLOTH, SoundType.CLOTH, "shovel", 0.8F, false),
+    /** Smooth trowelled concrete: a skate park, a cart path. */
+    CONCRETE(Material.ROCK, SoundType.STONE, "pickaxe", 1.8F, false);
 
     final Material material;
     final SoundType sound;

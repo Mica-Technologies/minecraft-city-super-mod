@@ -1,0 +1,139 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "flags": "csm:blocks/venues/pool/flags",
+    "cord": "csm:blocks/venues/pool/cable",
+    "pole": "csm:blocks/venues/pool/white",
+    "cap": "csm:blocks/venues/pool/red",
+    "particle": "csm:blocks/venues/pool/white"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        -16,
+        15.3
+      ],
+      "to": [
+        1.4,
+        13.4,
+        16.7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pole",
+          "uv": [
+            14.6,
+            -13.4,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pole",
+          "uv": [
+            0,
+            -13.4,
+            1.4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pole",
+          "uv": [
+            0,
+            -13.4,
+            1.4,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pole",
+          "uv": [
+            14.6,
+            -13.4,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            0,
+            0,
+            1.4,
+            1.4
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -0.2,
+        13.4,
+        15.1
+      ],
+      "to": [
+        1.6,
+        14.2,
+        16.9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cap",
+          "uv": [
+            14.2,
+            1.8,
+            16,
+            2.6
+          ]
+        },
+        "south": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            1.8,
+            1.8,
+            2.6
+          ]
+        },
+        "east": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            1.8,
+            1.8,
+            2.6
+          ]
+        },
+        "west": {
+          "texture": "#cap",
+          "uv": [
+            14.2,
+            1.8,
+            16,
+            2.6
+          ]
+        },
+        "up": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            14.2,
+            1.8,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#cap",
+          "uv": [
+            0,
+            0,
+            1.8,
+            1.8
+          ]
+        }
+      }
+    }
+  ]
+}

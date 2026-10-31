@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/pool/touchpad_0"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "variant": {
+      "0": {
+        "model": "csm:venues/pool/touchpad_0"
+      },
+      "1": {
+        "model": "csm:venues/pool/touchpad_1"
+      },
+      "2": {
+        "model": "csm:venues/pool/touchpad_2"
+      },
+      "3": {
+        "model": "csm:venues/pool/touchpad_3"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/pool/touchpad_0"
+      }
+    ]
+  }
+}

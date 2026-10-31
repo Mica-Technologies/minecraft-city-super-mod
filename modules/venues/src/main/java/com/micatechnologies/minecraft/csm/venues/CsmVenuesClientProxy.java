@@ -17,6 +17,10 @@ import com.micatechnologies.minecraft.csm.venues.bowling.TileEntityBowlingMonito
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
 import com.micatechnologies.minecraft.csm.venues.courts.TileEntityCourtBoard;
 import com.micatechnologies.minecraft.csm.venues.courts.TileEntityCourtBoardRenderer;
+import com.micatechnologies.minecraft.csm.venues.pool.TileEntityPaceClock;
+import com.micatechnologies.minecraft.csm.venues.pool.TileEntityPaceClockRenderer;
+import com.micatechnologies.minecraft.csm.venues.pool.TileEntityVenueSign;
+import com.micatechnologies.minecraft.csm.venues.pool.TileEntityVenueSignRenderer;
 import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
 import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarquee;
 import com.micatechnologies.minecraft.csm.venues.field.BlockFieldTurf;
@@ -50,7 +54,7 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  * screens, the ribbon board's scrolling text, the banners' lettering, the exterior marquee's
  * picture, the ballpark scoreboards' line score and count, the outfield distance markers, the
  * football and soccer scoreboards, the end zone lettering, the bowling scoring monitors, the
- * court scoreboards and lap counters) and
+ * court scoreboards and lap counters, the pool scoreboard and golf tee signs, the pace clocks) and
  * registers the colour
  * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
  * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
@@ -91,6 +95,10 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
         new TileEntityBowlingMonitorRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCourtBoard.class,
         new TileEntityCourtBoardRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVenueSign.class,
+        new TileEntityVenueSignRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPaceClock.class,
+        new TileEntityPaceClockRenderer());
     seatColours();
     bannerColours();
     storeColours();

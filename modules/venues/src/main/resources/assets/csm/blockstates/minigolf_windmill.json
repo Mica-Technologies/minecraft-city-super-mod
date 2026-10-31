@@ -1,0 +1,187 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/golf/windmill.obj"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              {
+                "x": 30
+              },
+              {
+                "y": 225
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0.0,
+              -0.2,
+              0.0
+            ],
+            "scale": [
+              0.3,
+              0.3,
+              0.3
+            ]
+          },
+          "ground": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 0
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.2,
+              0
+            ],
+            "scale": [
+              0.15,
+              0.15,
+              0.15
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 180
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0.0,
+              -0.2,
+              0.0
+            ],
+            "scale": [
+              0.3,
+              0.3,
+              0.3
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              {
+                "x": 75
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.15,
+              0
+            ],
+            "scale": [
+              0.18,
+              0.18,
+              0.18
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              {
+                "x": 75
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.15,
+              0
+            ],
+            "scale": [
+              0.18,
+              0.18,
+              0.18
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.1,
+              0
+            ],
+            "scale": [
+              0.21,
+              0.21,
+              0.21
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 225
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.1,
+              0
+            ],
+            "scale": [
+              0.21,
+              0.21,
+              0.21
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

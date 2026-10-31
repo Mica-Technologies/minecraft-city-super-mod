@@ -54,10 +54,10 @@ public final class LineArtModels {
     CsmBakedModelWrappers.register(LineArtModels::wrap);
   }
 
-  /** Every texture a material can name, in either family. */
+  /** Every texture a material can name, in any family. */
   static Set<String> textures() {
     Set<String> out = new HashSet<>();
-    for (LineArtFamily fam : new LineArtFamily[]{LineArtFamily.COURTS, LineArtFamily.TRACK}) {
+    for (LineArtFamily fam : LineArtFamily.ALL) {
       for (LineArtMaterial m : LineArtMaterials.ALL) {
         out.add(fam.sprite(m.sprite));
       }

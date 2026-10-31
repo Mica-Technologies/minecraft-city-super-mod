@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/venues/pool/starting_block_r",
+  "textures": {
+    "plate": "csm:blocks/venues/pool/num_2"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "variants": {
+    "across=false,cut=0,dark=false": {
+      "model": "csm:venues/golf/turf_green_0"
+    },
+    "across=false,cut=0,dark=true": {
+      "model": "csm:venues/golf/turf_green_1"
+    },
+    "across=false,cut=1,dark=false": {
+      "model": "csm:venues/golf/turf_collar_0"
+    },
+    "across=false,cut=1,dark=true": {
+      "model": "csm:venues/golf/turf_collar_1"
+    },
+    "across=false,cut=2,dark=false": {
+      "model": "csm:venues/golf/turf_fairway_0"
+    },
+    "across=false,cut=2,dark=true": {
+      "model": "csm:venues/golf/turf_fairway_1"
+    },
+    "across=false,cut=3,dark=false": {
+      "model": "csm:venues/golf/turf_rough_0"
+    },
+    "across=false,cut=3,dark=true": {
+      "model": "csm:venues/golf/turf_rough_1"
+    },
+    "across=false,cut=4,dark=false": {
+      "model": "csm:venues/golf/turf_tee_0"
+    },
+    "across=false,cut=4,dark=true": {
+      "model": "csm:venues/golf/turf_tee_1"
+    },
+    "across=false,cut=5,dark=false": {
+      "model": "csm:venues/golf/turf_cup_0"
+    },
+    "across=false,cut=5,dark=true": {
+      "model": "csm:venues/golf/turf_cup_1"
+    },
+    "across=true,cut=0,dark=false": {
+      "model": "csm:venues/golf/turf_green_0",
+      "y": 90
+    },
+    "across=true,cut=0,dark=true": {
+      "model": "csm:venues/golf/turf_green_1",
+      "y": 90
+    },
+    "across=true,cut=1,dark=false": {
+      "model": "csm:venues/golf/turf_collar_0",
+      "y": 90
+    },
+    "across=true,cut=1,dark=true": {
+      "model": "csm:venues/golf/turf_collar_1",
+      "y": 90
+    },
+    "across=true,cut=2,dark=false": {
+      "model": "csm:venues/golf/turf_fairway_0",
+      "y": 90
+    },
+    "across=true,cut=2,dark=true": {
+      "model": "csm:venues/golf/turf_fairway_1",
+      "y": 90
+    },
+    "across=true,cut=3,dark=false": {
+      "model": "csm:venues/golf/turf_rough_0",
+      "y": 90
+    },
+    "across=true,cut=3,dark=true": {
+      "model": "csm:venues/golf/turf_rough_1",
+      "y": 90
+    },
+    "across=true,cut=4,dark=false": {
+      "model": "csm:venues/golf/turf_tee_0",
+      "y": 90
+    },
+    "across=true,cut=4,dark=true": {
+      "model": "csm:venues/golf/turf_tee_1",
+      "y": 90
+    },
+    "across=true,cut=5,dark=false": {
+      "model": "csm:venues/golf/turf_cup_0",
+      "y": 90
+    },
+    "across=true,cut=5,dark=true": {
+      "model": "csm:venues/golf/turf_cup_1",
+      "y": 90
+    }
+  }
+}

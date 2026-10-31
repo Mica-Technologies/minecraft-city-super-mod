@@ -62,6 +62,63 @@ public final class VenuesFabricatorRules {
   public static final String TAB_BOWLING = "tabvenuesbowling";
   /** The Courts, Track &amp; Pool tab. */
   public static final String TAB_COURTS = "tabvenuescourts";
+  /** The Golf tab. */
+  public static final String TAB_GOLF = "tabvenuesgolf";
+  /** The Skate Park tab. */
+  public static final String TAB_SKATE = "tabvenuesskate";
+
+  /**
+   * The pool's, golf's and the skate park's pieces: a registry name, then its ingredients, each
+   * a vanilla item name (lower case) or a CSM part (upper case, {@code part_} and the name in
+   * lower case), with {@code " xN"} for more than one. {@code audit_fabricator_costs.py} reads
+   * this table.
+   */
+  private static final String[][] POOL_GOLF_SKATE = {
+      {"pool_tile", "hardened_clay"},
+      {"pool_deck", "hardened_clay"},
+      {"pool_gutter", "hardened_clay", "iron_bars"},
+      {"pool_floor_anchor", "hardened_clay", "dye x2"},
+      {"pool_floor_painted", "hardened_clay", "dye x2"},
+      {"pool_wall_target", "hardened_clay", "dye"},
+      {"pool_touchpad", "hardened_clay", "WIRING_HARNESS"},
+      {"pool_lane_rope", "string x2", "dye"},
+      {"pool_backstroke_flags", "string", "wool", "iron_ingot"},
+      {"pool_starting_block", "iron_ingot x2", "dye"},
+      {"pool_ladder", "iron_ingot x3"},
+      {"pool_lifeguard_chair", "SHEET_METAL x3", "wool"},
+      {"pool_springboard_1m", "planks x4", "iron_ingot x2"},
+      {"pool_springboard_3m", "CONCRETE_MIX x4", "planks x4", "iron_ingot x4"},
+      {"pool_dive_platform", "CONCRETE_MIX x12", "iron_ingot x6"},
+      {"pool_pace_clock", "ENCLOSURE_SHELL", "CONTROL_BOARD"},
+      {"pool_scoreboard", "ENCLOSURE_SHELL x2", "LED_MODULE x2", "CONTROL_BOARD"},
+      {"golf_turf", "dirt", "wheat_seeds"},
+      {"golf_bunker_sand", "sand"},
+      {"golf_cart_path", "CONCRETE_MIX"},
+      {"golf_cart_path_curb", "CONCRETE_MIX"},
+      {"golf_flagstick", "stick x2", "wool"},
+      {"golf_tee_marker", "planks", "dye"},
+      {"golf_yardage_marker", "planks", "dye"},
+      {"golf_hole_sign", "SIGN_BLANK", "planks"},
+      {"golf_ball_washer", "SHEET_METAL", "FASTENER_KIT"},
+      {"golf_bench", "planks x2", "iron_ingot"},
+      {"driving_range_mat", "wool x2", "slime_ball"},
+      {"range_tee_divider", "planks x2", "iron_ingot"},
+      {"range_ball_bucket", "iron_ingot"},
+      {"range_target_flag", "stick x2", "wool", "planks"},
+      {"range_ball_dispenser", "SHEET_METAL x3", "CONTROL_BOARD", "WIRING_HARNESS"},
+      {"minigolf_carpet", "wool", "dye"},
+      {"minigolf_cup", "wool", "dye"},
+      {"minigolf_border", "planks"},
+      {"minigolf_ramp", "wool", "planks"},
+      {"minigolf_scorecard_stand", "planks", "paper x2"},
+      {"minigolf_windmill", "brick x4", "planks x2", "wool x2"},
+      {"minigolf_loop", "iron_ingot x3", "wool"},
+      {"skate_concrete", "CONCRETE_MIX"},
+      {"skate_quarter_pipe", "CONCRETE_MIX x2", "iron_ingot"},
+      {"skate_bowl_corner", "CONCRETE_MIX x2", "iron_ingot"},
+      {"skate_ramp", "CONCRETE_MIX"},
+      {"skate_grind_rail", "iron_ingot x2"},
+      {"skate_ledge", "CONCRETE_MIX x2", "iron_ingot"}};
 
   private VenuesFabricatorRules() {
   }
@@ -103,6 +160,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> court = courts(registryName);
     if (court != null) {
       return court;
+    }
+    List<FabricatorIngredient> table = tabled(registryName);
+    if (table != null) {
+      return table;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -468,6 +529,31 @@ public final class VenuesFabricatorRules {
       default:
         return null;
     }
+  }
+
+  /** A piece in {@link #POOL_GOLF_SKATE}, or null for a name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> tabled(String registryName) {
+    for (String[] row : POOL_GOLF_SKATE) {
+      if (!row[0].equals(registryName)) {
+        continue;
+      }
+      FabricatorIngredient[] in = new FabricatorIngredient[row.length - 1];
+      for (int i = 1; i < row.length; i++) {
+        String spec = row[i];
+        int n = 1;
+        int x = spec.indexOf(" x");
+        if (x > 0) {
+          n = Integer.parseInt(spec.substring(x + 2));
+          spec = spec.substring(0, x);
+        }
+        in[i - 1] = spec.equals(spec.toUpperCase(java.util.Locale.ROOT))
+            ? FabricatorIngredient.part("part_" + spec.toLowerCase(java.util.Locale.ROOT), n)
+            : FabricatorIngredient.any("minecraft:" + spec, n);
+      }
+      return CsmFabricatorCosts.cost(in);
+    }
+    return null;
   }
 
   /** The Courts, Track &amp; Pool tab's pieces, or null for a name that is not one of them. */

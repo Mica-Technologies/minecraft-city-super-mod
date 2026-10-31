@@ -129,6 +129,29 @@ def jet_bridge_turn_cells():
             r'new BlockJetBridgeTurn\("(\w+)", JetBridgeTurnShape\.(\w+)\)', tab)}
     return _TURN_CELLS
 
+_VENUES_TABLE = None
+
+
+def _venues_table():
+    """VenuesFabricatorRules.POOL_GOLF_SKATE: registry -> its ingredients."""
+    global _VENUES_TABLE
+    if _VENUES_TABLE is None:
+        import os
+        import re as _re
+        path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+            os.path.abspath(__file__)))), "modules", "venues", "src", "main", "java", "com",
+            "micatechnologies", "minecraft", "csm", "venues", "VenuesFabricatorRules.java")
+        text = open(path, encoding="utf-8").read()
+        body = text[text.index("POOL_GOLF_SKATE = {"):]
+        body = body[:body.index("};")]
+        _VENUES_TABLE = {}
+        for row in _re.findall(r"\{([^{}]*)\}", body):
+            vals = _re.findall(r'"([^"]*)"', row)
+            if vals:
+                _VENUES_TABLE[vals[0]] = tuple(vals[1:])
+    return _VENUES_TABLE
+
+
 def cost_for(registry, info, ancestors):
     """Mirror of CsmFabricatorCosts.getCost, returning a tuple of ingredient labels or None."""
     tab = info["tab"]
@@ -772,6 +795,11 @@ def cost_for(registry, info, ancestors):
         if registry in bowl:
             return bowl[registry]
         return ("SHEET_METAL", "FASTENER_KIT")
+    if tab in ("tabvenuescourts", "tabvenuesgolf", "tabvenuesskate"):
+        # VenuesFabricatorRules.POOL_GOLF_SKATE, read from the Java so the two cannot differ.
+        row = _venues_table().get(registry)
+        if row is not None:
+            return row
     if tab == "tabvenuescourts":
         # Mirrors VenuesFabricatorRules.courts (Sports & Venues module).
         court = {

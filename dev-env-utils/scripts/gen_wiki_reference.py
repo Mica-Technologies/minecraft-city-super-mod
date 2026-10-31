@@ -231,19 +231,39 @@ TABS = {
                          "bowler; the house ball rack; the shoe counter, cubbies and shoe "
                          "spray."),
     "tabvenuescourts": ("venues-courts", "Sports & Venues - Courts, Track & Pool",
-                        "Courts and a running track, one block a metre, every line where it "
-                        "really falls (worked out per cell, at the true radii on a track's "
-                        "bends): acrylic courts in sixteen colours for tennis, pickleball (alone "
-                        "or over tennis in a second line colour), basketball full and half "
-                        "court, volleyball and sand volleyball, laid from an anchor and painted "
-                        "cells; the tennis, pickleball and volleyball nets, the umpire chair, "
-                        "players' benches, a chain-link fence with windscreen, a divider "
+                        "Courts, a running track and a competition pool, one block a metre, "
+                        "every line where it really falls (worked out per cell, at the true radii "
+                        "on a track's bends): acrylic courts in sixteen colours for tennis, "
+                        "pickleball (alone or over tennis in a second line colour), basketball "
+                        "full and half court, volleyball and sand volleyball, laid from an anchor "
+                        "and painted cells; the tennis, pickleball and volleyball nets, the umpire "
+                        "chair, players' benches, a chain-link fence with windscreen, a divider "
                         "curtain, a ball machine, the courtside scoreboard and a pole-mounted "
                         "hoop; a World Athletics 400 m track in polyurethane with its staggers, "
                         "relay zones, hurdle marks and lane numbers, the jumps and throws, "
                         "hurdles, starting blocks, the finish camera tower, a lap counter and "
                         "bell, the high jump and pole vault landing areas, the shot put toe "
-                        "board, the discus and hammer cage and the steeplechase barrier."),
+                        "board, the discus and hammer cage and the steeplechase barrier; a 25 m "
+                        "or 50 m pool round real water: tile, deck and a deck-level gutter, the "
+                        "floor's lane lines, the end walls' targets and touch pads, lane ropes at "
+                        "the water line, backstroke flags, numbered starting blocks, a lifeguard "
+                        "chair, ladders, 1 m and 3 m springboards and a 5 m platform, a pace "
+                        "clock and the scoreboard."),
+    "tabvenuesgolf": ("venues-golf", "Sports & Venues - Golf",
+                      "A golf course, a driving range and mini-golf, decor without ball "
+                      "physics: turf in five cuts whose mowing stripes line up across blocks, the "
+                      "cup and a flagstick in four colours, raked bunker sand, tee markers, "
+                      "yardage markers, a tee sign with the hole, par and yards typed in, a ball "
+                      "washer, a bench, the cart path and its curb; a hitting mat, the bay "
+                      "divider, a ball dispenser, a bucket of balls and distance flags; mini-golf "
+                      "carpet in sixteen colours, the cup, a border along any side of a block, a "
+                      "ramp, a windmill, a loop and a scorecard stand."),
+    "tabvenuesskate": ("venues-skate", "Sports & Venues - Skate Park",
+                       "Skate park basics in smooth concrete: quarter pipes of 1 m and 2 m, a "
+                       "bowl corner that turns two quarter pipes round an inside corner, a "
+                       "kicker, a bank and a box top for a funbox, a grind rail and a ledge that "
+                       "join into runs. The curves are drawn true; the collision is a staircase "
+                       "under them that a player can walk up."),
     "tabvenuesconcourse": ("venues-concourse", "Sports & Venues - Concourse",
                            "An arena's concourse and premium spaces: concession counters "
                            "(straight, outside corner and back counter in four finishes), the lit "
@@ -293,7 +313,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
               "tabvenuesconcourse", "tabvenuesballpark", "tabvenuesfootball", "tabvenuesbowling",
-              "tabvenuescourts",
+              "tabvenuescourts", "tabvenuesgolf", "tabvenuesskate",
               "tabnone"]
 
 

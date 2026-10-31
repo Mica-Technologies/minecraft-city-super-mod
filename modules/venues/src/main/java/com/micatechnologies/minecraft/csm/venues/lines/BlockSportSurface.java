@@ -38,9 +38,22 @@ public class BlockSportSurface extends BlockArenaFloorBase {
    * @param coloured     whether it takes a surface colour
    */
   public BlockSportSurface(String registryName, Surface surface, boolean coloured) {
+    this(registryName, surface, coloured, surface == Surface.POLYURETHANE ? 4 : 2);
+  }
+
+  /**
+   * Constructs a surface placed by hand, and shown as an item, in a colour of its own.
+   *
+   * @param registryName  its registry name
+   * @param surface       what it is made of
+   * @param coloured      whether it takes a surface colour
+   * @param defaultColour the colour it is placed in by hand ({@link SurfaceColours})
+   */
+  public BlockSportSurface(String registryName, Surface surface, boolean coloured,
+      int defaultColour) {
     super(registryName, surface, coloured);
     this.coloured = coloured;
-    this.defaultColour = surface == Surface.POLYURETHANE ? 4 : 2;
+    this.defaultColour = SurfaceColours.clamp(defaultColour);
     if (colour != null) {
       setDefaultState(blockState.getBaseState().withProperty(colour, 0));
     }

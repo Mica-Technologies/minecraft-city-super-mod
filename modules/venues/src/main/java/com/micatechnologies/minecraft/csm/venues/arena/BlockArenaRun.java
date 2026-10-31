@@ -23,7 +23,8 @@ import net.minecraft.world.World;
  * padded seat and back) and the scorer's table (a counter whose front is an LED panel, an
  * animated texture, so nothing ticks); and a ballpark's dugout bench, dugout rail and dugout
  * canopy; a football team bench and a soccer substitutes' shelter; a bowling centre's house ball
- * rack and shoe counter. Each block draws its own
+ * rack and shoe counter; a pool's backstroke flags; a golf bench; a skate park's grind rail and
+ * ledge. Each block draws its own
  * length; where the run stops it
  * draws an end frame or end panel ({@code end_l}, {@code end_r}, actual state).
  *
@@ -58,7 +59,16 @@ public class BlockArenaRun extends BlockVenue {
     /** A bowling centre's shoe counter, its top at a metre. */
     SHOE_COUNTER(BlockVenueBox.of(0, 0, 0, 16, 16, 16), -1),
     /** A court's players' bench: slats and a backrest on a green frame. */
-    COURT_BENCH(BlockVenueBox.of(0, 0, 4, 16, 16, 14.5), 8.0 / 16.0);
+    COURT_BENCH(BlockVenueBox.of(0, 0, 4, 16, 16, 14.5), 8.0 / 16.0),
+    /** A pool's backstroke flags: pennants on a line 1.8 m over the water, a pole at each end
+     * reaching down to the deck below. */
+    BACKSTROKE_FLAGS(BlockVenueBox.of(0, 8, 7, 16, 14, 9), -1),
+    /** A golf course's bench: slats on cast ends. */
+    GOLF_BENCH(BlockVenueBox.of(0, 0, 3, 16, 15, 14), 7.5 / 16.0),
+    /** A skate park's grind rail: a round rail on posts, its ends flared to the ground. */
+    GRIND_RAIL(BlockVenueBox.of(0, 0, 7, 16, 5.5, 9), -1),
+    /** A skate park's ledge: a concrete block with a steel angle on its top front edge. */
+    SKATE_LEDGE(BlockVenueBox.of(0, 0, 0, 16, 7, 9), -1);
 
     final AxisAlignedBB box;
     final double seatTop;
@@ -91,7 +101,7 @@ public class BlockArenaRun extends BlockVenue {
   }
 
   private static boolean wooden(Kind kind) {
-    return kind == Kind.SCORERS_TABLE || kind == Kind.SHOE_COUNTER;
+    return kind == Kind.SCORERS_TABLE || kind == Kind.SHOE_COUNTER || kind == Kind.GOLF_BENCH;
   }
 
   @Override
@@ -129,6 +139,14 @@ public class BlockArenaRun extends BlockVenue {
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     return kind.box;
+  }
+
+  @Override
+  @javax.annotation.Nullable
+  public AxisAlignedBB getCollisionBoundingBox(IBlockState state, IBlockAccess source,
+      BlockPos pos) {
+    return kind == Kind.BACKSTROKE_FLAGS ? NULL_AABB
+        : super.getCollisionBoundingBox(state, source, pos);
   }
 
   @Override
