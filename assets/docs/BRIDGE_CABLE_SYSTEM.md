@@ -35,7 +35,9 @@ anchor, or any block at all) just has a cable arriving at it.
 | Remove an anchor's cables | Sneak + click it with the tool |
 | Anything else (thickness, colour, exact sag, stripes, LED, hanger spacing) | `/blockdata` on the owning anchor, below |
 
-The tool never draws a cable twice: linking A to B first drops a B-to-A cable B may own.
+The tool never draws a cable twice: linking A to B first drops a B-to-A cable B may own. A
+cable strung both ways by NBT is drawn once, by the anchor at the lower position
+(`BlockPos.compareTo`), so both ends decide alike without either one changing its links.
 
 ## NBT
 
@@ -128,8 +130,9 @@ also wears a **guide pipe** for its first block, drawn by the renderer at whatev
 cable leaves, so the socket does not have to be modelled for every angle; a clevis end wears a
 short one, a saddle none. A short cable's pipes are cut to a quarter of its length.
 
-A cable that ends on a block that is not an anchor ends on top of it, or in its middle if it is
-air.
+A cable that ends on a block that is not an anchor ends on top of it. A cable with nothing at
+its far end (air, water or a plant: the far anchor was broken, or the block is not built yet) is
+not drawn at all, and its link is kept: it comes back as soon as something is there to hold it.
 
 ### Hangers
 
@@ -178,26 +181,33 @@ display list, for A/B measurement in one session.
 
 ### What it costs
 
-Not yet measured in game (the work was done where no client could be launched). From the layout,
-the test bridges draw:
+Measured in the dev client on 2026-10-30, in the "Bridge Cable Test" world: a cable-stayed bridge
+(two H-pylons 50 apart, 64 stays of 2 to 8 px, 13 to 57 blocks, half of them in other colours,
+thicknesses, stripes or LED strips), a self-anchored suspension bridge (two 40-block main spans
+with sag 6 and seven hangers each, four side spans) and a tied arch with 18 hangers. The camera
+stood broadside to the cable-stayed bridge with the suspension bridge behind it, about 70 anchors
+drawing; render distance 16, no frame cap, no vsync, A/B/A/B in one session, 10 s a sample:
 
-| Bridge | Anchors drawing | Quads |
-|---|---|---|
-| Cable-stayed, 32 plain 4 px stays, socket to deck anchor | 32 | 32 each (8 for the stay, 12 for each guide pipe): about 1,000 |
-| Self-anchored suspension, two 8 px main spans of 80 with hangers every 5, two side spans | 4 | about 1,250 a main span (960 cable, 15 hangers at 6, 15 bands at 12), 100 a side span |
+| Pass | renderWork, mean |
+|---|---|
+| Cables drawn (display lists) | 1.66 ms (1.66, 1.67, 1.65) |
+| `/csm renderpass skip bridgeCable` | 1.60 ms (1.60, 1.59) |
+| `bridgeCablePerFrame` (drawn without the lists) | 4.07 ms |
 
-That is a fraction of one span wire stress scene, and the draw is the same shape (a matrix push,
-a bind and a list call per anchor), so by the span wire's figure of 1.9 us a baked attachment the
-pass should cost about 0.06 ms for the 32-stay bridge in view. The client also rebuilds each
+So the whole pass costs about 0.06 ms a frame for roughly 70 anchors and 80 cables in view, under
+a microsecond an anchor, as estimated from the span wire's figures. The display list is what makes
+it cheap: rebuilding the same tubes every frame costs 2.4 ms. The client also rebuilds each
 layout every 40 ticks (spread across anchors) to look for a changed end or a new deck; the list
 is recompiled only when that finds a change.
 
 ## Traps
 
 * **One end draws.** The tool drops the reverse cable, but NBT does not: two anchors that each
-  own a cable to the other draw it twice.
-* **Breaking the far anchor** leaves the owner's cable ending in the middle of the empty block.
-  Remove the cable (`remove:[x,y,z]`, or sneak-click the owner with the tool) or re-link.
+  own a cable to the other keep both links, and the anchor at the higher position leaves its
+  copy out of the layout. Its NBT still holds it, so `/blockdata` on that anchor still shows it.
+* **Breaking the far anchor** takes the cable out of view, not out of the owner's NBT: put an
+  anchor back and the cable returns. Remove it for good with `remove:[x,y,z]`, or by
+  sneak-clicking the owner with the tool.
 * **The single-cable keys act once.** They are never saved, so they do not reappear in the next
   `/blockdata` read-back, and running the same command twice does not trip `/blockdata`'s "nothing
   changed" check (the merged compound still holds the keys).
@@ -206,6 +216,9 @@ is recompiled only when that finds a change.
   when a target is read, which `/blockdata` and chunk loading both guarantee.
 * **Light is sampled once, at the anchor.** A long stay running into a dark underside keeps the
   anchor's light all the way. Fine in daylight; at night the anchor's block light decides.
+* **A model face names a texture variable** (`#plate`, `#chord`), never a path: 1.12 reads the
+  face's string as a variable name either way, so a path there drew every anchor in the missing
+  texture with nothing in the log.
 * **A colour's shaded top facet can pass full brightness** on a white cable; `stitch` holds
   shaded colours to 1, because the buffer stores a byte and would wrap round to black.
 * **Vec3d's squared length is named differently between mappings**; the layout writes it out, as
@@ -213,8 +226,12 @@ is recompiled only when that finds a change.
 
 ## Leftovers
 
-* In-game check and a measured frame-time figure for 100+ cables (the estimate above stands until
-  then), and a test world with both test bridges' shapes.
+* A cable is drawn to 128 blocks plus its own reach, which the pylon outlasts: at a render
+  distance of 16 the stays of a bridge 220 blocks off are gone while its pylons still stand.
+  Matching the render distance would be cheap by the figures above, but needs a look at a whole
+  city's worth of cables first.
+* The sheath stripes wind one facet a segment, which on a long stay reads as a dashed line
+  rather than a tight helix.
 * The LED strip is always on: no redstone, no dusk switch.
 * Light is one sample per anchor (see Traps).
 * No GUI: the tool's presets and `/blockdata` cover it.
