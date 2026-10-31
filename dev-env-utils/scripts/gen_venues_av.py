@@ -321,9 +321,29 @@ def board_polys(b):
         pz0, pz1 = sorted((cz - sz * e, cz + sz * pr))
         P += vc.obox(p(px0), p(px1), p(b.ring), p(b.top - b.ring), p(pz0), p(pz1), "casing",
                      "nsew")
-    # the underside and the top deck
-    P.append(vc.Poly([(p(x0), 0, p(z0)), (p(x1), 0, p(z0)), (p(x1), 0, p(z1)), (p(x0), 0, p(z1))],
-                     "casing", (0, -1, 0), [(0, 0), (1, 0), (1, 1), (0, 1)]))
+    # the underbelly: a dark LED field a block at a time, an LED chase ring round it a block in
+    # from the edge (what the ice sees of the board), then the top deck
+    def under(ax, az, cx, cz, mat, y=0.0):
+        P.append(vc.Poly([(p(ax), p(y), p(az)), (p(cx), p(y), p(az)), (p(cx), p(y), p(cz)),
+                          (p(ax), p(y), p(cz))], mat, (0, -1, 0),
+                         [(0, 0), (1, 0), (1, 1), (0, 1)]))
+    xs = [x0 + i for i in range(int(round(b.w)))] + [x1]
+    zs = [z0 + i for i in range(int(round(b.d)))] + [z1]
+    for i in range(len(xs) - 1):
+        for k in range(len(zs) - 1):
+            under(xs[i], zs[k], xs[i + 1], zs[k + 1], "screen")
+    ins = 1.0 if b.w > 8 else 0.5
+    band = 0.5 if b.w > 8 else 0.25
+    ry = -0.01
+    rx0, rx1, rz0, rz1 = x0 + ins, x1 - ins, z0 + ins, z1 - ins
+    for i in range(int(round(rx1 - rx0))):
+        under(rx0 + i, rz0, rx0 + i + 1, rz0 + band, "ring", ry)
+        under(rx0 + i, rz1 - band, rx0 + i + 1, rz1, "ring", ry)
+    for k in range(int(math.ceil(rz1 - rz0 - 2 * band - 1e-6))):
+        za = rz0 + band + k
+        zb = min(rz1 - band, za + 1)
+        under(rx0, za, rx0 + band, zb, "ring", ry)
+        under(rx1 - band, za, rx1, zb, "ring", ry)
     top = b.top
     P.append(vc.Poly([(p(x0), p(top), p(z1)), (p(x1), p(top), p(z1)), (p(x1), p(top), p(z0)),
                       (p(x0), p(top), p(z0))], "deck", (0, 1, 0), [(0, 1), (1, 1), (1, 0), (0, 0)]))
