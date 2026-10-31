@@ -11,12 +11,15 @@ generators) import it for:
   * the arena palette as small swatch textures every model shares;
   * a minimal OBJ writer for the parts no JSON element can draw (a rail or a guard on a 1 in 2
     slope): convex polygons in pixel space, written in block space with their normals, v down
-    the texture (no flip-v, since a multipart part cannot pass Forge's custom data);
+    the texture (no flip-v, since a multipart part cannot pass Forge's custom data), with the
+    faces that would z-fight moved a hair apart first (separate_depths), so every OBJ passes
+    audit_obj_models.py;
   * Forge blockstates for a horizontal facing and a keyed multipart helper.
 
 Every model faces north (towards the event floor) with what it backs onto at +Z, as every
 rotatable block in the mod is drawn.
 """
+import copy
 import json
 import math
 import os
@@ -166,29 +169,139 @@ class Poly(object):
         self.normal = _norm(outward)
 
 
+#: How far the depth pass moves a face, in pixels: well under anything the eye can see, but
+#: more than the depth buffer needs to tell two surfaces apart a block or two away, and more
+#: than the 1/1000 block audit_obj_models.py rounds a plane to.
+DEPTH_STEP = 0.03
+
+
+def _plan(pts, normal):
+    """The polygon's corners in 2D, dropping the axis its normal is closest to."""
+    axis = max(range(3), key=lambda i: abs(normal[i]))
+    keep = [i for i in range(3) if i != axis]
+    return [(p[keep[0]], p[keep[1]]) for p in pts]
+
+
+def _area(pts2):
+    a = 0.0
+    for i in range(len(pts2)):
+        (x0, y0), (x1, y1) = pts2[i], pts2[(i + 1) % len(pts2)]
+        a += x0 * y1 - x1 * y0
+    return abs(a) / 2.0
+
+
+def _overlap2(p, q, tol=1e-4):
+    """Separating-axis test on two convex polygons; touching edges do not count."""
+    for poly in (p, q):
+        for i in range(len(poly)):
+            (x0, y0), (x1, y1) = poly[i], poly[(i + 1) % len(poly)]
+            ax, ay = -(y1 - y0), x1 - x0
+            m = math.hypot(ax, ay)
+            if m < 1e-9:
+                continue
+            ax, ay = ax / m, ay / m
+            pv = [ax * x + ay * y for x, y in p]
+            qv = [ax * x + ay * y for x, y in q]
+            if min(pv) >= max(qv) - tol or min(qv) >= max(pv) - tol:
+                return False
+    return True
+
+
+def _face_normal(pts):
+    n = (0.0, 0.0, 0.0)
+    for i in range(1, len(pts) - 1):
+        c = _cross(_sub(pts[i], pts[0]), _sub(pts[i + 1], pts[0]))
+        n = (n[0] + c[0], n[1] + c[1], n[2] + c[2])
+    return _norm(n)
+
+
+def separate_depths(polys):
+    """Moves apart the faces that would z-fight, in place, and returns the polygons to write.
+
+    The OBJ counterpart of model_depth.py for the JSON models, holding audit_obj_models.py's two
+    failures to nothing:
+
+      * a face lying on a block face (x, y or z at 0 or 16) and facing into the block is at the
+        depth of the neighbouring block's own face, so it moves DEPTH_STEP into its block;
+      * two faces in one plane facing the same way and overlapping (a decal on its backing, a
+        cap flush with the face of the box it stands on) are drawn at one depth, so the smaller
+        moves DEPTH_STEP out along its normal (the later one, if they are the same size, which
+        is the one added over the other). An exact copy in the same material is dropped.
+
+    Nothing moves further than a few DEPTH_STEPs, so no shape changes; every polygon keeps its
+    own vertices in the OBJ, so moving one opens no gap in another.
+    """
+    normals = [_face_normal(p.pts) for p in polys]
+    # On a block face, facing in.
+    for poly, normal in zip(polys, normals):
+        for axis in range(3):
+            vals = [p[axis] for p in poly.pts]
+            if max(vals) - min(vals) > 1e-4:
+                continue
+            for plane, inward in ((0.0, 1.0), (16.0, -1.0)):
+                if abs(vals[0] - plane) < 1e-3 and normal[axis] * inward > 0.9:
+                    poly.pts = [tuple(p[k] + (inward * DEPTH_STEP if k == axis else 0.0)
+                                      for k in range(3)) for p in poly.pts]
+    # Coplanar and overlapping.
+    info = []
+    for poly, n in zip(polys, normals):
+        info.append([_dot(n, poly.pts[0]), _area(_plan(poly.pts, n))])
+    dropped = set()
+    for _ in range(8):
+        moved = False
+        for i in range(len(polys)):
+            if i in dropped:
+                continue
+            for j in range(i + 1, len(polys)):
+                if j in dropped:
+                    continue
+                a, b = polys[i], polys[j]
+                if _dot(normals[i], normals[j]) < 0.999 or abs(info[i][0] - info[j][0]) > 0.02:
+                    continue
+                if not _overlap2(_plan(a.pts, normals[i]), _plan(b.pts, normals[i])):
+                    continue
+                if (a.mat == b.mat and len(a.pts) == len(b.pts)
+                        and sorted(a.pts) == sorted(b.pts)):
+                    dropped.add(j)
+                    continue
+                k = i if info[i][1] < info[j][1] - 1e-6 else j
+                poly = polys[k]
+                poly.pts = [tuple(p[c] + normals[k][c] * DEPTH_STEP for c in range(3))
+                            for p in poly.pts]
+                info[k][0] += DEPTH_STEP
+                moved = True
+        if not moved:
+            break
+    return [p for idx, p in enumerate(polys) if idx not in dropped]
+
+
 class Obj(object):
-    """An OBJ in 0..1 block space, its materials in an MTL beside it."""
+    """An OBJ in 0..1 block space, its materials in an MTL beside it. Its faces go through
+    separate_depths before they are written."""
 
     def __init__(self, gen, mtl, name):
         self.gen, self.mtl, self.name = gen, mtl, name
-        self.v, self.t, self.n, self.faces = [], [], [], []
+        self.polys = []
 
     def add(self, poly):
-        refs = []
-        for p, uv in zip(poly.pts, poly.uvs):
-            self.v.append("v %.5f %.5f %.5f" % (p[0] / 16.0 + 0.0, p[1] / 16.0 + 0.0,
-                                                p[2] / 16.0 + 0.0))
-            self.t.append("vt %.5f %.5f" % (min(1, max(0, uv[0])), min(1, max(0, uv[1]))))
-            self.n.append("vn %.5f %.5f %.5f" % poly.normal)
-            refs.append(len(self.v))
-        self.faces.append((poly.mat, refs))
+        self.polys.append(copy.copy(poly))
 
     def text(self):
+        v, t, n, faces = [], [], [], []
+        for poly in separate_depths(self.polys):
+            refs = []
+            for p, uv in zip(poly.pts, poly.uvs):
+                v.append("v %.5f %.5f %.5f" % (p[0] / 16.0 + 0.0, p[1] / 16.0 + 0.0,
+                                               p[2] / 16.0 + 0.0))
+                t.append("vt %.5f %.5f" % (min(1, max(0, uv[0])), min(1, max(0, uv[1]))))
+                n.append("vn %.5f %.5f %.5f" % poly.normal)
+                refs.append(len(v))
+            faces.append((poly.mat, refs))
         lines = ["# Generated by dev-env-utils/scripts/%s -- do not edit" % self.gen,
                  "mtllib %s.mtl" % self.mtl, "o %s" % self.name]
-        lines += self.v + self.t + self.n
+        lines += v + t + n
         current = None
-        for mat, refs in sorted(self.faces, key=lambda f: f[0]):
+        for mat, refs in sorted(faces, key=lambda f: f[0]):
             if mat != current:
                 lines.append("usemtl " + mat)
                 current = mat
