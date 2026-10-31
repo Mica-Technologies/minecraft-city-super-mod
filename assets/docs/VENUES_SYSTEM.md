@@ -29,14 +29,12 @@ from fixed numbers rather than from a Building block.
 | Sports & Venues - Ballpark (`tabvenuesballpark`) | 37 | baseball and softball: the field's surfaces, edges and chalk lines, the marking anchors and painted cells, the mound, plate, bases and rubber, the dugout, nets, the outfield wall, markers and foul pole, the line score and count boards, a pitching machine (below) |
 | Sports & Venues - Football & Soccer (`tabvenuesfootball`) | 38 | American football and soccer: the field's turf, paint, surround and end zone colour, the marking anchors and painted cells that draw every line where it really falls, goals, the sideline, end zone lettering and the scoreboards (below) |
 | Sports & Venues - Bowling (`tabvenuesbowling`) | 39 | a ten-pin bowling centre: lanes and approaches that mark themselves, the pins, the pinsetter and masking unit, the ball return, settees and the scorer's console, the overhead scoring monitors, the house ball rack, the shoe counter, cubbies and shoe spray (below) |
+| Sports & Venues - Courts, Track & Pool (`tabvenuescourts`) | 40 | outdoor hard courts (tennis, pickleball, basketball, volleyball, sand volleyball) with their nets, fixtures and scoreboard, and a 400 m track with its field events and equipment, every line drawn where it falls by the line art engine (below); swimming, golf and skate park pieces join it later |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
-tab for every block family. Planned, in the order they land:
-
-| Tab | Holds |
-|---|---|
-| Courts, Track & Pool | tennis and pickleball, volleyball, track and field, swimming, golf and mini-golf, skate park basics |
+tab for every block family. Swimming, golf and mini-golf and skate park basics are planned for the
+Courts, Track & Pool tab.
 
 A piece used by more than one sport (a stadium light tower, a bleacher, a press box) goes in
 Seating & Venue rather than in the first sport that needed it. The exterior did not get a tab of
@@ -1572,6 +1570,240 @@ monitor a frame (more bowlers, more words), 34.5 us for the four.
   only against another lane block. Against anything else (the approach, the pit's cabinet) it
   draws its end, which is what closes the gutter at the foul line.
 
+## Courts and track (Courts, Track & Pool tab)
+
+Outdoor hard courts and a running track at one block a metre, every line where it really
+falls. Written by `dev-env-utils/scripts/gen_venues_courts.py` (the courts, and the line art
+engine's materials) and `gen_venues_track.py` (the track and field events), both with
+`--check`, `--fragments`, `--layout NAME [--commands X Y Z [--rot R]]`, `--preview DIR` and
+`--doc`. The geometry is `court_layouts.py` and `track_layout.py`; the engine that paints it is
+`venues_lines.py` in Python and `venues.lines` in Java, step for step the same
+(`LinePainterTest` holds the Java to samples the generators write, `CourtSamples` and
+`TrackSamples`). Swimming, golf and the skate park join this tab later.
+
+### Line art: lines as geometry, not pictures
+
+Football and the ballpark draw each distinct cell as a 32 px picture. That is fine for a field
+whose lines repeat (173 pictures); a 400 m track's bends make every cell different (about 5,700
+painted cells, few of them alike, more with staggers and relay marks), so pictures would cost
+thousands of sprites and states. The courts and the track instead **compute each cell's top
+from the geometry** and bake it as quads:
+
+- A **layout** (`LineArtLayout`) is a base material and an ordered list of paint operations in
+  metres in its own frame (x east, z south, cell (i, j) the square [i, i+1] x [j, j+1]). An
+  operation paints one material over the intersection of its positive sets less the union of
+  its negative sets; a set is a convex polygon (half-planes) or a disc. A lane line on a bend is
+  an annulus (disc r1 less disc r0) cut by a half-plane; a stagger is a strip across the lane
+  intersected with the lane's annulus; a lane number is strokes of a painted numeral
+  (`venues_lines.DIGITS`).
+- **A circle is the polygon through its crossings of a grid** of N lines a block, N chosen so no
+  chord strays more than 4 mm inside the arc (`n = ceil(1 / sqrt(8 r 0.004))`: 1 for a track's
+  bends, 5 for a 1.25 m arc). Within a cell, a disc is just the chords between its crossings of
+  that cell's grid lines, and **two cells sharing an edge compute the same crossing on it**, so
+  a lane line is continuous from cell to cell all round a bend, at its true radius
+  (36.50 m + 1.22 m n).
+- `LinePainter.paint(layout, i, j)` cuts the cell's square by each operation's half-planes into
+  convex pieces, each one material: **a partition, so nothing overlaps and nothing z-fights**.
+- `LineArtBakedModel` (wrapped round the painted and anchor blocks by `LineArtModels` through
+  `CsmBakedModelWrappers`) turns the pieces into the block's top quads: fanned polygons, the
+  sprite sampled at block-local uv, the colour written into the vertex colour. A raised material
+  (the track's inner kerb, 5 cm) stands proud with walls where it is not the cell's own edge.
+  Quads are cached by `LineArtKey` (family, layout, cell, quarter turn, colours), 24,576 keys at
+  most, emptied at every bake; nothing runs per frame.
+- **Materials** (`LineArtMaterials`, written from `venues_lines.MATERIALS`): `SURFACE` and
+  `SURROUND` (the family's surface sprite, acrylic or polyurethane, in the anchor's `cc` and
+  `sc`), `LINE` and `OVERLAY` (paint in `lc` and `oc`, venue colours), `TAPE` (a beach court's
+  tape in `lc`), `GRASS` (the football turf sprite, so it matches `field_turf`), `SAND`, `KERB`,
+  `CONCRETE`, `STEEL`, and fixed `WHITE`, `YELLOW`, `BLUE`, `GREEN`, `RED`, `BLACK` paint.
+
+**State cost**: a painted cell has one state (metadata 0, the key an unlisted property), an
+anchor four. **Atlas cost**: the shared sprites only (acrylic, polyurethane, paint, tape, sand,
+kerb, concrete, steel, asphalt, track side and the icons, about a dozen 16-32 px sprites); no
+sprite per cell.
+
+### Anchors and painted cells
+
+| Block | Metadata | What it is |
+|---|---|---|
+| `court_acrylic_anchor`, `track_marking_anchor` | 0-3: the quarter turns clockwise from the layout's frame to the world's (0: its +x east and +z south as drawn) | A cell showing its own piece of the layout, whose tile entity says which layout, where the anchor sits in it and the colours |
+| `court_acrylic_painted`, `track_painted` | 0 | A cell that finds the nearest anchor of its family within 12 cells whose layout reaches it (rings out from itself, at most 625 reads, only when its section is built) and shows its piece |
+| `court_acrylic`, `track_surface` | the surface colour, 0-15 (`SurfaceColours`) | Plain acrylic or polyurethane, a tint over the same sprite a painted cell uses |
+| `sports_sand` | 0 | Sand, for a beach court or a pit |
+
+**Anchor NBT** (`TileEntityLineAnchor`): `lay` the layout (courts: 0 tennis, 1 pickleball,
+2 tennis with pickleball over it, 3 basketball, 4 basketball half court, 5 volleyball, 6 sand
+volleyball; track: 0 the 400 m track with its field events, 1 long and triple jump, 2 pole
+vault), `ax`, `az` the anchor's own cell in the layout's frame, `cc`, `sc` (surface colours),
+`lc`, `oc` (line colours, `VenueColours`); a colour left out is the layout's default. By hand an
+anchor is placed as the court's centre cell (`ax` = `az` = 0) with the court's far end the way
+the placer looks; a sneak-click with an empty hand steps the layout. One anchor at the centre
+reaches every cell of a tennis, pickleball or volleyball court; the basketball courts and the
+track need more, which `--layout` places on a lattice 25 cells apart.
+
+**Surface colours** (`SurfaceColours`, `cc` and `sc`, and `court_acrylic` / `track_surface`
+metadata): 0 green, 1 dark green, 2 blue, 3 light blue, 4 red, 5 terracotta, 6 purple, 7 grey,
+8 tan, 9 navy, 10 orange, 11 black, 12 teal, 13 burgundy, 14 yellow, 15 light grey.
+
+### The courts
+
+| Layout | Size and lines | Centre in its frame | Defaults (cc, sc, lc, oc) |
+|---|---|---|---|
+| `tennis` | ITF doubles 23.77 x 10.97 m, singles 8.23 m, service lines 6.40 m from the net, centre service line, centre marks; baselines 10 cm, other lines 5 cm, measured to their outer edges | the middle of cell (0, 0); the net along the middle of row 0 | blue, green, white, gold |
+| `pickleball` | 13.41 x 6.10 m, the non-volley line 2.13 m from the net, centre lines, 5 cm | as tennis | blue, green, white, gold |
+| `tennis_pickleball` | tennis with a pickleball court centred on it in the second line colour; the tennis lines painted over | as tennis | blue, green, white, gold |
+| `basketball`, `basketball_half` | FIBA 28 x 15 m: the key 4.9 x 5.8 m, the restricted area arc (1.25 m), the three-point line (6.75 m, 0.9 m in from the sidelines), the free throw circle (1.8 m, dashed inside the key), the centre circle; the key and circles in the second surface colour | the middle of cell (0, 0); length north-south | blue, green, white, gold |
+| `volleyball` | FIVB 18 x 9 m, the centre line under the net, attack lines 3 m from it with their dashed extensions | the middle of cell (0, 0) | orange, blue, white, gold |
+| `sand_volleyball` | FIVB beach 16 x 8 m, the boundary as 5 cm tape in the line colour, no centre line | the west edge of cell (0, 0)'s middle row (so its posts fall in cell middles 0.5 m outside the sidelines) | tan, tan, royal blue, gold |
+
+### The fixtures
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `tennis_net` | facing (the net's face; the run goes across it) | A run across the court, laid as 13 blocks from cell -6 to 6 on the net row: posts at the run's ends 0.914 m outside the doubles sidelines (a winder on the left one), the net sagging from 1.07 m at the posts to 0.914 m in the middle, where the centre strap is. Actual: `end_l`, `end_r`, `sag` 0-3 and 4 (the middle) |
+| `pickleball_net` | facing | The portable net: 7 blocks, posts on feet, 36 in at the posts and 34 in in the middle |
+| `volleyball_net` | facing, bit 2 the women's height | 2.43 m (men's) or 2.24 m (women's) to the top of a 1 m band, posts in the end blocks' middles, an antenna over each sideline (the edge of the block next to each post). 11 blocks indoors, 10 on sand. A sneak-click with an empty hand switches the height |
+| `tennis_umpire_chair` | facing | A unit two blocks tall |
+| `court_players_bench` | facing | A run, sat on with a click |
+| `court_fence` | the windscreen: 0 none, 1 green, 2 blue, 3 black | Chain-link drawn as Building's is: a post a block, a panel to every side that meets the same block or a solid face, stacking, the top rail on the top course |
+| `court_divider_curtain` | the colour: 0 green, 1 blue, 2 black, 3 grey | The same joining, mesh and a top pipe |
+| `tennis_ball_machine` | facing (the way it shoots) | Decor |
+| `court_scoreboard` | facing (towards the reader) | A unit 3 blocks wide, the board 1.5 blocks tall on two posts, the master the left post's foot. Each player's colour, serve lamp, name, games by set (the current set in amber) and points |
+| `basketball_hoop_pole` | facing (towards the court) | A unit: a square pole 1 m behind the baseline, an extension arm, the board 1.8 x 1.05 m with its bottom at 2.9 m and face 1.2 m inside the baseline, the rim at 3.05 m (its centre 1.575 m in), a net. The master is the pole's cell. The arena's `basketball_stanchion` serves an indoor court |
+
+**Court scoreboard NBT**: `p1`, `p2` (12 characters), `g1`, `g2` (games by set, up to five,
+`"6 4 2"`, `-` for an empty square), `pt1`, `pt2` (3 characters: `0`, `15`, `30`, `40`, `AD`),
+`srv` (0 none, 1, 2), `c1`, `c2` (venue colours). A click opens the venue text editor.
+
+```
+/blockdata X Y Z {p1:"OKAFOR",p2:"LINDQVIST",g1:"6 3 4",g2:"4 6 3",pt1:"40",pt2:"AD",srv:2}
+```
+
+### The track
+
+`track_400m` is the World Athletics standard track: straights of 84.39 m, bends with the inner
+kerb's outer edge at 36.50 m, eight 1.22 m lanes (each lane's 5 cm line on its outer side, so
+lane n's outer line ends at 36.50 + 1.22 n), 176.91 x 92.52 m to the outside of lane 8, plus a
+1 m apron. Lane 1 is measured 0.30 m from the kerb, the others 0.20 m from their inner line;
+lane 1's measurement line is 400.0 m. In its frame the centre is (0.5, 0) (the west edge of the
+middle of a cell across, the soccer pitch's centre, so a pitch from `gen_venues_football.py
+--layout soccer` laid at the same centre cell sits concentric); the straights run east-west,
+the home straight south, running anticlockwise, the finish line at the east end of the home
+straight (x = 42.695).
+
+Painted, in order: the surface (lanes, apron, the home straight's chute carried 28.6 m west of
+bend 2 for the 100 m and 110 m hurdles starts, and the west D for the high jump fan and the
+javelin runway; grass elsewhere), the raised inner kerb, the lane lines, then the markings:
+
+| Marking | Colour | Where |
+|---|---|---|
+| Finish line, 100 m and 110 m H starts | white | across the eight lanes; the starts on the chute |
+| 400 m starts | white | staggered into bend 1: lane n `2 pi d_n` ahead, d_n the measurement radius over lane 1's |
+| 200 m starts | white | lane 1 at the start of bend 2, the others `pi d_n` into it |
+| 800 m starts and break line | green | staggered one bend plus the break's correction; the break line across the back straight where bend 1 ends |
+| 4 x 100 m takeover zones | yellow | 30 m, the scratch line 20 m in, at 100, 200 and 300 m from each lane's 400 m start |
+| 4 x 400 m first takeover | blue | 10 m either side of each lane's 400 m start |
+| Hurdle marks | 100 m H yellow, 110 m H blue, 400 m H green | 10 cm ticks on both lines of every lane at each hurdle |
+| Lane numbers | white | 0.8 m numerals before the finish (read from outside the track) and beyond the 100 m start (read from the blocks) |
+
+**The curve scheme and its cost.** Each bend's lines are discs about the bend's centre drawn
+as the grid-crossing polygon above, so a line is continuous across every cell edge, at its true
+radius, exact to 4 mm; a stagger or relay line is a strip square to the lane at the lane's own
+measured distance. A painted cell is one state; the track is 5,729 painted cells (32 anchors),
+which bake to a few quads each when first drawn (about 6 quads a cell on average, under 1 MB of
+cached quads for the whole track) and cost no sprite.
+
+Field events in the same layout (so their lines and the track's share cells): the javelin runway
+(4 m, 30 m long, its 8 m arc at the west D's edge) with its 28.96 degree sector to 85 m; the
+shot put circle (2.135 m, concrete) at (60.5, -13.5) and the discus and hammer circle (2.50 m)
+at (64.5, 10.5) in the east D, each with its 34.92 degree sector (25 m, 80 m) and 75 cm side
+lines. `long_jump` (a layout of its own): a 1.22 m runway 45 m long, take-off boards at 2 m
+(long jump) and 11 and 13 m (triple jump) from the pit, a 2.75 x 9 m sand pit with a concrete
+rim. `pole_vault`: a runway, the planting box (1 m, 60 cm tapering to 15 cm, steel), the zero
+line, a surfaced landing area for the pit.
+
+### Track and field equipment
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `track_hurdle` | facing (the way the runners go), bits 2-3 the height: 0 0.762 m, 1 0.838 m, 2 0.914 m, 3 1.067 m | 1.18 m wide, centred on its block; feet towards the runners; a sneak-click steps the height |
+| `starting_block` | facing | Decor |
+| `shot_put_toe_board` | facing (the throw) | Placed on the circle's centre cell; drawn as the 1.21 m arc on the circle's front edge |
+| `track_timing_tower` | facing (the camera's) | A unit 4 blocks tall: tripod mast, platform, camera |
+| `track_lap_counter` | facing (towards the runners) | A unit 2 blocks tall: LAPS TO GO on two flip cards and a bell. A click turns it down a lap and rings the bell at 1; a sneak-click with an empty hand opens the editor. NBT `laps` 0-99 (25) |
+| `high_jump_mat` | facing (towards the approach) | A unit: the 6 x 4 m mat (0.7 m) behind its two standards 4.02 m apart, the bar at 2.0 m. The master is the mat's front middle cell |
+| `pole_vault_pit` | facing (towards the runway) | A unit: the 4 x 6 m pit and the front pads either side of the box, the standards 4.35 m apart, the bar at 5.0 m. The master's front edge is the zero line, the box in the gap in front of it |
+| `throwing_cage` | facing (the throw) | A unit: netting 7 m tall on ten posts round the circle at 4 m, a 6 m mouth. The master is the back of the cage, 4 m behind the circle's centre |
+| `steeplechase_barrier` | facing (towards the runners) | A unit 4 blocks long, the beam at 0.914 m |
+
+### Worked layouts
+
+```
+py -3 dev-env-utils/scripts/gen_venues_courts.py --layout tennis_pickleball --commands X Y Z
+py -3 dev-env-utils/scripts/gen_venues_track.py --layout track_400m --commands X Y Z [--rot 1]
+```
+
+(`X Y Z` is the layout's cell (0, 0) at the ground's level; `--rot R` turns it R quarters
+clockwise, the anchors' metadata and the fixtures' facings with it.) The commands lay the
+extent: painted cells where a line falls, anchors with their NBT, plain surface, sand or
+`field_turf` elsewhere, a court's run-off as the surround, then the fixtures one block up (the
+tennis net, umpire chair and benches; the other nets; the hoops; the track's timing tower, lap
+counter, a flight of hurdles and the starting blocks, the steeplechase barrier, the high jump
+mat, the toe board and the cage; the pole vault pit). Run them as an mcfunction or through a
+build script.
+
+In "Venues Arena Test" (`data/functions/csm/courts.mcfunction` and `track.mcfunction` in the
+save, 461 and 962 commands; raise `maxCommandChainLength` first): tennis with pickleball at
+(450, 3, -30), basketball at (480, 3, -30), sand volleyball at (510, 3, -30), the track's centre
+cell at (530, 3, 60), the jumps runway's cell (0, 0) at (470, 3, 6) and the pole vault's at
+(540, 3, -4); a chain-link fence with windscreens, a divider curtain, a ball machine, a portable
+pickleball net and a court scoreboard (441, 4, -14) round the tennis court.
+
+| What | Painted cells | Anchors | Commands |
+|---|---|---|---|
+| `tennis` / `tennis_pickleball` | 139 / 183 | 2 | |
+| `pickleball` | 58 | 1 | |
+| `basketball` / `basketball_half` | 223 / 134 | 2 / 1 | |
+| `volleyball` / `sand_volleyball` | 81 / 46 | 1 | |
+| `track_400m` | 5,729 | 32 | 899 with its fixtures |
+| `long_jump` / `pole_vault` | 134 / 114 | 3 / 3 | |
+
+### Costs
+
+The surfaces are chunk geometry: a painted cell is the plain body and its top's pieces (one to a
+few dozen quads where small circles are cut fine; on the track about six), baked once a key and
+cached; an anchor search reads at most 625 blocks, only when a section is built. Measured in
+"Venues Arena Test" looking over the whole track from the home straight's stand side (12 chunk
+view, the track, field events and courts in view): 0.59 ms of render work a frame, 1,350 fps
+uncapped, no per-frame cost of the lines at all. The renderers are the court scoreboard and the
+lap counter (a few coloured quads and one display list each; toggle `venueCourts`).
+
+**States**: `court_acrylic`, `track_surface` 16 each; `sports_sand` 1; the anchors 4 each; the
+painted cells 1 each; `tennis_net`, `pickleball_net` 80 each (facing, ends, sag); `volleyball_net`
+128; `court_fence`, `court_divider_curtain` 128 each; `court_players_bench` 16; `track_hurdle` 16;
+the other twelve fixtures 4 each. **667 states** for 27 blocks, against the thousands a
+picture-per-cell track would have needed. **Atlas**: 57 small sprites, 25,088 texels (0.07% of
+the atlas, which was already past 8192 x 4096).
+
+### Traps
+
+- **Keep layouts' extents apart.** A painted cell takes the nearest anchor of its family whose
+  layout reaches it; two courts whose extents overlap may each draw the other's cells.
+- **A painted cell reads its anchor only when its section is built.** The anchor's tile entity
+  asks for every cell within 13 blocks to be drawn again when it loads or changes, so a
+  `/blockdata` on an anchor (a colour) shows at once; a painted cell placed after a section was
+  built is drawn with it.
+- **Lines are geometry, so they alias.** A 5 cm line is under a pixel beyond about 50 m and
+  shimmers rather than fading as a mipmapped texture would; true widths were kept.
+- **Vertex colours.** The pieces' colours are in the vertex colour (no tint index), which both
+  lighting pipelines multiply in; a shader pack that ignores vertex colour draws them grey.
+- **The ops tables are text.** As an array initializer a track's 20,000 numbers would pass a
+  method's 64 KB limit, so `TrackLayouts` holds them as short string literals parsed at class
+  load (`LineArtLayout.table`).
+- **A layout is append-only by id.** Anchors save `lay`; add layouts at the end of
+  `court_layouts.layouts()` / `track_layout.layouts()`.
+- **Registry names**: the arena already has `court_painted` (the maple court's painted cell);
+  the acrylic court's blocks are `court_acrylic_anchor` and `court_acrylic_painted`.
+
 
 ## Brands
 
@@ -1584,7 +1816,7 @@ is a generic machine with no maker's name; the scorer's table plays an abstract 
 ballpark's line score says AWAY and HOME until typed into; its helmets, bats, water cooler and
 pitching machine carry no maker's name. The football and soccer scoreboards say HOME and AWAY,
 the end zones HOME and AWAY until typed into; the goals, heater, fan and boards carry no maker's
-name. The bowling centre's masking graphics are invented (a starburst, a cosmic scene, retro boomerangs, neon waves), its scoring monitors show the names typed into them, and the ball return, settees, console and shoe spray carry no maker's name.
+name. The bowling centre's masking graphics are invented (a starburst, a cosmic scene, retro boomerangs, neon waves), its scoring monitors show the names typed into them, and the ball return, settees, console and shoe spray carry no maker's name. The court scoreboard says HOME and AWAY until typed into; the nets, ball machine, hoop, hurdles, blocks, mats, cage and timing camera carry no maker's name.
 
 ## Traps
 

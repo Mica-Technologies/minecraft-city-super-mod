@@ -154,7 +154,15 @@ approach's locator dots) as actual state, with bumpers raised by a sneak-click; 
 click knocks down; the pinsetter and masking unit for a pair with four lit graphics, the ball
 return, settees joining round curved corners, the scorer's console, the overhead scoring
 monitors scoring ten frames from score sheet notation, the ball rack, shoe counter, cubbies
-and spray); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab, the Bowling tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
+and spray), then courts and a track (`venues.lines`: the line art engine, a layout's paint
+operations over half-planes and discs, each cell's top cut into convex pieces and baked as quads
+with vertex colours, cached by key, so lines and the track's bends fall at their true positions
+and radii with no texture per cell; anchors with a tile entity holding the layout, place and
+colours, one-state painted cells, plain acrylic and polyurethane in sixteen colours, sand;
+`venues.courts`: tennis, pickleball and volleyball nets as runs, the umpire chair, chain-link
+fence with windscreen and divider curtain, ball machine, hurdles and other one-block fixtures,
+the courtside scoreboard and the lap counter with its bell; the hoop, landing areas, cage,
+camera tower and barrier as units); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab, the Football & Soccer tab, the Bowling tab, the Courts, Track & Pool tab and a hidden tab; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -220,7 +228,10 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    painted cells and their layout table, mound, fixtures, nets, outfield
 │                    wall and markers, foul pole, scoreboards), field/ (football and soccer:
 │                    turf, anchors, painted cells, their tint and layout table, fixtures,
-│                    end zone lettering, scoreboards); the multi-block unit (hung or
+│                    end zone lettering, scoreboards), bowling/, lines/ (the courts' and
+│                    track's line art engine: layouts, painter, anchors, painted cells, the
+│                    baked model), courts/ (nets, fences, fixtures, the court scoreboard and
+│                    lap counter); the multi-block unit (hung or
 │                    standing) and its part, and the module's sounds, at the package root
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
@@ -624,7 +635,13 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   six towers, the state counts (1,196), costs and traps; bowling: the two-block lane and its
   scale, lanes and approaches that mark themselves from their place along the lane, every
   block's metadata and NBT, the scoring monitor's notation and NBT, a worked eight-lane centre,
-  the state counts (392), measured costs and traps
+  the state counts (392), measured costs and traps; courts and track: the line art engine (why
+  geometry rather than a picture a cell, circles as their grid-crossing polygons so a bend's
+  lines are continuous at their true radii, the convex partition, the cached quads and their
+  vertex colours), anchors and painted cells with their NBT, every court's dimensions and
+  defaults, the nets, fences and fixtures, the 400 m track's markings (staggers, relay zones,
+  hurdle marks, lane numbers) and field events, the equipment, worked layouts, state and atlas
+  costs and traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1377,6 +1394,29 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   `TileEntityBowlingMonitorRenderer`), ball rack, shoe counter, cubbies and spray.
   `--layout [--lanes N]` prints a whole centre, `--commands X Y Z` as an mcfunction's lines;
   `--check`, `--fragments`. `gen_venues_sounds.py` synthesises the ball's roll and the strike
+- `venues_lines.py` -- the courts' and track's line art engine (not run on its own): layouts as
+  ordered paint operations over half-planes and discs (a disc drawn as the polygon through its
+  crossings of a fine grid, so neighbouring cells meet on the same point), the painter
+  `LinePainter.java` follows step for step, the census of plain and painted cells, anchors on a
+  lattice within reach of every painted cell, painted numerals, previews, and the Java tables
+  (`LineArtMaterials`, the layouts as short literals). `court_layouts.py` and
+  `track_layout.py` are the geometry (ITF, pickleball, FIBA, FIVB; the World Athletics 400 m
+  track and its field events); `venues_units.py` the fixtures' OBJ and unit helpers
+- `gen_venues_courts.py` -- the Courts, Track & Pool tab's courts (Sports & Venues): the surface
+  sprites both families share, the plain, anchor and painted cell blocks, the tennis,
+  pickleball and volleyball nets (runs; the volleyball net OBJ), the umpire chair, players'
+  bench, chain-link fence with windscreen (Building's look, drawn again) and divider curtain,
+  ball machine, the courtside scoreboard (its face shared with `TileEntityCourtBoardRenderer`)
+  and the pole-mounted hoop; writes `LineArtMaterials.java`, `CourtLayouts.java` and the
+  `CourtSamples` that `LinePainterTest` holds the Java painter to. `--layout NAME --commands X Y Z
+  [--rot R]` lays a court with its fixtures; `--preview DIR`, `--doc`, `--check`, `--fragments`
+- `gen_venues_track.py` -- the same tab's track and field: the polyurethane surface and track
+  cells, `TrackLayouts.java` and `TrackSamples`, hurdles (four heights), starting blocks, the
+  shot put toe board (OBJ arc), the finish camera tower, the lap counter, the high jump and pole
+  vault landing areas with standards and bars, the discus and hammer cage and the steeplechase
+  barrier (OBJ units). `--layout track_400m|long_jump|pole_vault --commands X Y Z [--rot R]`;
+  `--preview`, `--doc`, `--check`, `--fragments`. `gen_venues_sounds.py` synthesises the lap
+  counter's bell
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under
