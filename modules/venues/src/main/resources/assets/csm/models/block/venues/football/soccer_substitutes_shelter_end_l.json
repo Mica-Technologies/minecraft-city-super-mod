@@ -1,0 +1,139 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "alu": "csm:blocks/venues/football/aluminium",
+    "steel": "csm:blocks/venues/football/steel_dark",
+    "black": "csm:blocks/venues/football/black",
+    "acrylic": "csm:blocks/venues/football/acrylic",
+    "particle": "csm:blocks/venues/football/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1
+      ],
+      "to": [
+        0.5,
+        30,
+        14.5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#acrylic",
+          "uv": [
+            0,
+            0,
+            0.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#acrylic",
+          "uv": [
+            1.5,
+            0,
+            15,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#acrylic",
+          "uv": [
+            1,
+            0,
+            14.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#acrylic",
+          "uv": [
+            0,
+            1,
+            0.5,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#acrylic",
+          "uv": [
+            0,
+            1.5,
+            0.5,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -0.2,
+        0,
+        0
+      ],
+      "to": [
+        1,
+        31.5,
+        1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            14.5,
+            0,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            1,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            14.5,
+            1,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

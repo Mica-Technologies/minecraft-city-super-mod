@@ -1,0 +1,83 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "orange": "csm:blocks/venues/football/orange",
+    "white": "csm:blocks/venues/football/white",
+    "steel": "csm:blocks/venues/football/steel",
+    "steel_dark": "csm:blocks/venues/football/steel_dark",
+    "black": "csm:blocks/venues/football/black",
+    "red": "csm:blocks/venues/football/red",
+    "yellow": "csm:blocks/venues/football/yellow",
+    "particle": "csm:blocks/venues/football/steel"
+  },
+  "elements": [
+    {
+      "from": [
+        6.75,
+        0,
+        6.75
+      ],
+      "to": [
+        9.25,
+        7.5,
+        9.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#orange",
+          "uv": [
+            6.75,
+            8.5,
+            9.25,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#orange",
+          "uv": [
+            6.75,
+            8.5,
+            9.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#orange",
+          "uv": [
+            6.75,
+            8.5,
+            9.25,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#orange",
+          "uv": [
+            6.75,
+            8.5,
+            9.25,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#orange",
+          "uv": [
+            6.75,
+            6.75,
+            9.25,
+            9.25
+          ]
+        },
+        "down": {
+          "texture": "#orange",
+          "uv": [
+            6.75,
+            6.75,
+            9.25,
+            9.25
+          ]
+        }
+      }
+    }
+  ]
+}

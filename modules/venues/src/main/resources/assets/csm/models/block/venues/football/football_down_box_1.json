@@ -1,0 +1,266 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "orange": "csm:blocks/venues/football/orange",
+    "white": "csm:blocks/venues/football/white",
+    "steel": "csm:blocks/venues/football/steel",
+    "steel_dark": "csm:blocks/venues/football/steel_dark",
+    "black": "csm:blocks/venues/football/black",
+    "red": "csm:blocks/venues/football/red",
+    "yellow": "csm:blocks/venues/football/yellow",
+    "particle": "csm:blocks/venues/football/steel",
+    "num": "csm:blocks/venues/football/down_2"
+  },
+  "elements": [
+    {
+      "from": [
+        7.2,
+        0.0,
+        7.669
+      ],
+      "to": [
+        8.8,
+        26.0,
+        8.331
+      ],
+      "faces": {
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.2,
+            7.669,
+            8.8,
+            8.331
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.669,
+        -0.004,
+        7.2
+      ],
+      "to": [
+        8.331,
+        26.004,
+        8.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            7.2,
+            8.331,
+            8.8
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.2,
+        -0.008,
+        7.669
+      ],
+      "to": [
+        8.8,
+        26.008,
+        8.331
+      ],
+      "faces": {
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.2,
+            7.669,
+            8.8,
+            8.331
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        7.669,
+        -0.012,
+        7.2
+      ],
+      "to": [
+        8.331,
+        26.012,
+        8.8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            0,
+            8.331,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            7.669,
+            7.2,
+            8.331,
+            8.8
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          0,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        5.5,
+        26,
+        5.5
+      ],
+      "to": [
+        10.5,
+        31,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#num",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#num",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#orange",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            0.01
+          ]
+        },
+        "west": {
+          "texture": "#orange",
+          "uv": [
+            5.5,
+            0,
+            10.5,
+            0.01
+          ]
+        },
+        "up": {
+          "texture": "#orange",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#orange",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    }
+  ]
+}

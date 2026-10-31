@@ -1,0 +1,139 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "alu": "csm:blocks/venues/football/aluminium",
+    "steel": "csm:blocks/venues/football/steel_dark",
+    "black": "csm:blocks/venues/football/black",
+    "acrylic": "csm:blocks/venues/football/acrylic",
+    "particle": "csm:blocks/venues/football/aluminium"
+  },
+  "elements": [
+    {
+      "from": [
+        15.5,
+        0,
+        1
+      ],
+      "to": [
+        16,
+        30,
+        14.5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#acrylic",
+          "uv": [
+            15.5,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#acrylic",
+          "uv": [
+            15.5,
+            1,
+            16,
+            14.5
+          ]
+        },
+        "down": {
+          "texture": "#acrylic",
+          "uv": [
+            15.5,
+            1.5,
+            16,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#acrylic",
+          "uv": [
+            1.5,
+            0,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#acrylic",
+          "uv": [
+            1,
+            0,
+            14.5,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        0,
+        0
+      ],
+      "to": [
+        16.2,
+        31.5,
+        1.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            1,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            0,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            0,
+            16,
+            1.5
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            15,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            14.5,
+            0,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

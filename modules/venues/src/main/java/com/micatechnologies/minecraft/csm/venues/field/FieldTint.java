@@ -25,8 +25,8 @@ import net.minecraft.world.IBlockAccess;
  * <p>Parts off the field (the border, the surround) take no tint. With no turf found the tone is
  * light; with no end zone found the colour is the turf's, as if the end zone were grass.</p>
  *
- * <p>Called as a chunk section is built, with the cell's actual state: up to 17 block reads a
- * part. A tone changed further than a block from a cell across a section line is not seen there
+ * <p>Called as a chunk section is built, with the cell's actual state: up to 49 block reads a
+ * part (a cell in the middle of a long painted line; most find turf a cell or two away). A tone changed further than a block from a cell across a section line is not seen there
  * until that section is built again.</p>
  *
  * @since 2026.10
@@ -40,8 +40,8 @@ public final class FieldTint {
   /** An end zone with no colour block beside it: the zone paint tinted to the turf's green. */
   public static final int ZONE_GRASS = 0x63A840;
 
-  /** How far along a stripe a cell looks for turf. */
-  private static final int SEARCH = 8;
+  /** How far along a stripe a cell looks for turf: past a penalty area's side, 40 cells long. */
+  private static final int SEARCH = 24;
 
   private static final EnumFacing[] WEST_TURNED = {EnumFacing.WEST, EnumFacing.NORTH,
       EnumFacing.EAST, EnumFacing.SOUTH};

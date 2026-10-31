@@ -1,0 +1,382 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "yellow": "csm:blocks/venues/football/yellow",
+    "pad": "csm:blocks/venues/football/navy_pad",
+    "particle": "csm:blocks/venues/football/yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        -0.2,
+        7
+      ],
+      "to": [
+        9,
+        7,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            9,
+            9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            9,
+            9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            9,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            9,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            7,
+            9,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        0,
+        6.5
+      ],
+      "to": [
+        9.5,
+        4,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pad",
+          "uv": [
+            6.5,
+            12,
+            9.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#pad",
+          "uv": [
+            6.5,
+            12,
+            9.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#pad",
+          "uv": [
+            6.5,
+            12,
+            9.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            6.5,
+            12,
+            9.5,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#pad",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            6.5,
+            6.5,
+            9.5,
+            9.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        6,
+        4
+      ],
+      "to": [
+        9,
+        7.5,
+        9
+      ],
+      "faces": {
+        "south": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            8.5,
+            9,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            8.5,
+            12,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#yellow",
+          "uv": [
+            4,
+            8.5,
+            9,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            4,
+            9,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#yellow",
+          "uv": [
+            7,
+            7,
+            9,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        6,
+        3.5
+      ],
+      "to": [
+        15,
+        7.5,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            8.5,
+            15,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            8.5,
+            15,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#yellow",
+          "uv": [
+            11,
+            8.5,
+            12.5,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#yellow",
+          "uv": [
+            3.5,
+            8.5,
+            5,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            3.5,
+            15,
+            5
+          ]
+        },
+        "down": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            11,
+            15,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        7.5,
+        3.5
+      ],
+      "to": [
+        2.5,
+        16,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#yellow",
+          "uv": [
+            13.5,
+            0,
+            15,
+            8.5
+          ]
+        },
+        "south": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            0,
+            2.5,
+            8.5
+          ]
+        },
+        "east": {
+          "texture": "#yellow",
+          "uv": [
+            11,
+            0,
+            12.5,
+            8.5
+          ]
+        },
+        "west": {
+          "texture": "#yellow",
+          "uv": [
+            3.5,
+            0,
+            5,
+            8.5
+          ]
+        },
+        "up": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            3.5,
+            2.5,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        13.5,
+        7.5,
+        3.5
+      ],
+      "to": [
+        15,
+        16,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#yellow",
+          "uv": [
+            1,
+            0,
+            2.5,
+            8.5
+          ]
+        },
+        "south": {
+          "texture": "#yellow",
+          "uv": [
+            13.5,
+            0,
+            15,
+            8.5
+          ]
+        },
+        "east": {
+          "texture": "#yellow",
+          "uv": [
+            11,
+            0,
+            12.5,
+            8.5
+          ]
+        },
+        "west": {
+          "texture": "#yellow",
+          "uv": [
+            3.5,
+            0,
+            5,
+            8.5
+          ]
+        },
+        "up": {
+          "texture": "#yellow",
+          "uv": [
+            13.5,
+            3.5,
+            15,
+            5
+          ]
+        }
+      }
+    }
+  ]
+}

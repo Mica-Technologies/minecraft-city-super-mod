@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/football/football_down_box_0"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "variant": {
+      "0": {
+        "model": "csm:venues/football/football_down_box_0"
+      },
+      "1": {
+        "model": "csm:venues/football/football_down_box_1"
+      },
+      "2": {
+        "model": "csm:venues/football/football_down_box_2"
+      },
+      "3": {
+        "model": "csm:venues/football/football_down_box_3"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/football/football_down_box_0"
+      }
+    ]
+  }
+}

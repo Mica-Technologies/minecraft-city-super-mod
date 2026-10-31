@@ -22,7 +22,8 @@ import net.minecraft.world.World;
  * a steel frame, no back: the boards behind the players are the back), the penalty box bench (a
  * padded seat and back) and the scorer's table (a counter whose front is an LED panel, an
  * animated texture, so nothing ticks); and a ballpark's dugout bench, dugout rail and dugout
- * canopy. Each block draws its own length; where the run stops it
+ * canopy; a football team bench and a soccer substitutes' shelter. Each block draws its own
+ * length; where the run stops it
  * draws an end frame or end panel ({@code end_l}, {@code end_r}, actual state).
  *
  * <p><b>Metadata</b>: the facing (S 0, W 1, N 2, E 3), the way a sitter or scorer faces: the
@@ -45,7 +46,12 @@ public class BlockArenaRun extends BlockVenue {
     /** The dugout's front rail: a padded top rail on posts, to lean on. */
     DUGOUT_RAIL(BlockVenueBox.of(0, 0, 6, 16, 18, 10), -1),
     /** The dugout's canopy: a roof deck at the top of its cell with a padded front fascia. */
-    DUGOUT_CANOPY(BlockVenueBox.of(0, 11, 0, 16, 16, 16), -1);
+    DUGOUT_CANOPY(BlockVenueBox.of(0, 11, 0, 16, 16, 16), -1),
+    /** A football sideline's team bench: aluminium planks and a backrest. */
+    TEAM_BENCH(BlockVenueBox.of(0, 0, 4, 16, 17, 14.75), 8.5 / 16.0),
+    /** A soccer substitutes' shelter: seats against a back panel under a clear roof, two blocks
+     * tall (the roof has no collision). */
+    SUB_SHELTER(BlockVenueBox.of(0, 0, 6, 16, 16, 16), 9.0 / 16.0);
 
     final AxisAlignedBB box;
     final double seatTop;

@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/football/field_scoreboard.obj",
+    "custom": {
+      "ambient": false
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/football/football_scoreboard_item",
+        "custom": {}
+      }
+    ]
+  }
+}

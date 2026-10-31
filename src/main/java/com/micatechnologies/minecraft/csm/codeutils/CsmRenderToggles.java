@@ -173,6 +173,9 @@ public final class CsmRenderToggles {
   /** Skip the venues' ballpark scoreboards and outfield distance markers. Measurement only. */
   public static boolean skipVenueBallpark = false;
 
+  /** Skip the venues' football and soccer scoreboards and end zone lettering. Measurement only. */
+  public static boolean skipVenueField = false;
+
   /**
    * Draw every renderer that replays a list shared by appearance ({@link CsmSharedDisplayLists})
    * per frame instead, the way each was drawn before it was baked. One switch for the whole family
@@ -229,6 +232,7 @@ public final class CsmRenderToggles {
     values.put("venueBanners", skipVenueBanners);
     values.put("venueMarquee", skipVenueMarquee);
     values.put("venueBallpark", skipVenueBallpark);
+    values.put("venueField", skipVenueField);
     values.put("sharedBakesPerFrame", sharedBakesPerFrame);
     values.put("signalLayoutPerFrame", signalLayoutPerFrame);
     return values;
@@ -305,6 +309,8 @@ public final class CsmRenderToggles {
       skipVenueMarquee = skipped;
     } else if ("venueBallpark".equalsIgnoreCase(name)) {
       skipVenueBallpark = skipped;
+    } else if ("venueField".equalsIgnoreCase(name)) {
+      skipVenueField = skipped;
     } else if ("sharedBakesPerFrame".equalsIgnoreCase(name)) {
       sharedBakesPerFrame = skipped;
     } else if ("signalLayoutPerFrame".equalsIgnoreCase(name)) {
@@ -348,6 +354,7 @@ public final class CsmRenderToggles {
     skipVenueBanners = false;
     skipVenueMarquee = false;
     skipVenueBallpark = false;
+    skipVenueField = false;
     sharedBakesPerFrame = false;
     signalLayoutPerFrame = false;
   }

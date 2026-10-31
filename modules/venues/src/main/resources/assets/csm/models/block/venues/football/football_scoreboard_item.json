@@ -1,0 +1,197 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/venues/football/scoreboard_icon_fb",
+    "cab": "csm:blocks/venues/football/board_cab",
+    "steel": "csm:blocks/venues/football/steel_dark",
+    "particle": "csm:blocks/venues/football/board_cab"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        6,
+        6
+      ],
+      "to": [
+        16,
+        15,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            1,
+            16,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            0,
+            1,
+            16,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            6,
+            1,
+            10,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            6,
+            1,
+            10,
+            10
+          ]
+        },
+        "up": {
+          "texture": "#cab",
+          "uv": [
+            0,
+            6,
+            16,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#cab",
+          "uv": [
+            0,
+            6,
+            16,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        0,
+        7
+      ],
+      "to": [
+        4,
+        6,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            12,
+            10,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            10,
+            4,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7,
+            10,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7,
+            10,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            7,
+            4,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12,
+        0,
+        7
+      ],
+      "to": [
+        13,
+        6,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            3,
+            10,
+            4,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            12,
+            10,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7,
+            10,
+            9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7,
+            10,
+            9,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            12,
+            7,
+            13,
+            9
+          ]
+        }
+      }
+    }
+  ]
+}
