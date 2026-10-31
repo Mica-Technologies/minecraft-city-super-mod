@@ -710,7 +710,8 @@ Written by `dev-env-utils/scripts/gen_venues_exterior.py` (`--check`, `--fragmen
 outside and entry (the marquee, the blades, the box office) are in the Concourse tab, after the
 concourse; the pieces every outdoor venue shares (bleachers, the press box, the ticket booth, the
 stadium light towers) in Seating & Venue, after the bowl. Everything is baked models; the one
-renderer is the marquee's, one per board. Nothing ticks.
+renderer is the marquee's, one per board. Nothing ticks: the light heads' field lighting (below)
+is placed by Core a few cells a tick when a head is switched, loaded or random-ticked.
 
 ### State counts
 
@@ -726,7 +727,7 @@ renderer is the marquee's, one per board. Nothing ticks.
 | `press_box_module` | facing, wall, corner | end_l, end_r | 64 |
 | `ticket_booth` | facing | | 4 |
 | `stadium_light_pole`, `stadium_light_lattice` | facing | base | 8 each, 16 |
-| `stadium_light_head`, `_small` | facing, lit | | 8 each, 16 |
+| `stadium_light_head`, `_small` | facing, lit | (tile entity: the field's light-up air, the last redstone seen) | 8 each, 16 |
 
 604 states. The aisle block carries the seat property it never sets (it is the same class), so
 half its 64 are never reached.
@@ -750,7 +751,7 @@ model's back is at +z.
 | `press_box_module` | `facing \| wall << 2 \| corner << 3` | A unit two blocks tall on the front edge of its cells (the master below). Window: siding to desk height, a writing ledge inside, tinted glass leaning out, a fascia; wall: siding up to the fascia. A corner also walls its left side looking the way it faces: build the box clockwise, each corner facing the run that leaves it (north-west corner faces north, north-east east, south-east south, south-west west). A slab roof on top closes it. By hand: a window, a wall if sneaking |
 | `ticket_booth` | facing: its window | A unit 2 x 2 x 3 (OBJ): the master is the front cell on the customer's right; the booth reaches a block to the customer's left and a block back. Light 7 (its TICKETS band) |
 | `stadium_light_pole`, `stadium_light_lattice` | facing (the head's; the monopole's step bolts are on its back) | Stack as tall as wanted; the bottom cell stands on a concrete pier |
-| `stadium_light_head`, `_small` | `facing \| lit << 2` | A unit on top of the shaft: the master is the bottom middle cell, in the cell over the shaft's top; the head is 5 wide and 3 tall (20 floodlights) or 3 wide and 2 tall (6). Facing is the way the floodlights aim, tipped 20 degrees down. A click with an empty hand switches it; by hand it is lit and aims at the placer |
+| `stadium_light_head`, `_small` | `facing \| lit << 2` | A unit on top of the shaft: the master is the bottom middle cell, in the cell over the shaft's top; the head is 5 wide and 3 tall (20 floodlights) or 3 wide and 2 tall (6). Facing is the way the floodlights aim, tipped 20 degrees down, and the way its footprint of field lighting lies (below). A click with an empty hand switches it, and so does redstone at the master, on the signal's edges; by hand it is lit and aims at the placer |
 
 **Bleacher rows** rise a block at a time, as the bowl's do. With the bleacher facing north and
 its front row at `z`: a **2-deep row** is a plain deck (meta 2) at `z` and a seat block (meta 6)
@@ -801,6 +802,64 @@ board's shape from its middle. In the cycle the switch is on world time, so ever
 world turns over together. The controller finds the board's size by walking its bottom row and
 left column, at most once a second.
 
+### Field lighting
+
+A lit stadium light head lights the ground in front of its tower with Core's light-up air
+(`csm:lightupair`, the invisible light-15 block Lighting's fixtures project; see
+`LIGHTING_SYSTEM.md`, "Light-Up Air in Core"). The head's own light 15 and its glowing lenses
+only light the top of the tower.
+
+**The footprint** is a square grid of columns, a column every 3 blocks, lying along the head's
+facing:
+
+| Head | Grid | Centre | Reaches (blocks out from the tower) | Light-up air |
+|---|---|---|---|---|
+| `stadium_light_head` | 9 x 9 | 16 out | 4 to 28, 24 across | 81 |
+| `stadium_light_head_small` | 5 x 5 | 9 out | 3 to 15, 12 across | 25 |
+
+Each column gets one light-up air in the air cell on the first surface below the head's bottom
+row (up to 64 blocks down), so a stand roof, a net or the turf under it is lit, whichever comes
+first. A column that already holds a light-up air, or has no surface, is skipped. Light 15 every
+3 blocks leaves no cell of the grid darker than 13; past its edge the light falls away over about
+12 blocks. Towers beside a field facing across it light it best (the ballpark below: four towers,
+two each side, light the infield).
+
+**Placing.** `TileEntityLightHead` (on the master, `tileentityvenuelighthead`) says where the
+columns are and keeps the cells the head placed (`lpa`, offsets from the master) and the redstone
+it last saw (`pw`). Core's `CsmLightFootprints` does the work at the end of each server tick:
+the waiting heads round robin, a column or a cell at a time, at most 16 light changes, 512 steps
+and 3 ms a tick, so many towers switched together come up (or go out) over a few seconds rather
+than in one stalled tick. It never loads a chunk: a column in an unloaded one is skipped and
+filled at the next heal; a placed cell in one stays on the head's list until it can be removed.
+A head asks again when it is switched (click, or redstone at the master on the signal's edges),
+when its chunk loads (the tile entity's `onLoad`; worlds with heads placed before the tile
+entity existed get one from Core's backfill and light up as they load), when it is placed
+(`onBlockAdded`, a tick late) and on random ticks, the same heal Lighting's fixtures have.
+
+**Ownership.** The light-up air stores no owner, so a head only ever removes cells it placed.
+Giving a cell up (switched off or broken), it hands it to another loaded, lit head whose own
+column scan meets that cell (overlapping grids on the same 3-block lattice), leaves it to a lit
+Lighting fixture above that relies on it (`ICsmLightupAirSource`: a street light in a footprint
+keeps its light when the head goes off), and otherwise removes it. A street light turning off
+removes the first light-up air in its column whoever placed it (Lighting's rule, unchanged); a
+head that loses a cell that way fills it again at its next heal. A head broken while some of its
+cells are in unloaded chunks leaves those behind.
+
+**Cost**, measured 2026-10-31 in "Venues Arena Test" (dev client, all modules), switching eight
+large heads together by redstone (648 cells), `/csm lightfootprints` and `server_tick_stats`:
+
+| What | Ticks | Worst tick spent on it | Median server tick meanwhile |
+|---|---|---|---|
+| on (648 placed) | 118 (about 6 s) | 5.9 ms | 0.4 ms (p95 4.7) |
+| off (648 removed) | 212 (about 11 s) | 6.3 ms | 3.5 ms |
+| the switch itself (eight masters' own light 15) | 1 | 33-35 ms | |
+
+Removing costs more than placing (darkening relights a wider volume). Before the time budget
+was checked every step, a tick could take 16 changes and 27 ms. Nothing else is spent: an idle
+lit head is a tile entity that does not tick and a random tick that rescans its 81 columns about
+once a minute. The client relights each change too. `/csm lightfootprints [reset]` reports the
+heads loaded, the work waiting and the worst tick.
+
 ### Costs
 
 Measured 2026-10-31 in "Venues Arena Test" (dev client, all modules, 854 x 480, render
@@ -820,10 +879,13 @@ heaviest model (its OBJ is a few hundred quads), drawn once per tower. Toggle fo
 
 ### Traps
 
-- **The stadium light heads do not light the field.** Lighting's light-up air projection is
-  Lighting's alone, and Sports & Venues depends on Core only. A lit head gives light 15 at its
-  master and its lenses glow (OptiFine `_e`), so it reads lit at night, but the field under a
-  20-block tower stays dark: light it with Lighting's fixtures or glowstone under the turf.
+- **A head's footprint is square to its facing**, so a tower can only light the field straight
+  ahead of it. Stand towers beside the field facing across it rather than at the corners facing
+  the middle; a corner tower facing along a foul line lights the line, not the infield.
+- **Switching a head is itself a light update.** The master's own light 15 at the top of a
+  20-block tower relights a large volume: about 4.5 ms of server tick a head, at once, whatever
+  the footprint does. That was so before the footprint; eight heads on one redstone line cost
+  about 36 ms in the tick they switch.
 - **The marquee's controller is the bottom-left as the front's reader sees it**, which on a
   board facing south is its west end and facing north its east end. A controller anywhere else
   draws a picture on the cells to its right and above it only.
@@ -1039,7 +1101,10 @@ the field running north; round it: the backstop (a padded wall and nets four hig
 returns at x -11 and 11, the count board on it), dugouts at x 17..20 and -20..-17 (z 296..305),
 a bleacher of four rows at x 23..26, the bullpen in right field foul ground (plate at (50, 4,
 270), its mound at (50, 3, 252)), a batting cage at x -51..-47, z 269..282 with a pitching
-machine, and the line score at (5, 4, 172) facing home over the centre field wall.
+machine, and the line score at (5, 4, 172) facing home over the centre field wall. Four light
+towers light the infield, each 20 shafts high under a `stadium_light_head`: monopoles at
+`(-30, 4, 292)` facing east (head meta 7) and `(30, 4, 292)` facing west (meta 5), lattice towers
+at `(-36, 4, 262)` meta 7 and `(36, 4, 262)` meta 5; the outfield is left dark.
 
 ### Costs
 

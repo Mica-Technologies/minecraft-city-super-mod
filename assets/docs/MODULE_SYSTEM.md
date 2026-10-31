@@ -105,6 +105,10 @@ That is why Building Materials is `csm_building` and not `csm_buildingmaterials`
 - The base classes in `codeutils`, the survival parts and the CSM Fabricator (`materials`), and
   every JSON recipe.
 - The service registries listed below, plus the `csm` network channel and the single `IGuiHandler`.
+- The light-up air (`csm:lightupair`, `codeutils.light`), registered from Core's own hidden tab
+  (`CsmTabCoreHidden`, order -16): the block, Lighting's column projection and the budgeted
+  footprints the stadium light heads light a field with. Moved out of Lighting in 2026-10 so
+  Sports & Venues could use it; see `LIGHTING_SYSTEM.md` "Light-Up Air in Core".
 - Shared assets — anything two or more modules reference.
 
 **A module owns its content and nothing else.**
@@ -139,6 +143,7 @@ Core that the module's class implements:
 | `ICsmFabricatorCostRule` | `LifeSafetyFabricatorRules`, `TrafficSignalsFabricatorRules` | `instanceof` branches over module classes inside `CsmFabricatorCosts` |
 | `ICsmSound` | each module's sound enum | the single mod-wide `CsmSounds` enum |
 | `ICsmTtsEngine` | the TTS module's MaryTTS adapter | `CsmTts` importing MaryTTS directly |
+| `light.ICsmLightupAirSource` | Lighting's `AbstractBrightLight` | — (lets the stadium light footprints leave a street light's light-up air alone) |
 
 ---
 

@@ -8,7 +8,10 @@ The lighting system provides 119 realistic light fixture blocks (street lights, 
 wall-mounted fixtures) with a 4-state on/off system combining redstone control and manual
 override. Lights can project illumination downward using invisible "light-up air" blocks.
 
-All lighting code lives in `src/main/java/com/micatechnologies/minecraft/csm/lighting/`.
+The fixtures live in the Lighting module, `modules/lighting/src/main/java/com/micatechnologies/minecraft/csm/lighting/`.
+The light-up air they project is **Core's**: the block, its column projection and the stadium
+light footprints are in `src/main/java/com/micatechnologies/minecraft/csm/codeutils/light/`, so
+Sports & Venues' stadium light heads can place it too (see "Light-Up Air in Core" below).
 
 ## Architecture
 
@@ -18,7 +21,7 @@ The system has three categories of blocks:
    redstone + manual on/off control and light emission
 2. **Structural Mounting Blocks** (extend `AbstractBlockRotatableNSEW/UD`) -- passive brackets,
    mounts, and junction boxes with no lighting logic
-3. **BlockLightupAir** -- invisible light source block automatically placed/removed by lights
+3. **BlockLightupAir** (Core) -- invisible light source block automatically placed/removed by lights
 
 There are **no tile entities** in the lighting system. All logic is handled through block state
 properties and block event methods.
@@ -79,7 +82,9 @@ ground well. The solution is invisible "light-up air" blocks.
 
 ### How It Works
 
-When a light turns ON, `handleAirLightBlock(true, world, pos)` is called:
+When a light turns ON, `handleAirLightBlock(true, world, pos)` is called, which hands its column
+to Core's `CsmLightupAir.projectColumn` (the code that used to sit in `AbstractBrightLight`,
+moved unchanged):
 1. Scans **downward** from the light's position (up to 16 blocks), through the air below it
 2. Takes the **lowest** air cell before the first non-air block, the one just above the floor,
    unless that is the cell directly beneath the light
@@ -129,11 +134,40 @@ public int getBrightLightXOffset() { return 1; }  // 1 block to the side
 
 ### BlockLightupAir
 
+- Core's: `codeutils.light.BlockLightupAir`, registry name `lightupair`, registered from Core's
+  hidden tab `CsmTabCoreHidden` (order -16), so it exists whichever modules are installed. Its
+  blockstate and its lang line (`tile.lightupair.name`) ship in Core's jar
 - Extends `AbstractBlockRotatableNSEWUD`
 - Invisible and passable (null collision box, tiny render box)
 - Replaceable (can be overwritten by block placement)
 - Render layer: CUTOUT
 - Emits light level 15
+
+### Light-Up Air in Core
+
+The block moved from Lighting to Core in 2026-10 so the stadium light heads in Sports & Venues,
+which depend on Core only, could light a field. Nothing about Lighting changed: same registry
+name, same column rule (`CsmLightupAir.projectColumn` is the old `handleAirLightBlock` body),
+same heal, same creative order for every visible Lighting block. Existing worlds load unchanged:
+a block's id is saved by name, and the registry dump differs only in where the hidden
+`lightupair` sits among the hidden blocks (`--unordered-hidden`).
+
+What Core holds, in `codeutils/light/`:
+
+| Class | What it is |
+|---|---|
+| `BlockLightupAir` | the block, registered from `tabs/CsmTabCoreHidden` |
+| `CsmLightupAir` | the column projection, `firstBelow` (the light-up air a column scan meets before anything else) and `claimedBySource` |
+| `ICsmLightupAirSource` | implemented by `AbstractBrightLight`: "do you, lit, rely on this light-up air?" |
+| `AbstractLightFootprintTileEntity`, `CsmLightFootprints` | a light that lights a grid of columns (the stadium heads), placed and removed a few a tick; see `VENUES_SYSTEM.md` |
+
+**Sharing.** The light-up air stores no owner. A fixture's scan stops on any light-up air already
+in its column, so a street light under a stadium footprint may rely on a cell a head placed. The
+footprints therefore never remove a cell that a lit fixture claims (`claimedBySource` asks every
+`ICsmLightupAirSource` within 16 cells above and one to either side along x), nor one another
+lit head's column meets (it takes the cell over). The other way round is unchanged: a fixture
+turning off removes the first light-up air in its column, whoever placed it, and a head missing
+that cell fills it again at its next heal.
 
 ## AbstractBrightLight Base Class
 

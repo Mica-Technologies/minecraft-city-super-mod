@@ -127,8 +127,9 @@ wall bracket; the box office window, a two-block unit joining into a run under l
 rows one or two deep closing themselves with end and back rails by actual state, and their
 understructure; press box window and wall modules with outward-leaning glass turning outside
 corners; the ticket booth; stadium light towers, a monopole or lattice shaft stacked to height
-under an OBJ head of floodlights, lit but not lighting the field, since Lighting's light
-projection is not Core's), then baseball and softball (`venues.ballpark`: a full-size diamond
+under an OBJ head of floodlights that lights a grid of the field in front of it with Core's
+light-up air (`TileEntityLightHead` on Core's `CsmLightFootprints`, a few cells a tick)), then
+baseball and softball (`venues.ballpark`: a full-size diamond
 laid with its centre line along the grid, one block a metre, drawn from one geometry,
 `ballpark_field.py`: turf in two mowing tones, skin, packing clay and the warning track as
 `BlockArenaFloor` floors, turf/clay edges and chalk lines at 45 degrees as standard pieces, the
@@ -153,7 +154,8 @@ Full design, service registries, the "adding a module" checklist and the traps:
 
 ```
 src/main/java/com/micatechnologies/minecraft/csm/   # Core only
-├── codeutils/        # Base classes, service registries, utilities (see below)
+├── codeutils/        # Base classes, service registries, utilities (see below); light/ is the
+│                    # light-up air every light places (Lighting's fixtures, Venues' light heads)
 ├── api/              # CsmEvent
 ├── materials/        # Survival crafting parts + the CSM Fabricator
 └── tabs/             # Core's own tab (Materials)
@@ -476,7 +478,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
 - `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own
   controller cabinet, groups on a time-of-day schedule, and why the clearance runs one way only
-- `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection, AbstractBrightLight, the decorative pendant/sconce family and its 3-material OBJ finish/lens pattern, the tall building (aviation obstruction) beacons, flashed bright by a renderer
+- `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection (the block and
+  its projection are Core's, `codeutils/light`, so the stadium light heads share it), AbstractBrightLight, the decorative pendant/sconce family and its 3-material OBJ finish/lens pattern, the tall building (aviation obstruction) beacons, flashed bright by a renderer
 - `assets/docs/UTILITIES_SYSTEM.md` -- The Utilities module (was Power Grid; mod id `csm_powergrid`
   kept): why only the display name changed, why it requires Roads, why two tabs (Power Grid and
   Utilities); the Forge Energy integration and the utility pole pieces; the building service
@@ -591,7 +594,8 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   ticket, the team colours, and the traps; the exterior and shared outdoor pieces: the marquee
   built to size and where its controller goes, its NBT and measured cost, the blades on Core's
   wayfinding panel, the box office window, how bleacher rows are laid, the press box clockwise
-  round its corners, the booth, the light towers and why they do not light the field; the
+  round its corners, the booth, the light towers and the field they light (a grid of Core's
+  light-up air a few cells a tick, who removes which cell, the measured cost); the
   ballpark: the one-block-a-metre scale and the diamond laid along the grid, why the foul lines
   sit on half-integer diagonals, the surfaces and standard pieces, the anchors and painted
   cells (and why the arc is three anchors a side: a painted cell's reach against the render
