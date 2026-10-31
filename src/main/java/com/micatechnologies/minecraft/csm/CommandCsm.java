@@ -50,7 +50,7 @@ public class CommandCsm extends CommandBase {
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
           + "|renderpass <list|skip|draw|reset> [pass]|incandescent [ms|reset]|displaylists"
-          + "|memstats [dump|variants]|chunkbuffers [trim]|statecheck>";
+          + "|memstats [dump|variants]|chunkbuffers [trim]|statecheck|lightfootprints [reset]>";
 
   @Override
   public String getName() {
@@ -111,6 +111,13 @@ public class CommandCsm extends CommandBase {
           Csm.getLogger().info("[statecheck] {}", line);
           sendSuccess(sender, line);
         }
+        return;
+      case "lightfootprints":
+        if (args.length > 1 && "reset".equalsIgnoreCase(args[1])) {
+          com.micatechnologies.minecraft.csm.codeutils.light.CsmLightFootprints.resetStats();
+        }
+        sendSuccess(sender,
+            com.micatechnologies.minecraft.csm.codeutils.light.CsmLightFootprints.stats());
         return;
       default:
         throw new WrongUsageException(USAGE);
@@ -327,10 +334,13 @@ public class CommandCsm extends CommandBase {
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
       return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore", "renderpass",
-          "incandescent", "displaylists", "memstats", "chunkbuffers", "statecheck");
+          "incandescent", "displaylists", "memstats", "chunkbuffers", "statecheck", "lightfootprints");
     }
     if (args.length == 2 && "chunkbuffers".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "trim");
+    }
+    if (args.length == 2 && "lightfootprints".equalsIgnoreCase(args[0])) {
+      return getListOfStringsMatchingLastWord(args, "reset");
     }
     if (args.length == 2 && "memstats".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "dump", "variants");

@@ -145,6 +145,9 @@ public class Csm {
           new com.micatechnologies.minecraft.csm.codeutils.CsmTileEntityBackfillHandler());
       MinecraftForge.EVENT_BUS.register(
           new com.micatechnologies.minecraft.csm.codeutils.CsmDeferredSync.Flusher());
+      // Lights and darkens the stadium light footprints a few light-up air at a time
+      MinecraftForge.EVENT_BUS.register(
+          new com.micatechnologies.minecraft.csm.codeutils.light.CsmLightFootprints.Ticker());
       logger.info("Finished registering event bus");
 
       // Register Core's GUI provider. Every other provider registers from its own module's
