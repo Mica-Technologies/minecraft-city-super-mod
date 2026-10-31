@@ -82,7 +82,7 @@ CSM adds nothing to world generation. See `assets/docs/SURVIVAL_AND_RECIPES.md`.
 
 ### Modules
 
-The mod ships as a mandatory **CSM: Core** jar (`csm`) plus fourteen optional module jars, all built
+The mod ships as a mandatory **CSM: Core** jar (`csm`) plus fifteen optional module jars, all built
 from this repository and released together at the same version. Every module pins Core to that
 exact version, and **all content keeps the `csm:` namespace** — module ids only give Forge a
 container per jar.
@@ -103,6 +103,7 @@ container per jar.
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | `parks`: street trees built from log and leaves blocks, the Tree Planting Tool, the tree tools (chainsaw, pole trimmer, tree shears, stump grinder), plantings and park amenities, and plantable planters, raised beds and troughs (`parks.planters`: a plant's baked quads merged onto the soil, no TESR; `/csmparks planter fill`); two tabs, Trees & Plants and Parks |
 | `modules/transit` | `csm_transit` | CSM: Transit | `transit`: the working fare system (fare gates, the fare vending machine, fare tickets and transit cards, moved here from Technology under their registry names) and the bus stops (`transit.stop`: agency flags with settable route plates, poster cases and the arrival display, all road signs on Roads' sign posts, and the curb plaque), shelters, bus station departure boards and bay displays (`transit.board`: listing the stops around them, paging across a bank, spoken call-outs only through Core's TTS service), and station and platform fit-out made to complement RCMC's stations (`transit.platform`: tactile paving, platform furniture, station signs, tile, columns, canopy, ticket validator), stations (`transit.station`: the subway entrance kiosk built from glass and roof pieces with agency fascias and name boards, the open stair entrance's railing and lit globe lamps, the fare line railing that joins the fare gates, its service gate, line bullets and the agent's booth counter), and airport terminal pieces (`transit.airport`: check-in desks and kiosk, queue stanchions, the security lane, gate desk, boarding pass scanner and seating, working flight information boards, the baggage carousel, carts, gate and wayfinding signs, and the Boarding Pass) and airside pieces (the same package: airfield lights and signs switched a circuit at a time by redstone, the wind sock, beacon and masts, the stand sign, ground equipment on Roads' utility box, a walk-through jet bridge, and a helipad: its marking, laid by `/csmtransit helipad`, and lights; no aircraft); the Transit tab; requires Roads; see `assets/docs/TRANSIT_SYSTEM.md` |
 | `modules/healthcare` | `csm_healthcare` | CSM: Healthcare | `healthcare`: the hospital fit-out of GitHub #293: patient rooms and wards (beds as a head and a shared foot, headwalls, monitors, IV poles, cubicle curtains filled from a ceiling track, room furniture, dispensers and carts), a linked nurse call network, the ICU, the ED (its tracking board one of the module's two renderers), the nurses' station (its monitors showing the master panel's calls), surgery support, an operating room set (table, anaesthesia machine, twin surgical light, scrub sink, back table, Mayo stand, kick bucket, supply cabinet, drape trolley), ceiling-hung pendants and lights on a drop column, clinics, dialysis and infusion, imaging (the CT and MRI as a master and invisible parts), the lab, pharmacy and morgue, maternity and the NICU, rehab, the waiting room (a queue with a now-serving display, the other renderer), teaching (a mannequin that lies on a bed or table), the playroom, a baked wayfinding panel that is a drop-in for Transit's airport one, code blue, medical gas, emergency power and infant security; everything settable by `/setblock` and `/blockdata`, wired by `/csmhealthcare`; two tabs, Healthcare - Patient Care and Healthcare - Clinical, and a hidden tab; Core only (the hospital doors and finishes are Building's, the helipad Transit's, the pews and laundry Furnishings'); see `assets/docs/HEALTHCARE_SYSTEM.md` |
+| `modules/venues` | `csm_venues` | CSM: Sports & Venues | `venues`: the arena fit-out of GitHub #324, the seating bowl first; Core only; the Sports & Venues - Seating tab and a hidden tab; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -157,6 +158,7 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    display, network), codeblue/, systems/ (gas alarm, infant security),
 │                    wayfinding/ (the baked wayfinding panel); the CT/MRI unit, pair, run,
 │                    screen and light base classes at the package root
+├── venues/          (modules/venues) seating/ (the seating bowl)
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
 ├── trafficaccessories/
@@ -345,7 +347,7 @@ Voice evac sound volume target: ~4,500 RMS.
 ## In-Depth System Documentation
 
 See `assets/docs/` for detailed technical documentation on major subsystems:
-- `assets/docs/MODULE_SYSTEM.md` -- Core plus fourteen optional module jars: what each owns, how
+- `assets/docs/MODULE_SYSTEM.md` -- Core plus fifteen optional module jars: what each owns, how
   registration still works across jars, the Core service registries, adding a module, the traps
 - `assets/docs/BLOCK_AND_ITEM_BASE_CLASSES.md` -- Every abstract class, constructors, rotation, meta encoding, registration
 - `assets/docs/FRAMING_SYSTEM.md` -- Stud walls, joists, deck and structural steel: why a wall is

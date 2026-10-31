@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
  * order list is:</p>
  * <pre>
  *   Order -15 = CsmTabHvacHidden        (hidden: the lab exhaust fan's cells)
+ *   Order -12 = CsmTabVenuesHidden      (hidden: Sports &amp; Venues, empty so far)
  *   Order -11 = CsmTabHealthcareHidden  (hidden: a hospital bed's foot cell)
  *   Order -10 = CsmTabRoadsHidden       (hidden: retired road/signal blocks)
  *   Order  -9 = CsmTabLightingHidden    (hidden: light-up air)
@@ -65,6 +66,10 @@ import org.apache.logging.log4j.Logger;
  *   Order 28 = CsmTabUtilities        (Utilities module, beside its Power Grid tab)
  *   Order 29 = CsmTabHealthcarePatientCare
  *   Order 30 = CsmTabHealthcareClinical
+ *   Order 31 = CsmTabTechnologyComputers
+ *   Order 32 = CsmTabTechnologyNetworking
+ *   Order 33 = CsmTabStairsRailings   (Building)
+ *   Order 34 = CsmTabVenuesSeating    (Sports &amp; Venues)
  * </pre>
  * <p>When adding a new tab, choose the next available order value and update this list. A
  * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs

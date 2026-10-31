@@ -1,13 +1,13 @@
 # The Module System
 
-City Super Mod ships as **one mandatory jar and fourteen optional ones**, built from this single
+City Super Mod ships as **one mandatory jar and fifteen optional ones**, built from this single
 repository and released together. A player installs CSM: Core plus whichever subsystems they want;
-with all fifteen jars installed the mod behaves exactly as the old single jar did — same registry
+with all sixteen jars installed the mod behaves exactly as the old single jar did — same registry
 names, same creative tabs in the same order, same config file, same saves, same sounds, same
 Fabricator costs.
 
 This document is the durable design record: what is in which jar, how registration still works when
-the classes are spread across fifteen of them, which Core service a module registers with and when, how
+the classes are spread across sixteen of them, which Core service a module registers with and when, how
 to add a module or move a block between two, and the traps that have already cost time once.
 
 ---
@@ -34,6 +34,7 @@ world ever sees is namespaced with them.
 | Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 166 + 1 item |
 | Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 119 + 2 items |
 | Healthcare | `csm_healthcare` | CSM: Healthcare | `…-healthcare-<version>.jar` | `healthcare` | Healthcare - Patient Care (29), Healthcare - Clinical (30), hidden (−11) | 0 (scaffold) |
+| Sports & Venues | `csm_venues` | CSM: Sports & Venues | `…-venues-<version>.jar` | `venues` | Sports & Venues - Seating (34), hidden (−12) | 0 (scaffold) |
 | Vehicles | `csm_vehicles` | CSM: Vehicles | `…-vehicles-<version>.jar` | `vehicles` | none — its content is an Immersive Vehicles pack | 0 (6 IV parts) |
 
 Block counts are blockstates shipped in that tree, so they include hidden (retiring) blocks and the
@@ -141,7 +142,7 @@ Core that the module's class implements:
 
 ---
 
-## How registration works across fifteen jars
+## How registration works across sixteen jars
 
 Forge runs the lifecycle **per phase, across all mods**, not per mod. The order that matters here:
 
@@ -215,7 +216,7 @@ For each entry in `modules.gradle`'s `csmModules` list it creates:
 - test sources under `modules/<name>/src/test/java` folded into the one JUnit suite.
 
 ```bash
-./gradlew build                       # Core + all fourteen module jars, dev and release
+./gradlew build                       # Core + all fifteen module jars, dev and release
 ./gradlew runClient                   # dev client with every module jar on the classpath
 ./gradlew runClient -PcsmRunModules=core          # Core alone
 ./gradlew runClient -PcsmRunModules=lighting      # Core + Lighting
@@ -394,7 +395,7 @@ simply skipped when Roads & Traffic is absent.
 `CsmSoundsTest` fails the build on it, and on any drift between the enums and the shipped
 `sounds.json` files in either direction.
 
-**Versions are pinned.** All fifteen jars come from one release and pin each other exactly. A player
+**Versions are pinned.** All sixteen jars come from one release and pin each other exactly. A player
 mixing versions gets a startup failure, which is the intended outcome.
 
 **A module's reobfuscation needs Core's classes.** A release jar must name every Minecraft field and

@@ -635,6 +635,19 @@ def cost_for(registry, info, ancestors):
         if registry.endswith("_sign"):
             return ("SIGN_BLANK",)
         return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabvenuesseating":
+        # Mirrors VenuesFabricatorRules (Sports & Venues module).
+        if registry.endswith("_sign"):
+            return ("SIGN_BLANK",)
+        if registry.endswith("_light"):
+            return ("LED_MODULE", "SHEET_METAL")
+        if registry.startswith("stadium_glass_guard"):
+            return ("glass_pane x2", "SHEET_METAL")
+        if registry == "stadium_wheelchair_space":
+            return ("dye",)
+        if registry.startswith("stadium_seat") or registry.endswith("_seat"):
+            return ("SHEET_METAL",)
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabutilities":
         # Mirrors UtilitiesFabricatorRules (Utilities module).
         if registry.startswith("utility_label_"):
