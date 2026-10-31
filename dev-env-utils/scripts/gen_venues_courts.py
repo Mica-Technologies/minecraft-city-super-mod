@@ -778,7 +778,7 @@ C.add("basketball_hoop_pole",
                     (-6, 46, int(HP_BOARD_Z) - 1, 22, 64, int(HP_BOARD_Z) + 2)]),
       ("Basketball Hoop (Pole-Mounted)", "Basketballkorb (Mastmontiert)",
        "Canasta de Baloncesto (en Poste)", "Basketkorg (Stolpmonterad)"), {},
-      U.obj_state("hoop_pole", 0.18, ty=-0.3, tz=-0.4), tab=TAB)
+      U.obj_state("hoop_pole", 0.22, ty=-0.37, tz=-0.49), tab=TAB)
 
 
 # ------------------------------------------------------------------------------------------
