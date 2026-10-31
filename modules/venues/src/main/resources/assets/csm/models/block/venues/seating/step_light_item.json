@@ -1,0 +1,228 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "housing": "csm:blocks/venues/seating/step_housing",
+    "lens": "csm:blocks/venues/seating/step_lens",
+    "particle": "csm:blocks/venues/seating/step_housing"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        4.5,
+        6.5,
+        8.0
+      ],
+      "to": [
+        11.5,
+        9.5,
+        9.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            6.5,
+            11.5,
+            9.5
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            6.5,
+            1.0,
+            9.5
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            15.0,
+            6.5,
+            16,
+            9.5
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            15.0,
+            11.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        9.0,
+        7.25
+      ],
+      "to": [
+        11.5,
+        9.5,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            6.5,
+            11.5,
+            7.0
+          ]
+        },
+        "south": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            6.5,
+            11.5,
+            7.0
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            1.0,
+            6.5,
+            1.75,
+            7.0
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            14.25,
+            6.5,
+            15.0,
+            7.0
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            14.25,
+            11.5,
+            15.0
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            1.0,
+            11.5,
+            1.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.25,
+        7.0,
+        7.8
+      ],
+      "to": [
+        10.75,
+        9.0,
+        8.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lens",
+          "uv": [
+            1,
+            5,
+            15,
+            11
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        20,
+        200,
+        0
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        1.5
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "scale": [
+        1.2,
+        1.2,
+        1.2
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "scale": [
+        0.8,
+        0.8,
+        0.8
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/seating/step_light_low"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/seating/step_light_item"
+      }
+    ],
+    "high": {
+      "false": {},
+      "true": {
+        "model": "csm:venues/seating/step_light_high"
+      }
+    }
+  }
+}

@@ -31,7 +31,7 @@ every module requires it. Beyond that, install only the subsystems you actually 
 | **CSM: Parks & Greenery** | Street trees built from blocks, the Tree Planting Tool, hedges and plantings, benches, playgrounds, fountains and irrigation |
 | **CSM: Transit** | Working fare gates, a fare vending machine, fare tickets and transit cards, bus stop signs and bus shelters. **Also requires CSM: Roads & Traffic** |
 | **CSM: Healthcare** | Hospital fit-out: hospital beds, patient headwalls, bedside monitors, IV poles, cubicle curtains, a linked nurse call system, wall dispensers and ward carts |
-| **CSM: Sports & Venues** | Arena and stadium fit-out: stadium seats in ten colours, aisle-end standards with row letters, aisle step lights and handrails, glass guards, wheelchair spaces, and section and portal signs |
+| **CSM: Sports & Venues** | Arenas, stadiums, ballparks, fields and courts, starting with the seating bowl: stadium seats in ten colours, aisle-end standards with row letters, aisle step lights and handrails, glass guards, wheelchair spaces, and section and portal signs |
 | **CSM: Vehicles** | Fire engines, ambulances, police cars, work trucks and a city bus for Immersive Vehicles, emergency lightbars and sirens for any vehicle, and signal preemption for vehicles running their emergency lights. **Also requires CSM: Roads & Traffic and [Immersive Vehicles](https://www.curseforge.com/minecraft/mc-mods/immersive-vehicles)** |
 
 !!! warning "All from the same release, all the same version"

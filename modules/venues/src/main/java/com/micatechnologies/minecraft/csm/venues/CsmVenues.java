@@ -10,9 +10,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The CSM: Sports & Venues module: the fit-out of an arena or stadium, from the seating bowl
- * (stadium seats, aisle lights and rails, guards, section signs) to the event floor, the
- * scoreboard and the concourse.
+ * The CSM: Sports & Venues module: sports venues of every kind (arenas, stadiums, ballparks,
+ * football and soccer fields, bowling alleys, courts, tracks and pools), from what they share
+ * (the seating bowl, bleachers, signs, scoreboards, concourses) to each sport's own playing
+ * surface and equipment.
  *
  * <p>A module's mod container exists so that Forge serves the module jar's {@code assets/csm}
  * resources and shows it in the mod list. Content registration is entirely Core's: the creative

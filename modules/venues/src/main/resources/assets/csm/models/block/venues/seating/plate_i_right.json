@@ -1,0 +1,74 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "shell": "csm:blocks/venues/seating/shell",
+    "shell_shade": "csm:blocks/venues/seating/shell_shade",
+    "cast": "csm:blocks/venues/seating/cast",
+    "armrest": "csm:blocks/venues/seating/armrest",
+    "cup": "csm:blocks/venues/seating/cup",
+    "plate": "csm:blocks/venues/seating/plate_blank",
+    "labels": "csm:blocks/venues/seating/row_labels",
+    "particle": "csm:blocks/venues/seating/cast"
+  },
+  "elements": [
+    {
+      "from": [
+        15.8,
+        8.25,
+        3.0
+      ],
+      "to": [
+        16.0,
+        11.75,
+        7.67
+      ],
+      "faces": {
+        "north": {
+          "texture": "#labels",
+          "uv": [
+            0,
+            4.25,
+            0.2,
+            7.75
+          ]
+        },
+        "south": {
+          "texture": "#labels",
+          "uv": [
+            15.8,
+            4.25,
+            16,
+            7.75
+          ]
+        },
+        "up": {
+          "texture": "#labels",
+          "uv": [
+            15.8,
+            3.0,
+            16,
+            7.67
+          ]
+        },
+        "down": {
+          "texture": "#labels",
+          "uv": [
+            15.8,
+            8.33,
+            16,
+            13.0
+          ]
+        },
+        "east": {
+          "texture": "#labels",
+          "uv": [
+            0.0,
+            1.5,
+            2.0,
+            3.0
+          ]
+        }
+      }
+    }
+  ]
+}

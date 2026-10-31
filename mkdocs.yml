@@ -178,7 +178,7 @@ nav:
       - Transit: reference/transit.md
       - Trees & Plants: reference/trees-and-plants.md
       - Utilities: reference/utilities.md
-      - Sports & Venues - Seating: reference/venues-seating.md
+      - Sports & Venues - Seating & Venue: reference/venues-seating.md
       - Unlisted: reference/unlisted.md
   - Developer:
       - developer/index.md

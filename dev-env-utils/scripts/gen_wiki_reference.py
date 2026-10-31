@@ -184,8 +184,9 @@ TABS = {
                               "The clinical side of a hospital: the nurse call master panel, "
                               "wall dispensers, infection control carts and bins, linen, "
                               "medical gas outlets and the eyewash station."),
-    "tabvenuesseating": ("venues-seating", "Sports & Venues - Seating",
-                         "The seating bowl of an arena or stadium: stadium seats in ten "
+    "tabvenuesseating": ("venues-seating", "Sports & Venues - Seating & Venue",
+                         "What every sports venue shares, starting with the seating bowl: "
+                         "stadium seats in ten "
                          "colours, aisle-end standards with their row letters, the "
                          "companion seat and wheelchair space, aisle step lights and "
                          "handrails, glass guards for tier and suite fronts, and the "

@@ -1,0 +1,39 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/seating/handrail_level.obj"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "piece": {
+      "level": {
+        "model": "csm:venues/seating/handrail_level.obj"
+      },
+      "steep": {
+        "model": "csm:venues/seating/handrail_steep.obj"
+      },
+      "shallow_low": {
+        "model": "csm:venues/seating/handrail_shallow_low.obj"
+      },
+      "shallow_high": {
+        "model": "csm:venues/seating/handrail_shallow_high.obj"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/seating/handrail_item"
+      }
+    ]
+  }
+}

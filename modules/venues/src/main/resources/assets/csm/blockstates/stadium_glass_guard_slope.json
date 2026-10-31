@@ -1,0 +1,102 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,high=false,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_left.obj"
+      }
+    ],
+    "facing=north,high=true,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_left.obj"
+      }
+    ],
+    "facing=north,high=false,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_right.obj"
+      }
+    ],
+    "facing=north,high=true,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_right.obj"
+      }
+    ],
+    "facing=east,high=false,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_left.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,high=true,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_left.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,high=false,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_right.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,high=true,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_right.obj",
+        "y": 90
+      }
+    ],
+    "facing=south,high=false,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_left.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,high=true,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_left.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,high=false,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_right.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,high=true,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_right.obj",
+        "y": 180
+      }
+    ],
+    "facing=west,high=false,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_left.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,high=true,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_left.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,high=false,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_low_right.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,high=true,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_shallow_high_right.obj",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/seating/glass_guard_level"
+      }
+    ]
+  }
+}

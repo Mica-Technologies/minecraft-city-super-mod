@@ -41,7 +41,7 @@ sixteen.
 | CSM: Parks & Greenery | Street trees built from blocks, a planting tool, hedges and plantings, benches, playgrounds, fountains, irrigation |
 | CSM: Transit | Working fare gates, a fare vending machine, fare tickets and transit cards, bus stop signs, bus shelters — **also requires CSM: Roads & Traffic** |
 | CSM: Healthcare | Hospital beds, patient headwalls, monitors, IV poles, cubicle curtains, a linked nurse call system and the rest of a hospital ward |
-| CSM: Sports & Venues | Arena seating: stadium seats in ten colours, aisle-end standards with row letters, aisle lights and handrails, glass guards, and section and portal signs |
+| CSM: Sports & Venues | Sports venues, starting with the seating bowl: stadium seats in ten colours, aisle-end standards with row letters, aisle lights and handrails, glass guards, and section and portal signs |
 
 Installing a subset only removes that content — nothing about the blocks you keep changes. Removing
 a module from a world that already uses its blocks is the usual missing-mod situation, though:

@@ -1,0 +1,56 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_left.obj"
+      }
+    ],
+    "facing=north,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_right.obj"
+      }
+    ],
+    "facing=east,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_left.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_right.obj",
+        "y": 90
+      }
+    ],
+    "facing=south,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_left.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_right.obj",
+        "y": 180
+      }
+    ],
+    "facing=west,right=false": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_left.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,right=true": [
+      {
+        "model": "csm:venues/seating/glass_guard_steep_right.obj",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/seating/glass_guard_level"
+      }
+    ]
+  }
+}

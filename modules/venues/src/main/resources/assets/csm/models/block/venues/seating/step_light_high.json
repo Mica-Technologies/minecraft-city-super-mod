@@ -1,0 +1,161 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "housing": "csm:blocks/venues/seating/step_housing",
+    "lens": "csm:blocks/venues/seating/step_lens",
+    "particle": "csm:blocks/venues/seating/step_housing"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        4.5,
+        11.0,
+        15.0
+      ],
+      "to": [
+        11.5,
+        14.0,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            2.0,
+            11.5,
+            5.0
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            2.0,
+            1.0,
+            5.0
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            15.0,
+            2.0,
+            16,
+            5.0
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            15.0,
+            11.5,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            1.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.5,
+        13.5,
+        14.25
+      ],
+      "to": [
+        11.5,
+        14.0,
+        15.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            2.0,
+            11.5,
+            2.5
+          ]
+        },
+        "south": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            2.0,
+            11.5,
+            2.5
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            1.0,
+            2.0,
+            1.75,
+            2.5
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            14.25,
+            2.0,
+            15.0,
+            2.5
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            14.25,
+            11.5,
+            15.0
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            1.0,
+            11.5,
+            1.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.25,
+        11.5,
+        14.8
+      ],
+      "to": [
+        10.75,
+        13.5,
+        15.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lens",
+          "uv": [
+            1,
+            5,
+            15,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

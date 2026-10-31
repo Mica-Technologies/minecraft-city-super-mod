@@ -1,0 +1,33 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "mark": "csm:blocks/venues/seating/wheelchair",
+    "particle": "csm:blocks/venues/seating/wheelchair"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        0.1,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#mark",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1810 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "riser": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_down"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_up"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_floor"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_down"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_up"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "true",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_riser"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "0",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "0",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "1",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "1",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "2",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "2",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "3",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "3",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "4",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "4",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "5",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "5",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "6",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "6",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "7",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "7",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "8",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "8",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "9",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "9",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "10",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "10",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "11",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "11",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "12",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "12",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "13",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "13",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "14",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "14",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "15",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "label": "15",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_up",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_floor",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_down",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_up",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "true",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_riser",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "0",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "0",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "1",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "1",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "2",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "2",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "3",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "3",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "4",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "4",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "5",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "5",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "6",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "6",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "7",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "7",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "8",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "8",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "9",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "9",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "10",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "10",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "11",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "11",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "12",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "12",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "13",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "13",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "14",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "14",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "15",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "label": "15",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_up",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_floor",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_down",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_up",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "true",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_riser",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "0",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "0",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "1",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "1",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "2",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "2",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "3",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "3",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "4",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "4",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "5",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "5",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "6",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "6",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "7",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "7",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "8",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "8",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "9",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "9",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "10",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "10",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "11",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "11",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "12",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "12",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "13",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "13",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "14",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "14",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "15",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "label": "15",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "false",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_floor_up",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "false",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_floor",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "false",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_floor_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_down",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "true",
+        "up": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/seat_riser_up",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "true",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/standard_riser",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "riser": "true",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/end_riser_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "0",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "0",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_q_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "1",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "1",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_r_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "2",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "2",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_s_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "3",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "3",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_t_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "4",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "4",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_u_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "5",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "5",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_v_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "6",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "6",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_w_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "7",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "7",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_x_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "8",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "8",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_y_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "9",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "9",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_z_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "10",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "10",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_aa_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "11",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "11",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_bb_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "12",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "12",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_cc_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "13",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "13",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_dd_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "14",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "14",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ee_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "15",
+        "right": "false"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "label": "15",
+        "right": "true"
+      },
+      "apply": {
+        "model": "csm:venues/seating/plate_ff_right",
+        "y": 270
+      }
+    }
+  ]
+}
