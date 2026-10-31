@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -160,7 +161,12 @@ public class TileEntityBridgeCableAnchor extends AbstractTileEntity {
     return new AxisAlignedBB(pos);
   }
 
-  /** Drawn as far off as the far end of its longest cable is in the long-range distance. */
+  /**
+   * Drawn as far off as the far end of its longest cable is in the long-range distance, or in the
+   * view distance when that is further: a landmark bridge's pylons stay in view to the edge of the
+   * loaded world, and stays that vanished before them would read as missing (they cost about
+   * 0.06 ms a frame for a whole bridge, BRIDGE_CABLE_SYSTEM.md).
+   */
   @Override
   public double getMaxRenderDistanceSquared() {
     final AxisAlignedBB bounds = getRenderBoundingBox();
@@ -170,7 +176,9 @@ public class TileEntityBridgeCableAnchor extends AbstractTileEntity {
     final double dx = Math.max(cx - bounds.minX, bounds.maxX - cx);
     final double dy = Math.max(cy - bounds.minY, bounds.maxY - cy);
     final double dz = Math.max(cz - bounds.minZ, bounds.maxZ - cz);
-    final double distance = LONG_RANGE_RENDER_DISTANCE + Math.sqrt(dx * dx + dy * dy + dz * dz);
+    final double view = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16.0;
+    final double distance = Math.max(LONG_RANGE_RENDER_DISTANCE, view)
+        + Math.sqrt(dx * dx + dy * dy + dz * dz);
     return CsmPerformance.capRenderDistanceSq(distance * distance);
   }
 

@@ -170,8 +170,10 @@ the LED strip's light is full bright.
 * **The render box is the whole cable** (`BridgeCableLayout.getBounds`), never the infinite box.
   Until the first layout is worked out, a rough box over the end blocks, sag and a 64-block drop
   for hangers stands in.
-* **Render distance** is the long-range 128 blocks plus the cable's own reach from its anchor,
-  capped by the performance mode, so a 120-block main cable is still drawn from its far end.
+* **Render distance** is the view distance (or the long-range 128 blocks, if that is further)
+  plus the cable's own reach from its anchor, capped by the performance mode, so a 120-block main
+  cable is still drawn from its far end and a far bridge never shows its pylons without its stays.
+  A whole bridge costs about 0.06 ms a frame (below), so drawing to the edge of the view is cheap.
 * Prism sides follow thickness: 6 at 2 px, 8 at 4 px, 12 above. A plain stay is one segment
   (nothing along it to show); a striped one is sampled twice a block; a hanging cable once a
   block of plan length (8 to 256 segments, doubled with stripes).
@@ -226,10 +228,8 @@ is recompiled only when that finds a change.
 
 ## Leftovers
 
-* A cable is drawn to 128 blocks plus its own reach, which the pylon outlasts: at a render
-  distance of 16 the stays of a bridge 220 blocks off are gone while its pylons still stand.
-  Matching the render distance would be cheap by the figures above, but needs a look at a whole
-  city's worth of cables first.
+* Drawing to the view distance was measured on one test world's three bridges, not on a whole
+  city's worth of cables; check the frame time once the city has several cable bridges.
 * The sheath stripes wind one facet a segment, which on a long stay reads as a dashed line
   rather than a tight helix.
 * The LED strip is always on: no redstone, no dusk switch.
