@@ -667,7 +667,7 @@ def cost_for(registry, info, ancestors):
             "rink_rubber_floor": ("carpet",),
             "court_maple": ("planks",),
             "court_line": ("planks", "dye"), "court_floor_anchor": ("planks", "dye"),
-            "court_acrylic_painted": ("planks", "dye"),
+            "court_painted": ("planks", "dye"),
             "hockey_goal": ("iron_ingot x2", "string x2"),
             "basketball_stanchion": ("SHEET_METAL x4", "glass_pane x2", "LED_MODULE",
                                      "CONTROL_BOARD"),

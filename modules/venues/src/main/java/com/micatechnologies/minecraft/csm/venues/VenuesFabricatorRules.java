@@ -203,7 +203,7 @@ public final class VenuesFabricatorRules {
         return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 1));
       case "court_line":
       case "court_floor_anchor":
-      case "court_acrylic_painted":
+      case "court_painted":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 1),
             FabricatorIngredient.any("minecraft:dye", 1));
       case "hockey_goal":
