@@ -43,7 +43,10 @@ public class TileEntityVenueSignRenderer extends TileEntitySpecialRenderer<TileE
   private static final int AMBER = 0xFFC830;
   private static final int WHITE = 0xF4F4EE;
   private static final int[] TEES = {0x2050C0, 0xF0F0EC, 0xC82828};
+  /** Rows on an eight-lane pool's board (lanes 1-8). */
   private static final int LANES = 8;
+  /** Rows on a ten-lane pool's board (lanes 0-9), shown when more than eight swimmers are named. */
+  private static final int LANES_TEN = 10;
 
   static void release(BlockPos pos) {
     LISTS.invalidate(pos);
@@ -115,9 +118,9 @@ public class TileEntityVenueSignRenderer extends TileEntitySpecialRenderer<TileE
     GlStateManager.popMatrix();
   }
 
-  /** A pool board's row v. */
-  private static float rowV(int r) {
-    return 8.6f + r * 2.7f;
+  /** A pool board's row v, on a board of {@code rows} rows. */
+  private static float rowV(int r, int rows) {
+    return 8.6f + r * (rows > LANES ? 2.12f : 2.7f);
   }
 
   private static void panels(TileEntityVenueSign te, boolean pool, float w, float h) {
@@ -175,15 +178,19 @@ public class TileEntityVenueSignRenderer extends TileEntitySpecialRenderer<TileE
       String[] names = te.line(2).split(",", -1);
       String[] times = words(te.line(3));
       String[] places = words(te.line(4));
-      for (int r = 0; r < LANES; r++) {
-        float v = rowV(r);
+      // A ten-lane pool numbers its lanes 0 to 9; eight named swimmers or fewer keep 1 to 8.
+      int rows = names.length > LANES ? LANES_TEN : LANES;
+      int first = rows > LANES ? 0 : 1;
+      float tall = rows > LANES ? 1.75f : 2.1f;
+      for (int r = 0; r < rows; r++) {
+        float v = rowV(r, rows);
         String place = r < places.length ? places[r] : "";
         int rgb = "1".equals(place) ? AMBER : WHITE;
-        text(buf, fr, place, 3f, v, 2.1f, 4f, rgb, 0);
-        text(buf, fr, Integer.toString(r + 1), 7.5f, v, 2.1f, 3f, AMBER, 0);
+        text(buf, fr, place, 3f, v, tall, 4f, rgb, 0);
+        text(buf, fr, Integer.toString(r + first), 7.5f, v, tall, 3f, AMBER, 0);
         String name = r < names.length ? names[r].trim() : "";
-        text(buf, fr, up(name), 11f, v, 2.1f, 34f, rgb, -1);
-        text(buf, fr, r < times.length ? times[r] : "", w - 1.5f, v, 2.1f, 14f, rgb, 1);
+        text(buf, fr, up(name), 11f, v, tall, 34f, rgb, -1);
+        text(buf, fr, r < times.length ? times[r] : "", w - 1.5f, v, tall, 14f, rgb, 1);
       }
     } else {
       text(buf, fr, "HOLE", w / 2f, 0.6f, 1.4f, w - 1f, WHITE, 0);
