@@ -24,7 +24,7 @@ from fixed numbers rather than from a Building block.
 | Tab | Order | Holds |
 |---|---|---|
 | Sports & Venues - Seating & Venue (`tabvenuesseating`) | 34 | what every venue shares: the seating bowl (below), later bleachers, press boxes and venue signs |
-| Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor (below); later the centre-hung scoreboard, ribbon boards, banners and AV |
+| Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor and, over it, the centre-hung scoreboard, ribbon boards, banners and AV (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
@@ -384,9 +384,220 @@ be 10 ft over a real size court.
 sitter or scorer faces. Side by side they join; a run's ends are drawn by actual state. A click
 sits on a bench (Core's seat entity, one a block).
 
+## Scoreboards and AV (Arena tab)
+
+Written by `dev-env-utils/scripts/gen_venues_av.py` (`--check` holds `ScoreboardSize.java` too,
+`--fragments` prints the tab). Everything a player sees at a distance is baked; three renderers
+draw only what changes (the scoreboard's screens, the ribbon board's scrolling text, the banners'
+lettering), each within its tile entity's render range, and nothing ticks.
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `centre_hung_scoreboard`, `_small` | facing | | 4 each |
+| `led_ribbon_board` | facing, pattern (16) | phase (4) | 64 |
+| `led_ribbon_board_corner` | facing, pattern (16) | | 16 |
+| `led_ribbon_board_text` | facing | phase (4) | 16 |
+| `championship_banner`, `_small`, `retired_number_banner`, `_small` | facing | | 4 each, 16 |
+| `line_array_speaker`, `broadcast_camera_platform` | facing | | 4 each |
+| `venue_catwalk` | | north, east, south, west | 16 |
+
+144 states in all. Thousands of ribbon blocks are 64 states and 16 small models between them.
+
+### Units, hung
+
+The scoreboards, the banners and the speaker cluster are **hung** units
+(`BlockVenueUnit(name, true, cells, boxes)`): their item places them against the underside of a
+truss or ceiling, the cell clicked under being the unit's top layer, and the master as many cells
+below it as the footprint reaches above the master. A `/setblock` names the master, which then
+fills its parts as every unit does:
+
+| Block | Footprint | Master | `/setblock` the master at |
+|---|---|---|---|
+| `centre_hung_scoreboard` | 12 x 8 casing (13 x 9 cells, the edge cells half full), 9 tall: bottom ring, 6-tall screens, top ring, rigging | middle cell of the bottom layer | 9 below the truss's underside block, over the floor's centre |
+| `centre_hung_scoreboard_small` | 6 x 4 (7 x 5 cells), 5 tall: half-block rings, 3-tall screens | middle cell of the bottom layer | 5 below |
+| `championship_banner`, `retired_number_banner` | 2 wide, 3 tall | the left cell, looking from the north at a north-facing banner, of the middle row | 2 below the truss; the banner reaches to +x at facing north |
+| `championship_banner_small`, `retired_number_banner_small` | 1 x 2 | bottom cell | 2 below |
+| `line_array_speaker` | 1 x 1, 3 tall | middle cell | 2 below |
+| `broadcast_camera_platform` | 2 x 2, 2 high (stands) | front-left (the lens looks north, +x and +z behind) | on the floor |
+
+The scoreboard's facing only turns its long faces: facing north or south puts the 12-wide faces
+to the north and south. Its cells are worked out in code from its shell boxes
+(`BlockVenueUnit.cellsOf`, the generator's footprint rule): the shell is half a block thick, so
+about 480 invisible parts, not the thousand a solid box would claim; the hollow inside stays air.
+
+### The centre-hung scoreboard
+
+The OBJ draws the casing, the corner posts, the rigging (a hoist frame and four bridles up to a
+shackle in the top cell), the two LED rings (an animated chase, with an OptiFine `_e`) and the
+screens dark, so the board is there at any distance. `TileEntityScoreboardRenderer` draws over
+the screens, fullbright, within 160 blocks (capped by the performance mode):
+
+- **Score**: home and away names on bars in the teams' colours, the scores under them in amber,
+  the clock in a panel in the middle in yellow, PERIOD and the period under it, SHOTS at the foot.
+- **Video**: the idle video (32 frames of an invented intro and a MAKE SOME NOISE meter, 4 frames a
+  second) over the top four-fifths, and a strip along the foot: home colour, HOME 2, the period,
+  the clock, 1 AWAY, away colour.
+
+A click anywhere on the board opens its editor; a sneak-click with an empty hand starts or stops
+the clock (the action bar says which, and at what time); so does a **rising redstone edge at any
+of its cells** (a part passes its neighbour changes to the master, `IVenueUnitListener`).
+
+**The clock never ticks.** While it runs the time left is `clk - (worldTime - t0) / 2` tenths,
+worked out each frame from the world's time, so every client shows the same tenth. From a minute
+up it reads `M:SS`, under it `S.T`. At 0.0 it stops counting; in mode 0 the screens go back to the
+video.
+
+**The editor** (GUI id 70): home and away names, scores and shots (with +1 buttons), colours
+(click to step, shift-click back), the period, the clock and a period's length (`m:ss`, `ss.t`
+or `m:ss.t`), the screens' mode, Start/Stop, Reset (stops it and sets it to the length) and Done.
+The clock field is sent only if it was edited, so a running clock is not set back to when the
+screen opened. It sends `ScoreboardPacket` (APPLY, TOGGLE, RESET), its strings bounded on decode
+and cleaned again by the tile entity.
+
+**NBT** (`/blockdata` on the master):
+
+| Key | Meaning |
+|---|---|
+| `home`, `away` | team names, up to 12 printable ASCII characters (default HOME, AWAY) |
+| `hs`, `as` | scores, 0-999 |
+| `hsh`, `ash` | shots, 0-999 |
+| `per` | the period, up to 4 characters (`1`, `OT`, `Q4`) |
+| `clk` | the clock, tenths of a second: the time left when last started or stopped (12000 = 20:00) |
+| `len` | a period's length, tenths; what Reset sets |
+| `run` | `1b` while running; set it without `t0` and it starts now |
+| `t0` | the world time it started at, written only while running |
+| `mode` | 0 score while running and video while stopped (default), 1 always score, 2 always video |
+| `hc`, `ac` | team colours, 0-15 (below) |
+
+```
+/setblock 13 20 30 csm:centre_hung_scoreboard 2
+/blockdata 13 20 30 {home:"WOLVES",away:"BIRDS",hs:3,as:2,hsh:31,ash:24,per:"3",clk:7215,hc:0,ac:9}
+/blockdata 13 20 30 {run:1b}
+```
+
+**Team colours** (`VenueColours`, the index stored): 0 navy, 1 royal blue, 2 ice blue, 3 teal,
+4 green, 5 forest green, 6 gold, 7 orange, 8 red, 9 crimson, 10 maroon, 11 purple, 12 black,
+13 silver, 14 white, 15 brown. A team bar light enough to lose white lettering gets dark lettering.
+
+### The LED ribbon board
+
+| Block | Metadata |
+|---|---|
+| `led_ribbon_board` | bits 0-1 facing (the way the LED face looks), bits 2-3 pattern: 0 navy and ice blue sweep, 1 crimson and gold chevrons, 2 green and white chase, 3 white crawl (LET'S GO) |
+| `led_ribbon_board_corner` | as the straight; the facing is the dasher corner's (the band faces between it and the next facing clockwise: east = south-east, a bowl's north-west corner) |
+| `led_ribbon_board_text` | facing |
+
+A band is 1 block tall on the **back** of its cell (3 px deep), so it goes in the air cell in
+front of a tier's fascia, facing the floor. Placed by hand it looks back at the placer; a
+sneak-click with an empty hand steps the pattern. No tile entity, no renderer: one animated
+64 px texture holds the four patterns, each four blocks long, and each block shows the quarter its
+**phase** (actual state: its position along the band, counted to the right as seen) picks. Every
+block of every band keeps time with every other, so straights side by side play one sweep.
+
+**45 degree corners**, drawn as at a bowl's north-west corner: a corner at `(x, z)` meets the
+straight along x at `(x + 1, z)`, the straight along z at `(x, z + 1)`, and the next corner at
+`(x - 1, z + 1)`. A bowl corner chamfered over `n` cells: straights along the north row up to
+`x0 + n`, corners from `(x0 + n - 1, z0)` down the diagonal to `(x0, z0 + n - 1)`, straights down
+the west column from `z0 + n`. Corners show phase 0, so a sweep restarts round them. Only the
+inside (concave) corner is drawn; a band round a balcony's outside corner is still open.
+
+**Scrolling text**: put `led_ribbon_board_text` at the **left end** (as seen from the floor) of
+a straight run. Its renderer draws a band in the background colour over the run (this cell and
+the straights to its right facing the same way, up to 256, stopping at a corner, a gap or another
+text piece) and the text on it, sliding left and coming round again three blocks after its end;
+speed 0 centres it, still. One display list of the text's glyphs is replayed for each copy; two GL
+clip planes cut the copies at the run's ends. The run is walked again at most once a second. A
+click opens the text editor (GUI id 71): the text, its colour, the band's colour, the speed.
+
+NBT: `txt` (up to 64 characters), `fg`, `bg` (colours), `spd` (0 still, 1 slow 1 block/s, 2
+medium 2, 3 fast 4).
+
+```
+/setblock 0 12 -6 csm:led_ribbon_board_text 0
+/blockdata 0 12 -6 {txt:"WELCOME TO THE ARENA",fg:6,bg:12,spd:2}
+```
+
+### Banners
+
+Cloth and trim are baked, tinted (tint 0 the cloth, 1 the trim) from the tile entity by a block
+colour handler, so a colour change rebuilds the chunk section (`getBakedModelKey` is the two
+colours); the three lines are `TileEntityVenueBannerRenderer`'s, on both faces, lit as the cloth
+is, within 128 blocks: the top line, the big line (a year or a number, up to 8), the bottom line
+(up to 24), each shrunk to the cloth's width. A click opens the text editor.
+
+NBT: `l1`, `l2`, `l3`, `bc` (cloth), `tc` (trim), `fc` (lettering). Championship banners start
+CHAMPIONS / 2026, white on navy with gold trim; retired numbers PLAYER / 00, white on crimson
+with white trim.
+
+```
+/blockdata 4 26 0 {l1:"CHAMPIONS",l2:"2026",l3:"NATIONAL HOCKEY CUP",bc:0,tc:6,fc:14}
+/blockdata 8 26 0 {l1:"SMITH",l2:"19",l3:"1998 - 2012",bc:9,tc:14,fc:14}
+```
+
+### Speakers, camera, catwalk
+
+`line_array_speaker`: nine cabinets hung from a fly bar, curling into a J (OBJ). Metadata the
+facing (the way the cabinets point). `broadcast_camera_platform`: a 2 x 2 riser with rails on
+three sides and a studio camera on a pedestal, its lens to the open front. `venue_catwalk`: bar
+grating at the bottom of its cell; a rail (toe board, mid and top rail) on every side with no
+catwalk beside it, so a run closes itself. Nothing stored. Venues may not need Roads, so this is
+not Roads' truss catwalk.
+
+### Costs
+
+Measured 2026-10-30 in the "Venues Arena Test" world (dev client, all modules, 854 x 480,
+render distance 12, the frame cap lifted), from the stands looking at the board and 298 ribbon
+blocks (three runs along each side, the north run with its corners and a text run), all in one
+session:
+
+| What | How | Cost |
+|---|---|---|
+| Large scoreboard's screens, video layout | `client_profile_rendering`, 6 s warm-up | 35 us a frame |
+| the same, score layout | the same | 29 us a frame |
+| the same, frame level | `/csm renderpass skip venueScoreboard`, A/B/A | render work 0.89 / 0.85 / 0.89 ms: about 40 us |
+| 298 ribbon blocks (straights and corners) | delete and difference, A/B/A | render work 0.86 / 0.86 / 0.86 ms: below what a frame measure resolves |
+| a ribbon text run (21 cells) | profiler | 8.8 us a frame |
+| a banner's lettering | profiler | 2.3 to 3.5 us a frame |
+
+So the ribbon board is free at any length (it is chunk geometry and an atlas animation), a board
+costs about as much as one dynamic guide sign, and the text and banners are small. Toggles for
+A/B: `venueScoreboard`, `venueRibbonText`, `venueBanners`.
+
+### Traps
+
+- **A hung unit's master is not where you clicked.** Placed by hand, the cell under the truss is
+  the top layer; by `/setblock` the master is named, which on the large scoreboard is 8 cells
+  below the top of its casing. Its rigging cell reaches one more.
+- **A unit's screen packet names its master,** which on a scoreboard may be eleven blocks from
+  the cell clicked, so reach is to the nearest point of the unit's outline
+  (`VenuePackets.canReach`), not to the master.
+- **Parts find their master by walking,** up to 64 steps (a scoreboard's far corner is about
+  twenty).
+- **The video is not a block texture.** It is bound on its own and its frame picked from the time,
+  so OptiFine's or VintageFix's animation trimming cannot stop it; nothing names it in a model, so
+  the integrity tool lists it as unused.
+- **The scoreboard's casing is baked; a baked model is culled with its master's chunk section.**
+  The master is the bottom layer's middle cell, so looking up past the board's top edge with that
+  section out of view can drop the board for a frame. The renderer is not global, so screens and
+  casing go together.
+- **A ribbon's sweep restarts at a corner** (corners show phase 0), and only the inside corner is
+  drawn.
+- **The ribbon text stops at the first cell that is not a straight facing its way**, including a
+  corner: put a text piece on each straight that should carry text.
+- **The ribbon text's clip planes** are fixed-function GL; a shader pack may ignore them and show
+  the copies past the run's ends.
+- **A banner's colours are baked** (tint), so changing them rebuilds its chunk section; its words
+  are not.
+- **The scoreboard GUI sends the clock only if it was edited**, or opening the editor during play
+  would set a running clock back to the moment the screen opened.
+
 ## Brands
 
-None. Team, league and sponsor names are what players type into the signs. The ice resurfacer
+None. Team, league and sponsor names are what players type into the signs, the scoreboard and
+the banners (HOME and AWAY by default). The idle video is an invented intro and a noise meter;
+the ribbon's crawl reads LET'S GO. The ice resurfacer
 is a generic machine with no maker's name; the scorer's table plays an abstract pattern.
 
 ## Traps
