@@ -128,7 +128,18 @@ rows one or two deep closing themselves with end and back rails by actual state,
 understructure; press box window and wall modules with outward-leaning glass turning outside
 corners; the ticket booth; stadium light towers, a monopole or lattice shaft stacked to height
 under an OBJ head of floodlights, lit but not lighting the field, since Lighting's light
-projection is not Core's); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
+projection is not Core's), then baseball and softball (`venues.ballpark`: a full-size diamond
+laid with its centre line along the grid, one block a metre, drawn from one geometry,
+`ballpark_field.py`: turf in two mowing tones, skin, packing clay and the warning track as
+`BlockArenaFloor` floors, turf/clay edges and chalk lines at 45 degrees as standard pieces, the
+foul lines on half-integer diagonals so each is a band across a cell's corner; the home plate
+area, base cutouts, coach's boxes, on-deck circles, the infield arc in segments and softball's
+home area and circle as pictures round marking anchors that painted cells find within seven
+blocks, each anchor with a third base side twin drawing mirrored; the pitcher's mound as
+heightfield OBJ cells round the rubber's; bases placed off their cell's middle to the diamond;
+dugout runs, nets, the outfield wall straight and 45 degree with distance markers drawn by a
+renderer, the foul pole; the line score and count boards, their words a renderer's, edited in the
+venue text editor); Core only; the Sports & Venues - Seating & Venue tab (shared by every venue), the Arena tab, the Concourse tab, the Ballpark tab and a hidden tab, later per-sport tabs; see `assets/docs/VENUES_SYSTEM.md` |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | `vehicles`: Immersive Vehicles integration. Its jar carries an IV content pack (pack id `csmvehicles`: an LED lightbar in four colour schemes, a preemption emitter and a siren speaker, all fitting other packs' vehicles by slot type; and, with Parks installed, the tree crew's chip bed for UNU Contractor beds, whose chipper turns dropped logs into Parks' Mulch, a towed brush chipper and a self-propelled stump grinder that grinds by Parks' rules through Core's `CsmStumpGrinders`) and registers `IvPreemptSource`, so any IV vehicle running its emergency lights calls Roads' preempt detectors; requires Roads and Immersive Vehicles (`mts`, the module system's one external dependency); see `assets/docs/VEHICLES_SYSTEM.md` |
 
 `modules.gradle` (applied from `addon.gradle`) creates one source set, one dev jar and one
@@ -189,7 +200,9 @@ modules/<name>/src/main/java/com/micatechnologies/minecraft/csm/
 │                    av/ (centre-hung scoreboard, ribbon boards, banners, speakers, camera,
 │                    catwalk; their renderers, editors and packets), concourse/ (counters,
 │                    concession sign, menu board, machines, beer kiosk, turnstile, scanner,
-│                    ticket, suite bar and rail, team store); the multi-block unit (hung or
+│                    ticket, suite bar and rail, team store), ballpark/ (field anchors,
+│                    painted cells and their layout table, mound, fixtures, nets, outfield
+│                    wall and markers, foul pole, scoreboards); the multi-block unit (hung or
 │                    standing) and its part, and the module's sounds, at the package root
 ├── vehicles/        (modules/vehicles) IvPreemptSource; the IV pack is assets/csmvehicles/
 ├── streetscape/      (modules/roads) street fixtures that settle onto road surfaces
@@ -578,7 +591,12 @@ See `assets/docs/` for detailed technical documentation on major subsystems:
   ticket, the team colours, and the traps; the exterior and shared outdoor pieces: the marquee
   built to size and where its controller goes, its NBT and measured cost, the blades on Core's
   wayfinding panel, the box office window, how bleacher rows are laid, the press box clockwise
-  round its corners, the booth, the light towers and why they do not light the field
+  round its corners, the booth, the light towers and why they do not light the field; the
+  ballpark: the one-block-a-metre scale and the diamond laid along the grid, why the foul lines
+  sit on half-integer diagonals, the surfaces and standard pieces, the anchors and painted
+  cells (and why the arc is three anchors a side: a painted cell's reach against the render
+  cache's), the mound, every fixture's metadata and NBT, the scoreboards' NBT, a worked baseball
+  and softball diamond (where each base, plate, mound, line, box and anchor goes), costs and traps
 - `assets/docs/WAYFINDING_PANELS.md` -- The wayfinding panels (#307): the airport, hospital and
   generic `wayfinding_panel` as one baked engine in Core, cells joining into a panel up to 16 x 6,
   each cell's place worked out on the server, the mounts (auto, wall, hung, post, ceiling) and
@@ -1300,6 +1318,17 @@ The `dev-env-utils/` directory is a separate Maven project (Java 11+) with tooli
   the press box modules (glass and mullions turned 22.5 degrees, tall elements cut at the block
   lines by `tall()`), and the ticket booth and the light heads (lit and dark) as OBJ; unit
   footprints written into the tab lines from their boxes; `--check`, `--fragments`
+- `gen_venues_ballpark.py` -- the Ballpark tab (Sports & Venues), from the field geometry in
+  `ballpark_field.py` (a full-size baseball and softball diamond as predicates on world points,
+  rastered at 32 px a block with jittered samples so no sample sits on a 45 degree line): every
+  cell classified as a plain surface, a standard piece (edge or chalk, matched in each of four
+  turns) or a picture; pictures deduplicated (a mirror reuses an existing picture where one is its
+  mirror) and owned by anchors (the small markings first, then the home area and cutouts, then
+  the arc in greedy segments within a painted cell's seven-block reach); `BallparkLayouts.java`;
+  the mound's heightfield OBJ cells; the fixtures, dugout, nets, wall (the 45 degree one a band
+  past its cell), pole, scoreboards and machine. `--layout baseball|softball` prints a field's
+  blocks (and checks every painted cell shows the drawing through its anchors as the Java finds
+  them), `--doc` the anchors and offsets; `--check`, `--fragments`
 - `gen_vehicle_parts.py` -- the CSM: Vehicles module's Immersive Vehicles pack (`csmvehicles`):
   the LED lightbar's one OBJ and its four colour schemes' JSON and dark-lens textures, the
   preemption emitter and the siren speaker, their item icons and item models (under

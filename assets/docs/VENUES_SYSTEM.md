@@ -26,6 +26,7 @@ from fixed numbers rather than from a Building block.
 | Sports & Venues - Seating & Venue (`tabvenuesseating`) | 34 | what every venue shares: the seating bowl, aluminium bleachers, the press box, the ticket booth and stadium light towers (below) |
 | Sports & Venues - Arena (`tabvenuesarena`) | 35 | the event floor and, over it, the centre-hung scoreboard, ribbon boards, banners and AV (below) |
 | Sports & Venues - Concourse (`tabvenuesconcourse`) | 36 | concession stands and their machines, menu boards, the beer kiosk, turnstiles and the ticket scanner, suite fixtures, the team store, and the arena's outside and entry: the marquee board and its pylon, the wayfinding blades and their bracket, the box office window (below) |
+| Sports & Venues - Ballpark (`tabvenuesballpark`) | 37 | baseball and softball: the field's surfaces, edges and chalk lines, the marking anchors and painted cells, the mound, plate, bases and rubber, the dugout, nets, the outfield wall, markers and foul pole, the line score and count boards, a pitching machine (below) |
 | hidden (`CsmTabVenuesHidden`) | −12 | `venue_unit_part`, the invisible cells of the multi-block units |
 
 Tabs are one per kind of venue, not one per piece, so the module scales to many sports without a
@@ -33,7 +34,6 @@ tab for every block family. Planned, in the order they land:
 
 | Tab | Holds |
 |---|---|
-| Ballpark | baseball and softball: bases, mound, the infield and warning track palettes, dugouts, backstop, foul poles, outfield wall |
 | Football & Soccer | the turf palette and its lines, goal posts and goals, pylons, sideline benches, chains |
 | Bowling | the lane built to length, pinsetter, ball return, scoring monitor, the counter and settees |
 | Courts, Track & Pool | tennis and pickleball, volleyball, track and field, swimming, golf and mini-golf, skate park basics |
@@ -843,6 +843,232 @@ heaviest model (its OBJ is a few hundred quads), drawn once per tower. Toggle fo
   their top rows**, mapped by explicit UVs (`SIGN_ROWS`, `HEADER_UV`); change the drawing and the
   mapping together.
 
+## The ballpark (Ballpark tab)
+
+Baseball and softball. Written by `dev-env-utils/scripts/gen_venues_ballpark.py` (`--check`
+holds `BallparkLayouts.java` too; `--fragments` prints the tab; `--layout baseball|softball`
+prints a whole field's blocks as JSON, home plate's cell at (0, 0) and the field to the north;
+`--doc` dumps the anchors, the base offsets and the block census). The field itself is one
+geometry, `dev-env-utils/scripts/ballpark_field.py` (`--analyse`, `--plan`, `--count` for a
+developer): every line, circle and region of a full-size diamond as predicates on world points.
+Everything a field cell shows is cut from that one drawing, so a plain block, a standard piece
+and a painted picture can never disagree where they meet.
+
+### The scale, and how a diamond lies on the grid
+
+**One block is a metre.** A 90 ft base path is 27.43 blocks, a 60 ft one 18.29. A diamond is laid
+with its **centre line along the grid**: home plate at the south, the pitcher and second base
+due north of it, centre field beyond. The base paths and the foul lines therefore run at 45
+degrees, which is why the field needs diagonal pieces at all (a diamond laid with its base
+paths along the grid would put the centre line on the diagonal instead, and the outfield wall
+too).
+
+In the canonical frame (x east, z south, blocks; home plate's cell is (0, 0)) home plate's back
+point is at **(0.5, 1.0)**: the middle of the south edge of its cell. The foul lines are then
+`x + z = 1.5` (first base) and `x - z = -0.5` (third base). Both are half-integers: a 45 degree
+chalk line crosses every cell it meets through two mid-edges, so it is a band across one corner
+of each cell, two cells a step, and never narrows to a point at a block corner. Surface edges at
+45 degrees are on whole diagonals instead (`x + z = 0`, `x - z = 37`, ...), so they split a cell
+corner to corner.
+
+### State counts
+
+| Block | Stored (metadata) | Actual | States |
+|---|---|---|---|
+| `ballpark_turf` | facing, kind (3) | | 12 |
+| `ballpark_clay`, `ballpark_field_edge`, `ballpark_track_edge`, `ballpark_chalk_turf`, `ballpark_chalk_clay` | facing, kind (4) | | 16 each, 80 |
+| `ballpark_marking_anchor`, `_third`, `softball_marking_anchor`, `_third` | facing, kind (4) | | 16 each, 64 |
+| `ballpark_arc_anchor`, `_third` | facing, kind (3) | | 12 each, 24 |
+| `ballpark_painted` | | cell (329), rot (4) | 1,316 |
+| `pitchers_mound` | facing | | 4 |
+| `pitchers_mound_slope` | | cell (38), rot (4) | 152 |
+| `home_plate` | facing, variant (2) | | 8 |
+| `baseball_base`, `softball_base` | facing, variant (4) | | 16 each, 32 |
+| `pitchers_rubber`, `dugout_helmet_rack`, `dugout_bat_rack`, `dugout_water_cooler`, `ballpark_net_roof`, `pitching_machine` | facing | | 4 each, 24 |
+| `dugout_bench`, `dugout_rail`, `dugout_canopy` | facing | end_l, end_r | 16 each, 48 |
+| `ballpark_net` | facing, pole | top, end_l, end_r | 64 |
+| `ballpark_net_diagonal` | facing, pole | top | 16 |
+| `outfield_wall`, `outfield_wall_diagonal` | facing | top | 8 each, 16 |
+| `outfield_wall_marker` | facing, diagonal | top | 16 |
+| `foul_pole` | facing, wing | base, cap | 32 |
+| `ballpark_scoreboard`, `ballpark_count_board` | facing | | 4 each, 8 |
+
+1,916 states, of which the painted cells are 1,316: one per distinct 32 px picture (214 of
+them, plus 115 mirrored copies for the third base side) and turn, each a plain cube with one top
+texture. That is the arena's painted floor's pattern, at about twice the court's size; the
+pictures cost 214 small sprites and no geometry worth counting.
+
+### Field surfaces and standard pieces
+
+All are `BlockArenaFloor` with `Orient.FACING`: **metadata `facing | kind << 2`**, facing S 0,
+W 1, N 2, E 3. A piece is drawn facing north; the facing turns it. By hand it faces the way the
+placer looks, and a sneak-click with an empty hand steps the kind. The surfaces' grain has no
+direction, so a turned or mirrored cell meets its neighbours unseen.
+
+| Block | Kinds | Facing north draws |
+|---|---|---|
+| `ballpark_turf` | 0 light stripe, 1 dark stripe, 2 split | 2: dark on the north-west half, light on the south-east (diagonal mowing) |
+| `ballpark_clay` | 0 infield skin, 1 dragged skin, 2 packing clay (mound, plate), 3 warning track | 1: drag grooves north-south |
+| `ballpark_field_edge` (turf and skin) | 0 diagonal, 1 half, 2 quarter, 3 quarter inverted | 0: turf north-west of the diagonal from the south-west corner to the north-east one; 1: turf on the north half; 2: turf in the north quarter (the triangle to the cell's middle); 3: skin there, turf elsewhere |
+| `ballpark_track_edge` (turf and warning track) | 0 diagonal light, 1 diagonal dark, 2 half light, 3 half dark | as the field edge's 0 and 1 |
+| `ballpark_chalk_turf` | 0 band light, 1 band dark, 2 middle light, 3 middle dark | band: a chalk line across the north-west corner (`u + v = 0.5`); middle: a line down the middle, north-south |
+| `ballpark_chalk_clay` | 0 band on skin, 1 band on track, 2 middle on skin, 3 middle on track | as above |
+
+So a foul line is a staircase of band pieces, alternately cutting the corner on one side and the
+other: in the canonical field, first base line cells with `cx + cz = 0` take facing south (meta
+0) and those with `cx + cz = 1` facing north (2); on the third base line, `cz - cx = 0` facing
+west (1) and `cz - cx = 1` facing east (3). `--layout` lists every one.
+
+### Painted markings: anchors and painted cells
+
+What is not a plain block or a standard piece is a picture laid out round an **anchor**, as on
+the arena's floor: a `ballpark_painted` cell finds the nearest anchor within **7 cells** each way
+on its level that draws something at its cell and shows that piece, turned with the anchor.
+There are three anchor blocks, each with a **third base side twin** (`_third`) that draws the
+same kinds **mirrored**:
+
+| Block | Kind 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| `ballpark_marking_anchor` (`_third`) | baseball home plate area | base cutout (first; third on the twin) | coach's box (first; third on the twin) | on-deck circle |
+| `ballpark_arc_anchor` (`_third`) | infield arc, centre | infield arc, middle | infield arc, end | |
+| `softball_marking_anchor` (`_third`) | softball home plate area | pitcher's circle | softball infield arc, centre | softball infield arc, end |
+
+Anchor metadata is `facing | kind << 2`; facing is the field's (towards centre field), so on a
+field laid north every anchor is meta 2, 6, 10 or 14. The home area and the cutouts own every
+cell of their circle's square, plain ones included; the arc segments their arc's cells and a
+band a cell wide beside it; the coach's box, on-deck circle and pitcher's circle just the cells
+their chalk touches, which is what lets them travel to any field. Fill a picture's cells with
+`ballpark_painted` (or fill a little wider: a cell no anchor draws is plain skin).
+
+The anchor's tile entity is the arena anchor's (no data, no tick): it asks for the painted cells
+within ten blocks to be drawn again when it is loaded, changed or removed.
+
+### The pitcher's mound
+
+`pitchers_mound` is the rubber's cell; `pitchers_mound_slope` cells within three blocks of it
+find it and show their cell of the mound, a heightfield OBJ: the 18 ft circle of packing clay
+in the infield grass, the 5 ft x 34 in table 10 in up (4 px) with the rubber set in it, the
+table's front sloping towards home, the rest rounding down to the circle. Each cell's collision
+rises to its highest point (a player stands on the table at 0.31 of a block). Mound metadata is
+the field's facing (2 on a field laid north); the slope stores nothing. The mound's middle is
+59 ft from home's point and the rubber's front 60 ft 6 in, so the rubber's cell is **(0, -18)**
+and the mound's 38 cells are x -3..3, z -20..-15 round it (`--layout` lists them).
+
+### Fixtures
+
+| Block | Metadata | Notes |
+|---|---|---|
+| `home_plate` | `facing \| variant << 2`; facing the field's | The 17 in pentagon on a black rubber edge. Variant 0: its point on the cell's back (south) edge, the field's home; 1: centred (a bullpen or a cage). Stands in the air cell over the home area anchor |
+| `baseball_base` | `facing \| variant << 2` | A 15 in bag, turned 45 degrees to the base paths. Variant 0 first, 1 second, 2 third base: placed off the cell's middle to where the 90 ft diamond puts the bag (first (10.0, 9.6) px in its cell, second (8, 3.3), third (6.0, 9.6), facing north); 3 centred and square to the cell |
+| `softball_base` | as above | The 60 ft diamond's bags: first (2.6, 1.1), second (8, 2.2), third (13.4, 1.1); first is the double base, its orange half in foul ground |
+| `pitchers_rubber` | facing | 24 x 6 in, flush; the mound has its own, this is for a flat practice area |
+| `dugout_bench`, `dugout_rail`, `dugout_canopy` | facing (towards the field) | Runs: side by side they join, ends drawn by actual state. The bench is sat on with a click; the rail is a padded top rail to lean on; the canopy a roof deck at the top of its cell with a padded fascia at the front |
+| `dugout_helmet_rack`, `dugout_bat_rack`, `dugout_water_cooler` | facing | Against the wall behind (+z). Decor |
+| `ballpark_net` | `facing \| pole << 2` | A net down the middle of its cell, across its facing. Side by side and stacked it is one net; poles stand at a run's ends and wherever bit 2 is set (the panel's left edge, looking the way it faces); the top panel draws the head cable. Backstops, netting over a dugout, batting cage walls |
+| `ballpark_net_diagonal` | `facing \| pole << 2` | Across its cell corner to corner, the dasher corner's convention (facing north looks north-east) |
+| `ballpark_net_roof` | facing | A batting cage's roof, at the top of its cell; no collision |
+| `outfield_wall` | facing (towards the field) | A wall block with dark green padding; stack two for an 8 ft wall. The top block draws the yellow home run line |
+| `outfield_wall_diagonal` | facing | Across its cell: facing south looks south-west (a right field wall), facing east south-east (left field). Its back is a smooth band, a little past its cell |
+| `outfield_wall_marker` | `facing \| diagonal << 2` | A wall block with a painted distance: NBT `txt` (up to five characters, default 400), `fc` (colour, `VenueColours`, white); a click opens the editor. The number is about 1.4 blocks tall, centred on the block's top edge: use it as the lower block of a two-high wall |
+| `foul_pole` | `facing \| wing << 2` | Stack it; a footing where nothing of the pole is below, a cap at the top. Bit 2 puts the yellow mesh wing, a block and a half long, on the facing side: set it on the blocks above the wall, the wing reaching into fair territory |
+| `ballpark_scoreboard` | facing (towards the reader) | A unit 12 x 5 on two legs 3 tall; the master is the left leg's foot, looking at the board (the board reaches one block to the master's left and ten to its right) |
+| `ballpark_count_board` | facing | A unit 3 x 2 for a wall or fence; the master is the bottom left cell, looking at it |
+| `pitching_machine` | facing (the way it throws) | Decor |
+
+### The scoreboards
+
+The line score: the inning numbers (the last nine played if there are more), each team's name on
+a bar of its colour with its runs by inning in squares and **R** (summed from the innings),
+**H** and **E** in yellow, a lamp beside the batting team, and along the foot the ball (green),
+strike and out (red) lamps and the last pitch's speed. The count board: the three rows of lamps
+and the speed. The casing is baked; `TileEntityBallparkScoreboardRenderer` draws the squares and
+lamps (a few coloured quads) and every glyph (one display list a board, compiled when a value
+changes), fullbright, within 192 blocks.
+
+A click opens the venue text editor (`GuiVenueText`, which lays out more than three lines with
+their captions beside them): the teams, each team's runs by inning as numbers between spaces
+(`X` for a home half not played, `-` for an empty square), `H E H E`, `B S O`, the speed, and
+buttons for the two colours and who is batting. The count board's editor has the count and the
+speed. NBT on the master:
+
+| Key | Meaning |
+|---|---|
+| `away`, `home` | up to 10 characters (AWAY, HOME) |
+| `ai`, `hi` | runs by inning, up to twelve: `"0 1 0 0 2"` |
+| `ah`, `ae`, `hh`, `he` | hits and errors, 0-99 |
+| `b`, `s`, `o` | balls 0-3, strikes and outs 0-2 |
+| `mph` | 0-199, 0 shows nothing |
+| `ac`, `hc` | colours (`VenueColours`; navy, crimson) |
+| `bat` | 0 away, 1 home |
+
+```
+/blockdata 5 4 172 {away:"VISITORS",ai:"0 1 0 0 2 0 0",hi:"1 0 0 3 0 0",ah:7,ae:1,hh:9,b:2,s:1,o:1,mph:94,bat:1}
+```
+
+### A worked diamond: where everything goes
+
+Relative to home plate's cell (0, 0), the field laid north (the field's facing, meta 2 on every
+anchor). The ground is one layer; fixtures stand in the layer above. `--layout` gives every cell.
+
+| What | Baseball (90 ft) | Softball (60 ft, 43 ft pitching) |
+|---|---|---|
+| Home plate area anchor | (0, 0) `ballpark_marking_anchor` 2, `home_plate` 2 above | (0, 0) `softball_marking_anchor` 2, `home_plate` 2 above |
+| The home area | the 13 ft dirt circle, cells -4..4 each way | all skin; the boxes, cells -5..5 |
+| Batter's boxes | 4 x 6 ft, 6 in off the plate, in the home picture | 3 x 7 ft |
+| Catcher's box | 43 in wide, 8 ft back | 8 ft 5 in wide, 10 ft back |
+| Foul lines | from the batter's box's front (1.73 m along the line) to the wall; band pieces on `x + z` 0/1 and `z - x` 0/1 | the same, from 1.95 m, out to the fence |
+| First base | `baseball_base` 2 at (19, -19); cutout anchor `ballpark_marking_anchor` 6 there | `softball_base` 2 at (13, -12) |
+| Second base | `baseball_base` 6 at (0, -38) | `softball_base` 6 at (0, -25) |
+| Third base | `baseball_base` 10 at (-19, -19); cutout anchor `ballpark_marking_anchor_third` 6 there | `softball_base` 10 at (-13, -12) |
+| Base paths | a 2.1 m skin strip on `x + z` 0..3 and `x - z` -2..1, edges `ballpark_field_edge` 0 | inside the skin |
+| Infield grass | `x + z <= 0`, `x - z >= 1`, `x - z <= 37`, `x + z >= -36`, less the circles | none |
+| Pitcher | `pitchers_mound` 2 at (0, -18), `pitchers_mound_slope` round it | pitcher's circle anchor `softball_marking_anchor` 6 at (0, -13), plate painted |
+| Infield arc (skin to grass) | 95 ft from the rubber's front; `ballpark_arc_anchor` 2, 6, 10 at (7, -46), (22, -36), (27, -28) and the `_third` twins at (-7, -46), (-22, -36), (-27, -28) | 60 ft from the plate's front; `softball_marking_anchor` 10, 14 at (7, -30), (17, -20), twins at (-7, -30), (-17, -20) |
+| Coach's boxes | `ballpark_marking_anchor` 10 at (22, -12), `_third` 10 at (-22, -12) | the same blocks at (16, -4), (-16, -4) |
+| On-deck circles | `ballpark_marking_anchor` 14 at (12, 0) and (-12, 0) | the same |
+| Warning track | 5 blocks inside the wall and along the sides (`x >= 67`, `x <= -67`), behind home from `z >= 10` | |
+| Outfield wall | two high: straight at x 72 (z -77..-66) and x -72, 45 degree from (71, -78) to (28, -121) and its mirror, straight at z -122 (x -27..27): 330 ft at the lines, 375 in the alleys, 400 to centre | (none laid; a 200-220 ft fence the same way) |
+| Markers | `outfield_wall_marker` 330 at (72, -74) and (-72, -74), 375 diagonal at (44, -105) and (-44, -105), 400 at (0, -122) | |
+| Foul poles | at (73, -73) and (-73, -73), behind the wall, 18 high, the wing on the blocks over the wall | |
+
+The cut-off softball picture uses baseball's coach's box: its box sits seven cells nearer home
+and one further out than baseball's, so its anchor lands on the same fraction of a cell.
+
+In "Venues Arena Test" the baseball field's home plate cell is at **(0, 3, 300)** (ground y 3),
+the field running north; round it: the backstop (a padded wall and nets four high at z 313,
+returns at x -11 and 11, the count board on it), dugouts at x 17..20 and -20..-17 (z 296..305),
+a bleacher of four rows at x 23..26, the bullpen in right field foul ground (plate at (50, 4,
+270), its mound at (50, 3, 252)), a batting cage at x -51..-47, z 269..282 with a pitching
+machine, and the line score at (5, 4, 172) facing home over the centre field wall.
+
+### Costs
+
+The field is chunk geometry and atlas sprites: 214 pictures, 38 mound textures and about 25
+plain and piece textures at 32 px (about 1.1 MB of atlas), a cube each (the mound cells an OBJ of
+64 quads). A painted cell reads at most 225 blocks to find its anchor, and only when its chunk
+section is built; a field has about 250 of them. The renderers are the line score and count
+boards (a list call and a few dozen quads each) and the distance markers (a list call each);
+toggle `venueBallpark` for A/B.
+
+### Traps
+
+- **A painted cell's reach is seven blocks, the render cache's sixteen.** A picture farther from
+  its anchor would read air in the chunk cache a section is built from, so the infield arc, 29 m
+  from the mound, is three anchors a side rather than one centre.
+- **Pictures are drawn in the light mowing tone.** Stripe the outfield from three blocks past
+  the arc's top, or the light grass in the arc's cells shows against a dark stripe.
+- **The bases are placed off their cell's middle** to the 90 ft (or 60 ft) diamond laid as above,
+  turned 45 degrees: on any other layout use variant 3 (centred, square).
+- **The chalk bands depend on the half-integer foul lines.** Lay home plate's point on a cell's
+  edge middle as above, or the foul lines will not fall on the band pieces.
+- **The mound's cells are full blocks with their top above them** (up to 5 px): a block placed
+  on a mound cell sits on the cell's top face, not on the mound.
+- **The 45 degree wall's back reaches past its cell**, square to its face at the corners, so a
+  run is smooth front and back; the straight wall meets it at the corner with a small notch at
+  the back.
+- **The scoreboard's text is in front of its squares by 0.03 px** towards the reader; flip the
+  sign and the numbers vanish behind the squares.
+
 ## Brands
 
 None. Team, league and sponsor names are what players type into the signs, the scoreboard and
@@ -850,7 +1076,9 @@ the banners (HOME and AWAY by default). The idle video is an invented intro and 
 the ribbon's crawl reads LET'S GO. The concourse's signs say what is sold (HOT DOGS,
 COLD BEER, DRAFTS, SOFT SERVE), never whose; the box office headers say BOX OFFICE, WILL CALL
 and TICKETS, and the marquee shows what is typed into it. The ice resurfacer
-is a generic machine with no maker's name; the scorer's table plays an abstract pattern.
+is a generic machine with no maker's name; the scorer's table plays an abstract pattern. The
+ballpark's line score says AWAY and HOME until typed into; its helmets, bats, water cooler and
+pitching machine carry no maker's name.
 
 ## Traps
 
