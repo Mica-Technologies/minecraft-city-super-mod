@@ -1,0 +1,78 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/ballpark/turf_light",
+        "y": 180
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/ballpark/turf_light",
+        "y": 270
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/ballpark/turf_light"
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/ballpark/turf_light",
+        "y": 90
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/ballpark/turf_dark",
+        "y": 180
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/ballpark/turf_dark",
+        "y": 270
+      }
+    ],
+    "variant=6": [
+      {
+        "model": "csm:venues/ballpark/turf_dark"
+      }
+    ],
+    "variant=7": [
+      {
+        "model": "csm:venues/ballpark/turf_dark",
+        "y": 90
+      }
+    ],
+    "variant=8": [
+      {
+        "model": "csm:venues/ballpark/turf_split",
+        "y": 180
+      }
+    ],
+    "variant=9": [
+      {
+        "model": "csm:venues/ballpark/turf_split",
+        "y": 270
+      }
+    ],
+    "variant=10": [
+      {
+        "model": "csm:venues/ballpark/turf_split"
+      }
+    ],
+    "variant=11": [
+      {
+        "model": "csm:venues/ballpark/turf_split",
+        "y": 90
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/turf_light"
+      }
+    ]
+  }
+}

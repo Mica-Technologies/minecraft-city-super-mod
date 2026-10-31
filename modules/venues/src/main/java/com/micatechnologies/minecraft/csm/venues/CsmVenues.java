@@ -77,6 +77,8 @@ public class CsmVenues {
         VenuesFabricatorRules::price);
     CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_CONCOURSE,
         VenuesFabricatorRules::price);
+    CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_BALLPARK,
+        VenuesFabricatorRules::price);
     VenuesSounds.registerSounds();
 
     CsmGuiRegistry.register(new VenuesGuiProvider());

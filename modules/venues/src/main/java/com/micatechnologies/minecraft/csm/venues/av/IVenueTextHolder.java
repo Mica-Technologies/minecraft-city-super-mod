@@ -2,7 +2,8 @@ package com.micatechnologies.minecraft.csm.venues.av;
 
 /**
  * A tile entity whose words and colours {@link GuiVenueText} edits and
- * {@link VenueTextPacket} carries: the ribbon board's scrolling text and the banners. Lines are
+ * {@link VenueTextPacket} carries: the ribbon board's scrolling text, the banners, the marquee, the
+ * ballpark scoreboards and the outfield wall's distance markers. Lines are
  * free text, cleaned and cut by the holder; choices are small numbers (a colour index, a speed)
  * the holder clamps.
  *
@@ -11,7 +12,7 @@ package com.micatechnologies.minecraft.csm.venues.av;
 public interface IVenueTextHolder {
 
   /** The most lines any holder has, and the most choices: what a packet may carry. */
-  int MAX_LINES = 3;
+  int MAX_LINES = 7;
   int MAX_CHOICES = 3;
 
   /** How many lines of text. */

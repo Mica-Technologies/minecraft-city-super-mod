@@ -22,7 +22,11 @@ import net.minecraft.block.Block;
  * garments wool. Outside: a marquee cell is an LED module on sheet metal (its controller adds a
  * control board), the pylon stone, the blades sign blanks, the box office window glass on
  * sheet metal; a bleacher is sheet metal, the press box sheet metal and glass, the ticket booth
- * enclosures and glass, a light tower's shaft iron, its head LED modules.
+ * enclosures and glass, a light tower's shaft iron, its head LED modules. At the ballpark: turf
+ * is dirt and seed, clay is clay, an edge both, a chalk line or a painted marking adds dye; home
+ * plate and the rubber are quartz, a base wool; the dugout's pieces sheet metal (the bat rack
+ * planks, the cooler a bucket); a net is string; the outfield wall concrete under wool padding
+ * (its marker adds dye); the foul pole iron; the scoreboards enclosures and LED modules.
  * {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
@@ -35,6 +39,8 @@ public final class VenuesFabricatorRules {
   public static final String TAB_ARENA = "tabvenuesarena";
   /** The Concourse tab. */
   public static final String TAB_CONCOURSE = "tabvenuesconcourse";
+  /** The Ballpark tab. */
+  public static final String TAB_BALLPARK = "tabvenuesballpark";
 
   private VenuesFabricatorRules() {
   }
@@ -60,6 +66,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> outside = exterior(registryName);
     if (outside != null) {
       return outside;
+    }
+    List<FabricatorIngredient> park = ballpark(registryName);
+    if (park != null) {
+      return park;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -237,6 +247,84 @@ public final class VenuesFabricatorRules {
       default:
         return null;
     }
+  }
+
+  /** The Ballpark tab's pieces, or null for a registry name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> ballpark(String registryName) {
+    switch (registryName) {
+      case "ballpark_turf":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:dirt", 1),
+            FabricatorIngredient.any("minecraft:wheat_seeds", 1));
+      case "ballpark_clay":
+      case "pitchers_mound":
+      case "pitchers_mound_slope":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:clay_ball", 2));
+      case "ballpark_field_edge":
+      case "ballpark_track_edge":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:dirt", 1),
+            FabricatorIngredient.any("minecraft:clay_ball", 1));
+      case "ballpark_chalk_turf":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:dirt", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "ballpark_chalk_clay":
+      case "ballpark_painted":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:clay_ball", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "home_plate":
+      case "pitchers_rubber":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:quartz", 1));
+      case "baseball_base":
+      case "softball_base":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 1));
+      case "dugout_bench":
+      case "dugout_canopy":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+      case "dugout_rail":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any("minecraft:wool", 1));
+      case "dugout_helmet_rack":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "dugout_bat_rack":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2));
+      case "dugout_water_cooler":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any("minecraft:bucket", 1));
+      case "ballpark_net":
+      case "ballpark_net_diagonal":
+      case "ballpark_net_roof":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:string", 2));
+      case "outfield_wall":
+      case "outfield_wall_diagonal":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
+            FabricatorIngredient.any("minecraft:wool", 1));
+      case "outfield_wall_marker":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1),
+            FabricatorIngredient.any("minecraft:wool", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "foul_pole":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 2),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "ballpark_scoreboard":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 4),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 4),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "ballpark_count_board":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "pitching_machine":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      default:
+        break;
+    }
+    if (registryName.endsWith("_anchor") || registryName.endsWith("_anchor_third")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:clay_ball", 1),
+          FabricatorIngredient.any("minecraft:dye", 1));
+    }
+    return null;
   }
 
   /** The exterior and the shared outdoor pieces, or null for a name that is not one of them. */

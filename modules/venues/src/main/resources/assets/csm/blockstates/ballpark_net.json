@@ -1,0 +1,188 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net"
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "north",
+            "pole": "true"
+          },
+          {
+            "facing": "north",
+            "end_l": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_l"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_r"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_top"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "east",
+            "pole": "true"
+          },
+          {
+            "facing": "east",
+            "end_l": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_l",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_r",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "south",
+            "pole": "true"
+          },
+          {
+            "facing": "south",
+            "end_l": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_l",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_r",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "OR": [
+          {
+            "facing": "west",
+            "pole": "true"
+          },
+          {
+            "facing": "west",
+            "end_l": "true"
+          }
+        ]
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_l",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "end_r": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_pole_r",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "top": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/net_top",
+        "y": 270
+      }
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,kind=0": [
+      {
+        "model": "csm:venues/ballpark/cell_027"
+      }
+    ],
+    "facing=east,kind=0": [
+      {
+        "model": "csm:venues/ballpark/cell_027",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=0": [
+      {
+        "model": "csm:venues/ballpark/cell_027",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=0": [
+      {
+        "model": "csm:venues/ballpark/cell_027",
+        "y": 270
+      }
+    ],
+    "facing=north,kind=1": [
+      {
+        "model": "csm:venues/ballpark/cell_167"
+      }
+    ],
+    "facing=east,kind=1": [
+      {
+        "model": "csm:venues/ballpark/cell_167",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=1": [
+      {
+        "model": "csm:venues/ballpark/cell_167",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=1": [
+      {
+        "model": "csm:venues/ballpark/cell_167",
+        "y": 270
+      }
+    ],
+    "facing=north,kind=2": [
+      {
+        "model": "csm:venues/ballpark/cell_186"
+      }
+    ],
+    "facing=east,kind=2": [
+      {
+        "model": "csm:venues/ballpark/cell_186",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=2": [
+      {
+        "model": "csm:venues/ballpark/cell_186",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=2": [
+      {
+        "model": "csm:venues/ballpark/cell_186",
+        "y": 270
+      }
+    ],
+    "facing=north,kind=3": [
+      {
+        "model": "csm:venues/ballpark/cell_205"
+      }
+    ],
+    "facing=east,kind=3": [
+      {
+        "model": "csm:venues/ballpark/cell_205",
+        "y": 90
+      }
+    ],
+    "facing=south,kind=3": [
+      {
+        "model": "csm:venues/ballpark/cell_205",
+        "y": 180
+      }
+    ],
+    "facing=west,kind=3": [
+      {
+        "model": "csm:venues/ballpark/cell_205",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/cell_027"
+      }
+    ]
+  }
+}

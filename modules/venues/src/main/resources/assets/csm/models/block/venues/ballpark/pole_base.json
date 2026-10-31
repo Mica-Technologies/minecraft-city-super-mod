@@ -1,0 +1,79 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pole": "csm:blocks/venues/ballpark/yellow",
+    "mesh": "csm:blocks/venues/ballpark/foul_mesh",
+    "base": "csm:blocks/venues/ballpark/concrete",
+    "particle": "csm:blocks/venues/ballpark/yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        2,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#base",
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#base",
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#base",
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#base",
+          "uv": [
+            3,
+            14,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#base",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#base",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    }
+  ]
+}

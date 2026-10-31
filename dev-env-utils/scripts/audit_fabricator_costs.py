@@ -692,6 +692,38 @@ def cost_for(registry, info, ancestors):
         "stadium_light_head": ("LED_MODULE x6", "SHEET_METAL x2", "WIRING_HARNESS"),
         "stadium_light_head_small": ("LED_MODULE x3", "SHEET_METAL", "WIRING_HARNESS"),
     }
+    if tab == "tabvenuesballpark":
+        # Mirrors VenuesFabricatorRules.ballpark (Sports & Venues module).
+        park = {
+            "ballpark_turf": ("dirt", "wheat_seeds"),
+            "ballpark_clay": ("clay_ball x2",), "pitchers_mound": ("clay_ball x2",),
+            "pitchers_mound_slope": ("clay_ball x2",),
+            "ballpark_field_edge": ("dirt", "clay_ball"),
+            "ballpark_track_edge": ("dirt", "clay_ball"),
+            "ballpark_chalk_turf": ("dirt", "dye"),
+            "ballpark_chalk_clay": ("clay_ball", "dye"), "ballpark_painted": ("clay_ball", "dye"),
+            "home_plate": ("quartz",), "pitchers_rubber": ("quartz",),
+            "baseball_base": ("wool",), "softball_base": ("wool",),
+            "dugout_bench": ("SHEET_METAL x2",), "dugout_canopy": ("SHEET_METAL x2",),
+            "dugout_rail": ("SHEET_METAL", "wool"),
+            "dugout_helmet_rack": ("SHEET_METAL", "dye"),
+            "dugout_bat_rack": ("planks x2",),
+            "dugout_water_cooler": ("SHEET_METAL", "bucket"),
+            "ballpark_net": ("string x2",), "ballpark_net_diagonal": ("string x2",),
+            "ballpark_net_roof": ("string x2",),
+            "outfield_wall": ("CONCRETE_MIX", "wool"),
+            "outfield_wall_diagonal": ("CONCRETE_MIX", "wool"),
+            "outfield_wall_marker": ("CONCRETE_MIX", "wool", "dye"),
+            "foul_pole": ("iron_ingot x2", "dye"),
+            "ballpark_scoreboard": ("ENCLOSURE_SHELL x4", "LED_MODULE x4", "CONTROL_BOARD"),
+            "ballpark_count_board": ("ENCLOSURE_SHELL", "LED_MODULE x2", "CONTROL_BOARD"),
+            "pitching_machine": ("SHEET_METAL x2", "WIRING_HARNESS"),
+        }
+        if registry in park:
+            return park[registry]
+        if registry.endswith("_anchor") or registry.endswith("_anchor_third"):
+            return ("clay_ball", "dye")
+        return ("SHEET_METAL", "FASTENER_KIT")
     if tab in ("tabvenuesconcourse", "tabvenuesseating") and registry in exterior:
         # Mirrors VenuesFabricatorRules.exterior (Sports & Venues module).
         return exterior[registry]

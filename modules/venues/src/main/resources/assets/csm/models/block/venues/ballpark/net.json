@@ -1,0 +1,44 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "net": "csm:blocks/venues/ballpark/net",
+    "pole": "csm:blocks/venues/ballpark/galv",
+    "cable": "csm:blocks/venues/ballpark/black",
+    "particle": "csm:blocks/venues/ballpark/galv"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        16,
+        8
+      ],
+      "shade": false,
+      "faces": {
+        "north": {
+          "texture": "#net",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#net",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

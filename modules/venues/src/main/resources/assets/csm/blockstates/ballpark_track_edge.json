@@ -1,0 +1,101 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/ballpark/track_diag",
+        "y": 180
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/ballpark/track_diag",
+        "y": 270
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/ballpark/track_diag"
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/ballpark/track_diag",
+        "y": 90
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/ballpark/track_diag_dark",
+        "y": 180
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/ballpark/track_diag_dark",
+        "y": 270
+      }
+    ],
+    "variant=6": [
+      {
+        "model": "csm:venues/ballpark/track_diag_dark"
+      }
+    ],
+    "variant=7": [
+      {
+        "model": "csm:venues/ballpark/track_diag_dark",
+        "y": 90
+      }
+    ],
+    "variant=8": [
+      {
+        "model": "csm:venues/ballpark/track_half",
+        "y": 180
+      }
+    ],
+    "variant=9": [
+      {
+        "model": "csm:venues/ballpark/track_half",
+        "y": 270
+      }
+    ],
+    "variant=10": [
+      {
+        "model": "csm:venues/ballpark/track_half"
+      }
+    ],
+    "variant=11": [
+      {
+        "model": "csm:venues/ballpark/track_half",
+        "y": 90
+      }
+    ],
+    "variant=12": [
+      {
+        "model": "csm:venues/ballpark/track_half_dark",
+        "y": 180
+      }
+    ],
+    "variant=13": [
+      {
+        "model": "csm:venues/ballpark/track_half_dark",
+        "y": 270
+      }
+    ],
+    "variant=14": [
+      {
+        "model": "csm:venues/ballpark/track_half_dark"
+      }
+    ],
+    "variant=15": [
+      {
+        "model": "csm:venues/ballpark/track_half_dark",
+        "y": 90
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/track_diag"
+      }
+    ]
+  }
+}

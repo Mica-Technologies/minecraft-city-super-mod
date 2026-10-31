@@ -1,0 +1,141 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/ballpark/mound_15.obj"
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:venues/ballpark/mound_00.obj"
+      },
+      "1": {
+        "model": "csm:venues/ballpark/mound_01.obj"
+      },
+      "2": {
+        "model": "csm:venues/ballpark/mound_02.obj"
+      },
+      "3": {
+        "model": "csm:venues/ballpark/mound_03.obj"
+      },
+      "4": {
+        "model": "csm:venues/ballpark/mound_04.obj"
+      },
+      "5": {
+        "model": "csm:venues/ballpark/mound_05.obj"
+      },
+      "6": {
+        "model": "csm:venues/ballpark/mound_06.obj"
+      },
+      "7": {
+        "model": "csm:venues/ballpark/mound_07.obj"
+      },
+      "8": {
+        "model": "csm:venues/ballpark/mound_08.obj"
+      },
+      "9": {
+        "model": "csm:venues/ballpark/mound_09.obj"
+      },
+      "10": {
+        "model": "csm:venues/ballpark/mound_10.obj"
+      },
+      "11": {
+        "model": "csm:venues/ballpark/mound_11.obj"
+      },
+      "12": {
+        "model": "csm:venues/ballpark/mound_12.obj"
+      },
+      "13": {
+        "model": "csm:venues/ballpark/mound_13.obj"
+      },
+      "14": {
+        "model": "csm:venues/ballpark/mound_14.obj"
+      },
+      "15": {
+        "model": "csm:venues/ballpark/mound_15.obj"
+      },
+      "16": {
+        "model": "csm:venues/ballpark/mound_16.obj"
+      },
+      "17": {
+        "model": "csm:venues/ballpark/mound_17.obj"
+      },
+      "18": {
+        "model": "csm:venues/ballpark/mound_18.obj"
+      },
+      "19": {
+        "model": "csm:venues/ballpark/mound_19.obj"
+      },
+      "20": {
+        "model": "csm:venues/ballpark/mound_20.obj"
+      },
+      "21": {
+        "model": "csm:venues/ballpark/mound_21.obj"
+      },
+      "22": {
+        "model": "csm:venues/ballpark/mound_22.obj"
+      },
+      "23": {
+        "model": "csm:venues/ballpark/mound_23.obj"
+      },
+      "24": {
+        "model": "csm:venues/ballpark/mound_24.obj"
+      },
+      "25": {
+        "model": "csm:venues/ballpark/mound_25.obj"
+      },
+      "26": {
+        "model": "csm:venues/ballpark/mound_26.obj"
+      },
+      "27": {
+        "model": "csm:venues/ballpark/mound_27.obj"
+      },
+      "28": {
+        "model": "csm:venues/ballpark/mound_28.obj"
+      },
+      "29": {
+        "model": "csm:venues/ballpark/mound_29.obj"
+      },
+      "30": {
+        "model": "csm:venues/ballpark/mound_30.obj"
+      },
+      "31": {
+        "model": "csm:venues/ballpark/mound_31.obj"
+      },
+      "32": {
+        "model": "csm:venues/ballpark/mound_32.obj"
+      },
+      "33": {
+        "model": "csm:venues/ballpark/mound_33.obj"
+      },
+      "34": {
+        "model": "csm:venues/ballpark/mound_34.obj"
+      },
+      "35": {
+        "model": "csm:venues/ballpark/mound_35.obj"
+      },
+      "36": {
+        "model": "csm:venues/ballpark/mound_36.obj"
+      },
+      "37": {
+        "model": "csm:venues/ballpark/mound_37.obj"
+      }
+    },
+    "rot": {
+      "0": {},
+      "1": {
+        "y": 90
+      },
+      "2": {
+        "y": 180
+      },
+      "3": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/mound_item"
+      }
+    ]
+  }
+}

@@ -1,0 +1,229 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pole": "csm:blocks/venues/ballpark/yellow",
+    "mesh": "csm:blocks/venues/ballpark/foul_mesh",
+    "base": "csm:blocks/venues/ballpark/concrete",
+    "particle": "csm:blocks/venues/ballpark/yellow"
+  },
+  "elements": [
+    {
+      "from": [
+        4.4,
+        15.0,
+        6.509
+      ],
+      "to": [
+        11.6,
+        16.5,
+        9.491
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.0
+          ]
+        },
+        "west": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.0
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            4.4,
+            6.509,
+            11.6,
+            9.491
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            4.4,
+            6.509,
+            11.6,
+            9.491
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.509,
+        14.996,
+        4.4
+      ],
+      "to": [
+        9.491,
+        16.504,
+        11.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.004
+          ]
+        },
+        "south": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.004
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            4.4,
+            9.491,
+            11.6
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            4.4,
+            9.491,
+            11.6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4.4,
+        14.992,
+        6.509
+      ],
+      "to": [
+        11.6,
+        16.508,
+        9.491
+      ],
+      "faces": {
+        "east": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.008
+          ]
+        },
+        "west": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.008
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            4.4,
+            6.509,
+            11.6,
+            9.491
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            4.4,
+            6.509,
+            11.6,
+            9.491
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          15,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        6.509,
+        14.988,
+        4.4
+      ],
+      "to": [
+        9.491,
+        16.512,
+        11.6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.012
+          ]
+        },
+        "south": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            0,
+            9.491,
+            1.012
+          ]
+        },
+        "down": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            4.4,
+            9.491,
+            11.6
+          ]
+        },
+        "up": {
+          "texture": "#pole",
+          "uv": [
+            6.509,
+            4.4,
+            9.491,
+            11.6
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          15,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "w": "csm:blocks/venues/ballpark/rubber_white",
+    "particle": "csm:blocks/venues/ballpark/rubber_white"
+  },
+  "elements": [
+    {
+      "from": [
+        3.123,
+        0,
+        6.781
+      ],
+      "to": [
+        12.877,
+        0.6,
+        9.219
+      ],
+      "faces": {
+        "north": {
+          "texture": "#w",
+          "uv": [
+            3.123,
+            15.4,
+            12.877,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#w",
+          "uv": [
+            3.123,
+            15.4,
+            12.877,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#w",
+          "uv": [
+            6.781,
+            15.4,
+            9.219,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#w",
+          "uv": [
+            6.781,
+            15.4,
+            9.219,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#w",
+          "uv": [
+            3.123,
+            6.781,
+            12.877,
+            9.219
+          ]
+        },
+        "down": {
+          "texture": "#w",
+          "uv": [
+            3.123,
+            6.781,
+            12.877,
+            9.219
+          ]
+        }
+      }
+    }
+  ]
+}

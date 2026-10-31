@@ -1,0 +1,54 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "csm:blocks/venues/ballpark/pic_202",
+    "up": "csm:blocks/venues/ballpark/pic_202",
+    "side": "csm:blocks/venues/ballpark/soil"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        },
+        "down": {
+          "texture": "#side",
+          "cullface": "down"
+        },
+        "up": {
+          "texture": "#up",
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "cullface": "up"
+        }
+      }
+    }
+  ]
+}

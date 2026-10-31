@@ -1,0 +1,33 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/ballpark/home_plate.obj"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "variant": {
+      "0": {},
+      "1": {
+        "model": "csm:venues/ballpark/home_plate_centred.obj"
+      },
+      "2": {},
+      "3": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/home_plate_item"
+      }
+    ]
+  }
+}

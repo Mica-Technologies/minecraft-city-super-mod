@@ -8,6 +8,10 @@ import com.micatechnologies.minecraft.csm.venues.av.TileEntityScoreboardRenderer
 import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBanner;
 import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBannerRenderer;
 import com.micatechnologies.minecraft.csm.venues.av.VenueColours;
+import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityBallparkScoreboard;
+import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityBallparkScoreboardRenderer;
+import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityOutfieldMarker;
+import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityOutfieldMarkerRenderer;
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
 import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
 import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarquee;
@@ -26,9 +30,10 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
- * The venues module's proxy on the client. It binds the four renderers (the scoreboard's
+ * The venues module's proxy on the client. It binds the six renderers (the scoreboard's
  * screens, the ribbon board's scrolling text, the banners' lettering, the exterior marquee's
- * picture) and registers the colour
+ * picture, the ballpark scoreboards' line score and count, the outfield distance markers) and
+ * registers the colour
  * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
  * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
  * seat beside it, so ten colours cost one set of models; a banner's cloth (tint 0) and trim (1)
@@ -50,6 +55,10 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
         new TileEntityVenueBannerRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityMarquee.class,
         new TileEntityMarqueeRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBallparkScoreboard.class,
+        new TileEntityBallparkScoreboardRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityOutfieldMarker.class,
+        new TileEntityOutfieldMarkerRenderer());
     seatColours();
     bannerColours();
     storeColours();

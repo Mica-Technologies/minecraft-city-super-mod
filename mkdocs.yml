@@ -181,6 +181,7 @@ nav:
       - Sports & Venues - Seating & Venue: reference/venues-seating.md
       - Sports & Venues - Arena: reference/venues-arena.md
       - Sports & Venues - Concourse: reference/venues-concourse.md
+      - Sports & Venues - Ballpark: reference/venues-ballpark.md
       - Unlisted: reference/unlisted.md
   - Developer:
       - developer/index.md

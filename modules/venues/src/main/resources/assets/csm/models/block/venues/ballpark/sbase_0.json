@@ -1,0 +1,146 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "canvas": "csm:blocks/venues/ballpark/canvas",
+    "orange": "csm:blocks/venues/ballpark/canvas_orange",
+    "particle": "csm:blocks/venues/ballpark/canvas"
+  },
+  "elements": [
+    {
+      "from": [
+        -0.453,
+        0,
+        -1.953
+      ],
+      "to": [
+        5.643,
+        1.6,
+        4.143
+      ],
+      "faces": {
+        "north": {
+          "texture": "#canvas",
+          "uv": [
+            10.357,
+            14.4,
+            16,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#canvas",
+          "uv": [
+            11.857,
+            14.4,
+            16,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#canvas",
+          "uv": [
+            0,
+            14.4,
+            4.143,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#canvas",
+          "uv": [
+            0,
+            0,
+            5.643,
+            4.143
+          ]
+        },
+        "down": {
+          "texture": "#canvas",
+          "uv": [
+            0,
+            11.857,
+            5.643,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          2.595,
+          0,
+          1.095
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        3.857,
+        0,
+        2.357
+      ],
+      "to": [
+        9.953,
+        1.6,
+        8.453
+      ],
+      "faces": {
+        "south": {
+          "texture": "#orange",
+          "uv": [
+            3.857,
+            14.4,
+            9.953,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#orange",
+          "uv": [
+            7.547,
+            14.4,
+            13.643,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#orange",
+          "uv": [
+            2.357,
+            14.4,
+            8.453,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#orange",
+          "uv": [
+            3.857,
+            2.357,
+            9.953,
+            8.453
+          ]
+        },
+        "down": {
+          "texture": "#orange",
+          "uv": [
+            3.857,
+            7.547,
+            9.953,
+            13.643
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          6.905,
+          0,
+          5.405
+        ],
+        "axis": "y",
+        "angle": 45
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "csm:blocks/venues/ballpark/piece_track_diag_dark",
+    "down": "csm:blocks/venues/ballpark/soil",
+    "up": "csm:blocks/venues/ballpark/piece_track_diag_dark",
+    "north": "csm:blocks/venues/ballpark/soil",
+    "south": "csm:blocks/venues/ballpark/soil",
+    "east": "csm:blocks/venues/ballpark/soil",
+    "west": "csm:blocks/venues/ballpark/soil"
+  }
+}

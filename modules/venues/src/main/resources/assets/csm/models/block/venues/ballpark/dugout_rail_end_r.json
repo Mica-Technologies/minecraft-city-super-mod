@@ -1,0 +1,149 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "alu": "csm:blocks/venues/ballpark/alu",
+    "frame": "csm:blocks/venues/ballpark/frame_green",
+    "pad": "csm:blocks/venues/ballpark/pad_navy",
+    "steel": "csm:blocks/venues/ballpark/steel",
+    "roof": "csm:blocks/venues/ballpark/roof_deck",
+    "particle": "csm:blocks/venues/ballpark/frame_green"
+  },
+  "elements": [
+    {
+      "from": [
+        14.5,
+        0,
+        7.25
+      ],
+      "to": [
+        16,
+        14,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            2,
+            1.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            14.5,
+            2,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            14.5,
+            7.25,
+            16,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            14.5,
+            7.25,
+            16,
+            8.75
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            7.25,
+            2,
+            8.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            7.25,
+            2,
+            8.75,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        15,
+        14,
+        6
+      ],
+      "to": [
+        16,
+        18,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pad",
+          "uv": [
+            0,
+            0,
+            1,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#pad",
+          "uv": [
+            15,
+            0,
+            16,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#pad",
+          "uv": [
+            15,
+            6,
+            16,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#pad",
+          "uv": [
+            15,
+            6,
+            16,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#pad",
+          "uv": [
+            6,
+            0,
+            10,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#pad",
+          "uv": [
+            6,
+            0,
+            10,
+            2
+          ]
+        }
+      }
+    }
+  ]
+}

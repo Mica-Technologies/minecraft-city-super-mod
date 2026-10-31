@@ -1,0 +1,101 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/ballpark/clay",
+        "y": 180
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/ballpark/clay",
+        "y": 270
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/ballpark/clay"
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/ballpark/clay",
+        "y": 90
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/ballpark/clay_dragged",
+        "y": 180
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/ballpark/clay_dragged",
+        "y": 270
+      }
+    ],
+    "variant=6": [
+      {
+        "model": "csm:venues/ballpark/clay_dragged"
+      }
+    ],
+    "variant=7": [
+      {
+        "model": "csm:venues/ballpark/clay_dragged",
+        "y": 90
+      }
+    ],
+    "variant=8": [
+      {
+        "model": "csm:venues/ballpark/pack",
+        "y": 180
+      }
+    ],
+    "variant=9": [
+      {
+        "model": "csm:venues/ballpark/pack",
+        "y": 270
+      }
+    ],
+    "variant=10": [
+      {
+        "model": "csm:venues/ballpark/pack"
+      }
+    ],
+    "variant=11": [
+      {
+        "model": "csm:venues/ballpark/pack",
+        "y": 90
+      }
+    ],
+    "variant=12": [
+      {
+        "model": "csm:venues/ballpark/track",
+        "y": 180
+      }
+    ],
+    "variant=13": [
+      {
+        "model": "csm:venues/ballpark/track",
+        "y": 270
+      }
+    ],
+    "variant=14": [
+      {
+        "model": "csm:venues/ballpark/track"
+      }
+    ],
+    "variant=15": [
+      {
+        "model": "csm:venues/ballpark/track",
+        "y": 90
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/clay"
+      }
+    ]
+  }
+}

@@ -13,8 +13,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
 /**
- * A full, opaque floor block of an arena's event floor: rink ice (as slippery as vanilla ice) or
- * a maple court, or the rubber matting round a rink. The subclasses differ only in what picks
+ * A full, opaque floor block of an arena's event floor or a ballpark: rink ice (as slippery as
+ * vanilla ice) or a maple court, the rubber matting round a rink, a ballpark's turf and clay. The subclasses differ only in what picks
  * their top: metadata ({@link BlockArenaFloor}), an anchor's facing and kind
  * ({@link BlockArenaFloorAnchor}) or the anchor found nearby ({@link BlockArenaFloorPainted}).
  *
@@ -32,7 +32,11 @@ public abstract class BlockArenaFloorBase extends AbstractBlock {
     /** Rubber matting. */
     RUBBER(Material.ROCK, SoundType.CLOTH, "pickaxe", 1.0F, false),
     /** Maple strip flooring. */
-    WOOD(Material.WOOD, SoundType.WOOD, "axe", 1.5F, false);
+    WOOD(Material.WOOD, SoundType.WOOD, "axe", 1.5F, false),
+    /** A ballpark's turf. */
+    TURF(Material.GRASS, SoundType.PLANT, "shovel", 0.6F, false),
+    /** A ballpark's infield clay, packing clay and warning track. */
+    CLAY(Material.GROUND, SoundType.GROUND, "shovel", 0.6F, false);
 
     final Material material;
     final SoundType sound;

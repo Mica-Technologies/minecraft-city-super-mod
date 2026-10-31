@@ -1,0 +1,101 @@
+{
+  "variants": {
+    "variant=0": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_band",
+        "y": 180
+      }
+    ],
+    "variant=1": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_band",
+        "y": 270
+      }
+    ],
+    "variant=2": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_band"
+      }
+    ],
+    "variant=3": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_band",
+        "y": 90
+      }
+    ],
+    "variant=4": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_band",
+        "y": 180
+      }
+    ],
+    "variant=5": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_band",
+        "y": 270
+      }
+    ],
+    "variant=6": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_band"
+      }
+    ],
+    "variant=7": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_band",
+        "y": 90
+      }
+    ],
+    "variant=8": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_mid",
+        "y": 180
+      }
+    ],
+    "variant=9": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_mid",
+        "y": 270
+      }
+    ],
+    "variant=10": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_mid"
+      }
+    ],
+    "variant=11": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_mid",
+        "y": 90
+      }
+    ],
+    "variant=12": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_mid",
+        "y": 180
+      }
+    ],
+    "variant=13": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_mid",
+        "y": 270
+      }
+    ],
+    "variant=14": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_mid"
+      }
+    ],
+    "variant=15": [
+      {
+        "model": "csm:venues/ballpark/chalk_track_mid",
+        "y": 90
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/chalk_clay_band"
+      }
+    ]
+  }
+}

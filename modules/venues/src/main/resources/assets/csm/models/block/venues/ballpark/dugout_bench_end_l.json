@@ -1,0 +1,149 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "alu": "csm:blocks/venues/ballpark/alu",
+    "frame": "csm:blocks/venues/ballpark/frame_green",
+    "pad": "csm:blocks/venues/ballpark/pad_navy",
+    "steel": "csm:blocks/venues/ballpark/steel",
+    "roof": "csm:blocks/venues/ballpark/roof_deck",
+    "particle": "csm:blocks/venues/ballpark/frame_green"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        3
+      ],
+      "to": [
+        1.25,
+        8,
+        14.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            14.75,
+            8,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            8,
+            1.25,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            1.75,
+            8,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            3,
+            8,
+            14.25,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3,
+            1.25,
+            14.25
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            1.75,
+            1.25,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        8,
+        12.8
+      ],
+      "to": [
+        1.25,
+        18.5,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            14.75,
+            0,
+            16,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            1.25,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0.5,
+            0,
+            3,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            13,
+            0,
+            15.5,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            13,
+            1.25,
+            15.5
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0.5,
+            1.25,
+            3
+          ]
+        }
+      }
+    }
+  ]
+}

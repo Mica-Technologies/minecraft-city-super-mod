@@ -198,6 +198,17 @@ TABS = {
                        "bench gate and penalty box door), the hockey goal, benches, the "
                        "scorer's table, the ice resurfacer and ice plant; the maple court, its "
                        "lines and painted keys, and the portable basketball stanchion."),
+    "tabvenuesballpark": ("venues-ballpark", "Sports & Venues - Ballpark",
+                          "Baseball and softball: turf in two mowing tones, infield clay, "
+                          "packing clay and the warning track, the grass edges and chalk lines "
+                          "that run at 45 degrees across a diamond laid along the grid, the "
+                          "marking anchors and painted cells that draw the home plate area, base "
+                          "cutouts, coach's boxes, on-deck circles, the infield arc and "
+                          "softball's circle, the pitcher's mound, home plate, the bases and the "
+                          "rubber; the dugout's bench, rail, canopy, helmet and bat racks and "
+                          "water cooler; backstop and batting cage nets; the outfield wall with "
+                          "its distance markers and the foul pole; the line score scoreboard, "
+                          "the count board and a pitching machine."),
     "tabvenuesconcourse": ("venues-concourse", "Sports & Venues - Concourse",
                            "An arena's concourse and premium spaces: concession counters "
                            "(straight, outside corner and back counter in four finishes), the lit "
@@ -246,7 +257,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
-              "tabvenuesconcourse",
+              "tabvenuesconcourse", "tabvenuesballpark",
               "tabnone"]
 
 

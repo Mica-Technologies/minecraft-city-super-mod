@@ -1,0 +1,1014 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/ballpark/cell_000"
+  },
+  "variants": {
+    "cell": {
+      "0": {
+        "model": "csm:venues/ballpark/cell_000"
+      },
+      "1": {
+        "model": "csm:venues/ballpark/cell_001"
+      },
+      "2": {
+        "model": "csm:venues/ballpark/cell_002"
+      },
+      "3": {
+        "model": "csm:venues/ballpark/cell_003"
+      },
+      "4": {
+        "model": "csm:venues/ballpark/cell_004"
+      },
+      "5": {
+        "model": "csm:venues/ballpark/cell_005"
+      },
+      "6": {
+        "model": "csm:venues/ballpark/cell_006"
+      },
+      "7": {
+        "model": "csm:venues/ballpark/cell_007"
+      },
+      "8": {
+        "model": "csm:venues/ballpark/cell_008"
+      },
+      "9": {
+        "model": "csm:venues/ballpark/cell_009"
+      },
+      "10": {
+        "model": "csm:venues/ballpark/cell_010"
+      },
+      "11": {
+        "model": "csm:venues/ballpark/cell_011"
+      },
+      "12": {
+        "model": "csm:venues/ballpark/cell_012"
+      },
+      "13": {
+        "model": "csm:venues/ballpark/cell_013"
+      },
+      "14": {
+        "model": "csm:venues/ballpark/cell_014"
+      },
+      "15": {
+        "model": "csm:venues/ballpark/cell_015"
+      },
+      "16": {
+        "model": "csm:venues/ballpark/cell_016"
+      },
+      "17": {
+        "model": "csm:venues/ballpark/cell_017"
+      },
+      "18": {
+        "model": "csm:venues/ballpark/cell_018"
+      },
+      "19": {
+        "model": "csm:venues/ballpark/cell_019"
+      },
+      "20": {
+        "model": "csm:venues/ballpark/cell_020"
+      },
+      "21": {
+        "model": "csm:venues/ballpark/cell_021"
+      },
+      "22": {
+        "model": "csm:venues/ballpark/cell_022"
+      },
+      "23": {
+        "model": "csm:venues/ballpark/cell_023"
+      },
+      "24": {
+        "model": "csm:venues/ballpark/cell_024"
+      },
+      "25": {
+        "model": "csm:venues/ballpark/cell_025"
+      },
+      "26": {
+        "model": "csm:venues/ballpark/cell_026"
+      },
+      "27": {
+        "model": "csm:venues/ballpark/cell_027"
+      },
+      "28": {
+        "model": "csm:venues/ballpark/cell_028"
+      },
+      "29": {
+        "model": "csm:venues/ballpark/cell_029"
+      },
+      "30": {
+        "model": "csm:venues/ballpark/cell_030"
+      },
+      "31": {
+        "model": "csm:venues/ballpark/cell_031"
+      },
+      "32": {
+        "model": "csm:venues/ballpark/cell_032"
+      },
+      "33": {
+        "model": "csm:venues/ballpark/cell_033"
+      },
+      "34": {
+        "model": "csm:venues/ballpark/cell_034"
+      },
+      "35": {
+        "model": "csm:venues/ballpark/cell_035"
+      },
+      "36": {
+        "model": "csm:venues/ballpark/cell_036"
+      },
+      "37": {
+        "model": "csm:venues/ballpark/cell_037"
+      },
+      "38": {
+        "model": "csm:venues/ballpark/cell_038"
+      },
+      "39": {
+        "model": "csm:venues/ballpark/cell_039"
+      },
+      "40": {
+        "model": "csm:venues/ballpark/cell_040"
+      },
+      "41": {
+        "model": "csm:venues/ballpark/cell_041"
+      },
+      "42": {
+        "model": "csm:venues/ballpark/cell_042"
+      },
+      "43": {
+        "model": "csm:venues/ballpark/cell_043"
+      },
+      "44": {
+        "model": "csm:venues/ballpark/cell_044"
+      },
+      "45": {
+        "model": "csm:venues/ballpark/cell_045"
+      },
+      "46": {
+        "model": "csm:venues/ballpark/cell_046"
+      },
+      "47": {
+        "model": "csm:venues/ballpark/cell_047"
+      },
+      "48": {
+        "model": "csm:venues/ballpark/cell_048"
+      },
+      "49": {
+        "model": "csm:venues/ballpark/cell_049"
+      },
+      "50": {
+        "model": "csm:venues/ballpark/cell_050"
+      },
+      "51": {
+        "model": "csm:venues/ballpark/cell_051"
+      },
+      "52": {
+        "model": "csm:venues/ballpark/cell_052"
+      },
+      "53": {
+        "model": "csm:venues/ballpark/cell_053"
+      },
+      "54": {
+        "model": "csm:venues/ballpark/cell_054"
+      },
+      "55": {
+        "model": "csm:venues/ballpark/cell_055"
+      },
+      "56": {
+        "model": "csm:venues/ballpark/cell_056"
+      },
+      "57": {
+        "model": "csm:venues/ballpark/cell_057"
+      },
+      "58": {
+        "model": "csm:venues/ballpark/cell_058"
+      },
+      "59": {
+        "model": "csm:venues/ballpark/cell_059"
+      },
+      "60": {
+        "model": "csm:venues/ballpark/cell_060"
+      },
+      "61": {
+        "model": "csm:venues/ballpark/cell_061"
+      },
+      "62": {
+        "model": "csm:venues/ballpark/cell_062"
+      },
+      "63": {
+        "model": "csm:venues/ballpark/cell_063"
+      },
+      "64": {
+        "model": "csm:venues/ballpark/cell_064"
+      },
+      "65": {
+        "model": "csm:venues/ballpark/cell_065"
+      },
+      "66": {
+        "model": "csm:venues/ballpark/cell_066"
+      },
+      "67": {
+        "model": "csm:venues/ballpark/cell_067"
+      },
+      "68": {
+        "model": "csm:venues/ballpark/cell_068"
+      },
+      "69": {
+        "model": "csm:venues/ballpark/cell_069"
+      },
+      "70": {
+        "model": "csm:venues/ballpark/cell_070"
+      },
+      "71": {
+        "model": "csm:venues/ballpark/cell_071"
+      },
+      "72": {
+        "model": "csm:venues/ballpark/cell_072"
+      },
+      "73": {
+        "model": "csm:venues/ballpark/cell_073"
+      },
+      "74": {
+        "model": "csm:venues/ballpark/cell_074"
+      },
+      "75": {
+        "model": "csm:venues/ballpark/cell_075"
+      },
+      "76": {
+        "model": "csm:venues/ballpark/cell_076"
+      },
+      "77": {
+        "model": "csm:venues/ballpark/cell_077"
+      },
+      "78": {
+        "model": "csm:venues/ballpark/cell_078"
+      },
+      "79": {
+        "model": "csm:venues/ballpark/cell_079"
+      },
+      "80": {
+        "model": "csm:venues/ballpark/cell_080"
+      },
+      "81": {
+        "model": "csm:venues/ballpark/cell_081"
+      },
+      "82": {
+        "model": "csm:venues/ballpark/cell_082"
+      },
+      "83": {
+        "model": "csm:venues/ballpark/cell_083"
+      },
+      "84": {
+        "model": "csm:venues/ballpark/cell_084"
+      },
+      "85": {
+        "model": "csm:venues/ballpark/cell_085"
+      },
+      "86": {
+        "model": "csm:venues/ballpark/cell_086"
+      },
+      "87": {
+        "model": "csm:venues/ballpark/cell_087"
+      },
+      "88": {
+        "model": "csm:venues/ballpark/cell_088"
+      },
+      "89": {
+        "model": "csm:venues/ballpark/cell_089"
+      },
+      "90": {
+        "model": "csm:venues/ballpark/cell_090"
+      },
+      "91": {
+        "model": "csm:venues/ballpark/cell_091"
+      },
+      "92": {
+        "model": "csm:venues/ballpark/cell_092"
+      },
+      "93": {
+        "model": "csm:venues/ballpark/cell_093"
+      },
+      "94": {
+        "model": "csm:venues/ballpark/cell_094"
+      },
+      "95": {
+        "model": "csm:venues/ballpark/cell_095"
+      },
+      "96": {
+        "model": "csm:venues/ballpark/cell_096"
+      },
+      "97": {
+        "model": "csm:venues/ballpark/cell_097"
+      },
+      "98": {
+        "model": "csm:venues/ballpark/cell_098"
+      },
+      "99": {
+        "model": "csm:venues/ballpark/cell_099"
+      },
+      "100": {
+        "model": "csm:venues/ballpark/cell_100"
+      },
+      "101": {
+        "model": "csm:venues/ballpark/cell_101"
+      },
+      "102": {
+        "model": "csm:venues/ballpark/cell_102"
+      },
+      "103": {
+        "model": "csm:venues/ballpark/cell_103"
+      },
+      "104": {
+        "model": "csm:venues/ballpark/cell_104"
+      },
+      "105": {
+        "model": "csm:venues/ballpark/cell_105"
+      },
+      "106": {
+        "model": "csm:venues/ballpark/cell_106"
+      },
+      "107": {
+        "model": "csm:venues/ballpark/cell_107"
+      },
+      "108": {
+        "model": "csm:venues/ballpark/cell_108"
+      },
+      "109": {
+        "model": "csm:venues/ballpark/cell_109"
+      },
+      "110": {
+        "model": "csm:venues/ballpark/cell_110"
+      },
+      "111": {
+        "model": "csm:venues/ballpark/cell_111"
+      },
+      "112": {
+        "model": "csm:venues/ballpark/cell_112"
+      },
+      "113": {
+        "model": "csm:venues/ballpark/cell_113"
+      },
+      "114": {
+        "model": "csm:venues/ballpark/cell_114"
+      },
+      "115": {
+        "model": "csm:venues/ballpark/cell_115"
+      },
+      "116": {
+        "model": "csm:venues/ballpark/cell_116"
+      },
+      "117": {
+        "model": "csm:venues/ballpark/cell_117"
+      },
+      "118": {
+        "model": "csm:venues/ballpark/cell_118"
+      },
+      "119": {
+        "model": "csm:venues/ballpark/cell_119"
+      },
+      "120": {
+        "model": "csm:venues/ballpark/cell_120"
+      },
+      "121": {
+        "model": "csm:venues/ballpark/cell_121"
+      },
+      "122": {
+        "model": "csm:venues/ballpark/cell_122"
+      },
+      "123": {
+        "model": "csm:venues/ballpark/cell_123"
+      },
+      "124": {
+        "model": "csm:venues/ballpark/cell_124"
+      },
+      "125": {
+        "model": "csm:venues/ballpark/cell_125"
+      },
+      "126": {
+        "model": "csm:venues/ballpark/cell_126"
+      },
+      "127": {
+        "model": "csm:venues/ballpark/cell_127"
+      },
+      "128": {
+        "model": "csm:venues/ballpark/cell_128"
+      },
+      "129": {
+        "model": "csm:venues/ballpark/cell_129"
+      },
+      "130": {
+        "model": "csm:venues/ballpark/cell_130"
+      },
+      "131": {
+        "model": "csm:venues/ballpark/cell_131"
+      },
+      "132": {
+        "model": "csm:venues/ballpark/cell_132"
+      },
+      "133": {
+        "model": "csm:venues/ballpark/cell_133"
+      },
+      "134": {
+        "model": "csm:venues/ballpark/cell_134"
+      },
+      "135": {
+        "model": "csm:venues/ballpark/cell_135"
+      },
+      "136": {
+        "model": "csm:venues/ballpark/cell_136"
+      },
+      "137": {
+        "model": "csm:venues/ballpark/cell_137"
+      },
+      "138": {
+        "model": "csm:venues/ballpark/cell_138"
+      },
+      "139": {
+        "model": "csm:venues/ballpark/cell_139"
+      },
+      "140": {
+        "model": "csm:venues/ballpark/cell_140"
+      },
+      "141": {
+        "model": "csm:venues/ballpark/cell_141"
+      },
+      "142": {
+        "model": "csm:venues/ballpark/cell_142"
+      },
+      "143": {
+        "model": "csm:venues/ballpark/cell_143"
+      },
+      "144": {
+        "model": "csm:venues/ballpark/cell_144"
+      },
+      "145": {
+        "model": "csm:venues/ballpark/cell_145"
+      },
+      "146": {
+        "model": "csm:venues/ballpark/cell_146"
+      },
+      "147": {
+        "model": "csm:venues/ballpark/cell_147"
+      },
+      "148": {
+        "model": "csm:venues/ballpark/cell_148"
+      },
+      "149": {
+        "model": "csm:venues/ballpark/cell_149"
+      },
+      "150": {
+        "model": "csm:venues/ballpark/cell_150"
+      },
+      "151": {
+        "model": "csm:venues/ballpark/cell_151"
+      },
+      "152": {
+        "model": "csm:venues/ballpark/cell_152"
+      },
+      "153": {
+        "model": "csm:venues/ballpark/cell_153"
+      },
+      "154": {
+        "model": "csm:venues/ballpark/cell_154"
+      },
+      "155": {
+        "model": "csm:venues/ballpark/cell_155"
+      },
+      "156": {
+        "model": "csm:venues/ballpark/cell_156"
+      },
+      "157": {
+        "model": "csm:venues/ballpark/cell_157"
+      },
+      "158": {
+        "model": "csm:venues/ballpark/cell_158"
+      },
+      "159": {
+        "model": "csm:venues/ballpark/cell_159"
+      },
+      "160": {
+        "model": "csm:venues/ballpark/cell_160"
+      },
+      "161": {
+        "model": "csm:venues/ballpark/cell_161"
+      },
+      "162": {
+        "model": "csm:venues/ballpark/cell_162"
+      },
+      "163": {
+        "model": "csm:venues/ballpark/cell_163"
+      },
+      "164": {
+        "model": "csm:venues/ballpark/cell_164"
+      },
+      "165": {
+        "model": "csm:venues/ballpark/cell_165"
+      },
+      "166": {
+        "model": "csm:venues/ballpark/cell_166"
+      },
+      "167": {
+        "model": "csm:venues/ballpark/cell_167"
+      },
+      "168": {
+        "model": "csm:venues/ballpark/cell_168"
+      },
+      "169": {
+        "model": "csm:venues/ballpark/cell_169"
+      },
+      "170": {
+        "model": "csm:venues/ballpark/cell_170"
+      },
+      "171": {
+        "model": "csm:venues/ballpark/cell_171"
+      },
+      "172": {
+        "model": "csm:venues/ballpark/cell_172"
+      },
+      "173": {
+        "model": "csm:venues/ballpark/cell_173"
+      },
+      "174": {
+        "model": "csm:venues/ballpark/cell_174"
+      },
+      "175": {
+        "model": "csm:venues/ballpark/cell_175"
+      },
+      "176": {
+        "model": "csm:venues/ballpark/cell_176"
+      },
+      "177": {
+        "model": "csm:venues/ballpark/cell_177"
+      },
+      "178": {
+        "model": "csm:venues/ballpark/cell_178"
+      },
+      "179": {
+        "model": "csm:venues/ballpark/cell_179"
+      },
+      "180": {
+        "model": "csm:venues/ballpark/cell_180"
+      },
+      "181": {
+        "model": "csm:venues/ballpark/cell_181"
+      },
+      "182": {
+        "model": "csm:venues/ballpark/cell_182"
+      },
+      "183": {
+        "model": "csm:venues/ballpark/cell_183"
+      },
+      "184": {
+        "model": "csm:venues/ballpark/cell_184"
+      },
+      "185": {
+        "model": "csm:venues/ballpark/cell_185"
+      },
+      "186": {
+        "model": "csm:venues/ballpark/cell_186"
+      },
+      "187": {
+        "model": "csm:venues/ballpark/cell_187"
+      },
+      "188": {
+        "model": "csm:venues/ballpark/cell_188"
+      },
+      "189": {
+        "model": "csm:venues/ballpark/cell_189"
+      },
+      "190": {
+        "model": "csm:venues/ballpark/cell_190"
+      },
+      "191": {
+        "model": "csm:venues/ballpark/cell_191"
+      },
+      "192": {
+        "model": "csm:venues/ballpark/cell_192"
+      },
+      "193": {
+        "model": "csm:venues/ballpark/cell_193"
+      },
+      "194": {
+        "model": "csm:venues/ballpark/cell_194"
+      },
+      "195": {
+        "model": "csm:venues/ballpark/cell_195"
+      },
+      "196": {
+        "model": "csm:venues/ballpark/cell_196"
+      },
+      "197": {
+        "model": "csm:venues/ballpark/cell_197"
+      },
+      "198": {
+        "model": "csm:venues/ballpark/cell_198"
+      },
+      "199": {
+        "model": "csm:venues/ballpark/cell_199"
+      },
+      "200": {
+        "model": "csm:venues/ballpark/cell_200"
+      },
+      "201": {
+        "model": "csm:venues/ballpark/cell_201"
+      },
+      "202": {
+        "model": "csm:venues/ballpark/cell_202"
+      },
+      "203": {
+        "model": "csm:venues/ballpark/cell_203"
+      },
+      "204": {
+        "model": "csm:venues/ballpark/cell_204"
+      },
+      "205": {
+        "model": "csm:venues/ballpark/cell_205"
+      },
+      "206": {
+        "model": "csm:venues/ballpark/cell_206"
+      },
+      "207": {
+        "model": "csm:venues/ballpark/cell_207"
+      },
+      "208": {
+        "model": "csm:venues/ballpark/cell_208"
+      },
+      "209": {
+        "model": "csm:venues/ballpark/cell_209"
+      },
+      "210": {
+        "model": "csm:venues/ballpark/cell_210"
+      },
+      "211": {
+        "model": "csm:venues/ballpark/cell_211"
+      },
+      "212": {
+        "model": "csm:venues/ballpark/cell_212"
+      },
+      "213": {
+        "model": "csm:venues/ballpark/cell_213"
+      },
+      "214": {
+        "model": "csm:venues/ballpark/cell_214"
+      },
+      "215": {
+        "model": "csm:venues/ballpark/cell_215"
+      },
+      "216": {
+        "model": "csm:venues/ballpark/cell_216"
+      },
+      "217": {
+        "model": "csm:venues/ballpark/cell_217"
+      },
+      "218": {
+        "model": "csm:venues/ballpark/cell_218"
+      },
+      "219": {
+        "model": "csm:venues/ballpark/cell_219"
+      },
+      "220": {
+        "model": "csm:venues/ballpark/cell_220"
+      },
+      "221": {
+        "model": "csm:venues/ballpark/cell_221"
+      },
+      "222": {
+        "model": "csm:venues/ballpark/cell_222"
+      },
+      "223": {
+        "model": "csm:venues/ballpark/cell_223"
+      },
+      "224": {
+        "model": "csm:venues/ballpark/cell_224"
+      },
+      "225": {
+        "model": "csm:venues/ballpark/cell_225"
+      },
+      "226": {
+        "model": "csm:venues/ballpark/cell_226"
+      },
+      "227": {
+        "model": "csm:venues/ballpark/cell_227"
+      },
+      "228": {
+        "model": "csm:venues/ballpark/cell_228"
+      },
+      "229": {
+        "model": "csm:venues/ballpark/cell_229"
+      },
+      "230": {
+        "model": "csm:venues/ballpark/cell_230"
+      },
+      "231": {
+        "model": "csm:venues/ballpark/cell_231"
+      },
+      "232": {
+        "model": "csm:venues/ballpark/cell_232"
+      },
+      "233": {
+        "model": "csm:venues/ballpark/cell_233"
+      },
+      "234": {
+        "model": "csm:venues/ballpark/cell_234"
+      },
+      "235": {
+        "model": "csm:venues/ballpark/cell_235"
+      },
+      "236": {
+        "model": "csm:venues/ballpark/cell_236"
+      },
+      "237": {
+        "model": "csm:venues/ballpark/cell_237"
+      },
+      "238": {
+        "model": "csm:venues/ballpark/cell_238"
+      },
+      "239": {
+        "model": "csm:venues/ballpark/cell_239"
+      },
+      "240": {
+        "model": "csm:venues/ballpark/cell_240"
+      },
+      "241": {
+        "model": "csm:venues/ballpark/cell_241"
+      },
+      "242": {
+        "model": "csm:venues/ballpark/cell_242"
+      },
+      "243": {
+        "model": "csm:venues/ballpark/cell_243"
+      },
+      "244": {
+        "model": "csm:venues/ballpark/cell_244"
+      },
+      "245": {
+        "model": "csm:venues/ballpark/cell_245"
+      },
+      "246": {
+        "model": "csm:venues/ballpark/cell_246"
+      },
+      "247": {
+        "model": "csm:venues/ballpark/cell_247"
+      },
+      "248": {
+        "model": "csm:venues/ballpark/cell_248"
+      },
+      "249": {
+        "model": "csm:venues/ballpark/cell_249"
+      },
+      "250": {
+        "model": "csm:venues/ballpark/cell_250"
+      },
+      "251": {
+        "model": "csm:venues/ballpark/cell_251"
+      },
+      "252": {
+        "model": "csm:venues/ballpark/cell_252"
+      },
+      "253": {
+        "model": "csm:venues/ballpark/cell_253"
+      },
+      "254": {
+        "model": "csm:venues/ballpark/cell_254"
+      },
+      "255": {
+        "model": "csm:venues/ballpark/cell_255"
+      },
+      "256": {
+        "model": "csm:venues/ballpark/cell_256"
+      },
+      "257": {
+        "model": "csm:venues/ballpark/cell_257"
+      },
+      "258": {
+        "model": "csm:venues/ballpark/cell_258"
+      },
+      "259": {
+        "model": "csm:venues/ballpark/cell_259"
+      },
+      "260": {
+        "model": "csm:venues/ballpark/cell_260"
+      },
+      "261": {
+        "model": "csm:venues/ballpark/cell_261"
+      },
+      "262": {
+        "model": "csm:venues/ballpark/cell_262"
+      },
+      "263": {
+        "model": "csm:venues/ballpark/cell_263"
+      },
+      "264": {
+        "model": "csm:venues/ballpark/cell_264"
+      },
+      "265": {
+        "model": "csm:venues/ballpark/cell_265"
+      },
+      "266": {
+        "model": "csm:venues/ballpark/cell_266"
+      },
+      "267": {
+        "model": "csm:venues/ballpark/cell_267"
+      },
+      "268": {
+        "model": "csm:venues/ballpark/cell_268"
+      },
+      "269": {
+        "model": "csm:venues/ballpark/cell_269"
+      },
+      "270": {
+        "model": "csm:venues/ballpark/cell_270"
+      },
+      "271": {
+        "model": "csm:venues/ballpark/cell_271"
+      },
+      "272": {
+        "model": "csm:venues/ballpark/cell_272"
+      },
+      "273": {
+        "model": "csm:venues/ballpark/cell_273"
+      },
+      "274": {
+        "model": "csm:venues/ballpark/cell_274"
+      },
+      "275": {
+        "model": "csm:venues/ballpark/cell_275"
+      },
+      "276": {
+        "model": "csm:venues/ballpark/cell_276"
+      },
+      "277": {
+        "model": "csm:venues/ballpark/cell_277"
+      },
+      "278": {
+        "model": "csm:venues/ballpark/cell_278"
+      },
+      "279": {
+        "model": "csm:venues/ballpark/cell_279"
+      },
+      "280": {
+        "model": "csm:venues/ballpark/cell_280"
+      },
+      "281": {
+        "model": "csm:venues/ballpark/cell_281"
+      },
+      "282": {
+        "model": "csm:venues/ballpark/cell_282"
+      },
+      "283": {
+        "model": "csm:venues/ballpark/cell_283"
+      },
+      "284": {
+        "model": "csm:venues/ballpark/cell_284"
+      },
+      "285": {
+        "model": "csm:venues/ballpark/cell_285"
+      },
+      "286": {
+        "model": "csm:venues/ballpark/cell_286"
+      },
+      "287": {
+        "model": "csm:venues/ballpark/cell_287"
+      },
+      "288": {
+        "model": "csm:venues/ballpark/cell_288"
+      },
+      "289": {
+        "model": "csm:venues/ballpark/cell_289"
+      },
+      "290": {
+        "model": "csm:venues/ballpark/cell_290"
+      },
+      "291": {
+        "model": "csm:venues/ballpark/cell_291"
+      },
+      "292": {
+        "model": "csm:venues/ballpark/cell_292"
+      },
+      "293": {
+        "model": "csm:venues/ballpark/cell_293"
+      },
+      "294": {
+        "model": "csm:venues/ballpark/cell_294"
+      },
+      "295": {
+        "model": "csm:venues/ballpark/cell_295"
+      },
+      "296": {
+        "model": "csm:venues/ballpark/cell_296"
+      },
+      "297": {
+        "model": "csm:venues/ballpark/cell_297"
+      },
+      "298": {
+        "model": "csm:venues/ballpark/cell_298"
+      },
+      "299": {
+        "model": "csm:venues/ballpark/cell_299"
+      },
+      "300": {
+        "model": "csm:venues/ballpark/cell_300"
+      },
+      "301": {
+        "model": "csm:venues/ballpark/cell_301"
+      },
+      "302": {
+        "model": "csm:venues/ballpark/cell_302"
+      },
+      "303": {
+        "model": "csm:venues/ballpark/cell_303"
+      },
+      "304": {
+        "model": "csm:venues/ballpark/cell_304"
+      },
+      "305": {
+        "model": "csm:venues/ballpark/cell_305"
+      },
+      "306": {
+        "model": "csm:venues/ballpark/cell_306"
+      },
+      "307": {
+        "model": "csm:venues/ballpark/cell_307"
+      },
+      "308": {
+        "model": "csm:venues/ballpark/cell_308"
+      },
+      "309": {
+        "model": "csm:venues/ballpark/cell_309"
+      },
+      "310": {
+        "model": "csm:venues/ballpark/cell_310"
+      },
+      "311": {
+        "model": "csm:venues/ballpark/cell_311"
+      },
+      "312": {
+        "model": "csm:venues/ballpark/cell_312"
+      },
+      "313": {
+        "model": "csm:venues/ballpark/cell_313"
+      },
+      "314": {
+        "model": "csm:venues/ballpark/cell_314"
+      },
+      "315": {
+        "model": "csm:venues/ballpark/cell_315"
+      },
+      "316": {
+        "model": "csm:venues/ballpark/cell_316"
+      },
+      "317": {
+        "model": "csm:venues/ballpark/cell_317"
+      },
+      "318": {
+        "model": "csm:venues/ballpark/cell_318"
+      },
+      "319": {
+        "model": "csm:venues/ballpark/cell_319"
+      },
+      "320": {
+        "model": "csm:venues/ballpark/cell_320"
+      },
+      "321": {
+        "model": "csm:venues/ballpark/cell_321"
+      },
+      "322": {
+        "model": "csm:venues/ballpark/cell_322"
+      },
+      "323": {
+        "model": "csm:venues/ballpark/cell_323"
+      },
+      "324": {
+        "model": "csm:venues/ballpark/cell_324"
+      },
+      "325": {
+        "model": "csm:venues/ballpark/cell_325"
+      },
+      "326": {
+        "model": "csm:venues/ballpark/cell_326"
+      },
+      "327": {
+        "model": "csm:venues/ballpark/cell_327"
+      },
+      "328": {
+        "model": "csm:venues/ballpark/cell_328"
+      }
+    },
+    "rot": {
+      "0": {},
+      "1": {
+        "y": 90
+      },
+      "2": {
+        "y": 180
+      },
+      "3": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/cell_033"
+      }
+    ]
+  }
+}

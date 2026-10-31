@@ -1,0 +1,156 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_cap"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_base"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "wing": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_wing"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_cap",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_base",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "wing": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_wing",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_cap",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_base",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "wing": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_wing",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_cap",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_base",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "wing": "true"
+      },
+      "apply": {
+        "model": "csm:venues/ballpark/pole_wing",
+        "y": 270
+      }
+    }
+  ]
+}

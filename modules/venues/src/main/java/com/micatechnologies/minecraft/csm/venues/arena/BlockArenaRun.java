@@ -21,7 +21,8 @@ import net.minecraft.world.World;
  * An event floor piece that joins side by side into a run: the player bench (a padded seat on
  * a steel frame, no back: the boards behind the players are the back), the penalty box bench (a
  * padded seat and back) and the scorer's table (a counter whose front is an LED panel, an
- * animated texture, so nothing ticks). Each block draws its own length; where the run stops it
+ * animated texture, so nothing ticks); and a ballpark's dugout bench, dugout rail and dugout
+ * canopy. Each block draws its own length; where the run stops it
  * draws an end frame or end panel ({@code end_l}, {@code end_r}, actual state).
  *
  * <p><b>Metadata</b>: the facing (S 0, W 1, N 2, E 3), the way a sitter or scorer faces: the
@@ -38,7 +39,13 @@ public class BlockArenaRun extends BlockVenue {
     /** The penalty box bench: a seat and back. */
     PENALTY_BENCH(BlockVenueBox.of(0, 0, 3, 16, 17.5, 15.5), 9.0 / 16.0),
     /** The scorer's table. */
-    SCORERS_TABLE(BlockVenueBox.of(0, 0, 0.5, 16, 14, 15), -1);
+    SCORERS_TABLE(BlockVenueBox.of(0, 0, 0.5, 16, 14, 15), -1),
+    /** A ballpark's dugout bench: aluminium slats on a green frame, with a back. */
+    DUGOUT_BENCH(BlockVenueBox.of(0, 0, 3, 16, 18, 15.5), 9.25 / 16.0),
+    /** The dugout's front rail: a padded top rail on posts, to lean on. */
+    DUGOUT_RAIL(BlockVenueBox.of(0, 0, 6, 16, 18, 10), -1),
+    /** The dugout's canopy: a roof deck at the top of its cell with a padded front fascia. */
+    DUGOUT_CANOPY(BlockVenueBox.of(0, 11, 0, 16, 16, 16), -1);
 
     final AxisAlignedBB box;
     final double seatTop;

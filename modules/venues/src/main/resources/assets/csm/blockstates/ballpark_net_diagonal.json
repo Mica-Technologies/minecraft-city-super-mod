@@ -1,0 +1,109 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/ballpark/net_diagonal_00.obj",
+    "custom": {
+      "ambient": false
+    }
+  },
+  "variants": {
+    "facing=north,pole=false,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_00.obj"
+      }
+    ],
+    "facing=north,pole=false,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_01.obj"
+      }
+    ],
+    "facing=north,pole=true,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_10.obj"
+      }
+    ],
+    "facing=north,pole=true,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_11.obj"
+      }
+    ],
+    "facing=east,pole=false,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_00.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,pole=false,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_01.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,pole=true,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_10.obj",
+        "y": 90
+      }
+    ],
+    "facing=east,pole=true,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_11.obj",
+        "y": 90
+      }
+    ],
+    "facing=south,pole=false,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_00.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,pole=false,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_01.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,pole=true,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_10.obj",
+        "y": 180
+      }
+    ],
+    "facing=south,pole=true,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_11.obj",
+        "y": 180
+      }
+    ],
+    "facing=west,pole=false,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_00.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,pole=false,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_01.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,pole=true,top=false": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_10.obj",
+        "y": 270
+      }
+    ],
+    "facing=west,pole=true,top=true": [
+      {
+        "model": "csm:venues/ballpark/net_diagonal_11.obj",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/ballpark/net_item",
+        "custom": {}
+      }
+    ]
+  }
+}

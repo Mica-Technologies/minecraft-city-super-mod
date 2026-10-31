@@ -1,0 +1,79 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "net": "csm:blocks/venues/ballpark/net",
+    "pole": "csm:blocks/venues/ballpark/galv",
+    "cable": "csm:blocks/venues/ballpark/black",
+    "particle": "csm:blocks/venues/ballpark/galv"
+  },
+  "elements": [
+    {
+      "from": [
+        -0.2,
+        15.25,
+        7.6
+      ],
+      "to": [
+        16.2,
+        16,
+        8.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#cable",
+          "uv": [
+            0,
+            0,
+            16,
+            0.75
+          ]
+        },
+        "south": {
+          "texture": "#cable",
+          "uv": [
+            0,
+            0,
+            16,
+            0.75
+          ]
+        },
+        "east": {
+          "texture": "#cable",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            0.75
+          ]
+        },
+        "west": {
+          "texture": "#cable",
+          "uv": [
+            7.6,
+            0,
+            8.4,
+            0.75
+          ]
+        },
+        "up": {
+          "texture": "#cable",
+          "uv": [
+            0,
+            7.6,
+            16,
+            8.4
+          ]
+        },
+        "down": {
+          "texture": "#cable",
+          "uv": [
+            0,
+            7.6,
+            16,
+            8.4
+          ]
+        }
+      }
+    }
+  ]
+}
