@@ -2,7 +2,9 @@
   "parent": "block/block",
   "ambientocclusion": false,
   "textures": {
-    "particle": "csm:blocks/trafficaccessories/truss/truss_plate"
+    "particle": "csm:blocks/trafficaccessories/truss/truss_plate",
+    "plate": "csm:blocks/trafficaccessories/truss/truss_plate",
+    "chord": "csm:blocks/trafficaccessories/truss/truss_chord"
   },
   "elements": [
     {
@@ -18,7 +20,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             14,
@@ -27,7 +29,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             14,
@@ -36,7 +38,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             14,
@@ -45,7 +47,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             14,
@@ -54,7 +56,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             1,
@@ -63,7 +65,7 @@
           ]
         },
         "down": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             1,
@@ -86,7 +88,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             7,
@@ -95,7 +97,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             7,
@@ -104,7 +106,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             7,
@@ -113,7 +115,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             7,
@@ -122,7 +124,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -145,7 +147,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             12,
             2,
@@ -154,7 +156,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -163,7 +165,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -172,7 +174,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -181,7 +183,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -204,7 +206,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -213,7 +215,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             12,
             2,
@@ -222,7 +224,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -231,7 +233,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             2,
             2,
@@ -240,7 +242,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             12,
             2,
@@ -263,7 +265,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_chord",
+          "texture": "#chord",
           "uv": [
             4,
             6.5,
@@ -272,7 +274,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_chord",
+          "texture": "#chord",
           "uv": [
             4,
             6.5,
@@ -281,7 +283,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_chord",
+          "texture": "#chord",
           "uv": [
             4,
             3,
@@ -304,7 +306,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             8,
@@ -313,7 +315,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             8,
@@ -322,7 +324,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             3.5,
             8,
@@ -331,7 +333,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             3.5,
@@ -354,7 +356,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             8,
@@ -363,7 +365,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             8,
@@ -372,7 +374,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             11.5,
             8,
@@ -381,7 +383,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             3.5,
@@ -404,7 +406,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             8,
@@ -413,7 +415,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             8,
@@ -422,7 +424,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             7.5,
             8,
@@ -431,7 +433,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             7.5,
@@ -454,7 +456,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             8,
@@ -463,7 +465,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             8,
@@ -472,7 +474,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             7.5,
             8,
@@ -481,7 +483,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             7.5,
@@ -504,7 +506,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             8,
@@ -513,7 +515,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             8,
@@ -522,7 +524,7 @@
           ]
         },
         "west": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             11.5,
             8,
@@ -531,7 +533,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             11.5,
@@ -554,7 +556,7 @@
       ],
       "faces": {
         "north": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             1,
             8,
@@ -563,7 +565,7 @@
           ]
         },
         "south": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             8,
@@ -572,7 +574,7 @@
           ]
         },
         "east": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             3.5,
             8,
@@ -581,7 +583,7 @@
           ]
         },
         "up": {
-          "texture": "csm:blocks/trafficaccessories/truss/truss_plate",
+          "texture": "#plate",
           "uv": [
             14,
             11.5,

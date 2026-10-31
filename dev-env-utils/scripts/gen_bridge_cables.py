@@ -26,7 +26,6 @@ the same square turned 45 is a star, not an octagon); see life_safety_gen_common
 """
 
 import argparse
-import filecmp
 import io
 import json
 import math
@@ -51,8 +50,12 @@ ITEM_MODEL_DIR = os.path.join(ASSETS, "models", "item")
 LANG_DIR = os.path.join(ASSETS, "lang")
 MODEL_REF = "csm:" + FOLDER + "/%s"
 
-PLATE = "csm:blocks/trafficaccessories/truss/truss_plate"
-CHORD = "csm:blocks/trafficaccessories/truss/truss_chord"
+PLATE_TEX = "csm:blocks/trafficaccessories/truss/truss_plate"
+CHORD_TEX = "csm:blocks/trafficaccessories/truss/truss_chord"
+# Faces name a texture variable, never a path: 1.12 reads a face's texture as a variable name
+# whether or not it starts with '#', so a path there is the missing texture.
+PLATE = "#plate"
+CHORD = "#chord"
 
 SOCKET = "bridge_cable_socket"
 CLEVIS = "bridge_cable_clevis"
@@ -159,7 +162,7 @@ MODELS = {SOCKET: socket, CLEVIS: clevis, SADDLE: saddle, DECK: deck_anchor}
 
 def model(name):
     return {"parent": "block/block", "ambientocclusion": False,
-            "textures": {"particle": PLATE}, "elements": MODELS[name]()}
+            "textures": {"particle": PLATE_TEX, "plate": PLATE_TEX, "chord": CHORD_TEX}, "elements": MODELS[name]()}
 
 
 def blockstate(name):
@@ -261,6 +264,18 @@ def fragments():
     return "\n".join(lines)
 
 
+def _same(a, b):
+    """Byte-equal once line endings are set aside: a Windows checkout (autocrlf) holds the text
+    files with CRLF, and the generator writes LF."""
+    with open(a, "rb") as fa, open(b, "rb") as fb:
+        da, db = fa.read(), fb.read()
+    if da == db:
+        return True
+    if a.endswith(".png"):
+        return False
+    return da.replace(b"\r\n", b"\n") == db.replace(b"\r\n", b"\n")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -282,8 +297,7 @@ def main():
         written = write_all(t["model"], t["state"], t["itemtex"], t["itemmodel"], t["lang"])
         drift = [os.path.relpath(os.path.join(roots[k], f), REPO) for k, f in written
                  if not os.path.exists(os.path.join(roots[k], f))
-                 or not filecmp.cmp(os.path.join(roots[k], f), os.path.join(t[k], f),
-                                    shallow=False)]
+                 or not _same(os.path.join(roots[k], f), os.path.join(t[k], f))]
         if drift:
             print("DRIFT: %d file(s) differ from the generator:" % len(drift))
             for p in drift:
