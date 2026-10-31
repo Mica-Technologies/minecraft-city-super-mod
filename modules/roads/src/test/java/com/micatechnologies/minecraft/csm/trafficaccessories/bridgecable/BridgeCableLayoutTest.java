@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 class BridgeCableLayoutTest {
 
   /** A world of anchors and solid blocks given by position; everything else is air. */
-  private static final class FakeWorld implements BridgeCableLayout.WorldView {
+  private static class FakeWorld implements BridgeCableLayout.WorldView {
 
     final Map<BlockPos, BridgeCableLayout.AnchorEnd> anchors = new HashMap<>();
     final Map<BlockPos, Double> solids = new HashMap<>();
@@ -142,6 +142,7 @@ class BridgeCableLayoutTest {
     final BlockPos socket = new BlockPos(-2535, 117, -2340);
     final BlockPos far = new BlockPos(-2478, 84, -2290);
     world.anchor(socket, BridgeCableAnchorKind.SOCKET, EnumFacing.SOUTH);
+    world.solids.put(far, 85.0);
     final BridgeCableLayout layout = BridgeCableLayout.build(socket,
         Collections.singletonList(BridgeCableLink.of(socket, far, BridgeCableStyle.STAY)), world);
     final AxisAlignedBB bounds = layout.getBounds();
@@ -154,6 +155,7 @@ class BridgeCableLayoutTest {
     final FakeWorld world = new FakeWorld();
     final BlockPos socket = new BlockPos(0, 100, 0);
     world.anchor(socket, BridgeCableAnchorKind.CLEVIS, EnumFacing.EAST);
+    world.solids.put(new BlockPos(30, 84, 0), 85.0);
     final BridgeCableLink link = new BridgeCableLink(30, -16, 0, BridgeCableStyle.STAY, 4,
         "white", Double.NaN, false, "blue", "blue", 0, 0, null);
     final BridgeCableLayout layout =
@@ -161,6 +163,44 @@ class BridgeCableLayoutTest {
     final BridgeCableLayout.Tube cable = layout.getTubes().get(0);
     assertEquals(BridgeCableColour.rgb("blue"), cable.stripeRgb);
     assertTrue(layout.getTubes().stream().anyMatch(tube -> tube.glow));
+  }
+
+  @Test
+  void aCableWithNothingAtItsFarEndIsNotDrawn() {
+    final FakeWorld world = new FakeWorld();
+    final BlockPos socket = new BlockPos(0, 100, 0);
+    final BlockPos deck = new BlockPos(0, 85, -30);
+    world.anchor(socket, BridgeCableAnchorKind.SOCKET, EnumFacing.NORTH);
+    final List<BridgeCableLink> links =
+        Collections.singletonList(BridgeCableLink.of(socket, deck, BridgeCableStyle.STAY));
+    final BridgeCableLayout broken = BridgeCableLayout.build(socket, links, world);
+    assertTrue(broken.getTubes().isEmpty());
+    world.anchor(deck, BridgeCableAnchorKind.DECK, EnumFacing.NORTH);
+    final BridgeCableLayout rebuilt = BridgeCableLayout.build(socket, links, world);
+    assertEquals(3, rebuilt.getTubes().size());
+    assertNotEquals(broken.getKey(), rebuilt.getKey());
+  }
+
+  @Test
+  void aCableStrungFromBothEndsIsDrawnByOneOfThem() {
+    final BlockPos a = new BlockPos(0, 100, 0);
+    final BlockPos b = new BlockPos(0, 85, -30);
+    final FakeWorld world = new FakeWorld() {
+      @Override
+      public boolean ownsCableTo(BlockPos anchor, BlockPos target) {
+        return (anchor.equals(a) && target.equals(b)) || (anchor.equals(b) && target.equals(a));
+      }
+    };
+    world.anchor(a, BridgeCableAnchorKind.SOCKET, EnumFacing.NORTH);
+    world.anchor(b, BridgeCableAnchorKind.DECK, EnumFacing.NORTH);
+    final int fromA = BridgeCableLayout.build(a,
+        Collections.singletonList(BridgeCableLink.of(a, b, BridgeCableStyle.STAY)), world)
+        .getTubes().size();
+    final int fromB = BridgeCableLayout.build(b,
+        Collections.singletonList(BridgeCableLink.of(b, a, BridgeCableStyle.STAY)), world)
+        .getTubes().size();
+    // exactly one end draws it, whichever the positions pick
+    assertTrue((fromA == 0) != (fromB == 0));
   }
 
   @Test

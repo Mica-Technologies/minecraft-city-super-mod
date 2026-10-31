@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -240,6 +241,20 @@ public class TileEntityBridgeCableAnchor extends AbstractTileEntity {
         return Double.NaN;
       }
       return pos.getY() + box.maxY;
+    }
+
+    @Override
+    public boolean ownsCableTo(BlockPos anchor, BlockPos target) {
+      final TileEntity tileEntity = world.getTileEntity(anchor);
+      if (!(tileEntity instanceof TileEntityBridgeCableAnchor)) {
+        return false;
+      }
+      for (BridgeCableLink link : ((TileEntityBridgeCableAnchor) tileEntity).getLinks()) {
+        if (link.getTarget(anchor).equals(target)) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 }

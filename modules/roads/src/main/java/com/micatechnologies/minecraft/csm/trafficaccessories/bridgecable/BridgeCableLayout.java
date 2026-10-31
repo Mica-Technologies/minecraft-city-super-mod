@@ -44,6 +44,14 @@ public final class BridgeCableLayout {
      * through it (air, water, plants).
      */
     double solidTop(BlockPos pos);
+
+    /**
+     * Whether the anchor at a position owns a cable to a block: the same cable strung from both
+     * ends, which only one of them draws.
+     */
+    default boolean ownsCableTo(BlockPos anchor, BlockPos target) {
+      return false;
+    }
   }
 
   /** An anchor block: which kind, facing which way. */
@@ -173,7 +181,19 @@ public final class BridgeCableLayout {
       key = key * 31L + link.hashCode();
       final BlockPos targetPos = link.getTarget(owner);
       final AnchorEnd far = view.anchorAt(targetPos);
+      if (far != null && owner.compareTo(targetPos) > 0 && view.ownsCableTo(targetPos, owner)) {
+        // Strung from both ends (by NBT; the tool never does it): the anchor at the lower
+        // position draws it, so both ends agree without asking each other.
+        key = key * 31L + 2L;
+        continue;
+      }
       final Vec3d end = far != null ? far.attachPoint(targetPos) : looseEnd(targetPos, view);
+      if (end == null) {
+        // Nothing at the far end (an anchor broken, or a block not built yet): nothing holds
+        // the cable, so none is drawn until there is. The link is kept.
+        key = key * 31L + 3L;
+        continue;
+      }
       key = mix(key, end);
       if (start.squareDistanceTo(end) < 1.0e-6) {
         continue;
@@ -273,13 +293,14 @@ public final class BridgeCableLayout {
   }
 
   /**
-   * Where a cable ends on a block that is not an anchor: on top of it, or in the middle of it
-   * when it is air (a target that has not been built yet, or a cable meant to end in mid-air).
+   * Where a cable ends on a block that is not an anchor: on top of it, or null when nothing
+   * there would hold it (air, water, plants: an anchor broken, or a block not built yet).
    */
+  @Nullable
   static Vec3d looseEnd(BlockPos pos, WorldView view) {
     final double solid = view.solidTop(pos);
     if (Double.isNaN(solid)) {
-      return centre(pos);
+      return null;
     }
     return new Vec3d(pos.getX() + 0.5, solid, pos.getZ() + 0.5);
   }
