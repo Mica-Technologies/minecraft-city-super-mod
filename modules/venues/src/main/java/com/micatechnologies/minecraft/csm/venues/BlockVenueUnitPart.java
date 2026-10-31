@@ -172,6 +172,26 @@ public class BlockVenueUnitPart extends AbstractBlock {
         .getBlock());
   }
 
+  /**
+   * A neighbour change at a part is passed to a master that listens for one (the scoreboard's
+   * redstone), with the part's position, so a wire may run to any cell of the unit.
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public void neighborChanged(IBlockState state, World world, BlockPos pos,
+      net.minecraft.block.Block blockIn, BlockPos fromPos) {
+    if (world.isRemote) {
+      return;
+    }
+    BlockPos master = BlockVenueUnit.findMaster(world, pos);
+    if (master != null) {
+      IBlockState s = world.getBlockState(master);
+      if (s.getBlock() instanceof IVenueUnitListener) {
+        ((IVenueUnitListener) s.getBlock()).onUnitNeighborChanged(world, master, s, pos);
+      }
+    }
+  }
+
   /** A click anywhere on the unit is a click on the master. */
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,

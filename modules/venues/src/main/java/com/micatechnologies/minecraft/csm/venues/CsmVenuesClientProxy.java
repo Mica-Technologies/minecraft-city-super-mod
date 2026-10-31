@@ -1,5 +1,13 @@
 package com.micatechnologies.minecraft.csm.venues;
 
+import com.micatechnologies.minecraft.csm.venues.av.BlockVenueBanner;
+import com.micatechnologies.minecraft.csm.venues.av.TileEntityRibbonText;
+import com.micatechnologies.minecraft.csm.venues.av.TileEntityRibbonTextRenderer;
+import com.micatechnologies.minecraft.csm.venues.av.TileEntityScoreboard;
+import com.micatechnologies.minecraft.csm.venues.av.TileEntityScoreboardRenderer;
+import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBanner;
+import com.micatechnologies.minecraft.csm.venues.av.TileEntityVenueBannerRenderer;
+import com.micatechnologies.minecraft.csm.venues.av.VenueColours;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumCompanionSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.BlockStadiumSeat;
 import com.micatechnologies.minecraft.csm.venues.seating.IStadiumSeat;
@@ -8,14 +16,18 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
- * The venues module's proxy on the client. Every block is drawn from baked models, so it binds no
- * renderer. It registers the stadium seats' colour: every seat shares one set of grey models and
- * the shell is tinted (tint index 0) by the block's colour, or for an aisle-end block and the
- * companion seat by the colour of the seat beside it, so ten colours cost one set of models.
+ * The venues module's proxy on the client. It binds the three renderers (the scoreboard's
+ * screens, the ribbon board's scrolling text, the banners' lettering) and registers the colour
+ * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
+ * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
+ * seat beside it, so ten colours cost one set of models; a banner's cloth (tint 0) and trim (1)
+ * take its tile entity's colours.
  *
  * @since 2026.10
  */
@@ -24,6 +36,17 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
   @Override
   public void init(FMLInitializationEvent event) {
     super.init(event);
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityScoreboard.class,
+        new TileEntityScoreboardRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRibbonText.class,
+        new TileEntityRibbonTextRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVenueBanner.class,
+        new TileEntityVenueBannerRenderer());
+    seatColours();
+    bannerColours();
+  }
+
+  private static void seatColours() {
     List<Block> tinted = new ArrayList<>();
     for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
       if (block instanceof IStadiumSeat || block instanceof BlockStadiumCompanionSeat) {
@@ -61,5 +84,44 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
       return block instanceof BlockStadiumSeat ? ((BlockStadiumSeat) block).getColour()
           : IStadiumSeat.DEFAULT_COLOUR;
     }, items.toArray(new Item[0]));
+  }
+
+  private static void bannerColours() {
+    List<Block> banners = new ArrayList<>();
+    for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+      if (block instanceof BlockVenueBanner) {
+        banners.add(block);
+      }
+    }
+    Block[] blocks = banners.toArray(new Block[0]);
+    Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(
+        (state, world, pos, tintIndex) -> {
+          if (tintIndex < 0 || tintIndex > 1) {
+            return -1;
+          }
+          TileEntity te = world == null || pos == null ? null : world.getTileEntity(pos);
+          if (te instanceof TileEntityVenueBanner) {
+            TileEntityVenueBanner b = (TileEntityVenueBanner) te;
+            return VenueColours.rgb(tintIndex == 0 ? b.getCloth() : b.getTrim());
+          }
+          return defaultBanner(state.getBlock(), tintIndex);
+        }, blocks);
+    List<Item> items = new ArrayList<>();
+    for (Block block : blocks) {
+      items.add(Item.getItemFromBlock(block));
+    }
+    Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) ->
+            tintIndex < 0 || tintIndex > 1 ? -1
+                : defaultBanner(Block.getBlockFromItem(stack.getItem()), tintIndex),
+        items.toArray(new Item[0]));
+  }
+
+  /** A banner's colours before its tile entity says otherwise: its kind's defaults. */
+  private static int defaultBanner(Block block, int tintIndex) {
+    boolean retired = block instanceof BlockVenueBanner && ((BlockVenueBanner) block).isRetired();
+    if (tintIndex == 0) {
+      return VenueColours.rgb(retired ? VenueColours.CRIMSON : VenueColours.NAVY);
+    }
+    return VenueColours.rgb(retired ? VenueColours.WHITE : VenueColours.GOLD);
   }
 }

@@ -1,0 +1,102 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0"
+      }
+    ],
+    "facing=north,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1"
+      }
+    ],
+    "facing=north,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2"
+      }
+    ],
+    "facing=north,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3"
+      }
+    ],
+    "facing=east,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0",
+        "y": 90
+      }
+    ],
+    "facing=east,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1",
+        "y": 90
+      }
+    ],
+    "facing=east,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2",
+        "y": 90
+      }
+    ],
+    "facing=east,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3",
+        "y": 90
+      }
+    ],
+    "facing=south,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0",
+        "y": 180
+      }
+    ],
+    "facing=south,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1",
+        "y": 180
+      }
+    ],
+    "facing=south,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2",
+        "y": 180
+      }
+    ],
+    "facing=south,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3",
+        "y": 180
+      }
+    ],
+    "facing=west,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0",
+        "y": 270
+      }
+    ],
+    "facing=west,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1",
+        "y": 270
+      }
+    ],
+    "facing=west,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2",
+        "y": 270
+      }
+    ],
+    "facing=west,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/av/ribbon_3_0"
+      }
+    ]
+  }
+}

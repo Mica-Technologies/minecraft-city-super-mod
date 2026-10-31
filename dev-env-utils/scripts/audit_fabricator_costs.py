@@ -652,6 +652,19 @@ def cost_for(registry, info, ancestors):
             "ice_plant": ("ENCLOSURE_SHELL x2", "DUCTING", "CONTROL_BOARD"),
             "scorers_table": ("SHEET_METAL x2", "LED_MODULE x2", "CONTROL_BOARD"),
             "player_bench": ("SHEET_METAL", "wool"), "penalty_bench": ("SHEET_METAL", "wool"),
+            "centre_hung_scoreboard": ("ENCLOSURE_SHELL x6", "LED_MODULE x8", "CONTROL_BOARD x2",
+                                       "WIRING_HARNESS x2"),
+            "centre_hung_scoreboard_small": ("ENCLOSURE_SHELL x3", "LED_MODULE x4",
+                                             "CONTROL_BOARD", "WIRING_HARNESS"),
+            "led_ribbon_board": ("LED_MODULE", "SHEET_METAL"),
+            "led_ribbon_board_corner": ("LED_MODULE", "SHEET_METAL"),
+            "led_ribbon_board_text": ("LED_MODULE", "SHEET_METAL", "CONTROL_BOARD"),
+            "championship_banner": ("wool x3", "dye"), "retired_number_banner": ("wool x3", "dye"),
+            "championship_banner_small": ("wool", "dye"),
+            "retired_number_banner_small": ("wool", "dye"),
+            "line_array_speaker": ("ENCLOSURE_SHELL x2", "SOUNDER_DRIVER x2", "WIRING_HARNESS"),
+            "broadcast_camera_platform": ("SHEET_METAL x2", "LENS_ASSEMBLY", "OPTICAL_SENSOR"),
+            "venue_catwalk": ("SHEET_METAL", "iron_bars"),
         }
         if registry in arena:
             return arena[registry]

@@ -158,6 +158,15 @@ public final class CsmRenderToggles {
    */
   public static boolean bridgeCablePerFrame = false;
 
+  /** Skip what the venues' centre-hung scoreboards' screens show. Measurement only. */
+  public static boolean skipVenueScoreboard = false;
+
+  /** Skip the venues' ribbon board scrolling text. Measurement only. */
+  public static boolean skipVenueRibbonText = false;
+
+  /** Skip the venues' banner lettering. Measurement only. */
+  public static boolean skipVenueBanners = false;
+
   /**
    * Draw every renderer that replays a list shared by appearance ({@link CsmSharedDisplayLists})
    * per frame instead, the way each was drawn before it was baked. One switch for the whole family
@@ -209,6 +218,9 @@ public final class CsmRenderToggles {
     values.put("spanWireCablePerFrame", spanWireCablePerFrame);
     values.put("bridgeCable", skipBridgeCable);
     values.put("bridgeCablePerFrame", bridgeCablePerFrame);
+    values.put("venueScoreboard", skipVenueScoreboard);
+    values.put("venueRibbonText", skipVenueRibbonText);
+    values.put("venueBanners", skipVenueBanners);
     values.put("sharedBakesPerFrame", sharedBakesPerFrame);
     values.put("signalLayoutPerFrame", signalLayoutPerFrame);
     return values;
@@ -275,6 +287,12 @@ public final class CsmRenderToggles {
       skipBridgeCable = skipped;
     } else if ("bridgeCablePerFrame".equalsIgnoreCase(name)) {
       bridgeCablePerFrame = skipped;
+    } else if ("venueScoreboard".equalsIgnoreCase(name)) {
+      skipVenueScoreboard = skipped;
+    } else if ("venueRibbonText".equalsIgnoreCase(name)) {
+      skipVenueRibbonText = skipped;
+    } else if ("venueBanners".equalsIgnoreCase(name)) {
+      skipVenueBanners = skipped;
     } else if ("sharedBakesPerFrame".equalsIgnoreCase(name)) {
       sharedBakesPerFrame = skipped;
     } else if ("signalLayoutPerFrame".equalsIgnoreCase(name)) {
@@ -313,6 +331,9 @@ public final class CsmRenderToggles {
     spanWireCablePerFrame = false;
     skipBridgeCable = false;
     bridgeCablePerFrame = false;
+    skipVenueScoreboard = false;
+    skipVenueRibbonText = false;
+    skipVenueBanners = false;
     sharedBakesPerFrame = false;
     signalLayoutPerFrame = false;
   }

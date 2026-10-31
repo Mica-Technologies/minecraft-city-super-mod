@@ -2,7 +2,7 @@
 
 An arena's event floor: rink ice and its lines, the painted circles, crease and spots laid round their anchors, dasher boards and glass (straights, 45 degree corners, the true curve of a rink's corner, the bench gate and penalty box door), the hockey goal, benches, the scorer's table, the ice resurfacer and ice plant; the maple court, its lines and painted keys, and the portable basketball stanchion.
 
-!!! info "30 blocks in this tab"
+!!! info "42 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -12,6 +12,12 @@ An arena's event floor: rink ice and its lines, the painted circles, crease and 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
 | Basketball Stanchion | `csm:basketball_stanchion` |  |  | pickaxe | 0 |
+| Broadcast Camera Platform | `csm:broadcast_camera_platform` |  |  | pickaxe | 0 |
+| Catwalk Grating | `csm:venue_catwalk` | 2 | 6 | pickaxe | 0 |
+| Centre-Hung Scoreboard | `csm:centre_hung_scoreboard` |  |  | pickaxe | 0 |
+| Centre-Hung Scoreboard (Small) | `csm:centre_hung_scoreboard_small` |  |  | pickaxe | 0 |
+| Championship Banner | `csm:championship_banner` |  |  | pickaxe | 0 |
+| Championship Banner (Small) | `csm:championship_banner_small` |  |  | pickaxe | 0 |
 | Court Line | `csm:court_line` |  |  |  |  |
 | Court Marking Anchor | `csm:court_floor_anchor` |  |  |  |  |
 | Dasher Board | `csm:dasher_board` |  |  | pickaxe | 0 |
@@ -23,12 +29,18 @@ An arena's event floor: rink ice and its lines, the painted circles, crease and 
 | Hockey Goal | `csm:hockey_goal` |  |  | pickaxe | 0 |
 | Ice Plant Chiller | `csm:ice_plant` |  |  | pickaxe | 0 |
 | Ice Resurfacer | `csm:ice_resurfacer` |  |  | pickaxe | 0 |
+| LED Ribbon Board | `csm:led_ribbon_board` |  |  | pickaxe | 0 |
+| LED Ribbon Board (45 Degree Corner) | `csm:led_ribbon_board_corner` |  |  | pickaxe | 0 |
+| LED Ribbon Board (Scrolling Text) | `csm:led_ribbon_board_text` |  |  | pickaxe | 0 |
+| Line Array Speaker Cluster | `csm:line_array_speaker` |  |  | pickaxe | 0 |
 | Maple Court Floor | `csm:court_maple` |  |  |  |  |
 | Maple Court, Painted Marking | `csm:court_painted` |  |  |  |  |
 | Penalty Box Bench | `csm:penalty_bench` |  |  | pickaxe | 0 |
 | Penalty Box Door | `csm:dasher_penalty_door` |  |  | pickaxe | 0 |
 | Player Bench | `csm:player_bench` |  |  | pickaxe | 0 |
 | Player Bench Gate | `csm:dasher_bench_gate` |  |  | pickaxe | 0 |
+| Retired Number Banner | `csm:retired_number_banner` |  |  | pickaxe | 0 |
+| Retired Number Banner (Small) | `csm:retired_number_banner_small` |  |  | pickaxe | 0 |
 | Rink Glass | `csm:dasher_glass` |  |  | pickaxe | 0 |
 | Rink Glass, 45° Corner | `csm:dasher_glass_corner` |  |  | pickaxe | 0 |
 | Rink Glass, Curve (North-East) | `csm:dasher_glass_curve_ne` |  |  | pickaxe | 0 |

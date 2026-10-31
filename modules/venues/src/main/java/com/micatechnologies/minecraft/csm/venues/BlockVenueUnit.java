@@ -6,8 +6,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -47,6 +49,11 @@ import net.minecraft.world.World;
  * finds its master in a few lookups. Breaking the master or any part takes the whole unit; only
  * the master drops an item.</p>
  *
+ * <p><b>Hung units</b> (the speaker cluster, the banners, the centre-hung scoreboard) hang from
+ * the block above their top layer. Their item places them against the underside of a ceiling or
+ * truss: the cell clicked under is the unit's top layer, so the master goes as many cells below
+ * it as the footprint reaches above the master. A {@code /setblock} still names the master.</p>
+ *
  * @since 2026.10
  */
 public class BlockVenueUnit extends BlockVenue {
@@ -62,6 +69,8 @@ public class BlockVenueUnit extends BlockVenue {
   private final AxisAlignedBB[] boxes;
   private final AxisAlignedBB whole;
   private final AxisAlignedBB masterShare;
+  private final boolean hung;
+  private final int topLayer;
 
   /**
    * Constructs a unit.
@@ -73,13 +82,33 @@ public class BlockVenueUnit extends BlockVenue {
    *                     {x0, y0, z0, x1, y1, z1} sextuples, which may reach past the cell
    */
   public BlockVenueUnit(String registryName, int[] cells, int[] boxes) {
+    this(registryName, false, cells, boxes);
+  }
+
+  /**
+   * Constructs a unit that may hang.
+   *
+   * @param registryName its registry name
+   * @param hung         whether its item hangs it from the block above its top layer
+   * @param cells        the footprint after the master, as {@link #BlockVenueUnit(String, int[],
+   *                     int[])} takes it
+   * @param boxes        its solid boxes, as {@link #BlockVenueUnit(String, int[], int[])} takes
+   *                     them
+   */
+  public BlockVenueUnit(String registryName, boolean hung, int[] cells, int[] boxes) {
     super(registryName, Material.IRON, SoundType.METAL, 2.0F);
+    this.hung = hung;
     int n = cells.length / 3;
     this.cells = new int[n][];
     for (int i = 0; i < n; i++) {
       this.cells[i] = new int[]{cells[i * 3], cells[i * 3 + 1], cells[i * 3 + 2]};
     }
     this.stepToMaster = paths(this.cells);
+    int top = 0;
+    for (int[] c : this.cells) {
+      top = Math.max(top, c[1]);
+    }
+    this.topLayer = top;
     this.boxes = new AxisAlignedBB[boxes.length / 6];
     AxisAlignedBB u = null;
     for (int i = 0; i < this.boxes.length; i++) {
@@ -90,6 +119,64 @@ public class BlockVenueUnit extends BlockVenue {
     }
     this.whole = u;
     this.masterShare = share(this.boxes, new AxisAlignedBB(0, 0, 0, 1, SHARE_TOP, 1));
+  }
+
+  /**
+   * Every cell boxes reach 6 px into (or wholly hold along an axis), but the master's: the rule
+   * {@code gen_venues_arena.py} writes a footprint by, for a unit whose boxes are in code.
+   *
+   * @param boxes {x0, y0, z0, x1, y1, z1} sextuples, pixels from the master cell's origin
+   *
+   * @return the cells, {dx, dy, dz} triples
+   */
+  public static int[] cellsOf(int[] boxes) {
+    Set<Long> seen = new HashSet<>();
+    List<int[]> out = new ArrayList<>();
+    for (int o = 0; o + 5 < boxes.length; o += 6) {
+      int[] xs = claimed(boxes[o], boxes[o + 3]);
+      int[] ys = claimed(boxes[o + 1], boxes[o + 4]);
+      int[] zs = claimed(boxes[o + 2], boxes[o + 5]);
+      for (int y : ys) {
+        for (int z : zs) {
+          for (int x : xs) {
+            if ((x != 0 || y != 0 || z != 0) && seen.add(key(x, y, z))) {
+              out.add(new int[]{x, y, z});
+            }
+          }
+        }
+      }
+    }
+    int[] flat = new int[out.size() * 3];
+    for (int i = 0; i < out.size(); i++) {
+      System.arraycopy(out.get(i), 0, flat, i * 3, 3);
+    }
+    return flat;
+  }
+
+  /** The cells along one axis a box from lo to hi pixels claims. */
+  private static int[] claimed(int lo, int hi) {
+    List<Integer> out = new ArrayList<>();
+    for (int c = Math.floorDiv(lo, 16); c * 16 < hi; c++) {
+      double ov = Math.min(hi, 16.0 * (c + 1)) - Math.max(lo, 16.0 * c);
+      if (ov >= Math.min(6.0, hi - lo - 1e-6)) {
+        out.add(c);
+      }
+    }
+    int[] a = new int[out.size()];
+    for (int i = 0; i < a.length; i++) {
+      a[i] = out.get(i);
+    }
+    return a;
+  }
+
+  /** Whether the unit hangs from the block above its top layer. */
+  public boolean isHung() {
+    return hung;
+  }
+
+  /** How many cells the footprint reaches above the master. */
+  public int topLayer() {
+    return topLayer;
   }
 
   /** The union of the boxes' parts inside {@code cell}, or a thin slab if none. */
@@ -188,7 +275,7 @@ public class BlockVenueUnit extends BlockVenue {
   }
 
   /** The whole unit's outline in the world. */
-  AxisAlignedBB worldOutline(BlockPos master, EnumFacing facing) {
+  public AxisAlignedBB worldOutline(BlockPos master, EnumFacing facing) {
     return RotationUtils.rotateBoundingBoxByFacing(whole, facing).offset(master);
   }
 
@@ -282,7 +369,8 @@ public class BlockVenueUnit extends BlockVenue {
   @Nullable
   public static BlockPos findMaster(IBlockAccess world, BlockPos part) {
     BlockPos at = part;
-    for (int i = 0; i < 16; i++) {
+    // a centre-hung scoreboard's farthest cell is some twenty steps from its master
+    for (int i = 0; i < 64; i++) {
       IBlockState s = world.getBlockState(at);
       if (s.getBlock() instanceof BlockVenueUnitPart) {
         at = at.offset(s.getValue(BlockVenueUnitPart.TOWARD));
@@ -314,6 +402,17 @@ public class BlockVenueUnit extends BlockVenue {
         World world, @Nonnull BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ,
         @Nonnull IBlockState newState) {
       BlockVenueUnit unit = (BlockVenueUnit) block;
+      if (unit.hung) {
+        // the cell clicked is the top layer; the master is that far below it
+        pos = pos.down(unit.topLayer);
+        if (pos.getY() < 0 || !world.getBlockState(pos).getBlock().isReplaceable(world, pos)) {
+          if (!world.isRemote) {
+            player.sendStatusMessage(new TextComponentTranslation("csm.venues.unit.blocked",
+                pos.getX(), pos.getY(), pos.getZ()), true);
+          }
+          return false;
+        }
+      }
       for (BlockPos cell : unit.partCells(pos, newState.getValue(FACING))) {
         if (cell.getY() < 0 || cell.getY() >= world.getHeight()
             || !world.getBlockState(cell).getBlock().isReplaceable(world, cell)

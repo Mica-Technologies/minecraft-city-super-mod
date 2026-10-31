@@ -1,0 +1,126 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "grating": "csm:blocks/venues/av/grating",
+    "rail": "csm:blocks/venues/av/steel",
+    "toe": "csm:blocks/venues/av/steel",
+    "particle": "csm:blocks/venues/av/steel"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        1.5,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#grating",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#grating",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.2,
+        0
+      ],
+      "to": [
+        16,
+        1.7,
+        0.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.5,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        -0.2,
+        15.5
+      ],
+      "to": [
+        16,
+        1.7,
+        16
+      ],
+      "faces": {
+        "south": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            14.5,
+            16,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            15.5,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#rail",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

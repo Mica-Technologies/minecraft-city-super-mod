@@ -12,6 +12,13 @@ import com.micatechnologies.minecraft.csm.venues.arena.BlockDasherCorner;
 import com.micatechnologies.minecraft.csm.venues.arena.BlockDasherCurve;
 import com.micatechnologies.minecraft.csm.venues.arena.BlockDasherDoor;
 import com.micatechnologies.minecraft.csm.venues.arena.BlockDasherStraight;
+import com.micatechnologies.minecraft.csm.venues.av.BlockLedRibbon;
+import com.micatechnologies.minecraft.csm.venues.av.BlockLedRibbonCorner;
+import com.micatechnologies.minecraft.csm.venues.av.BlockLedRibbonText;
+import com.micatechnologies.minecraft.csm.venues.av.BlockScoreboard;
+import com.micatechnologies.minecraft.csm.venues.av.BlockVenueBanner;
+import com.micatechnologies.minecraft.csm.venues.av.BlockVenueCatwalk;
+import com.micatechnologies.minecraft.csm.venues.av.ScoreboardSize;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
@@ -24,7 +31,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * 61 x 26 rink's corner, the player bench gate and penalty box door), the hockey goal, the
  * benches and the scorer's table, the ice resurfacer and the ice plant; the basketball court
  * (maple in four finishes, its lines, the keys and centre circle round their anchors) and the
- * portable basketball stanchion. The scoreboard, ribbon boards, banners and AV join it later.
+ * portable basketball stanchion; then the arena's scoreboard and AV: the centre-hung scoreboard
+ * in two sizes, the LED ribbon board (straights, 45 degree corners and the scrolling-text piece),
+ * championship and retired-number banners in two sizes, the line-array speaker cluster, the
+ * broadcast camera platform and a catwalk grating.
  *
  * @version 1.0
  * @since 2026.10
@@ -86,5 +96,18 @@ public class CsmTabVenuesArena extends CsmTab {
     initTabBlock(new BlockArenaRun("player_bench", BlockArenaRun.Kind.PLAYER_BENCH));
     initTabBlock(new BlockArenaRun("penalty_bench", BlockArenaRun.Kind.PENALTY_BENCH));
     initTabBlock(new BlockArenaRun("scorers_table", BlockArenaRun.Kind.SCORERS_TABLE));
+    // --- Sports & Venues - Arena (gen_venues_av.py --fragments) ---
+    initTabBlock(new BlockScoreboard("centre_hung_scoreboard", ScoreboardSize.LARGE));
+    initTabBlock(new BlockScoreboard("centre_hung_scoreboard_small", ScoreboardSize.SMALL));
+    initTabBlock(new BlockLedRibbon("led_ribbon_board"));
+    initTabBlock(new BlockLedRibbonCorner("led_ribbon_board_corner"));
+    initTabBlock(new BlockLedRibbonText("led_ribbon_board_text"));
+    initTabBlock(new BlockVenueBanner("championship_banner", true, false, new int[]{0, -1, 0, 1, -1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0}, new int[]{0, -15, 7, 32, 32, 9}));
+    initTabBlock(new BlockVenueBanner("championship_banner_small", false, false, new int[]{0, 1, 0}, new int[]{0, 1, 7, 16, 32, 9}));
+    initTabBlock(new BlockVenueBanner("retired_number_banner", true, true, new int[]{0, -1, 0, 1, -1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0}, new int[]{0, -15, 7, 32, 32, 9}));
+    initTabBlock(new BlockVenueBanner("retired_number_banner_small", false, true, new int[]{0, 1, 0}, new int[]{0, 1, 7, 16, 32, 9}));
+    initTabBlock(new BlockVenueUnit("line_array_speaker", true, new int[]{0, -1, 0, 0, 1, 0}, new int[]{1, -15, 2, 15, 32, 14}));
+    initTabBlock(new BlockVenueUnit("broadcast_camera_platform", new int[]{1, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1}, new int[]{0, 0, 0, 32, 14, 32, 8, 14, 6, 24, 30, 26}));
+    initTabBlock(new BlockVenueCatwalk());
   }
 }

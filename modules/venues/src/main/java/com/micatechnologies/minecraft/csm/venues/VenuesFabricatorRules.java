@@ -13,7 +13,9 @@ import net.minecraft.block.Block;
  * guard is glass on a metal shoe; a sign is a sign blank; a painted floor marking is dye. An arena
  * holds thousands of seats, so a seat stays cheap. On the event floor: ice is ice and a court is
  * planks (a painted cell or a line adds dye), a board is sheet metal, its glass is glass, and the
- * machines (the stanchion, the resurfacer, the ice plant) are priced as the machines they are. {@code audit_fabricator_costs.py} mirrors these
+ * machines (the stanchion, the resurfacer, the ice plant) are priced as the machines they are.
+ * Over the floor: a scoreboard is enclosures and LED modules, a ribbon board an LED module on
+ * sheet metal, a banner wool and dye, the speakers drivers, the camera a lens and a sensor. {@code audit_fabricator_costs.py} mirrors these
  * branches.
  *
  * @since 2026.10
@@ -107,6 +109,43 @@ public final class VenuesFabricatorRules {
       case "penalty_bench":
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.any("minecraft:wool", 1));
+      case "centre_hung_scoreboard":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 6),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 8),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 2));
+      case "centre_hung_scoreboard_small":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 3),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 4),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "led_ribbon_board":
+      case "led_ribbon_board_corner":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "led_ribbon_board_text":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "championship_banner":
+      case "retired_number_banner":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 3),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "championship_banner_small":
+      case "retired_number_banner_small":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "line_array_speaker":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2),
+            FabricatorIngredient.part(CsmParts.SOUNDER_DRIVER, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "broadcast_camera_platform":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+            FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1));
+      case "venue_catwalk":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.any("minecraft:iron_bars", 1));
       default:
         break;
     }

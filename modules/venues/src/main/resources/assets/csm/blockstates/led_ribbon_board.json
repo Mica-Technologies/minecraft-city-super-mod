@@ -1,0 +1,378 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,pattern=team_navy,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_0_0"
+      }
+    ],
+    "facing=north,pattern=team_navy,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_0_1"
+      }
+    ],
+    "facing=north,pattern=team_navy,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_0_2"
+      }
+    ],
+    "facing=north,pattern=team_navy,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_0_3"
+      }
+    ],
+    "facing=north,pattern=team_crimson,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_1_0"
+      }
+    ],
+    "facing=north,pattern=team_crimson,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_1_1"
+      }
+    ],
+    "facing=north,pattern=team_crimson,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_1_2"
+      }
+    ],
+    "facing=north,pattern=team_crimson,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_1_3"
+      }
+    ],
+    "facing=north,pattern=team_green,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_2_0"
+      }
+    ],
+    "facing=north,pattern=team_green,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_2_1"
+      }
+    ],
+    "facing=north,pattern=team_green,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_2_2"
+      }
+    ],
+    "facing=north,pattern=team_green,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_2_3"
+      }
+    ],
+    "facing=north,pattern=white_crawl,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0"
+      }
+    ],
+    "facing=north,pattern=white_crawl,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1"
+      }
+    ],
+    "facing=north,pattern=white_crawl,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2"
+      }
+    ],
+    "facing=north,pattern=white_crawl,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3"
+      }
+    ],
+    "facing=east,pattern=team_navy,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_0_0",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_navy,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_0_1",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_navy,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_0_2",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_navy,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_0_3",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_crimson,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_1_0",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_crimson,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_1_1",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_crimson,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_1_2",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_crimson,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_1_3",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_green,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_2_0",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_green,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_2_1",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_green,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_2_2",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=team_green,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_2_3",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=white_crawl,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=white_crawl,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=white_crawl,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2",
+        "y": 90
+      }
+    ],
+    "facing=east,pattern=white_crawl,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3",
+        "y": 90
+      }
+    ],
+    "facing=south,pattern=team_navy,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_0_0",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_navy,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_0_1",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_navy,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_0_2",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_navy,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_0_3",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_crimson,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_1_0",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_crimson,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_1_1",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_crimson,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_1_2",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_crimson,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_1_3",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_green,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_2_0",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_green,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_2_1",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_green,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_2_2",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=team_green,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_2_3",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=white_crawl,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=white_crawl,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=white_crawl,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2",
+        "y": 180
+      }
+    ],
+    "facing=south,pattern=white_crawl,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3",
+        "y": 180
+      }
+    ],
+    "facing=west,pattern=team_navy,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_0_0",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_navy,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_0_1",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_navy,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_0_2",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_navy,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_0_3",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_crimson,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_1_0",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_crimson,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_1_1",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_crimson,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_1_2",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_crimson,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_1_3",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_green,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_2_0",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_green,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_2_1",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_green,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_2_2",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=team_green,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_2_3",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=white_crawl,phase=0": [
+      {
+        "model": "csm:venues/av/ribbon_3_0",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=white_crawl,phase=1": [
+      {
+        "model": "csm:venues/av/ribbon_3_1",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=white_crawl,phase=2": [
+      {
+        "model": "csm:venues/av/ribbon_3_2",
+        "y": 270
+      }
+    ],
+    "facing=west,pattern=white_crawl,phase=3": [
+      {
+        "model": "csm:venues/av/ribbon_3_3",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/av/ribbon_0_0"
+      }
+    ]
+  }
+}

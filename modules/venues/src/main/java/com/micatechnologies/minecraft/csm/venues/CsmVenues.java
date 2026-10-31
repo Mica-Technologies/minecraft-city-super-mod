@@ -1,12 +1,17 @@
 package com.micatechnologies.minecraft.csm.venues;
 
+import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
+import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.venues.av.ScoreboardPacket;
+import com.micatechnologies.minecraft.csm.venues.av.VenueTextPacket;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -38,6 +43,13 @@ public class CsmVenues {
   public static final String MOD_ID = "csm_venues";
   public static final String MOD_NAME = "CSM: Sports & Venues";
 
+  /**
+   * This module's network channel. Its packets are registered in {@link #preInit}, in a fixed
+   * order, so their discriminators are the same on every client and server whatever other
+   * modules are installed.
+   */
+  public static final CsmNetwork NETWORK = CsmNetwork.create(MOD_ID);
+
   @SidedProxy(
       clientSide = "com.micatechnologies.minecraft.csm.venues.CsmVenuesClientProxy",
       serverSide = "com.micatechnologies.minecraft.csm.venues.CsmVenuesCommonProxy")
@@ -63,6 +75,11 @@ public class CsmVenues {
         VenuesFabricatorRules::price);
     CsmFabricatorCosts.registerRule(VenuesFabricatorRules.TAB_ARENA,
         VenuesFabricatorRules::price);
+
+    CsmGuiRegistry.register(new VenuesGuiProvider());
+    // The packet order here fixes this channel's discriminators; only append to it.
+    NETWORK.registerMessage(ScoreboardPacket.Handler.class, ScoreboardPacket.class, Side.SERVER);
+    NETWORK.registerMessage(VenueTextPacket.Handler.class, VenueTextPacket.class, Side.SERVER);
 
     proxy.preInit(event);
   }

@@ -1,0 +1,151 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "facing=north,pattern=team_navy": [
+      {
+        "model": "csm:venues/av/ribbon_corner_0.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 270
+      }
+    ],
+    "facing=north,pattern=team_crimson": [
+      {
+        "model": "csm:venues/av/ribbon_corner_1.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 270
+      }
+    ],
+    "facing=north,pattern=team_green": [
+      {
+        "model": "csm:venues/av/ribbon_corner_2.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 270
+      }
+    ],
+    "facing=north,pattern=white_crawl": [
+      {
+        "model": "csm:venues/av/ribbon_corner_3.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 270
+      }
+    ],
+    "facing=east,pattern=team_navy": [
+      {
+        "model": "csm:venues/av/ribbon_corner_0.obj",
+        "custom": {
+          "ambient": false
+        }
+      }
+    ],
+    "facing=east,pattern=team_crimson": [
+      {
+        "model": "csm:venues/av/ribbon_corner_1.obj",
+        "custom": {
+          "ambient": false
+        }
+      }
+    ],
+    "facing=east,pattern=team_green": [
+      {
+        "model": "csm:venues/av/ribbon_corner_2.obj",
+        "custom": {
+          "ambient": false
+        }
+      }
+    ],
+    "facing=east,pattern=white_crawl": [
+      {
+        "model": "csm:venues/av/ribbon_corner_3.obj",
+        "custom": {
+          "ambient": false
+        }
+      }
+    ],
+    "facing=south,pattern=team_navy": [
+      {
+        "model": "csm:venues/av/ribbon_corner_0.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 90
+      }
+    ],
+    "facing=south,pattern=team_crimson": [
+      {
+        "model": "csm:venues/av/ribbon_corner_1.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 90
+      }
+    ],
+    "facing=south,pattern=team_green": [
+      {
+        "model": "csm:venues/av/ribbon_corner_2.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 90
+      }
+    ],
+    "facing=south,pattern=white_crawl": [
+      {
+        "model": "csm:venues/av/ribbon_corner_3.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 90
+      }
+    ],
+    "facing=west,pattern=team_navy": [
+      {
+        "model": "csm:venues/av/ribbon_corner_0.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 180
+      }
+    ],
+    "facing=west,pattern=team_crimson": [
+      {
+        "model": "csm:venues/av/ribbon_corner_1.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 180
+      }
+    ],
+    "facing=west,pattern=team_green": [
+      {
+        "model": "csm:venues/av/ribbon_corner_2.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 180
+      }
+    ],
+    "facing=west,pattern=white_crawl": [
+      {
+        "model": "csm:venues/av/ribbon_corner_3.obj",
+        "custom": {
+          "ambient": false
+        },
+        "y": 180
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/av/ribbon_corner_item",
+        "custom": {}
+      }
+    ]
+  }
+}

@@ -1,0 +1,392 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "cab": "csm:blocks/venues/av/speaker_cab",
+    "grille": "csm:blocks/venues/av/speaker_grille",
+    "steel": "csm:blocks/venues/av/steel",
+    "particle": "csm:blocks/venues/av/speaker_cab"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        15,
+        6
+      ],
+      "to": [
+        11,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            0,
+            11,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            6,
+            0,
+            10,
+            1
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            5,
+            6,
+            11,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        12,
+        5
+      ],
+      "to": [
+        12,
+        15,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            4,
+            1,
+            12,
+            4
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            1,
+            12,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            1,
+            11,
+            4
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            1,
+            11,
+            4
+          ]
+        },
+        "up": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        9,
+        5
+      ],
+      "to": [
+        12,
+        12,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            4,
+            4,
+            12,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            4,
+            12,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            4,
+            11,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            4,
+            11,
+            7
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        6,
+        5
+      ],
+      "to": [
+        12,
+        9,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            4,
+            7,
+            12,
+            10
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            7,
+            12,
+            10
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            7,
+            11,
+            10
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            7,
+            11,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        3,
+        5
+      ],
+      "to": [
+        12,
+        6,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            4,
+            10,
+            12,
+            13
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            10,
+            12,
+            13
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            10,
+            11,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            10,
+            11,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          6,
+          5
+        ],
+        "axis": "x",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        4,
+        0,
+        5
+      ],
+      "to": [
+        12,
+        3,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#grille",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            13,
+            12,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            13,
+            11,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#cab",
+          "uv": [
+            5,
+            13,
+            11,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        },
+        "down": {
+          "texture": "#cab",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          3,
+          5
+        ],
+        "axis": "x",
+        "angle": 22.5
+      }
+    }
+  ]
+}
