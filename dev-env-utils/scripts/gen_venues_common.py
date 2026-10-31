@@ -275,9 +275,56 @@ def separate_depths(polys):
     return [p for idx, p in enumerate(polys) if idx not in dropped]
 
 
+def split_for_forge(poly):
+    """A polygon as pieces Forge will draw whole: its OBJ loader draws only the first four
+    corners of a face, so a polygon of more than four is cut into a fan of quads (and a last
+    triangle) when it is convex, and into triangles by ear clipping when it is not. Every piece
+    keeps its corners' uvs and the polygon's winding and normal."""
+    n = len(poly.pts)
+    if n <= 4:
+        return [poly]
+    normal = _face_normal(poly.pts)
+
+    def piece(idx):
+        out = copy.copy(poly)
+        out.pts = [poly.pts[i] for i in idx]
+        out.uvs = [poly.uvs[i] for i in idx]
+        return out
+
+    def turn(a, b, c):
+        return _dot(_cross(_sub(poly.pts[b], poly.pts[a]), _sub(poly.pts[c], poly.pts[b])), normal)
+
+    if all(turn(i, (i + 1) % n, (i + 2) % n) >= -1e-6 for i in range(n)):
+        pieces, i = [], 1
+        while i < n - 1:
+            idx = [0] + list(range(i, min(i + 3, n)))
+            pieces.append(piece(idx))
+            i += 2
+        return pieces
+
+    def inside(q, a, b, c):
+        return all(_dot(_cross(_sub(poly.pts[y], poly.pts[x]), _sub(q, poly.pts[x])), normal) > 1e-6
+                   for x, y in ((a, b), (b, c), (c, a)))
+    ring, pieces = list(range(n)), []
+    while len(ring) > 3:
+        for k in range(len(ring)):
+            a, b, c = ring[k - 1], ring[k], ring[(k + 1) % len(ring)]
+            if turn(a, b, c) <= 1e-6:
+                continue
+            if any(inside(poly.pts[q], a, b, c) for q in ring if q not in (a, b, c)):
+                continue
+            pieces.append(piece([a, b, c]))
+            ring.pop(k)
+            break
+        else:
+            raise SystemExit("cannot cut a polygon into triangles: %s" % (poly.pts,))
+    pieces.append(piece(ring))
+    return pieces
+
+
 class Obj(object):
     """An OBJ in 0..1 block space, its materials in an MTL beside it. Its faces go through
-    separate_depths before they are written."""
+    separate_depths, and are cut by split_for_forge, before they are written."""
 
     def __init__(self, gen, mtl, name):
         self.gen, self.mtl, self.name = gen, mtl, name
@@ -288,7 +335,7 @@ class Obj(object):
 
     def text(self):
         v, t, n, faces = [], [], [], []
-        for poly in separate_depths(self.polys):
+        for poly in [q for p in separate_depths(self.polys) for q in split_for_forge(p)]:
             refs = []
             for p, uv in zip(poly.pts, poly.uvs):
                 v.append("v %.5f %.5f %.5f" % (p[0] / 16.0 + 0.0, p[1] / 16.0 + 0.0,
