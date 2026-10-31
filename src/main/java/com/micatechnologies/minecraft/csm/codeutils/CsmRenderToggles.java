@@ -179,6 +179,9 @@ public final class CsmRenderToggles {
   /** Skip the venues' bowling scoring monitors. Measurement only. */
   public static boolean skipVenueBowling = false;
 
+  /** Skip the venues' court scoreboards and lap counters. Measurement only. */
+  public static boolean skipVenueCourts = false;
+
   /**
    * Draw every renderer that replays a list shared by appearance ({@link CsmSharedDisplayLists})
    * per frame instead, the way each was drawn before it was baked. One switch for the whole family
@@ -237,6 +240,7 @@ public final class CsmRenderToggles {
     values.put("venueBallpark", skipVenueBallpark);
     values.put("venueField", skipVenueField);
     values.put("venueBowling", skipVenueBowling);
+    values.put("venueCourts", skipVenueCourts);
     values.put("sharedBakesPerFrame", sharedBakesPerFrame);
     values.put("signalLayoutPerFrame", signalLayoutPerFrame);
     return values;
@@ -317,6 +321,8 @@ public final class CsmRenderToggles {
       skipVenueField = skipped;
     } else if ("venueBowling".equalsIgnoreCase(name)) {
       skipVenueBowling = skipped;
+    } else if ("venueCourts".equalsIgnoreCase(name)) {
+      skipVenueCourts = skipped;
     } else if ("sharedBakesPerFrame".equalsIgnoreCase(name)) {
       sharedBakesPerFrame = skipped;
     } else if ("signalLayoutPerFrame".equalsIgnoreCase(name)) {
@@ -362,6 +368,7 @@ public final class CsmRenderToggles {
     skipVenueBallpark = false;
     skipVenueField = false;
     skipVenueBowling = false;
+    skipVenueCourts = false;
     sharedBakesPerFrame = false;
     signalLayoutPerFrame = false;
   }

@@ -1,0 +1,50 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "top": "csm:blocks/venues/courts/acrylic",
+    "side": "csm:blocks/venues/courts/asphalt",
+    "bottom": "csm:blocks/venues/courts/asphalt",
+    "particle": "csm:blocks/venues/courts/acrylic"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#top",
+          "cullface": "up",
+          "tintindex": 0
+        },
+        "down": {
+          "texture": "#bottom",
+          "cullface": "down"
+        },
+        "north": {
+          "texture": "#side",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#side",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        }
+      }
+    }
+  ]
+}

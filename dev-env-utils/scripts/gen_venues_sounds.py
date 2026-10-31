@@ -152,12 +152,36 @@ def bowling_strike():
     return total
 
 
+def track_lap_bell():
+    """The bell lap: a hand bell rung hard and fast, a dozen strokes. Each stroke is a struck bell's
+    inharmonic partials (the hum, the prime, the tierce and the higher ones), decaying at their
+    own rates. About 2.6 s."""
+    partials = ((0.5, 0.35, 1.6), (1.0, 1.0, 1.1), (1.183, 0.55, 0.8), (1.506, 0.45, 0.6),
+                (2.0, 0.38, 0.5), (2.514, 0.25, 0.35), (3.011, 0.18, 0.25))
+    base = 1180.0
+    total = np.zeros(int(RATE * 2.6))
+    t = t_of(1.4)
+    rng = np.random.default_rng(7)
+    for k in range(12):
+        stroke = np.zeros_like(t)
+        f0 = base * (1.0 + rng.uniform(-0.004, 0.004))
+        for ratio, level, decay in partials:
+            stroke += level * np.sin(2 * np.pi * f0 * ratio * t + rng.uniform(0, 6.28))                 * np.exp(-t / decay)
+        a = int(RATE * 0.002)
+        stroke[:a] *= np.linspace(0, 1, a)
+        mix_at(total, stroke * rng.uniform(0.8, 1.0), 0.05 + k * 0.155)
+    r = int(RATE * 0.3)
+    total[-r:] *= np.linspace(1, 0, r)
+    return total
+
+
 SOUNDS = {
     'venue_scanner_accept': (venue_scanner_accept, 4600),
     'venue_scanner_deny': (venue_scanner_deny, 4200),
     'venue_turnstile': (venue_turnstile, 5000),
     'bowling_roll': (bowling_roll, 4200),
     'bowling_strike': (bowling_strike, 5600),
+    'track_lap_bell': (track_lap_bell, 5200),
 }
 
 

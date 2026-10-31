@@ -644,7 +644,7 @@ def cost_for(registry, info, ancestors):
             "rink_rubber_floor": ("carpet",),
             "court_maple": ("planks",),
             "court_line": ("planks", "dye"), "court_floor_anchor": ("planks", "dye"),
-            "court_painted": ("planks", "dye"),
+            "court_acrylic_painted": ("planks", "dye"),
             "hockey_goal": ("iron_ingot x2", "string x2"),
             "basketball_stanchion": ("SHEET_METAL x4", "glass_pane x2", "LED_MODULE",
                                      "CONTROL_BOARD"),
@@ -771,6 +771,33 @@ def cost_for(registry, info, ancestors):
         }
         if registry in bowl:
             return bowl[registry]
+        return ("SHEET_METAL", "FASTENER_KIT")
+    if tab == "tabvenuescourts":
+        # Mirrors VenuesFabricatorRules.courts (Sports & Venues module).
+        court = {
+            "court_acrylic": ("stone", "dye"), "court_acrylic_anchor": ("stone", "dye x2"),
+            "court_acrylic_painted": ("stone", "dye x2"), "track_surface": ("slime_ball", "dye"),
+            "track_marking_anchor": ("slime_ball", "dye x2"),
+            "track_painted": ("slime_ball", "dye x2"), "sports_sand": ("sand",),
+            "tennis_net": ("string x2", "iron_ingot"),
+            "pickleball_net": ("string x2", "iron_ingot"),
+            "volleyball_net": ("string x2", "iron_ingot"),
+            "tennis_umpire_chair": ("SHEET_METAL x3",), "court_players_bench": ("SHEET_METAL",),
+            "court_fence": ("iron_bars x2",), "court_divider_curtain": ("wool x2",),
+            "tennis_ball_machine": ("SHEET_METAL x2", "WIRING_HARNESS"),
+            "court_scoreboard": ("ENCLOSURE_SHELL x2", "LED_MODULE x2", "CONTROL_BOARD"),
+            "track_lap_counter": ("ENCLOSURE_SHELL", "LED_MODULE", "gold_ingot"),
+            "basketball_hoop_pole": ("iron_ingot x4", "glass_pane x2", "string"),
+            "track_hurdle": ("iron_ingot", "dye"), "starting_block": ("iron_ingot", "dye"),
+            "shot_put_toe_board": ("planks x2", "iron_ingot"),
+            "steeplechase_barrier": ("planks x2", "iron_ingot"),
+            "track_timing_tower": ("iron_ingot x2", "LENS_ASSEMBLY", "OPTICAL_SENSOR"),
+            "high_jump_mat": ("wool x6", "iron_ingot x2"),
+            "pole_vault_pit": ("wool x6", "iron_ingot x2"),
+            "throwing_cage": ("iron_ingot x4", "string x6"),
+        }
+        if registry in court:
+            return court[registry]
         return ("SHEET_METAL", "FASTENER_KIT")
     if tab in ("tabvenuesconcourse", "tabvenuesseating") and registry in exterior:
         # Mirrors VenuesFabricatorRules.exterior (Sports & Venues module).

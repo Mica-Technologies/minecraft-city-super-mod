@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/track/track_anchor"
+  },
+  "variants": {
+    "inventory": [
+      {}
+    ],
+    "rot": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pipe": "csm:blocks/venues/courts/steel_dark",
+    "particle": "csm:blocks/venues/courts/curtain_0",
+    "c0": "csm:blocks/venues/courts/curtain_0",
+    "c1": "csm:blocks/venues/courts/curtain_1",
+    "c2": "csm:blocks/venues/courts/curtain_2",
+    "c3": "csm:blocks/venues/courts/curtain_3"
+  },
+  "elements": [
+    {
+      "from": [
+        8,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        16,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#c0",
+          "uv": [
+            0,
+            0,
+            8,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#c0",
+          "uv": [
+            8,
+            0,
+            16,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

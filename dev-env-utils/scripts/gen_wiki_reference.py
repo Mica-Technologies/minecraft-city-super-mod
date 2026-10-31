@@ -230,6 +230,20 @@ TABS = {
                          "overhead scoring monitors with a full ten-frame score for every "
                          "bowler; the house ball rack; the shoe counter, cubbies and shoe "
                          "spray."),
+    "tabvenuescourts": ("venues-courts", "Sports & Venues - Courts, Track & Pool",
+                        "Courts and a running track, one block a metre, every line where it "
+                        "really falls (worked out per cell, at the true radii on a track's "
+                        "bends): acrylic courts in sixteen colours for tennis, pickleball (alone "
+                        "or over tennis in a second line colour), basketball full and half "
+                        "court, volleyball and sand volleyball, laid from an anchor and painted "
+                        "cells; the tennis, pickleball and volleyball nets, the umpire chair, "
+                        "players' benches, a chain-link fence with windscreen, a divider "
+                        "curtain, a ball machine, the courtside scoreboard and a pole-mounted "
+                        "hoop; a World Athletics 400 m track in polyurethane with its staggers, "
+                        "relay zones, hurdle marks and lane numbers, the jumps and throws, "
+                        "hurdles, starting blocks, the finish camera tower, a lap counter and "
+                        "bell, the high jump and pole vault landing areas, the shot put toe "
+                        "board, the discus and hammer cage and the steeplechase barrier."),
     "tabvenuesconcourse": ("venues-concourse", "Sports & Venues - Concourse",
                            "An arena's concourse and premium spaces: concession counters "
                            "(straight, outside corner and back counter in four finishes), the lit "
@@ -279,6 +293,7 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
               "tabvenuesconcourse", "tabvenuesballpark", "tabvenuesfootball", "tabvenuesbowling",
+              "tabvenuescourts",
               "tabnone"]
 
 

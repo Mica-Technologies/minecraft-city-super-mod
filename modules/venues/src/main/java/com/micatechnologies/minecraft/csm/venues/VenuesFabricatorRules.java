@@ -35,7 +35,13 @@ import net.minecraft.block.Block;
  * wiring, a control board and LED modules for its masking graphic, the ball return sheet metal
  * and its blower's wiring, a settee wool on sheet metal, the console a control board behind
  * glass, the monitors enclosures and LED modules, the ball rack sheet metal and dye, the shoe
- * counter planks, the cubbies planks and leather, the shoe spray sheet metal.
+ * counter planks, the cubbies planks and leather, the shoe spray sheet metal. On a court or a
+ * track: acrylic is stone and dye, polyurethane slime and dye (a painted cell or an anchor adds
+ * dye), sand is sand; a net string on iron posts; the umpire chair and the bench sheet metal; the
+ * chain-link fence iron bars, its curtain wool; the ball machine sheet metal and wiring; the
+ * scoreboard and the lap counter enclosures and LED modules (the lap counter's bell gold); the
+ * hoop iron and glass; hurdles, blocks, the toe board and the barrier iron or planks; the camera
+ * tower a lens and a sensor; the landing mats wool; the cage iron and string.
  * {@code audit_fabricator_costs.py} mirrors these branches.
  *
  * @since 2026.10
@@ -54,6 +60,8 @@ public final class VenuesFabricatorRules {
   public static final String TAB_FOOTBALL = "tabvenuesfootball";
   /** The Bowling tab. */
   public static final String TAB_BOWLING = "tabvenuesbowling";
+  /** The Courts, Track &amp; Pool tab. */
+  public static final String TAB_COURTS = "tabvenuescourts";
 
   private VenuesFabricatorRules() {
   }
@@ -91,6 +99,10 @@ public final class VenuesFabricatorRules {
     List<FabricatorIngredient> bowl = bowling(registryName);
     if (bowl != null) {
       return bowl;
+    }
+    List<FabricatorIngredient> court = courts(registryName);
+    if (court != null) {
+      return court;
     }
     if (registryName.endsWith("_sign")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1));
@@ -130,7 +142,7 @@ public final class VenuesFabricatorRules {
         return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 1));
       case "court_line":
       case "court_floor_anchor":
-      case "court_painted":
+      case "court_acrylic_painted":
         return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 1),
             FabricatorIngredient.any("minecraft:dye", 1));
       case "hockey_goal":
@@ -453,6 +465,78 @@ public final class VenuesFabricatorRules {
             FabricatorIngredient.any("minecraft:leather", 2));
       case "bowling_shoe_spray":
         return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      default:
+        return null;
+    }
+  }
+
+  /** The Courts, Track &amp; Pool tab's pieces, or null for a name that is not one of them. */
+  @Nullable
+  private static List<FabricatorIngredient> courts(String registryName) {
+    switch (registryName) {
+      case "court_acrylic":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:stone", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "court_acrylic_anchor":
+      case "court_acrylic_painted":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:stone", 1),
+            FabricatorIngredient.any("minecraft:dye", 2));
+      case "track_surface":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:slime_ball", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "track_marking_anchor":
+      case "track_painted":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:slime_ball", 1),
+            FabricatorIngredient.any("minecraft:dye", 2));
+      case "sports_sand":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:sand", 1));
+      case "tennis_net":
+      case "pickleball_net":
+      case "volleyball_net":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:string", 2),
+            FabricatorIngredient.any("minecraft:iron_ingot", 1));
+      case "tennis_umpire_chair":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 3));
+      case "court_players_bench":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      case "court_fence":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_bars", 2));
+      case "court_divider_curtain":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 2));
+      case "tennis_ball_machine":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+            FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
+      case "court_scoreboard":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 2),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 2),
+            FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1));
+      case "track_lap_counter":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.ENCLOSURE_SHELL, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+            FabricatorIngredient.any("minecraft:gold_ingot", 1));
+      case "basketball_hoop_pole":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 4),
+            FabricatorIngredient.any("minecraft:glass_pane", 2),
+            FabricatorIngredient.any("minecraft:string", 1));
+      case "track_hurdle":
+      case "starting_block":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 1),
+            FabricatorIngredient.any("minecraft:dye", 1));
+      case "shot_put_toe_board":
+      case "steeplechase_barrier":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:planks", 2),
+            FabricatorIngredient.any("minecraft:iron_ingot", 1));
+      case "track_timing_tower":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 2),
+            FabricatorIngredient.part(CsmParts.LENS_ASSEMBLY, 1),
+            FabricatorIngredient.part(CsmParts.OPTICAL_SENSOR, 1));
+      case "high_jump_mat":
+      case "pole_vault_pit":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:wool", 6),
+            FabricatorIngredient.any("minecraft:iron_ingot", 2));
+      case "throwing_cage":
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any("minecraft:iron_ingot", 4),
+            FabricatorIngredient.any("minecraft:string", 6));
       default:
         return null;
     }

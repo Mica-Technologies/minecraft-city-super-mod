@@ -43,5 +43,14 @@
         "stream": false
       }
     ]
+  },
+  "track_lap_bell": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:track_lap_bell",
+        "stream": false
+      }
+    ]
   }
 }

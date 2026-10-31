@@ -15,11 +15,16 @@ import com.micatechnologies.minecraft.csm.venues.ballpark.TileEntityOutfieldMark
 import com.micatechnologies.minecraft.csm.venues.bowling.TileEntityBowlingMonitor;
 import com.micatechnologies.minecraft.csm.venues.bowling.TileEntityBowlingMonitorRenderer;
 import com.micatechnologies.minecraft.csm.venues.concourse.BlockTeamStoreFixture;
+import com.micatechnologies.minecraft.csm.venues.courts.TileEntityCourtBoard;
+import com.micatechnologies.minecraft.csm.venues.courts.TileEntityCourtBoardRenderer;
 import com.micatechnologies.minecraft.csm.venues.concourse.TileEntityTeamColour;
 import com.micatechnologies.minecraft.csm.venues.exterior.TileEntityMarquee;
 import com.micatechnologies.minecraft.csm.venues.field.BlockFieldTurf;
 import com.micatechnologies.minecraft.csm.venues.field.FieldTint;
 import com.micatechnologies.minecraft.csm.venues.field.TileEntityEndZoneLettering;
+import com.micatechnologies.minecraft.csm.venues.lines.BlockSportSurface;
+import com.micatechnologies.minecraft.csm.venues.lines.LineArtModels;
+import com.micatechnologies.minecraft.csm.venues.lines.SurfaceColours;
 import com.micatechnologies.minecraft.csm.venues.field.TileEntityEndZoneLetteringRenderer;
 import com.micatechnologies.minecraft.csm.venues.field.TileEntityFieldScoreboard;
 import com.micatechnologies.minecraft.csm.venues.field.TileEntityFieldScoreboardRenderer;
@@ -36,13 +41,16 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
- * The venues module's proxy on the client. It binds the nine renderers (the scoreboard's
+ * The venues module's proxy on the client. It puts the courts' and track's line art model round
+ * their painted cells, binds the ten renderers (the scoreboard's
  * screens, the ribbon board's scrolling text, the banners' lettering, the exterior marquee's
  * picture, the ballpark scoreboards' line score and count, the outfield distance markers, the
- * football and soccer scoreboards, the end zone lettering, the bowling scoring monitors) and
+ * football and soccer scoreboards, the end zone lettering, the bowling scoring monitors, the
+ * court scoreboards and lap counters) and
  * registers the colour
  * handlers: the stadium seats share one set of grey models and the shell is tinted (tint index
  * 0) by the block's colour, or for an aisle-end block and the companion seat by the colour of the
@@ -53,6 +61,12 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  * @since 2026.10
  */
 public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
+
+  @Override
+  public void preInit(FMLPreInitializationEvent event) {
+    super.preInit(event);
+    LineArtModels.register();
+  }
 
   @Override
   public void init(FMLInitializationEvent event) {
@@ -75,10 +89,40 @@ public class CsmVenuesClientProxy extends CsmVenuesCommonProxy {
         new TileEntityEndZoneLetteringRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBowlingMonitor.class,
         new TileEntityBowlingMonitorRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCourtBoard.class,
+        new TileEntityCourtBoardRenderer());
     seatColours();
     bannerColours();
     storeColours();
     fieldColours();
+    surfaceColours();
+  }
+
+  /**
+   * A plain court's or track's surface: its colour by metadata ({@link SurfaceColours}), the same
+   * colour a painted cell writes into its vertices.
+   */
+  private static void surfaceColours() {
+    List<Block> blocks = new ArrayList<>();
+    for (Block block : ForgeRegistries.BLOCKS.getValuesCollection()) {
+      if (block instanceof BlockSportSurface && ((BlockSportSurface) block).isColoured()) {
+        blocks.add(block);
+      }
+    }
+    Minecraft.getMinecraft().getBlockColors().registerBlockColorHandler(
+        (state, world, pos, tintIndex) -> tintIndex == 0
+            && state.getBlock() instanceof BlockSportSurface
+            ? SurfaceColours.rgb(((BlockSportSurface) state.getBlock()).colourOf(state)) : -1,
+        blocks.toArray(new Block[0]));
+    List<Item> items = new ArrayList<>();
+    for (Block block : blocks) {
+      items.add(Item.getItemFromBlock(block));
+    }
+    Minecraft.getMinecraft().getItemColors().registerItemColorHandler((stack, tintIndex) -> {
+      Block block = Block.getBlockFromItem(stack.getItem());
+      return tintIndex == 0 && block instanceof BlockSportSurface
+          ? SurfaceColours.rgb(((BlockSportSurface) block).defaultColour()) : -1;
+    }, items.toArray(new Item[0]));
   }
 
   /**

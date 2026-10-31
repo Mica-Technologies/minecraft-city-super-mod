@@ -1,0 +1,187 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:venues/courts/hoop_pole.obj"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              {
+                "x": 30
+              },
+              {
+                "y": 225
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0.0,
+              -0.3,
+              -0.4
+            ],
+            "scale": [
+              0.18,
+              0.18,
+              0.18
+            ]
+          },
+          "ground": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 0
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.2,
+              0
+            ],
+            "scale": [
+              0.09,
+              0.09,
+              0.09
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 180
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0.0,
+              -0.3,
+              -0.4
+            ],
+            "scale": [
+              0.18,
+              0.18,
+              0.18
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              {
+                "x": 75
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.15,
+              0
+            ],
+            "scale": [
+              0.108,
+              0.108,
+              0.108
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              {
+                "x": 75
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.15,
+              0
+            ],
+            "scale": [
+              0.108,
+              0.108,
+              0.108
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 45
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.1,
+              0
+            ],
+            "scale": [
+              0.126,
+              0.126,
+              0.126
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              {
+                "x": 0
+              },
+              {
+                "y": 225
+              },
+              {
+                "z": 0
+              }
+            ],
+            "translation": [
+              0,
+              0.1,
+              0
+            ],
+            "scale": [
+              0.126,
+              0.126,
+              0.126
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

@@ -36,7 +36,13 @@ public abstract class BlockArenaFloorBase extends AbstractBlock {
     /** A ballpark's turf. */
     TURF(Material.GRASS, SoundType.PLANT, "shovel", 0.6F, false),
     /** A ballpark's infield clay, packing clay and warning track. */
-    CLAY(Material.GROUND, SoundType.GROUND, "shovel", 0.6F, false);
+    CLAY(Material.GROUND, SoundType.GROUND, "shovel", 0.6F, false),
+    /** A court's acrylic coating on asphalt. */
+    ACRYLIC(Material.ROCK, SoundType.STONE, "pickaxe", 1.2F, false),
+    /** A track's polyurethane. */
+    POLYURETHANE(Material.ROCK, SoundType.CLOTH, "pickaxe", 1.0F, false),
+    /** Sand: a beach court, a jumping pit. */
+    SAND(Material.SAND, SoundType.SAND, "shovel", 0.5F, false);
 
     final Material material;
     final SoundType sound;

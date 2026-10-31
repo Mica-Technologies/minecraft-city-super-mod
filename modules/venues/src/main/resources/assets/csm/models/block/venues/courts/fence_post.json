@@ -1,0 +1,81 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "post": "csm:blocks/venues/courts/chainlink_post",
+    "mesh": "csm:blocks/venues/courts/chainlink_mesh",
+    "particle": "csm:blocks/venues/courts/chainlink_post",
+    "screen1": "csm:blocks/venues/courts/screen_1",
+    "screen2": "csm:blocks/venues/courts/screen_2",
+    "screen3": "csm:blocks/venues/courts/screen_3"
+  },
+  "elements": [
+    {
+      "from": [
+        7.1,
+        0,
+        7.1
+      ],
+      "to": [
+        8.9,
+        16,
+        8.9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#post",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#post",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#post",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#post",
+          "uv": [
+            7.1,
+            0,
+            8.9,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#post",
+          "uv": [
+            7.1,
+            7.1,
+            8.9,
+            8.9
+          ]
+        },
+        "down": {
+          "texture": "#post",
+          "uv": [
+            7.1,
+            7.1,
+            8.9,
+            8.9
+          ]
+        }
+      }
+    }
+  ]
+}

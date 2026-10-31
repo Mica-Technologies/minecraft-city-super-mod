@@ -1,0 +1,452 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "colour": "0",
+        "top": "false",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone0"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "false",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "false",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "false",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "false",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "0",
+        "top": "true",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone0_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "true",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0_top"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "true",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "true",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "true",
+        "colour": "0"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm0_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "1",
+        "top": "false",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone1"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "false",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "false",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "false",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "false",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "1",
+        "top": "true",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone1_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "true",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1_top"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "true",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "true",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "true",
+        "colour": "1"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm1_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "2",
+        "top": "false",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone2"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "false",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "false",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "false",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "false",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "2",
+        "top": "true",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone2_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "true",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2_top"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "true",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "true",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "true",
+        "colour": "2"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm2_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "3",
+        "top": "false",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone3"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "false",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "false",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "false",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "false",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "colour": "3",
+        "top": "true",
+        "north": "false",
+        "south": "false",
+        "east": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_lone3_top"
+      }
+    },
+    {
+      "when": {
+        "east": "true",
+        "top": "true",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3_top"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "top": "true",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "west": "true",
+        "top": "true",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "top": "true",
+        "colour": "3"
+      },
+      "apply": {
+        "model": "csm:venues/courts/curtain_arm3_top",
+        "y": 270
+      }
+    }
+  ]
+}

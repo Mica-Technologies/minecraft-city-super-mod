@@ -1,0 +1,470 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "end_l=false,end_r=false,facing=north,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_0"
+      }
+    ],
+    "end_l=false,end_r=false,facing=north,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1"
+      }
+    ],
+    "end_l=false,end_r=false,facing=north,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1"
+      }
+    ],
+    "end_l=false,end_r=false,facing=north,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1"
+      }
+    ],
+    "end_l=false,end_r=false,facing=north,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_4"
+      }
+    ],
+    "end_l=false,end_r=true,facing=north,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r"
+      }
+    ],
+    "end_l=false,end_r=true,facing=north,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r"
+      }
+    ],
+    "end_l=false,end_r=true,facing=north,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r"
+      }
+    ],
+    "end_l=false,end_r=true,facing=north,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r"
+      }
+    ],
+    "end_l=false,end_r=true,facing=north,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r"
+      }
+    ],
+    "end_l=true,end_r=false,facing=north,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l"
+      }
+    ],
+    "end_l=true,end_r=false,facing=north,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l"
+      }
+    ],
+    "end_l=true,end_r=false,facing=north,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l"
+      }
+    ],
+    "end_l=true,end_r=false,facing=north,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l"
+      }
+    ],
+    "end_l=true,end_r=false,facing=north,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l"
+      }
+    ],
+    "end_l=true,end_r=true,facing=north,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo"
+      }
+    ],
+    "end_l=true,end_r=true,facing=north,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo"
+      }
+    ],
+    "end_l=true,end_r=true,facing=north,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo"
+      }
+    ],
+    "end_l=true,end_r=true,facing=north,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo"
+      }
+    ],
+    "end_l=true,end_r=true,facing=north,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo"
+      }
+    ],
+    "end_l=false,end_r=false,facing=east,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_0",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=false,facing=east,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=false,facing=east,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=false,facing=east,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=false,facing=east,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_4",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=true,facing=east,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=true,facing=east,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=true,facing=east,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=true,facing=east,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=true,facing=east,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=false,facing=east,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=false,facing=east,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=false,facing=east,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=false,facing=east,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=false,facing=east,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=true,facing=east,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=true,facing=east,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=true,facing=east,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=true,facing=east,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 90
+      }
+    ],
+    "end_l=true,end_r=true,facing=east,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 90
+      }
+    ],
+    "end_l=false,end_r=false,facing=south,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_0",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=false,facing=south,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=false,facing=south,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=false,facing=south,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=false,facing=south,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_4",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=true,facing=south,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=true,facing=south,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=true,facing=south,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=true,facing=south,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=true,facing=south,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=false,facing=south,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=false,facing=south,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=false,facing=south,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=false,facing=south,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=false,facing=south,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=true,facing=south,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=true,facing=south,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=true,facing=south,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=true,facing=south,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 180
+      }
+    ],
+    "end_l=true,end_r=true,facing=south,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 180
+      }
+    ],
+    "end_l=false,end_r=false,facing=west,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_0",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=false,facing=west,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=false,facing=west,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=false,facing=west,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_1",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=false,facing=west,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_mid_4",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=true,facing=west,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=true,facing=west,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=true,facing=west,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=true,facing=west,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 270
+      }
+    ],
+    "end_l=false,end_r=true,facing=west,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_r",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=false,facing=west,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=false,facing=west,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=false,facing=west,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=false,facing=west,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=false,facing=west,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_end_l",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=true,facing=west,sag=0": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=true,facing=west,sag=1": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=true,facing=west,sag=2": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=true,facing=west,sag=3": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 270
+      }
+    ],
+    "end_l=true,end_r=true,facing=west,sag=4": [
+      {
+        "model": "csm:venues/courts/pickleball_net_solo",
+        "y": 270
+      }
+    ],
+    "inventory": [
+      {
+        "model": "csm:venues/courts/pickleball_net_item"
+      }
+    ]
+  }
+}

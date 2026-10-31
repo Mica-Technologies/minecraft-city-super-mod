@@ -56,7 +56,9 @@ public class BlockArenaRun extends BlockVenue {
     /** A bowling centre's house ball rack: three sloped shelves of balls. */
     BALL_RACK(BlockVenueBox.of(0, 0, 2, 16, 16, 14), -1),
     /** A bowling centre's shoe counter, its top at a metre. */
-    SHOE_COUNTER(BlockVenueBox.of(0, 0, 0, 16, 16, 16), -1);
+    SHOE_COUNTER(BlockVenueBox.of(0, 0, 0, 16, 16, 16), -1),
+    /** A court's players' bench: slats and a backrest on a green frame. */
+    COURT_BENCH(BlockVenueBox.of(0, 0, 4, 16, 16, 14.5), 8.0 / 16.0);
 
     final AxisAlignedBB box;
     final double seatTop;

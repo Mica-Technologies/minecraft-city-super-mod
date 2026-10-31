@@ -1,0 +1,113 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "pipe": "csm:blocks/venues/courts/steel_dark",
+    "particle": "csm:blocks/venues/courts/curtain_0",
+    "c0": "csm:blocks/venues/courts/curtain_0",
+    "c1": "csm:blocks/venues/courts/curtain_1",
+    "c2": "csm:blocks/venues/courts/curtain_2",
+    "c3": "csm:blocks/venues/courts/curtain_3"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        16,
+        15.2,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#c3",
+          "uv": [
+            0,
+            0.8,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#c3",
+          "uv": [
+            0,
+            0.8,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        15.2,
+        7.5
+      ],
+      "to": [
+        16,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            0,
+            16,
+            0.8
+          ]
+        },
+        "south": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            0,
+            16,
+            0.8
+          ]
+        },
+        "east": {
+          "texture": "#pipe",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            0.8
+          ]
+        },
+        "west": {
+          "texture": "#pipe",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            0.8
+          ]
+        },
+        "up": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            7.5,
+            16,
+            8.5
+          ]
+        },
+        "down": {
+          "texture": "#pipe",
+          "uv": [
+            0,
+            7.5,
+            16,
+            8.5
+          ]
+        }
+      }
+    }
+  ]
+}
