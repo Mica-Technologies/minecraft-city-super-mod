@@ -5,6 +5,7 @@ The detail the repository `CLAUDE.md` links to rather than carries, so an agent 
 
 - [`modules.md`](modules.md) -- the full module table: every module's packages, tabs and contents
 - [`system-docs.md`](system-docs.md) -- what each in-depth doc in `assets/docs/` covers
+- [`source-layout.md`](source-layout.md) -- the package and asset tree of Core and every module
 - The `dev-env-utils/scripts/` entries, one file per module: [`core-and-shared-tools.md`](core-and-shared-tools.md),
   [`road-signs.md`](road-signs.md), [`roads.md`](roads.md), [`life-safety.md`](life-safety.md)
   (with the fire alarm sound architecture), [`lighting.md`](lighting.md), [`signage.md`](signage.md),
