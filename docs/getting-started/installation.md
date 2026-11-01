@@ -70,8 +70,12 @@ a line naming RoughlyEnoughIDs just before).
 1. Install Forge for 1.12.2 and run it once, so it creates the `mods` folder.
 2. Open the
    [Releases page](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
-   and download **CSM: Core** plus each module you want. The release lists a `SHA256SUMS.txt` you
-   can check the downloads against. Installing every module (or CSM alongside other content
+   and download **CSM: Core** plus each module you want. Want everything? Download the one
+   `minecraft-city-super-mod-all-modules-<version>.zip` instead: it holds every jar, so extract it
+   into `mods` and delete any module you do not want (CSM: Vehicles needs
+   [Immersive Vehicles](https://www.curseforge.com/minecraft/mc-mods/immersive-vehicles); delete
+   its jar if you do not have it). The release lists a `SHA256SUMS.txt` you can check the
+   downloads against. Installing every module (or CSM alongside other content
    mods)? Also download **[RoughlyEnoughIDs](https://modrinth.com/mod/reid)** and **[MixinBooter](https://modrinth.com/mod/mixinbooter)** -- see [Block IDs](#block-ids-roughlyenoughids-is-required).
 
     [![Latest release](https://img.shields.io/github/v/release/Mica-Technologies/minecraft-city-super-mod?sort=semver&display_name=tag&style=for-the-badge&label=Latest%20Version)](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)

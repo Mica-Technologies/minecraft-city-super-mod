@@ -195,16 +195,72 @@ jobs:
           echo "==> ${#jars[@]} release jars"
           cat SHA256SUMS.txt
 
+          # Every jar in one ZIP as well (discussion #327), for a player who wants the lot in one
+          # download. A ZIP of the separate jars rather than one merged "-all" jar: a merged jar
+          # would make Immersive Vehicles a hard requirement of everything (CSM: Vehicles is
+          # `required-after:mts`), would carry sixteen mcmod.info files in one, and could not be
+          # trimmed to a subset. The jars sit at the top of the ZIP so it extracts straight into
+          # `mods`. It is built from the same files just hashed, so its SHA256SUMS.txt is the
+          # jars' own, and the ZIP's hash is added to the outer SHA256SUMS.txt afterwards.
+          # Named after the Core jar (printModuleJarNames lists it first), with `core` swapped
+          # for `all-modules`: minecraft-city-super-mod-all-modules-<version>.zip.
+          coreSuffix="-core-${{ env.MOD_VERSION }}.jar"
+          if [ "${jars[0]%"$coreSuffix"}" = "${jars[0]}" ]; then
+            echo "::error::the first jar listed, ${jars[0]}, is not the Core jar"
+            exit 1
+          fi
+          zipName="${jars[0]%"$coreSuffix"}-all-modules-${{ env.MOD_VERSION }}.zip"
+          if ! printf '%s\n' "$zipName" | grep -qE '^[A-Za-z0-9._+-]+\.zip$'; then
+            echo "::error::unexpected ZIP name '$zipName'"
+            exit 1
+          fi
+          cat > INSTALL.txt <<CSM_INSTALL_EOF
+          City Super Mod ${{ env.MOD_VERSION }} for Minecraft ${{ env.MINECRAFT_VERSION }}: every module
+
+          Extract these jars into your Forge 1.12.2 mods folder. The core jar is required; every
+          other jar is optional, so delete any module you do not want. All the jars must stay at
+          the same version as each other.
+
+          Every module together passes Minecraft 1.12.2's 4,096 block IDs, so a full install also
+          needs RoughlyEnoughIDs (https://modrinth.com/mod/reid) and MixinBooter
+          (https://modrinth.com/mod/mixinbooter).
+
+          CSM: Vehicles (the -vehicles- jar) needs Immersive Vehicles
+          (https://www.curseforge.com/minecraft/mc-mods/immersive-vehicles). Without it the game
+          stops at startup: delete that jar, or install Immersive Vehicles.
+
+          SHA256SUMS.txt checks the jars: sha256sum -c SHA256SUMS.txt
+
+          https://github.com/${{ github.repository }}/releases/tag/${{ env.CHOSEN_TAG }}
+          CSM_INSTALL_EOF
+          # -X drops the extra file attributes, -j keeps only the file names.
+          zip -X -j "$zipName" "${jars[@]}" SHA256SUMS.txt INSTALL.txt
+          if [ "$(unzip -Z1 "$zipName" | grep -c '\.jar$')" -ne "${#jars[@]}" ]; then
+            echo "::error::$zipName does not hold all ${#jars[@]} jars"
+            exit 1
+          fi
+          unzip -l "$zipName"
+
+          zipSha1=$(sha1sum "$zipName" | awk '{print $1}')
+          zipSha256=$(sha256sum "$zipName" | awk '{print $1}')
+          zipMd5=$(md5sum "$zipName" | awk '{print $1}')
+          zipCrc32=$(cksum "$zipName" | awk '{print $1}')
+          printf '%s  %s\n' "$zipSha256" "$zipName" >> SHA256SUMS.txt
+          printf '| `%s` (every jar above, in one ZIP) | `%s` | `%s` | `%s` | `%s` |\n' \
+            "$zipName" "$zipSha1" "$zipSha256" "$zipMd5" "$zipCrc32" >> release-jar-table.md
+
           {
             echo "RELEASE_FILES<<CSM_RELEASE_EOF"
             printf '%s\n' "${jars[@]}"
+            echo "$zipName"
             echo "SHA256SUMS.txt"
             echo "CSM_RELEASE_EOF"
             echo "RELEASE_JAR_TABLE<<CSM_RELEASE_EOF"
             cat release-jar-table.md
             echo "CSM_RELEASE_EOF"
-            # Every jar plus SHA256SUMS.txt. The publish step is verified against this below.
-            echo "RELEASE_FILE_COUNT=$(( ${#jars[@]} + 1 ))"
+            echo "RELEASE_ZIP=$zipName"
+            # Every jar, the ZIP and SHA256SUMS.txt. The publish step is verified against this below.
+            echo "RELEASE_FILE_COUNT=$(( ${#jars[@]} + 2 ))"
           } >> "$GITHUB_ENV"
 
       - name: Create Release Entry
@@ -223,6 +279,10 @@ jobs:
             The `core` jar is required. Every other jar is optional and adds one subsystem;
             install as many of them alongside Core as you want. All jars in a release must be
             the same version as each other.
+
+            **Want everything?** `${{ env.RELEASE_ZIP }}` holds every jar in one download:
+            extract it into your `mods` folder and delete any module you do not want. CSM:
+            Vehicles in it needs Immersive Vehicles; without IV, delete the `-vehicles-` jar.
 
             **Installing every module needs RoughlyEnoughIDs** (https://modrinth.com/mod/reid)
             and MixinBooter (https://modrinth.com/mod/mixinbooter): together the modules pass
@@ -254,6 +314,10 @@ jobs:
             The `core` jar is required. Every other jar is optional and adds one subsystem;
             install as many of them alongside Core as you want. All jars in a release must be
             the same version as each other.
+
+            **Want everything?** `${{ env.RELEASE_ZIP }}` holds every jar in one download:
+            extract it into your `mods` folder and delete any module you do not want. CSM:
+            Vehicles in it needs Immersive Vehicles; without IV, delete the `-vehicles-` jar.
 
             **Installing every module needs RoughlyEnoughIDs** (https://modrinth.com/mod/reid)
             and MixinBooter (https://modrinth.com/mod/mixinbooter): together the modules pass

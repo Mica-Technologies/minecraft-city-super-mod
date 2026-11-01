@@ -17,7 +17,10 @@ install fails at startup on purpose.
 Download the jars you want from the
 [latest release](https://github.com/Mica-Technologies/minecraft-city-super-mod/releases/latest)
 and drop them into your Forge 1.12.2 `mods` folder. Want everything the mod has ever had? Take all
-sixteen.
+sixteen, or the one `minecraft-city-super-mod-all-modules-<version>.zip` that holds them all: extract
+it into `mods` (CSM: Vehicles also needs
+[Immersive Vehicles](https://www.curseforge.com/minecraft/mc-mods/immersive-vehicles); delete its jar
+if you do not have it).
 
 > **RoughlyEnoughIDs is required for a full install.** Every module together registers about
 > 4,000 blocks, which with vanilla's is past Minecraft 1.12.2's 4,096 block IDs, so install
