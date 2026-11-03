@@ -255,7 +255,8 @@ The kitchen's appliances, the things on its counters and the tableware follow, d
 - `BlockBuiltInAppliance` (range, wall oven) and `BlockDishwasher` stand in the base run as an
   `IKitchenFitting`: a cabinet beside one carries its run through it, so shows no end panel. The
   dishwasher also carries the countertop of the cabinet beside it (`counter`, actual state:
-  granite beside oak, quartz beside walnut and white, its own top alone). The cooktop cabinet is
+  granite beside oak, quartz beside walnut and white, tan granite beside cherry, its own top
+  alone). The cooktop cabinet is
   a drawer bank with a glass cooktop in its countertop.
 - `BlockCounterPiece` (tableware, chopping board, kettle, mixer), `BlockCounterAppliance` and
   `BlockCookieJar` stand on whatever is under them: `rest` (actual state, `SurfaceRest`) picks a
@@ -612,7 +613,13 @@ the first player opens it and the last closes it.
 Finishes are separate blocks (`_oak`, `_walnut`, `_white`; fabrics `_charcoal`, `_navy`,
 `_oatmeal`, `_red`; appliances `_stainless`, `_white`; bathroom fittings `_white` porcelain or
 `_chrome`). Countertops: dark granite on oak, light
-quartz on walnut and white. The plan for the rest of the round-out (bedroom, kitchen, bath, office,
+quartz on walnut and white, speckled tan granite on cherry. Cherry (`_cherry`) is the kitchen
+generator's own finish, not the living room's: the base and wall cabinets, island, sink,
+cooktop cabinet and bathroom vanity come in it, so a granite top is a cherry block, and nothing
+else does. A finish id is one word, because `getFinish()` is the last word of the registry name
+(the sofa, the corner and the cabinets join only within a finish). The single, double and
+king beds also come in forest green (`_forest`) and in white bedding with a forest-green cross-pattern throw over
+the foot (`_forest_throw`, its own base models with the throw drawn in, `BED_THROWS`). The plan for the rest of the round-out (bedroom, kitchen, bath, office,
 outdoor, working appliances) aims at parity with other furniture mods.
 
 ## Commercial & Office

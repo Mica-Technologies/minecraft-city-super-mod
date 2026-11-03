@@ -55,6 +55,15 @@
     },
     {
       "when": {
+        "counter": "tan_granite",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_tan_granite"
+      }
+    },
+    {
+      "when": {
         "facing": "east"
       },
       "apply": {
@@ -114,6 +123,16 @@
     },
     {
       "when": {
+        "counter": "tan_granite",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_tan_granite",
+        "y": 90
+      }
+    },
+    {
+      "when": {
         "facing": "south"
       },
       "apply": {
@@ -173,6 +192,16 @@
     },
     {
       "when": {
+        "counter": "tan_granite",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_tan_granite",
+        "y": 180
+      }
+    },
+    {
+      "when": {
         "facing": "west"
       },
       "apply": {
@@ -227,6 +256,16 @@
       },
       "apply": {
         "model": "csm:furniture/residential/dishwasher_stainless_counter_quartz",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "counter": "tan_granite",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/residential/dishwasher_stainless_counter_tan_granite",
         "y": 270
       }
     }

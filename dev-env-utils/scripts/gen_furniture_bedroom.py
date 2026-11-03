@@ -2,7 +2,8 @@
 """
 gen_furniture_bedroom.py -- the Residential tab's bedroom, study and nursery in the Furniture &
 Novelties module: beds you sleep in (single, double and king in four fabrics; a day bed and a
-bunk bed in the three wood finishes), the nightstand, dresser, dresser with mirror, wardrobe,
+bunk bed in the three wood finishes; single, double and king also in forest green, and in white
+with a forest-green throw across the foot), the nightstand, dresser, dresser with mirror, wardrobe,
 the white built-in closet, the blanket chest, the desk and desk chair, the crib, the cradle
 with drawers, the changing table, the rocking chair, the standing mirror, the vanity and its
 stool, and area rugs in four colours.
@@ -186,6 +187,20 @@ def rug_field(field, motif, seed, size=16):
     return img
 
 
+def cross_throw(base, cross, seed, size=16):
+    """A wool throw: the weave in the base colour with a small cross of the second colour
+    every four texels, offset row by row, so it reads as a woven cross pattern."""
+    img = R.fabric(base, seed, size)
+    px = img.load()
+    for by in range(0, size, 4):
+        for bx in range(0, size, 4):
+            ox = (bx + (2 if (by // 4) % 2 else 0)) % size
+            for dx, dy in ((1, 2), (2, 1), (2, 2), (3, 2), (2, 3)):
+                x, y = (ox + dx) % size, (by + dy) % size
+                px[x, y] = R.shade(cross, 1.0 + (0.03 if (x + y) % 2 else -0.03)) + (255,)
+    return img
+
+
 def rug_border(binding, accent, field, seed, size=16):
     """A rug's bound border, three texels deep: the binding at the edge, a band of the accent,
     then the field's own colour darkened. The top left 3 x 3 is the corner, turned round both
@@ -236,13 +251,22 @@ for _i, (_cid, (_f, _m, _b, _a)) in enumerate(sorted(RUG_COLOURS.items())):
     TEXTURES["rug_" + _cid] = (lambda f=_f, m=_m, s=530 + _i: rug_field(f, m, s))
     TEXTURES["rug_border_" + _cid] = (lambda f=_f, b=_b, a=_a, s=540 + _i: rug_border(b, a, f, s))
 
+# Forest green, kept out of FABRIC_BASE so the seeds of the four fabrics above stay as they are.
+FOREST = (44, 82, 56)
+TEXTURES["forest"] = lambda: R.fabric(FOREST, 560)
+TEXTURES["forest_dark"] = lambda: R.fabric(R.shade(FOREST, 0.78), 561)
+TEXTURES["duvet_forest"] = lambda: duvet(FOREST, 562)
+TEXTURES["tufted_forest"] = lambda: tufted(R.shade(FOREST, 0.9), 563)
+TEXTURES["duvet_white"] = lambda: duvet((236, 236, 232), 564)
+TEXTURES["bed_throw_forest"] = lambda: cross_throw(FOREST, (222, 214, 190), 565)
+
 DEFAULT_TEX = dict(K.DEFAULT_TEX)
 DEFAULT_TEX.update({
     "handle": T("brass"), "brass": T("brass"), "sheet": T("bed_sheet"),
     "pillow": T("bed_pillow"), "mattress": T("bed_ticking"), "duvet": T("duvet_navy"),
     "tufted": T("tufted_navy"), "mirror": T("mirror_glass"), "louvre": T("louvre_white"),
     "nursery": T("nursery_gingham"), "pad": T("changing_pad"), "blanket": T("blanket_knit"),
-    "rug": T("rug_navy"), "rug_border": T("rug_border_navy"),
+    "rug": T("rug_navy"), "rug_border": T("rug_border_navy"), "throw": T("bed_throw_forest"),
 })
 
 
@@ -394,6 +418,20 @@ BED_SINGLE = upholstered_bed(0.5, 15.5, 18, [(2.5, 13.5)])
 BED_DOUBLE = upholstered_bed(-12, 12, 20, [(-10.5, -1), (1, 10.5)])
 BED_KING = upholstered_bed(-15.75, 15.75, 24, [(-14, -1), (1, 14)], tufted_head=True,
                            accents=[(-9, -2.5), (2.5, 9)])
+
+
+def throw(x0, x1, top=9):
+    """A throw folded across the foot of a bed, over the duvet and down its sides: x0..x1 is
+    the bed's frame, as upholstered_bed takes it."""
+    return [el([x0 + 0.25, top - 2.0, 2.5], [x1 - 0.25, top + 0.85, 10], "throw",
+               ("north", "south", "east", "west", "up"))]
+
+
+# The beds with a throw, for the finishes that have one (THROWN): their own base models.
+THROWN = ("forest_throw",)
+BED_THROWS = {"bed_single": BED_SINGLE + throw(0.5, 15.5),
+              "bed_double": BED_DOUBLE + throw(-12, 12),
+              "bed_king": BED_KING + throw(-15.75, 15.75)}
 
 # --- the bunk bed: a single bed below another, on four corner posts, with a ladder at the
 # foot, a guard rail round the top bunk, and a panel at each head ---------------------------
@@ -711,6 +749,18 @@ WOODS = R.WOODS
 FABRICS = [(fid, dict(ftex, duvet=T("duvet_" + fid), tufted=T("tufted_" + fid)), *names)
            for fid, ftex, *names in R.FABRICS]
 OATMEAL_CUSHION = {"fabric": T("oatmeal"), "fabric_dark": T("oatmeal_dark")}
+# The upholstered beds also come in forest green, and in white bedding with a forest-green
+# throw on an oatmeal base (its own base models, BED_THROWS).
+BED_FABRICS = FABRICS + [
+    ("forest", {"fabric": T("forest"), "fabric_dark": T("forest_dark"),
+                "duvet": T("duvet_forest"), "tufted": T("tufted_forest")},
+     "Forest Green", "Waldgrün", "verde bosque", "skogsgrön"),
+    ("forest_throw", {"fabric": T("oatmeal"), "fabric_dark": T("oatmeal_dark"),
+                      "duvet": T("duvet_white"), "tufted": T("tufted_oatmeal"),
+                      "throw": T("bed_throw_forest")},
+     "White, Forest Green Throw", "Weiß, waldgrüne Decke", "blanco, manta verde bosque",
+     "vit, skogsgrönt pläd"),
+]
 RUGS = [(cid, {"rug": T("rug_" + cid), "rug_border": T("rug_border_" + cid)}, *names)
         for cid, _t, *names in R.FABRICS]
 
@@ -805,12 +855,13 @@ def entries():
     by_piece = {}
     for piece, kind, layout, _geo, boxes, extra, names in BEDS:
         rows = []
-        for fid, ftex, *fnames in finishes(kind):
+        for fid, ftex, *fnames in (BED_FABRICS if kind == "fabric" else WOODS):
             reg = "%s_%s" % (piece, fid)
             java = ('new BlockResidentialBed("%s", BedLayout.%s, new int[][]{%s}, %s)'
                     % (reg, layout, ", ".join("{%s}" % jbox(b) for b in boxes),
                        "true" if kind == "fabric" else "false"))
-            rows.append((reg, "bed", piece, dict(ftex, **extra), names_with(names, fnames), java))
+            base = piece + "_throw" if fid in THROWN else piece
+            rows.append((reg, "bed", base, dict(ftex, **extra), names_with(names, fnames), java))
         by_piece[piece] = rows
     for piece, kind, _geo, box, slots, sounds, names in TALL:
         rows = []
@@ -901,10 +952,16 @@ def split_halves(geo):
     return K.split_y(copy.deepcopy(geo))
 
 
+def bed_bases():
+    """The beds' base geometries: each bed, and each bed that has a throw, as <piece>_throw."""
+    return BEDS + [(piece + "_throw", kind, layout, BED_THROWS[piece], b, e, n)
+                   for piece, kind, layout, _g, b, e, n in BEDS if piece in BED_THROWS]
+
+
 def base_models():
     """Every base geometry model: (name, geometry json)."""
     out = []
-    for piece, kind, layout, geo, _b, _e, _n in BEDS:
+    for piece, kind, layout, geo, _b, _e, _n in bed_bases():
         particle = "fabric_dark" if kind == "fabric" else "wood"
         for i, cell in enumerate(cut_cells(geo, BED_CELLS[layout])):
             out.append(("%s_cell%d" % (piece, i), geometry(cell, particle)))
@@ -976,7 +1033,7 @@ def generate(assets):
         written.append(rel)
     for name, data in base_models():
         dump("models/block/%s/base/%s.json" % (SUB, name), data)
-    beds = {b[0]: b for b in BEDS}
+    beds = {b[0]: b for b in bed_bases()}
     for reg, kind, piece, ftex, _names, _java in entries():
         blk = "models/block/%s/%s_%%s.json" % (SUB, reg)
         item = "models/item/%s.json" % reg

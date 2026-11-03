@@ -1,0 +1,10 @@
+{
+  "parent": "csm:block/furniture/residential/base/bed_double_throw_cell3",
+  "textures": {
+    "fabric": "csm:blocks/furniture/residential/oatmeal",
+    "fabric_dark": "csm:blocks/furniture/residential/oatmeal_dark",
+    "duvet": "csm:blocks/furniture/residential/duvet_white",
+    "tufted": "csm:blocks/furniture/residential/tufted_oatmeal",
+    "throw": "csm:blocks/furniture/residential/bed_throw_forest"
+  }
+}

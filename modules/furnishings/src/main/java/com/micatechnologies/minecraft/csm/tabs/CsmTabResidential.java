@@ -196,41 +196,49 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockKitchenCabinet("kitchen_base_cabinet_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_base_cabinet_walnut", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_base_cabinet_white", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_base_cabinet_cherry", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
 
     // Kitchen Drawer Cabinet
     initTabBlock(new BlockKitchenCabinet("kitchen_drawer_cabinet_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
     initTabBlock(new BlockKitchenCabinet("kitchen_drawer_cabinet_walnut", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
     initTabBlock(new BlockKitchenCabinet("kitchen_drawer_cabinet_white", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_drawer_cabinet_cherry", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
 
     // Kitchen Door and Drawer Cabinet
     initTabBlock(new BlockKitchenCabinet("kitchen_door_drawer_cabinet_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_door_drawer_cabinet_walnut", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_door_drawer_cabinet_white", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_door_drawer_cabinet_cherry", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
 
     // Kitchen Corner Cabinet
     initTabBlock(new BlockKitchenCorner("kitchen_corner_cabinet_oak"));
     initTabBlock(new BlockKitchenCorner("kitchen_corner_cabinet_walnut"));
     initTabBlock(new BlockKitchenCorner("kitchen_corner_cabinet_white"));
+    initTabBlock(new BlockKitchenCorner("kitchen_corner_cabinet_cherry"));
 
     // Kitchen Sink Cabinet
     initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_oak"));
     initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_walnut"));
     initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_white"));
+    initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_cherry"));
 
     // Kitchen Island
     initTabBlock(new BlockKitchenCabinet("kitchen_island_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.ISLAND, 18, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_island_walnut", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.ISLAND, 18, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_island_white", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.ISLAND, 18, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_island_cherry", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.ISLAND, 18, KitchenFront.DOORS));
 
     // Kitchen Wall Cabinet
     initTabBlock(new BlockKitchenCabinet("kitchen_wall_cabinet_oak", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 9, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_wall_cabinet_walnut", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 9, KitchenFront.DOORS));
     initTabBlock(new BlockKitchenCabinet("kitchen_wall_cabinet_white", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 9, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_wall_cabinet_cherry", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 9, KitchenFront.DOORS));
 
     // Open Kitchen Shelf
     initTabBlock(new BlockKitchenCabinet("kitchen_wall_shelf_oak", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 0, KitchenFront.OPEN));
     initTabBlock(new BlockKitchenCabinet("kitchen_wall_shelf_walnut", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 0, KitchenFront.OPEN));
     initTabBlock(new BlockKitchenCabinet("kitchen_wall_shelf_white", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 0, KitchenFront.OPEN));
+    initTabBlock(new BlockKitchenCabinet("kitchen_wall_shelf_cherry", new int[]{0, 0, 8, 16, 16, 16}, KitchenLine.WALL, 0, KitchenFront.OPEN));
 
     // Range Hood
     initTabBlock(new BlockKitchenLight("range_hood_stainless", new int[]{0, 0, 6, 16, 16, 16}, 13));
@@ -257,6 +265,7 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockKitchenCabinet("kitchen_cooktop_cabinet_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
     initTabBlock(new BlockKitchenCabinet("kitchen_cooktop_cabinet_walnut", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
     initTabBlock(new BlockKitchenCabinet("kitchen_cooktop_cabinet_white", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_cooktop_cabinet_cherry", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DRAWERS));
 
     // Wall Oven
     initTabBlock(new BlockBuiltInAppliance("wall_oven_stainless", new int[]{0, 0, 0, 16, 16, 16}, KitchenAppliances.OVEN, null));
@@ -336,18 +345,24 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockResidentialBed("bed_single_navy", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_single_oatmeal", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_single_red", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_single_forest", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_single_forest_throw", BedLayout.SINGLE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
 
     // Double Bed
     initTabBlock(new BlockResidentialBed("bed_double_charcoal", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_double_navy", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_double_oatmeal", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_double_red", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_double_forest", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_double_forest_throw", BedLayout.WIDE, new int[][]{{0, 0, 0, 12, 9, 16}, {0, 0, 0, 12, 9, 16}, {4, 0, 0, 16, 9, 16}, {4, 0, 0, 16, 9, 16}}, true));
 
     // King Bed
     initTabBlock(new BlockResidentialBed("bed_king_charcoal", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_king_navy", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_king_oatmeal", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
     initTabBlock(new BlockResidentialBed("bed_king_red", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_king_forest", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
+    initTabBlock(new BlockResidentialBed("bed_king_forest_throw", BedLayout.WIDE, new int[][]{{0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}, {0, 0, 0, 16, 9, 16}}, true));
 
     // Day Bed
     initTabBlock(new BlockResidentialBed("day_bed_oak", BedLayout.DAY, new int[][]{{0, 0, 1, 16, 7, 15}, {0, 0, 1, 16, 7, 15}}, false));
@@ -453,6 +468,7 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockBathroomVanity("bathroom_vanity_oak"));
     initTabBlock(new BlockBathroomVanity("bathroom_vanity_walnut"));
     initTabBlock(new BlockBathroomVanity("bathroom_vanity_white"));
+    initTabBlock(new BlockBathroomVanity("bathroom_vanity_cherry"));
 
     // Mirror Cabinet
     initTabBlock(new BlockResidentialStorage("mirror_cabinet_oak", new int[]{1, 1, 12, 15, 15, 16}, 9, FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE));

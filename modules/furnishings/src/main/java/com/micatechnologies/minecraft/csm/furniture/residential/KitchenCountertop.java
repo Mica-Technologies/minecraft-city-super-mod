@@ -6,8 +6,8 @@ import net.minecraft.util.IStringSerializable;
 /**
  * Which countertop a built-in appliance under the counter (the dishwasher) carries over itself:
  * the one of the cabinets beside it, so the counter runs on unbroken, or its own plain top when
- * it stands alone. Light oak cabinets have dark granite, walnut and white have light quartz, as
- * {@code gen_furniture_kitchen.py} draws them.
+ * it stands alone. Light oak cabinets have dark granite, walnut and white have light quartz, and
+ * cherry has speckled tan granite, as {@code gen_furniture_kitchen.py} draws them.
  *
  * @since 2026.9
  */
@@ -17,17 +17,23 @@ public enum KitchenCountertop implements IStringSerializable {
   /** Dark granite, over light oak cabinets. */
   GRANITE,
   /** Light quartz, over walnut and white cabinets. */
-  QUARTZ;
+  QUARTZ,
+  /** Speckled tan granite, over cherry cabinets. */
+  TAN_GRANITE;
 
   /**
    * The countertop cabinets of {@code finish} have.
    *
-   * @param finish the cabinets' finish ({@code oak}, {@code walnut}, {@code white})
+   * @param finish the cabinets' finish ({@code oak}, {@code walnut}, {@code white},
+   *               {@code cherry})
    *
    * @return their countertop
    */
   public static KitchenCountertop of(String finish) {
-    return "oak".equals(finish) ? GRANITE : QUARTZ;
+    if ("oak".equals(finish)) {
+      return GRANITE;
+    }
+    return "cherry".equals(finish) ? TAN_GRANITE : QUARTZ;
   }
 
   @Nonnull

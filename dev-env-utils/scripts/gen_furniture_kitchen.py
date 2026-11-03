@@ -2,8 +2,9 @@
 """
 gen_furniture_kitchen.py -- the Residential tab's kitchen cabinetry and cold storage in the
 Furniture & Novelties module: base cabinets (two doors, a drawer bank, door and drawer), the
-corner base that turns a run, the sink base, the island, wall cabinets and the open wall shelf,
-each in the three wood finishes of gen_furniture_residential.py with a countertop to suit it;
+corner base that turns a run, the sink base, the island, wall cabinets
+and the open wall shelf, each in the three wood finishes of gen_furniture_residential.py and in
+cherry (the kitchen's own finish, under a speckled tan granite), with a countertop to suit it;
 and in stainless steel or white, the chimney and under-cabinet range hoods, the under-cabinet
 light, the two-block refrigerator and the chest freezer.
 
@@ -157,12 +158,21 @@ def control_strip(size=16):
 
 
 GRANITE = (60, 60, 64)
+GRANITE_TAN = (172, 142, 110)
+CHERRY = (148, 80, 50)
+CHERRY_EDGE = (120, 62, 38)
 QUARTZ = (228, 226, 220)
 STAINLESS = (186, 190, 194)
 
 TEXTURES = {
     "counter_granite": lambda: stone(GRANITE, [(36, 36, 38), (92, 90, 88), (116, 112, 106),
                                                (84, 72, 64)], 401, 0.10),
+    "counter_granite_tan": lambda: stone(GRANITE_TAN, [(94, 66, 48), (58, 46, 42), (216, 198, 172),
+                                                       (138, 100, 74), (34, 30, 30)], 413,
+                                         0.24),
+    "cherry": lambda: R.wood(CHERRY, 414, line=0.8, figure=0.07),
+    "cherry_v": lambda: R.wood(CHERRY, 414, vertical=True, line=0.8, figure=0.07),
+    "cherry_edge": lambda: R.wood(CHERRY_EDGE, 415, streak=0.05),
     "counter_quartz": lambda: stone(QUARTZ, [(196, 194, 188), (174, 172, 168), (208, 202, 192),
                                              (150, 148, 146)], 402, 0.07),
     "stainless": lambda: brushed(STAINLESS, 403),
@@ -179,10 +189,16 @@ TEXTURES = {
     "rubber_black": lambda: R.flat((34, 34, 36), 412, grain=3),
 }
 
-# The wood finishes, each with its countertop.
+# The wood finishes, each with its countertop: the living room's three, and cherry, the
+# kitchen's (and the bathroom vanity's) own, under speckled tan granite. A finish's id is the
+# last word of a registry name (BlockResidentialFurniture.getFinish), so it is one word.
 COUNTERS = {"oak": T("counter_granite"), "walnut": T("counter_quartz"),
-            "white": T("counter_quartz")}
-WOODS = [(fid, dict(ftex, counter=COUNTERS[fid]), *names) for fid, ftex, *names in R.WOODS]
+            "white": T("counter_quartz"), "cherry": T("counter_granite_tan")}
+CHERRY_FINISH = ("cherry", {"wood": T("cherry"), "wood_v": T("cherry_v"), "edge": T("cherry_edge")},
+                 "Cherry, Granite", "Kirsche, Granit", "cerezo, granito", "körsbär, granit")
+CHERRY_WALL_NAMES = ("Cherry", "Kirsche", "cerezo", "körsbär")
+WOODS = [(fid, dict(ftex, counter=COUNTERS[fid]), *names)
+         for fid, ftex, *names in R.WOODS + [CHERRY_FINISH]]
 
 STAINLESS_FINISH = ("stainless", {"shell": T("stainless"), "door": T("stainless_v"),
                                   "handle": T("chrome"), "trim": T("stainless_dark")},
@@ -259,6 +275,7 @@ DOOR_DRAWER = (shaker(0.5, 15.5, 10, 13.25, ZF, grain="h", frame=1.0)
                + bar_h(8, 11.45, ZF)
                + shaker(0.5, 15.5, 2, 9.75, ZF)
                + bar_v(13.4, 6, 9, ZF))
+
 
 BASE_BODY = FRAME + TWO_DOORS
 DRAWER_BODY = FRAME + DRAWERS
@@ -558,6 +575,8 @@ def entries():
     for piece, *names in RUN_NAMES:
         for fid, ftex, *fnames in WOODS:
             reg = "%s_%s" % (piece, fid)
+            if fid == "cherry" and piece.startswith("kitchen_wall_"):
+                fnames = CHERRY_WALL_NAMES  # no countertop to name
             out.append((reg, "run", piece, ftex, names_with(names, fnames),
                         RUNS[piece]["java"] % reg))
     for piece, _geo, (fid, ftex, *fnames), names, java in LIGHTS:
