@@ -1,5 +1,6 @@
 {
   "parent": "block/block",
+  "ambientocclusion": false,
   "textures": {
     "tread": "csm:blocks/stairsrailings/wood_oak",
     "riser": "csm:blocks/stairsrailings/paint_trim",
