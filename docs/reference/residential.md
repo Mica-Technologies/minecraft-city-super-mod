@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard.
 
-!!! info "355 blocks in this tab"
+!!! info "371 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -27,6 +27,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Bath Mat (Grey) | `csm:bath_mat_grey` | 0.2 | 0.4 | axe | 0 |
 | Bath Mat (White) | `csm:bath_mat_white` | 0.2 | 0.4 | axe | 0 |
 | Bathroom Radiator (White) | `csm:bathroom_radiator_white` | 1.5 | 3.0 | axe | 0 |
+| Bathroom Vanity (Cherry, Granite) | `csm:bathroom_vanity_cherry` | 1.5 | 3.0 | axe | 0 |
 | Bathroom Vanity (Light Oak) | `csm:bathroom_vanity_oak` | 1.5 | 3.0 | axe | 0 |
 | Bathroom Vanity (Walnut) | `csm:bathroom_vanity_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bathroom Vanity (White) | `csm:bathroom_vanity_white` | 1.5 | 3.0 | axe | 0 |
@@ -113,9 +114,11 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Door Mat (Grey) | `csm:door_mat_grey` | 0.2 | 0.4 | axe | 0 |
 | Doorbell (White) | `csm:doorbell_white` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Charcoal) | `csm:bed_double_charcoal` | 1.5 | 3.0 | axe | 0 |
+| Double Bed (Forest Green) | `csm:bed_double_forest` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Navy) | `csm:bed_double_navy` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Oatmeal) | `csm:bed_double_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Double Bed (Red) | `csm:bed_double_red` | 1.5 | 3.0 | axe | 0 |
+| Double Bed (White, Forest Green Throw) | `csm:bed_double_forest_throw` | 1.5 | 3.0 | axe | 0 |
 | Dresser (Light Oak) | `csm:dresser_oak` | 1.5 | 3.0 | axe | 0 |
 | Dresser (Walnut) | `csm:dresser_walnut` | 1.5 | 3.0 | axe | 0 |
 | Dresser (White) | `csm:dresser_white` | 1.5 | 3.0 | axe | 0 |
@@ -164,30 +167,40 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Jumbo Roll Toilet Paper Dispenser (White) | `csm:jumbo_toilet_paper_dispenser_white` | 1.5 | 3.0 | axe | 0 |
 | Kiddie Pool (Blue) | `csm:kiddie_pool_blue` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Charcoal) | `csm:bed_king_charcoal` | 1.5 | 3.0 | axe | 0 |
+| King Bed (Forest Green) | `csm:bed_king_forest` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Navy) | `csm:bed_king_navy` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Oatmeal) | `csm:bed_king_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | King Bed (Red) | `csm:bed_king_red` | 1.5 | 3.0 | axe | 0 |
+| King Bed (White, Forest Green Throw) | `csm:bed_king_forest_throw` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Base Cabinet (Cherry, Granite) | `csm:kitchen_base_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Base Cabinet (Light Oak) | `csm:kitchen_base_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Base Cabinet (Walnut) | `csm:kitchen_base_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Base Cabinet (White) | `csm:kitchen_base_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Cooktop Cabinet (Cherry, Granite) | `csm:kitchen_cooktop_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Cooktop Cabinet (Light Oak) | `csm:kitchen_cooktop_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Cooktop Cabinet (Walnut) | `csm:kitchen_cooktop_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Cooktop Cabinet (White) | `csm:kitchen_cooktop_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Corner Cabinet (Cherry, Granite) | `csm:kitchen_corner_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Corner Cabinet (Light Oak) | `csm:kitchen_corner_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Corner Cabinet (Walnut) | `csm:kitchen_corner_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Corner Cabinet (White) | `csm:kitchen_corner_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Door and Drawer Cabinet (Cherry, Granite) | `csm:kitchen_door_drawer_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Door and Drawer Cabinet (Light Oak) | `csm:kitchen_door_drawer_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Door and Drawer Cabinet (Walnut) | `csm:kitchen_door_drawer_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Door and Drawer Cabinet (White) | `csm:kitchen_door_drawer_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Drawer Cabinet (Cherry, Granite) | `csm:kitchen_drawer_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Drawer Cabinet (Light Oak) | `csm:kitchen_drawer_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Drawer Cabinet (Walnut) | `csm:kitchen_drawer_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Drawer Cabinet (White) | `csm:kitchen_drawer_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Island (Cherry, Granite) | `csm:kitchen_island_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Island (Light Oak) | `csm:kitchen_island_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Island (Walnut) | `csm:kitchen_island_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Island (White) | `csm:kitchen_island_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Sink Cabinet (Cherry, Granite) | `csm:kitchen_sink_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Sink Cabinet (Light Oak) | `csm:kitchen_sink_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Sink Cabinet (Walnut) | `csm:kitchen_sink_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Sink Cabinet (White) | `csm:kitchen_sink_cabinet_white` | 1.5 | 3.0 | axe | 0 |
+| Kitchen Wall Cabinet (Cherry) | `csm:kitchen_wall_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (Light Oak) | `csm:kitchen_wall_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (Walnut) | `csm:kitchen_wall_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
 | Kitchen Wall Cabinet (White) | `csm:kitchen_wall_cabinet_white` | 1.5 | 3.0 | axe | 0 |
@@ -208,6 +221,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Nightstand (Light Oak) | `csm:nightstand_oak` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (Walnut) | `csm:nightstand_walnut` | 1.5 | 3.0 | axe | 0 |
 | Nightstand (White) | `csm:nightstand_white` | 1.5 | 3.0 | axe | 0 |
+| Open Kitchen Shelf (Cherry) | `csm:kitchen_wall_shelf_cherry` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (Light Oak) | `csm:kitchen_wall_shelf_oak` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (Walnut) | `csm:kitchen_wall_shelf_walnut` | 1.5 | 3.0 | axe | 0 |
 | Open Kitchen Shelf (White) | `csm:kitchen_wall_shelf_white` | 1.5 | 3.0 | axe | 0 |
@@ -264,9 +278,11 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Sideboard (Walnut) | `csm:sideboard_walnut` | 1.5 | 3.0 | axe | 0 |
 | Sideboard (White) | `csm:sideboard_white` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Charcoal) | `csm:bed_single_charcoal` | 1.5 | 3.0 | axe | 0 |
+| Single Bed (Forest Green) | `csm:bed_single_forest` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Navy) | `csm:bed_single_navy` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Oatmeal) | `csm:bed_single_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Single Bed (Red) | `csm:bed_single_red` | 1.5 | 3.0 | axe | 0 |
+| Single Bed (White, Forest Green Throw) | `csm:bed_single_forest_throw` | 1.5 | 3.0 | axe | 0 |
 | Snake Plant (Grey Pot) | `csm:snake_plant_grey` | 1.5 | 3.0 | axe | 0 |
 | Soap Dispenser (White) | `csm:soap_dispenser_white` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Charcoal) | `csm:sofa_charcoal` | 1.5 | 3.0 | axe | 0 |

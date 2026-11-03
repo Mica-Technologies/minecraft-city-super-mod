@@ -38,7 +38,7 @@ two pixels.
 
 **Joining.** The range and the dishwasher stand in a base-cabinet run: a cabinet beside one hides
 its end panel (Java, IKitchenFitting), and the dishwasher carries the countertop of the cabinet
-beside it (granite or quartz, "counter" actual state), or its own top when it stands alone.
+beside it (granite, quartz or tan granite, "counter" actual state), or its own top when it stands alone.
 
 Usage:
     python gen_furniture_appliances.py              # write everything
@@ -946,7 +946,8 @@ def built_in_state(piece, ftex, glow):
 DW_RULES = R.faced([("body", {}), ("led_on", {"running": "true"}),
                     ("led_off", {"running": "false"}), ("top", {"counter": "none"}),
                     ("counter_granite", {"counter": "granite"}),
-                    ("counter_quartz", {"counter": "quartz"})])
+                    ("counter_quartz", {"counter": "quartz"}),
+                    ("counter_tan_granite", {"counter": "tan_granite"})])
 
 
 def dishwasher_parts(ftex):
@@ -957,7 +958,8 @@ def dishwasher_parts(ftex):
             ("led_off", "dishwasher_led", dict(ftex, glow=off)),
             ("top", "dishwasher_top", dict(ftex)),
             ("counter_granite", "dishwasher_counter", {"counter": T("counter_granite")}),
-            ("counter_quartz", "dishwasher_counter", {"counter": T("counter_quartz")})]
+            ("counter_quartz", "dishwasher_counter", {"counter": T("counter_quartz")}),
+            ("counter_tan_granite", "dishwasher_counter", {"counter": T("counter_granite_tan")})]
 
 
 def lang_entries():

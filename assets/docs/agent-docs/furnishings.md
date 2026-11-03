@@ -17,8 +17,10 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   lang lines by key; `--check`, `--fragments`
 - `gen_furniture_kitchen.py` -- the Residential tab's kitchen, importing
   `gen_furniture_residential.py`'s helpers and finishes: base cabinets (doors, drawers, door and
-  drawer, sink with a working tap), the corner base that turns a run, island, wall cabinets and
-  open shelves, each finish with its countertop; range hoods and the under-cabinet light (lit
+  drawer, sink with a working tap), the corner base that turns a run,
+  island, wall cabinets and open shelves, each finish with its countertop (the kitchen's own
+  `WOODS` adds cherry under tan granite, which the cooktop cabinet, the dishwasher's counter and
+  the bathroom vanity follow; `KitchenCountertop.TAN_GRANITE` in Java); range hoods and the under-cabinet light (lit
   lens by blockstate), the two-block refrigerator (drawn whole, cut at the block line into two
   models) and the chest freezer; `--check`, `--fragments`. `gen_furniture_sounds.py`
   synthesises the cabinet, drawer and refrigerator door sounds (numpy to ffmpeg to OGG)
@@ -32,8 +34,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   `furniture.appliance` machine framework (NOVELTIES_SYSTEM.md, Residential Furniture)
 - `gen_furniture_bedroom.py` -- the bedroom, study and nursery, importing the residential and
   kitchen generators: beds (single, double, king in four fabrics; day bed and bunk in the wood
-  finishes) drawn whole in `BedLayout`'s frame and cut at the block lines into one model per
-  cell, the two-block pieces (dresser with mirror, wardrobe, standing mirror, vanity, the
+  finishes; single, double and king also in forest green and in white with a forest-green
+  throw, `BED_FABRICS`, the throw beds on their own base models) drawn whole in `BedLayout`'s
+  frame and cut at the block lines into one model per cell, the two-block pieces (dresser with mirror, wardrobe, standing mirror, vanity, the
   joining white closet) cut into halves, the one-block storage and seats, and rugs whose border
   is drawn only on an open side (multipart `OR` corners); `--check`, `--fragments`. The mattress
   heights must match `BedLayout.java`
