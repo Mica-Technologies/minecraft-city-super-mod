@@ -9,10 +9,11 @@ The glazing the window treatments hang against is in `WALL_MATERIALS.md` § Glaz
 | Ceilings | the popcorn ceiling and ceiling tiles (`BlockPCC`, `BlockCT*`, `BlockDCT*`) | -- |
 | Modern ceilings | Tegular Ceiling Tile (White, Light Grey); Fine Fissured and Square Embossed Ceiling Tile; Perforated Metal Ceiling Tile (Silver, White); Pressed Tin Ceiling (Silver, Antique Copper); Wood Slat Ceiling (Light Oak, Walnut); Corrugated Metal Ceiling (Silver, White, Black); Open Cell Ceiling (Black, White); Exposed Ceiling Grid (White, Black) | `gen_ceilings.py` |
 | Hanging acoustics | Acoustic Baffle and Acoustic Ceiling Cloud, each in the linear lights' ten finishes (Black, Silver, White, Light Grey, Charcoal, Navy, Sage, Terracotta, Light Oak, Walnut) | `gen_acoustic_ceilings.py` |
-| Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy); Sheer Curtain | `gen_window_treatments.py` |
-| Wall finishes | Painted Drywall (six colours); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Accent Wall Panel (Maple, Walnut, Teal, Blue, Green, Yellow); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
+| Window treatments | Venetian Blind (White); Roller Shade (White, Grey, Blackout); Vertical Blind (White); Curtain (Beige, Grey, Navy, Blanket Stripe); Sheer Curtain | `gen_window_treatments.py` |
+| Wall finishes | Painted Drywall (six colours); Wallpaper (Navy Arrow Print); Ceramic Wall Tile (White Subway, Green Subway, White Square); Acoustic Wall Panel (Grey, Blue, Charcoal); Beadboard (White); Wood Slat Wall (Oak); Accent Wall Panel (Maple, Walnut, Teal, Blue, Green, Yellow); Corner Guard (Stainless, White Vinyl) | `gen_wall_finishes.py` |
 | Wall fittings | Wayfinding Stripe (Blue, Green, Teal, Yellow, Orange, Purple); Room Sign (Charcoal, Blue); Wayfinding Panel; Nurse Station Glass Screen (Clear, Frosted) | `gen_wall_finishes.py` (the panel: `gen_wayfinding.py`) |
 | Flooring | Carpet Tile (Grey, Blue, Charcoal); Vinyl Composition Tile (White, Beige); Ceramic Floor Tile (White, Grey); Hardwood Floor (Oak, Walnut); Polished Concrete Floor; Rubber Floor (Studded); a full block of each of the carpet, vinyl, ceramic and rubber floors; and the Polished Concrete, Oak Hardwood and Walnut Hardwood sets | `gen_flooring.py` |
+| Paneling | Knotty Cedar V-Groove Paneling set (block, stairs, slab, fence) | `gen_siding.py` |
 
 ## Modern ceilings
 
@@ -193,6 +194,24 @@ tile, fabric acoustic panels, beadboard and a wood slat wall. Chosen over full-b
 Priced by material: drywall paper and a dye, wall tile two clay (it is ceramic), acoustic panels a
 wool, beadboard and slat wall a plank, a stainless guard an iron ingot and a vinyl one paper and a
 dye.
+
+### Wallpaper
+
+`wall_wallpaper_<pattern>_<colour>` (`BlockWallFinish`, kind `wallpaper`; one so far, a navy
+arrow print, #331): hung exactly as paint is, 0.25 px off the wall with no trim, joining, turning
+corners and abutting as paint does (`BlockWallFinish.thin` counts it with paint, so a finish
+meeting it in a corner stops at `abut_thin`). Its print is a 32 px texture, four cream arrows to a
+block in a half-drop repeat. A new print is a `FINISHES` entry of kind `wallpaper` and a drawing
+function.
+
+### Knotty cedar paneling
+
+`paneling_knotty_cedar`, a block, stairs, slab and fence set (`BlockSetPanelingKnottyCedar`):
+tongue-and-groove cedar boards run plumb with a V-groove at every joint and knots that wrap across
+the tile, for a lodge or cabin wall and ceiling (#331). A full block rather than a wall finish
+because it is what such a wall is built of; the accent wall panels are the finish to hang on
+drywall. Drawn by `gen_siding.py` beside the board and batten, which it resembles, and registered
+here after the hardwood sets.
 
 ### Accent wall panels
 

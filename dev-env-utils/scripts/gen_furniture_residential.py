@@ -3,7 +3,8 @@
 gen_furniture_residential.py -- the Residential tab's living and dining furniture in the
 Furniture & Novelties module: dining table, coffee table, side table, cafe table, dining chair,
 bar stool, bookcase, TV stand and sideboard in three wood finishes (light oak, walnut, white),
-and the armchair, sofa and sofa corner in four fabrics (charcoal, navy, oatmeal, red) on walnut feet.
+and the armchair, sofa and sofa corner in four fabrics (charcoal, navy, oatmeal, red) and brown
+leather on walnut feet.
 
 One catalogue writes, under modules/furnishings/src/main/resources/assets/csm:
 
@@ -140,6 +141,27 @@ def fabric(base, seed, size=16, heather=0.0):
     return img
 
 
+def leather(base, seed, size=16):
+    """Smooth upholstery leather: a soft mottle of lighter and darker hide, a fine pebble, and
+    a few creases where the cushion has been sat on. No weave."""
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    blot = [[rng.uniform(-0.05, 0.05) for _ in range(4)] for _ in range(4)]
+    for y in range(size):
+        for x in range(size):
+            k = 1.0 + blot[y * 4 // size][x * 4 // size] + rng.uniform(-0.025, 0.025)
+            px[x, y] = shade(base, k) + (255,)
+    for _ in range(3):
+        cx, cy = rng.randrange(size), rng.randrange(size)
+        dx = rng.choice((1, -1))
+        for i in range(rng.randrange(3, 6)):
+            x, y = (cx + i * dx) % size, (cy + i // 2) % size
+            px[x, y] = shade(px[x, y][:3], 0.86) + (255,)
+            px[x, (y + 1) % size] = shade(px[x, (y + 1) % size][:3], 1.08) + (255,)
+    return img
+
+
 def metal(base, seed, size=16):
     rng = random.Random(seed)
     img = Image.new("RGBA", (size, size))
@@ -232,6 +254,8 @@ TEXTURES = {
     "oatmeal_dark": lambda: fabric((178, 164, 140), 316, heather=0.08),
     "red": lambda: fabric((150, 36, 38), 317),
     "red_dark": lambda: fabric((114, 26, 28), 318),
+    "leather_brown": lambda: leather((112, 66, 38), 319),
+    "leather_brown_dark": lambda: leather((86, 50, 30), 320),
     "books": lambda: books(321),
     "books_b": lambda: books(322),
     "book_tops": lambda: book_tops(323),
@@ -257,6 +281,12 @@ FABRICS = [
      "Oatmeal", "Haferbeige", "avena", "havrebeige"),
     ("red", {"fabric": T("red"), "fabric_dark": T("red_dark")},
      "Red", "Rot", "rojo", "röd"),
+]
+# Upholstery the seating comes in: the fabrics, and brown leather. The beds and the other pieces
+# that take a fabric use FABRICS, so leather stays on the sofas and armchairs.
+UPHOLSTERY = FABRICS + [
+    ("leather", {"fabric": T("leather_brown"), "fabric_dark": T("leather_brown_dark")},
+     "Brown Leather", "Braunes Leder", "cuero marrón", "brunt läder"),
 ]
 # The textures every base model starts with; a finish overrides its own keys.
 DEFAULT_TEX = {"wood": T("oak"), "wood_v": T("oak_v"), "edge": T("oak_edge"),
@@ -705,7 +735,7 @@ MULTI = {
 
 
 def finishes(kind):
-    return WOODS if kind == "wood" else FABRICS
+    return WOODS if kind == "wood" else UPHOLSTERY
 
 
 def entries():

@@ -120,7 +120,7 @@ public class BlockWallFinish extends AbstractBlock {
       return Material.ROCK;
     }
     // Drywall comes off by hand, as clay does; rock would need a pickaxe to drop anything.
-    return registryName.contains("paint") ? Material.CLAY : Material.WOOD;
+    return thin(registryName) ? Material.CLAY : Material.WOOD;
   }
 
   private static SoundType sound(String registryName) {
@@ -131,8 +131,16 @@ public class BlockWallFinish extends AbstractBlock {
         || registryName.contains("panel") ? SoundType.WOOD : SoundType.STONE;
   }
 
+  /**
+   * Paint and wallpaper: a coat on the drywall rather than a panel on it, standing off the wall
+   * a quarter pixel, so a different finish meeting one in a corner stops at {@link End#ABUT_THIN}.
+   */
+  private static boolean thin(String registryName) {
+    return registryName.contains("paint") || registryName.contains("wallpaper");
+  }
+
   private static double depth(String registryName) {
-    if (registryName.contains("paint")) {
+    if (thin(registryName)) {
       return 0.25;
     }
     if (registryName.contains("panel")) {
@@ -239,7 +247,7 @@ public class BlockWallFinish extends AbstractBlock {
     }
     BlockWallFinish other = abuts(world, pos, facing, side);
     if (other != null) {
-      return other.registryName.contains("paint") ? End.ABUT_THIN : End.ABUT;
+      return thin(other.registryName) ? End.ABUT_THIN : End.ABUT;
     }
     return End.END;
   }

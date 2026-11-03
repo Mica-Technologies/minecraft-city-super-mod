@@ -6,6 +6,10 @@ block/stairs/slab/fence set in the colour that profile is most often seen in: th
 textures, and the set blockstates and models from gen_cmu.py pointed at them. ``--check`` writes
 nothing and fails on drift.
 
+Also here, because it is drawn the same way: knotty cedar V-groove paneling, the tongue-and-groove
+boards of a lodge or cabin interior, as a full-block set (registered in Interior Finishes, not
+with the siding).
+
     python dev-env-utils/scripts/gen_siding.py
     python dev-env-utils/scripts/gen_siding.py --check
     python dev-env-utils/scripts/gen_siding.py --fragments   # lang and tab lines to paste
@@ -69,7 +73,19 @@ PROFILES = {
         lang=("Vinyl Siding", "Revestimiento de Vinilo", "Vinylverkleidung", "Vinylpanel")),
 }
 
-ORDER = ["siding_lap", "siding_boardbatten", "siding_shingle", "siding_vinyl"]
+# Interior paneling, drawn as siding is; registered in CsmTabInteriorFinishes, not with the siding
+PANELING = {
+    "paneling_knotty_cedar": dict(
+        seed=20261101, body=(178, 114, 70),
+        lang=("Knotty Cedar V-Groove Paneling", "Friso de Cedro Nudoso Machihembrado",
+              "Astige Zedern-Profilholzschalung", "Kvistig Cederpanel med V-Fog")),
+}
+PROFILES.update(PANELING)
+
+ORDER = ["siding_lap", "siding_boardbatten", "siding_shingle", "siding_vinyl",
+         "paneling_knotty_cedar"]
+
+VGROOVE_PITCH = 8  # a board, groove included: four to a block, about a 9 in board
 
 
 # --------------------------------------------------------------------------------------------
@@ -197,6 +213,42 @@ def shingle(rng, body):
     return img
 
 
+def vgroove(rng, body):
+    """Knotty cedar tongue-and-groove boards run plumb, a V-groove at every joint: the left bevel in
+    shadow, the right catching the light (lit from the upper left). Each board is its own shade of
+    cedar with a grain streaking up it, and the knots -- a dark core in a darker ring, with the grain
+    bending round it -- fall where they like, the occasional one cut by a groove, as on real boards.
+    Knots wrap at the edges, so the pattern tiles up and across a wall."""
+    img = _blank(body)
+    px = img.load()
+    boards = SIZE // VGROOVE_PITCH
+    tints = [rng.randint(-14, 14) for _ in range(boards)]
+    grain = [rng.uniform(-8, 8) for _ in range(SIZE)]
+    # Knots: (x, y, radius)
+    knots = [(rng.randrange(SIZE), rng.randrange(SIZE), rng.choice((1.2, 1.6, 2.0)))
+             for _ in range(rng.randint(3, 4))]
+
+    def wrap(d):
+        return min(d % SIZE, -d % SIZE)
+
+    for x in range(SIZE):
+        offset = x % VGROOVE_PITCH
+        bias = {0: -40, 1: -18, VGROOVE_PITCH - 1: 12}.get(offset, 0)
+        for y in range(SIZE):
+            d = tints[x // VGROOVE_PITCH] + bias + grain[x] + rng.uniform(-4, 4)
+            # Grain swirls darker round each knot, and the knot itself is near-black brown
+            for kx, ky, r in knots:
+                dist = (wrap(x - kx) ** 2 + wrap(y - ky) ** 2) ** 0.5
+                if dist <= r * 0.6:
+                    d = -78 + rng.uniform(-4, 4)
+                elif dist <= r:
+                    d = min(d, -52)
+                elif dist <= r + 2.2:
+                    d -= 16 * (r + 2.2 - dist) / 2.2
+            px[x, y] = _shift(body, d)
+    return img
+
+
 def top(rng, body):
     """The top of a sided wall: the sheathing's edge, flat and a little darker than the face."""
     img = _blank(body)
@@ -208,7 +260,7 @@ def top(rng, body):
 
 
 DRAW = {"siding_lap": lap, "siding_boardbatten": board_batten, "siding_shingle": shingle,
-        "siding_vinyl": vinyl}
+        "siding_vinyl": vinyl, "paneling_knotty_cedar": vgroove}
 
 
 def side_texture(name):
@@ -266,6 +318,7 @@ def fragments():
             lines.append("%s=%s" % (key, names[lang]))
         lines.append("")
     lines.append("# tab registration, in CsmTabBuildingMaterials, AFTER the stucco sets")
+    lines.append("# (the paneling goes in CsmTabInteriorFinishes, after the hardwood sets)")
     lines.append("")
     for name in ORDER:
         lines.append("    initTabBlock(%s.class,"

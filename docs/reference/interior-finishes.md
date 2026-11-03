@@ -2,7 +2,7 @@
 
 The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them.
 
-!!! info "122 blocks in this tab"
+!!! info "128 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -71,6 +71,7 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Corrugated Metal Ceiling (Silver) | `csm:ceiling_corrugated_silver` |  |  |  |  |
 | Corrugated Metal Ceiling (White) | `csm:ceiling_corrugated_white` |  |  |  |  |
 | Curtain (Beige) | `csm:curtain_beige` | 0.3 | 1 | axe | 0 |
+| Curtain (Blanket Stripe) | `csm:curtain_striped` | 0.3 | 1 | axe | 0 |
 | Curtain (Grey) | `csm:curtain_grey` | 0.3 | 1 | axe | 0 |
 | Curtain (Navy) | `csm:curtain_navy` | 0.3 | 1 | axe | 0 |
 | Exposed Ceiling Grid (Black) | `csm:ceiling_grid_black` |  |  |  |  |
@@ -78,6 +79,10 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Fine Fissured Ceiling Tile | `csm:ceiling_fissured_white` |  |  |  |  |
 | Hardwood Floor (Oak) | `csm:floor_hardwood_oak` |  |  |  |  |
 | Hardwood Floor (Walnut) | `csm:floor_hardwood_walnut` |  |  |  |  |
+| Knotty Cedar V-Groove Paneling | `csm:paneling_knotty_cedar` | 2 | 10 | axe | 0 |
+| Knotty Cedar V-Groove Paneling Fence | `csm:paneling_knotty_cedar_fence` | 2 | 10 | axe | 0 |
+| Knotty Cedar V-Groove Paneling Slab | `csm:paneling_knotty_cedar_slab` | 2 | 10 | axe | 0 |
+| Knotty Cedar V-Groove Paneling Stairs | `csm:paneling_knotty_cedar_stairs` | 2 | 10 | axe | 0 |
 | Nurse Station Glass Screen (Clear) | `csm:nurse_screen_clear` | 0.5 | 2 |  | 0 |
 | Nurse Station Glass Screen (Frosted) | `csm:nurse_screen_frosted` | 0.5 | 2 |  | 0 |
 | Oak Hardwood | `csm:hardwood_oak` | 2 | 10 | axe | 0 |
@@ -119,6 +124,7 @@ The surfaces that go on last: ceiling finishes, and the floor and wall finishes 
 | Vinyl Composition Tile (White) | `csm:floor_vct_white` |  |  |  |  |
 | Vinyl Composition Tile Block (Beige) | `csm:floor_vct_beige_block` |  |  |  |  |
 | Vinyl Composition Tile Block (White) | `csm:floor_vct_white_block` |  |  |  |  |
+| Wallpaper (Navy Arrow Print) | `csm:wall_wallpaper_arrow_navy` |  |  |  |  |
 | Walnut Hardwood | `csm:hardwood_walnut` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Fence | `csm:hardwood_walnut_fence` | 2 | 10 | axe | 0 |
 | Walnut Hardwood Slab | `csm:hardwood_walnut_slab` | 2 | 10 | axe | 0 |

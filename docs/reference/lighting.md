@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "168 blocks in this tab"
+!!! info "171 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -137,6 +137,9 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Louvered Linear LED Light (White) | `csm:linear_light_louver_white` | 2 | 10 | pickaxe | 1 |
 | Louvered Slot Troffer (2x2) | `csm:troffer_slot_2x2` | 2 | 10 | pickaxe | 1 |
 | Louvered Slot Troffer (2x4) | `csm:troffer_slot_2x4` | 2 | 10 | pickaxe | 1 |
+| Mission Flush Mount (Black) | `csm:ceilmissionblack` | 2 | 10 | pickaxe | 1 |
+| Mission Flush Mount (Bronze) | `csm:ceilmissionbronze` | 2 | 10 | pickaxe | 1 |
+| Mission Flush Mount (Brushed Nickel) | `csm:ceilmissionnickel` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Eliptical Curve) | `csm:novtm2` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Lakewood, CA Style) | `csm:novtm3` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Straight Mount Long) | `csm:novtm4` | 2 | 10 | pickaxe | 1 |

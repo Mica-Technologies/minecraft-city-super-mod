@@ -64,6 +64,10 @@ FINISHES = {
     "wall_paint_sage": ("paint", (170, 184, 160), (
         "Painted Drywall (Sage)", "Pladur Pintado (Salvia)", "Gestrichene Trockenbauwand (Salbei)",
         "Målad Gipsvägg (Salvia)")),
+    # Wallpaper hangs as paint does (the same depth, joins and corners), with a printed pattern
+    "wall_wallpaper_arrow_navy": ("wallpaper", (36, 50, 82), (
+        "Wallpaper (Navy Arrow Print)", "Papel Pintado (Flechas sobre Azul Marino)",
+        "Tapete (Pfeilmuster, Marineblau)", "Tapet (Pilmönster, Marinblå)")),
     "wall_tile_subway_white": ("subway", (236, 236, 232), (
         "Ceramic Wall Tile (White Subway)", "Azulejo Cerámico (Metro Blanco)",
         "Keramische Wandfliese (Metro, Weiß)", "Kakel (Vit Tunnelbana)")),
@@ -138,6 +142,31 @@ def _flat(rgb, rng, amount):
 def paint(rgb, rng):
     """Painted drywall: an eggshell finish, the faintest orange-peel."""
     return _flat(rgb, rng, 2.5)[0]
+
+
+# A wallpaper's print colour, and its motif: an arrow pointing up, as (dx, dy) pixels from its tip
+WALLPAPER_INK = (226, 216, 190)
+ARROW = ([(0, 0), (-1, 1), (1, 1), (-2, 2), (2, 2)]          # the head
+         + [(0, y) for y in range(1, 8)]                     # the shaft
+         + [(-1, 7), (1, 7), (-1, 8), (1, 8), (-2, 9), (2, 9)])  # the fletching
+
+
+def wallpaper(rgb, rng):
+    """An arrow print on a paper ground: small cream arrows pointing up in a half-drop repeat,
+    four to a 32 px tile (one block), each about a foot tall. The paper has a faint linen
+    texture; the print is flat, a shade off in places as a printed ink is."""
+    size = 32
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    for y in range(size):
+        for x in range(size):
+            px[x, y] = _shift(rgb, rng.uniform(-2.5, 2.5) + (2 if (x + y) % 3 == 0 else 0))
+    # Half-drop: the second column of arrows sits half a repeat lower, so the print runs on
+    # diagonals and no row of arrows lines up across the wall
+    for cx, cy in ((8, 3), (8, 19), (24, 11), (24, 27)):
+        for dx, dy in ARROW:
+            px[(cx + dx) % size, (cy + dy) % size] = _shift(WALLPAPER_INK, rng.uniform(-6, 3))
+    return img
 
 
 def _grout(rgb):
@@ -257,7 +286,7 @@ def panel_trim(rgb, rng):
     return img
 
 
-DRAW = {"paint": paint, "subway": subway, "square": square, "acoustic": acoustic,
+DRAW = {"paint": paint, "wallpaper": wallpaper, "subway": subway, "square": square, "acoustic": acoustic,
         "beadboard": beadboard, "slatwall": slat}
 
 
@@ -289,7 +318,7 @@ box = sc._box
 mirror_x = sc._mirror_x
 
 # How far each kind stands off the wall, in px.
-DEPTH = {"paint": 0.25, "subway": 1.0, "square": 1.0, "acoustic": 1.5, "beadboard": 1.0,
+DEPTH = {"paint": 0.25, "wallpaper": 0.25, "subway": 1.0, "square": 1.0, "acoustic": 1.5, "beadboard": 1.0,
          "slatwall": 0.5, "panel": 0.75}
 
 # A trimmed kind's trim, in px: (edge width, edge depth, cap height, cap depth). The cap is the top
@@ -512,7 +541,7 @@ def guard_model(rgb_name):
 def finish_parts(kind):
     """Every part of a finish but the whole panel, by model suffix, the right-hand ones mirrored
     from the left."""
-    if kind == "paint":
+    if kind in ("paint", "wallpaper"):
         parts = _paint()
     elif kind == "acoustic":
         parts = _acoustic()
@@ -572,7 +601,7 @@ def finish_state(name):
     and down."""
     kind = FINISHES[name][0]
     abut = [v for v, _ in ABUT]
-    if kind == "paint":
+    if kind in ("paint", "wallpaper"):
         conds = [({}, name)]
         for s in ("left", "right"):
             conds.append(({s: "corner"}, "%s_corner_%s" % (name, s)))

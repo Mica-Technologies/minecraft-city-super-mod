@@ -559,6 +559,9 @@ SWATCHES = {
     "lens_opal_off": ((176, 178, 176), (214, 216, 212), 3),
     "lens_bulb_on": ((255, 186, 84), (255, 238, 190), 3),
     "lens_bulb_off": ((122, 120, 112), (170, 168, 158), 4),
+    # Amber art glass, for the mission flush mount: honey when lit, a dark caramel when not
+    "lens_amber_on": ((236, 150, 52), (255, 210, 128), 3),
+    "lens_amber_off": ((112, 72, 34), (150, 104, 56), 4),
 }
 
 
@@ -800,6 +803,43 @@ def ceiling_square(mesh):
     box(mesh, (hole0, 15.45, hole0), (hole1, 15.75, hole1), LENS)
 
 
+def ceiling_mission(mesh):
+    """Mission / craftsman flush mount: a square amber art-glass box in a metal frame, hung
+    tight under the ceiling on a square canopy, with a strap down the middle of each side and a
+    cross under the bottom glass. The glass sits a little inside the frame so it reads as panes
+    set in a frame, not a painted box."""
+    lo, hi = 3.5, 12.5      # the frame's outside, 9 px square
+    bot, top = 11.0, 15.0   # the frame's bottom and top
+    inner0, inner1 = lo + 1.0, hi - 1.0
+    # Square canopy plate against the ceiling
+    box(mesh, (3.0, top, 3.0), (13.0, 16.0, 13.0), BODY)
+    # Four corner posts
+    for x in (lo, inner1):
+        for z in (lo, inner1):
+            box(mesh, (x, bot, z), (x + 1.0, top, z + 1.0), BODY)
+    # Bottom and top rails between the posts, round all four sides
+    for y0, y1 in ((bot, bot + 1.0), (top - 1.0, top)):
+        for z in (lo, inner1):
+            box(mesh, (inner0, y0, z), (inner1, y1, z + 1.0), BODY)
+        for x in (lo, inner1):
+            box(mesh, (x, y0, inner0), (x + 1.0, y1, inner1), BODY)
+    # The amber panes, set back 0.3 px from the frame's faces
+    g0, g1 = lo + 0.3, lo + 0.7
+    box(mesh, (inner0, bot + 1.0, g0), (inner1, top - 1.0, g1), LENS)
+    box(mesh, (inner0, bot + 1.0, 16.0 - g1), (inner1, top - 1.0, 16.0 - g0), LENS)
+    box(mesh, (g0, bot + 1.0, inner0), (g1, top - 1.0, inner1), LENS)
+    box(mesh, (16.0 - g1, bot + 1.0, inner0), (16.0 - g0, top - 1.0, inner1), LENS)
+    box(mesh, (inner0, bot + 0.3, inner0), (inner1, bot + 0.7, inner1), LENS)
+    # The straps: one down the middle of each side, proud of the glass, and a cross underneath
+    s0, s1 = 7.6, 8.4
+    box(mesh, (s0, bot + 1.0, lo), (s1, top - 1.0, g0), BODY)
+    box(mesh, (s0, bot + 1.0, 16.0 - g0), (s1, top - 1.0, hi), BODY)
+    box(mesh, (lo, bot + 1.0, s0), (g0, top - 1.0, s1), BODY)
+    box(mesh, (16.0 - g0, bot + 1.0, s0), (hi, top - 1.0, s1), BODY)
+    box(mesh, (s0, bot, inner0), (s1, bot + 0.3, inner1), BODY)
+    box(mesh, (inner0, bot - COPLANAR_NUDGE, s0), (inner1, bot + 0.3, s1), BODY)
+
+
 # --------------------------------------------------------------------------- chain
 def pendant_chain(mesh):
     """Stackable chain/stem extension. Links alternate plane so it reads as chain from any angle."""
@@ -829,6 +869,8 @@ FIXTURES = [
      refs(lens="lens_opal_on")),
     ("sconce_rlm_gooseneck", sconce_rlm_gooseneck, "RLM gooseneck storefront sconce",
      refs(lens="lens_bulb_on")),
+    ("ceiling_mission", ceiling_mission, "Mission amber glass flush mount",
+     refs(body="finish_bronze", lens="lens_amber_on")),
     ("pendant_chain", pendant_chain, "Stackable pendant chain", refs()),
     ("ceiling_halo", ceiling_halo, "Commercial Electric LED halo flush mount",
      refs(body="finish_white", lens="lens_opal_on")),
@@ -862,6 +904,8 @@ CATALOGUE = [
     ("sconce_carriage_lantern", "sconcelantern", "Carriage Lantern Sconce", "opal",
      "shade_enamel"),
     ("sconce_rlm_gooseneck", "sconcerlm", "Gooseneck Barn Sconce", "bulb", "shade_enamel"),
+    # No shade: the frame is the body and the art glass the lens
+    ("ceiling_mission", "ceilmission", "Mission Flush Mount", "amber", None),
 ]
 
 #: The chain is not a light -- no STATE property, no lens, no redstone -- so it is generated from
@@ -942,7 +986,7 @@ def chain_blockstate(model, finish_swatch):
 
 
 def write_registration(bounds_by_model):
-    """Emit the 33 blockstates, plus lang and tab-registration fragments for merging."""
+    """Emit the 36 blockstates, plus lang and tab-registration fragments for merging."""
     os.makedirs(BLOCKSTATE_DIR, exist_ok=True)
     lang, tab, written = [], [], 0
 
@@ -950,12 +994,15 @@ def write_registration(bounds_by_model):
     for model, stem, label, lens_family, shade_swatch in CATALOGUE:
         if model == "sconce_halfshell":
             tab.append("    // Decorative wall sconces")
+        elif model == "ceiling_mission":
+            tab.append("    // Decorative ceiling fixtures")
         x0, y0, z0, x1, y1, z1 = bounds_by_model[model]
         for suffix, swatch, finish_label in FINISHES:
             block_id = stem + suffix
             path = os.path.join(BLOCKSTATE_DIR, block_id + ".json")
             with open(path, "w", newline="\n") as handle:
-                json.dump(blockstate(model, swatch, shade_swatch, lens_family), handle, indent=2)
+                json.dump(blockstate(model, swatch, shade_swatch, lens_family,
+                                     include_shade=shade_swatch is not None), handle, indent=2)
                 handle.write("\n")
             written += 1
             lang.append("tile.%s.name=%s (%s)" % (block_id, label, finish_label))

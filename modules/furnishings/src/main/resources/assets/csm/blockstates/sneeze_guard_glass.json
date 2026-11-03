@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:furniture/lodge/base/sneeze_guard_floor",
+    "textures": {}
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "rest": {
+      "floor": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_floor"
+      },
+      "counter": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_counter"
+      },
+      "sideboard": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_sideboard"
+      },
+      "table": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_table"
+      },
+      "side_table": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_side_table"
+      },
+      "tv_stand": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_tv_stand"
+      },
+      "coffee_table": {
+        "model": "csm:furniture/lodge/base/sneeze_guard_coffee_table"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:furniture/lodge/base/sneeze_guard_item"
+      }
+    ]
+  }
+}

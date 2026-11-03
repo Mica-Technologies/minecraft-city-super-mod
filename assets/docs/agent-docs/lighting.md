@@ -6,7 +6,7 @@ Moved out of the repository `CLAUDE.md`, which links here; read this file when w
 covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run directly.
 
 - `gen_decorative_lighting.py` -- the decorative pendant and wall-sconce family: lathes the OBJ
-  geometry for 11 models, draws the shared metal/shade/lens swatch textures, and emits all 33
+  geometry for 12 models, draws the shared metal/shade/lens swatch textures, and emits all 36
   blockstates plus lang and tab-registration fragments from one catalogue, so an id cannot drift
   from its blockstate
 - `gen_linear_lights.py` -- the linear LED lights (`BlockLinearLight`, opal and louvered, ten

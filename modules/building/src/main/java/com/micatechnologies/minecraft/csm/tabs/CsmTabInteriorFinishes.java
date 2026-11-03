@@ -20,6 +20,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockFloorFinishBloc
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPolishedConcrete;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodOak;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetHardwoodWalnut;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetPanelingKnottyCedar;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCornerGuard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockNurseScreen;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockRoomPlate;
@@ -159,6 +160,7 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockWindowTreatment("curtain_beige")); // Curtain (Beige)
     initTabBlock(new BlockWindowTreatment("curtain_grey")); // Curtain (Grey)
     initTabBlock(new BlockWindowTreatment("curtain_navy")); // Curtain (Navy)
+    initTabBlock(new BlockWindowTreatment("curtain_striped")); // Curtain (Blanket Stripe)
     initTabBlock(new BlockWindowTreatment("curtain_sheer")); // Sheer Curtain
 
     // Flooring: finishes laid over any floor, and the sets built of them.
@@ -187,6 +189,8 @@ public class CsmTabInteriorFinishes extends CsmTab {
         fmlPreInitializationEvent); // Oak Hardwood Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetHardwoodWalnut.class,
         fmlPreInitializationEvent); // Walnut Hardwood Set (Block, Fence, Slab, Stairs)
+    initTabBlock(BlockSetPanelingKnottyCedar.class,
+        fmlPreInitializationEvent); // Knotty Cedar V-Groove Paneling Set (Block, Fence, Slab, Stairs)
 
     // Wall finishes hung on any wall, and corner guards.
     initTabBlock(new BlockWallFinish("wall_paint_white")); // Painted Drywall (White)
@@ -195,6 +199,7 @@ public class CsmTabInteriorFinishes extends CsmTab {
     initTabBlock(new BlockWallFinish("wall_paint_grey")); // Painted Drywall (Light Grey)
     initTabBlock(new BlockWallFinish("wall_paint_blue")); // Painted Drywall (Pale Blue)
     initTabBlock(new BlockWallFinish("wall_paint_sage")); // Painted Drywall (Sage)
+    initTabBlock(new BlockWallFinish("wall_wallpaper_arrow_navy")); // Wallpaper (Navy Arrow Print)
     initTabBlock(new BlockWallFinish("wall_tile_subway_white")); // Ceramic Wall Tile (White Subway)
     initTabBlock(new BlockWallFinish("wall_tile_subway_green")); // Ceramic Wall Tile (Green Subway)
     initTabBlock(new BlockWallFinish("wall_tile_square_white")); // Ceramic Wall Tile (White Square)

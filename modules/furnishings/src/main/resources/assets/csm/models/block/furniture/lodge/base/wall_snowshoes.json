@@ -1,0 +1,91 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "snowshoe": "csm:blocks/furniture/lodge/snowshoe",
+    "particle": "csm:blocks/furniture/lodge/snowshoe"
+  },
+  "elements": [
+    {
+      "from": [
+        5.0,
+        0.5,
+        15.5
+      ],
+      "to": [
+        11.0,
+        15.5,
+        15.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#snowshoe",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#snowshoe",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          8.0,
+          15.625
+        ],
+        "axis": "z",
+        "angle": 22.5
+      }
+    },
+    {
+      "from": [
+        5.0,
+        0.5,
+        15.2
+      ],
+      "to": [
+        11.0,
+        15.5,
+        15.45
+      ],
+      "faces": {
+        "north": {
+          "texture": "#snowshoe",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#snowshoe",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          8.0,
+          15.325
+        ],
+        "axis": "z",
+        "angle": -22.5
+      }
+    }
+  ]
+}

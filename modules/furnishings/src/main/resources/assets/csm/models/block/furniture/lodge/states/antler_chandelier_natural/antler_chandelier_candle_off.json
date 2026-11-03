@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/lodge/base/antler_chandelier",
+  "textures": {
+    "lens": "csm:blocks/furniture/lodge/candle_off"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "csm:block/furniture/lodge/base/drum_pendant",
+  "textures": {
+    "lens": "csm:blocks/furniture/lodge/alabaster_on"
+  }
+}

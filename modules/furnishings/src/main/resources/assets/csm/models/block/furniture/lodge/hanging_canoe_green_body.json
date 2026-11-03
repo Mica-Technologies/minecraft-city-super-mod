@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/furniture/lodge/base/hanging_canoe_body",
+  "textures": {
+    "hull": "csm:blocks/furniture/lodge/canoe_green",
+    "inside": "csm:blocks/furniture/lodge/canoe_green_inside"
+  }
+}

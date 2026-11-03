@@ -6,7 +6,7 @@ bunk bed in the three wood finishes; single, double and king also in forest gree
 with a forest-green throw across the foot), the nightstand, dresser, dresser with mirror, wardrobe,
 the white built-in closet, the blanket chest, the desk and desk chair, the crib, the cradle
 with drawers, the changing table, the rocking chair, the standing mirror, the vanity and its
-stool, and area rugs in four colours.
+stool, and area rugs in four colours and a blue Southwest pattern.
 
 Borrows gen_furniture_residential.py's element helpers, finishes, textures and output, and
 gen_furniture_kitchen.py's Shaker fronts, pulls and the cut of a two-block piece into halves
@@ -201,6 +201,35 @@ def cross_throw(base, cross, seed, size=16):
     return img
 
 
+def southwest_field(seed, size=16):
+    """A Southwest-style weave in blue: a stepped diamond a block, red at its heart in
+    a cream and a dark ring, and quarter diamonds in the corners, so a rug of any size shows a
+    row of whole diamonds with half ones between."""
+    rng = random.Random(seed)
+    img = Image.new("RGBA", (size, size))
+    px = img.load()
+    field, cream, dark, red = (44, 72, 122), (226, 214, 186), (26, 30, 44), (164, 58, 42)
+    for y in range(size):
+        for x in range(size):
+            d = abs(x - 7.5) + abs(y - 7.5)
+            e = min(abs(x - cx) + abs(y - cy) for cx in (-0.5, 15.5) for cy in (-0.5, 15.5))
+            if d < 2.5:
+                c = red
+            elif d < 4.5:
+                c = cream
+            elif d < 5.5:
+                c = dark
+            elif e < 2.5:
+                c = cream
+            elif e < 3.5:
+                c = dark
+            else:
+                c = field
+            k = 1.0 + rng.uniform(-0.035, 0.035)
+            px[x, y] = R.shade(c, k) + (255,)
+    return img
+
+
 def rug_border(binding, accent, field, seed, size=16):
     """A rug's bound border, three texels deep: the binding at the edge, a band of the accent,
     then the field's own colour darkened. The top left 3 x 3 is the corner, turned round both
@@ -259,6 +288,9 @@ TEXTURES["duvet_forest"] = lambda: duvet(FOREST, 562)
 TEXTURES["tufted_forest"] = lambda: tufted(R.shade(FOREST, 0.9), 563)
 TEXTURES["duvet_white"] = lambda: duvet((236, 236, 232), 564)
 TEXTURES["bed_throw_forest"] = lambda: cross_throw(FOREST, (222, 214, 190), 565)
+TEXTURES["rug_southwest"] = lambda: southwest_field(566)
+TEXTURES["rug_border_southwest"] = lambda: rug_border((26, 30, 44), (164, 58, 42),
+                                                      (44, 72, 122), 567)
 
 DEFAULT_TEX = dict(K.DEFAULT_TEX)
 DEFAULT_TEX.update({
@@ -762,7 +794,10 @@ BED_FABRICS = FABRICS + [
      "vit, skogsgrönt pläd"),
 ]
 RUGS = [(cid, {"rug": T("rug_" + cid), "rug_border": T("rug_border_" + cid)}, *names)
-        for cid, _t, *names in R.FABRICS]
+        for cid, _t, *names in R.FABRICS] + [
+    ("southwest", {"rug": T("rug_southwest"), "rug_border": T("rug_border_southwest")},
+     "Southwest Blue", "Südwest-Muster, Blau", "diseño del suroeste, azul",
+     "sydvästmönster, blå")]
 
 DRAWERS = "FurnishingsSounds.DRAWER_OPEN, FurnishingsSounds.DRAWER_CLOSE"
 DOORS = "FurnishingsSounds.CABINET_OPEN, FurnishingsSounds.CABINET_CLOSE"
