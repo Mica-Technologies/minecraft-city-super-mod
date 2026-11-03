@@ -21,6 +21,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
 - `gen_siding.py` -- the four siding profiles (fiber cement lap, board and batten, cedar shingle,
   vinyl), one colour each, as sets on `gen_cmu.py`'s blockstates. Courses are 8 px on a 32 px
   texture so a slab's edge lands on a course line; `--check` fails on drift
+- `gen_screen_blocks.py` -- the breeze blocks (`BlockBreezeBlock`, four patterns in three
+  colours: the pierced face, a darker web drawn on seven slices inside the block so a hole has
+  walls, and the plain edge) and the slatted timber screens (`BlockSlatScreen`, teak, oak, walnut:
+  slats on one edge of the cell, rails capping each run by actual state); `--check`,
+  `--fragments`
 - `gen_cladding.py` -- the four metal and panel cladding profiles (corrugated, standing seam,
   insulated panel, composite panel). The profile is shaded into a 32 px texture rather than
   modelled, with every rib pitch dividing the block; `--check` fails on drift

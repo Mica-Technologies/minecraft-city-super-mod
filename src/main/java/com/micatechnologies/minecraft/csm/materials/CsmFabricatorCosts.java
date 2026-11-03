@@ -512,6 +512,10 @@ public final class CsmFabricatorCosts {
     if (CsmBlockDisplayNames.hasWord(registryName, "panelling")) {
       return cost(FabricatorIngredient.any(MC_PLANKS, 2));
     }
+    // A slatted screen is timber battens on two rails; a breeze block falls through to masonry.
+    if (CsmBlockDisplayNames.hasWord(registryName, "slatted")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 1));
+    }
     if (CsmBlockDisplayNames.hasWord(registryName, "metal")) {
       FabricatorIngredient dye = dyeForMetalColour(registryName);
       if (block instanceof AbstractBlockSlab) {

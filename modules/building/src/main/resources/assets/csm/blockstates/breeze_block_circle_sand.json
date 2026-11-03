@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/screens/breeze_block_circle_sand"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/screens/breeze_block_circle_sand",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/screens/breeze_block_circle_sand"
+    }
+  }
+}

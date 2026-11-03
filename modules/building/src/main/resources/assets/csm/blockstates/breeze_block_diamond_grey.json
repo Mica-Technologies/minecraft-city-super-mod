@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/screens/breeze_block_diamond_grey"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/screens/breeze_block_diamond_grey",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/screens/breeze_block_diamond_grey"
+    }
+  }
+}
