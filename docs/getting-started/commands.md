@@ -7,7 +7,7 @@ to be an op. `/csmclient` runs in your own game and anyone can use it.
 | Command | Module | For |
 |---|---|---|
 | [`/csm`](#csm) (alias `/citysupermod`) | Core | The config file, traffic pole connections, and diagnostics |
-| [`/csmfirealarm`](#csmfirealarm) | Life Safety | Wiring a whole building to a fire alarm panel at once, and checking a panel |
+| [`/csmfirealarm`](#csmfirealarm) | Life Safety | Wiring a whole building to a fire alarm panel at once, checking a panel, and testing it without touching it |
 | [`/csmhvac`](#csmhvac) | HVAC | Inspecting and testing the room temperature simulation |
 | [`/csmlighting`](#csmlighting) | Lighting | Repairing the light a lamp throws |
 | [`/csmclient`](#csmclient) | Core | Your own game: the performance mode, sharing other mods' quads, and the chunk builder memory, on any server |
@@ -130,6 +130,8 @@ too much (see [Running out of memory after a while](../performance/memory.md#run
 /csmfirealarm unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>
 /csmfirealarm status <panel x y z>
 /csmfirealarm prune  <panel x y z>
+/csmfirealarm alarm|drill|ack|silence|resound|reset <panel x y z>
+/csmfirealarm trigger <device x y z>
 ```
 
 The panel coordinates must point at a fire alarm control panel.
@@ -145,6 +147,16 @@ The panel coordinates must point at a fire alarm control panel.
   lists any that are **missing**, meaning the panel still has them linked but the block is gone,
   and how many sit in unloaded chunks and so went unchecked.
 - **`prune`** unlinks the missing devices that `status` reports.
+- **`alarm`**, **`drill`**, **`ack`**, **`silence`**, **`resound`** and **`reset`** press the
+  panel's buttons: they do what the panel's screen and the Signal Configuration Tool do. `alarm`
+  starts an alarm with no initiating device named; `silence` stops the horns and speakers but
+  leaves the strobes flashing; `reset` ends the alarm and resets the sprinklers.
+- **`trigger`** takes the coordinates of a pull station or detector, not a panel. The device
+  reports to the panel it is linked to, as if someone had pulled it, and the panel names it as
+  where the alarm started.
+- `status` also prints the panel's state on one line (`state: Alarm Active; alarm=true,
+  drill=false, acknowledged=false, silenced=false, trouble=false, origin=…`), so a script can
+  check each step of a test.
 
 The **Fire Alarm Area Linker** item does `link` and `unlink` with three clicks and no
 commands: see [Fire Alarm Systems](../guides/fire-alarms.md#a-whole-building-at-once).

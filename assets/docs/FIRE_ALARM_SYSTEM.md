@@ -347,6 +347,11 @@ click on it would:
 - **`/csmfirealarm`** (permission level 2): `link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>`,
   `status <panel x y z>` (counts, missing devices, how many are unloaded) and
   `prune <panel x y z>` (unlinks the missing ones, as a sneak-click on the panel does).
+  `alarm|drill|ack|silence|resound|reset <panel x y z>` call the same panel methods the
+  config packet handler does (`setAlarmState`, `startDrill`, `acknowledge`, `setAudibleSilence`),
+  and `trigger <device x y z>` calls the device's `activateLinkedPanel` with no player, so a
+  system is tested by script without a player's hotbar (#330). `status` prints a `state:` line
+  (status string, alarm, drill, acknowledged, silenced, trouble, origin) for a script to match.
 - **`appsList`**: `/blockdata x y z {appsList:[I;x,y,z,x,y,z,...]}` on a panel adds every triple to
   `apps` when the panel reads it and is never written back. `apps` itself is a newline-separated
   string, which chat cannot type, so `/blockdata` could add only one appliance at a time.
