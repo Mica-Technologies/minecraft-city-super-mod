@@ -131,6 +131,10 @@ Each member's collision box is its **own real extent**, not a full cube, so a fl
 be walked between and stood on before it is decked. The box is written once as the member is drawn,
 spanning north-south, and turned for the other axis in the base class.
 
+**The roof deck lies on the floor of its cell** (#326), 3 px deep (4 with its concrete topping),
+so a deck laid over a roof slab, a beam or a row of joists rests on it. It used to sit at y 12-15,
+which left it hovering over whatever it was laid on and turned a stepped roof into stacked plates.
+
 Two members do not get their true extent, both for the same reason: the rafter and the X-brace are
 diagonals, and an axis-aligned box cannot describe a diagonal. They take a full cube.
 

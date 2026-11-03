@@ -534,17 +534,18 @@ def span_models():
                                    + _diagonals(8, 4, thickness=1.5))
 
     # Corrugated B-deck. The rib pitch divides the block exactly, so a sheet tiles without the
-    # ribs bunching or splitting at the seam.
-    deck = [_span(0, 12, 0, 16, 13, 16),
-            _span(0, 13, 0, 4, 15, 16),
-            _span(8, 13, 0, 12, 15, 16)]
+    # ribs bunching or splitting at the seam. It lies on the floor of its cell, like a carpet, so
+    # it rests on the block, joist or beam under it rather than hovering 12 px above it (#326).
+    deck = [_span(0, 0, 0, 16, 1, 16),
+            _span(0, 1, 0, 4, 3, 16),
+            _span(8, 1, 0, 12, 3, 16)]
     models["span_metal_roof_deck"] = deck
     # The composite slab: concrete in the flutes and a topping over, drawn so that it never shares
     # a plane with the deck it sits on.
     models["span_metal_roof_deck_concrete"] = deck + [
-        _span(4, 13, 0, 8, 15, 16, broad="#topping"),
-        _span(12, 13, 0, 16, 15, 16, broad="#topping"),
-        _span(0, 15, 0, 16, 16, 16, broad="#topping"),
+        _span(4, 1, 0, 8, 3, 16, broad="#topping"),
+        _span(12, 1, 0, 16, 3, 16, broad="#topping"),
+        _span(0, 3, 0, 16, 4, 16, broad="#topping"),
     ]
     # A ceiling joist sits at the TOP of its block, on the plate, with the ceiling hung under it.
     # Shallower than a floor joist because it carries a ceiling and not a floor.

@@ -14,8 +14,8 @@ public class BlockMetalRoofDeck extends BlockFramingSpan {
 
   /** The member's own extent, as drawn: spanning north-south. */
   private static final AxisAlignedBB BOX =
-      new AxisAlignedBB(0 / 16.0D, 12 / 16.0D, 0.0D,
-          16 / 16.0D, 15 / 16.0D, 1.0D);
+      new AxisAlignedBB(0 / 16.0D, 0 / 16.0D, 0.0D,
+          16 / 16.0D, 3 / 16.0D, 1.0D);
 
   /**
    * Constructs a {@link BlockMetalRoofDeck}.
