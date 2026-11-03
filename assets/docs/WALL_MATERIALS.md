@@ -1,7 +1,7 @@
 # Wall Materials
 
 What a building is faced in: concrete block, brick, stucco, siding, metal and panel cladding, and
-stone veneer. 100 blocks in **CSM: Building Materials** (counted as the tab shows them, without
+stone veneer, and the screen blocks a wall is pierced with. 115 blocks in **CSM: Building Materials** (counted as the tab shows them, without
 the double slabs), all shipped by `csm_building`, every one of
 them drawn by a generator from a catalogue.
 
@@ -19,6 +19,7 @@ way to face a building in anything.
 | Siding | fiber cement lap, board and batten, cedar shingle, vinyl | | `gen_siding.py` |
 | Cladding | corrugated steel, standing seam, insulated panel, composite panel | | `gen_cladding.py` |
 | Stone veneer | ashlar, fieldstone, cast stone | | `gen_stone.py` |
+| Screen blocks | breeze block (circle, quatrefoil, diamond, squares; white, grey, sand), slatted timber screen (teak, oak, walnut) | | `gen_screen_blocks.py` |
 
 Every set is a block, stairs, slab and fence (`AbstractBlockSetBasic`: five registry names with the
 double slab), registered in the order above after the coloured metal sets. **Each material comes in
@@ -150,6 +151,31 @@ Voronoi partition of the tile measured on a **torus**, so the cells wrap and a w
 visible repeat, each cell a stone of its own colour, rounded by shading, in recessed mortar. **Cast
 stone** is manufactured: ashlar's order without its variation, in units a block wide and half a
 block tall. At brick-like proportions it read as buff brick.
+
+## Screen blocks
+
+Mid-century and tropical walls that light, air and a view pass through (#329), from
+`gen_screen_blocks.py`. Neither is a set: a breeze block is one unit, and a screen has no stairs.
+
+- **Breeze blocks** (`BlockBreezeBlock`, by name `breeze_block_<pattern>_<colour>`): pierced
+  concrete units, four to a block face (a real one is about a foot square) on a 32 px cutout
+  texture. The pattern goes right through, which a cube of cutout faces cannot show, so the
+  model adds the pattern again on seven slices inside the block, 2 px apart, in a darker "web"
+  texture: at an angle, through a hole, the slices stack into the hole's walls. 20 quads a block,
+  and no face is drawn against another breeze block, so a wall is one screen. The block stores
+  the axis it is seen through (placed, the pattern faces the player); every pattern is
+  mirror-symmetric, so the far face lines up with the near one. Not opaque and not a full cube:
+  it shades nothing, light passes, and the model has no smooth lighting, which would shade the
+  slices from the blocks round the cell.
+- **Slatted screens** (`BlockSlatScreen`, by name `slat_screen_<timber>`): vertical slats 2 px
+  wide with 2 px gaps, standing along one edge of the cell, a wall screen, a balcony privacy fin
+  or a sunshade. Facing is the edge (the way to the wall it was placed against; on a floor, the
+  far edge ahead of the player) and the only stored state; `up` / `down` are actual state, and a
+  rail caps the top and bottom of each run, so a stack is one screen with one head and one sill.
+  The slats are inset half a pixel inside the rails' faces, so no two faces share a plane.
+- **By command**: a breeze block's metadata is 0 for the pattern facing north and south, 1 for
+  east and west (2 states); a screen's is the horizontal index of its edge, S 0, W 1, N 2, E 3
+  (16 states with `up` and `down`).
 
 ## Glazing
 

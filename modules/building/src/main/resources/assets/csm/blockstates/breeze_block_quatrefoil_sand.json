@@ -1,0 +1,14 @@
+{
+  "variants": {
+    "axis=z": {
+      "model": "csm:buildingmaterials/screens/breeze_block_quatrefoil_sand"
+    },
+    "axis=x": {
+      "model": "csm:buildingmaterials/screens/breeze_block_quatrefoil_sand",
+      "y": 90
+    },
+    "inventory": {
+      "model": "csm:buildingmaterials/screens/breeze_block_quatrefoil_sand"
+    }
+  }
+}

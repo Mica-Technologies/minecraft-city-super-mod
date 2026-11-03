@@ -1,0 +1,122 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:buildingmaterials/screens/slat_screen_teak"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_slats"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_slats",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_slats",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_slats",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_top"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_top",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_top",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_top",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_bottom"
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_bottom",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_bottom",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "down": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:buildingmaterials/screens/slat_screen_teak_rail_bottom",
+        "y": 270
+      }
+    }
+  ]
+}

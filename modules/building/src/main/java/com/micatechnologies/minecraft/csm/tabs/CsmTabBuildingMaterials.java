@@ -15,6 +15,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCathedralDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCustomDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockDoorWorkshop;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSlatScreen;
 import com.micatechnologies.minecraft.csm.buildingmaterials.ItemDoorCloser;
 import com.micatechnologies.minecraft.csm.buildingmaterials.ItemDoorSwingTool;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorControl;
@@ -39,6 +40,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetSilverMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetWhiteMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetYellowMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBrickTrim;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBreezeBlock;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickBrown;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickBuff;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBrickGrey;
@@ -211,6 +213,24 @@ public class CsmTabBuildingMaterials extends CsmTab {
         fmlPreInitializationEvent); // Fieldstone Veneer Set (Block, Fence, Slab, Stairs)
     initTabBlock(BlockSetStoneCast.class,
         fmlPreInitializationEvent); // Cast Stone Veneer Set (Block, Fence, Slab, Stairs)
+
+    // Screen blocks: pierced breeze blocks and slatted timber screens.
+    initTabBlock(new BlockBreezeBlock("breeze_block_circle_white")); // Breeze Block (Circle, White)
+    initTabBlock(new BlockBreezeBlock("breeze_block_circle_grey")); // Breeze Block (Circle, Grey)
+    initTabBlock(new BlockBreezeBlock("breeze_block_circle_sand")); // Breeze Block (Circle, Sand)
+    initTabBlock(new BlockBreezeBlock("breeze_block_quatrefoil_white")); // Breeze Block (Quatrefoil, White)
+    initTabBlock(new BlockBreezeBlock("breeze_block_quatrefoil_grey")); // Breeze Block (Quatrefoil, Grey)
+    initTabBlock(new BlockBreezeBlock("breeze_block_quatrefoil_sand")); // Breeze Block (Quatrefoil, Sand)
+    initTabBlock(new BlockBreezeBlock("breeze_block_diamond_white")); // Breeze Block (Diamond, White)
+    initTabBlock(new BlockBreezeBlock("breeze_block_diamond_grey")); // Breeze Block (Diamond, Grey)
+    initTabBlock(new BlockBreezeBlock("breeze_block_diamond_sand")); // Breeze Block (Diamond, Sand)
+    initTabBlock(new BlockBreezeBlock("breeze_block_square_white")); // Breeze Block (Squares, White)
+    initTabBlock(new BlockBreezeBlock("breeze_block_square_grey")); // Breeze Block (Squares, Grey)
+    initTabBlock(new BlockBreezeBlock("breeze_block_square_sand")); // Breeze Block (Squares, Sand)
+    initTabBlock(new BlockSlatScreen("slat_screen_teak")); // Slatted Screen (Teak)
+    initTabBlock(new BlockSlatScreen("slat_screen_oak")); // Slatted Screen (Oak)
+    initTabBlock(new BlockSlatScreen("slat_screen_walnut")); // Slatted Screen (Walnut)
+
     initTabBlock(new BlockSiteFence("chainlink_fence")); // Chain-Link Fence
     initTabBlock(new BlockSiteFence("chainlink_fence_black")); // Chain-Link Fence (Black)
     initTabBlock(new BlockSiteFence("chainlink_barbed_top")); // Chain-Link Barbed Wire Top

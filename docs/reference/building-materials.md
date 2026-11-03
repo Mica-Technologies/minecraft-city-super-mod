@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "237 blocks in this tab"
+!!! info "252 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -33,6 +33,18 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Board and Batten Siding Fence | `csm:siding_boardbatten_fence` | 2 | 5 | axe | 0 |
 | Board and Batten Siding Slab | `csm:siding_boardbatten_slab` | 2 | 5 | axe | 0 |
 | Board and Batten Siding Stairs | `csm:siding_boardbatten_stairs` | 2 | 5 | axe | 0 |
+| Breeze Block (Circle, Grey) | `csm:breeze_block_circle_grey` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Circle, Sand) | `csm:breeze_block_circle_sand` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Circle, White) | `csm:breeze_block_circle_white` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Diamond, Grey) | `csm:breeze_block_diamond_grey` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Diamond, Sand) | `csm:breeze_block_diamond_sand` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Diamond, White) | `csm:breeze_block_diamond_white` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Quatrefoil, Grey) | `csm:breeze_block_quatrefoil_grey` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Quatrefoil, Sand) | `csm:breeze_block_quatrefoil_sand` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Quatrefoil, White) | `csm:breeze_block_quatrefoil_white` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Squares, Grey) | `csm:breeze_block_square_grey` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Squares, Sand) | `csm:breeze_block_square_sand` | 2 | 10 | pickaxe | 1 |
+| Breeze Block (Squares, White) | `csm:breeze_block_square_white` | 2 | 10 | pickaxe | 1 |
 | Bronze Tinted Glass | `csm:glass_bronze` |  |  | pickaxe | 0 |
 | Bronze Tinted Glass Pane | `csm:glass_pane_bronze` |  |  | pickaxe | 0 |
 | Brown Brick | `csm:brick_brown` | 2 | 10 | pickaxe | 1 |
@@ -214,6 +226,9 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Silver Metal Fence | `csm:silvermetal_fence` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Slab | `csm:silvermetal_slab` | 2 | 10 | pickaxe | 1 |
 | Silver Metal Stairs | `csm:silvermetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Slatted Screen (Oak) | `csm:slat_screen_oak` | 2 | 5 | axe | 0 |
+| Slatted Screen (Teak) | `csm:slat_screen_teak` | 2 | 5 | axe | 0 |
+| Slatted Screen (Walnut) | `csm:slat_screen_walnut` | 2 | 5 | axe | 0 |
 | Sliding Door Sidelite (Clear Aluminium) | `csm:auto_door_sidelite_clear` |  |  |  |  |
 | Sliding Door Sidelite (Dark Bronze) | `csm:auto_door_sidelite_bronze` |  |  |  |  |
 | Smoke Barrier Door (Beige Metal) | `csm:door_smoke_metal_beige` |  |  |  |  |
