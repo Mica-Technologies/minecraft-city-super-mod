@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -24,6 +25,11 @@ import net.minecraft.world.World;
  *   <li>{@code unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>} -- unlinks every device in the box.</li>
  *   <li>{@code status <panel x y z>} -- how many devices the panel has, and which are missing.</li>
  *   <li>{@code prune <panel x y z>} -- unlinks the missing ones.</li>
+ *   <li>{@code alarm|drill|ack|silence|resound|reset <panel x y z>} -- operate the panel as its
+ *   screen and the Signal Configuration Tool do, so a system can be tested by script with no
+ *   player's hands on it (#330).</li>
+ *   <li>{@code trigger <device x y z>} -- an initiating device reports to its panel, as a pull
+ *   or a detection does.</li>
  * </ul>
  *
  * @author Mica Technologies
@@ -42,7 +48,8 @@ public class CommandFireAlarm extends CommandBase {
   @Override
   public String getUsage(ICommandSender sender) {
     return "/csmfirealarm <link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>"
-        + "|status <panel x y z>|prune <panel x y z>>";
+        + "|status|prune|alarm|drill|ack|silence|resound|reset <panel x y z>"
+        + "|trigger <device x y z>>";
   }
 
   @Override
@@ -57,6 +64,10 @@ public class CommandFireAlarm extends CommandBase {
       throw new WrongUsageException(getUsage(sender));
     }
     World world = sender.getEntityWorld();
+    if ("trigger".equals(args[0])) {
+      trigger(sender, world, parseBlockPos(sender, args, 1, false));
+      return;
+    }
     BlockPos panelPos = parseBlockPos(sender, args, 1, false);
     TileEntity te = world.getTileEntity(panelPos);
     if (!(te instanceof TileEntityFireAlarmControlPanel)) {
@@ -93,9 +104,82 @@ public class CommandFireAlarm extends CommandBase {
                 + " from the panel at " + describe(panelPos) + ".");
         break;
       }
+      case "alarm":
+        // No origin: the panel says only that there is an alarm, as for redstone or the API
+        if (panel.getAlarmState()) {
+          say(sender, "The panel at " + describe(panelPos) + " is already in alarm.");
+        } else {
+          panel.setAlarmState(true);
+          say(sender, "Put the panel at " + describe(panelPos) + " in alarm.");
+        }
+        break;
+      case "drill":
+        if (panel.getAlarmState()) {
+          throw new CommandException("The panel at " + describe(panelPos)
+              + " is already in alarm; a drill starts from normal.");
+        }
+        panel.startDrill();
+        say(sender, "Started a drill on the panel at " + describe(panelPos) + ".");
+        break;
+      case "ack":
+        if (!panel.getAlarmState() && !panel.getTrouble()) {
+          say(sender, "Nothing to acknowledge on the panel at " + describe(panelPos) + ".");
+        } else {
+          panel.acknowledge();
+          say(sender, "Acknowledged the panel at " + describe(panelPos) + ".");
+        }
+        break;
+      case "silence":
+        requireAlarm(panel, panelPos, "silence");
+        panel.setAudibleSilence(true);
+        say(sender, "Silenced the panel at " + describe(panelPos) + " (strobes stay on).");
+        break;
+      case "resound":
+        requireAlarm(panel, panelPos, "resound");
+        panel.setAudibleSilence(false);
+        say(sender, "Re-sounded the panel at " + describe(panelPos) + ".");
+        break;
+      case "reset":
+        if (!panel.getAlarmState()) {
+          say(sender, "The panel at " + describe(panelPos) + " is not in alarm; nothing to reset.");
+        } else {
+          panel.setAlarmState(false);
+          say(sender, "Reset the panel at " + describe(panelPos) + ".");
+        }
+        break;
       default:
         throw new WrongUsageException(getUsage(sender));
     }
+  }
+
+  private static void requireAlarm(TileEntityFireAlarmControlPanel panel, BlockPos panelPos,
+      String action) throws CommandException {
+    if (!panel.getAlarmState()) {
+      throw new CommandException("The panel at " + describe(panelPos) + " is not in alarm; "
+          + "nothing to " + action + ".");
+    }
+  }
+
+  /**
+   * An initiating device reports to its panel, exactly as a pull or a detection makes it: the
+   * panel records it as the alarm's origin if it is the first.
+   */
+  private static void trigger(ICommandSender sender, World world, BlockPos devicePos)
+      throws CommandException {
+    Block block = world.getBlockState(devicePos).getBlock();
+    if (!(block instanceof AbstractBlockFireAlarmActivator)) {
+      throw new CommandException("No pull station or detector at " + describe(devicePos) + ".");
+    }
+    TileEntity te = world.getTileEntity(devicePos);
+    BlockPos panelPos = te instanceof TileEntityFireAlarmSensor
+        ? ((TileEntityFireAlarmSensor) te).getLinkedPanelPos(world) : null;
+    if (!((AbstractBlockFireAlarmActivator) block).activateLinkedPanel(world, devicePos, null)) {
+      throw new CommandException("The device at " + describe(devicePos) + " reached no panel: "
+          + (panelPos == null ? "it is not linked to one."
+          : "its panel at " + describe(panelPos) + " is gone or not loaded."));
+    }
+    say(sender, "Triggered the device at " + describe(devicePos) + "; the panel at "
+        + describe(panelPos) + " is in alarm.");
   }
 
   private static void status(ICommandSender sender, World world,
@@ -120,6 +204,15 @@ public class CommandFireAlarm extends CommandBase {
       }
     }
     say(sender, "Fire alarm control panel at " + describe(panel.getPos()) + ":");
+    // One line a script can match each step against: the state the panel's screen shows
+    say(sender, "  state: " + panel.getStatusString()
+        + "; alarm=" + panel.getAlarmState()
+        + ", drill=" + panel.getDrill()
+        + ", acknowledged=" + panel.getAcknowledged()
+        + ", silenced=" + panel.getAudibleSilence()
+        + ", trouble=" + panel.getTrouble()
+        + (panel.getAlarmOriginPos() != null
+        ? ", origin=" + describe(panel.getAlarmOriginPos()) : ""));
     say(sender, "  " + count(appliances.size(), "appliance") + " ("
         + count(voiceEvac, "voice evac speaker") + "), "
         + count(initiating.size(), "initiating device"));
@@ -153,7 +246,8 @@ public class CommandFireAlarm extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "link", "unlink", "status", "prune");
+      return getListOfStringsMatchingLastWord(args, "link", "unlink", "status", "prune", "alarm",
+          "drill", "ack", "silence", "resound", "reset", "trigger");
     }
     int limit = "link".equals(args[0]) || "unlink".equals(args[0]) ? 9 : 3;
     if (args.length >= 2 && args.length <= limit + 1) {
