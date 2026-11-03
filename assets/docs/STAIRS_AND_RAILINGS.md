@@ -98,5 +98,8 @@ under timber treads that overhang a straight flight's riser by a pixel.
 - **A corner cell is level.** Its edges cross axes; a corner on a sloped flight is not a thing.
 - **The foot needs a railing over the first stair.** Without one a cell in front of a stair stays
   level, so a railing that only guards the floor beside a stair does not kink.
+- **The stairs draw without smooth lighting** (`"ambientocclusion": false`). A lower tread's top is
+  mid-cell, so vanilla's AO shades it from the block beside it at that height, which in a flight is
+  the fill under the next stair: every other tread got a dark band along its back (#333).
 - **Measuring a texture change with `atlas_budget.py` after `git stash`** leaves the new,
   untracked textures in place.

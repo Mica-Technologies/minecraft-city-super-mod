@@ -773,8 +773,11 @@ def stairs():
         els = stair_models(kind)
         models = {}
         for shape, e in els.items():
-            models["%s_%s" % (reg, shape)] = {"parent": "block/block", "textures": t,
-                                              "elements": e}
+            # No smooth lighting: a lower tread's top is mid-cell, so vanilla's AO shades it
+            # from the block beside it at that height -- the fill under the next stair up -- and
+            # every other tread of a flight gets a dark band along its back (#333)
+            models["%s_%s" % (reg, shape)] = {"parent": "block/block", "ambientocclusion": False,
+                                              "textures": t, "elements": e}
         variants = {}
         for facing, half, shape, x, y in VANILLA_STAIRS:
             model = "%s_%s" % (reg, shape.split("_")[0])

@@ -1,5 +1,6 @@
 {
   "parent": "block/block",
+  "ambientocclusion": false,
   "textures": {
     "riser": "csm:blocks/stairsrailings/concrete",
     "nosing": "csm:blocks/stairsrailings/nosing_dark",
