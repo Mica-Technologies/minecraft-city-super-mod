@@ -1,0 +1,176 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "left": "true",
+        "right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_body"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_left"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_right"
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "false",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_solo"
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_body",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "false",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_solo",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_body",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "false",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_solo",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_body",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "true",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_end_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "false",
+        "right": "false",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:furniture/lodge/hanging_canoe_green_solo",
+        "y": 270
+      }
+    }
+  ]
+}

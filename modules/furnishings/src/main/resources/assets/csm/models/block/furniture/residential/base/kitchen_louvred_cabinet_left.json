@@ -1,0 +1,67 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "counter": "csm:blocks/furniture/residential/counter_granite",
+    "edge": "csm:blocks/furniture/residential/oak_edge",
+    "wood": "csm:blocks/furniture/residential/oak",
+    "wood_v": "csm:blocks/furniture/residential/oak_v",
+    "particle": "#wood"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        1.25
+      ],
+      "to": [
+        0.5,
+        13.75,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#wood_v",
+          "uv": [
+            1.25,
+            2.25,
+            16,
+            16
+          ]
+        },
+        "north": {
+          "texture": "#edge",
+          "uv": [
+            15.5,
+            2.25,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        13.75,
+        0.5
+      ],
+      "to": [
+        0.01,
+        14.5,
+        16
+      ],
+      "faces": {
+        "west": {
+          "texture": "#counter",
+          "uv": [
+            0.5,
+            1.5,
+            16,
+            2.25
+          ]
+        }
+      }
+    }
+  ]
+}

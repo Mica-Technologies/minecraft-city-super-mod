@@ -279,10 +279,10 @@ The mod includes fixtures modeled after real manufacturers:
 
 ## The Decorative Family (Pendants and Sconces)
 
-Ten decorative fixtures — five ceiling pendants and five wall sconces — plus a stackable chain,
-each in three metal finishes, for 33 blocks. Unlike the rest of the tab these are **OBJ models,
+Eleven decorative fixtures — five ceiling pendants, five wall sconces and a mission flush mount —
+plus a stackable chain, each in three metal finishes, for 36 blocks. Unlike the rest of the tab these are **OBJ models,
 procedurally generated** by `dev-env-utils/scripts/gen_decorative_lighting.py`; run that script to
-regenerate the geometry, the swatch textures and all 33 blockstates at once.
+regenerate the geometry, the swatch textures and all 36 blockstates at once.
 
 | Model | Registry stem | Notes |
 |---|---|---|
@@ -296,6 +296,7 @@ regenerate the geometry, the swatch textures and all 33 blockstates at once.
 | `sconce_vanity_bar` | `sconcevanity` | Three globes on a wide bar |
 | `sconce_carriage_lantern` | `sconcelantern` | Square glass lantern under a tapered cap |
 | `sconce_rlm_gooseneck` | `sconcerlm` | Barn shade on a jointed gooseneck arm |
+| `ceiling_mission` | `ceilmission` | Mission / craftsman square flush mount: amber art glass set back in a square frame, a strap down each side and a cross underneath; no `shade` material |
 | `pendant_chain` | `pendchain` | Stackable; links overhang so a stack reads continuous |
 
 Finish suffixes are `black`, `bronze`, `nickel` — e.g. `pendglobebronze`.
@@ -320,8 +321,8 @@ Forge's `OBJModel.retexture` keys overrides on `#` + the MTL material name, so a
 Every other fixture in the tab renders identically in all four STATE values — the blockstate lists
 `"state": {"0": {}, "1": {}, "2": {}, "3": {}}` and one texture covers all of them. The decorative
 family instead overrides `#lens` per state: STATE 1 and 3 (redstone-on and manual-on) get
-`lens_*_on`, STATE 0 and 2 get `lens_*_off`. Two lens families exist, `lens_opal_*` for glass
-shades and `lens_bulb_*` for exposed bulbs.
+`lens_*_on`, STATE 0 and 2 get `lens_*_off`. Three lens families exist, `lens_opal_*` for glass
+shades, `lens_bulb_*` for exposed bulbs and `lens_amber_*` for the mission fixture's art glass.
 
 The other 81 fixtures now do this too, by a different route — they share 27 atlas textures with the
 lamp painted in, so they swap the whole atlas per state rather than a `#lens` material. See

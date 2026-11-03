@@ -778,8 +778,14 @@ public final class CsmFabricatorCosts {
           ? cost(FabricatorIngredient.any(MC_IRON_INGOT, 1))
           : cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
     }
-    if (CsmBlockDisplayNames.hasWord(registryName, "drywall")) {
+    if (CsmBlockDisplayNames.hasWord(registryName, "drywall")
+        || CsmBlockDisplayNames.hasWord(registryName, "wallpaper")) {
       return cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
+    }
+    // Board paneling (either spelling) is timber, not the masonry fallback below.
+    if (CsmBlockDisplayNames.hasWord(registryName, "paneling")
+        || CsmBlockDisplayNames.hasWord(registryName, "panelling")) {
+      return cost(FabricatorIngredient.any(MC_PLANKS, 2));
     }
     if (CsmBlockDisplayNames.hasWord(registryName, "acoustic")) {
       return cost(FabricatorIngredient.any(MC_WOOL, 1));

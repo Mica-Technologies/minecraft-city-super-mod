@@ -12,12 +12,13 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   is tabled in `assets/docs/NOVELTIES_SYSTEM.md`; none writes lang or tab lines; `--check`
 - `gen_furniture_residential.py` -- the Residential tab (furniture round-out): tables, chairs, bar
   stools, bookcases, TV stands, sideboards in light oak, walnut and white; armchairs, sofas and
-  sofa corners in four fabrics. Joining pieces use multipart blockstates driven by actual state
+  sofa corners in four fabrics and brown leather (`UPHOLSTERY`; `FABRICS`, which the bedroom
+  and outdoor generators import, stays the four fabrics). Joining pieces use multipart blockstates driven by actual state
   (a model parent must be `csm:block/...`; a blockstate may drop the `block/`); writes its own
   lang lines by key; `--check`, `--fragments`
 - `gen_furniture_kitchen.py` -- the Residential tab's kitchen, importing
   `gen_furniture_residential.py`'s helpers and finishes: base cabinets (doors, drawers, door and
-  drawer, sink with a working tap), the corner base that turns a run,
+  drawer, sink with a working tap), the louvred buffet base, the corner base that turns a run,
   island, wall cabinets and open shelves, each finish with its countertop (the kitchen's own
   `WOODS` adds cherry under tan granite, which the cooktop cabinet, the dishwasher's counter and
   the bathroom vanity follow; `KitchenCountertop.TAN_GRANITE` in Java); range hoods and the under-cabinet light (lit
@@ -80,6 +81,14 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   and its hidden relay, the doorbell and the storage crate. Two-block pieces are cut into their
   blocks with spanned UVs so a picture stays whole; `--check`, `--fragments`.
   `gen_furniture_sounds.py` synthesises the doorbell chime and the fireplace crackle
+- `gen_furniture_lodge.py` -- the Residential tab's lodge set, importing the residential and
+  appliance generators: the hanging canoe (a `BlockResidentialRun`, bows where a run stops, a
+  run of one a short canoe), the antler chandelier and the three-block iron drum pendant with an
+  alabaster bowl (`BlockKitchenLight`), crossed snowshoes, crossed skis and a framed trout print
+  (`BlockLivingDecor`), bronze horses standing and rearing, a buffet sneeze guard and a glass
+  beverage dispenser (`BlockCounterPiece`, one model per `SurfaceRest`). Textures and models
+  under `furniture/lodge/`; writes its own lang lines by key; `--check`, `--fragments` (a
+  `// ---- Lodge ----` block for the end of `CsmTabResidential`)
 - `gen_furniture_outdoor.py` -- the Residential tab's outdoor and backyard section, importing the
   residential, bedroom, appliance and living generators: the patio set (a slatted table joining
   like the dining table, chairs, Adirondack chairs, two-block sun loungers, an outdoor sofa and

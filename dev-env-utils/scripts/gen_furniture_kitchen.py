@@ -2,7 +2,7 @@
 """
 gen_furniture_kitchen.py -- the Residential tab's kitchen cabinetry and cold storage in the
 Furniture & Novelties module: base cabinets (two doors, a drawer bank, door and drawer), the
-corner base that turns a run, the sink base, the island, wall cabinets
+corner base that turns a run, the sink base, the island, the louvred buffet base, wall cabinets
 and the open wall shelf, each in the three wood finishes of gen_furniture_residential.py and in
 cherry (the kitchen's own finish, under a speckled tan granite), with a countertop to suit it;
 and in stainless steel or white, the chimney and under-cabinet range hoods, the under-cabinet
@@ -277,6 +277,28 @@ DOOR_DRAWER = (shaker(0.5, 15.5, 10, 13.25, ZF, grain="h", frame=1.0)
                + bar_v(13.4, 6, 9, ZF))
 
 
+
+def louvre_door(x0, x1, y0, y1, zf, frame=1.25, pitch=1.0):
+    """A louvred door: stiles and rails flush at zf, and between them horizontal slats a
+    pixel apart, each tilted forward at its foot (drawn as a stepped pair) so the carcass
+    shows dark between them."""
+    f = frame
+    fr = ("north", "east", "west", "up", "down")
+    out = [board([x0, y0, zf], [x0 + f, y1, zf + 0.5], grain="v", faces=fr),
+           board([x1 - f, y0, zf], [x1, y1, zf + 0.5], grain="v", faces=fr),
+           board([x0 + f, y0, zf], [x1 - f, y0 + f, zf + 0.5], faces=fr),
+           board([x0 + f, y1 - f, zf], [x1 - f, y1, zf + 0.5], faces=fr)]
+    y = y0 + f + 0.15
+    while y + 0.6 <= y1 - f:
+        out.append(board([x0 + f, y, zf + 0.15], [x1 - f, y + 0.6, zf + 0.4],
+                         faces=("north", "up", "down")))
+        y += pitch
+    return out
+
+
+# The buffet base: a base cabinet with two louvred doors, for a dining room or a breakfast bar.
+LOUVRED_DOORS = (louvre_door(0.5, 7.9, 2, 13.25, ZF) + louvre_door(8.1, 15.5, 2, 13.25, ZF)
+                 + bar_v(6.7, 6.5, 9.5, ZF - 0.25) + bar_v(8.9, 6.5, 9.5, ZF - 0.25))
 BASE_BODY = FRAME + TWO_DOORS
 DRAWER_BODY = FRAME + DRAWERS
 DOOR_DRAWER_BODY = FRAME + DOOR_DRAWER
@@ -513,6 +535,8 @@ RUNS = {
                                         CABINET % (BOX_BASE, "BASE", 18, "DRAWERS")),
     "kitchen_door_drawer_cabinet": run_piece(DOOR_DRAWER_BODY, BASE_END,
                                              CABINET % (BOX_BASE, "BASE", 18, "DOORS")),
+    "kitchen_louvred_cabinet": run_piece(FRAME + LOUVRED_DOORS, BASE_END,
+                                         CABINET % (BOX_BASE, "BASE", 18, "DOORS")),
     "kitchen_sink_cabinet": run_piece(SINK_BODY, BASE_END, 'new BlockKitchenSink("%s")'),
     "kitchen_corner_cabinet": {
         "parts": {"north": CORNER_NORTH, "west": CORNER_WEST, "blind": CORNER_BLIND,
@@ -540,6 +564,8 @@ RUN_NAMES = [
      "Mueble esquinero de cocina", "Hörnbänkskåp"),
     ("kitchen_sink_cabinet", "Kitchen Sink Cabinet", "Spülenschrank",
      "Mueble de fregadero", "Diskbänksskåp"),
+    ("kitchen_louvred_cabinet", "Louvred Buffet Cabinet", "Buffetschrank mit Lamellentüren",
+     "Aparador de buffet con puertas de lamas", "Buffétskåp med lamelldörrar"),
     ("kitchen_island", "Kitchen Island", "Kücheninsel", "Isla de cocina", "Köksö"),
     ("kitchen_wall_cabinet", "Kitchen Wall Cabinet", "Küchen-Hängeschrank",
      "Mueble alto de cocina", "Väggskåp"),

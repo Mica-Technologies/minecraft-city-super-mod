@@ -1,0 +1,278 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:wallfinish/wall_wallpaper_arrow_navy"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy"
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "corner",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_left"
+      }
+    },
+    {
+      "when": {
+        "left": "corner",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "corner",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "corner",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_left"
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_left"
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "left": "abut_thin",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "corner",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_right"
+      }
+    },
+    {
+      "when": {
+        "right": "corner",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "corner",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "corner",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_corner_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_right"
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_right"
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "right": "abut_thin",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:wallfinish/wall_wallpaper_arrow_navy_abut_thin_right",
+        "y": 270
+      }
+    }
+  ]
+}

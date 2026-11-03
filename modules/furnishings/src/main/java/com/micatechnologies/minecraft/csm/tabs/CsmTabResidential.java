@@ -51,6 +51,7 @@ import com.micatechnologies.minecraft.csm.furniture.residential.BlockPianoBench;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockRefrigerator;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialBed;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialFurniture;
+import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialRun;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialStorage;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialTall;
 import com.micatechnologies.minecraft.csm.furniture.residential.BlockResidentialWide;
@@ -85,20 +86,25 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The tab for the furniture of homes: living and dining (tables, chairs, stools, bookcases, TV
- * stands, sideboards, armchairs and sofas), each in three wood finishes or four fabrics, then the
- * kitchen (cabinets, sink, island, hoods, lights, refrigerators, freezer), then its working
+ * stands, sideboards, armchairs and sofas), each in three wood finishes or four fabrics (the
+ * sofas and armchair also in brown leather), then the kitchen (cabinets, sink, island, the
+ * louvred buffet cabinet, hoods, lights, refrigerators, freezer; the cabinets also in cherry
+ * under tan granite), then its working
  * appliances, the things on its counters and the tableware, and the food and drink the
  * appliances make; then the bedroom, study and nursery; then the bathroom, a commercial
  * restroom's fittings and the laundry; then the living room's extras (TVs, audio, the piano,
  * clocks, pictures, house plants, the fireplace, lamps, candles, the light switch and doorbell);
  * and last the outdoor and backyard section (patio furniture and umbrellas, grills, fire pits, a
  * cooler, a chimney, a picket fence and gate, stepping stones, string lights, a trampoline, a
- * bounce castle, a diving board, a kiddie pool, pet furniture, a hose reel and a wall light).
+ * bounce castle, a diving board, a kiddie pool, pet furniture, a hose reel and a wall light);
+ * and after it the lodge set (a hanging canoe, an antler chandelier, a drum pendant, wall
+ * snowshoes, skis and a trout print, bronze horses, a buffet sneeze guard and a beverage
+ * dispenser).
  * The lines below are printed by
  * {@code gen_furniture_residential.py --fragments}, {@code gen_furniture_kitchen.py --fragments},
  * {@code gen_furniture_appliances.py --fragments}, {@code gen_furniture_bedroom.py --fragments},
- * {@code gen_furniture_bathroom.py --fragments}, {@code gen_furniture_living.py --fragments} and
- * {@code gen_furniture_outdoor.py --fragments}.
+ * {@code gen_furniture_bathroom.py --fragments}, {@code gen_furniture_living.py --fragments},
+ * {@code gen_furniture_outdoor.py --fragments} and {@code gen_furniture_lodge.py --fragments}.
  *
  * @version 1.0
  * @since 2026.9
@@ -178,18 +184,21 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockResidentialFurniture("armchair_navy", new int[]{1, 0, 1, 15, 14, 15}, true, 7.25, 1.9, 0));
     initTabBlock(new BlockResidentialFurniture("armchair_oatmeal", new int[]{1, 0, 1, 15, 14, 15}, true, 7.25, 1.9, 0));
     initTabBlock(new BlockResidentialFurniture("armchair_red", new int[]{1, 0, 1, 15, 14, 15}, true, 7.25, 1.9, 0));
+    initTabBlock(new BlockResidentialFurniture("armchair_leather", new int[]{1, 0, 1, 15, 14, 15}, true, 7.25, 1.9, 0));
 
     // Sofa
     initTabBlock(new BlockSofa("sofa_charcoal", new int[]{0, 0, 1, 16, 14, 16}));
     initTabBlock(new BlockSofa("sofa_navy", new int[]{0, 0, 1, 16, 14, 16}));
     initTabBlock(new BlockSofa("sofa_oatmeal", new int[]{0, 0, 1, 16, 14, 16}));
     initTabBlock(new BlockSofa("sofa_red", new int[]{0, 0, 1, 16, 14, 16}));
+    initTabBlock(new BlockSofa("sofa_leather", new int[]{0, 0, 1, 16, 14, 16}));
 
     // Sofa Corner
     initTabBlock(new BlockSofaCorner("sofa_corner_charcoal"));
     initTabBlock(new BlockSofaCorner("sofa_corner_navy"));
     initTabBlock(new BlockSofaCorner("sofa_corner_oatmeal"));
     initTabBlock(new BlockSofaCorner("sofa_corner_red"));
+    initTabBlock(new BlockSofaCorner("sofa_corner_leather"));
 
     // ---- Kitchen ----
     // Kitchen Base Cabinet
@@ -221,6 +230,12 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_walnut"));
     initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_white"));
     initTabBlock(new BlockKitchenSink("kitchen_sink_cabinet_cherry"));
+
+    // Louvred Buffet Cabinet
+    initTabBlock(new BlockKitchenCabinet("kitchen_louvred_cabinet_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_louvred_cabinet_walnut", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_louvred_cabinet_white", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
+    initTabBlock(new BlockKitchenCabinet("kitchen_louvred_cabinet_cherry", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.BASE, 18, KitchenFront.DOORS));
 
     // Kitchen Island
     initTabBlock(new BlockKitchenCabinet("kitchen_island_oak", new int[]{0, 0, 0, 16, 15, 16}, KitchenLine.ISLAND, 18, KitchenFront.DOORS));
@@ -453,6 +468,7 @@ public class CsmTabResidential extends CsmTab {
     initTabBlock(new BlockRug("rug_navy"));
     initTabBlock(new BlockRug("rug_oatmeal"));
     initTabBlock(new BlockRug("rug_red"));
+    initTabBlock(new BlockRug("rug_southwest"));
 
     // ---- Bathroom ----
     // Toilet
@@ -858,5 +874,38 @@ public class CsmTabResidential extends CsmTab {
     // Outdoor Wall Light
     initTabBlock(new BlockKitchenLight("outdoor_wall_light_black", new int[]{3, 6, 4, 13, 15, 16}, 12));
     initTabBlock(new BlockKitchenLight("outdoor_wall_light_galvanized", new int[]{3, 6, 4, 13, 15, 16}, 12));
+
+    // ---- Lodge ----
+    // Hanging Canoe
+    initTabBlock(new BlockResidentialRun("hanging_canoe_cedar", new int[]{0, 4, 1, 16, 16, 15}, false));
+    initTabBlock(new BlockResidentialRun("hanging_canoe_green", new int[]{0, 4, 1, 16, 16, 15}, false));
+
+    // Antler Chandelier
+    initTabBlock(new BlockKitchenLight("antler_chandelier_natural", new int[]{1, 5, 1, 15, 16, 15}, 13));
+
+    // Drum Pendant
+    initTabBlock(new BlockKitchenLight("drum_pendant_iron", new int[]{3, 0, 3, 13, 16, 13}, 15));
+
+    // Crossed Snowshoes
+    initTabBlock(new BlockLivingDecor("wall_snowshoes_wood", new int[]{2, 0, 14, 14, 16, 16}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.CUTOUT));
+
+    // Crossed Wooden Skis
+    initTabBlock(new BlockLivingDecor("wall_skis_wood", new int[]{2, 0, 13, 14, 16, 16}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.SOLID));
+
+    // Framed Trout Print
+    initTabBlock(new BlockLivingDecor("trout_print_wood", new int[]{1, 2, 15, 15, 14, 16}, Material.WOOD, SoundType.WOOD, 0.8F, BlockRenderLayer.SOLID));
+
+    // Horse Statue
+    initTabBlock(new BlockCounterPiece("horse_statue_bronze", new int[]{2, 0, 5, 13, 11, 11}, Material.IRON, SoundType.METAL, BlockRenderLayer.SOLID));
+
+    // Rearing Horse Statue
+    initTabBlock(new BlockCounterPiece("rearing_horse_statue_bronze", new int[]{2, 0, 5, 13, 11, 11}, Material.IRON, SoundType.METAL, BlockRenderLayer.SOLID));
+
+    // Buffet Sneeze Guard
+    initTabBlock(new BlockCounterPiece("sneeze_guard_glass", new int[]{0, 0, 2, 16, 10, 10}, Material.GLASS, SoundType.GLASS, BlockRenderLayer.TRANSLUCENT));
+
+    // Beverage Dispenser
+    initTabBlock(new BlockCounterPiece("beverage_dispenser_orange", new int[]{4, 0, 3, 12, 13, 12}, Material.GLASS, SoundType.GLASS, BlockRenderLayer.TRANSLUCENT));
+    initTabBlock(new BlockCounterPiece("beverage_dispenser_water", new int[]{4, 0, 3, 12, 13, 12}, Material.GLASS, SoundType.GLASS, BlockRenderLayer.TRANSLUCENT));
   }
 }

@@ -6,7 +6,7 @@
     python dev-env-utils/scripts/gen_window_treatments.py --fragments   # lang lines to paste
 
 Nine blocks, one class (BlockWindowTreatment): a white venetian blind; white, grey and blackout
-roller shades; a white vertical blind; beige, grey and navy curtains and a white sheer. Each hangs in
+roller shades; a white vertical blind; beige, grey, navy and blanket-stripe curtains and a white sheer. Each hangs in
 the cell on the room side of a window, drawn here with the window to the NORTH and turned by the
 blockstate to the way it faces.
 
@@ -70,12 +70,19 @@ BLOCKS = {
                                          "Gardin (Grå)")),
     "curtain_navy": ("curtain", "navy", ("Curtain (Navy)", "Cortina (Azul Marino)",
                                          "Vorhang (Marineblau)", "Gardin (Marinblå)")),
+    "curtain_striped": ("curtain", "striped", ("Curtain (Blanket Stripe)",
+                                               "Cortina (Rayas de Manta)",
+                                               "Vorhang (Deckenstreifen)", "Gardin (Filtrand)")),
     "curtain_sheer": ("curtain", "sheer", ("Sheer Curtain", "Cortina Visillo",
                                            "Gardine (Transparent)", "Skir Gardin")),
 }
 
 FABRIC = {"white": (234, 232, 224), "grey": (132, 134, 136), "blackout": (46, 46, 50),
-          "beige": (206, 186, 150), "navy": (40, 52, 90)}
+          "beige": (206, 186, 150), "navy": (40, 52, 90), "striped": (226, 214, 188)}
+# A lodge blanket stripe across a cream ground, top to bottom of each 16 px repeat: (rows, colour)
+STRIPES = ((2, (226, 214, 188)), (1, (34, 74, 52)), (1, (226, 214, 188)), (2, (178, 50, 40)),
+           (1, (226, 214, 188)), (1, (214, 170, 52)), (1, (226, 214, 188)), (2, (30, 30, 34)),
+           (1, (226, 214, 188)), (1, (214, 170, 52)), (1, (226, 214, 188)), (2, (178, 50, 40)))
 SHEER_ALPHA = 110
 
 
@@ -134,10 +141,11 @@ def curtain(name, seed):
     translucent."""
     rgb = FABRIC.get(name, (244, 244, 240))
     img, px, rng = _canvas(seed, rgb, 3)
+    rows = [c for n, c in STRIPES for _ in range(n)] if name == "striped" else [rgb] * 16
     for x in range(16):
         d = {0: 8, 1: 0, 2: -10, 3: 0}[x % 4]
         for y in range(16):
-            px[x, y] = _shift(rgb, d + rng.uniform(-2, 2))
+            px[x, y] = _shift(rows[y], d + rng.uniform(-2, 2))
             if name == "sheer":
                 px[x, y] = px[x, y][:3] + (SHEER_ALPHA,)
     return img
@@ -157,6 +165,7 @@ def textures():
         out["shade_rail_" + name] = rail(FABRIC[name] if name != "blackout" else (90, 90, 96))
     for i, name in enumerate(("beige", "grey", "navy", "sheer")):
         out["curtain_" + name] = curtain(name, 20261712 + i)
+    out["curtain_striped"] = curtain("striped", 20261716)
     return out
 
 

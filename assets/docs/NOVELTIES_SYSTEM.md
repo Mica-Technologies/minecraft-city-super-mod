@@ -614,12 +614,43 @@ Finishes are separate blocks (`_oak`, `_walnut`, `_white`; fabrics `_charcoal`, 
 `_oatmeal`, `_red`; appliances `_stainless`, `_white`; bathroom fittings `_white` porcelain or
 `_chrome`). Countertops: dark granite on oak, light
 quartz on walnut and white, speckled tan granite on cherry. Cherry (`_cherry`) is the kitchen
-generator's own finish, not the living room's: the base and wall cabinets, island, sink,
+generator's own finish, not the living room's: the base, wall and buffet cabinets, island, sink,
 cooktop cabinet and bathroom vanity come in it, so a granite top is a cherry block, and nothing
 else does. A finish id is one word, because `getFinish()` is the last word of the registry name
-(the sofa, the corner and the cabinets join only within a finish). The single, double and
-king beds also come in forest green (`_forest`) and in white bedding with a forest-green cross-pattern throw over
-the foot (`_forest_throw`, its own base models with the throw drawn in, `BED_THROWS`). The plan for the rest of the round-out (bedroom, kitchen, bath, office,
+(the sofa, the corner and the cabinets join only within a finish). The armchair, sofa and sofa
+corner also come in brown leather (`_leather`, `UPHOLSTERY` in the residential generator, kept
+out of `FABRICS` so beds and desk chairs do not get it); the single, double and king beds also
+in forest green (`_forest`) and in white bedding with a forest-green cross-pattern throw over
+the foot (`_forest_throw`, its own base models with the throw drawn in, `BED_THROWS`); and the
+rugs in a blue Southwest pattern (`rug_southwest`).
+
+**The lodge set** (`gen_furniture_lodge.py`, `furniture/lodge/`, the end of the Residential tab;
+#331), for a mountain lodge or a hotel's lobby, lounge and breakfast room. No new Java: each
+piece is an existing Residential class.
+
+- **Hanging canoe** (`hanging_canoe_cedar`, `_green`): a `BlockResidentialRun` hung in the block
+  under a ceiling. Canoes side by side facing the same way join into one long canoe (a lodge's
+  is eight to ten blocks); a bow is drawn where the run stops at either end, a rope sling round
+  the hull just inside each bow, and a run of one is a short canoe with two bows (`solo`). The
+  bows step in and up in three lengths to a stem, the hull's ends closed only there.
+- **Antler chandelier** and **drum pendant** (`BlockKitchenLight`: placed lit, a click or
+  redstone switches them, the lit texture swapped by the blockstate). The chandelier is eight
+  antlers on an iron hub, four tilted 22.5 degrees up and four level on the diagonals, a candle
+  on each tip. The pendant's octagonal wrought-iron ring is three blocks across, drawn by its one
+  block from -16 to 32 on eight spokes, its alabaster bowl lit; its box is only the rod and
+  bowl, and its item model is scaled down to fit a slot. They are here and not in Lighting
+  because they are lodge furnishings first, as the table lamps are.
+- **Wall pieces** (`BlockLivingDecor`, against the wall behind): crossed snowshoes (a cutout
+  teardrop frame and lacing, two panels crossed at 22.5 degrees each way, the whole texture on
+  each), crossed wooden skis with curled tips, and a framed trout print.
+- **Counter pieces** (`BlockCounterPiece`, standing on whatever is under them, drawn once per
+  `SurfaceRest`): a bronze horse, standing and rearing (body, neck, head and forelegs turned 45
+  degrees about the hindquarters), on a black plinth; a buffet sneeze guard (chrome posts, a
+  glass shelf and a front pane leaning towards the customer, translucent, so a run of them along
+  a counter reads as one guard); and a glass beverage dispenser, orange juice or water.
+- The louvred buffet cabinet is a kitchen base run (`kitchen_louvred_cabinet_*`, in every
+  kitchen finish), so it joins the other base cabinets under one top; in cherry its top is the
+  tan granite. The plan for the rest of the round-out (bedroom, kitchen, bath, office,
 outdoor, working appliances) aims at parity with other furniture mods.
 
 ## Commercial & Office

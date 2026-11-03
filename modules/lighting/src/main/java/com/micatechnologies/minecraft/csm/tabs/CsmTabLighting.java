@@ -246,6 +246,10 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("sconcerlmblack", new AxisAlignedBB(0.100000, 0.256250, 0.112500, 0.900000, 0.800000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("sconcerlmbronze", new AxisAlignedBB(0.100000, 0.256250, 0.112500, 0.900000, 0.800000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("sconcerlmnickel", new AxisAlignedBB(0.100000, 0.256250, 0.112500, 0.900000, 0.800000, 1.000000), 0));
+    // Decorative ceiling fixtures
+    initTabBlock(new BlockBrightLightFactory("ceilmissionblack", new AxisAlignedBB(0.187500, 0.678125, 0.187500, 0.812500, 1.000000, 0.812500), 0));
+    initTabBlock(new BlockBrightLightFactory("ceilmissionbronze", new AxisAlignedBB(0.187500, 0.678125, 0.187500, 0.812500, 1.000000, 0.812500), 0));
+    initTabBlock(new BlockBrightLightFactory("ceilmissionnickel", new AxisAlignedBB(0.187500, 0.678125, 0.187500, 0.812500, 1.000000, 0.812500), 0));
     // Chain that extends any pendant's drop
     initTabBlock(new BlockDecorativeChainFactory("pendchainblack"));
     initTabBlock(new BlockDecorativeChainFactory("pendchainbronze"));

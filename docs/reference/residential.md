@@ -2,7 +2,7 @@
 
 The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard.
 
-!!! info "371 blocks in this tab"
+!!! info "391 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,6 +15,8 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Adirondack Chair (White) | `csm:adirondack_chair_white` | 1.5 | 3.0 | axe | 0 |
 | Air Fryer (Black) | `csm:air_fryer_black` | 1.5 | 3.0 | axe | 0 |
 | Air Fryer (White) | `csm:air_fryer_white` | 1.5 | 3.0 | axe | 0 |
+| Antler Chandelier (Natural) | `csm:antler_chandelier_natural` | 1.5 | 3.0 | axe | 0 |
+| Armchair (Brown Leather) | `csm:armchair_leather` | 1.5 | 3.0 | axe | 0 |
 | Armchair (Charcoal) | `csm:armchair_charcoal` | 1.5 | 3.0 | axe | 0 |
 | Armchair (Navy) | `csm:armchair_navy` | 1.5 | 3.0 | axe | 0 |
 | Armchair (Oatmeal) | `csm:armchair_oatmeal` | 1.5 | 3.0 | axe | 0 |
@@ -32,6 +34,8 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Bathroom Vanity (Walnut) | `csm:bathroom_vanity_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bathroom Vanity (White) | `csm:bathroom_vanity_white` | 1.5 | 3.0 | axe | 0 |
 | Bathtub (White) | `csm:bathtub_white` | 1.5 | 3.0 | axe | 0 |
+| Beverage Dispenser (Orange Juice) | `csm:beverage_dispenser_orange` | 1.5 | 3.0 | axe | 0 |
+| Beverage Dispenser (Water) | `csm:beverage_dispenser_water` | 1.5 | 3.0 | axe | 0 |
 | Blanket Chest (Light Oak) | `csm:blanket_chest_oak` | 1.5 | 3.0 | axe | 0 |
 | Blanket Chest (Walnut) | `csm:blanket_chest_walnut` | 1.5 | 3.0 | axe | 0 |
 | Blanket Chest (White) | `csm:blanket_chest_white` | 1.5 | 3.0 | axe | 0 |
@@ -44,6 +48,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Bookshelf Speaker (Walnut) | `csm:bookshelf_speaker_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bounce Castle (Red) | `csm:bounce_castle_red` | 1.5 | 3.0 | axe | 0 |
 | Boxed Air Cooler (Delivery) | `csm:boxed_air_cooler` | 1.5 | 3.0 | axe | 0 |
+| Buffet Sneeze Guard (Glass) | `csm:sneeze_guard_glass` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Light Oak) | `csm:bunk_bed_oak` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (Walnut) | `csm:bunk_bed_walnut` | 1.5 | 3.0 | axe | 0 |
 | Bunk Bed (White) | `csm:bunk_bed_white` | 1.5 | 3.0 | axe | 0 |
@@ -87,6 +92,8 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Crib (Light Oak) | `csm:crib_oak` | 1.5 | 3.0 | axe | 0 |
 | Crib (Walnut) | `csm:crib_walnut` | 1.5 | 3.0 | axe | 0 |
 | Crib (White) | `csm:crib_white` | 1.5 | 3.0 | axe | 0 |
+| Crossed Snowshoes (Wood) | `csm:wall_snowshoes_wood` | 1.5 | 3.0 | axe | 0 |
+| Crossed Wooden Skis (Wood) | `csm:wall_skis_wood` | 1.5 | 3.0 | axe | 0 |
 | CRT TV (Grey) | `csm:crt_tv_grey` | 1.5 | 3.0 | axe | 0 |
 | Day Bed (Light Oak) | `csm:day_bed_oak` | 1.5 | 3.0 | axe | 0 |
 | Day Bed (Walnut) | `csm:day_bed_walnut` | 1.5 | 3.0 | axe | 0 |
@@ -126,6 +133,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Dresser with Mirror (Walnut) | `csm:dresser_mirror_walnut` | 1.5 | 3.0 | axe | 0 |
 | Dresser with Mirror (White) | `csm:dresser_mirror_white` | 1.5 | 3.0 | axe | 0 |
 | Drinking Glass (Water) | `csm:drinking_glass_water` | 1.5 | 3.0 | axe | 0 |
+| Drum Pendant (Alabaster Bowl) (Wrought Iron) | `csm:drum_pendant_iron` | 1.5 | 3.0 | axe | 0 |
 | Electric Kettle (Red) | `csm:kettle_red` | 1.5 | 3.0 | axe | 0 |
 | Electric Kettle (Stainless Steel) | `csm:kettle_stainless` | 1.5 | 3.0 | axe | 0 |
 | Electric Kettle (White) | `csm:kettle_white` | 1.5 | 3.0 | axe | 0 |
@@ -148,6 +156,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Flushometer Toilet (Wall-Hung, Sensor) | `csm:flushometer_toilet_wall_sensor_white` | 1.5 | 3.0 | axe | 0 |
 | Flushometer Urinal (Manual) | `csm:flushometer_urinal_manual_white` | 1.5 | 3.0 | axe | 0 |
 | Flushometer Urinal (Sensor) | `csm:flushometer_urinal_sensor_white` | 1.5 | 3.0 | axe | 0 |
+| Framed Trout Print (Wood) | `csm:trout_print_wood` | 1.5 | 3.0 | axe | 0 |
 | Garden Hose Reel (Green) | `csm:hose_reel_green` | 1.5 | 3.0 | axe | 0 |
 | Gas Grill (Black) | `csm:gas_grill_black` | 1.5 | 3.0 | axe | 0 |
 | Gas Grill (Stainless Steel) | `csm:gas_grill_stainless` | 1.5 | 3.0 | axe | 0 |
@@ -158,9 +167,12 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Hand Dryer (Blade, Stainless Steel) | `csm:hand_dryer_blade_stainless` | 1.5 | 3.0 | axe | 0 |
 | Hand Dryer (Classic, Stainless Steel) | `csm:hand_dryer_classic_stainless` | 1.5 | 3.0 | axe | 0 |
 | Hand Dryer (Classic, White) | `csm:hand_dryer_classic_white` | 1.5 | 3.0 | axe | 0 |
+| Hanging Canoe (Cedar Strip) | `csm:hanging_canoe_cedar` | 1.5 | 3.0 | axe | 0 |
+| Hanging Canoe (Green Canvas) | `csm:hanging_canoe_green` | 1.5 | 3.0 | axe | 0 |
 | Hanging Plant (White Pot) | `csm:hanging_plant_white` | 1.5 | 3.0 | axe | 0 |
 | Heated Towel Rail (Chrome) | `csm:heated_towel_rail_chrome` | 1.5 | 3.0 | axe | 0 |
 | Hi-Fi Stereo (Black) | `csm:stereo_black` | 1.5 | 3.0 | axe | 0 |
+| Horse Statue (Bronze) | `csm:horse_statue_bronze` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Blue) | `csm:ironing_board_blue` | 1.5 | 3.0 | axe | 0 |
 | Ironing Board (Grey) | `csm:ironing_board_grey` | 1.5 | 3.0 | axe | 0 |
 | Jumbo Roll Toilet Paper Dispenser (Stainless Steel) | `csm:jumbo_toilet_paper_dispenser_stainless` | 1.5 | 3.0 | axe | 0 |
@@ -211,6 +223,10 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Laundry Tub (White) | `csm:laundry_tub_white` | 1.5 | 3.0 | axe | 0 |
 | Light Switch (White) | `csm:light_switch_white` | 1.5 | 3.0 | axe | 0 |
 | Litter Box (Grey) | `csm:litter_box_grey` | 1.5 | 3.0 | axe | 0 |
+| Louvred Buffet Cabinet (Cherry, Granite) | `csm:kitchen_louvred_cabinet_cherry` | 1.5 | 3.0 | axe | 0 |
+| Louvred Buffet Cabinet (Light Oak) | `csm:kitchen_louvred_cabinet_oak` | 1.5 | 3.0 | axe | 0 |
+| Louvred Buffet Cabinet (Walnut) | `csm:kitchen_louvred_cabinet_walnut` | 1.5 | 3.0 | axe | 0 |
+| Louvred Buffet Cabinet (White) | `csm:kitchen_louvred_cabinet_white` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Black) | `csm:microwave_black` | 1.5 | 3.0 | axe | 0 |
 | Microwave (Stainless Steel) | `csm:microwave_stainless` | 1.5 | 3.0 | axe | 0 |
 | Microwave (White) | `csm:microwave_white` | 1.5 | 3.0 | axe | 0 |
@@ -259,6 +275,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Pool Float Ring (Pink) | `csm:pool_float_pink` | 1.5 | 3.0 | axe | 0 |
 | Pool Float Ring (Yellow) | `csm:pool_float_yellow` | 1.5 | 3.0 | axe | 0 |
 | Range Hood (Stainless Steel) | `csm:range_hood_stainless` | 1.5 | 3.0 | axe | 0 |
+| Rearing Horse Statue (Bronze) | `csm:rearing_horse_statue_bronze` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (Stainless Steel) | `csm:refrigerator_stainless` | 1.5 | 3.0 | axe | 0 |
 | Refrigerator (White) | `csm:refrigerator_white` | 1.5 | 3.0 | axe | 0 |
 | Rocking Chair (Light Oak) | `csm:rocking_chair_oak` | 1.5 | 3.0 | axe | 0 |
@@ -268,6 +285,7 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Rug (Navy) | `csm:rug_navy` | 0.2 | 0.4 | axe | 0 |
 | Rug (Oatmeal) | `csm:rug_oatmeal` | 0.2 | 0.4 | axe | 0 |
 | Rug (Red) | `csm:rug_red` | 0.2 | 0.4 | axe | 0 |
+| Rug (Southwest Blue) | `csm:rug_southwest` | 0.2 | 0.4 | axe | 0 |
 | Sanitary Napkin Disposal (Stainless Steel) | `csm:sanitary_napkin_disposal_stainless` | 1.5 | 3.0 | axe | 0 |
 | Shower Enclosure (Chrome) | `csm:shower_enclosure_chrome` | 1.5 | 3.0 | axe | 0 |
 | Shower Head (Chrome) | `csm:shower_head_chrome` | 1.5 | 3.0 | axe | 0 |
@@ -285,10 +303,12 @@ The furniture of homes: dining and living room furniture and sofas that join int
 | Single Bed (White, Forest Green Throw) | `csm:bed_single_forest_throw` | 1.5 | 3.0 | axe | 0 |
 | Snake Plant (Grey Pot) | `csm:snake_plant_grey` | 1.5 | 3.0 | axe | 0 |
 | Soap Dispenser (White) | `csm:soap_dispenser_white` | 1.5 | 3.0 | axe | 0 |
+| Sofa (Brown Leather) | `csm:sofa_leather` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Charcoal) | `csm:sofa_charcoal` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Navy) | `csm:sofa_navy` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Oatmeal) | `csm:sofa_oatmeal` | 1.5 | 3.0 | axe | 0 |
 | Sofa (Red) | `csm:sofa_red` | 1.5 | 3.0 | axe | 0 |
+| Sofa Corner (Brown Leather) | `csm:sofa_corner_leather` | 1.5 | 3.0 | axe | 0 |
 | Sofa Corner (Charcoal) | `csm:sofa_corner_charcoal` | 1.5 | 3.0 | axe | 0 |
 | Sofa Corner (Navy) | `csm:sofa_corner_navy` | 1.5 | 3.0 | axe | 0 |
 | Sofa Corner (Oatmeal) | `csm:sofa_corner_oatmeal` | 1.5 | 3.0 | axe | 0 |

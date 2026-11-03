@@ -19,8 +19,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   edge and its lattices (3 and 5 cells) deliberately do not divide the tile, or the mottling
   reads as a grid; `--check` fails on drift
 - `gen_siding.py` -- the four siding profiles (fiber cement lap, board and batten, cedar shingle,
-  vinyl), one colour each, as sets on `gen_cmu.py`'s blockstates. Courses are 8 px on a 32 px
-  texture so a slab's edge lands on a course line; `--check` fails on drift
+  vinyl), one colour each, as sets on `gen_cmu.py`'s blockstates, and the knotty cedar V-groove
+  paneling set (Interior Finishes). Courses are 8 px on a 32 px texture so a slab's edge lands on
+  a course line; `--check` fails on drift
 - `gen_screen_blocks.py` -- the breeze blocks (`BlockBreezeBlock`, four patterns in three
   colours: the pierced face, a darker web drawn on seven slices inside the block so a hole has
   walls, and the plain edge) and the slatted timber screens (`BlockSlatScreen`, teak, oak, walnut:
@@ -54,8 +55,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   along their axis, edges only at run ends) and clouds (`BlockAcousticCloud`) in the linear
   lights' ten finishes, drawn with the same Core textures (imports `gen_linear_lights.py`);
   `--check`, `--fragments`
-- `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, ceramic
-  tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
+- `gen_wall_finishes.py` -- wall finishes hung on any wall (`BlockWallFinish`: paint, wallpaper,
+  ceramic tile, acoustic panels, beadboard, slat wall) with caps, edge trims and frames drawn only at the
   edges of a joined run, and the corner guards (`BlockCornerGuard`) that wrap an outside corner
   into the next cell; `--check` fails on drift
 - `gen_doors.py` -- the doors: two halves per door, left and right hinge, and the open pose written

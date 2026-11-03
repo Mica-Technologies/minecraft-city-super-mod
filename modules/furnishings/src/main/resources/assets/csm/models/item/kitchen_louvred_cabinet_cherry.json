@@ -1,0 +1,9 @@
+{
+  "parent": "csm:block/furniture/residential/base/kitchen_louvred_cabinet_item",
+  "textures": {
+    "wood": "csm:blocks/furniture/residential/cherry",
+    "wood_v": "csm:blocks/furniture/residential/cherry_v",
+    "edge": "csm:blocks/furniture/residential/cherry_edge",
+    "counter": "csm:blocks/furniture/residential/counter_granite_tan"
+  }
+}
