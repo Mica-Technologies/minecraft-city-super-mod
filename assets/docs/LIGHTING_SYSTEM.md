@@ -592,12 +592,12 @@ instead — which reaches the lens without anything being re-materialled, and is
 file changed** in the retrofit.
 
 ```jsonc
-"defaults": { "textures": { "all": "…/ge_hps_fixtures_off", "particle": "…_off", "0": "…_off" } },
+"defaults": { "textures": { "all": "…/merc_fixtures_off", "particle": "…_off", "0": "…_off" } },
 "state": {
   "0": {},                                            // inherits the unlit default
-  "1": { "textures": { "all": "…/ge_hps_fixtures", "0": "…/ge_hps_fixtures" } },
+  "1": { "textures": { "all": "…/merc_fixtures", "0": "…/merc_fixtures" } },
   "2": {},
-  "3": { "textures": { "all": "…/ge_hps_fixtures", "0": "…/ge_hps_fixtures" } }
+  "3": { "textures": { "all": "…/merc_fixtures", "0": "…/merc_fixtures" } }
 }
 ```
 
