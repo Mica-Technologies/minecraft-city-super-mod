@@ -149,13 +149,6 @@ LENS = {
                 "canopy on top, olive glass bowl beneath. Not guessable from the sheet alone.",
     },
 
-    # --- LED arrays: the panel, restricted to the dies ------------------------------------------
-    "ci_navion": {"boxes": [(0, 0, 41, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
-    "ci_navion_alt": {"boxes": [(0, 0, 60, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
-    "solarmax_smx": {"boxes": [(0, 0, 44, 64)],
-                     "colors": [(255, 255, 255), (254, 253, 247)],
-                     "dim": LED_DIM,
-                     "note": "the LED dies and the lit band across the middle of the panel"},
 }
 
 #: How far to pull an unlit lens down, as (value multiplier, saturation multiplier). Applied in HSV
