@@ -97,7 +97,7 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("altomvul", new AxisAlignedBB(0.187500, 0.612500, 0.187500, 0.812500, 1.000000, 0.812500), 0));
     initTabBlock(new BlockBrightLightFactory("altomvwl", new AxisAlignedBB(0.343750, 0.250000, 0.812500, 0.750000, 0.750000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altomvwlslim", new AxisAlignedBB(0.406250, 0.250000, 0.812500, 0.656250, 0.750000, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("altorll", new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("altorll", new AxisAlignedBB(0.187500, -0.031250, 0.125000, 0.812500, 0.296875, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altorell", new AxisAlignedBB(0.312500, 0.000000, 0.187500, 0.687500, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altosqll", new AxisAlignedBB(0.312500, 0.000000, 0.375000, 0.687500, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("cehalo", new AxisAlignedBB(0.150000, 0.937500, 0.150000, 0.850000, 1.000000, 0.850000), 0));
