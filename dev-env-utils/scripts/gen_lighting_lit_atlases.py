@@ -152,9 +152,6 @@ LENS = {
     # --- LED arrays: the panel, restricted to the dies ------------------------------------------
     "ci_navion": {"boxes": [(0, 0, 41, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "ci_navion_alt": {"boxes": [(0, 0, 60, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
-    "cree_ledway": {"boxes": [(0, 0, 45, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
-    "cree_ledway_small": {"boxes": [(0, 0, 24, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
-    "cree_xsp": {"boxes": [(0, 0, 30, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "solarmax_smx": {"boxes": [(0, 0, 44, 64)],
                      "colors": [(255, 255, 255), (254, 253, 247)],
                      "dim": LED_DIM,
