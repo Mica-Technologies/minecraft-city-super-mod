@@ -8,7 +8,7 @@
     "textures": {
       "#body": "csm:blocks/lighting/shared_textures/streetlight_body_ge_evolve_grey",
       "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_evolve_large_off",
-      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_smartnode"
+      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
     }
   },
   "variants": {
