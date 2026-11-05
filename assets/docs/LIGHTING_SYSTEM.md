@@ -518,7 +518,7 @@ states in all (`mount` x `lit`); the metadata holds both.
 ## OBJ Roadway Fixtures
 
 The street lights are being rebuilt as OBJ models (GitHub #99), one generator for all of them:
-`dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family and the GE fixtures converted from JSON:
+`dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family and the fixtures converted from JSON:
 
 | Registry name | Fixture |
 |---|---|
@@ -530,6 +530,10 @@ The street lights are being rebuilt as OBJ models (GitHub #99), one generator fo
 | `gem240r2`, `gem240r2cu` | GE M-250R2 (CSM's "M240R2"), the short body, drop refractor or flat cutoff glass (his M240 lens art): converted in place |
 | `geform109` | GE Form 109, the 1950s-60s mercury fixture: a short high-domed hood over a drop refractor in his olive: converted in place |
 | `geform109td` | GE Form 109 teardrop: a lathed pendant, domed hood with finial over a pointed teardrop refractor, on a short neck: converted in place, the one fixture outside the cobra-head envelope (`ENVELOPE_FOR`: its own bounding box, x 3..13, y -7.5..6.25) |
+| `whov20` | Westinghouse OV-20, the small residential head (z 7..16) over a drop refractor: converted in place |
+| `whov50`, `whov50np` | Westinghouse OV-50, the long 1960s-80s cobra head over a deep drop refractor, with and without photocell: converted in place |
+| `whov50finned` | Westinghouse OV-50 with six cooling fins across the hood over the ballast, no photocell (as the JSON had it): converted in place |
+| `whov50shaded`, `whov50shadednp` | Westinghouse OV-50 with a round glare shield, a 12 px disc with a skirt round the refractor, with and without photocell: converted in place; the disc is wider than the envelope, so `ENVELOPE_FOR` holds their bounding box (x 2..14) |
 
 **Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
 blockstate changes hands, from a hand-written one to the generator's, so placed blocks and
@@ -556,7 +560,7 @@ cap is at 15.9.
 | Material | Texture |
 |---|---|
 | `body` | the housing paint, a 16 px swatch (`streetlight_body_*`) |
-| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass); the mercury Form 109 wears `streetlight_lens_refractor_merc_on`, his `merc_fixtures` olive raised to lamp brightness and ribbed the same way. States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
+| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass); the mercury Form 109 and the Westinghouse OV-20 / OV-50 wear `streetlight_lens_refractor_merc_on`, his `merc_fixtures` olive (the same olive his `westinghouse_ov50` sheet painted) raised to lamp brightness and ribbed the same way. States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
 | `photocell` | the twist-lock photocontrol |
 
 **The lens is drawn unshaded.** `CsmObjModelLoader` bakes any OBJ material whose name starts with

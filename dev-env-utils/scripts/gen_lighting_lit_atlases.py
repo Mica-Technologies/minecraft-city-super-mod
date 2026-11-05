@@ -148,11 +148,6 @@ LENS = {
         "note": "the olive refractor bowl. Confirmed by rendering alto_mv_underpass_light: dark "
                 "canopy on top, olive glass bowl beneath. Not guessable from the sheet alone.",
     },
-    "westinghouse_ov50": {
-        "boxes": [(69, 24, 81, 36)], "colors": None,
-        "note": "the olive refractor swatch -- the same olive merc_fixtures uses for its bowl, "
-                "which is the cross-check that settled both",
-    },
     "ge_hps_fixtures": {
         "boxes": [(8, 7, 33, 29), (69, 24, 81, 36), (5, 81, 19, 103)], "colors": None,
         "note": "the amber HPS lamp: two painted lamp windows and the flat swatch the other "
