@@ -1,19 +1,22 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "csm:lighting/shared_models/ge_evolve_small",
+    "model": "csm:lighting/shared_models/streetlight_gees.obj",
+    "custom": {
+      "flip-v": true
+    },
     "textures": {
-      "all": "csm:blocks/lighting/shared_textures/ge_evolve_small_off",
-      "particle": "csm:blocks/lighting/shared_textures/ge_evolve_small_off",
-      "0": "csm:blocks/lighting/shared_textures/ge_evolve_small_off"
+      "#body": "csm:blocks/lighting/shared_textures/streetlight_body_ge_evolve_grey",
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_evolve_small_off",
+      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
     }
   },
   "variants": {
     "facing": {
+      "north": {},
       "east": {
         "y": 90
       },
-      "north": {},
       "south": {
         "y": 180
       },
@@ -22,26 +25,151 @@
       }
     },
     "state": {
-      "0": {},
-      "1": {
+      "0": {
         "textures": {
-          "all": "csm:blocks/lighting/shared_textures/ge_evolve_small",
-          "0": "csm:blocks/lighting/shared_textures/ge_evolve_small"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_evolve_small_off"
         }
       },
-      "2": {},
+      "1": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_evolve_small_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_evolve_small_off"
+        }
+      },
       "3": {
         "textures": {
-          "all": "csm:blocks/lighting/shared_textures/ge_evolve_small",
-          "0": "csm:blocks/lighting/shared_textures/ge_evolve_small"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_evolve_small_on"
         }
       }
     },
     "inventory": [
-      {}
-    ],
-    "normal": [
-      {}
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              0,
+              90,
+              -5
+            ],
+            "translation": [
+              0.03125,
+              0.28125,
+              0.0
+            ],
+            "scale": [
+              0.625,
+              0.625,
+              0.625
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.40625,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              0.5,
+              0.5,
+              0.5
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              0,
+              90,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.28125,
+              0.0
+            ],
+            "scale": [
+              0.55,
+              0.55,
+              0.55
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              0,
+              -90,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.28125,
+              0.0
+            ],
+            "scale": [
+              0.55,
+              0.55,
+              0.55
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.1875,
+              0.3125,
+              0.0
+            ],
+            "scale": [
+              0.4,
+              0.4,
+              0.4
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              0.1875,
+              0.3125,
+              0.0
+            ],
+            "scale": [
+              0.4,
+              0.4,
+              0.4
+            ]
+          }
+        }
+      }
     ]
   }
 }

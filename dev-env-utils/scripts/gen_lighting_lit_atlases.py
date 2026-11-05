@@ -150,10 +150,6 @@ LENS = {
     },
 
     # --- LED arrays: the panel, restricted to the dies ------------------------------------------
-    "ge_evolve_large": {"boxes": [(0, 0, 41, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
-                        "note": "the LED module's dies"},
-    "ge_evolve_small": {"boxes": [(0, 0, 31, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
-                        "note": "the LED module's dies"},
     "ci_navion": {"boxes": [(0, 0, 41, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "ci_navion_alt": {"boxes": [(0, 0, 60, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "cree_ledway": {"boxes": [(0, 0, 45, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
