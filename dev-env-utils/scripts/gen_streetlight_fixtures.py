@@ -59,6 +59,8 @@ SWATCHES = {
     # name: (top RGB, bottom RGB) -- a vertical gradient, the decorative family's convention
     "streetlight_body_ge_grey": ((176, 178, 174), (136, 138, 134)),
     "streetlight_photocell": ((70, 72, 76), (38, 40, 44)),
+    # The Form 109's darker cast grey: merc_fixtures paints the housing 98 98 98.
+    "streetlight_body_merc_grey": ((112, 112, 110), (84, 84, 82)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -68,6 +70,11 @@ LENS_REFRACTOR_OFF = "streetlight_lens_refractor_off"
 # Lit, a refractor wears the requester's refractor orange (ge_hps_fixtures, 255 106 19) in the
 # ribs his JSON staircase showed, one band where each of its five steps caught the light.
 LENS_REFRACTOR_ON = "streetlight_lens_refractor_on"
+# The mercury fixtures' refractor (merc_fixtures, the GE Form 109): his olive glass, 135 135 86.
+# That is a dull mid olive, and unshaded it could not read lit, so the lit sprite takes his hue at
+# full lamp brightness (the lit-atlas audit found the olive had headroom) and ribs it the same way.
+LENS_REFRACTOR_MERC_ON = "streetlight_lens_refractor_merc_on"
+MERC_OLIVE = (135, 135, 86)
 
 # The glass. CsmObjModelLoader draws a material named unshaded_* without directional shading, as
 # a JSON element with "shade": false is: the flat lens faces straight down, and shaded it was
@@ -420,6 +427,85 @@ def build_m250(body, optics, photocell=True):
     return m
 
 
+def lathe(mesh, cx, cz, rings, mat, lon=16):
+    """A body of revolution about the vertical axis through (cx, cz): `rings` are (y, radius) from
+    top to bottom, each pair bridged by a band. A band whose two rings share a y is a flat annulus
+    facing down (the underside of a rim). Lens bands wrap their sprite round the axis, v by height,
+    so a ribbed refractor's ribs become rings."""
+    ys = [y for y, _ in rings]
+    ytop, ybot = max(ys), min(ys)
+
+    def pt(y, r, j):
+        a = 2 * math.pi * j / lon
+        return (cx + r * math.cos(a), y, cz + r * math.sin(a))
+
+    def uv(y, j):
+        t = (ytop - y) / (ytop - ybot)
+        if mat == "body":
+            return swatch_uv(j / lon, t)
+        return (0.05 + 0.9 * j / lon, 0.05 + 0.9 * t)
+
+    for (ya, ra), (yb, rb) in zip(rings, rings[1:]):
+        inside = (cx, ya + 1.0, cz) if abs(ya - yb) < 1e-9 else (cx, (ya + yb) / 2, cz)
+        for j in range(lon):
+            quad = [(pt(ya, ra, j), uv(ya, j)), (pt(ya, ra, j + 1), uv(ya, j + 1)),
+                    (pt(yb, rb, j + 1), uv(yb, j + 1)), (pt(yb, rb, j), uv(yb, j))]
+            uniq = []
+            for p, t in quad:
+                if all(max(abs(p[k] - q[k]) for k in range(3)) > 1e-9 for q, _ in uniq):
+                    uniq.append((p, t))
+            if len(uniq) >= 3:
+                mesh.poly_out(mat, [p for p, _ in uniq], [t for _, t in uniq], inside)
+
+
+# GE Form 109 (1950s-60s): a mercury vapour fixture in two shapes, both converted in place (D2).
+# The regular is a short, high-domed hood over a drop refractor: the JSON was a 6 x 3 px box at
+# z 7..16 stepped up to y 5 over z 10..15, with a three-step bowl at z 8..15 down to y -2.5. The
+# housing rises from the nose to a crown over the lamp, rounder than a cobra head's.
+FORM109_PROFILE = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (7.0, 1.4, 0.60, 1.80),
+    (7.4, 2.2, 0.25, 2.80),
+    (8.2, 2.8, 0.05, 3.70),
+    (9.5, 3.0, 0.0, 4.40),
+    (11.0, 3.0, 0.0, 4.80),
+    (12.5, 2.95, 0.0, 4.95),
+    (14.0, 2.8, -0.10, 4.70),
+    (15.0, 2.6, -0.25, 4.20),
+    (REAR_Z, 2.5, -0.35, 3.80),
+]
+FORM109_EXPONENT = 2.4
+
+# The teardrop is a pendant: a domed hood with a finial, hung from a short neck, over a teardrop
+# glass that comes to a point. The JSON stacked hexadecagons about (8, 9): radius 1 to 4 up the
+# hood, a 5 px rim at y -2.25..-1.25 (the bounding box's x 3..13, z 4..14) and the glass narrowing
+# to y -7.5, the arm stub at z 11..16. (y, radius) from the top:
+FORM109TD_HOOD = [(5.15, 0.0), (5.0, 1.0), (4.4, 2.2), (3.2, 3.2), (1.4, 4.0), (-0.6, 4.6),
+                  (-1.4, 5.0), (-2.0, 5.0), (-2.0, 4.6)]
+FORM109TD_GLASS = [(-2.0, 4.6), (-3.4, 4.2), (-4.8, 3.3), (-6.0, 2.2), (-6.9, 1.2), (-7.45, 0.0)]
+FORM109TD_NECK = [
+    (11.5, 1.9, 0.0, 3.0),     # buried in the hood
+    (13.6, 2.2, -0.30, 3.30),
+    (REAR_Z, 2.5, -0.45, 3.60),
+]
+FORM109TD_EXPONENT = 2.6
+
+
+def build_form109(teardrop=False):
+    m = Mesh()
+    if not teardrop:
+        check_neck_holds_arm("Form 109", FORM109_PROFILE, FORM109_EXPONENT)
+        loft_housing(m, FORM109_PROFILE, FORM109_EXPONENT)
+        half_ellipsoid_down(m, (8.0, 0.05, 11.5), 2.3, 2.5, 3.4, LENS_MAT)
+        return m
+    check_neck_holds_arm("Form 109 teardrop", FORM109TD_NECK, FORM109TD_EXPONENT)
+    lathe(m, 8.0, 9.0, FORM109TD_HOOD, "body")
+    lathe(m, 8.0, 9.0, FORM109TD_GLASS, LENS_MAT)
+    cylinder_y(m, 8.0, 9.0, 0.5, 4.9, 6.25, "body", sides=10)
+    loft_housing(m, FORM109TD_NECK, FORM109TD_EXPONENT)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -441,7 +527,17 @@ CATALOGUE = [
     ("gem240r2", "GE M240R2 (Standard)", lambda: build_m250("r2", "refractor"), "streetlight_body_ge_grey"),
     ("gem240r2cu", "GE M240R2 (Cutoff Optics)", lambda: build_m250("r2", "cutoff"),
      "streetlight_body_ge_grey"),
+    ("geform109", "GE Form 109 (Regular)", lambda: build_form109(), "streetlight_body_merc_grey"),
+    ("geform109td", "GE Form 109 (Teardrop)", lambda: build_form109(teardrop=True),
+     "streetlight_body_merc_grey"),
 ]
+
+# The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
+# converted fixture whose JSON bounding box was bigger: there the bounding box is the envelope.
+ENVELOPE = ((4.5, 11.5), (-3.0, 7.0), (0.9, REAR_Z + 1e-9))
+ENVELOPE_FOR = {
+    "geform109td": ((3.0, 13.0), (-7.5, 6.25), (4.0, REAR_Z + 1e-9)),
+}
 
 
 # Lens art cut from the requester's JSON fixture atlases (D5, hybrid): source crops in
@@ -465,6 +561,8 @@ LENS_FOR = {
     "gem240r1np": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem240r2": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem240r2cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
+    "geform109": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "geform109td": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
 }
 
 
@@ -498,10 +596,9 @@ def lens_png(lit):
     return img
 
 
-def refractor_on_png():
+def refractor_on_png(orange=(255, 106, 19)):
     """The requester's refractor orange, banded across the bowl: five light ribs on a body a
     little under his colour, so the bands read and the whole still reads as his orange."""
-    orange = (255, 106, 19)
     rib = tuple(int(round(c + (255 - c) * 0.35)) for c in orange)
     body = tuple(int(round(c * 0.86)) for c in orange)
     img = Image.new("RGBA", (16, 16))
@@ -550,6 +647,9 @@ def all_textures():
     out[LENS_OFF] = lens_png(False)
     out[LENS_REFRACTOR_OFF] = refractor_off_png()
     out[LENS_REFRACTOR_ON] = refractor_on_png()
+    # his olive at lamp brightness: the hue kept, the brightest channel raised to 232
+    out[LENS_REFRACTOR_MERC_ON] = refractor_on_png(
+        tuple(int(round(c * 232.0 / max(MERC_OLIVE))) for c in MERC_OLIVE))
     for art in LENS_ART:
         for state in ("on", "off"):
             out[art_lens(art, state)] = art_lens_png(art, state)
@@ -614,8 +714,9 @@ def outputs():
     files = {MODEL_DIR + "/" + MTL_NAME: mtl_text().encode()}
     for registry, display, builder, body in CATALOGUE:
         mesh = builder()
+        (xa, xb), (ya, yb), (za, zb) = ENVELOPE_FOR.get(registry, ENVELOPE)
         for x, y, z in mesh.v:
-            assert 4.5 <= x <= 11.5 and -3.0 <= y <= 7.0 and 0.9 <= z <= REAR_Z + 1e-9, \
+            assert xa - 1e-9 <= x <= xb + 1e-9 and ya - 1e-9 <= y <= yb + 1e-9 and za - 1e-9 <= z <= zb, \
                 "%s leaves the fixture envelope at %s" % (registry, (x, y, z))
         files[MODEL_DIR + "/streetlight_%s.obj" % registry] = mesh.text(display).encode()
         files["blockstates/%s.json" % registry] = (
