@@ -506,6 +506,105 @@ def build_form109(teardrop=False):
     return m
 
 
+def photocell(m, profile, pz, top_cap):
+    """The twist-lock photocontrol: a collar sunk into the hood, the cell on it."""
+    base = top_at(profile, pz) - 0.35
+    cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+    cylinder_y(m, 8.0, pz, 0.95, base + 0.55, min(base + 2.0, top_cap), "photocell", sides=12)
+
+
+def tube_y(mesh, cx, cz, r_out, r_in, y_top, y_bot, mat, lon=12):
+    """An open-topped thin-walled skirt about the vertical axis: outer wall facing out, inner wall
+    facing in, and no top or bottom (its top meets a disc; from below, the gap between the walls
+    shows that disc's underside)."""
+    def ring(r, y):
+        return [(cx + r * math.cos(2 * math.pi * j / lon), y, cz + r * math.sin(2 * math.pi * j / lon))
+                for j in range(lon)]
+    for r, sign in ((r_out, -1.0), (r_in, 1.0)):
+        top, bot = ring(r, y_top), ring(r, y_bot)
+        for j in range(lon):
+            j2 = (j + 1) % lon
+            ps = [top[j], top[j2], bot[j2], bot[j]]
+            mx = sum(p[0] for p in ps) / 4 - cx
+            mz = sum(p[2] for p in ps) / 4 - cz
+            # the point to face away from: toward the axis for the outer wall, away for the inner
+            inside = (cx + mx * (1 + sign * 0.5), (y_top + y_bot) / 2, cz + mz * (1 + sign * 0.5))
+            mesh.poly_out(mat, ps, [swatch_uv(j / lon, 0), swatch_uv((j + 1) / lon, 0),
+                                    swatch_uv((j + 1) / lon, 1), swatch_uv(j / lon, 1)], inside)
+
+
+# Westinghouse OV-20 and OV-50 (1960s-80s): classic cast cobra heads over a drop refractor, painted
+# in the mercury fixtures' grey (98 98 98 on both westinghouse_ov50 and merc_fixtures) with
+# AngelWingsPanda's olive refractor glass (135 135 86 on both), so they wear the Form 109's swatch
+# and ribbed olive. Converted in place (D2):
+#   OV-50, whov50*: z 1..16, a 3 px box with the hood stepped up to 4 px from z 7, a refractor
+#       staircase at z 3..10.6 down to y -3, the photocell at z 12..14.25 up to y 6.
+#   OV-20, whov20: the small residential head, z 7..16, the hood to y 4, the refractor to y -2.
+OV50_PROFILE = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (1.0, 1.3, 0.60, 1.60),
+    (1.4, 2.2, 0.25, 2.40),
+    (2.2, 2.85, 0.05, 2.95),
+    (3.5, 3.0, 0.0, 3.35),
+    (5.5, 3.0, 0.0, 3.70),
+    (8.0, 3.0, 0.0, 3.95),
+    (11.0, 2.9, 0.0, 4.00),
+    (13.5, 2.75, -0.10, 3.95),
+    (14.8, 2.6, -0.30, 3.85),
+    (REAR_Z, 2.5, -0.40, 3.80),
+]
+OV20_PROFILE = [
+    (7.0, 1.3, 0.60, 1.60),
+    (7.4, 2.1, 0.25, 2.50),
+    (8.2, 2.75, 0.05, 3.20),
+    (9.5, 3.0, 0.0, 3.70),
+    (11.5, 3.0, 0.0, 3.95),
+    (13.5, 2.85, -0.05, 3.95),
+    (14.8, 2.65, -0.25, 3.85),
+    (REAR_Z, 2.5, -0.35, 3.75),
+]
+WESTINGHOUSE_EXPONENT = 2.8
+
+
+def build_ov50(variant="standard", photocell_on=True):
+    """variant: standard, finned (cooling fins over the ballast, no photocell, as the JSON had it)
+    or shaded (a 12 px round glare shield at the top of the refractor, with a skirt round it)."""
+    m = Mesh()
+    check_neck_holds_arm("OV-50", OV50_PROFILE, WESTINGHOUSE_EXPONENT)
+    loft_housing(m, OV50_PROFILE, WESTINGHOUSE_EXPONENT)
+    # The JSON staircase ran from z 3 to 10.6 and reached y -3 at z 5..10.
+    half_ellipsoid_down(m, (8.0, 0.05, 6.8), 2.6, 2.95, 3.6, LENS_MAT,
+                        lat=5 if variant == "shaded" else 6)
+    box(m, (7.4, -0.25, 1.9), (8.6, 0.12, 2.7), "body")
+    if variant == "shaded":
+        # The JSON's ring of plates about (8, 7): a disc 6 px in radius at y -0.5..0 and a skirt
+        # 4..4.5 px out hanging to y -2.2. The disc stands 0.05 off the housing's flat bottom.
+        cylinder_y(m, 8.0, 7.0, 6.0, -0.55, -0.05, "body", sides=12)
+        under = [(8.0 + 6.0 * math.cos(2 * math.pi * j / 12), -0.55, 7.0 + 6.0 * math.sin(2 * math.pi * j / 12))
+                 for j in range(12)]
+        m.poly_out("body", under, [swatch_uv(0.5 + 0.5 * math.cos(2 * math.pi * j / 12),
+                                             0.5 + 0.5 * math.sin(2 * math.pi * j / 12)) for j in range(12)],
+                   (8.0, 0.0, 7.0))
+        tube_y(m, 8.0, 7.0, 4.5, 4.0, -0.55, -2.2, "body")
+    if variant == "finned":
+        for z in (8.6, 9.7, 10.8, 11.9, 13.0, 14.1):
+            box(m, (6.3, top_at(OV50_PROFILE, z) - 0.7, z - 0.18), (9.7, 5.3, z + 0.18), "body")
+    elif photocell_on:
+        photocell(m, OV50_PROFILE, 13.1, 6.0)
+    return m
+
+
+def build_ov20():
+    m = Mesh()
+    check_neck_holds_arm("OV-20", OV20_PROFILE, WESTINGHOUSE_EXPONENT)
+    loft_housing(m, OV20_PROFILE, WESTINGHOUSE_EXPONENT)
+    # The JSON staircase: z 8..15, y -2 at z 9..14.
+    half_ellipsoid_down(m, (8.0, 0.05, 11.5), 2.3, 2.0, 2.6, LENS_MAT)
+    box(m, (7.4, -0.2, 8.0), (8.6, 0.1, 8.8), "body")
+    return m
+
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -530,6 +629,16 @@ CATALOGUE = [
     ("geform109", "GE Form 109 (Regular)", lambda: build_form109(), "streetlight_body_merc_grey"),
     ("geform109td", "GE Form 109 (Teardrop)", lambda: build_form109(teardrop=True),
      "streetlight_body_merc_grey"),
+    ("whov20", "Westinghouse OV20", build_ov20, "streetlight_body_merc_grey"),
+    ("whov50", "Westinghouse OV50 (Standard)", lambda: build_ov50(), "streetlight_body_merc_grey"),
+    ("whov50finned", "Westinghouse OV50 (Finned)", lambda: build_ov50("finned"),
+     "streetlight_body_merc_grey"),
+    ("whov50np", "Westinghouse OV50 (No Photocell)", lambda: build_ov50(photocell_on=False),
+     "streetlight_body_merc_grey"),
+    ("whov50shaded", "Westinghouse OV50 (Shaded)", lambda: build_ov50("shaded"),
+     "streetlight_body_merc_grey"),
+    ("whov50shadednp", "Westinghouse OV50 (Shaded, No Photocell)",
+     lambda: build_ov50("shaded", photocell_on=False), "streetlight_body_merc_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -537,6 +646,9 @@ CATALOGUE = [
 ENVELOPE = ((4.5, 11.5), (-3.0, 7.0), (0.9, REAR_Z + 1e-9))
 ENVELOPE_FOR = {
     "geform109td": ((3.0, 13.0), (-7.5, 6.25), (4.0, REAR_Z + 1e-9)),
+    # The OV-50's round glare shield is 12 px across (x 2..14).
+    "whov50shaded": ((2.0, 14.0), (-3.0, 6.0), (1.0, REAR_Z + 1e-9)),
+    "whov50shadednp": ((2.0, 14.0), (-3.0, 4.0), (1.0, REAR_Z + 1e-9)),
 }
 
 
@@ -563,6 +675,12 @@ LENS_FOR = {
     "gem240r2cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
     "geform109": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "geform109td": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov20": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov50": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov50finned": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov50np": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov50shaded": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov50shadednp": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
 }
 
 
