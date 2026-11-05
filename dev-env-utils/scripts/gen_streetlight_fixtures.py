@@ -832,7 +832,7 @@ def receptacle_top(m, profile, pz, top, cell_top):
 # boxes are only 4 px tall (5 with a smart node, 6 with the outlet), so the rear rises just enough
 # to swallow the arm's 3 px end and the receptacle stands on the plate ahead of that rise, as the
 # ATB2's does. The vents his sheet paints on top of the plate are cooling fins along it.
-#   po: the receptacle with nothing in it (a blank cap); sn: a smart node in it.
+#   po: a raised photocell outlet with the photocell on it; sn: a taller, dark smart node cell.
 def evolve_profile(nose):
     return [
         # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
@@ -864,7 +864,18 @@ def build_evolve(size, top="photocell"):
     box(m, (lx0, 0.0, lz0), (lx1, 0.3, lz1), "body", bottom_mat=LENS_MAT)
     for dx in (-2.0, -1.0, 0.0, 1.0, 2.0):
         box(m, (8.0 + dx - 0.15, 0.9, fz0), (8.0 + dx + 0.15, 1.55, fz1), "body")
-    receptacle_top(m, profile, 12.0, top, 4.0)
+    pz = 12.0
+    base = top_at(profile, pz) - 0.35
+    if top == "outlet":
+        # As the JSON drew it: a 2 px raised photocell outlet (y 2..4), the photocell on it (4..6).
+        cylinder_y(m, 8.0, pz, 1.05, base, 4.0, "body", sides=12)
+        cylinder_y(m, 8.0, pz, 0.95, 4.0, 6.0, "photocell", sides=12)
+    elif top == "node":
+        # As the JSON drew it: the smart node is a taller cell (to y 5) in the photocell's dark.
+        cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+        cylinder_y(m, 8.0, pz, 0.95, base + 0.55, 5.0, "photocell", sides=12)
+    else:
+        receptacle_top(m, profile, pz, top, 4.0)
     return m
 
 
@@ -1076,12 +1087,12 @@ CATALOGUE = [
     ("ltgcmv2np", "Leotek GreenCobra GCM (Version 2, No Photocell)", lambda: build_leotek("gcm", "cap"),
      "streetlight_body_leotek_grey"),
     ("geel", "GE Evolve ESR2 (Large)", lambda: build_evolve("large"), "streetlight_body_ge_evolve_grey"),
-    ("geelpo", "GE Evolve ESR2 (Large, Photocell Outlet)", lambda: build_evolve("large", "cap"),
+    ("geelpo", "GE Evolve ESR2 (Large, Photocell Outlet)", lambda: build_evolve("large", "outlet"),
      "streetlight_body_ge_evolve_grey"),
     ("geelsn", "GE Evolve ESR2 (Large, Smart Node)", lambda: build_evolve("large", "node"),
      "streetlight_body_ge_evolve_grey"),
     ("gees", "GE Evolve ESR2 (Small)", lambda: build_evolve("small"), "streetlight_body_ge_evolve_grey"),
-    ("geespo", "GE Evolve ESR2 (Small, Photocell Outlet)", lambda: build_evolve("small", "cap"),
+    ("geespo", "GE Evolve ESR2 (Small, Photocell Outlet)", lambda: build_evolve("small", "outlet"),
      "streetlight_body_ge_evolve_grey"),
     ("geesn", "GE Evolve ESR2 (Small, Smart Node)", lambda: build_evolve("small", "node"),
      "streetlight_body_ge_evolve_grey"),
@@ -1216,8 +1227,6 @@ LENS_FOR = {
 PHOTOCELL_FOR = {
     "ltgcjsn": "streetlight_smartnode",
     "ltgcmsn": "streetlight_smartnode",
-    "geelsn": "streetlight_smartnode",
-    "geesn": "streetlight_smartnode",
 }
 
 
