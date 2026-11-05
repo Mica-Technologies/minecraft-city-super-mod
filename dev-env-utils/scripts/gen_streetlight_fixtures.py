@@ -362,6 +362,64 @@ def build_m400r3(optics, photocell=True):
     return m
 
 
+# GE M-250 (CSM's "M240" ids are GE's M-250R and M-250R2: the M-400's smaller sibling, for
+# residential streets). Two JSON bodies are converted in place (D2):
+#   R1, gem240r1/np: the long early body, z 1..16, a 3 px box with a 4 px ballast hump from z 5 and
+#       a refractor staircase at z 3..9 down to y -2.
+#   R2, gem240r2/cu: the short R2 body, z 5..16, the refractor at z 7..12; the cutoff's bounding box
+#       stops at y 0, so its flat glass sits in the housing's underside.
+# Both are 6 px wide (x 5..11), the photocell at z 12..14.25 up to y 6.25.
+M250R1_PROFILE = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (1.0, 1.3, 0.55, 1.50),
+    (1.4, 2.1, 0.25, 2.20),
+    (2.2, 2.7, 0.06, 2.75),
+    (3.5, 2.95, 0.0, 3.10),
+    (6.0, 3.0, 0.0, 3.50),
+    (9.0, 2.95, 0.0, 3.80),
+    (12.0, 2.8, -0.05, 4.00),
+    (14.4, 2.6, -0.25, 4.00),
+    (REAR_Z, 2.5, -0.35, 3.95),
+]
+M250R2_PROFILE = [
+    (5.0, 1.3, 0.55, 1.60),
+    (5.4, 2.1, 0.25, 2.30),
+    (6.2, 2.7, 0.06, 2.90),
+    (7.5, 2.95, 0.0, 3.30),
+    (9.5, 3.0, 0.0, 3.70),
+    (11.5, 2.9, 0.0, 3.95),
+    (13.5, 2.75, -0.08, 4.05),
+    (14.8, 2.6, -0.20, 4.00),
+    (REAR_Z, 2.5, -0.30, 3.95),
+]
+M250_EXPONENT = 2.8
+
+
+def build_m250(body, optics, photocell=True):
+    m = Mesh()
+    profile = M250R1_PROFILE if body == "r1" else M250R2_PROFILE
+    check_neck_holds_arm("M-250" + body.upper(), profile, M250_EXPONENT)
+    loft_housing(m, profile, M250_EXPONENT)
+    nose = profile[0][0]
+    if optics == "cutoff":
+        # Flat glass flush in the underside: the R2 cutoff's bounding box ends at y 0.
+        box(m, (5.7, -0.15, nose + 1.6), (10.3, 0.02, nose + 7.6), "body", bottom_mat=LENS_MAT)
+    elif body == "r1":
+        # The JSON staircase ran from z 3 to 9 and reached y -2.
+        half_ellipsoid_down(m, (8.0, 0.05, 6.0), 2.3, 2.0, 3.0, LENS_MAT)
+    else:
+        # z 7..12, y -2 at the back of it.
+        half_ellipsoid_down(m, (8.0, 0.05, 9.6), 2.2, 2.0, 2.5, LENS_MAT)
+    box(m, (7.4, -0.2, nose + 1.0), (8.6, 0.1, nose + 1.8), "body")
+    if not photocell:
+        return m
+    pz = 13.1
+    base = top_at(profile, pz) - 0.35
+    cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+    cylinder_y(m, 8.0, pz, 0.95, base + 0.55, min(base + 2.0, 6.25), "photocell", sides=12)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -377,13 +435,19 @@ CATALOGUE = [
      "streetlight_body_ge_grey"),
     ("gem400r3cunp", "GE M400R3 (Cutoff Optics, No Photocell)",
      lambda: build_m400r3("cutoff", photocell=False), "streetlight_body_ge_grey"),
+    ("gem240r1", "GE M240R1 (Standard)", lambda: build_m250("r1", "refractor"), "streetlight_body_ge_grey"),
+    ("gem240r1np", "GE M240R1 (Standard, No Photocell)", lambda: build_m250("r1", "refractor", photocell=False),
+     "streetlight_body_ge_grey"),
+    ("gem240r2", "GE M240R2 (Standard)", lambda: build_m250("r2", "refractor"), "streetlight_body_ge_grey"),
+    ("gem240r2cu", "GE M240R2 (Cutoff Optics)", lambda: build_m250("r2", "cutoff"),
+     "streetlight_body_ge_grey"),
 ]
 
 
 # Lens art cut from the requester's JSON fixture atlases (D5, hybrid): source crops in
 # dev-env-utils/scripts/artwork/streetlight/, written as streetlight_lens_<art>_on/_off.
 ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork", "streetlight")
-LENS_ART = ["ge_m400"]
+LENS_ART = ["ge_m400", "ge_m240"]
 
 
 def art_lens(art, state):
@@ -397,6 +461,10 @@ LENS_FOR = {
     "gem400r3": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem400r3cu": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
     "gem400r3cunp": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
+    "gem240r1": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem240r1np": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem240r2": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem240r2cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
 }
 
 
