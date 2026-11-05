@@ -63,6 +63,11 @@ SWATCHES = {
     "streetlight_body_merc_grey": ((112, 112, 110), (84, 84, 82)),
     # American Electric's Autobahn: the light grey of ae_autobahn_atb0/2, 177 on the hood, 153 under.
     "streetlight_body_ael_grey": ((188, 188, 186), (156, 156, 154)),
+    # Leotek's die-cast grey: every ltec/ltgc sheet paints the hood 186 and the underside 153.
+    "streetlight_body_leotek_grey": ((196, 196, 196), (156, 156, 156)),
+    # The smart-city node the GreenCobra "SN" heads carry in the photocell's receptacle: the blue
+    # (0, 92, 154) of ltgcj_smartnode / ltgcm_smartnode, worn on the photocell material.
+    "streetlight_smartnode": ((10, 104, 170), (0, 80, 138)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -682,6 +687,122 @@ def build_atb(size):
     return m
 
 
+# Leotek's LED cobra heads: the E-Cobra and the GreenCobra family. All are flat-bottomed die-cast
+# heads: a thin slab carrying the LED array underneath, a driver housing that rises behind it to
+# the slipfitter, the twist-lock receptacle on top of that. The JSON drew each as a 1 px panel, a
+# 1-2 px hump and a 3-5 px rear box; the lofted sections follow those steps. Their squarer section
+# (LEOTEK_EXPONENT) is both the look and what lets the 4 px GCJ's neck swallow the 3 px arm.
+# GC1 and GCJ wear cooling fins on top of the slab (the ribbed band of their sheets); the GCL, GCM
+# and E-Cobra are smooth.
+#   E-Cobra, ltec: z 0..16, x 4..12; the slab to z 11, the rear 3 px. Dusk to Dawn, ltecdtd: the
+#       short body from z 5, with the built-in sensor's eye under the rear (the JSON kept the
+#       twist-lock too).
+#   GC1, ltgc1v1/np, ltgc1v2: z 1..16, x 4..12, a 5 px driver housing from z 10.
+#   GCJ, ltgcj/sn: the junior, z 8..16 and only x 6..10.
+#   GCL, ltgcl (x 4..12) and GCM, ltgcm/sn, ltgcmv2/np (x 5..11): z 4..16, the rear 3 px.
+# v1 and v2 differ only in their LED art. "np" carries a blank cap in the receptacle, "sn" a
+# smart-city node in place of the photocell.
+LEOTEK_EXPONENT = 3.2
+ECOBRA_REAR = [
+    (11.2, 3.95, 0.05, 2.90),
+    (12.6, 3.85, -0.20, 3.40),
+    (14.6, 3.8, -0.30, 3.45),
+    (REAR_Z, 3.8, -0.30, 3.45),
+]
+ECOBRA_PROFILE = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (0.2, 3.2, 0.50, 0.95),
+    (0.6, 3.85, 0.28, 1.20),
+    (1.4, 4.0, 0.20, 1.30),
+    (6.0, 4.0, 0.20, 1.40),
+    (9.8, 4.0, 0.20, 1.60),
+] + ECOBRA_REAR
+ECOBRA_DTD_PROFILE = [
+    (5.2, 3.2, 0.50, 0.95),
+    (5.6, 3.85, 0.28, 1.20),
+    (6.4, 4.0, 0.20, 1.30),
+    (9.8, 4.0, 0.20, 1.55),
+] + ECOBRA_REAR
+GC1_PROFILE = [
+    (1.2, 3.0, 0.50, 0.95),
+    (1.6, 3.8, 0.28, 1.20),
+    (2.4, 4.0, 0.20, 1.30),
+    (5.6, 4.0, 0.20, 1.45),
+    (6.8, 4.0, 0.20, 2.60),
+    (9.4, 4.0, 0.15, 3.00),
+    (10.4, 4.0, 0.05, 4.70),
+    (12.2, 3.95, -0.10, 5.00),
+    (14.6, 3.85, -0.30, 4.95),
+    (REAR_Z, 3.8, -0.30, 4.90),
+]
+GCJ_PROFILE = [
+    (8.15, 1.4, 0.45, 0.95),
+    (8.5, 1.9, 0.25, 1.15),
+    (9.1, 2.0, 0.20, 1.25),
+    (10.6, 2.0, 0.20, 1.35),
+    (11.4, 2.0, 0.20, 2.05),
+    (12.6, 2.0, 0.12, 2.25),
+    (13.3, 2.0, -0.05, 3.55),
+    (14.6, 2.0, -0.30, 3.75),
+    (REAR_Z, 2.0, -0.30, 3.75),
+]
+
+
+def gc_medium_profile(hw):
+    """The GCL (hw 4) and GCM (hw 3): one body at two widths."""
+    return [
+        (4.15, hw - 1.0, 0.45, 0.95),
+        (4.5, hw - 0.15, 0.25, 1.15),
+        (5.2, hw, 0.20, 1.25),
+        (6.6, hw, 0.20, 1.40),
+        (7.6, hw, 0.20, 2.05),
+        (10.2, hw, 0.15, 2.25),
+        (11.4, hw, 0.0, 3.35),
+        (12.8, hw - 0.05, -0.20, 3.60),
+        (14.6, hw - 0.1, -0.30, 3.60),
+        (REAR_Z, hw - 0.1, -0.30, 3.60),
+    ]
+
+
+# model -> (profile, lens box (x0, x1, z0, z1), fins (x offsets, z0, z1, top) or None, receptacle z,
+#           top of the photocell)
+LEOTEK = {
+    "ec": (ECOBRA_PROFILE, (4.7, 11.3, 1.4, 10.4), None, 13.2, 5.0),
+    "ecdtd": (ECOBRA_DTD_PROFILE, (4.7, 11.3, 6.2, 10.4), None, 13.2, 5.0),
+    "gc1": (GC1_PROFILE, (4.7, 11.3, 2.4, 9.8), ((-3.0, -1.5, 0.0, 1.5, 3.0), 2.6, 6.6, 2.25), 11.5, 7.0),
+    "gcj": (GCJ_PROFILE, (6.45, 9.55, 9.1, 12.9), ((-1.1, 0.0, 1.1), 9.3, 11.8, 1.85), 14.5, 5.0),
+    "gcl": (gc_medium_profile(4.0), (4.7, 11.3, 5.2, 10.8), None, 12.4, 5.0),
+    "gcm": (gc_medium_profile(3.0), (5.6, 10.4, 5.2, 10.8), None, 12.4, 5.0),
+}
+
+
+def build_leotek(model, top="photocell"):
+    """top: photocell (the twist-lock cell), cap (a blank cap in the receptacle), node (a smart
+    node: a squat puck and its dome, on the photocell material, which its blockstate paints blue)."""
+    profile, (lx0, lx1, lz0, lz1), fins, pz, cell_top = LEOTEK[model]
+    m = Mesh()
+    check_neck_holds_arm("Leotek " + model.upper(), profile, LEOTEK_EXPONENT)
+    loft_housing(m, profile, LEOTEK_EXPONENT)
+    # The LED array: a slab just under the flat bottom, its top buried in the housing.
+    box(m, (lx0, 0.0, lz0), (lx1, 0.3, lz1), "body", bottom_mat=LENS_MAT)
+    if fins:
+        offsets, fz0, fz1, ftop = fins
+        for dx in offsets:
+            box(m, (8.0 + dx - 0.18, 0.7, fz0), (8.0 + dx + 0.18, ftop, fz1), "body")
+    if model == "ecdtd":
+        # the built-in dusk-to-dawn sensor's eye, under the driver housing
+        box(m, (7.0, -0.5, 13.0), (9.0, -0.05, 15.0), "body", bottom_mat="photocell")
+    base = top_at(profile, pz) - 0.35
+    if top == "photocell":
+        photocell(m, profile, pz, cell_top)
+    elif top == "cap":
+        cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+    elif top == "node":
+        cylinder_y(m, 8.0, pz, 1.15, base, base + 0.6, "photocell", sides=12)
+        cylinder_y(m, 8.0, pz, 0.7, base + 0.6, base + 0.85, "photocell", sides=12)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -722,6 +843,25 @@ CATALOGUE = [
      "streetlight_body_ge_grey"),
     ("aeatb0", "American Electric Autobahn ATB0", lambda: build_atb(0), "streetlight_body_ael_grey"),
     ("aeatb2", "American Electric Autobahn ATB2", lambda: build_atb(2), "streetlight_body_ael_grey"),
+    ("ltec", "Leotek E-Cobra", lambda: build_leotek("ec"), "streetlight_body_leotek_grey"),
+    ("ltecdtd", "Leotek E-Cobra (Dusk to Dawn)", lambda: build_leotek("ecdtd"), "streetlight_body_leotek_grey"),
+    ("ltgc1v1", "Leotek GreenCobra GC1 (Version 1)", lambda: build_leotek("gc1"),
+     "streetlight_body_leotek_grey"),
+    ("ltgc1v1np", "Leotek GreenCobra GC1 (Version 1, No Photocell)", lambda: build_leotek("gc1", "cap"),
+     "streetlight_body_leotek_grey"),
+    ("ltgc1v2", "Leotek GreenCobra GC1 (Version 2)", lambda: build_leotek("gc1"),
+     "streetlight_body_leotek_grey"),
+    ("ltgcj", "Leotek GreenCobra GCJ", lambda: build_leotek("gcj"), "streetlight_body_leotek_grey"),
+    ("ltgcjsn", "Leotek GreenCobra GCJ (Smart Node)", lambda: build_leotek("gcj", "node"),
+     "streetlight_body_leotek_grey"),
+    ("ltgcl", "Leotek GreenCobra GCL", lambda: build_leotek("gcl"), "streetlight_body_leotek_grey"),
+    ("ltgcm", "Leotek GreenCobra GCM", lambda: build_leotek("gcm"), "streetlight_body_leotek_grey"),
+    ("ltgcmsn", "Leotek GreenCobra GCM (Smart Node)", lambda: build_leotek("gcm", "node"),
+     "streetlight_body_leotek_grey"),
+    ("ltgcmv2", "Leotek GreenCobra GCM (Version 2)", lambda: build_leotek("gcm"),
+     "streetlight_body_leotek_grey"),
+    ("ltgcmv2np", "Leotek GreenCobra GCM (Version 2, No Photocell)", lambda: build_leotek("gcm", "cap"),
+     "streetlight_body_leotek_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -736,6 +876,14 @@ ENVELOPE_FOR = {
     # pixel below y 0 that it needs to swallow the arm's end (ARM_TIP), as every cobra head's does.
     "aeatb0": ((4.0, 12.0), (-0.5, 6.0), (0.0, REAR_Z + 1e-9)),
     "aeatb2": ((3.0, 13.0), (-0.5, 4.1), (0.0, REAR_Z + 1e-9)),
+    # The 8 px wide Leoteks (x 4..12); the E-Cobra's box also starts at z 0. The neck dips below
+    # y 0 for the arm, as the Autobahns' does.
+    "ltec": ((4.0, 12.0), (-0.5, 5.0), (0.0, REAR_Z + 1e-9)),
+    "ltecdtd": ((4.0, 12.0), (-0.5, 5.0), (5.0, REAR_Z + 1e-9)),
+    "ltgc1v1": ((4.0, 12.0), (-0.5, 7.0), (1.0, REAR_Z + 1e-9)),
+    "ltgc1v1np": ((4.0, 12.0), (-0.5, 5.45), (1.0, REAR_Z + 1e-9)),
+    "ltgc1v2": ((4.0, 12.0), (-0.5, 7.0), (1.0, REAR_Z + 1e-9)),
+    "ltgcl": ((4.0, 12.0), (-0.5, 5.0), (4.0, REAR_Z + 1e-9)),
 }
 
 
@@ -743,7 +891,22 @@ ENVELOPE_FOR = {
 # dev-env-utils/scripts/artwork/streetlight/, written as streetlight_lens_<art>_on/_off.
 ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork", "streetlight")
 # ael_atb0/2 are the Autobahns' LED arrays (the dies white lit, dimmed dark on a pale optic unlit).
-LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2"]
+# leotek_* are the E-Cobra and GreenCobra LED arrays, cut from the ltec / ltgc* sheets. The GCJ and
+# GCJ SN sheets carry pixel-identical arrays, as do the GCM and GCM SN, so each pair shares a cut.
+LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2",
+            "leotek_ec", "leotek_ecdtd", "leotek_gc1v1", "leotek_gc1v2", "leotek_gcj", "leotek_gcl",
+            "leotek_gcm", "leotek_gcmv2"]
+# The cuts are stored as they lie on the atlas. Where the JSON face mapped them onto the fixture
+# differently from art_lens_png's convention (the source's u from the slipfitter to the nose, its v
+# from east to west), they are turned first, so the array lands as the JSON drew it: a down face
+# with "rotation": 270 runs u nose -> slipfitter and v west -> east (half a turn), the GCL's also
+# mirrors u (a flip top to bottom), the GCJ's "rotation": 90 already matches.
+ART_TURN = {
+    "leotek_ec": Image.ROTATE_180, "leotek_ecdtd": Image.ROTATE_180,
+    "leotek_gc1v1": Image.ROTATE_180, "leotek_gc1v2": Image.ROTATE_180,
+    "leotek_gcl": Image.FLIP_TOP_BOTTOM,
+    "leotek_gcm": Image.ROTATE_180, "leotek_gcmv2": Image.ROTATE_180,
+}
 
 
 def art_lens(art, state):
@@ -773,6 +936,24 @@ LENS_FOR = {
     "ae115cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
     "aeatb0": (art_lens("ael_atb0", "on"), art_lens("ael_atb0", "off")),
     "aeatb2": (art_lens("ael_atb2", "on"), art_lens("ael_atb2", "off")),
+    "ltec": (art_lens("leotek_ec", "on"), art_lens("leotek_ec", "off")),
+    "ltecdtd": (art_lens("leotek_ecdtd", "on"), art_lens("leotek_ecdtd", "off")),
+    "ltgc1v1": (art_lens("leotek_gc1v1", "on"), art_lens("leotek_gc1v1", "off")),
+    "ltgc1v1np": (art_lens("leotek_gc1v1", "on"), art_lens("leotek_gc1v1", "off")),
+    "ltgc1v2": (art_lens("leotek_gc1v2", "on"), art_lens("leotek_gc1v2", "off")),
+    "ltgcj": (art_lens("leotek_gcj", "on"), art_lens("leotek_gcj", "off")),
+    "ltgcjsn": (art_lens("leotek_gcj", "on"), art_lens("leotek_gcj", "off")),
+    "ltgcl": (art_lens("leotek_gcl", "on"), art_lens("leotek_gcl", "off")),
+    "ltgcm": (art_lens("leotek_gcm", "on"), art_lens("leotek_gcm", "off")),
+    "ltgcmsn": (art_lens("leotek_gcm", "on"), art_lens("leotek_gcm", "off")),
+    "ltgcmv2": (art_lens("leotek_gcmv2", "on"), art_lens("leotek_gcmv2", "off")),
+    "ltgcmv2np": (art_lens("leotek_gcmv2", "on"), art_lens("leotek_gcmv2", "off")),
+}
+
+# The photocell material's texture, where a fixture carries something else in the receptacle.
+PHOTOCELL_FOR = {
+    "ltgcjsn": "streetlight_smartnode",
+    "ltgcmsn": "streetlight_smartnode",
 }
 
 
@@ -840,6 +1021,8 @@ def art_lens_png(art, state):
     an animation strip) to 32 px. Drawn unshaded now, the unlit art is halved, so it looks as it
     did shaded; the lit art is left as painted, and so reads lit for the first time."""
     src = Image.open(os.path.join(ARTWORK_DIR, "%s_lens_%s.png" % (art, state))).convert("RGBA")
+    if art in ART_TURN:
+        src = src.transpose(ART_TURN[art])
     img = src.transpose(Image.ROTATE_90).resize((32, 32), Image.NEAREST)
     if state == "off":
         img = Image.eval(img, lambda c: c)  # copy
@@ -887,7 +1070,7 @@ INVENTORY_TRANSFORM = {
 }
 
 
-def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF):
+def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF, photocell_tex="streetlight_photocell"):
     model = "csm:lighting/shared_models/streetlight_%s.obj" % registry
     lit = {"textures": {"#" + LENS_MAT: TEX + lens_on}}
     # States 0 and 2 name the unlit lens rather than inheriting it: gen_lighting_lit_atlases.py
@@ -899,7 +1082,7 @@ def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF):
             "model": model,
             "custom": {"flip-v": True},
             "textures": {"#body": TEX + body_tex, "#" + LENS_MAT: TEX + lens_off,
-                         "#photocell": TEX + "streetlight_photocell"},
+                         "#photocell": TEX + photocell_tex},
         },
         "variants": {
             "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
@@ -930,7 +1113,9 @@ def outputs():
                 "%s leaves the fixture envelope at %s" % (registry, (x, y, z))
         files[MODEL_DIR + "/streetlight_%s.obj" % registry] = mesh.text(display).encode()
         files["blockstates/%s.json" % registry] = (
-            json.dumps(blockstate(registry, body, *LENS_FOR.get(registry, (LENS_ON, LENS_OFF))), indent=2) + "\n").encode()
+            json.dumps(blockstate(registry, body, *LENS_FOR.get(registry, (LENS_ON, LENS_OFF)),
+                                  photocell_tex=PHOTOCELL_FOR.get(registry, "streetlight_photocell")),
+                       indent=2) + "\n").encode()
     for name, img in all_textures().items():
         buf = io.BytesIO()
         img.save(buf, "PNG")
