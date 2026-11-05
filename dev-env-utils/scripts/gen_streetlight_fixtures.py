@@ -1131,6 +1131,46 @@ ALTO_LOT_NECK = [
 ALTO_NECK_EXPONENT = 3.2
 
 
+# The Alto Round Lot Light (altorll). Its blockstate used to point at the rectangle model, so in
+# game it was a copy of altorell; the round JSON (alto_round_lot_light.json) was never wired up.
+# The user chose it round at that JSON's size: a 16-sided disc 10 px across (x 3..13, centred on
+# z 7), y -0.25..4.75, a 4 px-radius lens disc under it, y -0.5..-0.25; the block's bounding box
+# was widened to match. Its neck is the rectangle's, onto the same altollm mount, started deeper
+# (z 10.5) so its front corners stay inside the disc, whose edge is at z 11.6 two px off centre.
+ALTO_ROUND_NECK = [
+    (10.5, 2.0, 0.0, 3.2),     # buried in the disc
+    (12.6, 2.2, -0.3, 3.5),
+    (REAR_Z, 2.2, -0.3, 3.5),
+]
+
+
+def build_alto_round_lot():
+    m = Mesh()
+    check_neck_holds_arm("Alto round lot light", ALTO_ROUND_NECK, ALTO_NECK_EXPONENT)
+    cx, cz, sides = 8.0, 7.0, 16
+    # the disc: walls and top from cylinder_y, then its underside as a ring round the lens
+    cylinder_y(m, cx, cz, 5.0, -0.25, 4.75, "body", sides=sides)
+    outer = [(cx + 5.0 * math.cos(2 * math.pi * j / sides), -0.25,
+              cz + 5.0 * math.sin(2 * math.pi * j / sides)) for j in range(sides)]
+    inner = [(cx + 4.0 * math.cos(2 * math.pi * j / sides), -0.25,
+              cz + 4.0 * math.sin(2 * math.pi * j / sides)) for j in range(sides)]
+    above = (cx, 1.0, cz)
+    for j in range(sides):
+        j2 = (j + 1) % sides
+        quad = [outer[j], outer[j2], inner[j2], inner[j]]
+        m.poly_out("body", quad, [swatch_uv(0, 0), swatch_uv(1, 0), swatch_uv(1, 1),
+                                  swatch_uv(0, 1)], above)
+    # the lens: a shallow disc whose underside is the glass
+    cylinder_y(m, cx, cz, 4.0, -0.5, -0.25, "body", sides=sides, cap_top=False)
+    bottom = [(cx + 4.0 * math.cos(2 * math.pi * j / sides), -0.5,
+               cz + 4.0 * math.sin(2 * math.pi * j / sides)) for j in range(sides)]
+    lens_uv = [(0.05 + 0.9 * (cx + 4.0 - x) / 8.0, 0.05 + 0.9 * (z - cz + 4.0) / 8.0)
+               for x, _, z in bottom]
+    m.poly_out(LENS_MAT, bottom, lens_uv, above)
+    loft_housing(m, ALTO_ROUND_NECK, ALTO_NECK_EXPONENT)
+    return m
+
+
 def alto_lot_body(z0, z1):
     return [
         (z0 + 0.05, 2.5, 0.0, 3.2),
@@ -1311,7 +1351,7 @@ CATALOGUE = [
     ("cinavion", "Cooper Industries Navion", lambda: build_navion(2), "streetlight_body_led_grey"),
     ("cinavionalt", "Cooper Industries Navion (Alternate)", lambda: build_navion(3), "streetlight_body_led_grey"),
     ("smsmx", "Solarmax SMX", build_smx, "streetlight_body_solarmax"),
-    ("altorll", "Alto Round Lot Light", lambda: build_alto_lot("rect"), "streetlight_body_alto_silver"),
+    ("altorll", "Alto Round Lot Light", build_alto_round_lot, "streetlight_body_alto_silver"),
     ("altorell", "Alto Rectangle Lot Light", lambda: build_alto_lot("rect"), "streetlight_body_alto_silver"),
     ("altosqll", "Alto Square Lot Light", lambda: build_alto_lot("square"), "streetlight_body_alto_silver"),
     ("altomvul", "Alto Mercury Vapor Underpass Light", build_alto_mv_underpass, "streetlight_body_merc_grey"),
@@ -1356,7 +1396,7 @@ ENVELOPE_FOR = {
     "smsmx": ((3.0, 13.0), (-1.2, 5.0), (1.0, REAR_Z + 1e-9)),
     # The Alto lot lights' boxes (x 5..11, y 0..4, from z 3 / 6); the neck and the glass dip under
     # y 0 as the cobra heads' necks do.
-    "altorll": ((5.0, 11.0), (-0.5, 4.0), (3.0, REAR_Z + 1e-9)),
+    "altorll": ((3.0, 13.0), (-0.5, 4.75), (2.0, REAR_Z + 1e-9)),
     "altorell": ((5.0, 11.0), (-0.5, 4.0), (3.0, REAR_Z + 1e-9)),
     "altosqll": ((5.0, 11.0), (-0.5, 4.0), (6.0, REAR_Z + 1e-9)),
     # The underpass light hangs from the ceiling: x and z 3..13, y 9.8..16.

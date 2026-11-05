@@ -231,7 +231,7 @@ Tested by planting files that must be reported: an atlas-folder tile no tool lis
 an `_e` with no base, an exit sign icon for a colour that does not exist, and a model nothing
 names. All five were.
 
-### The 80 unused files
+### The 79 unused files
 
 Every one was traced by hand on 2026-09-22 and is a genuine leftover. **None has been deleted:
 that is a human call, not the tool's.**
@@ -247,7 +247,6 @@ that is a human call, not the tool's.**
 | 3 | `signal_backplate_{888,8812}_vertical.json`, `signal_backplate_hawk_full.json` at their old path; the blockstates use `shared_models/backplates/` |
 | 2 | `trafficpolehorizontal.json`, `trafficpolehorizontalangle.json`: the thin poles draw `small` and `black_angled_thin_traffic_pole` |
 | 2 | `hvac_vent_relay` model and texture: the relay block draws `modular_vent_3` |
-| 1 | `alto_round_lot_light.json` |
 
 ## Repair (2026-09-10)
 
