@@ -519,6 +519,7 @@ states in all (`mount` x `lit`); the metadata holds both.
 
 The street lights are being rebuilt as OBJ models (GitHub #99), one generator for all of them:
 `dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family and the fixtures converted from JSON:
+the roadway heads, and with them the Alto lot, wall and underpass lights, which share their materials and conventions:
 
 | Registry name | Fixture |
 |---|---|
@@ -546,6 +547,9 @@ The street lights are being rebuilt as OBJ models (GitHub #99), one generator fo
 | `creestylusfull`, `creestylushalf` | Cree Stylus: a linear LED fixture hung flush under a ceiling, not from an arm. A rounded bar 0.1 off the top of the block over a diffuser in his troffer white (`streetlight_lens_cree_stylus`, cut from `troffers`, which stays: the troffers use it); the Full runs on to z -16, one fixture two blocks long, as its JSON did. Converted in place; their boxes (y 11..16) are their envelopes |
 | `cinavion`, `cinavionalt` | Cooper Industries Navion: an open frame ahead of the driver housing, three rails closed by posts at the nose over a flat panel carrying his LightSquare art (`streetlight_lens_ci_navion`, two squares; `_alt`, three, the panel running on to z -4). Boxy, as the JSON was; the housing a squared loft round the arm's end. Converted in place; their boxes (from z 0 / -4) are their envelopes |
 | `smsmx` | Solarmax SMX (the first generation): a broad flat head 10 px wide with its corners cut, 2 px thick at y -1..1, on a neck rising over it to the slipfitter, his LED panel (`streetlight_lens_solarmax_smx`) under the front half, in a new warm grey swatch. Converted in place; its box (x 3..13, y -1..5) is its envelope |
+| `altorll`, `altorell`, `altosqll` | Alto lot lights: a squared shoebox in his `metal_silver` (a new `streetlight_body_alto_silver` swatch) over flat glass in his `merc_fixtures` olive, on a neck that swallows the arm; the square one's body starts at z 6. They hang from the Alto lot light mount (`altollm`) or any arm. The "Round" lot light's blockstate drew the same rectangular JSON model as the Rectangle one, so it is converted as it drew; the orphaned `alto_round_lot_light.json` (wider than the block's box) is left in place. Converted in place; their boxes (x 5..11, y 0..4, from z 3 / 6) are their envelopes |
+| `altomvwl`, `altomvwlslim` | Alto mercury vapour wall lights: a rounded back box against the wall, its back at 15.9, and the olive glass standing proud of its face, x 5.5..11.5 (slim 6.5..10.5) as the JSON placed them. Converted in place; their boxes (y 4..12, z 13..16) are their envelopes |
+| `altomvul` | Alto mercury vapour underpass light: a ceiling fixture, a round canopy 10 px across 0.1 under the ceiling over a lathed drop bowl in his olive (the JSON's four steps as one bowl), the facets turned half a step so no seam lies on an axis. Converted in place; its box (x and z 3..13, y 9.8..16) is its envelope |
 
 **Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
 blockstate changes hands, from a hand-written one to the generator's, so placed blocks and
@@ -564,8 +568,8 @@ inside the JSON cobra heads' footprint (x 5..11, z 1..16), so a JSON fixture's b
 point at one of these without moving a bounding box or an arm. The generator asserts both: every
 vertex inside the envelope, and the arm's 3 x 3 px end (`ARM_TIP`) inside the rear section, so no
 arm corner stands proud of the neck. A converted fixture whose JSON bounding box was bigger
-(the Form 109 teardrop) gets that box as its envelope in `ENVELOPE_FOR`. The Cree Stylus hangs from the
-ceiling rather than an arm, so it has no neck to check; its envelope is the top of the block. Nothing sits on z = 16 facing back into the block; the rear
+(the Form 109 teardrop) gets that box as its envelope in `ENVELOPE_FOR`. The Cree Stylus and the Alto underpass light hang from the
+ceiling, the Alto wall lights from a wall, so they have no neck to check; their envelopes are their boxes. Nothing sits on z = 16 facing back into the block; the rear
 cap is at 15.9.
 
 **Materials.** One `streetlight.mtl` for every fixture, retextured per blockstate:
@@ -573,7 +577,7 @@ cap is at 15.9.
 | Material | Texture |
 |---|---|
 | `body` | the housing paint, a 16 px swatch (`streetlight_body_*`) |
-| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass); the mercury Form 109 and the Westinghouse OV-20 / OV-50 wear `streetlight_lens_refractor_merc_on`, his `merc_fixtures` olive (the same olive his `westinghouse_ov50` sheet painted) raised to lamp brightness and ribbed the same way; an LED head (the Autobahns, the Leoteks, the Evolves, the Crees, the Navions, the SMX) wears his array art the same way as lens art (lit dies white, unlit dies dark on a pale optic). States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
+| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass); the mercury Form 109 and the Westinghouse OV-20 / OV-50 wear `streetlight_lens_refractor_merc_on`, his `merc_fixtures` olive (the same olive his `westinghouse_ov50` sheet painted) raised to lamp brightness and ribbed the same way, as does the Alto underpass bowl; the Alto lot and wall lights' flat glass wears the same olive unribbed (`streetlight_lens_merc_glass_on/_off`, made from his colour: `merc_fixtures` is four flat swatches with no framed lens art to cut); an LED head (the Autobahns, the Leoteks, the Evolves, the Crees, the Navions, the SMX) wears his array art the same way as lens art (lit dies white, unlit dies dark on a pale optic). States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
 | `photocell` | the twist-lock photocontrol |
 
 **The lens is drawn unshaded.** `CsmObjModelLoader` bakes any OBJ material whose name starts with

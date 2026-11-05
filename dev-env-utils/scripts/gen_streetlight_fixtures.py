@@ -77,6 +77,8 @@ SWATCHES = {
     "streetlight_body_stylus_grey": ((194, 193, 195), (172, 171, 173)),
     # Solarmax's warm grey: solarmax_smx paints the head 188 183 172 and its edges 153 152 145.
     "streetlight_body_solarmax": ((196, 191, 180), (150, 149, 142)),
+    # The Alto lot lights' housing: metal_silver, a brushed grey from 94 to 116 (106 on average).
+    "streetlight_body_alto_silver": ((120, 120, 120), (96, 96, 96)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -91,6 +93,11 @@ LENS_REFRACTOR_ON = "streetlight_lens_refractor_on"
 # full lamp brightness (the lit-atlas audit found the olive had headroom) and ribs it the same way.
 LENS_REFRACTOR_MERC_ON = "streetlight_lens_refractor_merc_on"
 MERC_OLIVE = (135, 135, 86)
+# The same olive as flat glass, for the Alto lot and wall lights: merc_fixtures is four flat
+# quadrants (housing 98, photocell black, the olive glass, a pale 182 globe), no framed lens art,
+# so the sprite is made from his colour rather than cut. Lit at lamp brightness, unlit at half.
+LENS_MERC_GLASS_ON = "streetlight_lens_merc_glass_on"
+LENS_MERC_GLASS_OFF = "streetlight_lens_merc_glass_off"
 
 # The glass. CsmObjModelLoader draws a material named unshaded_* without directional shading, as
 # a JSON element with "shade": false is: the flat lens faces straight down, and shaded it was
@@ -443,16 +450,16 @@ def build_m250(body, optics, photocell=True):
     return m
 
 
-def lathe(mesh, cx, cz, rings, mat, lon=16):
+def lathe(mesh, cx, cz, rings, mat, lon=16, phase=0.0):
     """A body of revolution about the vertical axis through (cx, cz): `rings` are (y, radius) from
     top to bottom, each pair bridged by a band. A band whose two rings share a y is a flat annulus
     facing down (the underside of a rim). Lens bands wrap their sprite round the axis, v by height,
-    so a ribbed refractor's ribs become rings."""
+    so a ribbed refractor's ribs become rings. `phase` turns the facets by that fraction of one."""
     ys = [y for y, _ in rings]
     ytop, ybot = max(ys), min(ys)
 
     def pt(y, r, j):
-        a = 2 * math.pi * j / lon
+        a = 2 * math.pi * (j + phase) / lon
         return (cx + r * math.cos(a), y, cz + r * math.sin(a))
 
     def uv(y, j):
@@ -1027,6 +1034,136 @@ def build_smx():
     return m
 
 
+def rounded_ring(z, cx, cy, hw, hh, ex, n):
+    """A closed superellipse section in the x-y plane at depth z, centred on (cx, cy)."""
+    pts = []
+    for j in range(n):
+        a = 2 * math.pi * j / n
+        c, s = math.cos(a), math.sin(a)
+        pts.append((cx + math.copysign(abs(c) ** (2.0 / ex), c) * hw,
+                    cy + math.copysign(abs(s) ** (2.0 / ex), s) * hh, z))
+    return pts
+
+
+def loft_closed(mesh, sections, ex, mat="body", front_mat=None, n=16):
+    """A rounded box along z: closed superellipse sections (z, cx, cy, half-width, half-height),
+    bridged and capped at both ends. A section's centre may move, so a run of them can climb
+    (a sloping arm). `front_mat` paints the low-z cap, mapped flat across it, x and y."""
+    rings = [rounded_ring(z, cx, cy, hw, hh, ex, n) for (z, cx, cy, hw, hh) in sections]
+    zs = [s[0] for s in sections]
+    zmin, zmax = min(zs), max(zs)
+    for i in range(len(rings) - 1):
+        a, b = rings[i], rings[i + 1]
+        sa, sb = sections[i], sections[i + 1]
+        inside = ((sa[1] + sb[1]) / 2, (sa[2] + sb[2]) / 2, (sa[0] + sb[0]) / 2)
+        va, vb = (sa[0] - zmin) / (zmax - zmin), (sb[0] - zmin) / (zmax - zmin)
+        for j in range(n):
+            j2 = (j + 1) % n
+            if mat == "body":
+                uvs = [swatch_uv(j / n, va), swatch_uv((j + 1) / n, va), swatch_uv((j + 1) / n, vb),
+                       swatch_uv(j / n, vb)]
+            else:
+                uvs = [(0.05 + 0.9 * j / n, 0.05 + 0.9 * va), (0.05 + 0.9 * (j + 1) / n, 0.05 + 0.9 * va),
+                       (0.05 + 0.9 * (j + 1) / n, 0.05 + 0.9 * vb), (0.05 + 0.9 * j / n, 0.05 + 0.9 * vb)]
+            mesh.poly_out(mat, [a[j], a[j2], b[j2], b[j]], uvs, inside)
+    for k, (ring, other) in enumerate(((rings[0], sections[1]), (rings[-1], sections[-2]))):
+        sec = sections[0] if k == 0 else sections[-1]
+        cen = (sec[1], sec[2], sec[0])
+        behind = (other[1], other[2], other[0])
+        cap_mat = front_mat if (k == 0 and front_mat) else mat
+        for j in range(len(ring)):
+            j2 = (j + 1) % len(ring)
+            ps = [cen, ring[j], ring[j2]]
+            if cap_mat == "body":
+                uvs = [swatch_uv(0.5, 0.5), swatch_uv(0.0, 0.0), swatch_uv(1.0, 0.0)]
+            else:
+                # the glass seen from the front: u east to west across it, v top to bottom
+                uvs = [(0.05 + 0.9 * (sec[1] + sec[3] - p[0]) / (2 * sec[3]),
+                        0.05 + 0.9 * (sec[2] + sec[4] - p[1]) / (2 * sec[4])) for p in ps]
+            mesh.poly_out(cap_mat, ps, uvs, behind)
+    return rings
+
+
+# Alto lot lights (altorll, altorell, altosqll): shoebox area lights that hang off the Alto lot
+# light mount (altollm, a hub with four 4 x 4 px arms at y 0..4) or any arm. The JSON: a 6 x 3 px
+# body (x 5..11, y 0.8..3.8) from z 3 (the square one from z 6) to 12, a 3 x 3 px neck on to the
+# slipfitter, and the olive glass under the body, x 6..10 from z 4 (7) to 11, all in his
+# metal_silver with the glass from merc_fixtures. The "Round" lot light's blockstate draws the same
+# rectangular model as the Rectangle one, so it is converted as it draws (the unused round JSON
+# model is a separate question). The body is a squared shoebox; the neck dips the fraction of a
+# pixel under it that it needs to swallow the arm's end (ARM_TIP), as every cobra head's does.
+ALTO_LOT_EXPONENT = 5.0
+ALTO_LOT_NECK = [
+    (11.8, 2.0, 0.0, 3.2),     # buried in the body
+    (12.6, 2.2, -0.3, 3.5),
+    (REAR_Z, 2.2, -0.3, 3.5),
+]
+ALTO_NECK_EXPONENT = 3.2
+
+
+def alto_lot_body(z0, z1):
+    return [
+        (z0 + 0.05, 2.5, 0.0, 3.2),
+        (z0 + 0.35, 2.92, -0.25, 3.6),
+        (z0 + 0.8, 3.0, -0.3, 3.7),
+        (z1 - 0.8, 3.0, -0.3, 3.7),
+        (z1 - 0.35, 2.92, -0.25, 3.6),
+        (z1 - 0.05, 2.5, 0.0, 3.2),
+    ]
+
+
+def build_alto_lot(shape):
+    """shape: rect (z 3..12, glass z 4..11) or square (z 6..12, glass z 7..11)."""
+    z0, gz0 = (3.0, 4.0) if shape == "rect" else (6.0, 7.0)
+    m = Mesh()
+    check_neck_holds_arm("Alto lot light", ALTO_LOT_NECK, ALTO_NECK_EXPONENT)
+    loft_housing(m, alto_lot_body(z0, 12.4), ALTO_LOT_EXPONENT)
+    loft_housing(m, ALTO_LOT_NECK, ALTO_NECK_EXPONENT)
+    # the olive glass under the body, its top buried 0.05 in the body's flat bottom
+    box(m, (6.0, -0.5, gz0), (10.0, -0.25, 11.0), "body", bottom_mat=LENS_MAT)
+    return m
+
+
+# Alto mercury vapour wall lights (altomvwl, and the narrower altomvwlslim): a wall pack, a back
+# box against the wall with the olive glass standing proud of its face. The JSON: the box
+# x 5.5..11.5 (slim 6.5..10.5), y 3.8..11.8, z 14..16, the glass x 6..11 (7..10), y 5.2..11.45,
+# z 13..14, olive on every face. The back plate is at z = 16 (LIGHTING_SYSTEM.md), drawn at
+# REAR_Z so nothing lies on the wall's own face; the boxes' bottoms rise to the bounding box's y 4.
+def build_alto_mv_wall(slim):
+    hw, gw = (2.0, 1.5) if slim else (3.0, 2.5)
+    cx, cy, hh = 8.5, 7.9, 3.9
+    gy, gh = 8.325, 3.125
+    m = Mesh()
+    loft_closed(m, [(14.0, cx, cy, hw - 0.3, hh - 0.3), (14.35, cx, cy, hw, hh), (REAR_Z, cx, cy, hw, hh)],
+                5.0, n=24)
+    loft_closed(m, [(13.0, cx, gy, gw - 0.2, gh - 0.2), (13.2, cx, gy, gw, gh), (14.1, cx, gy, gw, gh)],
+                5.0, mat=LENS_MAT, front_mat=LENS_MAT, n=24)
+    return m
+
+
+# Alto mercury vapour underpass light (altomvul): a ceiling fixture, a shallow round canopy 10 px
+# across against the ceiling over an olive glass bowl. The JSON: a hexadecagon 5 px in radius at
+# y 15..16, then the bowl in four steps, radius 4 at y 13..15, 3 at 11..13, 2 at 10.2..11 and 1 at
+# 9.8..10.3, all about the block's centre. Here the steps are one lathed bowl, a drop refractor in
+# his olive; the canopy stops 0.1 short of the ceiling, as the Cree Stylus does.
+ALTO_UNDERPASS_BOWL = [(15.1, 4.05), (13.6, 3.9), (12.6, 3.4), (11.6, 2.7), (10.8, 1.9), (10.2, 1.0),
+                       (9.85, 0.0)]
+
+
+def build_alto_mv_underpass():
+    m = Mesh()
+    # The canopy: its rim, its underside in under the bowl's rim (which is sunk into it, so there
+    # is no seam to see through), and its top 0.1 under the ceiling. Every facet is turned half a
+    # step, so no seam lies on the block's axes or diagonals.
+    lathe(m, 8.0, 8.0, [(15.9, 5.0), (14.9, 5.0), (14.9, 3.8)], "body", phase=0.5)
+    angles = [2 * math.pi * (j + 0.5) / 16 for j in range(16)]
+    top = [(8.0 + 5.0 * math.cos(a), 15.9, 8.0 + 5.0 * math.sin(a)) for a in angles]
+    m.poly_out("body", top, [swatch_uv(0.5 + 0.5 * math.cos(a), 0.5 + 0.5 * math.sin(a)) for a in angles],
+               (8.0, 15.0, 8.0))
+    lathe(m, 8.0, 8.0, ALTO_UNDERPASS_BOWL, LENS_MAT, phase=0.5)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1104,6 +1241,13 @@ CATALOGUE = [
     ("cinavion", "Cooper Industries Navion", lambda: build_navion(2), "streetlight_body_led_grey"),
     ("cinavionalt", "Cooper Industries Navion (Alternate)", lambda: build_navion(3), "streetlight_body_led_grey"),
     ("smsmx", "Solarmax SMX", build_smx, "streetlight_body_solarmax"),
+    ("altorll", "Alto Round Lot Light", lambda: build_alto_lot("rect"), "streetlight_body_alto_silver"),
+    ("altorell", "Alto Rectangle Lot Light", lambda: build_alto_lot("rect"), "streetlight_body_alto_silver"),
+    ("altosqll", "Alto Square Lot Light", lambda: build_alto_lot("square"), "streetlight_body_alto_silver"),
+    ("altomvul", "Alto Mercury Vapor Underpass Light", build_alto_mv_underpass, "streetlight_body_merc_grey"),
+    ("altomvwl", "Alto Mercury Vapor Wall Light", lambda: build_alto_mv_wall(False), "streetlight_body_merc_grey"),
+    ("altomvwlslim", "Alto Slim Mercury Vapor Wall Light", lambda: build_alto_mv_wall(True),
+     "streetlight_body_merc_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1139,6 +1283,16 @@ ENVELOPE_FOR = {
     "cinavionalt": ((4.9, 11.1), (-0.5, 6.0), (-4.0, REAR_Z + 1e-9)),
     # The SMX's head is 10 px wide (x 3..13) and hangs to y -1; his panel a fraction under it.
     "smsmx": ((3.0, 13.0), (-1.2, 5.0), (1.0, REAR_Z + 1e-9)),
+    # The Alto lot lights' boxes (x 5..11, y 0..4, from z 3 / 6); the neck and the glass dip under
+    # y 0 as the cobra heads' necks do.
+    "altorll": ((5.0, 11.0), (-0.5, 4.0), (3.0, REAR_Z + 1e-9)),
+    "altorell": ((5.0, 11.0), (-0.5, 4.0), (3.0, REAR_Z + 1e-9)),
+    "altosqll": ((5.0, 11.0), (-0.5, 4.0), (6.0, REAR_Z + 1e-9)),
+    # The underpass light hangs from the ceiling: x and z 3..13, y 9.8..16.
+    "altomvul": ((3.0, 13.0), (9.8, 16.0), (3.0, 13.0)),
+    # The wall lights stand off the wall at z 16: their boxes run z 13..16, y 4..12.
+    "altomvwl": ((5.5, 12.0), (4.0, 12.0), (13.0, REAR_Z + 1e-9)),
+    "altomvwlslim": ((6.5, 10.5), (4.0, 12.0), (13.0, REAR_Z + 1e-9)),
 }
 
 
@@ -1221,6 +1375,12 @@ LENS_FOR = {
     "cinavion": (art_lens("ci_navion", "on"), art_lens("ci_navion", "off")),
     "cinavionalt": (art_lens("ci_navion_alt", "on"), art_lens("ci_navion_alt", "off")),
     "smsmx": (art_lens("solarmax_smx", "on"), art_lens("solarmax_smx", "off")),
+    "altorll": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
+    "altorell": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
+    "altosqll": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
+    "altomvul": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "altomvwl": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
+    "altomvwlslim": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
@@ -1288,6 +1448,26 @@ def refractor_off_png():
     return img
 
 
+def scaled(colour, top):
+    """`colour` with its hue kept and its brightest channel raised (or lowered) to `top`."""
+    return tuple(int(round(c * float(top) / max(colour))) for c in colour)
+
+
+def merc_glass_png(lit):
+    """His olive as flat glass: lit, at lamp brightness, hotter at the middle; unlit, at half."""
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            dx, dy = (x - 7.5) / 7.5, (y - 7.5) / 7.5
+            d = min(1.0, math.sqrt(dx * dx + dy * dy))
+            if lit:
+                hot, edge = scaled(MERC_OLIVE, 250), scaled(MERC_OLIVE, 218)
+            else:
+                hot, edge = scaled(MERC_OLIVE, 72), scaled(MERC_OLIVE, 62)
+            img.putpixel((x, y), tuple(int(round(hot[k] + (edge[k] - hot[k]) * d)) for k in range(3)) + (255,))
+    return img
+
+
 def art_lens_png(art, state):
     """A lens crop from the requester's atlas, made a sprite: turned so the lamp lies along the
     fixture (the box lens runs v along z), scaled square (a taller-than-wide sprite is read as
@@ -1316,6 +1496,8 @@ def all_textures():
     # his olive at lamp brightness: the hue kept, the brightest channel raised to 232
     out[LENS_REFRACTOR_MERC_ON] = refractor_on_png(
         tuple(int(round(c * 232.0 / max(MERC_OLIVE))) for c in MERC_OLIVE))
+    out[LENS_MERC_GLASS_ON] = merc_glass_png(True)
+    out[LENS_MERC_GLASS_OFF] = merc_glass_png(False)
     for art in LENS_ART:
         for state in ("on", "off"):
             out[art_lens(art, state)] = art_lens_png(art, state)
@@ -1342,6 +1524,16 @@ INVENTORY_TRANSFORM = {
     "firstperson_lefthand": _display([0, 225, 0], [3, 5, 0], 0.4),
 }
 
+# A converted fixture whose JSON model carried a different `display` keeps it.
+TRANSFORM_FOR = {
+    # As alto_mv_underpass_light.json had it (deleted): the fixture is at the top of its block, so it was lowered.
+    "altomvul": dict(INVENTORY_TRANSFORM,
+                     gui=_display([0, 90, -5], [0.25, -3.5, 0], 0.625),
+                     ground=_display([0, 0, 0], [0, -4.25, 0], 1.0),
+                     thirdperson_righthand=_display([0, 90, 0], [0, -2.5, 0], 0.55),
+                     thirdperson_lefthand=_display([0, -90, 0], [0, -2.75, 0], 0.55)),
+}
+
 
 def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF, photocell_tex="streetlight_photocell"):
     model = "csm:lighting/shared_models/streetlight_%s.obj" % registry
@@ -1360,7 +1552,7 @@ def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF, photocell
         "variants": {
             "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
             "state": {"0": unlit, "1": lit, "2": unlit, "3": lit},
-            "inventory": [{"transform": INVENTORY_TRANSFORM}],
+            "inventory": [{"transform": TRANSFORM_FOR.get(registry, INVENTORY_TRANSFORM)}],
         },
     }
 
