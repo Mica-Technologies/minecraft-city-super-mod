@@ -519,7 +519,7 @@ states in all (`mount` x `lit`); the metadata holds both.
 
 The street lights are being rebuilt as OBJ models (GitHub #99), one generator for all of them:
 `dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family and the fixtures converted from JSON:
-the roadway heads, and with them the Alto lot, wall and underpass lights, which share their materials and conventions:
+the roadway heads, and with them the Alto lot, wall and underpass lights and the GE Powerbracket, which share their materials and conventions:
 
 | Registry name | Fixture |
 |---|---|
@@ -550,6 +550,7 @@ the roadway heads, and with them the Alto lot, wall and underpass lights, which 
 | `altorll`, `altorell`, `altosqll` | Alto lot lights: a squared shoebox in his `metal_silver` (a new `streetlight_body_alto_silver` swatch) over flat glass in his `merc_fixtures` olive, on a neck that swallows the arm; the square one's body starts at z 6. They hang from the Alto lot light mount (`altollm`) or any arm. The "Round" lot light's blockstate drew the same rectangular JSON model as the Rectangle one, so it is converted as it drew; the orphaned `alto_round_lot_light.json` (wider than the block's box) is left in place. Converted in place; their boxes (x 5..11, y 0..4, from z 3 / 6) are their envelopes |
 | `altomvwl`, `altomvwlslim` | Alto mercury vapour wall lights: a rounded back box against the wall, its back at 15.9, and the olive glass standing proud of its face, x 5.5..11.5 (slim 6.5..10.5) as the JSON placed them. Converted in place; their boxes (y 4..12, z 13..16) are their envelopes |
 | `altomvul` | Alto mercury vapour underpass light: a ceiling fixture, a round canopy 10 px across 0.1 under the ceiling over a lathed drop bowl in his olive (the JSON's four steps as one bowl), the facets turned half a step so no seam lies on an axis. Converted in place; its box (x and z 3..13, y 9.8..16) is its envelope |
+| `gepb` | GE Powerbracket: a wall plate at the back of its block, a cast arm climbing at 22.5 degrees (as the JSON tilted it) to a ballast housing on a round hood 12 px across centred 10 px into the block in front, over a globe of his pale 182 glass with his olive lamp showing through the bottom (`streetlight_lens_powerbracket_on/_off`), the photocell square to the arm. Converted in place; its two-block box (x 2..14, y 0..12, z -16..18) is its envelope, so the housing tops out at 11.95 where the JSON's reached 12.4 |
 
 **Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
 blockstate changes hands, from a hand-written one to the generator's, so placed blocks and
@@ -569,7 +570,7 @@ point at one of these without moving a bounding box or an arm. The generator ass
 vertex inside the envelope, and the arm's 3 x 3 px end (`ARM_TIP`) inside the rear section, so no
 arm corner stands proud of the neck. A converted fixture whose JSON bounding box was bigger
 (the Form 109 teardrop) gets that box as its envelope in `ENVELOPE_FOR`. The Cree Stylus and the Alto underpass light hang from the
-ceiling, the Alto wall lights from a wall, so they have no neck to check; their envelopes are their boxes. Nothing sits on z = 16 facing back into the block; the rear
+ceiling, the Alto wall lights and the Powerbracket from a wall, so they have no neck to check; their envelopes are their boxes. Nothing sits on z = 16 facing back into the block; the rear
 cap is at 15.9.
 
 **Materials.** One `streetlight.mtl` for every fixture, retextured per blockstate:

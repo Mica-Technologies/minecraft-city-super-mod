@@ -145,8 +145,10 @@ LENS = {
     },
     "merc_fixtures": {
         "boxes": [(0, 64, 64, 128)], "colors": None,
-        "note": "the olive refractor bowl. Confirmed by rendering alto_mv_underpass_light: dark "
-                "canopy on top, olive glass bowl beneath. Not guessable from the sheet alone.",
+        "note": "the olive refractor bowl. Confirmed by rendering the Alto underpass light's old JSON "
+                "model: dark canopy on top, olive glass bowl beneath. Not guessable from the "
+                "sheet alone. No blockstate wears the sheet now (#99); only the unused round "
+                "lot light JSON still names it.",
     },
 
 }
