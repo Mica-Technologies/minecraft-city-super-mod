@@ -75,6 +75,8 @@ SWATCHES = {
     "streetlight_body_led_grey": ((194, 194, 194), (142, 142, 142)),
     # The Cree Stylus's housing, the troffers sheet's 184 183 185.
     "streetlight_body_stylus_grey": ((194, 193, 195), (172, 171, 173)),
+    # Solarmax's warm grey: solarmax_smx paints the head 188 183 172 and its edges 153 152 145.
+    "streetlight_body_solarmax": ((196, 191, 180), (150, 149, 142)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -953,6 +955,66 @@ def build_stylus(full):
     return m
 
 
+# Cooper Industries Navion: an LED roadway head whose LightSquare modules sit in an open frame
+# ahead of the driver housing: the JSON's flat 1 px panel x 5..11 from z 0 (z -4 for the three
+# square "alt") to 10, three rails along it (x 5..6, 7..9, 10..11, y 1..3) closed at the nose by
+# three posts, on a 6 x 4 px housing at z 10..16 with the photocell at z 13..15. Boxy, as the
+# JSON and the real fixture are; the housing a squared loft round the arm's end.
+NAVION_REAR = [
+    (9.6, 2.8, 0.40, 3.30),
+    (10.1, 3.0, 0.05, 3.85),
+    (11.0, 3.0, -0.10, 4.0),
+    (14.6, 3.0, -0.35, 4.0),
+    (REAR_Z, 3.0, -0.35, 4.0),
+]
+NAVION_EXPONENT = 4.0
+
+
+def build_navion(squares):
+    nose = 0.1 if squares == 2 else -3.9
+    m = Mesh()
+    check_neck_holds_arm("Navion", NAVION_REAR, NAVION_EXPONENT)
+    loft_housing(m, NAVION_REAR, NAVION_EXPONENT)
+    # The panel: its underside is the LightSquares, its top buried under the rails.
+    box(m, (5.2, 0.0, nose + 0.05), (10.8, 0.9, 10.2), "body", bottom_mat=LENS_MAT)
+    for x0, x1 in ((5.1, 6.0), (7.0, 9.0), (10.0, 10.9)):
+        box(m, (x0, 0.8, nose + 0.9), (x1, 3.0, 10.7), "body")      # the rail, into the housing
+        box(m, (x0 - 0.05, 0.7, nose), (x1 + 0.05, 3.05, nose + 1.0), "body")  # the post at the nose
+    photocell(m, NAVION_REAR, 14.0, 6.0)
+    return m
+
+
+# Solarmax SMX (the first generation): a broad flat head, 2 px thick at y -1..1, ten wide with its
+# corners cut (the JSON's stepped plates: x 4..12 at the ends, 3..13 through the middle), from
+# z 1 to 14, on a 4 px neck at z 10..16 that rises over the head to the slipfitter, the photocell
+# on the neck at z 11..13. His LED panel (two modules) is under the front half, z 3..8, across the
+# full 8 px.
+SMX_HEAD = [
+    (1.1, 3.6, -0.85, 0.85),
+    (1.6, 4.5, -1.0, 1.0),
+    (2.6, 5.0, -1.0, 1.0),
+    (12.4, 5.0, -1.0, 1.0),
+    (13.4, 4.5, -1.0, 1.0),
+    (13.9, 3.6, -0.85, 0.85),
+]
+SMX_NECK = [
+    (9.0, 2.0, 0.0, 2.0),      # buried in the head
+    (11.0, 2.4, -0.25, 3.40),
+    (14.6, 2.4, -0.35, 3.60),
+    (REAR_Z, 2.4, -0.35, 3.60),
+]
+SMX_EXPONENT = 3.0
+
+
+def build_smx():
+    m = Mesh()
+    check_neck_holds_arm("Solarmax SMX", SMX_NECK, SMX_EXPONENT)
+    loft_housing(m, SMX_HEAD, 4.0)
+    loft_housing(m, SMX_NECK, SMX_EXPONENT)
+    box(m, (4.0, -1.15, 3.0), (12.0, -0.8, 8.0), "body", bottom_mat=LENS_MAT)
+    photocell(m, SMX_NECK, 12.0, 5.0)
+    return m
+
 
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
@@ -1028,6 +1090,9 @@ CATALOGUE = [
     ("creexsp", "Cree XSP", build_xsp, "streetlight_body_led_grey"),
     ("creestylusfull", "Cree Stylus (Full)", lambda: build_stylus(True), "streetlight_body_stylus_grey"),
     ("creestylushalf", "Cree Stylus (Half)", lambda: build_stylus(False), "streetlight_body_stylus_grey"),
+    ("cinavion", "Cooper Industries Navion", lambda: build_navion(2), "streetlight_body_led_grey"),
+    ("cinavionalt", "Cooper Industries Navion (Alternate)", lambda: build_navion(3), "streetlight_body_led_grey"),
+    ("smsmx", "Solarmax SMX", build_smx, "streetlight_body_solarmax"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1058,6 +1123,11 @@ ENVELOPE_FOR = {
     # The Stylus hangs from the ceiling at the top of the block; the Full runs on to z -16.
     "creestylusfull": ((5.0, 11.0), (11.0, 16.0), (-16.0, 16.0)),
     "creestylushalf": ((5.0, 11.0), (11.0, 16.0), (0.0, 16.0)),
+    # The Navions start at z 0 (z -4 with three squares).
+    "cinavion": ((4.9, 11.1), (-0.5, 6.0), (0.0, REAR_Z + 1e-9)),
+    "cinavionalt": ((4.9, 11.1), (-0.5, 6.0), (-4.0, REAR_Z + 1e-9)),
+    # The SMX's head is 10 px wide (x 3..13) and hangs to y -1; his panel a fraction under it.
+    "smsmx": ((3.0, 13.0), (-1.2, 5.0), (1.0, REAR_Z + 1e-9)),
 }
 
 
@@ -1071,7 +1141,7 @@ LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2",
             "leotek_ec", "leotek_ecdtd", "leotek_gc1v1", "leotek_gc1v2", "leotek_gcj", "leotek_gcl",
             "leotek_gcm", "leotek_gcmv2",
             "ge_evolve_large", "ge_evolve_small", "cree_ledway", "cree_ledway_small", "cree_xsp",
-            "cree_stylus"]
+            "cree_stylus", "ci_navion", "ci_navion_alt", "solarmax_smx"]
 # The cuts are stored as they lie on the atlas. Where the JSON face mapped them onto the fixture
 # differently from art_lens_png's convention (the source's u from the slipfitter to the nose, its v
 # from east to west), they are turned first, so the array lands as the JSON drew it: a down face
@@ -1137,6 +1207,9 @@ LENS_FOR = {
     "creexsp": (art_lens("cree_xsp", "on"), art_lens("cree_xsp", "off")),
     "creestylusfull": (art_lens("cree_stylus", "on"), art_lens("cree_stylus", "off")),
     "creestylushalf": (art_lens("cree_stylus", "on"), art_lens("cree_stylus", "off")),
+    "cinavion": (art_lens("ci_navion", "on"), art_lens("ci_navion", "off")),
+    "cinavionalt": (art_lens("ci_navion_alt", "on"), art_lens("ci_navion_alt", "off")),
+    "smsmx": (art_lens("solarmax_smx", "on"), art_lens("solarmax_smx", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
