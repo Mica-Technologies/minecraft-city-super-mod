@@ -525,6 +525,13 @@ The street lights are being rebuilt as OBJ models (GitHub #99), one generator fo
 | `gem400a` | GE M-400A, drop refractor |
 | `gem400acu` | GE M-400A, flat cutoff glass |
 | `gem400acunp` | GE M-400A, flat cutoff glass, no photocell |
+| `gem400r3`, `gem400r3cu`, `gem400r3cunp` | GE M400R3 refractor, cutoff, cutoff without photocell: **converted in place** from JSON |
+
+**Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
+blockstate changes hands, from a hand-written one to the generator's, so placed blocks and
+`/setblock` scripts keep working. The JSON models it used are deleted once nothing names them.
+The requester's lens art is kept: the framed lens from the fixture's old atlas is cut once into
+`dev-env-utils/scripts/artwork/streetlight/` and the generator makes a lens sprite of it.
 
 They are ordinary `BlockBrightLightFactory` blocks (4-state STATE, light-up air below); only the
 model is new. A JSON cobra head is a stack of boxes; these are lofted bodies, a superellipse
@@ -544,7 +551,7 @@ cap is at 15.9.
 | Material | Texture |
 |---|---|
 | `body` | the housing paint, a 16 px swatch (`streetlight_body_*`) |
-| `unshaded_lens` | `streetlight_lens_hps_on` in STATE 1 and 3; unlit, `streetlight_lens_hps_off` for flat glass, `streetlight_lens_refractor_off` for a drop refractor |
+| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass). States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
 | `photocell` | the twist-lock photocontrol |
 
 **The lens is drawn unshaded.** `CsmObjModelLoader` bakes any OBJ material whose name starts with

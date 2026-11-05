@@ -25,13 +25,21 @@
       }
     },
     "state": {
-      "0": {},
+      "0": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_off"
+        }
+      },
       "1": {
         "textures": {
           "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
         }
       },
-      "2": {},
+      "2": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_off"
+        }
+      },
       "3": {
         "textures": {
           "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"

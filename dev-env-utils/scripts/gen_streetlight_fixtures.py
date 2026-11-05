@@ -65,6 +65,9 @@ LENS_OFF = "streetlight_lens_hps_off"
 # A drop refractor with its lamp off is pale prismatic glass, not the dark smoked look of flat
 # glass, so refractor fixtures name this for STATE 0 and 2 instead.
 LENS_REFRACTOR_OFF = "streetlight_lens_refractor_off"
+# Lit, a refractor wears the requester's refractor orange (ge_hps_fixtures, 255 106 19) in the
+# ribs his JSON staircase showed, one band where each of its five steps caught the light.
+LENS_REFRACTOR_ON = "streetlight_lens_refractor_on"
 
 # The glass. CsmObjModelLoader draws a material named unshaded_* without directional shading, as
 # a JSON element with "shade": false is: the flat lens faces straight down, and shaded it was
@@ -318,6 +321,47 @@ def build_m400a(optics, photocell=True):
     return m
 
 
+# GE M-400R3 (the late, 1990s M-400 body; Phase 2 of #99 converts the JSON gem400r3* to it). The
+# JSON model this replaces is a 6 px wide box rising in steps to the rear, from 3 px over the
+# optics to 4.5 px over the ballast, with the photocell at z 12..14.25: the R3's hood is level
+# over the glass and tallest over the ballast, where the M-400A's swells over the optics. Held to
+# the JSON footprint (x 5..11, y up to 6.5 with the photocell, down to -2.5 under a refractor) so
+# the blocks' bounding boxes stay as registered (D2).
+M400R3_PROFILE = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (1.0, 1.4, 0.60, 1.60),
+    (1.4, 2.2, 0.30, 2.30),
+    (2.2, 2.8, 0.08, 2.90),
+    (3.5, 3.0, 0.0, 3.30),
+    (5.5, 3.0, 0.0, 3.80),
+    (8.0, 3.0, 0.0, 4.10),
+    (10.5, 2.95, 0.0, 4.40),
+    (13.0, 2.8, -0.10, 4.50),
+    (14.6, 2.6, -0.30, 4.45),
+    (REAR_Z, 2.5, -0.40, 4.40),
+]
+M400R3_EXPONENT = 2.8
+
+
+def build_m400r3(optics, photocell=True):
+    m = Mesh()
+    check_neck_holds_arm("M-400R3", M400R3_PROFILE, M400R3_EXPONENT)
+    loft_housing(m, M400R3_PROFILE, M400R3_EXPONENT)
+    if optics == "cutoff":
+        box(m, (5.6, -0.3, 2.8), (10.4, 0.02, 10.4), "body", bottom_mat=LENS_MAT)
+    else:
+        # The JSON staircase reached y -2.5 at z 7..9 and ran from z 3 to 9.
+        half_ellipsoid_down(m, (8.0, 0.05, 6.2), 2.6, 2.5, 3.2, LENS_MAT)
+    box(m, (7.4, -0.25, 1.9), (8.6, 0.12, 2.7), "body")
+    if not photocell:
+        return m
+    pz = 13.1
+    base = top_at(M400R3_PROFILE, pz) - 0.35
+    cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+    cylinder_y(m, 8.0, pz, 0.95, base + 0.55, min(base + 2.0, 6.5), "photocell", sides=12)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -326,11 +370,34 @@ CATALOGUE = [
      "streetlight_body_ge_grey"),
     ("gem400acunp", "GE M-400A (Cutoff Optics, No Photocell)",
      lambda: build_m400a("cutoff", photocell=False), "streetlight_body_ge_grey"),
+    # Converted in place from the JSON models (D2): same registry names, classes and bounding boxes.
+    ("gem400r3", "GE M400R3 (Standard)", lambda: build_m400r3("refractor"),
+     "streetlight_body_ge_grey"),
+    ("gem400r3cu", "GE M400R3 (Cutoff Optics)", lambda: build_m400r3("cutoff"),
+     "streetlight_body_ge_grey"),
+    ("gem400r3cunp", "GE M400R3 (Cutoff Optics, No Photocell)",
+     lambda: build_m400r3("cutoff", photocell=False), "streetlight_body_ge_grey"),
 ]
 
 
-# Fixtures whose lens is a drop refractor, and so wear the pale unlit refractor glass.
-REFRACTOR_OFF_FOR = {"gem400a": LENS_REFRACTOR_OFF}
+# Lens art cut from the requester's JSON fixture atlases (D5, hybrid): source crops in
+# dev-env-utils/scripts/artwork/streetlight/, written as streetlight_lens_<art>_on/_off.
+ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork", "streetlight")
+LENS_ART = ["ge_m400"]
+
+
+def art_lens(art, state):
+    return "streetlight_lens_%s_%s" % (art, state)
+
+
+# Each fixture's (lit, unlit) lens. Drop refractors wear the generated prismatic glass; flat
+# glass the requester's lens art where the JSON fixture had some, else the generated HPS glass.
+LENS_FOR = {
+    "gem400a": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem400r3": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem400r3cu": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
+    "gem400r3cunp": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
+}
 
 
 # --------------------------------------------------------------------------- textures
@@ -363,6 +430,20 @@ def lens_png(lit):
     return img
 
 
+def refractor_on_png():
+    """The requester's refractor orange, banded across the bowl: five light ribs on a body a
+    little under his colour, so the bands read and the whole still reads as his orange."""
+    orange = (255, 106, 19)
+    rib = tuple(int(round(c + (255 - c) * 0.35)) for c in orange)
+    body = tuple(int(round(c * 0.86)) for c in orange)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        col = (rib if y in (2, 5, 8, 11, 14) else body) + (255,)
+        for x in range(16):
+            img.putpixel((x, y), col)
+    return img
+
+
 def refractor_off_png():
     """Unlit prismatic glass: pale warm grey in horizontal prism bands, a little lighter where
     the bowl is deepest. Painted near the shaded housing's level, as it is drawn unshaded."""
@@ -378,11 +459,32 @@ def refractor_off_png():
     return img
 
 
+def art_lens_png(art, state):
+    """A lens crop from the requester's atlas, made a sprite: turned so the lamp lies along the
+    fixture (the box lens runs v along z), scaled square (a taller-than-wide sprite is read as
+    an animation strip) to 32 px. Drawn unshaded now, the unlit art is halved, so it looks as it
+    did shaded; the lit art is left as painted, and so reads lit for the first time."""
+    src = Image.open(os.path.join(ARTWORK_DIR, "%s_lens_%s.png" % (art, state))).convert("RGBA")
+    img = src.transpose(Image.ROTATE_90).resize((32, 32), Image.NEAREST)
+    if state == "off":
+        img = Image.eval(img, lambda c: c)  # copy
+        px = img.load()
+        for y in range(32):
+            for x in range(32):
+                r, g, b, a = px[x, y]
+                px[x, y] = (r // 2, g // 2, b // 2, a)
+    return img
+
+
 def all_textures():
     out = {name: swatch_png(*grad) for name, grad in SWATCHES.items()}
     out[LENS_ON] = lens_png(True)
     out[LENS_OFF] = lens_png(False)
     out[LENS_REFRACTOR_OFF] = refractor_off_png()
+    out[LENS_REFRACTOR_ON] = refractor_on_png()
+    for art in LENS_ART:
+        for state in ("on", "off"):
+            out[art_lens(art, state)] = art_lens_png(art, state)
     return out
 
 
@@ -393,9 +495,9 @@ def _display(rotation, translation_px, scale):
             "scale": [scale] * 3}
 
 
-# The JSON cobra heads' `display` (ge_m400r3_cutoff.json), so the OBJ fixtures sit in a slot, a
-# hand and on the ground as their neighbours in the tab do: side on in the slot, lifted to its
-# middle. forge:default-block draws a fixture this low and long as a sliver in the slot's corner.
+# The JSON cobra heads' `display` (as ge_m400r3_cutoff.json had it before its conversion), so
+# the OBJ fixtures sit in a slot, a hand and on the ground as their neighbours in the tab do:
+# side on in the slot, lifted to its middle. forge:default-block draws a fixture this low and long as a sliver in the slot's corner.
 INVENTORY_TRANSFORM = {
     "gui": _display([0, 90, -5], [0.5, 4.5, 0], 0.625),
     "ground": _display([0, 0, 0], [0, 6.5, 0], 1.0),
@@ -407,9 +509,12 @@ INVENTORY_TRANSFORM = {
 }
 
 
-def blockstate(registry, body_tex, lens_off=LENS_OFF):
+def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF):
     model = "csm:lighting/shared_models/streetlight_%s.obj" % registry
-    lit = {"textures": {"#" + LENS_MAT: TEX + LENS_ON}}
+    lit = {"textures": {"#" + LENS_MAT: TEX + lens_on}}
+    # States 0 and 2 name the unlit lens rather than inheriting it: gen_lighting_lit_atlases.py
+    # claims any blockstate whose 0 and 2 are empty (the troffers' rule, LIGHTING_SYSTEM.md).
+    unlit = {"textures": {"#" + LENS_MAT: TEX + lens_off}}
     return {
         "forge_marker": 1,
         "defaults": {
@@ -420,7 +525,7 @@ def blockstate(registry, body_tex, lens_off=LENS_OFF):
         },
         "variants": {
             "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
-            "state": {"0": {}, "1": lit, "2": {}, "3": lit},
+            "state": {"0": unlit, "1": lit, "2": unlit, "3": lit},
             "inventory": [{"transform": INVENTORY_TRANSFORM}],
         },
     }
@@ -446,7 +551,7 @@ def outputs():
                 "%s leaves the fixture envelope at %s" % (registry, (x, y, z))
         files[MODEL_DIR + "/streetlight_%s.obj" % registry] = mesh.text(display).encode()
         files["blockstates/%s.json" % registry] = (
-            json.dumps(blockstate(registry, body, REFRACTOR_OFF_FOR.get(registry, LENS_OFF)), indent=2) + "\n").encode()
+            json.dumps(blockstate(registry, body, *LENS_FOR.get(registry, (LENS_ON, LENS_OFF))), indent=2) + "\n").encode()
     for name, img in all_textures().items():
         buf = io.BytesIO()
         img.save(buf, "PNG")
