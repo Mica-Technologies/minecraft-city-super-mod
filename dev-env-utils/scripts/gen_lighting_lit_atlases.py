@@ -3,10 +3,19 @@
 gen_lighting_lit_atlases.py -- make a switched-off lighting fixture actually LOOK off.
 
 Every ``AbstractBrightLight`` has a four-value ``state`` (0 redstone-off, 1 redstone-on, 2 manual-
-off, 3 manual-on) that really does drive ``getLightValue``. But 81 of the older fixtures declare all
-four states as empty overrides and wear ONE atlas for the whole block, so an unlit cobra head is
-pixel-identical to a lit one. You can see the light it casts on the ground; the fixture itself never
-changes.
+off, 3 manual-on) that really does drive ``getLightValue``. But the older fixtures declared all
+four states as empty overrides and wore ONE atlas for the whole block, so an unlit cobra head was
+pixel-identical to a lit one. You could see the light it cast on the ground; the fixture itself never
+changed.
+
+WHAT IT COVERS TODAY
+--------------------
+It was written (2026-09) for 81 fixtures on 27 atlases. The street lights among them were rebuilt as
+OBJ models by ``gen_streetlight_fixtures.py`` (#99); their blockstates name the unlit lens on states
+0 and 2, so ``is_target`` no longer claims them, and their atlases are deleted. What this script
+still owns is **27 fixtures on 4 atlases**: ``troffers``, ``striplights``, ``mcla_classic_post_light``
+and ``mcla_park_light``. The figures in the sections below describe the original retrofit; they are
+kept because they are why the script works the way it does.
 
 The decorative pendant/sconce family already does this properly, by swapping a ``#lens`` texture per
 state (see ``assets/docs/LIGHTING_SYSTEM.md`` and ``cehalo.json``). This script retrofits the rest.
@@ -33,9 +42,10 @@ stayed bright, and the fix is one line in ``LENS`` plus a rerun.
 
 WHY NO MODEL CHANGES
 --------------------
-All 81 are JSON element models wearing a single texture through three keys (``0``, ``all``,
-``particle``). Because every face reads the same atlas, swapping that whole atlas per state already
-reaches the lens -- nothing has to be re-materialled to separate a ``#lens`` out first.
+All of them were JSON element models wearing a single texture through three keys (``0``, ``all``,
+``particle``), as today's 27 still are. Because every face reads the same atlas, swapping that whole
+atlas per state already reaches the lens -- nothing has to be re-materialled to separate a ``#lens``
+out first.
 
 WHY THE LENS IS CHOSEN BY EYE AND NOT DETECTED
 ----------------------------------------------
@@ -46,6 +56,7 @@ is which of them is the lamp, and the obvious heuristic is wrong in both directi
     troffers          lens is the MOST used rect (1390 faces) -- a troffer's whole underside is
                       the diffuser panel
     ge_hps_fixtures   lens is the RAREST (3 faces of 348) -- the little painted amber lamp
+                      (a sheet since deleted: its fixtures are OBJ now)
 
 Nothing separates those but looking, which is what ``--overlay`` is for: it draws each atlas at 8x
 with every candidate rect outlined and labelled, turning 27 judgements into 27 glances.
@@ -112,17 +123,13 @@ OFF_SUFFIX = "_off"
 # painted fixture face -- housing and lamp together -- so the catalogue has to be able to say
 # "this part of that rect".
 #
-# `colors` narrows a box to an exact set of RGBs. The LED arrays all need it: their panel rect is
-# a grey frame with the dies sitting in it, and brightening the frame would wash the fixture out.
-# Every one of those panels draws its dies in pure white, which is what makes this a list of one.
-WHITE_DIE = [(255, 255, 255)]
-
-#: The LED arrays want a harder dim than a flat diffuser, and it is a question of CONTRAST rather
-#: than of amount: a die taken from 255 to the default's 178 sits against a panel face that is
-#: already 220, so the dots stay about the value of the metal around them and the fixture barely
-#: changes. At ~133 the dies read clearly darker than their panel, which is what an unlit LED
-#: luminaire looks like -- a grid of dark dots on a light grey optic.
-LED_DIM = (0.52, 0.45)
+# `colors` narrows a box to an exact set of RGBs, for a lamp drawn inside a frame that must not be
+# dimmed with it. None of today's entries need it. The LED street lights did, until #99 made them
+# OBJ: their dies were pure white, [(255, 255, 255)], in a grey frame, and they took a harder dim
+# than a flat diffuser, `"dim": (0.52, 0.45)`. A die taken to the default's ~178 sat against a
+# panel face already at 220 and stayed the value of the metal round it; at ~133 the dies read as
+# dark dots on a light optic, which is what an unlit LED luminaire looks like. Use both again for
+# any new sheet that paints a lamp grid on a light frame.
 
 
 LENS = {
