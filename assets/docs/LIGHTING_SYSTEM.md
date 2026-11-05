@@ -324,8 +324,10 @@ family instead overrides `#lens` per state: STATE 1 and 3 (redstone-on and manua
 `lens_*_on`, STATE 0 and 2 get `lens_*_off`. Three lens families exist, `lens_opal_*` for glass
 shades, `lens_bulb_*` for exposed bulbs and `lens_amber_*` for the mission fixture's art glass.
 
-The other 81 fixtures now do this too, by a different route — they share 27 atlas textures with the
-lamp painted in, so they swap the whole atlas per state rather than a `#lens` material. See
+The older JSON fixtures do this too, by a different route — they wear atlas textures with the
+lamp painted in, so they swap the whole atlas per state rather than a `#lens` material. Today that
+is the troffers, the strip lights and the two MCLA post-top lanterns; the street lights are OBJ
+models since #99 (see [OBJ Roadway Fixtures](#obj-roadway-fixtures)). See
 [Lit and Unlit Textures on the Older Fixtures](#lit-and-unlit-textures-on-the-older-fixtures).
 
 ### Authoring notes
@@ -598,8 +600,11 @@ faces on the block boundary and see-through faces should all be 0.
 
 ## Lit and Unlit Textures on the Older Fixtures
 
-The 81 fixtures that predate the decorative family reach the same result by a different route, and
-it is worth knowing which, because the two families are authored in opposite directions.
+The JSON fixtures that predate the decorative family reach the same result by a different route,
+and it is worth knowing which, because the two families are authored in opposite directions. The
+retrofit covered 81 fixtures on 27 atlases; the street lights among them became OBJ models in #99,
+leaving **27 fixtures on 4 atlases** (`troffers`, `striplights`, `mcla_classic_post_light`,
+`mcla_park_light`). The figures below are the original retrofit's.
 
 The decorative family draws both lens textures from scratch and swaps a `#lens` material. The older
 fixtures could not: each wears **one atlas across every face**, through three texture keys (`0`,
@@ -630,8 +635,8 @@ unlit, which is what a block placed in `STATE_RS_OFF` should look like.
 
 ### Regenerating them
 
-`dev-env-utils/scripts/gen_lighting_lit_atlases.py` owns both halves — the 27 `_off` sheets and the
-81 blockstates — and is idempotent, so it can be re-run after re-tuning anything.
+`dev-env-utils/scripts/gen_lighting_lit_atlases.py` owns both halves — the `_off` sheets and the
+blockstates (4 and 27 today) — and is idempotent, so it can be re-run after re-tuning anything.
 
 - **`--overlay`** draws each atlas at 8x with every candidate UV rect outlined and labelled by face
   count. This is the classification aid; the models carry explicit per-face UV rects, so the
@@ -646,12 +651,15 @@ unlit, which is what a block placed in `STATE_RS_OFF` should look like.
 
 - **Which rect is the lamp cannot be detected.** The obvious heuristic is wrong in both directions:
   on `troffers` the lens is the MOST-used rect (1390 faces — a troffer's whole underside is the
-  diffuser), and on `ge_hps_fixtures` it is the rarest (3 of 348). Two atlases could not be read off
-  the sheet at all and were settled by rendering the fixture through `preview_block_model.py`.
+  diffuser), and on `ge_hps_fixtures` (since deleted) it was the rarest (3 of 348). Two atlases
+  could not be read off the sheet at all and were settled by rendering the fixture through
+  `preview_block_model.py`.
 - **Verify from BELOW.** These are downlights; the lens is on the underside. An above-angle render
   shows nothing changing and reads as a false pass. Use `--pitch 30` or greater.
-- **The LED arrays need a harder dim than the flat lenses**, and it is a question of contrast rather
-  than amount. Their dies are pure white sitting on a panel face already at 220, so the shared
-  default (which lands a white diffuser on ~178, matching the decorative family's `lens_opal_off`)
-  left the dots the same value as the metal around them. `LED_DIM` takes them to ~133, where they
-  read as dark dots on a light optic — which is what an unlit LED luminaire looks like.
+- **An LED array needs a harder dim than a flat lens**, and it is a question of contrast rather
+  than amount. The LED street lights' dies were pure white on a panel face already at 220, so the
+  shared default (which lands a white diffuser on ~178, matching the decorative family's
+  `lens_opal_off`) left the dots the same value as the metal around them; a `dim` of (0.52, 0.45)
+  took them to ~133, where they read as dark dots on a light optic. Those fixtures are OBJ since
+  #99, so no catalogue entry uses it now; the script's comment by `LENS` says how to bring it back
+  for a new sheet that paints a lamp grid on a light frame.
