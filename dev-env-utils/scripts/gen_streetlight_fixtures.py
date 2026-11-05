@@ -20,7 +20,8 @@ WHAT IT WRITES (per catalogue entry)
 
 Every fixture wears the same three materials, so a new fixture adds geometry and no sprites:
   body       the housing paint, overridden per fixture by the blockstate (`#body`)
-  lens       the glass, `streetlight_lens_hps_on` in STATE 1 and 3, `_off` in 0 and 2
+  unshaded_lens  the glass, `streetlight_lens_hps_on` in STATE 1 and 3, `_off` in 0 and 2;
+                 drawn without directional shading (CsmObjModelLoader.UNSHADED_PREFIX)
   photocell  the twist-lock photocontrol on top
 
 CONVENTIONS (the same as every other cobra head in the tab, so a fixture is a drop-in)
@@ -61,6 +62,15 @@ SWATCHES = {
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
+# A drop refractor with its lamp off is pale prismatic glass, not the dark smoked look of flat
+# glass, so refractor fixtures name this for STATE 0 and 2 instead.
+LENS_REFRACTOR_OFF = "streetlight_lens_refractor_off"
+
+# The glass. CsmObjModelLoader draws a material named unshaded_* without directional shading, as
+# a JSON element with "shade": false is: the flat lens faces straight down, and shaded it was
+# drawn at half brightness, so a lit lens could never read brighter than a dull tan. The unlit
+# lens is painted at about half to match the shaded housing round it (the troffers' rule).
+LENS_MAT = "unshaded_lens"
 
 ARC = 14          # points on a housing section's top arc
 REAR_Z = 15.9     # the rear cap's standoff from the block face
@@ -286,18 +296,20 @@ def top_at(profile, z):
     raise ValueError(z)
 
 
-def build_m400a(optics):
+def build_m400a(optics, photocell=True):
     m = Mesh()
     check_neck_holds_arm("M-400A", M400A_PROFILE, M400A_EXPONENT)
     loft_housing(m, M400A_PROFILE, M400A_EXPONENT)
     if optics == "cutoff":
         # Flat glass in the door frame: a shallow slab whose underside is the lens.
-        box(m, (5.3, -0.35, 3.4), (10.7, 0.02, 10.6), "body", bottom_mat="lens")
+        box(m, (5.3, -0.35, 3.4), (10.7, 0.02, 10.6), "body", bottom_mat=LENS_MAT)
     else:
         # Drop refractor: prismatic glass bowl under the optical chamber.
-        half_ellipsoid_down(m, (8.0, 0.05, 7.0), 2.8, 2.4, 3.6, "lens")
+        half_ellipsoid_down(m, (8.0, 0.05, 7.0), 2.8, 2.4, 3.6, LENS_MAT)
     # Door latch at the nose.
     box(m, (7.4, -0.25, 1.9), (8.6, 0.12, 2.7), "body")
+    if not photocell:
+        return m
     # Twist-lock photocell on the hood near the slipfitter.
     pz = 12.6
     base = top_at(M400A_PROFILE, pz) - 0.35
@@ -308,9 +320,17 @@ def build_m400a(optics):
 
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
+    ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
+     "streetlight_body_ge_grey"),
     ("gem400acu", "GE M-400A (Cutoff Optics)", lambda: build_m400a("cutoff"),
      "streetlight_body_ge_grey"),
+    ("gem400acunp", "GE M-400A (Cutoff Optics, No Photocell)",
+     lambda: build_m400a("cutoff", photocell=False), "streetlight_body_ge_grey"),
 ]
+
+
+# Fixtures whose lens is a drop refractor, and so wear the pale unlit refractor glass.
+REFRACTOR_OFF_FOR = {"gem400a": LENS_REFRACTOR_OFF}
 
 
 # --------------------------------------------------------------------------- textures
@@ -336,10 +356,25 @@ def lens_png(lit):
                 hot = (255, 236, 190)
                 edge = (236, 120, 30)
             else:
-                hot = (150, 128, 100)
-                edge = (96, 80, 66)
+                hot = (76, 65, 51)
+                edge = (49, 41, 34)
             col = tuple(int(round(hot[k] + (edge[k] - hot[k]) * d)) for k in range(3)) + (255,)
             img.putpixel((x, y), col)
+    return img
+
+
+def refractor_off_png():
+    """Unlit prismatic glass: pale warm grey in horizontal prism bands, a little lighter where
+    the bowl is deepest. Painted near the shaded housing's level, as it is drawn unshaded."""
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        for x in range(16):
+            dx, dy = (x - 7.5) / 7.5, (y - 7.5) / 7.5
+            d = min(1.0, math.sqrt(dx * dx + dy * dy))
+            band = 0.86 if y % 2 else 1.0
+            base = (150, 146, 134)
+            k = band * (1.0 - 0.18 * d)
+            img.putpixel((x, y), tuple(int(round(c * k)) for c in base) + (255,))
     return img
 
 
@@ -347,6 +382,7 @@ def all_textures():
     out = {name: swatch_png(*grad) for name, grad in SWATCHES.items()}
     out[LENS_ON] = lens_png(True)
     out[LENS_OFF] = lens_png(False)
+    out[LENS_REFRACTOR_OFF] = refractor_off_png()
     return out
 
 
@@ -371,15 +407,15 @@ INVENTORY_TRANSFORM = {
 }
 
 
-def blockstate(registry, body_tex):
+def blockstate(registry, body_tex, lens_off=LENS_OFF):
     model = "csm:lighting/shared_models/streetlight_%s.obj" % registry
-    lit = {"textures": {"#lens": TEX + LENS_ON}}
+    lit = {"textures": {"#" + LENS_MAT: TEX + LENS_ON}}
     return {
         "forge_marker": 1,
         "defaults": {
             "model": model,
             "custom": {"flip-v": True},
-            "textures": {"#body": TEX + body_tex, "#lens": TEX + LENS_OFF,
+            "textures": {"#body": TEX + body_tex, "#" + LENS_MAT: TEX + lens_off,
                          "#photocell": TEX + "streetlight_photocell"},
         },
         "variants": {
@@ -393,7 +429,7 @@ def blockstate(registry, body_tex):
 def mtl_text():
     lines = ["# Generated by dev-env-utils/scripts/gen_streetlight_fixtures.py -- do not edit",
              "# One set of materials for every OBJ street light; each blockstate retextures them."]
-    for mat, tex in (("body", "streetlight_body_ge_grey"), ("lens", LENS_OFF),
+    for mat, tex in (("body", "streetlight_body_ge_grey"), (LENS_MAT, LENS_OFF),
                      ("photocell", "streetlight_photocell")):
         lines += ["newmtl %s" % mat, "map_Kd %s%s" % (TEX, tex), ""]
     return "\n".join(lines)
@@ -410,7 +446,7 @@ def outputs():
                 "%s leaves the fixture envelope at %s" % (registry, (x, y, z))
         files[MODEL_DIR + "/streetlight_%s.obj" % registry] = mesh.text(display).encode()
         files["blockstates/%s.json" % registry] = (
-            json.dumps(blockstate(registry, body), indent=2) + "\n").encode()
+            json.dumps(blockstate(registry, body, REFRACTOR_OFF_FOR.get(registry, LENS_OFF)), indent=2) + "\n").encode()
     for name, img in all_textures().items():
         buf = io.BytesIO()
         img.save(buf, "PNG")

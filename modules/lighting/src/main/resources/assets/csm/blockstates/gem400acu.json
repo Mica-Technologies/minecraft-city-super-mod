@@ -7,7 +7,7 @@
     },
     "textures": {
       "#body": "csm:blocks/lighting/shared_textures/streetlight_body_ge_grey",
-      "#lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_off",
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_off",
       "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
     }
   },
@@ -28,13 +28,13 @@
       "0": {},
       "1": {
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
         }
       },
       "2": {},
       "3": {
         "textures": {
-          "#lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_hps_on"
         }
       }
     },
