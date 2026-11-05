@@ -68,6 +68,8 @@ SWATCHES = {
     # The smart-city node the GreenCobra "SN" heads carry in the photocell's receptacle: the blue
     # (0, 92, 154) of ltgcj_smartnode / ltgcm_smartnode, worn on the photocell material.
     "streetlight_smartnode": ((10, 104, 170), (0, 80, 138)),
+    # The GE Evolve's grey: ge_evolve_large/small paint the hood 186 and its flanks 177.
+    "streetlight_body_ge_evolve_grey": ((196, 196, 196), (170, 170, 170)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -803,6 +805,63 @@ def build_leotek(model, top="photocell"):
     return m
 
 
+def receptacle_top(m, profile, pz, top, cell_top):
+    """What stands in the twist-lock receptacle: the photocell, a blank cap (a receptacle with
+    nothing in it), or a smart node (a squat puck and its dome, on the photocell material)."""
+    base = top_at(profile, pz) - 0.35
+    if top == "photocell":
+        photocell(m, profile, pz, cell_top)
+    elif top == "cap":
+        cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+    elif top == "node":
+        cylinder_y(m, 8.0, pz, 1.15, base, base + 0.6, "photocell", sides=12)
+        cylinder_y(m, 8.0, pz, 0.7, base + 0.6, base + 0.85, "photocell", sides=12)
+
+
+# GE Evolve ERS2 (CSM's "geel"/"gees", Large and Small): a slim LED roadway head, a 1 px plate
+# carrying the LED module under a finned top, the driver housing rising behind it to the
+# slipfitter. The JSON: a plate x 5..11, y 0..1 from z 7 (Large) or 9 (Small) to 16, a narrower
+# nose 1 px ahead of it, a 1 px hump x 6..10 over z 11..16 and the receptacle at z 13..15. Its
+# boxes are only 4 px tall (5 with a smart node, 6 with the outlet), so the rear rises just enough
+# to swallow the arm's 3 px end and the receptacle stands on the plate ahead of that rise, as the
+# ATB2's does. The vents his sheet paints on top of the plate are cooling fins along it.
+#   po: the receptacle with nothing in it (a blank cap); sn: a smart node in it.
+def evolve_profile(nose):
+    return [
+        # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+        (nose + 0.1, 1.6, 0.30, 0.85),
+        (nose + 0.5, 2.5, 0.18, 1.00),
+        (nose + 1.2, 3.0, 0.15, 1.10),
+        (10.6, 3.0, 0.15, 1.25),
+        (12.4, 2.95, 0.10, 1.75),
+        (13.6, 2.75, -0.15, 3.00),
+        (14.6, 2.6, -0.30, 3.55),
+        (REAR_Z, 2.55, -0.35, 3.60),
+    ]
+
+
+EVOLVE_EXPONENT = 3.0
+# size -> (nose z, lens box (x0, x1, z0, z1), fin z0, z1)
+EVOLVE = {
+    "large": (6.0, (5.5, 10.5, 7.4, 12.3), 7.8, 10.6),
+    "small": (8.0, (5.5, 10.5, 9.4, 12.2), 9.5, 10.7),
+}
+
+
+def build_evolve(size, top="photocell"):
+    nose, (lx0, lx1, lz0, lz1), fz0, fz1 = EVOLVE[size]
+    profile = evolve_profile(nose)
+    m = Mesh()
+    check_neck_holds_arm("GE Evolve " + size, profile, EVOLVE_EXPONENT)
+    loft_housing(m, profile, EVOLVE_EXPONENT)
+    box(m, (lx0, 0.0, lz0), (lx1, 0.3, lz1), "body", bottom_mat=LENS_MAT)
+    for dx in (-2.0, -1.0, 0.0, 1.0, 2.0):
+        box(m, (8.0 + dx - 0.15, 0.9, fz0), (8.0 + dx + 0.15, 1.55, fz1), "body")
+    receptacle_top(m, profile, 12.0, top, 4.0)
+    return m
+
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -862,6 +921,16 @@ CATALOGUE = [
      "streetlight_body_leotek_grey"),
     ("ltgcmv2np", "Leotek GreenCobra GCM (Version 2, No Photocell)", lambda: build_leotek("gcm", "cap"),
      "streetlight_body_leotek_grey"),
+    ("geel", "GE Evolve ESR2 (Large)", lambda: build_evolve("large"), "streetlight_body_ge_evolve_grey"),
+    ("geelpo", "GE Evolve ESR2 (Large, Photocell Outlet)", lambda: build_evolve("large", "cap"),
+     "streetlight_body_ge_evolve_grey"),
+    ("geelsn", "GE Evolve ESR2 (Large, Smart Node)", lambda: build_evolve("large", "node"),
+     "streetlight_body_ge_evolve_grey"),
+    ("gees", "GE Evolve ESR2 (Small)", lambda: build_evolve("small"), "streetlight_body_ge_evolve_grey"),
+    ("geespo", "GE Evolve ESR2 (Small, Photocell Outlet)", lambda: build_evolve("small", "cap"),
+     "streetlight_body_ge_evolve_grey"),
+    ("geesn", "GE Evolve ESR2 (Small, Smart Node)", lambda: build_evolve("small", "node"),
+     "streetlight_body_ge_evolve_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -895,7 +964,8 @@ ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork"
 # GCJ SN sheets carry pixel-identical arrays, as do the GCM and GCM SN, so each pair shares a cut.
 LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2",
             "leotek_ec", "leotek_ecdtd", "leotek_gc1v1", "leotek_gc1v2", "leotek_gcj", "leotek_gcl",
-            "leotek_gcm", "leotek_gcmv2"]
+            "leotek_gcm", "leotek_gcmv2",
+            "ge_evolve_large", "ge_evolve_small"]
 # The cuts are stored as they lie on the atlas. Where the JSON face mapped them onto the fixture
 # differently from art_lens_png's convention (the source's u from the slipfitter to the nose, its v
 # from east to west), they are turned first, so the array lands as the JSON drew it: a down face
@@ -948,12 +1018,20 @@ LENS_FOR = {
     "ltgcmsn": (art_lens("leotek_gcm", "on"), art_lens("leotek_gcm", "off")),
     "ltgcmv2": (art_lens("leotek_gcmv2", "on"), art_lens("leotek_gcmv2", "off")),
     "ltgcmv2np": (art_lens("leotek_gcmv2", "on"), art_lens("leotek_gcmv2", "off")),
+    "geel": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
+    "geelpo": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
+    "geelsn": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
+    "gees": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
+    "geespo": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
+    "geesn": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
 PHOTOCELL_FOR = {
     "ltgcjsn": "streetlight_smartnode",
     "ltgcmsn": "streetlight_smartnode",
+    "geelsn": "streetlight_smartnode",
+    "geesn": "streetlight_smartnode",
 }
 
 
