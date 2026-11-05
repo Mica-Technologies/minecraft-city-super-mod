@@ -515,6 +515,53 @@ Placed against the side of a block it stands on a steel shelf bracket off that f
 (`mount=north|east|south|west`, the wall at +Z in the model, turned by the blockstate). Ten
 states in all (`mount` x `lit`); the metadata holds both.
 
+## OBJ Roadway Fixtures
+
+The street lights are being rebuilt as OBJ models (GitHub #99), one generator for all of them:
+`dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family:
+
+| Registry name | Fixture |
+|---|---|
+| `gem400a` | GE M-400A, drop refractor |
+| `gem400acu` | GE M-400A, flat cutoff glass |
+| `gem400acunp` | GE M-400A, flat cutoff glass, no photocell |
+
+They are ordinary `BlockBrightLightFactory` blocks (4-state STATE, light-up air below); only the
+model is new. A JSON cobra head is a stack of boxes; these are lofted bodies, a superellipse
+section swept along a profile table from the nose to the slipfitter. They are baked into the chunk
+mesh like any JSON model: no tile entity, no renderer.
+
+**The envelope.** A fixture faces north with its slipfitter at z = 16, where every CSM arm ends
+(the NOV tapered masts, the pole light mount, the SCE mounts, the mast arm curve tips), and stays
+inside the JSON cobra heads' footprint (x 5..11, z 1..16), so a JSON fixture's blockstate can later
+point at one of these without moving a bounding box or an arm. The generator asserts both: every
+vertex inside the envelope, and the arm's 3 x 3 px end (`ARM_TIP`) inside the rear section, so no
+arm corner stands proud of the neck. Nothing sits on z = 16 facing back into the block; the rear
+cap is at 15.9.
+
+**Materials.** One `streetlight.mtl` for every fixture, retextured per blockstate:
+
+| Material | Texture |
+|---|---|
+| `body` | the housing paint, a 16 px swatch (`streetlight_body_*`) |
+| `unshaded_lens` | `streetlight_lens_hps_on` in STATE 1 and 3; unlit, `streetlight_lens_hps_off` for flat glass, `streetlight_lens_refractor_off` for a drop refractor |
+| `photocell` | the twist-lock photocontrol |
+
+**The lens is drawn unshaded.** `CsmObjModelLoader` bakes any OBJ material whose name starts with
+`unshaded_` (`CsmObjModelLoader.UNSHADED_PREFIX`) without directional shading, as a JSON element
+with `"shade": false` is drawn. Forge's OBJ loader keeps no custom data of its own, so the material
+name is the only thing that reaches the bake. Without it a flat lens, which faces straight down, is
+drawn at half brightness, and a lit lens seen from the road could be no brighter than a dull tan
+whatever its texture. Because nothing shades it, the unlit textures are painted at about half, to
+sit beside the shaded housing (the troffers' rule). The prefix is opt-in: the many existing OBJ
+materials called plain `lens` (pendants, cameras) are unchanged. With the part bake cache disabled
+(`-Dcsm.noPartBakeCache=true`), Forge's own loader bakes CSM's OBJs and the lens is shaded again.
+
+**Adding a fixture:** a profile table and a builder in the generator, a `CATALOGUE` entry, then
+the usual tab line (bounding box from the generated geometry), lang in four locales and
+`gen_wiki_reference.py`. Run `audit_obj_models.py` on the new OBJ: winding, coplanar faces,
+faces on the block boundary and see-through faces should all be 0.
+
 ## Lit and Unlit Textures on the Older Fixtures
 
 The 81 fixtures that predate the decorative family reach the same result by a different route, and

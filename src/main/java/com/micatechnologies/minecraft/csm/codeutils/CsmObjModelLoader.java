@@ -2,7 +2,11 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.google.common.collect.ImmutableMap;
 import com.micatechnologies.minecraft.csm.CsmConstants;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -113,9 +117,36 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
     public IBakedModel bake(IModelState state, VertexFormat format,
         Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
       return CsmPartBakeCache.instance().bakeObj(this, state, format, bakedTextureGetter,
-          () -> new PackedObjModel(super.bake(state, format, bakedTextureGetter)));
+          () -> new PackedObjModel(super.bake(state, format, bakedTextureGetter),
+              unshadedSprites(bakedTextureGetter)));
+    }
+
+    /**
+     * The sprites of this model's {@code unshaded_*} materials, as retextured for this variant.
+     * Forge's OBJ loader keeps no custom data of its own, so a material's name is how a model
+     * asks for it: a material called {@code unshaded_lens} is drawn without directional shading.
+     */
+    private Set<TextureAtlasSprite> unshadedSprites(
+        Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+      Set<TextureAtlasSprite> out = Collections.newSetFromMap(new IdentityHashMap<>());
+      OBJModel.MaterialLibrary lib = getMatLib();
+      for (String name : lib.getMaterialNames()) {
+        if (name.startsWith(UNSHADED_PREFIX)) {
+          OBJModel.Material material = lib.getMaterial(name);
+          out.add(bakedTextureGetter.apply(material.getTexture().getTextureLocation()));
+        }
+      }
+      return out;
     }
   }
+
+  /**
+   * An OBJ material whose name starts with this is baked without directional ("diffuse")
+   * shading, as a JSON element with {@code "shade": false} is. For glass that is meant to read
+   * as lit: a face pointing straight down is otherwise drawn at half brightness, so a street
+   * light's lens, seen from the road, could never be brighter than a dull tan.
+   */
+  public static final String UNSHADED_PREFIX = "unshaded_";
 
   /**
    * An OBJ bake whose quads are built and fully packed, once and on one thread, before any
@@ -125,8 +156,16 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
 
     private volatile boolean ready;
 
-    PackedObjModel(IBakedModel baked) {
+    /** Sprites whose quads are drawn without directional shading; usually empty. */
+    private final Set<TextureAtlasSprite> unshaded;
+
+    /** The model's own quads, and the same list with the unshaded quads swapped in. */
+    private List<BakedQuad> ownQuads;
+    private List<BakedQuad> ownQuadsUnshaded;
+
+    PackedObjModel(IBakedModel baked, Set<TextureAtlasSprite> unshaded) {
       super(baked);
+      this.unshaded = unshaded;
     }
 
     @Override
@@ -137,14 +176,28 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
         synchronized (this) {
           if (!ready) {
             // The model's own quads, the ones any state without OBJ state gets.
-            for (BakedQuad quad : originalModel.getQuads(null, null, 0L)) {
+            List<BakedQuad> own = originalModel.getQuads(null, null, 0L);
+            for (BakedQuad quad : own) {
               quad.getVertexData();
+            }
+            if (!unshaded.isEmpty()) {
+              List<BakedQuad> copy = new ArrayList<>(own.size());
+              for (BakedQuad quad : own) {
+                copy.add(unshaded.contains(quad.getSprite())
+                    ? new BakedQuad(quad.getVertexData(), quad.getTintIndex(), quad.getFace(),
+                        quad.getSprite(), false, quad.getFormat())
+                    : quad);
+              }
+              ownQuads = own;
+              ownQuadsUnshaded = Collections.unmodifiableList(copy);
             }
             ready = true;
           }
         }
       }
-      return originalModel.getQuads(state, side, rand);
+      List<BakedQuad> quads = originalModel.getQuads(state, side, rand);
+      // Forge's OBJ bake hands back the same list for every state that carries no OBJ state.
+      return quads == ownQuads ? ownQuadsUnshaded : quads;
     }
   }
 }
