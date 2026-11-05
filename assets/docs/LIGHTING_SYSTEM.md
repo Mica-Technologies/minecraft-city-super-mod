@@ -518,7 +518,7 @@ states in all (`mount` x `lit`); the metadata holds both.
 ## OBJ Roadway Fixtures
 
 The street lights are being rebuilt as OBJ models (GitHub #99), one generator for all of them:
-`dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family:
+`dev-env-utils/scripts/gen_streetlight_fixtures.py`. Today it writes the GE M-400A family and the GE fixtures converted from JSON:
 
 | Registry name | Fixture |
 |---|---|
@@ -526,6 +526,8 @@ The street lights are being rebuilt as OBJ models (GitHub #99), one generator fo
 | `gem400acu` | GE M-400A, flat cutoff glass |
 | `gem400acunp` | GE M-400A, flat cutoff glass, no photocell |
 | `gem400r3`, `gem400r3cu`, `gem400r3cunp` | GE M400R3 refractor, cutoff, cutoff without photocell: **converted in place** from JSON |
+| `gem240r1`, `gem240r1np` | GE M-250R (CSM's "M240R1"), the long early body, drop refractor, with and without photocell: converted in place |
+| `gem240r2`, `gem240r2cu` | GE M-250R2 (CSM's "M240R2"), the short body, drop refractor or flat cutoff glass (his M240 lens art): converted in place |
 
 **Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
 blockstate changes hands, from a hand-written one to the generator's, so placed blocks and
