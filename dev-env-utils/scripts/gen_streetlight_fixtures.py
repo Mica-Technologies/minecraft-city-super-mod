@@ -61,6 +61,8 @@ SWATCHES = {
     "streetlight_photocell": ((70, 72, 76), (38, 40, 44)),
     # The Form 109's darker cast grey: merc_fixtures paints the housing 98 98 98.
     "streetlight_body_merc_grey": ((112, 112, 110), (84, 84, 82)),
+    # American Electric's Autobahn: the light grey of ae_autobahn_atb0/2, 177 on the hood, 153 under.
+    "streetlight_body_ael_grey": ((188, 188, 186), (156, 156, 154)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -604,6 +606,81 @@ def build_ov20():
     return m
 
 
+# American Electric 115 (1970s-90s): a tall, boxy cast head on a narrower neck. The JSON: a head
+# x 5..11, y -0.5..4 at z 5..12 over a neck x 6..10 to z 16, the refractor deepest at its rear
+# (y -3 at z 8..10.5), the photocell at z 13..15.25 up to y 6.25. The cutoff wears the same framed
+# lens panel on ge_hps_fixtures that the GE M240R2 cutoff does, so it reuses that cut.
+AE115_PROFILE = [
+    (5.0, 1.4, 0.40, 1.90),
+    (5.35, 2.3, -0.10, 2.90),
+    (6.0, 2.85, -0.40, 3.60),
+    (7.5, 3.0, -0.50, 3.95),
+    (10.0, 3.0, -0.50, 4.05),
+    (11.8, 2.85, -0.45, 4.00),
+    (13.0, 2.45, -0.32, 3.90),
+    (14.6, 2.4, -0.35, 3.90),
+    (REAR_Z, 2.4, -0.40, 3.90),
+]
+AE115_EXPONENT = 2.8
+
+
+def build_ae115(optics):
+    m = Mesh()
+    check_neck_holds_arm("AEL 115", AE115_PROFILE, AE115_EXPONENT)
+    loft_housing(m, AE115_PROFILE, AE115_EXPONENT)
+    if optics == "cutoff":
+        box(m, (5.6, -0.6, 6.3), (10.4, -0.45, 11.4), "body", bottom_mat=LENS_MAT)
+    else:
+        half_ellipsoid_down(m, (8.0, -0.45, 8.4), 2.6, 2.5, 2.4, LENS_MAT)
+    box(m, (7.4, -0.7, 5.6), (8.6, -0.35, 6.4), "body")
+    photocell(m, AE115_PROFILE, 14.1, 6.25)
+    return m
+
+
+# American Electric Autobahn ATB0 / ATB2: modern low-profile LED roadway heads, a flat underside
+# carrying the LED array (AngelWingsPanda's array art, cut from ae_autobahn_atb0/2), a smooth hood
+# that thickens toward the slipfitter. The ATB2 is the bigger, flatter one. Their JSON bounding
+# boxes are wider and longer than the cobra heads' envelope: x 4..12 and 3..13, z 0..16.
+ATB0_PROFILE = [
+    (0.3, 2.6, 1.00, 1.90),
+    (0.8, 3.5, 0.55, 2.40),
+    (1.8, 3.95, 0.30, 2.80),
+    (4.0, 4.0, 0.30, 3.10),
+    (8.0, 4.0, 0.30, 3.40),
+    (11.0, 3.95, 0.30, 3.70),
+    (13.0, 3.6, -0.10, 3.90),
+    (14.8, 3.1, -0.30, 3.95),
+    (REAR_Z, 3.0, -0.35, 3.95),
+]
+# Only 2 px thick over the optic (bounding box y 0..4), so the slipfitter end rises to take the arm
+# and the photocell stands on the flat ahead of that rise, where the box leaves it room.
+ATB2_PROFILE = [
+    (0.3, 3.6, 0.35, 1.00),
+    (0.8, 4.5, 0.25, 1.35),
+    (1.8, 4.95, 0.20, 1.60),
+    (5.0, 5.0, 0.20, 1.80),
+    (9.0, 4.9, 0.20, 2.00),
+    (11.5, 4.6, 0.10, 2.40),
+    (13.2, 3.9, -0.15, 3.20),
+    (14.6, 3.2, -0.30, 3.75),
+    (REAR_Z, 3.0, -0.35, 3.85),
+]
+ATB_EXPONENT = 2.6
+
+
+def build_atb(size):
+    m = Mesh()
+    profile = ATB0_PROFILE if size == 0 else ATB2_PROFILE
+    check_neck_holds_arm("Autobahn ATB%d" % size, profile, ATB_EXPONENT)
+    loft_housing(m, profile, ATB_EXPONENT)
+    if size == 0:
+        box(m, (4.6, 0.15, 1.6), (11.4, 0.32, 10.8), "body", bottom_mat=LENS_MAT)
+        photocell(m, profile, 13.0, 6.0)
+    else:
+        box(m, (3.7, 0.05, 1.6), (12.3, 0.22, 11.0), "body", bottom_mat=LENS_MAT)
+        photocell(m, profile, 11.4, 4.05)
+    return m
+
 
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
@@ -639,6 +716,12 @@ CATALOGUE = [
      "streetlight_body_merc_grey"),
     ("whov50shadednp", "Westinghouse OV50 (Shaded, No Photocell)",
      lambda: build_ov50("shaded", photocell_on=False), "streetlight_body_merc_grey"),
+    ("ae115", "American Electric 115 (Standard)", lambda: build_ae115("refractor"),
+     "streetlight_body_ge_grey"),
+    ("ae115cu", "American Electric 115 (Cutoff Optics)", lambda: build_ae115("cutoff"),
+     "streetlight_body_ge_grey"),
+    ("aeatb0", "American Electric Autobahn ATB0", lambda: build_atb(0), "streetlight_body_ael_grey"),
+    ("aeatb2", "American Electric Autobahn ATB2", lambda: build_atb(2), "streetlight_body_ael_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -649,13 +732,18 @@ ENVELOPE_FOR = {
     # The OV-50's round glare shield is 12 px across (x 2..14).
     "whov50shaded": ((2.0, 14.0), (-3.0, 6.0), (1.0, REAR_Z + 1e-9)),
     "whov50shadednp": ((2.0, 14.0), (-3.0, 4.0), (1.0, REAR_Z + 1e-9)),
+    # The Autobahns' boxes run x 4..12 / 3..13 and z 0..16 from y 0; the neck dips the fraction of a
+    # pixel below y 0 that it needs to swallow the arm's end (ARM_TIP), as every cobra head's does.
+    "aeatb0": ((4.0, 12.0), (-0.5, 6.0), (0.0, REAR_Z + 1e-9)),
+    "aeatb2": ((3.0, 13.0), (-0.5, 4.1), (0.0, REAR_Z + 1e-9)),
 }
 
 
 # Lens art cut from the requester's JSON fixture atlases (D5, hybrid): source crops in
 # dev-env-utils/scripts/artwork/streetlight/, written as streetlight_lens_<art>_on/_off.
 ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork", "streetlight")
-LENS_ART = ["ge_m400", "ge_m240"]
+# ael_atb0/2 are the Autobahns' LED arrays (the dies white lit, dimmed dark on a pale optic unlit).
+LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2"]
 
 
 def art_lens(art, state):
@@ -681,6 +769,10 @@ LENS_FOR = {
     "whov50np": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "whov50shaded": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "whov50shadednp": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "ae115": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "ae115cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
+    "aeatb0": (art_lens("ael_atb0", "on"), art_lens("ael_atb0", "off")),
+    "aeatb2": (art_lens("ael_atb2", "on"), art_lens("ael_atb2", "off")),
 }
 
 

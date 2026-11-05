@@ -148,12 +148,6 @@ LENS = {
         "note": "the olive refractor bowl. Confirmed by rendering alto_mv_underpass_light: dark "
                 "canopy on top, olive glass bowl beneath. Not guessable from the sheet alone.",
     },
-    "ge_hps_fixtures": {
-        "boxes": [(8, 7, 33, 29), (69, 24, 81, 36), (5, 81, 19, 103)], "colors": None,
-        "note": "the amber HPS lamp: two painted lamp windows and the flat swatch the other "
-                "fixtures wear. Boxes are the bounding boxes of the warm pixels, so the little "
-                "reflector frame inside them lifts too -- which is what a lit lamp does to it.",
-    },
 
     # --- LED arrays: the panel, restricted to the dies ------------------------------------------
     "ge_evolve_large": {"boxes": [(0, 0, 41, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
@@ -177,10 +171,6 @@ LENS = {
     "ltgcm": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "ltgcm_smartnode": {"boxes": [(0, 0, 64, 64)], "colors": WHITE_DIE, "dim": LED_DIM,
                         "note": "the LED array; the blue swatch is the smart node, not a lamp"},
-    "ae_autobahn_atb0": {"boxes": [(0, 0, 56, 30)], "colors": WHITE_DIE, "dim": LED_DIM,
-                         "note": "the five LED modules"},
-    "ae_autobahn_atb2": {"boxes": [(0, 0, 56, 53)], "colors": WHITE_DIE, "dim": LED_DIM,
-                         "note": "the four LED modules"},
     "ci_navion": {"boxes": [(0, 0, 41, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "ci_navion_alt": {"boxes": [(0, 0, 60, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
     "cree_ledway": {"boxes": [(0, 0, 45, 31)], "colors": WHITE_DIE, "dim": LED_DIM, "note": "the LED array"},
@@ -201,10 +191,10 @@ DIM_DEFAULT = (0.70, 0.45)
 
 #: Per-atlas overrides, for anything the shared default flatters badly. An unlit high-pressure
 #: sodium lamp is a grey ceramic tube, not a pale peach one, so the amber wants taking down further
-#: than a white diffuser does. A catalogue entry may also carry its own ``dim`` key, which wins.
-DIM_OVERRIDES = {
-    "ge_hps_fixtures": (0.55, 0.30),
-}
+#: than a white diffuser does: ge_hps_fixtures took (0.55, 0.30) until its last fixtures, the AEL
+#: 115s, became OBJ models (#99) and the sheet was deleted. A catalogue entry may also carry its own
+#: ``dim`` key, which wins.
+DIM_OVERRIDES = {}
 
 
 # --- reading the tree ------------------------------------------------------------------------------
