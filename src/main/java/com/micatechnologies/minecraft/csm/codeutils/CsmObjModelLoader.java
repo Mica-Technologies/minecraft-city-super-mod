@@ -1,6 +1,8 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.lang.reflect.Field;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,8 +151,34 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
   public static final String UNSHADED_PREFIX = "unshaded_";
 
   /**
+   * Forge's {@code OBJBakedModel.quads}, the list its {@code getQuads} hands out for any state
+   * without OBJ state; {@code null} if this Forge has no such field, and then the quads are left
+   * as Forge built them.
+   */
+  private static final Field OBJ_BAKED_QUADS = openObjBakedQuads();
+
+  private static Field openObjBakedQuads() {
+    try {
+      Field f = OBJModel.OBJBakedModel.class.getDeclaredField("quads");
+      f.setAccessible(true);
+      return f;
+    } catch (ReflectiveOperationException | RuntimeException e) {
+      return null;
+    }
+  }
+
+  /**
    * An OBJ bake whose quads are built and fully packed, once and on one thread, before any
    * caller sees them.
+   *
+   * <p>Forge builds an OBJ quad as an {@code UnpackedBakedQuad}, which keeps its unpacked
+   * {@code float[4][elements][4]} (about 900 bytes) for good after packing it into the vanilla
+   * {@code int[]}. Once packed, each is swapped for a plain {@link BakedQuad} on the same
+   * {@code int[]} (the same quad, field for field, as {@code CsmQuadSharing} would see it), and
+   * the list is written back into the OBJ bake, so the unpacked arrays are freed. A plain quad
+   * reaches Forge's lighting pipeline through {@code LightUtil.putBakedQuad}, which reads the
+   * packed data: what is drawn does not change. Measured on the street lights (#99): those
+   * arrays were most of the 27.5 MB the OBJ fixtures added.</p>
    */
   public static final class PackedObjModel extends BakedModelWrapper<IBakedModel> {
 
@@ -159,7 +187,10 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
     /** Sprites whose quads are drawn without directional shading; usually empty. */
     private final Set<TextureAtlasSprite> unshaded;
 
-    /** The model's own quads, and the same list with the unshaded quads swapped in. */
+    /**
+     * Only when the quads could not be written back: the model's own list, and the same list
+     * with the unshaded quads swapped in.
+     */
     private List<BakedQuad> ownQuads;
     private List<BakedQuad> ownQuadsUnshaded;
 
@@ -175,29 +206,41 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
       if (!ready) {
         synchronized (this) {
           if (!ready) {
-            // The model's own quads, the ones any state without OBJ state gets.
-            List<BakedQuad> own = originalModel.getQuads(null, null, 0L);
-            for (BakedQuad quad : own) {
-              quad.getVertexData();
-            }
-            if (!unshaded.isEmpty()) {
-              List<BakedQuad> copy = new ArrayList<>(own.size());
-              for (BakedQuad quad : own) {
-                copy.add(unshaded.contains(quad.getSprite())
-                    ? new BakedQuad(quad.getVertexData(), quad.getTintIndex(), quad.getFace(),
-                        quad.getSprite(), false, quad.getFormat())
-                    : quad);
-              }
-              ownQuads = own;
-              ownQuadsUnshaded = Collections.unmodifiableList(copy);
-            }
+            build();
             ready = true;
           }
         }
       }
       List<BakedQuad> quads = originalModel.getQuads(state, side, rand);
       // Forge's OBJ bake hands back the same list for every state that carries no OBJ state.
-      return quads == ownQuads ? ownQuadsUnshaded : quads;
+      return ownQuads != null && quads == ownQuads ? ownQuadsUnshaded : quads;
+    }
+
+    private void build() {
+      // The model's own quads, the ones any state without OBJ state gets.
+      List<BakedQuad> own = originalModel.getQuads(null, null, 0L);
+      List<BakedQuad> packed = new ArrayList<>(own.size());
+      for (BakedQuad quad : own) {
+        boolean diffuse = quad.shouldApplyDiffuseLighting()
+            && !unshaded.contains(quad.getSprite());
+        boolean plain = quad.getClass() == BakedQuad.class
+            && diffuse == quad.shouldApplyDiffuseLighting();
+        packed.add(plain ? quad
+            : new BakedQuad(quad.getVertexData(), quad.getTintIndex(), quad.getFace(),
+                quad.getSprite(), diffuse, quad.getFormat()));
+      }
+      if (OBJ_BAKED_QUADS != null && originalModel instanceof OBJModel.OBJBakedModel) {
+        try {
+          OBJ_BAKED_QUADS.set(originalModel, ImmutableList.copyOf(packed));
+          return;
+        } catch (IllegalAccessException | RuntimeException e) {
+          // fall through: keep Forge's list and swap in ours on the way out
+        }
+      }
+      if (!unshaded.isEmpty()) {
+        ownQuads = own;
+        ownQuadsUnshaded = Collections.unmodifiableList(packed);
+      }
     }
   }
 }
