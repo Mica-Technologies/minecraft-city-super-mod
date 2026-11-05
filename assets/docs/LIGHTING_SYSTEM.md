@@ -541,6 +541,9 @@ The street lights are being rebuilt as OBJ models (GitHub #99), one generator fo
 | `ltgcj`, `ltgcjsn` | Leotek GreenCobra GCJ, the 4 px wide junior with fins: the squarer Leotek section (`LEOTEK_EXPONENT`) is what lets its neck swallow the 3 px arm; `sn` carries a smart-city node, a blue puck on the photocell material (`PHOTOCELL_FOR`, `streetlight_smartnode`), in place of the photocell. Converted in place |
 | `ltgcl`, `ltgcm`, `ltgcmsn`, `ltgcmv2`, `ltgcmv2np` | Leotek GreenCobra GCL (x 4..12, two arrays side by side) and GCM (x 5..11): one smooth body at two widths, a slab over the array and a 3 px driver housing; GCM v2 wears his two-panel art, `sn` the smart node, `np` the blank cap. Converted in place; the GCL's box is its envelope. The Leotek cuts are turned to lie as his JSON faces drew them (`ART_TURN`) |
 | `geel`, `geelpo`, `geelsn`, `gees`, `geespo`, `geesn` | GE Evolve ESR2, Large (from z 6) and Small (from z 8): a slim 1 px plate carrying his LED module art (`streetlight_lens_ge_evolve_large/small`, two bars or one) under five cooling fins, the driver housing rising behind it to the slipfitter. Their boxes are only 4 px tall, so the rear rises just enough to swallow the arm and the receptacle stands on the plate ahead of that rise (the JSON had it over the rear, z 13..15); `po` carries a blank cap in the receptacle, `sn` the blue smart node. Converted in place |
+| `creeledway`, `creeledwaysmall` | Cree LEDway: a thin LED panel out front, its underside at y 2 (his array art, `streetlight_lens_cree_ledway/_small`), on a boxy 8 px driver housing carrying the photocell; the Small's panel is half as long (z 5..10). Converted in place; their x 4..12 boxes are their envelopes |
+| `creexsp` | Cree XSP: a broad flat LED head from z 2, its top stepping up toward the slipfitter, his two LED modules side by side across the front half of the underside (`streetlight_lens_cree_xsp`, turned a quarter by `ART_TURN`). Converted in place; its x 4..12 box is its envelope |
+| `creestylusfull`, `creestylushalf` | Cree Stylus: a linear LED fixture hung flush under a ceiling, not from an arm. A rounded bar 0.1 off the top of the block over a diffuser in his troffer white (`streetlight_lens_cree_stylus`, cut from `troffers`, which stays: the troffers use it); the Full runs on to z -16, one fixture two blocks long, as its JSON did. Converted in place; their boxes (y 11..16) are their envelopes |
 
 **Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
 blockstate changes hands, from a hand-written one to the generator's, so placed blocks and
@@ -559,7 +562,8 @@ inside the JSON cobra heads' footprint (x 5..11, z 1..16), so a JSON fixture's b
 point at one of these without moving a bounding box or an arm. The generator asserts both: every
 vertex inside the envelope, and the arm's 3 x 3 px end (`ARM_TIP`) inside the rear section, so no
 arm corner stands proud of the neck. A converted fixture whose JSON bounding box was bigger
-(the Form 109 teardrop) gets that box as its envelope in `ENVELOPE_FOR`. Nothing sits on z = 16 facing back into the block; the rear
+(the Form 109 teardrop) gets that box as its envelope in `ENVELOPE_FOR`. The Cree Stylus hangs from the
+ceiling rather than an arm, so it has no neck to check; its envelope is the top of the block. Nothing sits on z = 16 facing back into the block; the rear
 cap is at 15.9.
 
 **Materials.** One `streetlight.mtl` for every fixture, retextured per blockstate:
@@ -567,7 +571,7 @@ cap is at 15.9.
 | Material | Texture |
 |---|---|
 | `body` | the housing paint, a 16 px swatch (`streetlight_body_*`) |
-| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass); the mercury Form 109 and the Westinghouse OV-20 / OV-50 wear `streetlight_lens_refractor_merc_on`, his `merc_fixtures` olive (the same olive his `westinghouse_ov50` sheet painted) raised to lamp brightness and ribbed the same way; an LED head (the Autobahns, the Leoteks, the Evolves) wears his array art the same way as lens art (lit dies white, unlit dies dark on a pale optic). States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
+| `unshaded_lens` | flat glass: the requester's lens art (`streetlight_lens_<art>_on/_off`) where the JSON fixture had some, else `streetlight_lens_hps_on/_off`; a drop refractor: `streetlight_lens_refractor_on` (his refractor orange, ribbed as his staircase showed it) and `_off` (pale prismatic glass); the mercury Form 109 and the Westinghouse OV-20 / OV-50 wear `streetlight_lens_refractor_merc_on`, his `merc_fixtures` olive (the same olive his `westinghouse_ov50` sheet painted) raised to lamp brightness and ribbed the same way; an LED head (the Autobahns, the Leoteks, the Evolves, the Crees) wears his array art the same way as lens art (lit dies white, unlit dies dark on a pale optic). States 0 and 2 name the unlit lens explicitly, so `gen_lighting_lit_atlases.py` leaves these blockstates alone |
 | `photocell` | the twist-lock photocontrol |
 
 **The lens is drawn unshaded.** `CsmObjModelLoader` bakes any OBJ material whose name starts with

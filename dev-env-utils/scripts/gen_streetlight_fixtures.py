@@ -70,6 +70,11 @@ SWATCHES = {
     "streetlight_smartnode": ((10, 104, 170), (0, 80, 138)),
     # The GE Evolve's grey: ge_evolve_large/small paint the hood 186 and its flanks 177.
     "streetlight_body_ge_evolve_grey": ((196, 196, 196), (170, 170, 170)),
+    # Cree's LEDway and XSP and Cooper's Navion share one paint on their sheets: 186 on the housing,
+    # 132 on the panel's edges.
+    "streetlight_body_led_grey": ((194, 194, 194), (142, 142, 142)),
+    # The Cree Stylus's housing, the troffers sheet's 184 183 185.
+    "streetlight_body_stylus_grey": ((194, 193, 195), (172, 171, 173)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -861,6 +866,93 @@ def build_evolve(size, top="photocell"):
     return m
 
 
+# Cree LEDway: a thin LED panel out front, x 4..12 and 1 px thick with its underside at y 2, on a
+# boxy 8 px driver housing at z 10..16 that carries the photocell at z 13..15. The Small's panel is
+# half as long (z 5..10). The JSON's housing is y 1..4 over a 4 px neck at y 0..1; the loft's
+# flat bottom runs at the neck's depth so the arm's end is inside it.
+LEDWAY_REAR = [
+    (9.6, 3.6, 1.10, 3.40),
+    (10.1, 3.95, 0.60, 4.10),
+    (11.0, 4.0, 0.10, 4.60),
+    (12.5, 4.0, -0.20, 4.85),
+    (14.6, 3.95, -0.35, 4.90),
+    (REAR_Z, 3.9, -0.35, 4.90),
+]
+LEDWAY_EXPONENT = 3.6
+
+
+def ledway_panel(nose):
+    return [
+        (nose + 0.1, 3.4, 2.25, 2.85),
+        (nose + 0.5, 3.95, 2.05, 3.0),
+        (nose + 1.0, 4.0, 2.0, 3.05),
+        (10.6, 4.0, 2.0, 3.10),
+    ]
+
+
+def build_ledway(small=False):
+    nose = 5.0 if small else 0.0
+    m = Mesh()
+    check_neck_holds_arm("Cree LEDway", LEDWAY_REAR, LEDWAY_EXPONENT)
+    loft_housing(m, LEDWAY_REAR, LEDWAY_EXPONENT)
+    loft_housing(m, ledway_panel(nose), 4.0)
+    box(m, (4.6, 1.85, nose + 0.7), (11.4, 2.15, 9.7), "body", bottom_mat=LENS_MAT)
+    photocell(m, LEDWAY_REAR, 13.8, 7.0 if small else 8.0)
+    return m
+
+
+# Cree XSP: a broad flat LED head, x 4..12 from z 2, its top stepping up toward the slipfitter
+# (the JSON's 1 px plate under 6 and 4 px wide tiers), the photocell at z 11..13. His two LED
+# modules lie side by side across the front half of the underside.
+XSP_PROFILE = [
+    (2.1, 3.0, 0.25, 0.85),
+    (2.6, 3.7, 0.12, 1.00),
+    (3.3, 4.0, 0.10, 1.15),
+    (5.5, 4.0, 0.10, 1.80),
+    (8.0, 3.95, 0.10, 2.45),
+    (11.0, 3.9, 0.05, 2.85),
+    (13.5, 3.85, -0.10, 3.15),
+    (14.8, 3.8, -0.30, 3.45),
+    (REAR_Z, 3.8, -0.35, 3.50),
+]
+XSP_EXPONENT = 3.4
+
+
+def build_xsp():
+    m = Mesh()
+    check_neck_holds_arm("Cree XSP", XSP_PROFILE, XSP_EXPONENT)
+    loft_housing(m, XSP_PROFILE, XSP_EXPONENT)
+    box(m, (4.7, 0.0, 4.0), (11.3, 0.3, 9.6), "body", bottom_mat=LENS_MAT)
+    photocell(m, XSP_PROFILE, 12.0, 5.0)
+    return m
+
+
+def mirror_y(mesh, c):
+    """The mesh turned upside down about y = c: every y becomes 2c - y, the windings reversed so
+    the faces still point out."""
+    out = Mesh()
+    out.v = [(x, 2 * c - y, z) for x, y, z in mesh.v]
+    out.vt = list(mesh.vt)
+    out.vn = [(x, -y, z) for x, y, z in mesh.vn]
+    out.faces = [(mat, idx[::-1]) for mat, idx in mesh.faces]
+    return out
+
+
+# Cree Stylus: a linear LED fixture hung flush under a ceiling, not from an arm. The JSON: a
+# 6 x 4 px bar at the top of the block (y 12..16) the length of the block (the Full runs on into
+# the block to the north, z -16..16, as one 2-block fixture) over a 4 px diffuser at y 11..12,
+# both on the troffers sheet. Here the bar is a rounded extrusion, its flat top 0.1 off the
+# ceiling, the diffuser along its underside wearing his troffer white.
+def build_stylus(full):
+    z0 = -REAR_Z if full else 16.0 - REAR_Z
+    m = Mesh()
+    # Lofted with its flat side down, then turned over: the flat side becomes the top.
+    loft_housing(m, [(z0, 3.0, 0.1, 4.0), (REAR_Z, 3.0, 0.1, 4.0)], 3.2)
+    m = mirror_y(m, 8.0)
+    box(m, (6.0, 11.1, z0 + 0.6), (10.0, 12.3, REAR_Z - 0.6), "body", bottom_mat=LENS_MAT)
+    return m
+
+
 
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
@@ -931,6 +1023,11 @@ CATALOGUE = [
      "streetlight_body_ge_evolve_grey"),
     ("geesn", "GE Evolve ESR2 (Small, Smart Node)", lambda: build_evolve("small", "node"),
      "streetlight_body_ge_evolve_grey"),
+    ("creeledway", "Cree LEDway", lambda: build_ledway(), "streetlight_body_led_grey"),
+    ("creeledwaysmall", "Cree LEDway (Small)", lambda: build_ledway(small=True), "streetlight_body_led_grey"),
+    ("creexsp", "Cree XSP", build_xsp, "streetlight_body_led_grey"),
+    ("creestylusfull", "Cree Stylus (Full)", lambda: build_stylus(True), "streetlight_body_stylus_grey"),
+    ("creestylushalf", "Cree Stylus (Half)", lambda: build_stylus(False), "streetlight_body_stylus_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -953,6 +1050,14 @@ ENVELOPE_FOR = {
     "ltgc1v1np": ((4.0, 12.0), (-0.5, 5.45), (1.0, REAR_Z + 1e-9)),
     "ltgc1v2": ((4.0, 12.0), (-0.5, 7.0), (1.0, REAR_Z + 1e-9)),
     "ltgcl": ((4.0, 12.0), (-0.5, 5.0), (4.0, REAR_Z + 1e-9)),
+    # The 8 px wide Cree heads (x 4..12); the LEDway's box starts at z 0, the XSP's photocell box
+    # tops out at y 5.
+    "creeledway": ((4.0, 12.0), (-0.5, 8.0), (0.0, REAR_Z + 1e-9)),
+    "creeledwaysmall": ((4.0, 12.0), (-0.5, 7.0), (5.0, REAR_Z + 1e-9)),
+    "creexsp": ((4.0, 12.0), (-0.5, 5.0), (2.0, REAR_Z + 1e-9)),
+    # The Stylus hangs from the ceiling at the top of the block; the Full runs on to z -16.
+    "creestylusfull": ((5.0, 11.0), (11.0, 16.0), (-16.0, 16.0)),
+    "creestylushalf": ((5.0, 11.0), (11.0, 16.0), (0.0, 16.0)),
 }
 
 
@@ -965,7 +1070,8 @@ ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork"
 LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2",
             "leotek_ec", "leotek_ecdtd", "leotek_gc1v1", "leotek_gc1v2", "leotek_gcj", "leotek_gcl",
             "leotek_gcm", "leotek_gcmv2",
-            "ge_evolve_large", "ge_evolve_small"]
+            "ge_evolve_large", "ge_evolve_small", "cree_ledway", "cree_ledway_small", "cree_xsp",
+            "cree_stylus"]
 # The cuts are stored as they lie on the atlas. Where the JSON face mapped them onto the fixture
 # differently from art_lens_png's convention (the source's u from the slipfitter to the nose, its v
 # from east to west), they are turned first, so the array lands as the JSON drew it: a down face
@@ -976,6 +1082,8 @@ ART_TURN = {
     "leotek_gc1v1": Image.ROTATE_180, "leotek_gc1v2": Image.ROTATE_180,
     "leotek_gcl": Image.FLIP_TOP_BOTTOM,
     "leotek_gcm": Image.ROTATE_180, "leotek_gcmv2": Image.ROTATE_180,
+    # the XSP's two modules lie side by side across the head, where the sheet has them along u
+    "cree_xsp": Image.ROTATE_90,
 }
 
 
@@ -1024,6 +1132,11 @@ LENS_FOR = {
     "gees": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
     "geespo": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
     "geesn": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
+    "creeledway": (art_lens("cree_ledway", "on"), art_lens("cree_ledway", "off")),
+    "creeledwaysmall": (art_lens("cree_ledway_small", "on"), art_lens("cree_ledway_small", "off")),
+    "creexsp": (art_lens("cree_xsp", "on"), art_lens("cree_xsp", "off")),
+    "creestylusfull": (art_lens("cree_stylus", "on"), art_lens("cree_stylus", "off")),
+    "creestylushalf": (art_lens("cree_stylus", "on"), art_lens("cree_stylus", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
