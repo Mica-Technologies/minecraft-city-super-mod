@@ -98,6 +98,11 @@ MERC_OLIVE = (135, 135, 86)
 # so the sprite is made from his colour rather than cut. Lit at lamp brightness, unlit at half.
 LENS_MERC_GLASS_ON = "streetlight_lens_merc_glass_on"
 LENS_MERC_GLASS_OFF = "streetlight_lens_merc_glass_off"
+# The GE Powerbracket's globe: his pale 182 glass round the sides (the JSON's ring of plates) and
+# his olive lamp seen through the bottom of it, one sprite down the lathe.
+LENS_POWERBRACKET_ON = "streetlight_lens_powerbracket_on"
+LENS_POWERBRACKET_OFF = "streetlight_lens_powerbracket_off"
+MERC_GLOBE = (182, 182, 182)
 
 # The glass. CsmObjModelLoader draws a material named unshaded_* without directional shading, as
 # a JSON element with "shade": false is: the flat lens faces straight down, and shaded it was
@@ -1084,6 +1089,31 @@ def loft_closed(mesh, sections, ex, mat="body", front_mat=None, n=16):
     return rings
 
 
+def cylinder_axis(mesh, base, axis, r, h0, h1, mat, sides=12):
+    """A capped cylinder along any unit `axis` from `base`, between heights h0 and h1 along it.
+    Only the far end is capped: the near end is always sunk into whatever it stands on."""
+    ax = axis
+    # two unit vectors perpendicular to the axis
+    ref = (1.0, 0.0, 0.0) if abs(ax[0]) < 0.9 else (0.0, 1.0, 0.0)
+    u = normal((0, 0, 0), ax, ref)
+    v = normal((0, 0, 0), u, ax)
+
+    def ring(h):
+        return [tuple(base[k] + ax[k] * h + r * (math.cos(2 * math.pi * j / sides) * u[k]
+                                                  + math.sin(2 * math.pi * j / sides) * v[k])
+                      for k in range(3)) for j in range(sides)]
+    r0, r1 = ring(h0), ring(h1)
+    mid = tuple(base[k] + ax[k] * (h0 + h1) / 2 for k in range(3))
+    for j in range(sides):
+        j2 = (j + 1) % sides
+        mesh.poly_out(mat, [r0[j], r0[j2], r1[j2], r1[j]],
+                      [swatch_uv(j / sides, 0), swatch_uv((j + 1) / sides, 0),
+                       swatch_uv((j + 1) / sides, 1), swatch_uv(j / sides, 1)], mid)
+    mesh.poly_out(mat, r1, [swatch_uv(0.5 + 0.5 * math.cos(2 * math.pi * j / sides),
+                                      0.5 + 0.5 * math.sin(2 * math.pi * j / sides))
+                            for j in range(sides)], mid)
+
+
 # Alto lot lights (altorll, altorell, altosqll): shoebox area lights that hang off the Alto lot
 # light mount (altollm, a hub with four 4 x 4 px arms at y 0..4) or any arm. The JSON: a 6 x 3 px
 # body (x 5..11, y 0.8..3.8) from z 3 (the square one from z 6) to 12, a 3 x 3 px neck on to the
@@ -1161,6 +1191,46 @@ def build_alto_mv_underpass():
     m.poly_out("body", top, [swatch_uv(0.5 + 0.5 * math.cos(a), 0.5 + 0.5 * math.sin(a)) for a in angles],
                (8.0, 15.0, 8.0))
     lathe(m, 8.0, 8.0, ALTO_UNDERPASS_BOWL, LENS_MAT, phase=0.5)
+    return m
+
+
+# GE Powerbracket: a mercury bracket light, the ballast in a cast arm that climbs from a wall
+# plate to a round hood over a drop globe. Two blocks long: the plate is at the back of its own
+# block and the hood centred 10 px into the block in front (its bounding box: z -16..18). The
+# JSON: a plate x 5..11, y 0..5, z 13..16; the arm a 6 x 3 px bar tilted 22.5 degrees, from inside
+# the plate up to a 6 x 3 px housing at y 9.4..12.4, z -11..-4; under that a hood 12 px across
+# (y 7.75..10.25) about (8, -10) over a ring of his pale 182 glass, radius 3 down to y 2.75, with
+# the olive lamp inside; a photocell on the arm, leaning back with it. Held to the bounding box's
+# y 12, so the housing tops out at 11.95 rather than 12.4.
+PB_SLOPE = math.tan(math.radians(22.5))
+PB_HOOD = [(10.4, 0.0), (10.0, 3.2), (9.2, 5.4), (7.8, 5.95), (7.8, 3.0)]
+PB_GLOBE = [(7.8, 3.0), (5.6, 3.0), (3.83, 2.65), (3.2, 2.1), (2.8, 1.15), (2.7, 0.0)]
+
+
+def pb_arm_y(z):
+    """The arm's centreline: 22.5 degrees, as the JSON tilted it."""
+    return 2.7 + (14.9 - z) * PB_SLOPE
+
+
+def build_powerbracket():
+    m = Mesh()
+    # the wall plate
+    loft_closed(m, [(13.0, 8.0, 2.5, 2.7, 2.3), (13.3, 8.0, 2.5, 3.0, 2.5), (REAR_Z, 8.0, 2.5, 3.0, 2.5)], 4.0)
+    # the arm, sheared up the slope (vertical sections, so its thickness is 3 px square to it)
+    hh = 1.45
+    loft_closed(m, [(14.2, 8.0, pb_arm_y(14.2), 2.6, hh), (-3.8, 8.0, pb_arm_y(-3.8), 2.6, hh)], 3.0)
+    # the ballast housing over the hood
+    loft_closed(m, [(-11.2, 8.0, 10.75, 2.6, 1.0), (-10.8, 8.0, 10.7, 3.0, 1.25),
+                    (-3.0, 8.0, 10.7, 3.0, 1.25)], 5.0)
+    lathe(m, 8.0, -10.0, PB_HOOD, "body")
+    lathe(m, 8.0, -10.0, PB_GLOBE, LENS_MAT)
+    # the photocell, square to the arm's top: it leans back toward the plate, as the JSON's did
+    pz = 6.0
+    a = math.radians(22.5)
+    axis = (0.0, math.cos(a), math.sin(a))
+    base = (8.0, pb_arm_y(pz) + hh, pz)
+    cylinder_axis(m, base, axis, 1.05, -0.5, 0.45, "body")
+    cylinder_axis(m, base, axis, 0.95, 0.4, 2.4, "photocell")
     return m
 
 
@@ -1248,6 +1318,7 @@ CATALOGUE = [
     ("altomvwl", "Alto Mercury Vapor Wall Light", lambda: build_alto_mv_wall(False), "streetlight_body_merc_grey"),
     ("altomvwlslim", "Alto Slim Mercury Vapor Wall Light", lambda: build_alto_mv_wall(True),
      "streetlight_body_merc_grey"),
+    ("gepb", "GE Powerbracket", build_powerbracket, "streetlight_body_merc_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1293,6 +1364,8 @@ ENVELOPE_FOR = {
     # The wall lights stand off the wall at z 16: their boxes run z 13..16, y 4..12.
     "altomvwl": ((5.5, 12.0), (4.0, 12.0), (13.0, REAR_Z + 1e-9)),
     "altomvwlslim": ((6.5, 10.5), (4.0, 12.0), (13.0, REAR_Z + 1e-9)),
+    # The Powerbracket is two blocks long: its box runs z -16..18, x 2..14, y 0..12.
+    "gepb": ((2.0, 14.0), (0.0, 12.0), (-16.0, REAR_Z + 1e-9)),
 }
 
 
@@ -1381,6 +1454,7 @@ LENS_FOR = {
     "altomvul": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "altomvwl": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altomvwlslim": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
+    "gepb": (LENS_POWERBRACKET_ON, LENS_POWERBRACKET_OFF),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
@@ -1468,6 +1542,26 @@ def merc_glass_png(lit):
     return img
 
 
+def powerbracket_globe_png(lit):
+    """Down the lathe, top to bottom: his pale globe glass in prism bands (rows 0..11), then his
+    olive lamp showing through the bottom of the globe (rows 12..15)."""
+    if lit:
+        glass, glass_rib = scaled(MERC_GLOBE, 212), scaled(MERC_GLOBE, 236)
+        lamp, lamp_rib = scaled(MERC_OLIVE, 232), scaled(MERC_OLIVE, 250)
+    else:
+        glass, glass_rib = scaled(MERC_GLOBE, 118), scaled(MERC_GLOBE, 132)
+        lamp, lamp_rib = scaled(MERC_OLIVE, 68), scaled(MERC_OLIVE, 76)
+    img = Image.new("RGBA", (16, 16))
+    for y in range(16):
+        if y < 12:
+            col = glass_rib if y in (2, 5, 8, 11) else glass
+        else:
+            col = lamp_rib if y == 14 else lamp
+        for x in range(16):
+            img.putpixel((x, y), col + (255,))
+    return img
+
+
 def art_lens_png(art, state):
     """A lens crop from the requester's atlas, made a sprite: turned so the lamp lies along the
     fixture (the box lens runs v along z), scaled square (a taller-than-wide sprite is read as
@@ -1498,6 +1592,8 @@ def all_textures():
         tuple(int(round(c * 232.0 / max(MERC_OLIVE))) for c in MERC_OLIVE))
     out[LENS_MERC_GLASS_ON] = merc_glass_png(True)
     out[LENS_MERC_GLASS_OFF] = merc_glass_png(False)
+    out[LENS_POWERBRACKET_ON] = powerbracket_globe_png(True)
+    out[LENS_POWERBRACKET_OFF] = powerbracket_globe_png(False)
     for art in LENS_ART:
         for state in ("on", "off"):
             out[art_lens(art, state)] = art_lens_png(art, state)
@@ -1532,6 +1628,8 @@ TRANSFORM_FOR = {
                      ground=_display([0, 0, 0], [0, -4.25, 0], 1.0),
                      thirdperson_righthand=_display([0, 90, 0], [0, -2.5, 0], 0.55),
                      thirdperson_lefthand=_display([0, -90, 0], [0, -2.75, 0], 0.55)),
+    # As ge_powerbracket.json had it (deleted): two blocks long, so smaller in the slot and moved along.
+    "gepb": dict(INVENTORY_TRANSFORM, gui=_display([0, 90, -5], [4, 1, 0], 0.5)),
 }
 
 
