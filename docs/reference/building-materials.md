@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "252 blocks in this tab"
+!!! info "251 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,7 +15,6 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ashlar Stone Veneer Fence | `csm:stone_ashlar_fence` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Slab | `csm:stone_ashlar_slab` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Stairs | `csm:stone_ashlar_stairs` | 2 | 10 | pickaxe | 1 |
-| Automatic Door Activation Mat | `csm:auto_door_mat` | 0.5 | 1 |  | 0 |
 | Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_slider_clear` |  |  |  |  |
 | Automatic Sliding Door (Dark Bronze) | `csm:auto_door_slider_bronze` |  |  |  |  |
 | Back Door (Half Glass) | `csm:door_back_halfglass` |  |  |  |  |

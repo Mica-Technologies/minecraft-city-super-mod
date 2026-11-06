@@ -55,6 +55,7 @@ ASSETS_CSM = os.path.join("assets", "csm")
 # which needs no table. Hidden tabs are named for the module whose classes they hold.
 MODULE_OF_TAB = {
     "tabbuildingmaterials": "building",
+    "tabbuildinghidden": "building",
     "tabhvac": "hvac",
     "tablifesafety": "lifesafety",
     "tabexitsemergency": "lifesafety",

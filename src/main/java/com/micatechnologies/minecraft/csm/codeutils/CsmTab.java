@@ -32,6 +32,7 @@ import org.apache.logging.log4j.Logger;
  * <pre>
  *   Order -16 = CsmTabCoreHidden        (hidden, Core: light-up air)
  *   Order -15 = CsmTabHvacHidden        (hidden: the lab exhaust fan's cells)
+ *   Order -13 = CsmTabBuildingHidden    (hidden: the automatic door activation mat)
  *   Order -12 = CsmTabVenuesHidden      (hidden: Sports &amp; Venues' unit cells)
  *   Order -11 = CsmTabHealthcareHidden  (hidden: a hospital bed's foot cell)
  *   Order -10 = CsmTabRoadsHidden       (hidden: retired road/signal blocks)

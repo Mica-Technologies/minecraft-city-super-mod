@@ -19,7 +19,7 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Smoke Barrier Door (Grey / Beige) | `door_smoke_metal_grey`, `door_smoke_metal_beige` |
 | Lead-Lined Door (Radiation) | `door_lead_lined` |
 | Automatic Sliding Door (Clear Aluminium / Dark Bronze), and its fixed Sidelite | `auto_door_slider_clear`, `auto_door_slider_bronze`, `auto_door_sidelite_clear`, `auto_door_sidelite_bronze` |
-| Automatic Door Activation Mat | `auto_door_mat` |
+| Automatic Door Activation Mat (legacy: hidden tab, placed mats still work) | `auto_door_mat` |
 | Interior Door (Dark Oak), with a Vision Lite, Front Door (Dark Oak), Fire Door (Dark Oak, Wired Lite) | `door_wood_dark_oak`, `door_wood_dark_oak_lite`, `door_front_dark_oak`, `door_wood_dark_oak_fire` |
 | Cathedral Door (Dark Oak / Weathered Oak / Bronze), and its Arch Head | `cathedral_door_<variant>`, `cathedral_door_<variant>_arch`; variant `dark_oak`, `weathered_oak`, `bronze` |
 | Tympanum (Dark Oak / Weathered Oak / Bronze) | `cathedral_tympanum_<variant>` |
@@ -271,11 +271,15 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   or dark bronze) round clear glass with a mid-rail at push height and dark break-out pivots at
   the hinge-side corners, so they read as break-out panels. Glass in the translucent pass, the rest
   in the cutout pass (`ICsmGlassFronted`).
-- **Opening.** Redstone opens a slider and its pair while powered; the **activation mat**
-  (`BlockAutoDoorMat`) beside it opens it when someone steps on it; a click opens it by hand; a
-  linked keypad, button or station as on any door. A sidelite never moves (a click does nothing).
+- **Opening.** The **approach sensor** (`AutoDoorSensors`) opens a slider and its pair as a
+  player comes within `sensorRange` blocks (2.5 by default) of either face, roughly in line with
+  it (within 0.9 of its middle along the wall) and at its height, as a real door's header sensor
+  does. Redstone opens it while powered; a click opens it by hand; a linked keypad, button or
+  station as on any door; and an old **activation mat** (`BlockAutoDoorMat`, see below) still
+  does. A sidelite never moves (a click does nothing).
 - **Closing.** Whatever opened it, it shuts **3 s** (`HOLD_TICKS`, 60) after the last thing that
-  did: each step on a mat pushes the time back (`armClose`, the closer's deadline). The door's one
+  did: the sensor, every look while someone is in its zone, and each step on a mat, push the time
+  back (`armClose`, the closer's deadline). The door's one
   scheduled tick then shuts it, unless redstone still holds it, or a player or a non-hostile
   creature is in the doorway or within a block and a half either side, when it looks again a
   second later. That look is the only entity search and only an open door makes it. When the
@@ -288,11 +292,23 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   header where it is. At rest it is baked models; the open models are the shut ones moved 15.5 px
   with the UVs they had shut written out, since past 0..16 a position-derived UV samples other
   sprites.
-- **Locks.** A slider locked by a keypad does not open for a mat on its outside (the side away
-  from its facing); a mat on the inside still opens it (free egress). A click from outside asks
+- **Locks.** A slider locked by a keypad does not open for someone on its outside (the side away
+  from its facing), by the sensor or a mat; someone inside still opens it (free egress). A click from outside asks
   for the code as on any locked door.
-- **The mat** is a pixel-thin rubber mat with an aluminium edge, laid on the floor in front of the
-  door. It opens sliders in the four cells around it at its own height and the cell above it (a
+- **The sensor's cost.** The rule above stands: nothing ticks on an idle door. Each world keeps a
+  list of its sliders (lower halves) by chunk, in its saved data (`csm_auto_door_sensors`, beside
+  `DoorLocks`), and every `sensorIntervalTicks` (4 by default) looks only in the chunks within
+  reach of each player: no players, no work; a player with no slider near costs a map lookup or
+  four. Placing a slider adds it, breaking it takes it off, and a slider the sensor finds gone is
+  dropped. A slider also ticks randomly, and its random tick does nothing but add it (never the
+  vanilla random tick, which would run the closing tick), so sliders placed before the sensor, or
+  ever missed, join the list within a few minutes of their chunk loading. Only players trigger it;
+  a creature near an open door keeps it open through the doorway check. `automaticDoors` in the
+  config: `sensorEnabled`, `sensorRange` (1 to 6), `sensorIntervalTicks` (1 to 20).
+- **The mat (legacy)** is in the building module's hidden tab (`CsmTabBuildingHidden`) since the
+  sensor: not in the creative inventory or the Fabricator, still registered, so mats already laid
+  keep working. It is a pixel-thin rubber mat with an aluminium edge, laid on the floor in front of
+  the door. It opens sliders in the four cells around it at its own height and the cell above it (a
   pair opens with either half). It answers players and any creature that is not hostile, at most
   every 10 ticks a mat. It listens through `onEntityCollision`, as a pressure plate does, not
   `onEntityWalk`: the game sends the walking callback to the block under the walker's feet, which
@@ -437,9 +453,9 @@ east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave t
 | `door_hosp_*_narrow` | facing, open | hinge, reversed (closer ignored) | pairs with its full leaf |
 | `door_smoke_metal_*` | facing, open | hinge, reversed (closer always on) | held open by redstone, shuts when it goes |
 | `door_lead_lined` | facing, open | hinge, closer, reversed | plate on the outside face |
-| `auto_door_slider_*` | facing, open | hinge = the side it slides to | opens on redstone or a mat |
+| `auto_door_slider_*` | facing, open | hinge = the side it slides to | opens on approach, redstone or a mat |
 | `auto_door_sidelite_*` | facing | `8` (hinge ignored) | never moves |
-| `auto_door_mat` | `0` | -- | one block, on the floor beside the door |
+| `auto_door_mat` | `0` | -- | legacy; one block, on the floor beside the door |
 | `door_wood_dark_oak`, `_lite`, `door_front_dark_oak` | facing, open | hinge, closer, reversed | swing in by default |
 | `door_wood_dark_oak_fire` | facing, open | hinge, closer, reversed | swings out by default |
 
