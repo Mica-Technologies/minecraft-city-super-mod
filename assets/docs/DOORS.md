@@ -304,8 +304,9 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   vanilla random tick, which would run the closing tick), so sliders placed before the sensor, or
   ever missed, join the list within a few minutes of their chunk loading. Only players trigger it;
   a creature near an open door keeps it open through the doorway check. `automaticDoors` in the
-  config: `sensorEnabled`, `sensorRange` (1 to 6), `sensorIntervalTicks` (1 to 20).
-- **The mat (legacy)** is in the building module's hidden tab (`CsmTabBuildingHidden`) since the
+  config: `sensorEnabled`, `sensorRange` (1 to 6), `sensorIntervalTicks` (1 to 20). Measured
+  2026-11-05 with 400 sliders in the chunks round a player (none in reach to open): about
+  0.013 ms a tick of server time (a CPU sample over 15 s).- **The mat (legacy)** is in the building module's hidden tab (`CsmTabBuildingHidden`) since the
   sensor: not in the creative inventory or the Fabricator, still registered, so mats already laid
   keep working. It is a pixel-thin rubber mat with an aluminium edge, laid on the floor in front of
   the door. It opens sliders in the four cells around it at its own height and the cell above it (a
