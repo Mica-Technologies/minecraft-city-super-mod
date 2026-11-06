@@ -18,7 +18,7 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Hospital Door (Maple / Blue Metal / Sage Metal; Vision Lite or Half Glass), and each as a Narrow Leaf | `door_hosp_<finish>_<leaf>`, `door_hosp_<finish>_<leaf>_narrow`; finish `maple`, `metal_blue`, `metal_sage`; leaf `lite`, `halfglass` |
 | Smoke Barrier Door (Grey / Beige) | `door_smoke_metal_grey`, `door_smoke_metal_beige` |
 | Lead-Lined Door (Radiation) | `door_lead_lined` |
-| Automatic Sliding Door (Clear Aluminium / Dark Bronze), and its fixed Sidelite | `auto_door_slider_clear`, `auto_door_slider_bronze`, `auto_door_sidelite_clear`, `auto_door_sidelite_bronze` |
+| Automatic Sliding Door (Clear Aluminium / Dark Bronze / Black Anodised / White / Stainless Steel), and its fixed Sidelite | `auto_door_slider_<finish>`, `auto_door_sidelite_<finish>`; finish `clear`, `bronze`, `black`, `white`, `stainless` (`gen_doors.AUTO_FINISHES`) |
 | Automatic Door Activation Mat (legacy: hidden tab, placed mats still work) | `auto_door_mat` |
 | Interior Door (Dark Oak), with a Vision Lite, Front Door (Dark Oak), Fire Door (Dark Oak, Wired Lite) | `door_wood_dark_oak`, `door_wood_dark_oak_lite`, `door_front_dark_oak`, `door_wood_dark_oak_fire` |
 | Cathedral Door (Dark Oak / Weathered Oak / Bronze), and its Arch Head | `cathedral_door_<variant>`, `cathedral_door_<variant>_arch`; variant `dark_oak`, `weathered_oak`, `bronze` |
