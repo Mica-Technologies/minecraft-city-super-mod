@@ -1150,20 +1150,34 @@ def blockstates():
 # had shut, written out explicitly, since past 0..16 a position-derived UV samples other sprites.
 # SHARED with BlockAutoSlidingDoor: SLIDE_PX, the planes and the header.
 
+# The frame finishes, in creative order: (frame colour, how far the brushed streaks wander). The
+# streaks are what tell stainless from clear anodised aluminium of much the same grey.
+AUTO_FINISHES = {
+    "clear": ((198, 202, 206), 5),
+    "bronze": ((72, 58, 46), 5),
+    "black": ((38, 38, 40), 4),
+    "white": ((232, 232, 228), 3),
+    "stainless": ((176, 178, 176), 11),
+}
+AUTO_FINISH_NAMES = {
+    # finish: (en, es, de, sv), as each language's door names already word them
+    "clear": ("Clear Aluminium", "Aluminio Natural", "Aluminium natur", "Blank Aluminium"),
+    "bronze": ("Dark Bronze", "Bronce Oscuro", "Dunkelbronze", "Mörk Brons"),
+    "black": ("Black Anodised", "Anodizado Negro", "Schwarz eloxiert", "Svart Anodiserad"),
+    "white": ("White", "Blanco", "Weiß", "Vit"),
+    "stainless": ("Stainless Steel", "Acero Inoxidable", "Edelstahl", "Rostfritt Stål"),
+}
+AUTO_KIND_NAMES = {
+    "slider": ("Automatic Sliding Door (%s)", "Puerta Corredera Automática (%s)",
+               "Automatische Schiebetür (%s)", "Automatisk Skjutdörr (%s)"),
+    "sidelite": ("Sliding Door Sidelite (%s)", "Fijo de Puerta Corredera (%s)",
+                 "Schiebetür-Seitenteil (%s)", "Skjutdörr Sidoparti (%s)"),
+}
+# registry name -> (kind, frame colour, (en, es, de, sv)): every slider, then every sidelite.
 AUTO = {
-    "auto_door_slider_clear": ("slider", (198, 202, 206), (
-        "Automatic Sliding Door (Clear Aluminium)",
-        "Puerta Corredera Automática (Aluminio Natural)",
-        "Automatische Schiebetür (Aluminium natur)", "Automatisk Skjutdörr (Blank Aluminium)")),
-    "auto_door_slider_bronze": ("slider", (72, 58, 46), (
-        "Automatic Sliding Door (Dark Bronze)", "Puerta Corredera Automática (Bronce Oscuro)",
-        "Automatische Schiebetür (Dunkelbronze)", "Automatisk Skjutdörr (Mörk Brons)")),
-    "auto_door_sidelite_clear": ("sidelite", (198, 202, 206), (
-        "Sliding Door Sidelite (Clear Aluminium)", "Fijo de Puerta Corredera (Aluminio Natural)",
-        "Schiebetür-Seitenteil (Aluminium natur)", "Skjutdörr Sidoparti (Blank Aluminium)")),
-    "auto_door_sidelite_bronze": ("sidelite", (72, 58, 46), (
-        "Sliding Door Sidelite (Dark Bronze)", "Fijo de Puerta Corredera (Bronce Oscuro)",
-        "Schiebetür-Seitenteil (Dunkelbronze)", "Skjutdörr Sidoparti (Mörk Brons)")),
+    "auto_door_%s_%s" % (kind, finish): (
+        kind, rgb, tuple(f % n for f, n in zip(AUTO_KIND_NAMES[kind], AUTO_FINISH_NAMES[finish])))
+    for kind in ("slider", "sidelite") for finish, (rgb, _) in AUTO_FINISHES.items()
 }
 MAT_NAMES = ("Automatic Door Activation Mat", "Alfombra de Activación de Puerta Automática",
              "Kontaktmatte für Automatiktür", "Aktiveringsmatta för Automatisk Dörr")
@@ -1182,11 +1196,11 @@ def auto_finish(name):
 
 def auto_textures():
     out = {}
-    for finish, rgb in (("clear", (198, 202, 206)), ("bronze", (72, 58, 46))):
+    for finish, (rgb, streak) in AUTO_FINISHES.items():
         rng = random.Random(_seed("auto_door_frame_" + finish))
         img, px = _canvas(rgb, rng, 2)
         for x in range(16):
-            tone = rng.uniform(-5, 5)
+            tone = rng.uniform(-streak, streak)
             for y in range(16):
                 px[x, y] = _shift(rgb, tone + rng.uniform(-2, 2))
         out["auto_door_frame_" + finish] = img
@@ -1401,8 +1415,8 @@ def tab_lines():
              for n, v in DOORS.items() if n.startswith("door_")]
     lines += ['    initTabBlock(new BlockAutoSlidingDoor("%s")); // %s' % (n, v[2][0])
               for n, v in AUTO.items()]
-    lines.append("    initTabBlock(BlockAutoDoorMat.class, fmlPreInitializationEvent);"
-                 " // Automatic Door Activation Mat")
+    # The activation mat is registered from CsmTabBuildingHidden (legacy since the sensor):
+    #     initTabBlock(BlockAutoDoorMat.class, fmlPreInitializationEvent);
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")
     lines.append("    initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent);"
                  " // Door Swing Tool")
@@ -1421,8 +1435,20 @@ def fragments():
     return "\n".join(lines)
 
 
+def _same(have, want):
+    """Whether a committed file matches what the generator writes. Text is compared with CRLF
+    read as LF: a Windows checkout with core.autocrlf has every JSON in CRLF, which a byte
+    comparison called drift in all of them."""
+    if not os.path.exists(have):
+        return False
+    with open(have, "rb") as a, open(want, "rb") as b:
+        x, y = a.read(), b.read()
+    if not want.endswith(".png"):
+        x, y = x.replace(b"\r\n", b"\n"), y.replace(b"\r\n", b"\n")
+    return x == y
+
+
 def _check():
-    import filecmp
     import shutil
     import tempfile
     tmp = tempfile.mkdtemp(prefix="csm_doors_")
@@ -1434,9 +1460,7 @@ def _check():
             os.makedirs(d, exist_ok=True)
         written = write_all(t["tex"], t["model"], t["state"], t["itemtex"], t["itemmodel"])
         drifted = [os.path.join(real[k], f) for k, f in written
-                   if not os.path.exists(os.path.join(real[k], f))
-                   or not filecmp.cmp(os.path.join(real[k], f), os.path.join(t[k], f),
-                                      shallow=False)]
+                   if not _same(os.path.join(real[k], f), os.path.join(t[k], f))]
         if drifted:
             print("DRIFT: %d file(s) differ from the generator:" % len(drifted))
             for path in drifted:

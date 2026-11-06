@@ -298,8 +298,14 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockBuildingDoor("door_lead_lined")); // Lead-Lined Door (Radiation)
     initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_clear")); // Automatic Sliding Door (Clear Aluminium)
     initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_bronze")); // Automatic Sliding Door (Dark Bronze)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_black")); // Automatic Sliding Door (Black Anodised)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_white")); // Automatic Sliding Door (White)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_slider_stainless")); // Automatic Sliding Door (Stainless Steel)
     initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_clear")); // Sliding Door Sidelite (Clear Aluminium)
     initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_bronze")); // Sliding Door Sidelite (Dark Bronze)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_black")); // Sliding Door Sidelite (Black Anodised)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_white")); // Sliding Door Sidelite (White)
+    initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_stainless")); // Sliding Door Sidelite (Stainless Steel)
     initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
     initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent); // Door Swing Tool
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door

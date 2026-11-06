@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "251 blocks in this tab"
+!!! info "257 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -15,8 +15,11 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Ashlar Stone Veneer Fence | `csm:stone_ashlar_fence` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Slab | `csm:stone_ashlar_slab` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Stairs | `csm:stone_ashlar_stairs` | 2 | 10 | pickaxe | 1 |
+| Automatic Sliding Door (Black Anodised) | `csm:auto_door_slider_black` |  |  |  |  |
 | Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_slider_clear` |  |  |  |  |
 | Automatic Sliding Door (Dark Bronze) | `csm:auto_door_slider_bronze` |  |  |  |  |
+| Automatic Sliding Door (Stainless Steel) | `csm:auto_door_slider_stainless` |  |  |  |  |
+| Automatic Sliding Door (White) | `csm:auto_door_slider_white` |  |  |  |  |
 | Back Door (Half Glass) | `csm:door_back_halfglass` |  |  |  |  |
 | Black Metal | `csm:blackmetal` | 2 | 10 | pickaxe | 1 |
 | Black Metal Fence | `csm:blackmetal_fence` | 2 | 10 | pickaxe | 1 |
@@ -228,8 +231,11 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Slatted Screen (Oak) | `csm:slat_screen_oak` | 2 | 5 | axe | 0 |
 | Slatted Screen (Teak) | `csm:slat_screen_teak` | 2 | 5 | axe | 0 |
 | Slatted Screen (Walnut) | `csm:slat_screen_walnut` | 2 | 5 | axe | 0 |
+| Sliding Door Sidelite (Black Anodised) | `csm:auto_door_sidelite_black` |  |  |  |  |
 | Sliding Door Sidelite (Clear Aluminium) | `csm:auto_door_sidelite_clear` |  |  |  |  |
 | Sliding Door Sidelite (Dark Bronze) | `csm:auto_door_sidelite_bronze` |  |  |  |  |
+| Sliding Door Sidelite (Stainless Steel) | `csm:auto_door_sidelite_stainless` |  |  |  |  |
+| Sliding Door Sidelite (White) | `csm:auto_door_sidelite_white` |  |  |  |  |
 | Smoke Barrier Door (Beige Metal) | `csm:door_smoke_metal_beige` |  |  |  |  |
 | Smoke Barrier Door (Grey Metal) | `csm:door_smoke_metal_grey` |  |  |  |  |
 | Smooth Stucco | `csm:stucco_smooth` | 2 | 10 | pickaxe | 1 |
