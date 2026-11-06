@@ -20,6 +20,8 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Lead-Lined Door (Radiation) | `door_lead_lined` |
 | Automatic Sliding Door (Clear Aluminium / Dark Bronze / Black Anodised / White / Stainless Steel / Frameless Glass), and its fixed Sidelite | `auto_door_slider_<finish>`, `auto_door_sidelite_<finish>`; finish `clear`, `bronze`, `black`, `white`, `stainless` (`gen_doors.AUTO_FINISHES`), or `frameless`: full-width toughened glass with green edges, stainless patch fittings at a slider's corners, a floor channel under a sidelite, a slim header (`gen_doors._frameless_panel`); same planes, sensor and slide as the framed doors |
 | Wide Automatic Sliding Door and Telescoping Automatic Sliding Door (each in the six finishes above) | `auto_door_wide_slider_<finish>`, `auto_door_tele_slider_<finish>` (`BlockAutoSlidingDoorMulti`, `gen_doors.AUTO_MULTI`); multi-cell leaves, see "Wide and telescoping sliders"; they use the ordinary sidelites |
+| Tall Automatic Sliding Door, Tall Wide, Tall Telescoping, Tall Sliding Door Sidelite (each in the six finishes) | `auto_door_tall_slider_<finish>`, `auto_door_tall_wide_slider_<finish>`, `auto_door_tall_tele_slider_<finish>`, `auto_door_tall_sidelite_<finish>` (`gen_doors.AUTO_TALL`); three blocks tall, see "Tall sliders" |
+| Tall Sliding Door Header (hidden tab: placed by a tall door, never by hand) | `auto_door_tall_top_<finish>` (`BlockAutoDoorTop`) |
 | Automatic Door Activation Mat (legacy: hidden tab, placed mats still work) | `auto_door_mat` |
 | Interior Door (Dark Oak), with a Vision Lite, Front Door (Dark Oak), Fire Door (Dark Oak, Wired Lite) | `door_wood_dark_oak`, `door_wood_dark_oak_lite`, `door_front_dark_oak`, `door_wood_dark_oak_fire` |
 | Cathedral Door (Dark Oak / Weathered Oak / Bronze), and its Arch Head | `cathedral_door_<variant>`, `cathedral_door_<variant>_arch`; variant `dark_oak`, `weathered_oak`, `bronze` |
@@ -347,6 +349,28 @@ from its neighbours: no metadata, and the ordinary sliders' state count is untou
   `model_depth`), moving every part but the header (`TINT_FIXED`), so open and shut are one
   picture. The slide renderer moves the shut model by `slide(door)` (`travel - STRIP`).
 
+### Tall sliders
+
+Three blocks tall, in every kind and finish: 2 wide (a tall bi-parting pair, or a tall wide leaf
+alone), 3 wide (a tall 3-panel telescoping leaf) and 4 wide (tall wide or telescoping bi-parting).
+
+- **Structure.** A tall door is the same class as its 2-tall kind (`tall()`: the name starts
+  `auto_door_tall_`), with its usual two halves: the lower half draws the 2-tall **lower** model,
+  the upper half a **middle** model (stiles and glass the whole height, nothing across;
+  `<2-tall name>_middle_*`, `_c<cell>_middle_*`). Above it stands `auto_door_tall_top_<finish>`
+  (`BlockAutoDoorTop`), which draws the 2-tall kind's **upper** model: the top rail, the glass's top
+  and the header. No door's metadata or `HALF` changes.
+- **The top keeps no state.** Its actual state follows the door below (`kind`: slider, wide, tele,
+  sidelite; `cell`, `facing`, `hinge`, `open`, `swing`), so one top block per finish serves every
+  kind. Its metadata is always 0.
+- **Placing and breaking.** The upper half's `onBlockAdded` puts the top up (so a door placed by
+  hand or by command gets one), and a tall door needs the cell two above to be free. The top goes
+  by itself when the door below goes (`neighborChanged`); breaking the top breaks the door (which
+  drops from its lower half); a click on it is a click on the door.
+- **Moving.** The slide renderer draws the top's quads with the halves', its header fixed and the
+  rest moved; at rest the top's baked model (hidden while `swing`, as the door's is) takes over.
+  The swing's redraw marks the cells round the upper half, which include the top.
+
 ## Dark oak doors
 
 Four more leaves on `BlockBuildingDoor`, drawn by the same generator rows as their oak and white
@@ -488,6 +512,7 @@ east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave t
 | `auto_door_slider_*` | facing, open | hinge = the side it slides to | opens on approach, redstone or a mat |
 | `auto_door_sidelite_*` | facing | `8` (hinge ignored) | never moves |
 | `auto_door_wide_slider_*`, `auto_door_tele_slider_*` | facing, open | hinge = the side the leaf slides to, the same on every cell of a leaf | the cell number is read from the neighbours |
+| `auto_door_tall_*` | as its 2-tall kind | as its 2-tall kind | puts up its `auto_door_tall_top_*` (meta `0`) itself |
 | `auto_door_mat` | `0` | -- | legacy; one block, on the floor beside the door |
 | `door_wood_dark_oak`, `_lite`, `door_front_dark_oak` | facing, open | hinge, closer, reversed | swing in by default |
 | `door_wood_dark_oak_fire` | facing, open | hinge, closer, reversed | swings out by default |

@@ -209,6 +209,15 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
         BlockBuildingDoor.Half.LOWER));
     List<BakedQuad> upperQuads = quads(closed.withProperty(BlockBuildingDoor.HALF,
         BlockBuildingDoor.Half.UPPER));
+    // A tall door's top, above the upper half, facing north and shut, as the halves are drawn.
+    List<BakedQuad> topQuads = new ArrayList<>();
+    IBlockState top = te.getWorld().getBlockState(upperPos.up());
+    if (top.getBlock() instanceof BlockAutoDoorTop) {
+      topQuads = quads(top.getActualState(te.getWorld(), upperPos.up())
+          .withProperty(BlockBuildingDoor.FACING, EnumFacing.NORTH)
+          .withProperty(BlockBuildingDoor.OPEN, false)
+          .withProperty(BlockBuildingDoor.SWING, false));
+    }
     int light = te.getWorld().getCombinedLight(upperPos.down(), 0);
 
     bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
@@ -232,6 +241,11 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
           put(buffer, quad, facingTurn, 0, 0);
         }
       }
+      for (BakedQuad quad : topQuads) {
+        if (quad.getTintIndex() == TINT_FIXED && isGlass(quad) == glass) {
+          put(buffer, quad, facingTurn, 1, 0);
+        }
+      }
       tessellator.draw();
       GlStateManager.pushMatrix();
       GlStateManager.translate(along, 0, 0);
@@ -244,6 +258,11 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
       for (BakedQuad quad : upperQuads) {
         if (!quad.hasTintIndex() && isGlass(quad) == glass) {
           put(buffer, quad, facingTurn, 0, 0);
+        }
+      }
+      for (BakedQuad quad : topQuads) {
+        if (!quad.hasTintIndex() && isGlass(quad) == glass) {
+          put(buffer, quad, facingTurn, 1, 0);
         }
       }
       tessellator.draw();

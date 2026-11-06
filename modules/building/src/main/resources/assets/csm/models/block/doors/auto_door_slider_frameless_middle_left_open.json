@@ -1,0 +1,61 @@
+{
+  "textures": {
+    "frame": "csm:blocks/doors/auto_door_frame_stainless",
+    "glass": "csm:blocks/doors/auto_door_glass",
+    "pivot": "csm:blocks/doors/door_black",
+    "edge": "csm:blocks/doors/auto_door_glass_edge",
+    "particle": "csm:blocks/doors/auto_door_frame_stainless"
+  },
+  "elements": [
+    {
+      "from": [
+        -15.25,
+        0,
+        4.5
+      ],
+      "to": [
+        0.25,
+        16,
+        5.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0.25,
+            0,
+            15.75,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0.25,
+            0,
+            15.75,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            10.75,
+            0,
+            11.5,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            4.5,
+            0,
+            5.25,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

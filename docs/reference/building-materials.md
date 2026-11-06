@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "271 blocks in this tab"
+!!! info "295 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -253,6 +253,30 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Standing Seam Cladding Slab | `csm:cladding_standingseam_slab` | 3 | 10 | pickaxe | 1 |
 | Standing Seam Cladding Stairs | `csm:cladding_standingseam_stairs` | 3 | 10 | pickaxe | 1 |
 | Storefront Door (Dark Bronze) | `csm:door_storefront_bronze` |  |  |  |  |
+| Tall Automatic Sliding Door (Black Anodised) | `csm:auto_door_tall_slider_black` |  |  |  |  |
+| Tall Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_tall_slider_clear` |  |  |  |  |
+| Tall Automatic Sliding Door (Dark Bronze) | `csm:auto_door_tall_slider_bronze` |  |  |  |  |
+| Tall Automatic Sliding Door (Frameless Glass) | `csm:auto_door_tall_slider_frameless` |  |  |  |  |
+| Tall Automatic Sliding Door (Stainless Steel) | `csm:auto_door_tall_slider_stainless` |  |  |  |  |
+| Tall Automatic Sliding Door (White) | `csm:auto_door_tall_slider_white` |  |  |  |  |
+| Tall Sliding Door Sidelite (Black Anodised) | `csm:auto_door_tall_sidelite_black` |  |  |  |  |
+| Tall Sliding Door Sidelite (Clear Aluminium) | `csm:auto_door_tall_sidelite_clear` |  |  |  |  |
+| Tall Sliding Door Sidelite (Dark Bronze) | `csm:auto_door_tall_sidelite_bronze` |  |  |  |  |
+| Tall Sliding Door Sidelite (Frameless Glass) | `csm:auto_door_tall_sidelite_frameless` |  |  |  |  |
+| Tall Sliding Door Sidelite (Stainless Steel) | `csm:auto_door_tall_sidelite_stainless` |  |  |  |  |
+| Tall Sliding Door Sidelite (White) | `csm:auto_door_tall_sidelite_white` |  |  |  |  |
+| Tall Telescoping Automatic Sliding Door (Black Anodised) | `csm:auto_door_tall_tele_slider_black` |  |  |  |  |
+| Tall Telescoping Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_tall_tele_slider_clear` |  |  |  |  |
+| Tall Telescoping Automatic Sliding Door (Dark Bronze) | `csm:auto_door_tall_tele_slider_bronze` |  |  |  |  |
+| Tall Telescoping Automatic Sliding Door (Frameless Glass) | `csm:auto_door_tall_tele_slider_frameless` |  |  |  |  |
+| Tall Telescoping Automatic Sliding Door (Stainless Steel) | `csm:auto_door_tall_tele_slider_stainless` |  |  |  |  |
+| Tall Telescoping Automatic Sliding Door (White) | `csm:auto_door_tall_tele_slider_white` |  |  |  |  |
+| Tall Wide Automatic Sliding Door (Black Anodised) | `csm:auto_door_tall_wide_slider_black` |  |  |  |  |
+| Tall Wide Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_tall_wide_slider_clear` |  |  |  |  |
+| Tall Wide Automatic Sliding Door (Dark Bronze) | `csm:auto_door_tall_wide_slider_bronze` |  |  |  |  |
+| Tall Wide Automatic Sliding Door (Frameless Glass) | `csm:auto_door_tall_wide_slider_frameless` |  |  |  |  |
+| Tall Wide Automatic Sliding Door (Stainless Steel) | `csm:auto_door_tall_wide_slider_stainless` |  |  |  |  |
+| Tall Wide Automatic Sliding Door (White) | `csm:auto_door_tall_wide_slider_white` |  |  |  |  |
 | Telescoping Automatic Sliding Door (Black Anodised) | `csm:auto_door_tele_slider_black` |  |  |  |  |
 | Telescoping Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_tele_slider_clear` |  |  |  |  |
 | Telescoping Automatic Sliding Door (Dark Bronze) | `csm:auto_door_tele_slider_bronze` |  |  |  |  |
