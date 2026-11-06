@@ -70,11 +70,11 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
   private static final int RECHECK_TICKS = 20;
 
   /** SHARED with gen_doors: the panel's and the sidelite's planes, in blocks, inside north. */
-  private static final double SLIDER_Z0 = 4.0 / 16;
-  private static final double SLIDER_Z1 = 5.75 / 16;
+  static final double SLIDER_Z0 = 4.0 / 16;
+  static final double SLIDER_Z1 = 5.75 / 16;
   private static final double SIDELITE_Z0 = 6.5 / 16;
   private static final double SIDELITE_Z1 = 8.25 / 16;
-  private static final double STRIP = 0.5 / 16;
+  static final double STRIP = 0.5 / 16;
 
   /**
    * How far from a door's middle along the wall the approach sensor still sees someone, in
@@ -115,6 +115,18 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
   @Override
   public int motionTicks() {
     return SLIDE_TICKS;
+  }
+
+  /**
+   * How far this door's panel slides, in blocks, for the slide renderer.
+   *
+   * @param door the door's whole state
+   * @return the slide
+   *
+   * @since 1.2
+   */
+  public double slide(IBlockState door) {
+    return SLIDE;
   }
 
   @Override
@@ -218,10 +230,15 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
    * is open already. A locked door does not open for someone outside it (free egress inside).
    */
   private void openFor(World world, BlockPos lowerPos, IBlockState door, boolean inside) {
-    if (!door.getValue(OPEN) && !inside && DoorLocks.holds(world, lowerPos)) {
+    if (!door.getValue(OPEN) && !inside && held(world, lowerPos)) {
       return;
     }
     setOpen(world, lowerPos, true, false);
+  }
+
+  /** Whether a keypad holds the door shut against someone outside. */
+  boolean held(World world, BlockPos lowerPos) {
+    return DoorLocks.holds(world, lowerPos);
   }
 
   private static boolean insidePos(BlockPos p, BlockPos door, EnumFacing f) {
@@ -280,7 +297,7 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
     if (!door.getValue(OPEN) || worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up())) {
       return;
     }
-    if (occupied(worldIn, pos, door.getValue(FACING))) {
+    if (inTheWay(worldIn, pos, door)) {
       armClose(worldIn, pos, RECHECK_TICKS);
       return;
     }
@@ -291,7 +308,11 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
    * Whether a player or a non-hostile creature is in the doorway or within a block and a half of
    * it either side, along the wall a block either way (a bi-parting pair's other half).
    */
-  private static boolean occupied(World world, BlockPos lowerPos, EnumFacing f) {
+  boolean inTheWay(World world, BlockPos lowerPos, IBlockState door) {
+    return occupied(world, lowerPos, door.getValue(FACING));
+  }
+
+  static boolean occupied(World world, BlockPos lowerPos, EnumFacing f) {
     EnumFacing along = f.rotateY();
     AxisAlignedBB box = new AxisAlignedBB(lowerPos).expand(0, 1, 0)
         .grow(Math.abs(along.getXOffset()) + Math.abs(f.getXOffset()) * 1.5, 0,

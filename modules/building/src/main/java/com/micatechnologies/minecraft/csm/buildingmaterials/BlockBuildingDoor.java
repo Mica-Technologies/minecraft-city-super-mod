@@ -162,7 +162,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       Collections.synchronizedMap(new WeakHashMap<>());
 
   private static final ThreadLocal<String> PENDING_REGISTRY_NAME = new ThreadLocal<>();
-  private static final ThreadLocal<Hinge> PENDING_HINGE = new ThreadLocal<>();
+  static final ThreadLocal<Hinge> PENDING_HINGE = new ThreadLocal<>();
   private static final ThreadLocal<Boolean> PENDING_REVERSED = new ThreadLocal<>();
   /** A neighbour to turn round to pair with the door being placed, or null. */
   private static final ThreadLocal<BlockPos> PENDING_FLIP = new ThreadLocal<>();
