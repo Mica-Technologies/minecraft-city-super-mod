@@ -19,6 +19,7 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Smoke Barrier Door (Grey / Beige) | `door_smoke_metal_grey`, `door_smoke_metal_beige` |
 | Lead-Lined Door (Radiation) | `door_lead_lined` |
 | Automatic Sliding Door (Clear Aluminium / Dark Bronze / Black Anodised / White / Stainless Steel / Frameless Glass), and its fixed Sidelite | `auto_door_slider_<finish>`, `auto_door_sidelite_<finish>`; finish `clear`, `bronze`, `black`, `white`, `stainless` (`gen_doors.AUTO_FINISHES`), or `frameless`: full-width toughened glass with green edges, stainless patch fittings at a slider's corners, a floor channel under a sidelite, a slim header (`gen_doors._frameless_panel`); same planes, sensor and slide as the framed doors |
+| Wide Automatic Sliding Door and Telescoping Automatic Sliding Door (each in the six finishes above) | `auto_door_wide_slider_<finish>`, `auto_door_tele_slider_<finish>` (`BlockAutoSlidingDoorMulti`, `gen_doors.AUTO_MULTI`); multi-cell leaves, see "Wide and telescoping sliders"; they use the ordinary sidelites |
 | Automatic Door Activation Mat (legacy: hidden tab, placed mats still work) | `auto_door_mat` |
 | Interior Door (Dark Oak), with a Vision Lite, Front Door (Dark Oak), Fire Door (Dark Oak, Wired Lite) | `door_wood_dark_oak`, `door_wood_dark_oak_lite`, `door_front_dark_oak`, `door_wood_dark_oak_fire` |
 | Cathedral Door (Dark Oak / Weathered Oak / Bronze), and its Arch Head | `cathedral_door_<variant>`, `cathedral_door_<variant>_arch`; variant `dark_oak`, `weathered_oak`, `bronze` |
@@ -306,7 +307,8 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   a creature near an open door keeps it open through the doorway check. `automaticDoors` in the
   config: `sensorEnabled`, `sensorRange` (1 to 6), `sensorIntervalTicks` (1 to 20). Measured
   2026-11-05 with 400 sliders in the chunks round a player (none in reach to open): about
-  0.013 ms a tick of server time (a CPU sample over 15 s).- **The mat (legacy)** is in the building module's hidden tab (`CsmTabBuildingHidden`) since the
+  0.013 ms a tick of server time (a CPU sample over 15 s).
+- **The mat (legacy)** is in the building module's hidden tab (`CsmTabBuildingHidden`) since the
   sensor: not in the creative inventory or the Fabricator, still registered, so mats already laid
   keep working. It is a pixel-thin rubber mat with an aluminium edge, laid on the floor in front of
   the door. It opens sliders in the four cells around it at its own height and the cell above it (a
@@ -315,6 +317,35 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   `onEntityWalk`: the game sends the walking callback to the block under the walker's feet, which
   for a mat a pixel thick is the floor under it.
 - No closer (the item refuses it) and no reversing (the Door Swing Tool refuses it).
+
+### Wide and telescoping sliders
+
+`BlockAutoSlidingDoorMulti`, a subclass, for leaves of more than one cell. A **leaf** is a run of
+cells side by side, facing the same way and hinged the same way (toward the pocket they slide to).
+Where a cell is in its leaf, counted from the hinge side, is the actual-state `cell` (0..2), read
+from its neighbours: no metadata, and the ordinary sliders' state count is untouched.
+
+- **Wide** (`auto_door_wide_slider_*`): two cells draw one panel two blocks wide (each draws only
+  its outer stile, the rails run through) that slides two blocks into a pocket of two ordinary
+  sidelites. Bi-parting: `S S W W W W S S`, a 4-block opening; one leaf alone is a 2-block single
+  slide.
+- **Telescoping** (`auto_door_tele_slider_*`): two or three cells, each a whole panel on its own
+  plane (`TELE_Z`, cell 0 behind, in front of the sidelite's), cell `i` sliding `i + 1` blocks, so
+  open they all stack over one ordinary sidelite. Bi-parting 2 + 2: `S T T T T S`, a 4-block
+  opening; three cells and one sidelite: a 3-block single slide. The header is deeper to cover the
+  planes.
+- **Placing.** A cell placed beside one of its kind joins that leaf (same hinge) while the leaf is
+  short of full (wide 2, telescoping 3); on a leaf's latch side, sneaking (or a full leaf) starts the
+  other leaf of a bi-parting pair instead. With no neighbour, the hinge is the side of the opening
+  clicked, as for any door. By command, give the hinges as for a pair (`8` / `9` on the uppers).
+- **One door.** Every cell in the run along the wall (both leaves) opens and shuts together; a
+  keypad lock on any cell holds the run shut against someone outside; and it shuts only when the
+  doorway along the whole run is clear.
+- **Models.** Shut, JSON. Open, **OBJ** (`<name>_c<cell>_<half>_<hinge>_open.obj`, MTL per finish,
+  `auto_door_<finish>.mtl`): a JSON element cannot reach past -16..32 px, and a 2- or 3-block slide
+  does. `gen_doors.write_auto_multi_objs` makes each OBJ from the shut JSON *as written* (after
+  `model_depth`), moving every part but the header (`TINT_FIXED`), so open and shut are one
+  picture. The slide renderer moves the shut model by `slide(door)` (`travel - STRIP`).
 
 ## Dark oak doors
 
@@ -456,6 +487,7 @@ east narrow `9`). Keypad locks are not state: link a keypad as usual, or leave t
 | `door_lead_lined` | facing, open | hinge, closer, reversed | plate on the outside face |
 | `auto_door_slider_*` | facing, open | hinge = the side it slides to | opens on approach, redstone or a mat |
 | `auto_door_sidelite_*` | facing | `8` (hinge ignored) | never moves |
+| `auto_door_wide_slider_*`, `auto_door_tele_slider_*` | facing, open | hinge = the side the leaf slides to, the same on every cell of a leaf | the cell number is read from the neighbours |
 | `auto_door_mat` | `0` | -- | legacy; one block, on the floor beside the door |
 | `door_wood_dark_oak`, `_lite`, `door_front_dark_oak` | facing, open | hinge, closer, reversed | swing in by default |
 | `door_wood_dark_oak_fire` | facing, open | hinge, closer, reversed | swings out by default |

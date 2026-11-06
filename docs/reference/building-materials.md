@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "259 blocks in this tab"
+!!! info "271 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -253,6 +253,12 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Standing Seam Cladding Slab | `csm:cladding_standingseam_slab` | 3 | 10 | pickaxe | 1 |
 | Standing Seam Cladding Stairs | `csm:cladding_standingseam_stairs` | 3 | 10 | pickaxe | 1 |
 | Storefront Door (Dark Bronze) | `csm:door_storefront_bronze` |  |  |  |  |
+| Telescoping Automatic Sliding Door (Black Anodised) | `csm:auto_door_tele_slider_black` |  |  |  |  |
+| Telescoping Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_tele_slider_clear` |  |  |  |  |
+| Telescoping Automatic Sliding Door (Dark Bronze) | `csm:auto_door_tele_slider_bronze` |  |  |  |  |
+| Telescoping Automatic Sliding Door (Frameless Glass) | `csm:auto_door_tele_slider_frameless` |  |  |  |  |
+| Telescoping Automatic Sliding Door (Stainless Steel) | `csm:auto_door_tele_slider_stainless` |  |  |  |  |
+| Telescoping Automatic Sliding Door (White) | `csm:auto_door_tele_slider_white` |  |  |  |  |
 | Tympanum (Bronze) | `csm:cathedral_tympanum_bronze` |  |  |  |  |
 | Tympanum (Dark Oak) | `csm:cathedral_tympanum_dark_oak` |  |  |  |  |
 | Tympanum (Weathered Oak) | `csm:cathedral_tympanum_weathered_oak` |  |  |  |  |
@@ -264,6 +270,12 @@ Bulk material sets, with matching stairs, slabs and fences.
 | White Metal Fence | `csm:whitemetal_fence` | 2 | 10 | pickaxe | 1 |
 | White Metal Slab | `csm:whitemetal_slab` | 2 | 10 | pickaxe | 1 |
 | White Metal Stairs | `csm:whitemetal_stairs` | 2 | 10 | pickaxe | 1 |
+| Wide Automatic Sliding Door (Black Anodised) | `csm:auto_door_wide_slider_black` |  |  |  |  |
+| Wide Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_wide_slider_clear` |  |  |  |  |
+| Wide Automatic Sliding Door (Dark Bronze) | `csm:auto_door_wide_slider_bronze` |  |  |  |  |
+| Wide Automatic Sliding Door (Frameless Glass) | `csm:auto_door_wide_slider_frameless` |  |  |  |  |
+| Wide Automatic Sliding Door (Stainless Steel) | `csm:auto_door_wide_slider_stainless` |  |  |  |  |
+| Wide Automatic Sliding Door (White) | `csm:auto_door_wide_slider_white` |  |  |  |  |
 | Wired Glass | `csm:glass_wired` |  |  | pickaxe | 0 |
 | Wired Glass Pane | `csm:glass_pane_wired` |  |  | pickaxe | 0 |
 | Yellow Metal | `csm:yellowmetal` | 2 | 10 | pickaxe | 1 |

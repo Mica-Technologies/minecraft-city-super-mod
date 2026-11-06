@@ -94,8 +94,8 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
     if (block instanceof BlockAutoSlidingDoor) {
       // A sliding panel moves along the wall toward its hinge side, eased in and out.
       double smooth = p * p * (3 - 2 * p);
-      double along = (te.isOpening() ? smooth : 1 - smooth) * BlockAutoSlidingDoor.SLIDE
-          * (left ? -1 : 1);
+      double along = (te.isOpening() ? smooth : 1 - smooth)
+          * ((BlockAutoSlidingDoor) block).slide(door) * (left ? -1 : 1);
       renderMoved(te, block, door, facing, x, y, z, along);
       return;
     }
@@ -200,6 +200,11 @@ public class TileEntityDoorSwingRenderer extends TileEntitySpecialRenderer<TileE
         .withProperty(BlockBuildingDoor.HINGE, door.getValue(BlockBuildingDoor.HINGE))
         .withProperty(BlockBuildingDoor.CLOSER, door.getValue(BlockBuildingDoor.CLOSER))
         .withProperty(BlockBuildingDoor.REVERSED, door.getValue(BlockBuildingDoor.REVERSED));
+    if (block instanceof BlockAutoSlidingDoorMulti) {
+      // Which part of the leaf this cell draws.
+      closed = closed.withProperty(BlockAutoSlidingDoorMulti.CELL,
+          door.getValue(BlockAutoSlidingDoorMulti.CELL));
+    }
     List<BakedQuad> lowerQuads = quads(closed.withProperty(BlockBuildingDoor.HALF,
         BlockBuildingDoor.Half.LOWER));
     List<BakedQuad> upperQuads = quads(closed.withProperty(BlockBuildingDoor.HALF,

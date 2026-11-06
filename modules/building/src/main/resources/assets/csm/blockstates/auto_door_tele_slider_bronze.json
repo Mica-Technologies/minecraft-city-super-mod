@@ -1,0 +1,1329 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:doors/auto_door_tele_slider_bronze_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right_open.obj"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right_open.obj",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right_open.obj",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_left_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_lower_right_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_left_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "0",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c0_upper_right_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_left_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_lower_right_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_left_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "1",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c1_upper_right_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_left_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "lower",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_lower_right_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "left",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_left_open.obj",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "false",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "half": "upper",
+        "hinge": "right",
+        "cell": "2",
+        "open": "true",
+        "swing": "false"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_tele_slider_bronze_c2_upper_right_open.obj",
+        "y": 270
+      }
+    }
+  ]
+}

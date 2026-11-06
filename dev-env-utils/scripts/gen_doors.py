@@ -1192,6 +1192,38 @@ AUTO = {
     for kind in ("slider", "sidelite") for finish in AUTO_STYLES
     for rgb in [AUTO_FINISHES[auto_frame(finish)][0]]
 }
+# The multi-cell sliders (BlockAutoSlidingDoorMulti): a leaf is a run of cells hinged the same way,
+# counted from the hinge (pocket) side by the actual-state `cell`. A wide leaf is two cells drawing
+# one panel two blocks wide that slides two blocks; a telescoping leaf is two or three cells, each
+# a whole panel on its own plane, cell i sliding i + 1 blocks so they all stack over one sidelite.
+# SHARED with BlockAutoSlidingDoorMulti: the cell counts, the travel, TELE_Z.
+AUTO_MULTI_CELLS = {"wide": 2, "tele": 3}
+AUTO_MULTI_KIND_NAMES = {
+    "wide": ("Wide Automatic Sliding Door (%s)", "Puerta Corredera Automática Ancha (%s)",
+             "Breite Automatische Schiebetür (%s)", "Bred Automatisk Skjutdörr (%s)"),
+    "tele": ("Telescoping Automatic Sliding Door (%s)",
+             "Puerta Corredera Automática Telescópica (%s)",
+             "Automatische Teleskop-Schiebetür (%s)", "Automatisk Teleskopskjutdörr (%s)"),
+}
+# registry name -> (kind, frame colour, (en, es, de, sv)): every wide door, then every telescoping.
+AUTO_MULTI = {
+    "auto_door_%s_slider_%s" % (kind, finish): (
+        kind, rgb,
+        tuple(f % n for f, n in zip(AUTO_MULTI_KIND_NAMES[kind], AUTO_FINISH_NAMES[finish])))
+    for kind in ("wide", "tele") for finish in AUTO_STYLES
+    for rgb in [AUTO_FINISHES[auto_frame(finish)][0]]
+}
+# A telescoping leaf's planes, cell 0 (nearest the pocket) behind, in front of the sidelite's.
+TELE_Z = ((4.75, 6.25), (3.0, 4.5), (1.25, 2.75))
+TELE_HEADER_Z = (0.5, 9.5)
+
+
+def auto_travel_px(kind, cell):
+    """How far a multi-cell slider's cell slides, in px: whole blocks, less the half pixel that
+    leaves the stack lined up over the pocket (as SLIDE_PX does for one cell)."""
+    return (2 if kind == "wide" else cell + 1) * 16 - 0.5
+
+
 MAT_NAMES = ("Automatic Door Activation Mat", "Alfombra de Activación de Puerta Automática",
              "Kontaktmatte für Automatiktür", "Aktiveringsmatta för Automatisk Dörr")
 
@@ -1239,7 +1271,27 @@ def auto_textures():
     out.update(mat_textures())
     for name, (kind, rgb, _) in AUTO.items():
         out[name + "_icon"] = auto_icon(kind, rgb, auto_finish(name) == FRAMELESS)
+    for name, (kind, rgb, _) in AUTO_MULTI.items():
+        out[name + "_icon"] = auto_multi_icon(kind, rgb, auto_finish(name) == FRAMELESS)
     return out
+
+
+def auto_multi_icon(kind, rgb, frameless):
+    """A wide door: one panel across the whole icon. Telescoping: two panels overlapping, the
+    front one offset, as they stack when open."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    glass = (186, 212, 220, 150)
+    edge = (110, 160, 140, 220) if frameless else _shift(rgb, 0)
+    for x in range(0, 16):
+        px[x, 0] = px[x, 1] = _shift(rgb, -20 if not frameless else -10)
+    panels = ((1, 14),) if kind == "wide" else ((1, 10), (5, 14))
+    for x0, x1 in panels:
+        for y in range(2, 16):
+            for x in range(x0, x1 + 1):
+                rail = not frameless and (y in (2, 15) or y == 9)
+                px[x, y] = edge if x in (x0, x1) else (_shift(rgb, 0) if rail else glass)
+    return img
 
 
 def auto_icon(kind, rgb, frameless=False):
@@ -1299,45 +1351,51 @@ def _shift_x(elements, dx):
     return out
 
 
-def _slide_panel(z, upper, pivots):
+def _slide_panel(z, upper, pivots, ends=(True, True)):
     """A sliding (or fixed) glass panel in an aluminium frame, in the plane z, left-hinged: its
     stiles, rails and glass, a mid-rail at push height, and a slider's break-out pivots at the
-    hinge-side corners."""
+    hinge-side corners. `ends` (hinge side, latch side) says which of its stiles this cell draws:
+    a wide panel's two cells each draw only their outer one, and the rails run on into the
+    other cell."""
     z0, z1 = z
     zg0, zg1 = z0 + 0.6, z1 - 0.6
     f = "#frame"
+    xa = STILE if ends[0] else 0
+    xb = 16 - STILE if ends[1] else 16
     if upper:
         top = HEADER_Y
-        els = [box(0, 0, z0, STILE, top, z1, f, faces=_but_faces("down")),
-               box(16 - STILE, 0, z0, 16, top, z1, f, faces=_but_faces("down")),
-               box(STILE, top - STILE, z0, 16 - STILE, top, z1, f, faces=_but_faces("east", "west")),
-               box(STILE, 0, zg0, 16 - STILE, top - STILE, zg1, "#glass", faces=("north", "south"))]
-        if pivots:
+        els = ([box(0, 0, z0, STILE, top, z1, f, faces=_but_faces("down"))] if ends[0] else []) + (
+            [box(16 - STILE, 0, z0, 16, top, z1, f, faces=_but_faces("down"))] if ends[1] else [])
+        els += [box(xa, top - STILE, z0, xb, top, z1, f, faces=_but_faces("east", "west")),
+                box(xa, 0, zg0, xb, top - STILE, zg1, "#glass", faces=("north", "south"))]
+        if pivots and ends[0]:
             els.append(box(0, top - 1, z0 - 0.25, 2, top, z1 + 0.25, "#pivot",
                            faces=_but_faces("up")))
         return els
-    els = [box(0, 0, z0, STILE, 16, z1, f, faces=_but_faces("up")),
-           box(16 - STILE, 0, z0, 16, 16, z1, f, faces=_but_faces("up")),
-           box(STILE, 0, z0, 16 - STILE, 3, z1, f, faces=_but_faces("east", "west")),
-           box(STILE, 13.5, z0, 16 - STILE, 15, z1, f, faces=_but_faces("east", "west")),
-           box(STILE, 3, zg0, 16 - STILE, 13.5, zg1, "#glass", faces=("north", "south")),
-           box(STILE, 15, zg0, 16 - STILE, 16, zg1, "#glass", faces=("north", "south"))]
-    if pivots:
+    els = ([box(0, 0, z0, STILE, 16, z1, f, faces=_but_faces("up"))] if ends[0] else []) + (
+        [box(16 - STILE, 0, z0, 16, 16, z1, f, faces=_but_faces("up"))] if ends[1] else [])
+    els += [box(xa, 0, z0, xb, 3, z1, f, faces=_but_faces("east", "west")),
+            box(xa, 13.5, z0, xb, 15, z1, f, faces=_but_faces("east", "west")),
+            box(xa, 3, zg0, xb, 13.5, zg1, "#glass", faces=("north", "south")),
+            box(xa, 15, zg0, xb, 16, zg1, "#glass", faces=("north", "south"))]
+    if pivots and ends[0]:
         els.append(box(0, 0, z0 - 0.25, 2, 1, z1 + 0.25, "#pivot", faces=_but_faces("down")))
     return els
 
 
-def _frameless_panel(z, upper, slider):
+def _frameless_panel(z, upper, slider, ends=(True, True)):
     """A frameless panel: toughened glass the width of the cell (less FL_GAP each side), its
     edges showing, held by stainless patch fittings at its corners (a slider's, which move with
     it) or, for a sidelite, standing in a floor channel. Left-hinged, like _slide_panel."""
     z0, z1 = z
     zg0, zg1 = z0 + 0.5, z1 - 0.5
-    x0, x1 = FL_GAP, 16 - FL_GAP
+    x0 = FL_GAP if ends[0] else 0
+    x1 = 16 - FL_GAP if ends[1] else 16
     pw, ph = PATCH
+    inner = (() if ends[0] else ("west",)) + (() if ends[1] else ("east",))
 
     def glass(y0, y1, *leave):
-        el = box(x0, y0, zg0, x1, y1, zg1, "#glass", faces=_but_faces(*leave))
+        el = box(x0, y0, zg0, x1, y1, zg1, "#glass", faces=_but_faces(*(leave + inner)))
         for face in ("east", "west", "up", "down"):
             if face in el["faces"]:
                 el["faces"][face]["texture"] = "#edge"
@@ -1347,21 +1405,26 @@ def _frameless_panel(z, upper, slider):
         els = [glass(0, FL_HEADER_Y, "up", "down")]
         if slider:
             y = FL_HEADER_Y - ph
-            els += [box(x0, y, z0, x0 + pw, FL_HEADER_Y, z1, "#frame", faces=_but_faces("up")),
-                    box(x1 - pw, y, z0, x1, FL_HEADER_Y, z1, "#frame", faces=_but_faces("up"))]
+            els += ([box(x0, y, z0, x0 + pw, FL_HEADER_Y, z1, "#frame", faces=_but_faces("up"))]
+                    if ends[0] else []) + (
+                [box(x1 - pw, y, z0, x1, FL_HEADER_Y, z1, "#frame", faces=_but_faces("up"))]
+                if ends[1] else [])
         return els
     if slider:
-        return [glass(0.25, 16, "up"),
-                box(x0, 0.25, z0, x0 + pw, 0.25 + ph, z1, "#frame"),
-                box(x1 - pw, 0.25, z0, x1, 0.25 + ph, z1, "#frame")]
+        return [glass(0.25, 16, "up")] + (
+            [box(x0, 0.25, z0, x0 + pw, 0.25 + ph, z1, "#frame")] if ends[0] else []) + (
+            [box(x1 - pw, 0.25, z0, x1, 0.25 + ph, z1, "#frame")] if ends[1] else [])
     return [glass(1.25, 16, "up", "down"),
             box(0, 0, z0 - 0.25, 16, 1.25, z1 + 0.25, "#frame", faces=_but_faces("down"))]
 
 
-def _header(sensor, slim=False):
+def _header(sensor, slim=False, deep=False):
     """The operator header across the top of the upper half, fixed to the frame (TINT_FIXED),
-    with a slider's motion sensor on each face; slim over the frameless doors."""
+    with a slider's motion sensor on each face; slim over the frameless doors, deep over the
+    telescoping ones' extra planes."""
     y, (z0, z1) = (FL_HEADER_Y, FL_HEADER_Z) if slim else (HEADER_Y, HEADER_Z)
+    if deep:
+        z0, z1 = TELE_HEADER_Z
     els = [box(0, y, z0, 16, 16, z1, "#frame")]
     if sensor:
         s0, s1 = (y + 0.25, 15.75) if slim else (13, 15)
@@ -1397,12 +1460,159 @@ def auto_models():
                 _shift_x(right_panel, SLIDE_PX) + fixed, tex)
         out[name + "_inventory"] = {"parent": "item/generated",
                                     "textures": {"layer0": TEX_REF % (name + "_icon")}}
+    out.update(auto_multi_models())
     mat = {"top": TEX_REF % "auto_door_mat_top", "side": TEX_REF % "auto_door_mat_side"}
     el = box(0, 0, 0, 16, 1, 16, "#side")
     el["faces"]["up"]["texture"] = "#top"
     el["faces"]["down"]["cullface"] = "down"
     out["auto_door_mat"] = _model([el], mat)
     return out
+
+
+def auto_multi_textures(name):
+    frameless = auto_finish(name) == FRAMELESS
+    tex = {"frame": TEX_REF % ("auto_door_frame_" + auto_frame(auto_finish(name))),
+           "glass": TEX_REF % "auto_door_glass", "pivot": TEX_REF % "door_black"}
+    if frameless:
+        tex["edge"] = TEX_REF % "auto_door_glass_edge"
+    return tex
+
+
+def auto_multi_models():
+    """The multi-cell sliders' shut models, JSON, one per cell, half and hinge. Their open models
+    are OBJ (auto_multi_objs): a slide of two or three blocks is past where a JSON element may
+    reach (-16..32 px)."""
+    out = {}
+    for name, (kind, _, _) in AUTO_MULTI.items():
+        frameless = auto_finish(name) == FRAMELESS
+        tex = auto_multi_textures(name)
+        build = _frameless_panel if frameless else _slide_panel
+        for cell in range(AUTO_MULTI_CELLS[kind]):
+            if kind == "wide":
+                z, ends = SLIDER_Z, (cell == 0, cell == 1)
+            else:
+                z, ends = TELE_Z[cell], (True, True)
+            for half in ("lower", "upper"):
+                upper = half == "upper"
+                panel = build(z, upper, True, ends)
+                fixed = _header(True, frameless, kind == "tele") if upper else []
+                base = "%s_c%d_%s" % (name, cell, half)
+                out[base + "_left"] = _model(panel + fixed, auto_multi_textures(name))
+                out[base + "_right"] = _model(sc._mirror_x(panel) + fixed, tex)
+        out[name + "_inventory"] = {"parent": "item/generated",
+                                    "textures": {"layer0": TEX_REF % (name + "_icon")}}
+    return out
+
+
+def auto_multi_opens():
+    """(OBJ name, the shut model it is made from, px to move the panel along x, MTL name) for
+    every multi-cell slider's open model."""
+    out = []
+    for name, (kind, _, _) in AUTO_MULTI.items():
+        for cell in range(AUTO_MULTI_CELLS[kind]):
+            dx = auto_travel_px(kind, cell)
+            for half in ("lower", "upper"):
+                for hinge, sign in (("left", -1), ("right", 1)):
+                    shut = "%s_c%d_%s_%s" % (name, cell, half, hinge)
+                    out.append((shut + "_open", shut, sign * dx, "auto_door_" + auto_finish(name)))
+    return out
+
+
+_OBJ_FACES = {
+    # face: (the fixed axis and which end of it, normal, (u, v) of a corner from (x, y, z) px)
+    "north": (2, 0, (0, 0, -1), lambda x, y, z: (16 - x, 16 - y)),
+    "south": (2, 1, (0, 0, 1), lambda x, y, z: (x, 16 - y)),
+    "west": (0, 0, (-1, 0, 0), lambda x, y, z: (z, 16 - y)),
+    "east": (0, 1, (1, 0, 0), lambda x, y, z: (16 - z, 16 - y)),
+    "up": (1, 1, (0, 1, 0), lambda x, y, z: (x, z)),
+    "down": (1, 0, (0, -1, 0), lambda x, y, z: (x, 16 - z)),
+}
+
+
+def auto_multi_obj(model, dx):
+    """An OBJ of a shut JSON model with every part but the frame's (TINT_FIXED) moved dx px along
+    x: plain quads in 0..1 block space, each face's UV mapped as Minecraft maps the JSON's
+    (from its position, onto the face's uv), v down the texture (no flip-v)."""
+    import gen_garage_doors as gg
+    o = gg.Obj("")
+    for e in model["elements"]:
+        fixed = any(spec.get("tintindex") == TINT_FIXED for spec in e["faces"].values())
+        f = list(e["from"])
+        t = list(e["to"])
+        if not fixed:
+            f[0] += dx
+            t[0] += dx
+        for face, spec in e["faces"].items():
+            axis, end, normal, pos_uv = _OBJ_FACES[face]
+            others = [a for a in range(3) if a != axis]
+            corners = []
+            for i, j in ((0, 0), (1, 0), (1, 1), (0, 1)):
+                c = [0.0, 0.0, 0.0]
+                c[axis] = (t if end else f)[axis]
+                c[others[0]] = (f, t)[i][others[0]]
+                c[others[1]] = (f, t)[j][others[1]]
+                corners.append(c)
+            # The face's position-derived uv box, and where each corner falls in it.
+            pu = [pos_uv(*(c[k] - (dx if k == 0 and not fixed else 0) for k in range(3)))
+                  for c in corners]
+            us = [q[0] for q in pu]
+            vs = [q[1] for q in pu]
+            if max(us) == min(us) or max(vs) == min(vs):
+                continue
+            u0, v0, u1, v1 = spec["uv"]
+            # _position_uv's box runs from the smaller position-derived value to the larger, which
+            # it maps to uv[0] and uv[2] (uv[1], uv[3]).
+            uvs = [((u0 + (q[0] - min(us)) / (max(us) - min(us)) * (u1 - u0)) / 16,
+                    (v0 + (q[1] - min(vs)) / (max(vs) - min(vs)) * (v1 - v0)) / 16) for q in pu]
+            uvs = [(round(min(max(u, 0.0), 1.0), 6), round(min(max(v, 0.0), 1.0), 6))
+                   for u, v in uvs]
+            o.quad(spec["texture"].lstrip("#"), [tuple(k / 16 for k in c) for c in corners],
+                   uvs, normal)
+    return o
+
+
+def obj_text(o, name, mtl_name):
+    lines = ["# Generated by dev-env-utils/scripts/gen_doors.py -- do not edit",
+             "mtllib %s.mtl" % mtl_name, "o %s" % name]
+    lines += ["v %.5f %.5f %.5f" % p for p in o.v]
+    lines += ["vt %.5f %.5f" % t for t in o.vt]
+    lines += ["vn %.5f %.5f %.5f" % n for n in o.vn]
+    current = None
+    for material, idx in o.faces:
+        if material != current:
+            lines.append("usemtl " + material)
+            current = material
+        lines.append("f " + " ".join("%d/%d/%d" % i for i in idx))
+    return "\n".join(lines) + "\n"
+
+
+def auto_multi_mtls():
+    out = {}
+    for name in AUTO_MULTI:
+        mtl_name = "auto_door_" + auto_finish(name)
+        lines = ["# Generated by dev-env-utils/scripts/gen_doors.py -- do not edit"]
+        for mat, tex in sorted(auto_multi_textures(name).items()):
+            lines += ["newmtl " + mat, "map_Kd " + tex]
+        out[mtl_name + ".mtl"] = "\n".join(lines) + "\n"
+    return out
+
+
+def write_auto_multi_objs(model_dir):
+    """The open OBJs, made from the shut models as written (after model_depth has parted their
+    coplanar faces), so an open door is the same picture as a shut one, moved."""
+    written = []
+    for fname, text in sorted(auto_multi_mtls().items()):
+        with open(os.path.join(model_dir, fname), "w", newline="\n") as fh:
+            fh.write(text)
+        written.append(("obj", fname))
+    for obj_name, shut, dx, mtl_name in auto_multi_opens():
+        with open(os.path.join(model_dir, shut + ".json"), encoding="utf-8") as fh:
+            model = json.load(fh)
+        text = obj_text(auto_multi_obj(model, dx), obj_name, mtl_name)
+        with open(os.path.join(model_dir, obj_name + ".obj"), "w", newline="\n") as fh:
+            fh.write(text)
+        written.append(("obj", obj_name + ".obj"))
+    return written
 
 
 def auto_states():
@@ -1427,6 +1637,22 @@ def auto_states():
                         if rot:
                             apply["y"] = rot
                         parts.append({"when": when, "apply": apply})
+        out[name] = {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
+                     "multipart": parts}
+    for name, (kind, _, _) in AUTO_MULTI.items():
+        parts = []
+        for side, rot in SIDES:
+            for cell in range(AUTO_MULTI_CELLS[kind]):
+                for half in ("lower", "upper"):
+                    for hinge in ("left", "right"):
+                        shut = "%s_c%d_%s_%s" % (name, cell, half, hinge)
+                        for open_, model in ((False, shut), (True, shut + "_open.obj")):
+                            when = {"facing": side, "half": half, "hinge": hinge, "cell": str(cell),
+                                    "open": str(open_).lower(), "swing": "false"}
+                            apply = {"model": MODEL_REF % model}
+                            if rot:
+                                apply["y"] = rot
+                            parts.append({"when": when, "apply": apply})
         out[name] = {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
                      "multipart": parts}
     out["auto_door_mat"] = {"variants": {"normal": {"model": MODEL_REF % "auto_door_mat"},
@@ -1464,6 +1690,7 @@ def write_all(tex_dir, model_dir, state_dir, item_tex_dir, item_model_dir):
         gen_cmu._write_json(os.path.join(state_dir, name + ".json"), body)
         written.append(("state", name + ".json"))
     model_depth.separate_dirs([(tex_dir, TEX_DIR), (model_dir, MODEL_DIR), (state_dir, STATE_DIR), (item_tex_dir, ITEM_TEX_DIR), (item_model_dir, ITEM_MODEL_DIR)], written, gen_cmu._write_json)
+    written += write_auto_multi_objs(model_dir)
     return written
 
 
@@ -1475,6 +1702,8 @@ def lang_entries():
            for name, (_, _, _, names) in DOORS.items()]
     out += [("tile.%s.name" % name, dict(zip(LANGS, names)))
             for name, (_, _, names) in AUTO.items()]
+    out += [("tile.%s.name" % name, dict(zip(LANGS, names)))
+            for name, (_, _, names) in AUTO_MULTI.items()]
     out.append(("tile.auto_door_mat.name", dict(zip(LANGS, MAT_NAMES))))
     out.append(("item.door_closer.name", dict(zip(LANGS, CLOSER_NAMES))))
     out.append(("item.door_swing_tool.name", dict(zip(LANGS, SWING_TOOL_NAMES))))
@@ -1489,6 +1718,8 @@ def tab_lines():
              for n, v in DOORS.items() if n.startswith("door_")]
     lines += ['    initTabBlock(new BlockAutoSlidingDoor("%s")); // %s' % (n, v[2][0])
               for n, v in AUTO.items()]
+    lines += ['    initTabBlock(new BlockAutoSlidingDoorMulti("%s")); // %s' % (n, v[2][0])
+              for n, v in AUTO_MULTI.items()]
     # The activation mat is registered from CsmTabBuildingHidden (legacy since the sensor):
     #     initTabBlock(BlockAutoDoorMat.class, fmlPreInitializationEvent);
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")
@@ -1533,6 +1764,7 @@ def _check():
         for d in t.values():
             os.makedirs(d, exist_ok=True)
         written = write_all(t["tex"], t["model"], t["state"], t["itemtex"], t["itemmodel"])
+        real["obj"], t["obj"] = real["model"], t["model"]
         drifted = [os.path.join(real[k], f) for k, f in written
                    if not _same(os.path.join(real[k], f), os.path.join(t[k], f))]
         if drifted:

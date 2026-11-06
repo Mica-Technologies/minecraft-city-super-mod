@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuGroundfac
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuSplitface;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCmuStandard;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAutoSlidingDoor;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockAutoSlidingDoorMulti;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockBuildingDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCarvedPanelling;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockCathedralTympanum;
@@ -308,6 +309,18 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_white")); // Sliding Door Sidelite (White)
     initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_stainless")); // Sliding Door Sidelite (Stainless Steel)
     initTabBlock(new BlockAutoSlidingDoor("auto_door_sidelite_frameless")); // Sliding Door Sidelite (Frameless Glass)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_wide_slider_clear")); // Wide Automatic Sliding Door (Clear Aluminium)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_wide_slider_bronze")); // Wide Automatic Sliding Door (Dark Bronze)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_wide_slider_black")); // Wide Automatic Sliding Door (Black Anodised)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_wide_slider_white")); // Wide Automatic Sliding Door (White)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_wide_slider_stainless")); // Wide Automatic Sliding Door (Stainless Steel)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_wide_slider_frameless")); // Wide Automatic Sliding Door (Frameless Glass)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_tele_slider_clear")); // Telescoping Automatic Sliding Door (Clear Aluminium)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_tele_slider_bronze")); // Telescoping Automatic Sliding Door (Dark Bronze)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_tele_slider_black")); // Telescoping Automatic Sliding Door (Black Anodised)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_tele_slider_white")); // Telescoping Automatic Sliding Door (White)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_tele_slider_stainless")); // Telescoping Automatic Sliding Door (Stainless Steel)
+    initTabBlock(new BlockAutoSlidingDoorMulti("auto_door_tele_slider_frameless")); // Telescoping Automatic Sliding Door (Frameless Glass)
     initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer
     initTabItem(ItemDoorSwingTool.class, fmlPreInitializationEvent); // Door Swing Tool
     initTabBlock(BlockCustomDoor.class, fmlPreInitializationEvent); // Custom Door
