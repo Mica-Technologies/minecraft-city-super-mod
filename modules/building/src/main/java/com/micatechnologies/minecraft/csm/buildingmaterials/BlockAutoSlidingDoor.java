@@ -30,6 +30,10 @@ import net.minecraft.world.World;
  * sidelite on its hinge side is a single-slide door. A panel slides {@link #SLIDE} along the wall,
  * through the sidelite's cell (in a plane in front of the sidelite's glass) or into the wall.</p>
  *
+ * <p>The finish in the name is only the models': a framed one ({@code clear}, {@code bronze},
+ * {@code black}, {@code white}, {@code stainless}) or {@code frameless}, all-glass panels on patch
+ * fittings under a slim header. Every one has the same planes, bounding boxes and behaviour.</p>
+ *
  * <ul>
  *   <li><b>Opening.</b> The approach sensor ({@link AutoDoorSensors}) opens a panel (and its
  *   pair) as a player comes within a couple of blocks of either face, as a real door's header

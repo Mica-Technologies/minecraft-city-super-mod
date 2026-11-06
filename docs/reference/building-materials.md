@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "257 blocks in this tab"
+!!! info "259 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -18,6 +18,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Automatic Sliding Door (Black Anodised) | `csm:auto_door_slider_black` |  |  |  |  |
 | Automatic Sliding Door (Clear Aluminium) | `csm:auto_door_slider_clear` |  |  |  |  |
 | Automatic Sliding Door (Dark Bronze) | `csm:auto_door_slider_bronze` |  |  |  |  |
+| Automatic Sliding Door (Frameless Glass) | `csm:auto_door_slider_frameless` |  |  |  |  |
 | Automatic Sliding Door (Stainless Steel) | `csm:auto_door_slider_stainless` |  |  |  |  |
 | Automatic Sliding Door (White) | `csm:auto_door_slider_white` |  |  |  |  |
 | Back Door (Half Glass) | `csm:door_back_halfglass` |  |  |  |  |
@@ -234,6 +235,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Sliding Door Sidelite (Black Anodised) | `csm:auto_door_sidelite_black` |  |  |  |  |
 | Sliding Door Sidelite (Clear Aluminium) | `csm:auto_door_sidelite_clear` |  |  |  |  |
 | Sliding Door Sidelite (Dark Bronze) | `csm:auto_door_sidelite_bronze` |  |  |  |  |
+| Sliding Door Sidelite (Frameless Glass) | `csm:auto_door_sidelite_frameless` |  |  |  |  |
 | Sliding Door Sidelite (Stainless Steel) | `csm:auto_door_sidelite_stainless` |  |  |  |  |
 | Sliding Door Sidelite (White) | `csm:auto_door_sidelite_white` |  |  |  |  |
 | Smoke Barrier Door (Beige Metal) | `csm:door_smoke_metal_beige` |  |  |  |  |
