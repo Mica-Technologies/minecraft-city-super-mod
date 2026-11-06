@@ -1,10 +1,13 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.CsmConstants;
 import com.micatechnologies.minecraft.csm.codeutils.CsmGlassLayer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,10 +18,12 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 /**
  * An automatic sliding glass door: a sliding panel ({@code auto_door_slider_*}) or the fixed
@@ -100,6 +105,33 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
   /** Whether this is the fixed sidelite, which never moves. */
   public boolean fixed() {
     return getBlockRegistryName().contains("sidelite");
+  }
+
+  /**
+   * Whether this is a 3-block-tall door ({@code auto_door_tall_*}): its upper half draws the
+   * middle of the panel, and a {@link BlockAutoDoorTop} above it the top and the header.
+   *
+   * @return whether the door is tall
+   *
+   * @since 1.2
+   */
+  public boolean tall() {
+    return getBlockRegistryName().startsWith("auto_door_tall_");
+  }
+
+  /** The top of this tall door's finish, or null if there is none. */
+  @Nullable
+  private Block topBlock() {
+    String n = getBlockRegistryName();
+    Block b = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(CsmConstants.MOD_NAMESPACE,
+        "auto_door_tall_top_" + n.substring(n.lastIndexOf('_') + 1)));
+    return b instanceof BlockAutoDoorTop ? b : null;
+  }
+
+  @Override
+  public boolean canPlaceBlockAt(World worldIn, @Nonnull BlockPos pos) {
+    return super.canPlaceBlockAt(worldIn, pos) && (!tall()
+        || worldIn.getBlockState(pos.up(2)).getBlock().isReplaceable(worldIn, pos.up(2)));
   }
 
   @Override
@@ -253,6 +285,14 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
     super.onBlockAdded(worldIn, pos, state);
     if (!worldIn.isRemote && !fixed() && state.getValue(HALF) == Half.LOWER) {
       AutoDoorSensors.get(worldIn).add(pos);
+    }
+    if (!worldIn.isRemote && tall() && state.getValue(HALF) == Half.UPPER) {
+      // A tall door's top goes up with its upper half, however the door was put there.
+      Block top = topBlock();
+      if (top != null && worldIn.getBlockState(pos.up()).getBlock()
+          .isReplaceable(worldIn, pos.up())) {
+        worldIn.setBlockState(pos.up(), top.getDefaultState(), 3);
+      }
     }
   }
 

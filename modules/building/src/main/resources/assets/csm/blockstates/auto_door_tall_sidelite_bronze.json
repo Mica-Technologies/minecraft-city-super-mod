@@ -1,0 +1,87 @@
+{
+  "variants": {
+    "inventory": {
+      "model": "csm:doors/auto_door_tall_sidelite_bronze_inventory"
+    }
+  },
+  "multipart": [
+    {
+      "when": {
+        "half": "lower",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_lower"
+      }
+    },
+    {
+      "when": {
+        "half": "upper",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_middle"
+      }
+    },
+    {
+      "when": {
+        "half": "lower",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "half": "upper",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_middle",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "half": "lower",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "half": "upper",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_middle",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "half": "lower",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "half": "upper",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:doors/auto_door_sidelite_bronze_middle",
+        "y": 270
+      }
+    }
+  ]
+}

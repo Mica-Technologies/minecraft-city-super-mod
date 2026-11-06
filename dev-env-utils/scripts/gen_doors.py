@@ -689,6 +689,7 @@ def textures():
     out["door_trefoil"] = trefoil()
     out.update(workshop_textures())
     out.update(auto_textures())
+    out.update(auto_tall_textures())
     out.update(_cathedral().textures())
     return out
 
@@ -1082,6 +1083,7 @@ def models():
         out[prefix + "_right_open"] = _model(_rounded(sc._mirror_x(flip(open_))), hw)
     out["door_workshop"] = workshop_model()
     out.update(auto_models())
+    out.update(auto_tall_models())
     out.update(_cathedral().models())
     return out
 
@@ -1130,6 +1132,7 @@ def blockstates():
     out = {name: state_for(name) for name in DOORS}
     out["door_workshop"] = workshop_state()
     out.update(auto_states())
+    out.update(auto_tall_states())
     out.update(_cathedral().blockstates())
     return out
 
@@ -1511,7 +1514,7 @@ def auto_multi_opens():
     for name, (kind, _, _) in AUTO_MULTI.items():
         for cell in range(AUTO_MULTI_CELLS[kind]):
             dx = auto_travel_px(kind, cell)
-            for half in ("lower", "upper"):
+            for half in ("lower", "upper", "middle"):
                 for hinge, sign in (("left", -1), ("right", 1)):
                     shut = "%s_c%d_%s_%s" % (name, cell, half, hinge)
                     out.append((shut + "_open", shut, sign * dx, "auto_door_" + auto_finish(name)))
@@ -1615,6 +1618,196 @@ def write_auto_multi_objs(model_dir):
     return written
 
 
+# --- 3-block-tall doors (BlockAutoDoorTop above) ----------------------------------------------
+#
+# A tall door is the same class as its 2-tall kind, by the name auto_door_tall_<kind>_<finish>:
+# its lower half draws the 2-tall lower model, its upper half a MIDDLE model (stiles and glass the
+# whole height, no rail, no header), and the auto_door_tall_top_<finish> block it places above
+# draws the 2-tall kind's UPPER model (the top rail, the glass's top, the header), chosen by the
+# top's actual state, which follows the door below. SHARED with BlockAutoDoorTop.Kind.
+
+AUTO_TALL_KIND_NAMES = {
+    "slider": ("Tall Automatic Sliding Door (%s)", "Puerta Corredera Automática Alta (%s)",
+               "Hohe Automatische Schiebetür (%s)", "Hög Automatisk Skjutdörr (%s)"),
+    "wide": ("Tall Wide Automatic Sliding Door (%s)", "Puerta Corredera Automática Ancha Alta (%s)",
+             "Hohe Breite Automatische Schiebetür (%s)", "Hög Bred Automatisk Skjutdörr (%s)"),
+    "tele": ("Tall Telescoping Automatic Sliding Door (%s)",
+             "Puerta Corredera Automática Telescópica Alta (%s)",
+             "Hohe Automatische Teleskop-Schiebetür (%s)", "Hög Automatisk Teleskopskjutdörr (%s)"),
+    "sidelite": ("Tall Sliding Door Sidelite (%s)", "Fijo Alto de Puerta Corredera (%s)",
+                 "Hohes Schiebetür-Seitenteil (%s)", "Högt Skjutdörr Sidoparti (%s)"),
+}
+AUTO_TALL_TOP_NAMES = ("Tall Sliding Door Header (%s)", "Cabecero de Puerta Corredera Alta (%s)",
+                       "Kopfteil der hohen Schiebetür (%s)", "Överstycke för Hög Skjutdörr (%s)")
+
+
+def _tall_base(kind, finish):
+    return {"slider": "auto_door_slider_%s", "wide": "auto_door_wide_slider_%s",
+            "tele": "auto_door_tele_slider_%s", "sidelite": "auto_door_sidelite_%s"}[kind] % finish
+
+
+# registry name -> (kind, finish, the 2-tall door it is a tall version of, class, (en, es, de, sv))
+AUTO_TALL = {
+    "auto_door_tall_%s_%s" % ({"slider": "slider", "wide": "wide_slider", "tele": "tele_slider",
+                               "sidelite": "sidelite"}[kind], finish): (
+        kind, finish, _tall_base(kind, finish),
+        "BlockAutoSlidingDoorMulti" if kind in ("wide", "tele") else "BlockAutoSlidingDoor",
+        tuple(f % n for f, n in zip(AUTO_TALL_KIND_NAMES[kind], AUTO_FINISH_NAMES[finish])))
+    for kind in ("slider", "wide", "tele", "sidelite") for finish in AUTO_STYLES
+}
+AUTO_TALL_TOP = {
+    "auto_door_tall_top_%s" % finish: tuple(
+        f % n for f, n in zip(AUTO_TALL_TOP_NAMES, AUTO_FINISH_NAMES[finish]))
+    for finish in AUTO_STYLES
+}
+
+
+def _slide_middle(z, ends=(True, True)):
+    """A tall panel's middle block: its stiles and glass the whole height, nothing across."""
+    z0, z1 = z
+    zg0, zg1 = z0 + 0.6, z1 - 0.6
+    xa = STILE if ends[0] else 0
+    xb = 16 - STILE if ends[1] else 16
+    els = ([box(0, 0, z0, STILE, 16, z1, "#frame", faces=_but_faces("up", "down"))]
+           if ends[0] else []) + (
+        [box(16 - STILE, 0, z0, 16, 16, z1, "#frame", faces=_but_faces("up", "down"))]
+        if ends[1] else [])
+    els.append(box(xa, 0, zg0, xb, 16, zg1, "#glass", faces=("north", "south")))
+    return els
+
+
+def _frameless_middle(z, ends=(True, True)):
+    z0, z1 = z
+    x0 = FL_GAP if ends[0] else 0
+    x1 = 16 - FL_GAP if ends[1] else 16
+    inner = (() if ends[0] else ("west",)) + (() if ends[1] else ("east",))
+    el = box(x0, 0, z0 + 0.5, x1, 16, z1 - 0.5, "#glass", faces=_but_faces("up", "down", *inner))
+    for face in ("east", "west"):
+        if face in el["faces"]:
+            el["faces"][face]["texture"] = "#edge"
+    return [el]
+
+
+def _tall_tex(finish):
+    tex = {"frame": TEX_REF % ("auto_door_frame_" + auto_frame(finish)),
+           "glass": TEX_REF % "auto_door_glass", "pivot": TEX_REF % "door_black"}
+    if finish == FRAMELESS:
+        tex["edge"] = TEX_REF % "auto_door_glass_edge"
+    return tex
+
+
+def auto_tall_textures():
+    """The tall doors' icons: their 2-tall kind's, drawn narrower so they read as taller."""
+    out = {}
+    for name, (kind, finish, base, _, _) in AUTO_TALL.items():
+        rgb = AUTO_FINISHES[auto_frame(finish)][0]
+        if kind in ("wide", "tele"):
+            icon = auto_multi_icon(kind, rgb, finish == FRAMELESS)
+        else:
+            icon = auto_icon(kind, rgb, finish == FRAMELESS)
+        img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+        img.paste(icon.resize((11, 16), Image.NEAREST), (2, 0))
+        out[name + "_icon"] = img
+    return out
+
+
+def auto_tall_models():
+    """The middle models (upper half of a tall door), named on the 2-tall door they extend, and the
+    tall doors' inventory models. The open middles of the multi-cell kinds are OBJ
+    (auto_multi_opens)."""
+    out = {}
+    for finish in AUTO_STYLES:
+        frameless = finish == FRAMELESS
+        tex = _tall_tex(finish)
+        middle = _frameless_middle if frameless else _slide_middle
+        base = "auto_door_slider_" + finish
+        panel = middle(SLIDER_Z)
+        right = sc._mirror_x(panel)
+        out[base + "_middle_left"] = _model(panel, tex)
+        out[base + "_middle_right"] = _model(right, _tall_tex(finish))
+        out[base + "_middle_left_open"] = _model(_shift_x(panel, -SLIDE_PX), _tall_tex(finish))
+        out[base + "_middle_right_open"] = _model(_shift_x(right, SLIDE_PX), _tall_tex(finish))
+        out["auto_door_sidelite_%s_middle" % finish] = _model(middle(SIDELITE_Z),
+                                                             _tall_tex(finish))
+        for kind in ("wide", "tele"):
+            name = "auto_door_%s_slider_%s" % (kind, finish)
+            for cell in range(AUTO_MULTI_CELLS[kind]):
+                if kind == "wide":
+                    z, ends = SLIDER_Z, (cell == 0, cell == 1)
+                else:
+                    z, ends = TELE_Z[cell], (True, True)
+                panel = middle(z, ends)
+                out["%s_c%d_middle_left" % (name, cell)] = _model(panel, _tall_tex(finish))
+                out["%s_c%d_middle_right" % (name, cell)] = _model(sc._mirror_x(panel),
+                                                                   _tall_tex(finish))
+    for name in AUTO_TALL:
+        out[name + "_inventory"] = {"parent": "item/generated",
+                                    "textures": {"layer0": TEX_REF % (name + "_icon")}}
+    for name in AUTO_TALL_TOP:
+        finish = auto_finish(name)
+        out[name + "_inventory"] = {"parent": "item/generated", "textures": {
+            "layer0": TEX_REF % ("auto_door_tall_slider_%s_icon" % finish)}}
+    return out
+
+
+def _part(side, rot, when, model):
+    w = dict(when)
+    w["facing"] = side
+    apply = {"model": MODEL_REF % model}
+    if rot:
+        apply["y"] = rot
+    return {"when": w, "apply": apply}
+
+
+def auto_tall_states():
+    out = {}
+    for name, (kind, finish, base, _, _) in AUTO_TALL.items():
+        parts = []
+        for side, rot in SIDES:
+            if kind == "sidelite":
+                parts.append(_part(side, rot, {"half": "lower"}, base + "_lower"))
+                parts.append(_part(side, rot, {"half": "upper"}, base + "_middle"))
+                continue
+            cells = range(AUTO_MULTI_CELLS[kind]) if kind in ("wide", "tele") else [None]
+            for cell in cells:
+                for half in ("lower", "upper"):
+                    part = "lower" if half == "lower" else "middle"
+                    for hinge in ("left", "right"):
+                        for open_ in (False, True):
+                            when = {"half": half, "hinge": hinge, "open": str(open_).lower(),
+                                    "swing": "false"}
+                            if cell is None:
+                                model = "%s_%s_%s%s" % (base, part, hinge, "_open" if open_ else "")
+                            else:
+                                when["cell"] = str(cell)
+                                model = "%s_c%d_%s_%s%s" % (base, cell, part, hinge,
+                                                            "_open.obj" if open_ else "")
+                            parts.append(_part(side, rot, when, model))
+        out[name] = {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
+                     "multipart": parts}
+    for name in AUTO_TALL_TOP:
+        finish = auto_finish(name)
+        parts = []
+        for side, rot in SIDES:
+            parts.append(_part(side, rot, {"kind": "sidelite"},
+                               "auto_door_sidelite_%s_upper" % finish))
+            for hinge in ("left", "right"):
+                for open_ in (False, True):
+                    when = {"kind": "slider", "hinge": hinge, "open": str(open_).lower(),
+                            "swing": "false"}
+                    parts.append(_part(side, rot, when, "auto_door_slider_%s_upper_%s%s" % (
+                        finish, hinge, "_open" if open_ else "")))
+                    for kind in ("wide", "tele"):
+                        for cell in range(AUTO_MULTI_CELLS[kind]):
+                            when = {"kind": kind, "cell": str(cell), "hinge": hinge,
+                                    "open": str(open_).lower(), "swing": "false"}
+                            parts.append(_part(side, rot, when, "auto_door_%s_slider_%s_c%d_upper_%s%s" % (
+                                kind, finish, cell, hinge, "_open.obj" if open_ else "")))
+        out[name] = {"variants": {"inventory": {"model": MODEL_REF % (name + "_inventory")}},
+                     "multipart": parts}
+    return out
+
+
 def auto_states():
     out = {}
     for name, (kind, _, _) in AUTO.items():
@@ -1704,6 +1897,9 @@ def lang_entries():
             for name, (_, _, names) in AUTO.items()]
     out += [("tile.%s.name" % name, dict(zip(LANGS, names)))
             for name, (_, _, names) in AUTO_MULTI.items()]
+    out += [("tile.%s.name" % name, dict(zip(LANGS, v[4]))) for name, v in AUTO_TALL.items()]
+    out += [("tile.%s.name" % name, dict(zip(LANGS, names)))
+            for name, names in AUTO_TALL_TOP.items()]
     out.append(("tile.auto_door_mat.name", dict(zip(LANGS, MAT_NAMES))))
     out.append(("item.door_closer.name", dict(zip(LANGS, CLOSER_NAMES))))
     out.append(("item.door_swing_tool.name", dict(zip(LANGS, SWING_TOOL_NAMES))))
@@ -1720,6 +1916,11 @@ def tab_lines():
               for n, v in AUTO.items()]
     lines += ['    initTabBlock(new BlockAutoSlidingDoorMulti("%s")); // %s' % (n, v[2][0])
               for n, v in AUTO_MULTI.items()]
+    lines += ['    initTabBlock(new %s("%s")); // %s' % (v[3], n, v[4][0])
+              for n, v in AUTO_TALL.items()]
+    # The tall doors' tops are registered from CsmTabBuildingHidden:
+    lines += ['    // initTabBlock(new BlockAutoDoorTop("%s")); // %s' % (n, v[0])
+              for n, v in AUTO_TALL_TOP.items()]
     # The activation mat is registered from CsmTabBuildingHidden (legacy since the sensor):
     #     initTabBlock(BlockAutoDoorMat.class, fmlPreInitializationEvent);
     lines.append("    initTabItem(ItemDoorCloser.class, fmlPreInitializationEvent); // Door Closer")

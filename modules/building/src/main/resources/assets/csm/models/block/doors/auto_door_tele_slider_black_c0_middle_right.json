@@ -1,0 +1,142 @@
+{
+  "textures": {
+    "frame": "csm:blocks/doors/auto_door_frame_black",
+    "glass": "csm:blocks/doors/auto_door_glass",
+    "pivot": "csm:blocks/doors/door_black",
+    "particle": "csm:blocks/doors/auto_door_frame_black"
+  },
+  "elements": [
+    {
+      "from": [
+        14.5,
+        0,
+        4.75
+      ],
+      "to": [
+        16,
+        16,
+        6.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            9.75,
+            0,
+            11.25,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            4.75,
+            0,
+            6.25,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        4.75
+      ],
+      "to": [
+        1.5,
+        16,
+        6.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            9.75,
+            0,
+            11.25,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            4.75,
+            0,
+            6.25,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        1.5,
+        0,
+        5.35
+      ],
+      "to": [
+        14.5,
+        16,
+        5.65
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            1.5,
+            0,
+            14.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

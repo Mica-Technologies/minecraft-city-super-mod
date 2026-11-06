@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "141 blocks in this tab"
+!!! info "147 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -89,6 +89,12 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Symbolic Crosswalk Light (Single 16-Inch, Rear Mount) | `csm:controllablecrosswalkmount` | 2 | 10 | pickaxe | 1 |
 | Symbolic Crosswalk Light (Single 16-Inch, Right Mount) | `csm:controllablecrosswalkrightmount` | 2 | 10 | pickaxe | 1 |
 | Symbolic Crosswalk Light (Single 16-Inch, Right Mount, 90-Degree Rotation) | `csm:controllablecrosswalkrightmount90deg` | 2 | 10 | pickaxe | 1 |
+| Tall Sliding Door Header (Black Anodised) | `csm:auto_door_tall_top_black` | 3 | 15 | pickaxe | 0 |
+| Tall Sliding Door Header (Clear Aluminium) | `csm:auto_door_tall_top_clear` | 3 | 15 | pickaxe | 0 |
+| Tall Sliding Door Header (Dark Bronze) | `csm:auto_door_tall_top_bronze` | 3 | 15 | pickaxe | 0 |
+| Tall Sliding Door Header (Frameless Glass) | `csm:auto_door_tall_top_frameless` | 3 | 15 | pickaxe | 0 |
+| Tall Sliding Door Header (Stainless Steel) | `csm:auto_door_tall_top_stainless` | 3 | 15 | pickaxe | 0 |
+| Tall Sliding Door Header (White) | `csm:auto_door_tall_top_white` | 3 | 15 | pickaxe | 0 |
 | Tan Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1tan` |  | 10 | pickaxe | 1 |
 | Tan Angled Thin Traffic Pole w/ 2 Mounts | `csm:trafficpolehorizontalanglemount2tan` |  | 10 | pickaxe | 1 |
 | Tan Angled Thin Traffic Pole w/ 4 Mounts | `csm:trafficpolehorizontalanglemount3tan` |  | 10 | pickaxe | 1 |
