@@ -1166,7 +1166,14 @@ AUTO_FINISH_NAMES = {
     "black": ("Black Anodised", "Anodizado Negro", "Schwarz eloxiert", "Svart Anodiserad"),
     "white": ("White", "Blanco", "Weiß", "Vit"),
     "stainless": ("Stainless Steel", "Acero Inoxidable", "Edelstahl", "Rostfritt Stål"),
+    "frameless": ("Frameless Glass", "Vidrio sin Marco", "Ganzglas", "Ramlöst Glas"),
 }
+# The frameless all-glass doors are not a frame finish but their own build: a full-width
+# toughened glass panel held only by patch fittings at its corners (_frameless_panel), under a
+# slim header (_header(slim=True)), fittings and header in the stainless texture. Named like a
+# finish (auto_door_slider_frameless) so the class, the blockstates and the tab treat it as one.
+FRAMELESS = "frameless"
+AUTO_STYLES = list(AUTO_FINISHES) + [FRAMELESS]
 AUTO_KIND_NAMES = {
     "slider": ("Automatic Sliding Door (%s)", "Puerta Corredera Automática (%s)",
                "Automatische Schiebetür (%s)", "Automatisk Skjutdörr (%s)"),
@@ -1174,10 +1181,16 @@ AUTO_KIND_NAMES = {
                  "Schiebetür-Seitenteil (%s)", "Skjutdörr Sidoparti (%s)"),
 }
 # registry name -> (kind, frame colour, (en, es, de, sv)): every slider, then every sidelite.
+def auto_frame(finish):
+    """The frame texture's finish: the frameless doors' fittings are stainless."""
+    return "stainless" if finish == FRAMELESS else finish
+
+
 AUTO = {
     "auto_door_%s_%s" % (kind, finish): (
         kind, rgb, tuple(f % n for f, n in zip(AUTO_KIND_NAMES[kind], AUTO_FINISH_NAMES[finish])))
-    for kind in ("slider", "sidelite") for finish, (rgb, _) in AUTO_FINISHES.items()
+    for kind in ("slider", "sidelite") for finish in AUTO_STYLES
+    for rgb in [AUTO_FINISHES[auto_frame(finish)][0]]
 }
 MAT_NAMES = ("Automatic Door Activation Mat", "Alfombra de Activación de Puerta Automática",
              "Kontaktmatte für Automatiktür", "Aktiveringsmatta för Automatisk Dörr")
@@ -1188,6 +1201,10 @@ SIDELITE_Z = (6.5, 8.25)
 HEADER_Y = 12.5            # in the upper half: the header runs from here to the top
 HEADER_Z = (2.5, 9.5)
 STILE = 1.5
+FL_HEADER_Y = 14.0         # the frameless doors' slim header, and its depth
+FL_HEADER_Z = (3.0, 9.0)
+FL_GAP = 0.25              # a frameless panel stops this short of its cell's sides: a glass edge
+PATCH = (3.0, 1.75)        # a patch fitting's width and height
 
 
 def auto_finish(name):
@@ -1211,15 +1228,37 @@ def auto_textures():
         for x in range(16):
             gp[x, y] = (186, 212, 220, 92) if (x + y) % 11 not in (0, 1) else (210, 230, 236, 120)
     out["auto_door_glass"] = glass
+    # A frameless panel's edges: toughened glass seen edge-on is green and nearly opaque.
+    rng = random.Random(_seed("auto_door_glass_edge"))
+    edge = Image.new("RGBA", (16, 16))
+    ep = edge.load()
+    for y in range(16):
+        for x in range(16):
+            ep[x, y] = _shift((104, 152, 134), rng.uniform(-6, 6))[:3] + (214,)
+    out["auto_door_glass_edge"] = edge
     out.update(mat_textures())
     for name, (kind, rgb, _) in AUTO.items():
-        out[name + "_icon"] = auto_icon(kind, rgb)
+        out[name + "_icon"] = auto_icon(kind, rgb, auto_finish(name) == FRAMELESS)
     return out
 
 
-def auto_icon(kind, rgb):
+def auto_icon(kind, rgb, frameless=False):
     img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
     px = img.load()
+    if frameless:
+        for y in range(2, 16):
+            for x in range(3, 13):
+                px[x, y] = (110, 160, 140, 220) if x in (3, 12) else (186, 212, 220, 150)
+        for x in range(1, 15):
+            px[x, 0] = px[x, 1] = _shift(rgb, -10)
+        for x0 in (3, 10):
+            for x in range(x0, x0 + 3):
+                for y in ((2, 3) if kind == "slider" else ()) + (14, 15):
+                    px[x, y] = _shift(rgb, 0)
+        if kind == "sidelite":
+            for x in range(3, 13):
+                px[x, 15] = _shift(rgb, 0)
+        return img
     for y in range(16):
         for x in range(3, 13):
             frame = x in (3, 12) or y in (2, 15) or (kind == "slider" and y == 9)
@@ -1288,28 +1327,63 @@ def _slide_panel(z, upper, pivots):
     return els
 
 
-def _header(sensor):
+def _frameless_panel(z, upper, slider):
+    """A frameless panel: toughened glass the width of the cell (less FL_GAP each side), its
+    edges showing, held by stainless patch fittings at its corners (a slider's, which move with
+    it) or, for a sidelite, standing in a floor channel. Left-hinged, like _slide_panel."""
+    z0, z1 = z
+    zg0, zg1 = z0 + 0.5, z1 - 0.5
+    x0, x1 = FL_GAP, 16 - FL_GAP
+    pw, ph = PATCH
+
+    def glass(y0, y1, *leave):
+        el = box(x0, y0, zg0, x1, y1, zg1, "#glass", faces=_but_faces(*leave))
+        for face in ("east", "west", "up", "down"):
+            if face in el["faces"]:
+                el["faces"][face]["texture"] = "#edge"
+        return el
+
+    if upper:
+        els = [glass(0, FL_HEADER_Y, "up", "down")]
+        if slider:
+            y = FL_HEADER_Y - ph
+            els += [box(x0, y, z0, x0 + pw, FL_HEADER_Y, z1, "#frame", faces=_but_faces("up")),
+                    box(x1 - pw, y, z0, x1, FL_HEADER_Y, z1, "#frame", faces=_but_faces("up"))]
+        return els
+    if slider:
+        return [glass(0.25, 16, "up"),
+                box(x0, 0.25, z0, x0 + pw, 0.25 + ph, z1, "#frame"),
+                box(x1 - pw, 0.25, z0, x1, 0.25 + ph, z1, "#frame")]
+    return [glass(1.25, 16, "up", "down"),
+            box(0, 0, z0 - 0.25, 16, 1.25, z1 + 0.25, "#frame", faces=_but_faces("down"))]
+
+
+def _header(sensor, slim=False):
     """The operator header across the top of the upper half, fixed to the frame (TINT_FIXED),
-    with a slider's motion sensor on each face."""
-    els = [box(0, HEADER_Y, HEADER_Z[0], 16, 16, HEADER_Z[1], "#frame")]
+    with a slider's motion sensor on each face; slim over the frameless doors."""
+    y, (z0, z1) = (FL_HEADER_Y, FL_HEADER_Z) if slim else (HEADER_Y, HEADER_Z)
+    els = [box(0, y, z0, 16, 16, z1, "#frame")]
     if sensor:
-        els += [box(6, 13, HEADER_Z[0] - 0.75, 10, 15, HEADER_Z[0], "#pivot",
-                    faces=_but_faces("south")),
-                box(6, 13, HEADER_Z[1], 10, 15, HEADER_Z[1] + 0.75, "#pivot",
-                    faces=_but_faces("north"))]
+        s0, s1 = (y + 0.25, 15.75) if slim else (13, 15)
+        els += [box(6, s0, z0 - 0.75, 10, s1, z0, "#pivot", faces=_but_faces("south")),
+                box(6, s0, z1, 10, s1, z1 + 0.75, "#pivot", faces=_but_faces("north"))]
     return _tint(els, TINT_FIXED)
 
 
 def auto_models():
     out = {}
     for name, (kind, _, _) in AUTO.items():
-        tex = {"frame": TEX_REF % ("auto_door_frame_" + auto_finish(name)),
+        frameless = auto_finish(name) == FRAMELESS
+        tex = {"frame": TEX_REF % ("auto_door_frame_" + auto_frame(auto_finish(name))),
                "glass": TEX_REF % "auto_door_glass", "pivot": TEX_REF % "door_black"}
+        if frameless:
+            tex["edge"] = TEX_REF % "auto_door_glass_edge"
+        build = _frameless_panel if frameless else _slide_panel
         slider = kind == "slider"
         for half in ("lower", "upper"):
             upper = half == "upper"
-            panel = _slide_panel(SLIDER_Z if slider else SIDELITE_Z, upper, slider)
-            fixed = _header(slider) if upper else []
+            panel = build(SLIDER_Z if slider else SIDELITE_Z, upper, slider)
+            fixed = _header(slider, frameless) if upper else []
             left = panel + fixed
             if not slider:
                 out["%s_%s" % (name, half)] = _model(left, tex)

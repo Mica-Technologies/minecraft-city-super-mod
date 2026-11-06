@@ -1,0 +1,120 @@
+{
+  "textures": {
+    "frame": "csm:blocks/doors/auto_door_frame_stainless",
+    "glass": "csm:blocks/doors/auto_door_glass",
+    "pivot": "csm:blocks/doors/door_black",
+    "edge": "csm:blocks/doors/auto_door_glass_edge",
+    "particle": "csm:blocks/doors/auto_door_frame_stainless"
+  },
+  "elements": [
+    {
+      "from": [
+        0.25,
+        1.25,
+        7.0
+      ],
+      "to": [
+        15.75,
+        16,
+        7.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0.25,
+            0,
+            15.75,
+            14.75
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0.25,
+            0,
+            15.75,
+            14.75
+          ]
+        },
+        "east": {
+          "texture": "#edge",
+          "uv": [
+            8.25,
+            0,
+            9.0,
+            14.75
+          ]
+        },
+        "west": {
+          "texture": "#edge",
+          "uv": [
+            7.0,
+            0,
+            7.75,
+            14.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        6.25
+      ],
+      "to": [
+        16,
+        1.25,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            14.75,
+            16,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            14.75,
+            16,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            7.5,
+            14.75,
+            9.75,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            6.25,
+            14.75,
+            8.5,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            6.25,
+            16,
+            8.5
+          ]
+        }
+      }
+    }
+  ]
+}
