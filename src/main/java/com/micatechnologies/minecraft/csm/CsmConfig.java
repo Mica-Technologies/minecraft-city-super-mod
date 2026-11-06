@@ -174,6 +174,31 @@ public class CsmConfig {
   private static final String FIELD_DEFAULT_CHAINSAW_BRUSH_PILES = "FEW";
   private static final String[] FIELD_VALUES_CHAINSAW_BRUSH_PILES = {"NONE", "FEW", "MANY"};
 
+  private static final String CATEGORY_AUTO_DOORS = "automaticDoors";
+  private static final String CATEGORY_AUTO_DOORS_DESCRIPTION =
+      "Building Materials (csm_building): the automatic sliding doors' approach sensor, on the "
+          + "server. A sliding door opens when a player comes within sensorRange blocks of either "
+          + "face, as a header-mounted motion sensor would, and shuts a few seconds after the "
+          + "last one has gone. Only the doors near a player are ever looked at.";
+  private static final String FIELD_KEY_AUTO_DOOR_SENSOR = "sensorEnabled";
+  private static final String FIELD_DESCRIPTION_AUTO_DOOR_SENSOR =
+      "Whether automatic sliding doors open as a player approaches. Off, they open only for "
+          + "redstone, a click, a linked keypad or button, or an old activation mat.";
+  private static final boolean FIELD_DEFAULT_AUTO_DOOR_SENSOR = true;
+  private static final String FIELD_KEY_AUTO_DOOR_SENSOR_RANGE = "sensorRange";
+  private static final String FIELD_DESCRIPTION_AUTO_DOOR_SENSOR_RANGE =
+      "How far in front of or behind a sliding door, in blocks, a player opens it.";
+  private static final float FIELD_DEFAULT_AUTO_DOOR_SENSOR_RANGE = 2.5F;
+  private static final String FIELD_KEY_AUTO_DOOR_SENSOR_INTERVAL = "sensorIntervalTicks";
+  private static final String FIELD_DESCRIPTION_AUTO_DOOR_SENSOR_INTERVAL =
+      "How often the sensor looks, in ticks (20 a second). Higher is cheaper on a busy server "
+          + "and a door a little slower to notice someone.";
+  private static final int FIELD_DEFAULT_AUTO_DOOR_SENSOR_INTERVAL = 4;
+
+  private static boolean autoDoorSensor = FIELD_DEFAULT_AUTO_DOOR_SENSOR;
+  private static float autoDoorSensorRange = FIELD_DEFAULT_AUTO_DOOR_SENSOR_RANGE;
+  private static int autoDoorSensorInterval = FIELD_DEFAULT_AUTO_DOOR_SENSOR_INTERVAL;
+
   private static final String CATEGORY_HVAC = "hvac";
   private static final String CATEGORY_HVAC_DESCRIPTION =
       "The HVAC module's thermal simulation (csm_hvac), on the server. The full simulation finds "
@@ -505,6 +530,14 @@ public class CsmConfig {
     chainsawBrushPiles = config.getString(FIELD_KEY_CHAINSAW_BRUSH_PILES, CATEGORY_PARKS,
         FIELD_DEFAULT_CHAINSAW_BRUSH_PILES, FIELD_DESCRIPTION_CHAINSAW_BRUSH_PILES,
         FIELD_VALUES_CHAINSAW_BRUSH_PILES);
+    config.setCategoryComment(CATEGORY_AUTO_DOORS, CATEGORY_AUTO_DOORS_DESCRIPTION);
+    autoDoorSensor = config.getBoolean(FIELD_KEY_AUTO_DOOR_SENSOR, CATEGORY_AUTO_DOORS,
+        FIELD_DEFAULT_AUTO_DOOR_SENSOR, FIELD_DESCRIPTION_AUTO_DOOR_SENSOR);
+    autoDoorSensorRange = config.getFloat(FIELD_KEY_AUTO_DOOR_SENSOR_RANGE, CATEGORY_AUTO_DOORS,
+        FIELD_DEFAULT_AUTO_DOOR_SENSOR_RANGE, 1.0F, 6.0F, FIELD_DESCRIPTION_AUTO_DOOR_SENSOR_RANGE);
+    autoDoorSensorInterval = config.getInt(FIELD_KEY_AUTO_DOOR_SENSOR_INTERVAL,
+        CATEGORY_AUTO_DOORS, FIELD_DEFAULT_AUTO_DOOR_SENSOR_INTERVAL, 1, 20,
+        FIELD_DESCRIPTION_AUTO_DOOR_SENSOR_INTERVAL);
     config.setCategoryComment(CATEGORY_HVAC, CATEGORY_HVAC_DESCRIPTION);
     hvacLightweightMode = config.getString(FIELD_KEY_HVAC_LIGHTWEIGHT_MODE, CATEGORY_HVAC,
         FIELD_DEFAULT_HVAC_LIGHTWEIGHT_MODE, FIELD_DESCRIPTION_HVAC_LIGHTWEIGHT_MODE,
@@ -1039,6 +1072,39 @@ public class CsmConfig {
    */
   public static boolean isDoorAnimationEnabled() {
     return animateDoors;
+  }
+
+  /**
+   * Whether automatic sliding doors open as a player approaches (their approach sensor).
+   *
+   * @return whether the sensor is on
+   *
+   * @since 2026.11
+   */
+  public static boolean isAutoDoorSensorEnabled() {
+    return autoDoorSensor;
+  }
+
+  /**
+   * How far in front of or behind an automatic sliding door, in blocks, a player opens it.
+   *
+   * @return the sensor's range
+   *
+   * @since 2026.11
+   */
+  public static float getAutoDoorSensorRange() {
+    return autoDoorSensorRange;
+  }
+
+  /**
+   * How often the automatic sliding doors' approach sensor looks, in ticks.
+   *
+   * @return the interval, 1 to 20
+   *
+   * @since 2026.11
+   */
+  public static int getAutoDoorSensorInterval() {
+    return autoDoorSensorInterval;
   }
 
   /**

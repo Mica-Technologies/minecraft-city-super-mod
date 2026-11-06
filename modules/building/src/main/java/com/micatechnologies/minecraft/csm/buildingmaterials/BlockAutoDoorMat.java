@@ -32,6 +32,10 @@ import net.minecraft.world.World;
  * {@link #COOLDOWN} ticks a mat; the door's own single scheduled tick does the closing. No state,
  * no tile entity, nothing ticks.</p>
  *
+ * <p><b>Legacy.</b> The sliding doors open with their approach sensor ({@link AutoDoorSensors})
+ * since 2026.11, so the mat is in the building module's hidden tab: no longer in the creative
+ * inventory or the Fabricator, but still registered, so mats already laid keep working.</p>
+ *
  * @version 1.0
  * @since 2026.10
  */

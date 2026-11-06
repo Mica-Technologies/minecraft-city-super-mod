@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "140 blocks in this tab"
+!!! info "141 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -13,6 +13,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 |---|---|---|---|---|---|
 | Ad Kiosk | `csm:ad_kiosk_part` | 1.5 | 10 | pickaxe | 0 |
 | Ad Kiosk | `csm:ad_kiosk_service` | 1.5 | 10 | pickaxe | 0 |
+| Automatic Door Activation Mat | `csm:auto_door_mat` | 0.5 | 1 |  | 0 |
 | Billboard | `csm:ad_billboard_part` | 1.5 | 10 | pickaxe | 0 |
 | Billboard | `csm:ad_billboard_service` | 1.5 | 10 | pickaxe | 0 |
 | Black Angled Thin Traffic Pole w/ 1 Mount | `csm:trafficpolehorizontalanglemount1black` |  | 10 | pickaxe | 1 |
