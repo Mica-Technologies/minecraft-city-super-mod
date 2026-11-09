@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "148 blocks in this tab"
+!!! info "169 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -58,6 +58,27 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Large Ad Kiosk | `csm:ad_kiosk_large_service` | 1.5 | 10 | pickaxe | 0 |
 | Large Rooftop Unit | `csm:hvac_rtu_large_part` | 3 | 15 | pickaxe | 1 |
 | Light Switch Relay | `csm:switch_relay` | -1.0 | 18.0 | pickaxe | 0 |
+| Lithonia DSXF1 LED Floodlight (Knuckle) | `csm:lithdsxf1kn_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Knuckle) | `csm:lithdsxf1kn_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Knuckle) | `csm:lithdsxf1kn_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Slipfitter) | `csm:lithdsxf1sf_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Yoke) | `csm:lithdsxf1yk_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Yoke) | `csm:lithdsxf1yk_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Yoke) | `csm:lithdsxf1yk_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Knuckle) | `csm:lithdsxf2kn_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Knuckle) | `csm:lithdsxf2kn_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Knuckle) | `csm:lithdsxf2kn_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Slipfitter) | `csm:lithdsxf2sf_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Yoke) | `csm:lithdsxf2yk_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Yoke) | `csm:lithdsxf2yk_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Yoke) | `csm:lithdsxf2yk_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Knuckle) | `csm:lithdsxf3kn_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Knuckle) | `csm:lithdsxf3kn_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Knuckle) | `csm:lithdsxf3kn_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Slipfitter) | `csm:lithdsxf3sf_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk_x` | 2 | 10 | pickaxe | 1 |
 | MCLAGlowAir | `csm:lightupair` | 2 | 10 | pickaxe | 1 |
 | NOV Octagon Concrete Pole | `csm:ocpb` | 1 | 10 | pickaxe | 1 |
 | NOV Octagon Concrete Pole (Middle) | `csm:ocpm` | 1 | 10 | pickaxe | 1 |
