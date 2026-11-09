@@ -8,6 +8,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -183,11 +184,98 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
         return p.shapeIndex(cell, mountMask, fit);
       }
 
+      private final float[][][] rails = new float[p.getCellCount()][][];
+
+      @Override
+      public float[][] getCellRails(int cell) {
+        if (rails[cell] == null) {
+          rails[cell] = mastArmRails(p, cell);
+        }
+        return rails[cell];
+      }
+
       @Override
       public String describe() {
         return String.format("%dx%d mast arm curve", p.getRun(), p.getRise());
       }
     };
+  }
+
+  /**
+   * A mast arm curve cell's stretch of the tube, as two chords of the generator's parabola
+   * ({@code centre} and {@code radius} in gen_mast_arm_curves.py: 8 + 16 rise (2t/run - t^2/run^2),
+   * tapering 4.6 to 4.0), in the cell's own frame. Two chords a block keep the line within a
+   * fraction of a pixel of the curve, which is all a hanger's clamp needs.
+   */
+  private static float[][] mastArmRails(MastArmCurveProfile p, int cell) {
+    int[] offset = p.getCellOffset(cell);
+    float run = p.getRun();
+    float[][] out = new float[2][];
+    for (int half = 0; half < 2; half++) {
+      float t0 = Math.min(run, offset[0] + 0.5F * half);
+      float t1 = Math.min(run, t0 + 0.5F);
+      float tm = (t0 + t1) / 2.0F;
+      out[half] = new float[]{
+          8.0F, mastArmY(p, t0) - 16.0F * offset[1], 16.0F - 16.0F * (t0 - offset[0]),
+          8.0F, mastArmY(p, t1) - 16.0F * offset[1], 16.0F - 16.0F * (t1 - offset[0]),
+          4.6F + (4.0F - 4.6F) * tm / run};
+    }
+    return out;
+  }
+
+  private static float mastArmY(MastArmCurveProfile p, float t) {
+    float run = p.getRun();
+    return 8.0F + 16.0F * p.getRise() * (2.0F * t / run - t * t / (run * run));
+  }
+
+  /**
+   * The pipes passing through the cell at {@code pos}, in world space relative to that cell's
+   * lower north-west corner: each {@code {x0, y0, z0, x1, y1, z1, radius}} in sixteenths of a
+   * block, turned to the arm's facing.
+   *
+   * @param world the world
+   * @param pos   the cell's position
+   * @param state the cell's block state
+   *
+   * @return the segments, or {@code null} if this arm does not describe its pipes
+   */
+  @Nullable
+  public float[][] getWorldRails(IBlockAccess world, BlockPos pos, IBlockState state) {
+    float[][] rails = profile.getCellRails(cellIndexAt(world, pos));
+    if (rails == null) {
+      return null;
+    }
+    EnumFacing facing = state.getValue(FACING);
+    if (facing == EnumFacing.NORTH) {
+      return rails;
+    }
+    float[][] out = new float[rails.length][];
+    for (int i = 0; i < rails.length; i++) {
+      float[] r = rails[i];
+      float[] a = turned(r[0], r[2], facing);
+      float[] b = turned(r[3], r[5], facing);
+      out[i] = new float[]{a[0], r[1], a[1], b[0], r[4], b[1], r[6]};
+    }
+    return out;
+  }
+
+  /**
+   * A point of the unrotated (north) model turned about the block's centre to a facing, the way
+   * the blockstate's {@code y} rotation turns the model.
+   */
+  private static float[] turned(float x, float z, EnumFacing facing) {
+    float dx = x - 8.0F;
+    float dz = z - 8.0F;
+    switch (facing) {
+      case EAST:
+        return new float[]{8.0F - dz, 8.0F + dx};
+      case SOUTH:
+        return new float[]{8.0F - dx, 8.0F - dz};
+      case WEST:
+        return new float[]{8.0F + dz, 8.0F - dx};
+      default:
+        return new float[]{x, z};
+    }
   }
 
   private static synchronized PropertyInteger shapeProperty(int shapeCount) {
@@ -424,7 +512,8 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
       }
       int[] to = ICurvedArmProfile.MOUNT_DIRECTION_OFFSETS[bit];
       BlockPos neighbour = pos.offset(facing, to[0]).up(to[1]).offset(right, to[2]);
-      if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, neighbour, ignore)) {
+      if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, neighbour, ignore)
+          || (bit == 0 && isHangingWireMount(worldIn, neighbour))) {
         mask |= 1 << bit;
       }
     }
@@ -440,6 +529,24 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
       }
     }
     return state.withProperty(shapeProperty, profile.shapeIndex(cell, mask, fit));
+  }
+
+  /**
+   * Whether the block under a cell is a wire mount used on its own: the bracket a signal head
+   * hangs from, placed under an arm instead of on a span. The arm then grows its hardware down
+   * to it, which is how a head is hung from the tip of a truss arm.
+   *
+   * <p>Poles ignore every accessory of this family, wire mounts included, so the ordinary test
+   * says no. A mount that is linked into a span is left alone: its bracket is hidden and the
+   * span's own hardware carries it.
+   */
+  private static boolean isHangingWireMount(IBlockAccess world, BlockPos pos) {
+    IBlockState below = world.getBlockState(pos);
+    if (!(below.getBlock() instanceof BlockSpanWireHangerMount)
+        || !below.getPropertyKeys().contains(BlockSpanWireHangerMount.LINKED)) {
+      return false;
+    }
+    return !below.getActualState(world, pos).getValue(BlockSpanWireHangerMount.LINKED);
   }
 
   /**

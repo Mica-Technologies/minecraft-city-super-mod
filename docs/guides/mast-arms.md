@@ -74,6 +74,14 @@ Place one against the side of a pole, at the height the top pipe should leave it
 reach at least one block lower, where the bottom pipe lands. Signal heads, signs and cameras mount
 against the top pipe, and a sign placed under the arm hangs from the bottom pipe.
 
+To hang a signal head from the end of the arm, as New Jersey does, place a **Wire Mount** under
+the last block of the arm and the signal head under the mount. The arm grows a hanger down to
+it.
+
+A hanging **Dynamic Street Sign** placed under a truss arm, or under a curved mast arm, reaches
+up to the pipe above it: each of its hangers stops at the pipe, so under the sloping bottom pipe
+of a truss they come out different lengths.
+
 A **diagonal** arm always turns to the right of the face you place it on: on a pole's north face it
 reaches north-east, on its east face south-east. Pick the face one turn to the left of the corner
 you want it to cross.

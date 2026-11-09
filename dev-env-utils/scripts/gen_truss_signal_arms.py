@@ -596,8 +596,16 @@ def build(pid, kind, size):
     whole = Mesh()
     for idx, c in enumerate(order):
         whole.append(meshes[idx].moved(origin_of(c)))
+    # Each cell's chords as centreline segments in its own frame, for whatever hangs from the arm
+    # and has to find the pipe (a street name sign's hangers): {x0, y0, z0, x1, y1, z1, radius}.
+    rails = []
+    for c in order:
+        origin = origin_of(c)
+        rails.append([vsub(member.centre(u0), origin) + vsub(member.centre(u1), origin) + (member.r,)
+                      for member, u0, u1 in spans.get(c, [])])
     return {"id": pid, "kind": kind, "size": size, "order": order, "meshes": meshes, "fits": fits,
-            "boxes": boxes, "dirs": dirs, "stubs": stubs, "pole_at": pole_at, "whole": whole}
+            "boxes": boxes, "dirs": dirs, "stubs": stubs, "pole_at": pole_at, "whole": whole,
+            "rails": rails}
 
 
 def shape_layout(prof):
@@ -690,6 +698,9 @@ def java_enum(profiles):
         bases = ", ".join(str(b) for b, _bits in layout_)
         poles = ", ".join("{%d, %d}" % prof["pole_at"][k] if k in prof["pole_at"] else "null"
                           for k in range(n))
+        rails = ",\n          ".join(
+            "{%s}" % ", ".join("{%s}" % ", ".join("%.3fF" % v for v in seg) for seg in cell)
+            for cell in prof["rails"])
         body.append(
             "  /** %s: %d cells, %d shapes. */\n"
             "  %s(\"%s\", %d,\n"
@@ -697,8 +708,9 @@ def java_enum(profiles):
             "      new double[][]{%s},\n"
             "      new int[]{%s},\n"
             "      new int[]{%s},\n"
-            "      new int[][]{%s})%s"
-            % (label, n, count, pid.upper(), label, count, cells, boxes, dirs, bases, poles,
+            "      new int[][]{%s},\n"
+            "      new float[][][]{%s})%s"
+            % (label, n, count, pid.upper(), label, count, cells, boxes, dirs, bases, poles, rails,
                "," if i < len(profiles) - 1 else ";"))
     return JAVA_TEMPLATE % {"body": "\n".join(body)}
 
@@ -735,9 +747,10 @@ public enum TrussSignalArmProfile implements ICurvedArmProfile {
   private final int[] mountDirections;
   private final int[] shapeBases;
   private final int[][] poleOffsets;
+  private final float[][][] rails;
 
   TrussSignalArmProfile(String label, int shapeCount, int[][] cells, double[][] boxes,
-      int[] mountDirections, int[] shapeBases, int[][] poleOffsets) {
+      int[] mountDirections, int[] shapeBases, int[][] poleOffsets, float[][][] rails) {
     this.label = label;
     this.shapeCount = shapeCount;
     this.cells = cells;
@@ -745,6 +758,7 @@ public enum TrussSignalArmProfile implements ICurvedArmProfile {
     this.mountDirections = mountDirections;
     this.shapeBases = shapeBases;
     this.poleOffsets = poleOffsets;
+    this.rails = rails;
   }
 
   @Override
@@ -780,6 +794,11 @@ public enum TrussSignalArmProfile implements ICurvedArmProfile {
   @Override
   public int getMountDirections(int cell) {
     return mountDirections[cell];
+  }
+
+  @Override
+  public float[][] getCellRails(int cell) {
+    return rails[cell];
   }
 
   @Override

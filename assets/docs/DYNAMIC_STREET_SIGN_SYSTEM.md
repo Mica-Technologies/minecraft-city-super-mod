@@ -289,6 +289,25 @@ already extends four blocks up, so no culling change is needed; the block's own 
 deliberately stays within `0..1` (the part of the hanger above the block is not clickable, the
 same way the guide sign's posts are not).
 
+**Under a curved or truss arm, each hanger runs to the pipe that is really over it.** The fixed
+reach is right for the straight horizontal arm, whose tube is always in the middle of the block
+above. A mast arm curve's tube is somewhere else in every cell, and a truss arm's bottom chord
+climbs along the blade, so two hangers on one blade need two different lengths, as they have on
+the street. `StreetSignHangerRails.find` walks the blocks over the blade (up to three above,
+one column per block of the blade's length), asks any `BlockTrafficPoleMastArmCurve` there for
+its pipes (`getWorldRails`; MAST_ARM_CURVE_SYSTEM.md) and turns them into the sign's own pixel
+space, the inverse of the renderer's rotation and un-mirror. `lowestOver` then gives a hanger
+the lowest pipe within its radius plus a pixel of where the hanger stands, and
+`addHangerGrip` ends the rod in a saddle clamp cupping the pipe's lower half instead of the
+plain clamp. No pipe over a hanger, and it keeps the fixed reach, so nothing changes under a
+straight arm, a block or a slab. The bracket mount's single centre drop and the feed cable use
+the same lookup.
+
+The lookup is a few block reads, so it is not done per frame: the renderer keeps the answer on
+the blade's `Memo` and asks again every 20 ticks, which is also what picks up an arm built over
+a sign that was already there (nothing notifies a sign of a block two above it). The hangers are
+drawn immediate, outside every display list, so no cache key changes.
+
 ### Bracket hanger
 
 `HANGING_BRACKET` hangs the same panel a different way: the blade swings on two **short** links

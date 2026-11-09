@@ -105,6 +105,22 @@ public interface ICurvedArmProfile {
   }
 
   /**
+   * The pipes that pass through a cell, as centreline segments in the cell's own frame, unrotated
+   * (the arm running toward -Z): each {@code {x0, y0, z0, x1, y1, z1, radius}} in sixteenths of a
+   * block. This is how something hung from the arm finds the pipe to reach: a street name sign's
+   * hangers stop at whichever pipe is over them, at its real height. A segment may run past the
+   * cell's faces; it is a stretch of the same line either way. The array is shared: do not modify
+   * it.
+   *
+   * @param cell the cell index
+   *
+   * @return the segments, or {@code null} for an arm that does not say
+   */
+  default float[][] getCellRails(int cell) {
+    return null;
+  }
+
+  /**
    * The {@code shape} value for a cell.
    *
    * @param cell      the cell index
