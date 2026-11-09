@@ -2,7 +2,7 @@
 
 Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
-!!! info "152 blocks in this tab"
+!!! info "153 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -53,6 +53,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Gentex GXS Strobe (Red) | `csm:gentexgxsstrobered` | 2 | 10 | pickaxe | 1 |
 | Gentex GXS Strobe (White) | `csm:gentexgxsstrobewhite` | 2 | 10 | pickaxe | 1 |
 | Gentex Smoke Alarm | `csm:gentex_smoke_alarm` | 2 | 10 | pickaxe | 1 |
+| Home Fire & Security Keypad | `csm:home_fire_alarm_keypad` | 2 | 10 | pickaxe | 1 |
 | Honeywell Addressable Module | `csm:hwam` |  |  |  |  |
 | KAC Call Point | `csm:firealarmkaccallpoint` | 2 | 10 | pickaxe | 1 |
 | KAC Sounder Red (Horn) | `csm:firealarmkacsounderred` | 2 | 10 | pickaxe | 1 |

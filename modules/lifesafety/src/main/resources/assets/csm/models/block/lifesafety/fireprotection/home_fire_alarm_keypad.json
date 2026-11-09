@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "face": "csm:blocks/lifesafety/fireprotection/home_keypad",
+    "body": "csm:blocks/lifesafety/fireprotection/beige",
+    "particle": "csm:blocks/lifesafety/fireprotection/beige"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        4.5,
+        14.5
+      ],
+      "to": [
+        13,
+        11.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            3,
+            4.5,
+            13,
+            11.5
+          ]
+        },
+        "south": {
+          "texture": "#body",
+          "uv": [
+            3,
+            4.5,
+            13,
+            11.5
+          ]
+        },
+        "east": {
+          "texture": "#body",
+          "uv": [
+            0,
+            4.5,
+            1.5,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#body",
+          "uv": [
+            14.5,
+            4.5,
+            16,
+            11.5
+          ]
+        },
+        "up": {
+          "texture": "#body",
+          "uv": [
+            3,
+            14.5,
+            13,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#body",
+          "uv": [
+            3,
+            0,
+            13,
+            1.5
+          ]
+        }
+      }
+    }
+  ]
+}

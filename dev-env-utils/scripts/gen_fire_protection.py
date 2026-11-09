@@ -1181,6 +1181,49 @@ C.add("remote_annunciator",
       annunciator_state(),
       tab=FA)
 
+# The home fire and security keypad (#335): a fire alarm panel subclass, the keypad by a
+# house's front door. 10 x 7 px on the wall, 1.5 deep: a Honeywell-style keypad's 7.25 x 5.25 in.
+KEYPAD_FROM = (3, 4.5, 14.5)
+KEYPAD_TO = (13, 11.5, 16)
+
+
+@C.texture("home_keypad")
+def _home_keypad():
+    img = fill(OFFWHITE, size=64, grain=2, seed=151)
+    x0, y0, x1, y1 = north_region(KEYPAD_FROM, KEYPAD_TO, 64)
+    bevel(img, x0, y0, x1, y1, OFFWHITE)
+    # the display, backlit
+    rect(img, x0 + 3, y0 + 2, x1 - 3, y0 + 10, (34, 38, 40))
+    rect(img, x0 + 4, y0 + 3, x1 - 4, y0 + 9, (92, 150, 120))
+    draw_text(img, "READY", x0 + 6, y0 + 4, (20, 44, 30))
+    # ARMED (red, off) and READY (green, lit) lamps
+    disc(img, x0 + 5, y0 + 12.5, 1.3, (110, 30, 30))
+    disc(img, x0 + 9, y0 + 12.5, 1.3, (60, 220, 90))
+    # the function keys down the left: fire (red), police (blue), medical (grey)
+    for i, colour in enumerate(((200, 40, 40), (40, 80, 190), (150, 150, 150))):
+        bevel(img, x0 + 3, y0 + 15 + i * 4, x0 + 8, y0 + 18 + i * 4, colour)
+    # the 12 keys, 3 across and 4 down
+    for row in range(4):
+        for col in range(3):
+            kx = x0 + 13 + col * 8
+            ky = y0 + 15 + row * 3
+            bevel(img, kx, ky, kx + 6, ky + 2, (200, 200, 196))
+    return img
+
+
+C.add("home_fire_alarm_keypad",
+      'new BlockFireAlarmHomePanel("home_fire_alarm_keypad", %s)' % aabb(*(KEYPAD_FROM
+                                                                            + KEYPAD_TO)),
+      ("Home Fire & Security Keypad", "Brand- und Einbruchmelde-Bedienteil (Haus)",
+       "Teclado de alarma de incendio y seguridad para el hogar",
+       "Manöverpanel för hemmets brand- och inbrottslarm"),
+      {"home_fire_alarm_keypad": model({"face": T("home_keypad"), "body": T("beige"),
+                                        "particle": T("beige")},
+                                       [box(list(KEYPAD_FROM), list(KEYPAD_TO), "body",
+                                            per={"north": "face"})])},
+      facing_state(M("home_fire_alarm_keypad")),
+      tab=FA)
+
 # The annunciator's read-out. %s are the device's name and x, y, z.
 for key, names in (
         ("normal", ("[Annunciator] System normal.", "[Tableau] System in Ruhe.",

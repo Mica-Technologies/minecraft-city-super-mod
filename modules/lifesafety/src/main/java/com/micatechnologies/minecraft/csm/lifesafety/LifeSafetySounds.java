@@ -104,7 +104,10 @@ public enum LifeSafetySounds implements ICsmSound {
   SIREN_GROWL("siren_growl"),
   CALL_BOX_RING("call_box_ring"),
   RESIDENTIAL_ALARM_T3("residential_alarm_t3"),
-  RESIDENTIAL_ALARM_T4("residential_alarm_t4");
+  RESIDENTIAL_ALARM_T4("residential_alarm_t4"),
+  HOME_KEYPAD_ALARM("home_keypad_alarm"),
+  HOME_KEYPAD_TROUBLE("home_keypad_trouble"),
+  HOME_KEYPAD_RESET("home_keypad_reset");
 
   /**
    * The name of the sound.

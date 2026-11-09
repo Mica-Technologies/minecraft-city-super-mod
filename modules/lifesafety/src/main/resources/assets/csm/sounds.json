@@ -799,5 +799,32 @@
         "stream": false
       }
     ]
+  },
+  "home_keypad_alarm": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:home_keypad_alarm",
+        "stream": false
+      }
+    ]
+  },
+  "home_keypad_trouble": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:home_keypad_trouble",
+        "stream": false
+      }
+    ]
+  },
+  "home_keypad_reset": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:home_keypad_reset",
+        "stream": false
+      }
+    ]
   }
 }
