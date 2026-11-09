@@ -653,7 +653,7 @@ does not matter. 50 blocks in all, 15 visible. Every model faces north with its 
 z = 16, as every CSM fixture does; the ceiling model is the ground one turned 180 degrees about z,
 so it still aims north. The heads are drawn level in their own frame and turned to their aim about
 the knuckle's hub or the yoke's trunnion bolts, so the aim the model shows is the aim the light
-uses. 318 to 406 triangles each; `audit_obj_models.py` clean.
+uses. 288 to 406 triangles each; `audit_obj_models.py` clean.
 
 **Materials.** `floodlight.mtl`: `body` (the street lights' swatches: dark bronze for Lithonia,
 black for GE) and `unshaded_lens` (drawn unshaded, as the roadway fixtures' glass is), the lens
