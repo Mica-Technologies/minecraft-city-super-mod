@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "439 blocks in this tab"
+!!! info "444 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -40,6 +40,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Bridge Cable Clevis | `csm:bridge_cable_clevis` | 3.0 | 12.0 | pickaxe | 1 |
 | Bridge Cable Deck Anchor | `csm:bridge_cable_deck_anchor` | 3.0 | 12.0 | pickaxe | 1 |
 | Bridge Cable Socket | `csm:bridge_cable_socket` | 3.0 | 12.0 | pickaxe | 1 |
+| Broadway Rose Electrolier Pole | `csm:decopolelabroadwayrose` | 2 | 10 | pickaxe | 1 |
 | Cable Barrier | `csm:cable_barrier` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier Anchor | `csm:cable_barrier_anchor` | 1.2 | 6 | pickaxe | 0 |
@@ -123,12 +124,15 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Hawk Signal Border (White/Black) | `csm:tlhawkborderwhiteblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Yellow/Black) | `csm:tlhawkborderyellowblack` | 2 | 10 | pickaxe | 1 |
 | Hawk Signal Border (Yellow/Yellow) | `csm:tlhawkborderyellowyellow` | 2 | 10 | pickaxe | 1 |
+| Hollywood Boulevard Pole | `csm:decopolelahollywood` | 2 | 10 | pickaxe | 1 |
 | Horizontal Signal Mount Kit | `csm:tlhmountkit` |  | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole Sign Mount (Concrete) | `csm:trafficpolehorizsignmountconcrete` |  | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Double Mount (Unpainted) | `csm:trafficpolehorzdoublemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Horizontal Traffic Pole with Single Mount (Unpainted) | `csm:trafficpolehorzsinglemountunpainted` | 2 | 10 | pickaxe | 1 |
 | Lane Control Controller | `csm:lane_control_controller` | 2 | 10 | pickaxe | 1 |
 | Lane Control Signal | `csm:lane_control_signal` |  |  |  |  |
+| Los Angeles Concrete Electrolier Pole | `csm:decopolelaconcrete` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Fluted Electrolier Pole | `csm:decopolelafluted` | 2 | 10 | pickaxe | 1 |
 | Low-Profile Sign Truss | `csm:sign_truss_light` | 3.0 | 12.0 | pickaxe | 1 |
 | Metal Wire (Centered, Bottom) | `csm:metalwirecenter` |  | 10 | pickaxe | 1 |
 | Metal Wire (Centered, Top) | `csm:metalwirecentertop` |  | 10 | pickaxe | 1 |
@@ -428,6 +432,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | W-Beam to Thrie-Beam Transition | `csm:w_beam_thrie_transition` | 1.2 | 6 | pickaxe | 0 |
 | Water-Filled Barrier (Orange) | `csm:channelizing_wall_orange` | 0.6 | 3 | pickaxe | 0 |
 | Water-Filled Barrier (White) | `csm:channelizing_wall_white` | 0.6 | 3 | pickaxe | 0 |
+| Westwood Village Lantern Pole | `csm:decopolelawestwood` | 2 | 10 | pickaxe | 1 |
 | White Angled Thin Traffic Pole | `csm:trafficpolehorizontalanglewhite` | 2 | 10 | pickaxe | 1 |
 | White Double Horizontal Traffic Pole | `csm:trafficpolehorzdblwhite` |  | 10 | pickaxe | 1 |
 | White Double Vertical Traffic Pole | `csm:trafficpolevertdblwhite` |  | 10 | pickaxe | 1 |

@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "210 blocks in this tab"
+!!! info "222 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -28,6 +28,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | American Electric Autobahn ATB2 | `csm:aeatb2` | 2 | 10 | pickaxe | 1 |
 | American Electric AutoConnect ACM | `csm:aeacm` | 2 | 10 | pickaxe | 1 |
 | American Electric AutoConnect ACM (No Photocell) | `csm:aeacmnp` | 2 | 10 | pickaxe | 1 |
+| Broadway Rose Twin Globes | `csm:labroadwayrosehead` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Black) | `csm:pendcagedblack` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Bronze) | `csm:pendcagedbronze` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Brushed Nickel) | `csm:pendcagednickel` | 2 | 10 | pickaxe | 1 |
@@ -51,6 +52,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Cree Stylus (Full) | `csm:creestylusfull` | 2 | 10 | pickaxe | 1 |
 | Cree Stylus (Half) | `csm:creestylushalf` | 2 | 10 | pickaxe | 1 |
 | Cree XSP | `csm:creexsp` | 2 | 10 | pickaxe | 1 |
+| Five-Globe Llewellyn Electrolier | `csm:lallewellyn5` | 2 | 10 | pickaxe | 1 |
 | Full Ballast Mount | `csm:fbm` | 1 | 10 | pickaxe | 1 |
 | Full Ballast Mount 2 | `csm:fbm2` | 1 | 10 | pickaxe | 1 |
 | GE Evolve EALS Area Light (Arm Mount) | `csm:geealsarm` | 2 | 10 | pickaxe | 1 |
@@ -81,7 +83,10 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | GE M400R3 (Cutoff Optics) | `csm:gem400r3cu` | 2 | 10 | pickaxe | 1 |
 | GE M400R3 (Cutoff Optics, No Photocell) | `csm:gem400r3cunp` | 2 | 10 | pickaxe | 1 |
 | GE M400R3 (Standard) | `csm:gem400r3` | 2 | 10 | pickaxe | 1 |
+| GE No. 104 Globe with Brass Band | `csm:lage104globe` | 2 | 10 | pickaxe | 1 |
+| GE No. 198 Globe | `csm:lage198globe` | 2 | 10 | pickaxe | 1 |
 | GE Powerbracket | `csm:gepb` | 2 | 10 | pickaxe | 1 |
+| Genie Scroll Arm Teardrop | `csm:lagenie` | 2 | 10 | pickaxe | 1 |
 | Globe Pendant (Black) | `csm:pendglobeblack` | 2 | 10 | pickaxe | 1 |
 | Globe Pendant (Bronze) | `csm:pendglobebronze` | 2 | 10 | pickaxe | 1 |
 | Globe Pendant (Brushed Nickel) | `csm:pendglobenickel` | 2 | 10 | pickaxe | 1 |
@@ -94,6 +99,8 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Half-Shell Wall Sconce (Bronze) | `csm:sconcehalfshellbronze` | 2 | 10 | pickaxe | 1 |
 | Half-Shell Wall Sconce (Brushed Nickel) | `csm:sconcehalfshellnickel` | 2 | 10 | pickaxe | 1 |
 | Highbay Light Mount | `csm:highbaymount` | 1 | 10 | pickaxe | 1 |
+| Hollywood Special Five-Star Head | `csm:lahollywoodstar` | 2 | 10 | pickaxe | 1 |
+| Hollywood Walk of Fame Three-Lamp Head | `csm:lahollywoodwof` | 2 | 10 | pickaxe | 1 |
 | Holophane Mongoose LED | `csm:hpmongoose` | 2 | 10 | pickaxe | 1 |
 | Industrial Dome Pendant (Black) | `csm:penddomeblack` | 2 | 10 | pickaxe | 1 |
 | Industrial Dome Pendant (Bronze) | `csm:penddomebronze` | 2 | 10 | pickaxe | 1 |
@@ -170,6 +177,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Louvered Linear LED Light (White) | `csm:linear_light_louver_white` | 2 | 10 | pickaxe | 1 |
 | Louvered Slot Troffer (2x2) | `csm:troffer_slot_2x2` | 2 | 10 | pickaxe | 1 |
 | Louvered Slot Troffer (2x4) | `csm:troffer_slot_2x4` | 2 | 10 | pickaxe | 1 |
+| Metropolitan Lantern | `csm:lametropolitan` | 2 | 10 | pickaxe | 1 |
 | Mission Flush Mount (Black) | `csm:ceilmissionblack` | 2 | 10 | pickaxe | 1 |
 | Mission Flush Mount (Bronze) | `csm:ceilmissionbronze` | 2 | 10 | pickaxe | 1 |
 | Mission Flush Mount (Brushed Nickel) | `csm:ceilmissionnickel` | 2 | 10 | pickaxe | 1 |
@@ -210,6 +218,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Vanity Bar Sconce (Black) | `csm:sconcevanityblack` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Bronze) | `csm:sconcevanitybronze` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Brushed Nickel) | `csm:sconcevanitynickel` | 2 | 10 | pickaxe | 1 |
+| Vine Double Teardrops | `csm:lavinedouble` | 2 | 10 | pickaxe | 1 |
 | Westinghouse L-250 (HPS) | `csm:whl250hps` | 2 | 10 | pickaxe | 1 |
 | Westinghouse L-250 (Mercury Vapor) | `csm:whl250` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV-25 Silverliner (1950s, Mercury Vapor) | `csm:whov25early` | 2 | 10 | pickaxe | 1 |
@@ -221,5 +230,8 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Westinghouse OV50 (Shaded) | `csm:whov50shaded` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV50 (Shaded, No Photocell) | `csm:whov50shadednp` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV50 (Standard) | `csm:whov50` | 2 | 10 | pickaxe | 1 |
+| Westinghouse Paragon Jr. | `csm:laparagonjr` | 2 | 10 | pickaxe | 1 |
+| Westwood Village Lantern | `csm:lawestwoodlantern` | 2 | 10 | pickaxe | 1 |
+| Wilshire Special Lantern | `csm:lawilshirespecial` | 2 | 10 | pickaxe | 1 |
 
 </div>
