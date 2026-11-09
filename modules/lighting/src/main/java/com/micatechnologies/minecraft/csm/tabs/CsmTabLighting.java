@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.lighting.BlockDecorativeChainFactory;
 import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightFactory;
+import com.micatechnologies.minecraft.csm.lighting.BlockFloodlight;
 import com.micatechnologies.minecraft.csm.lighting.BlockLinearLight;
 import com.micatechnologies.minecraft.csm.lighting.BlockLinearLightHanger;
 import com.micatechnologies.minecraft.csm.lighting.BlockBrightLightPoleColoredFactory;
@@ -126,6 +127,17 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("geealswall", new AxisAlignedBB(0.250000, -0.031250, 0.046875, 0.750000, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory.PostTopAimed("geealspt", new AxisAlignedBB(0.250000, -0.015625, -0.328125, 0.750000, 0.406250, 0.578125), 1));
     initTabBlock(new BlockBrightLightFactory("hpmongoose", new AxisAlignedBB(0.234375, -0.031250, -0.125000, 0.765625, 0.328125, 1.000000), 0));
+    // Floodlights (#99): gen_floodlights.py; their ground, ceiling and crossarm blocks are in
+    // CsmTabLightingHidden
+    initTabBlock(new BlockFloodlight("lithdsxf1kn", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.328125, 0.187500, 0.531250, 0.671875, 0.578125, 1.000000), 16));
+    initTabBlock(new BlockFloodlight("lithdsxf1yk", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.265625, 0.359375, 0.687500, 0.734375, 0.640625, 1.000000), 16));
+    initTabBlock(new BlockFloodlight("lithdsxf1sf", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.328125, 0.000000, 0.437500, 0.671875, 0.390625, 1.000000), 16));
+    initTabBlock(new BlockFloodlight("lithdsxf2kn", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.265625, 0.187500, 0.546875, 0.734375, 0.562500, 1.000000), 20));
+    initTabBlock(new BlockFloodlight("lithdsxf2yk", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.203125, 0.359375, 0.703125, 0.796875, 0.640625, 1.000000), 20));
+    initTabBlock(new BlockFloodlight("lithdsxf2sf", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.265625, 0.000000, 0.453125, 0.734375, 0.359375, 1.000000), 20));
+    initTabBlock(new BlockFloodlight("lithdsxf3kn", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.265625, 0.187500, 0.390625, 0.734375, 0.718750, 1.000000), 24));
+    initTabBlock(new BlockFloodlight("lithdsxf3yk", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.203125, 0.265625, 0.546875, 0.796875, 0.734375, 1.000000), 24));
+    initTabBlock(new BlockFloodlight("lithdsxf3sf", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.265625, 0.000000, 0.296875, 0.734375, 0.531250, 1.000000), 24));
     initTabBlock(new BlockBrightLightFactory("geform109", new AxisAlignedBB(0.312500, -0.156250, 0.437500, 0.687500, 0.312500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("geform109td", new AxisAlignedBB(0.187500, -0.468750, 0.250000, 0.812500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem400r3", new AxisAlignedBB(0.312500, -0.156250, 0.062500, 0.687500, 0.406250, 1.000000), 0));

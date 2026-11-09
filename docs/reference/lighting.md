@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "195 blocks in this tab"
+!!! info "204 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -130,6 +130,15 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Lithonia Double LED Strip Light (Full) | `csm:dslf` | 2 | 10 | pickaxe | 1 |
 | Lithonia Double LED Strip Light (Half Reflectors) | `csm:dslhr` | 2 | 10 | pickaxe | 1 |
 | Lithonia Double LED Strip Light (Half) | `csm:dslh` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Knuckle) | `csm:lithdsxf1kn` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Slipfitter) | `csm:lithdsxf1sf` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF1 LED Floodlight (Yoke) | `csm:lithdsxf1yk` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Knuckle) | `csm:lithdsxf2kn` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Slipfitter) | `csm:lithdsxf2sf` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF2 LED Floodlight (Yoke) | `csm:lithdsxf2yk` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Knuckle) | `csm:lithdsxf3kn` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Slipfitter) | `csm:lithdsxf3sf` | 2 | 10 | pickaxe | 1 |
+| Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk` | 2 | 10 | pickaxe | 1 |
 | Lithonia GTL (Full) | `csm:lgtlf` | 2 | 10 | pickaxe | 1 |
 | Lithonia GTL (Half) | `csm:lgtlh` | 2 | 10 | pickaxe | 1 |
 | Lithonia RTL (Full) | `csm:lrtlf` | 2 | 10 | pickaxe | 1 |
