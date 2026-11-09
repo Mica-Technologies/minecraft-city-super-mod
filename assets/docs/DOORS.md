@@ -63,6 +63,10 @@ whose corridors read as white walls with solid white doors; see **Hospital doors
 - **Door Keypad**: linked to a door (sneak-click the keypad, then the door, both with an empty
   hand) it locks the door. From outside it then opens only with the keypad's code; from inside --
   the side the door faces -- it opens as ever. The button and control station link to doors too.
+  **Doors in other modules** link through Core's `CsmDoorControl` (Building registers the service
+  from `preInit`; a door implements `CsmDoorControl.Door`). Life Safety's holding cell door is
+  one (#336): its key is the bottom of its stack, and a keypad locks it from **both** sides, so a
+  locked cell opens only by its code, its control or redstone.
   Breaking the keypad unlocks the door. **A lock heals itself if its keypad is gone some other way**
   (a command, an editor, or a keypad broken before 2026-09-26, when breaking one did not unlock its
   door): the lock names its keypad in `DoorLocks`, and when it is about to stop someone -- a click
