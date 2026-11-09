@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -344,17 +346,10 @@ final class HvacSystemControl {
     // Thermostats of the system: the primary first, then its zones.
     List<Zone> zones = new ArrayList<>();
     zones.add(new Zone(primary, primaryAnchor));
-    for (Iterator<BlockPos> it = primary.getLinkedZones().iterator(); it.hasNext(); ) {
-      BlockPos zp = it.next();
-      if (!world.isBlockLoaded(zp)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(zp);
-      if (!(te instanceof TileEntityHvacZoneThermostat)) {
-        it.remove();
-        continue;
-      }
-      TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
+    Links<TileEntityHvacZoneThermostat> zoneLinks = links(world, primary,
+        primary.getLinkedZones(), TileEntityHvacZoneThermostat.class);
+    for (TileEntityHvacZoneThermostat zone : zoneLinks.found) {
+      BlockPos zp = zone.getPos();
       zone.lastRunStep = w.stepId;
       if (!primary.getPos().equals(zone.getLinkedPrimaryPos())) {
         zone.setLinkedPrimaryPos(primary.getPos());
@@ -364,21 +359,15 @@ final class HvacSystemControl {
 
     // Equipment.
     List<TileEntityHvacHeater> units = new ArrayList<>();
-    for (Iterator<BlockPos> it = primary.getLinkedUnits().iterator(); it.hasNext(); ) {
-      BlockPos up = it.next();
-      if (!world.isBlockLoaded(up)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(up);
-      if (!(te instanceof TileEntityHvacHeater)) {
-        it.remove();
-        continue;
-      }
-      TileEntityHvacHeater unit = (TileEntityHvacHeater) te;
+    Links<TileEntityHvacHeater> unitLinks = links(world, primary, primary.getLinkedUnits(),
+        TileEntityHvacHeater.class);
+    for (TileEntityHvacHeater unit : unitLinks.found) {
       unit.claimStep = w.stepId;
       units.add(unit);
     }
-    List<TileEntityHvacExhaustFan> fans = exhaustFans(world, primary);
+    Links<TileEntityHvacExhaustFan> fanLinks = links(world, primary,
+        primary.getLinkedExhaustFans(), TileEntityHvacExhaustFan.class);
+    List<TileEntityHvacExhaustFan> fans = fanLinks.found;
     // Switched off at the primary: nothing runs, and the rooms it serves sleep (neither stepped
     // nor rescanned) unless something else is working in them.
     if (primary.getSwitchMode() == HvacStatus.SWITCH_OFF) {
@@ -409,9 +398,9 @@ final class HvacSystemControl {
 
     // A system with any member unloaded (a zone, a unit, a vent) cannot know what it would do,
     // so it does nothing and holds every room it touches exactly as it is until it is whole.
-    boolean complete = zones.size() == 1 + primary.getLinkedZones().size()
-        && units.size() == primary.getLinkedUnits().size()
-        && fans.size() == primary.getLinkedExhaustFans().size();
+    // A link to a loaded place with nothing there yet is not a missing member (see links).
+    boolean complete = zoneLinks.unloaded == 0 && unitLinks.unloaded == 0
+        && fanLinks.unloaded == 0;
     for (Zone z : zones) {
       for (BlockPos vp : z.tstat.getLinkedVents()) {
         complete &= world.isBlockLoaded(vp);
@@ -447,16 +436,9 @@ final class HvacSystemControl {
     // in the vent lists, so only a supply vent makes the system ducted.
     boolean hasDucts = false;
     for (Zone z : zones) {
-      for (Iterator<BlockPos> it = z.tstat.getLinkedVents().iterator(); it.hasNext(); ) {
-        BlockPos vp = it.next();
-        if (!world.isBlockLoaded(vp)) {
-          continue;
-        }
-        TileEntity vte = world.getTileEntity(vp);
-        if (!(vte instanceof TileEntityHvacVentRelay)) {
-          it.remove();
-          continue;
-        }
+      for (TileEntityHvacVentRelay vte : links(world, z.tstat, z.tstat.getLinkedVents(),
+          TileEntityHvacVentRelay.class).found) {
+        BlockPos vp = vte.getPos();
         if (vte instanceof TileEntityHvacExhaustGrille) {
           z.grilles.add((TileEntityHvacExhaustGrille) vte);
         } else {
@@ -719,27 +701,55 @@ final class HvacSystemControl {
     }
   }
 
-  /** A primary's loaded exhaust fans; links to anything else are dropped. */
-  private static List<TileEntityHvacExhaustFan> exhaustFans(World world,
-      TileEntityHvacThermostat primary) {
-    List<BlockPos> linked = primary.getLinkedExhaustFans();
-    if (linked.isEmpty()) {
-      return java.util.Collections.emptyList();
+  /** A list of links resolved for one step: the members found, and how many were unloaded. */
+  static final class Links<T> {
+    final List<T> found = new ArrayList<>();
+    int unloaded;
+    boolean dropped;
+  }
+
+  private static <T> Links<T> links(World world, TileEntityHvacThermostatBase owner,
+      List<BlockPos> linked, Class<T> type) {
+    Links<T> out = resolveLinks(linked, world::isBlockLoaded, world::getTileEntity, type);
+    if (out.dropped) {
+      owner.markDirty();
     }
-    List<TileEntityHvacExhaustFan> fans = new ArrayList<>(linked.size());
+    return out;
+  }
+
+  /**
+   * Resolves a thermostat's links of one kind (units, zones, vents, exhaust fans) for a step.
+   *
+   * <ul>
+   *   <li>An unloaded position is counted in {@link Links#unloaded}: the member exists, but the
+   *   system cannot know what it would do, so it waits.</li>
+   *   <li>A loaded position holding the kind wanted is a member found.</li>
+   *   <li>A loaded position holding <em>nothing</em> is kept and skipped. Builds by command place
+   *   the thermostat with its links written first and the units, zones and vents after, often a
+   *   tick or a chunk later; a link to a place still empty used to be dropped on the first step,
+   *   so the system came up with no units ({@code tU 0}) or no vents, and the links were saved
+   *   that way. A unit broken and placed again at the same spot rejoins the same way.</li>
+   *   <li>A loaded position holding some other tile entity is a dead link: dropped.</li>
+   * </ul>
+   */
+  static <T> Links<T> resolveLinks(List<BlockPos> linked, Predicate<BlockPos> loaded,
+      Function<BlockPos, Object> tileAt, Class<T> type) {
+    Links<T> out = new Links<>();
     for (Iterator<BlockPos> it = linked.iterator(); it.hasNext(); ) {
-      BlockPos fp = it.next();
-      if (!world.isBlockLoaded(fp)) {
+      BlockPos p = it.next();
+      if (!loaded.test(p)) {
+        out.unloaded++;
         continue;
       }
-      TileEntity te = world.getTileEntity(fp);
-      if (!(te instanceof TileEntityHvacExhaustFan)) {
+      Object te = tileAt.apply(p);
+      if (type.isInstance(te)) {
+        out.found.add(type.cast(te));
+      } else if (te != null) {
         it.remove();
-        continue;
+        out.dropped = true;
       }
-      fans.add((TileEntityHvacExhaustFan) te);
     }
-    return fans;
+    return out;
   }
 
   /**
@@ -902,17 +912,9 @@ final class HvacSystemControl {
     primary.lastRunStep = w.stepId;
     List<TileEntityHvacThermostatBase> zones = new ArrayList<>();
     zones.add(primary);
-    for (Iterator<BlockPos> it = primary.getLinkedZones().iterator(); it.hasNext(); ) {
-      BlockPos zp = it.next();
-      if (!world.isBlockLoaded(zp)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(zp);
-      if (!(te instanceof TileEntityHvacZoneThermostat)) {
-        it.remove();
-        continue;
-      }
-      TileEntityHvacZoneThermostat zone = (TileEntityHvacZoneThermostat) te;
+    Links<TileEntityHvacZoneThermostat> zoneLinks = links(world, primary,
+        primary.getLinkedZones(), TileEntityHvacZoneThermostat.class);
+    for (TileEntityHvacZoneThermostat zone : zoneLinks.found) {
       zone.lastRunStep = w.stepId;
       if (!primary.getPos().equals(zone.getLinkedPrimaryPos())) {
         zone.setLinkedPrimaryPos(primary.getPos());
@@ -920,17 +922,9 @@ final class HvacSystemControl {
       zones.add(zone);
     }
     List<TileEntityHvacHeater> units = new ArrayList<>();
-    for (Iterator<BlockPos> it = primary.getLinkedUnits().iterator(); it.hasNext(); ) {
-      BlockPos up = it.next();
-      if (!world.isBlockLoaded(up)) {
-        continue;
-      }
-      TileEntity te = world.getTileEntity(up);
-      if (!(te instanceof TileEntityHvacHeater)) {
-        it.remove();
-        continue;
-      }
-      TileEntityHvacHeater unit = (TileEntityHvacHeater) te;
+    Links<TileEntityHvacHeater> unitLinks = links(world, primary, primary.getLinkedUnits(),
+        TileEntityHvacHeater.class);
+    for (TileEntityHvacHeater unit : unitLinks.found) {
       unit.claimStep = w.stepId;
       units.add(unit);
     }
