@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "207 blocks in this tab"
+!!! info "210 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -57,6 +57,9 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | GE Evolve EALS Area Light (Pole Top Knuckle) | `csm:geealspt` | 2 | 10 | pickaxe | 1 |
 | GE Evolve EALS Area Light (Slipfitter) | `csm:geeals` | 2 | 10 | pickaxe | 1 |
 | GE Evolve EALS Area Light (Wall Knuckle) | `csm:geealswall` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Knuckle) | `csm:geefmkn` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Slipfitter) | `csm:geefmsf` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Yoke) | `csm:geefmyk` | 2 | 10 | pickaxe | 1 |
 | GE Evolve ESR2 Large (Photocell Outlet) | `csm:geelpo` | 2 | 10 | pickaxe | 1 |
 | GE Evolve ESR2 Large (Smart Node) | `csm:geelsn` | 2 | 10 | pickaxe | 1 |
 | GE Evolve ESR2 Large (Standard) | `csm:geel` | 2 | 10 | pickaxe | 1 |

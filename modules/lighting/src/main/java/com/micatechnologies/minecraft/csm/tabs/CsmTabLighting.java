@@ -141,6 +141,9 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockFloodlight("lithtflkn", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.203125, 0.187500, 0.312500, 0.796875, 0.812500, 1.000000), 24));
     initTabBlock(new BlockFloodlight("lithtflyk", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.140625, 0.218750, 0.484375, 0.859375, 0.781250, 1.000000), 24));
     initTabBlock(new BlockFloodlight("lithtflsf", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.203125, 0.000000, 0.218750, 0.796875, 0.609375, 1.000000), 24));
+    initTabBlock(new BlockFloodlight("geefmkn", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.203125, 0.187500, 0.343750, 0.796875, 0.812500, 1.000000), 28));
+    initTabBlock(new BlockFloodlight("geefmyk", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.140625, 0.218750, 0.468750, 0.859375, 0.781250, 1.000000), 28));
+    initTabBlock(new BlockFloodlight("geefmsf", BlockFloodlight.Surface.WALL, new AxisAlignedBB(0.203125, 0.000000, 0.234375, 0.796875, 0.609375, 1.000000), 28));
     initTabBlock(new BlockBrightLightFactory("geform109", new AxisAlignedBB(0.312500, -0.156250, 0.437500, 0.687500, 0.312500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("geform109td", new AxisAlignedBB(0.187500, -0.468750, 0.250000, 0.812500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem400r3", new AxisAlignedBB(0.312500, -0.156250, 0.062500, 0.687500, 0.406250, 1.000000), 0));

@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "176 blocks in this tab"
+!!! info "183 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -26,6 +26,13 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Crosswalk Signal (Gray) | `csm:controllablecrosswalkmountgray` | 2 | 10 | pickaxe | 1 |
 | Cubicle Curtain | `csm:cubicle_curtain` | 0.5 | 1.0 | axe | 0 |
 | Digital Billboard | `csm:ad_digital_billboard_part` | 1.5 | 10 | pickaxe | 0 |
+| GE Evolve EFM LED Floodlight (Knuckle) | `csm:geefmkn_c` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Knuckle) | `csm:geefmkn_g` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Knuckle) | `csm:geefmkn_x` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Slipfitter) | `csm:geefmsf_g` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Yoke) | `csm:geefmyk_c` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Yoke) | `csm:geefmyk_g` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EFM LED Floodlight (Yoke) | `csm:geefmyk_x` | 2 | 10 | pickaxe | 1 |
 | Healthcare Unit Part | `csm:healthcare_unit_part` | 2 | 4 | pickaxe | 0 |
 | Horizontal Angle Traffic Signal (Ahead Arrow) | `csm:controllablehorizontalangleaheadsignal` |  |  |  |  |
 | Horizontal Angle Traffic Signal (Bike, Protected) | `csm:controllablehorizontalanglebikesignal` |  |  |  |  |
