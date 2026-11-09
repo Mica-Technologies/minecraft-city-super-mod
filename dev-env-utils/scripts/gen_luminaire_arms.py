@@ -75,8 +75,12 @@ FINISHES = [
 # Finishes a profile is offered in, where it is not FINISHES: the Anaheim arm only ever comes in
 # the city's P7-Green (the decorative poles' swatch, in Core).
 ANAHEIM_GREEN = ("green", "csm:blocks/decorativepoles/paint_anaheim_green", "Anaheim Green")
+BLACK = ("black", "csm:blocks/trafficsignals/shared_textures/metal_black", "Black")
 FINISHES_FOR = {
     "anaheim8ft": [ANAHEIM_GREEN],
+    "laupsweep8ft": FINISHES + [BLACK],
+    "laupsweep10ft": FINISHES + [BLACK],
+    "laupsweep12ft": FINISHES + [BLACK],
 }
 
 
@@ -520,6 +524,36 @@ def anaheim_members():
     ]
 
 
+# Los Angeles' 1950s-60s upsweep davits (the BSL museum's black pole in frame 02, a rusted one in
+# the requester's photos): the arm leaves the pole steeply, well below its top, and sweeps up and
+# out to a long, nearly level reach; a thin tie rod from lower on the pole holds it about halfway
+# out, bowed (it climbs the pole before it reaches out). Drawn at the Caltrans arms' scale, the
+# rise a judgement from the photos.
+LA_UPSWEEP = [
+    ("laupsweep8ft", 3, ft_px(3.5), 8),
+    ("laupsweep10ft", 4, ft_px(4.0), 10),
+    ("laupsweep12ft", 5, ft_px(4.25), 12),     # 4'3" keeps the root in the placed block
+]
+LA_ROD_DROP = 20.0          # px below the arm's root where the tie rod leaves the pole
+LA_ROD_R = 0.45
+
+
+def la_upsweep_members(run, rise):
+    y0 = start_y(rise)
+    up = parabola(y0, rise, run)
+    tm = 0.45 * run
+    ym = up(tm)[0] - 0.8
+    yl = y0 - LA_ROD_DROP
+
+    def rod(t):
+        k = max(0.0, t) / tm
+        return (yl + (ym - yl) * k ** 0.6, 16.0 - 16.0 * t)
+    return [
+        Member(up, boot_radius(up, R_ROOT, R_TIP, run), -0.6, run - INSET / 16.0, pole=True),
+        Member(rod, lambda t: LA_ROD_R, -0.6, tm, pole=True),
+    ]
+
+
 def catalogue():
     out = []
     for pid, run, rise, ft in CALTRANS:
@@ -532,6 +566,9 @@ def catalogue():
             label = "%sTruss Luminaire Arm %d ft" % ("Double " if double else "", ft)
             out.append((pid + ("double" if double else ""), lambda run=run: truss_members(run), double,
                         label, ft, run, TRUSS_RISE))
+    for pid, run, rise, ft in LA_UPSWEEP:
+        out.append((pid, lambda run=run, rise=rise: la_upsweep_members(run, rise), False,
+                    "Los Angeles Upsweep Luminaire Arm %d ft" % ft, ft, run, rise))
     out.append(("anaheim8ft", anaheim_members, False, "Anaheim Resort Area Luminaire Arm 8 ft", 8,
                 ANAHEIM_RUN, ANAHEIM_RISE))
     return out

@@ -592,6 +592,15 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleDecorative("decopolelaconcrete", 4.0, 4.5, 7.0, TRAFFIC_POLE_COLOR.SILVER));
     initTabBlock(new BlockTrafficPoleDecorative("decopolelawestwood", 4.0, 4.0, 6.8, TRAFFIC_POLE_COLOR.BLACK));
     initTabBlock(new BlockTrafficPoleDecorative("decopolelahollywood", 3.0, 3.0, 5.2, TRAFFIC_POLE_COLOR.SILVER));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep8ftgalvanized", LuminaireArmProfile.LAUPSWEEP8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep8ftsilver", LuminaireArmProfile.LAUPSWEEP8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep8ftblack", LuminaireArmProfile.LAUPSWEEP8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep10ftgalvanized", LuminaireArmProfile.LAUPSWEEP10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep10ftsilver", LuminaireArmProfile.LAUPSWEEP10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep10ftblack", LuminaireArmProfile.LAUPSWEEP10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep12ftgalvanized", LuminaireArmProfile.LAUPSWEEP12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep12ftsilver", LuminaireArmProfile.LAUPSWEEP12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep12ftblack", LuminaireArmProfile.LAUPSWEEP12FT));
     initTabBlock(new BlockTrafficPoleDecorative("decopoleanaheim", 3.0, 3.0, 5.0, TRAFFIC_POLE_COLOR.BLACK));
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmanaheim8ftgreen", LuminaireArmProfile.ANAHEIM8FT));
 
