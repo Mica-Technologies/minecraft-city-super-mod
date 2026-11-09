@@ -1387,6 +1387,40 @@ def build_acm(top="photocell"):
     return m
 
 
+# GE M-250A (1960s-90s; the M-250A2 the later run): the M-400A's smaller sibling, the same
+# Powr/Door cobra head at about 27.5 x 11.5 in to the M-400A's 31.8 x 15.1. CSM's gem240* ids are
+# GE's later M-250R / R2 bodies; this is the original, drop refractor or flat cutoff glass. Its
+# rear is the M-400A's, the size every cobra neck has to be to swallow the arm.
+M250A_PROFILE = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (3.0, 1.1, 0.65, 1.40),
+    (3.3, 1.9, 0.32, 1.95),
+    (4.0, 2.55, 0.10, 2.55),
+    (5.1, 2.95, 0.0, 3.05),
+    (6.6, 3.05, 0.0, 3.35),
+    (8.3, 3.0, 0.0, 3.50),
+    (10.0, 2.9, 0.0, 3.55),
+    (11.8, 2.7, -0.05, 3.55),
+    (13.4, 2.55, -0.22, 3.52),
+    (14.7, 2.47, -0.38, 3.50),
+    (REAR_Z, 2.45, -0.45, 3.50),
+]
+
+
+def build_m250a(optics, with_photocell=True):
+    m = Mesh()
+    check_neck_holds_arm("M-250A", M250A_PROFILE, M400A_EXPONENT)
+    loft_housing(m, M250A_PROFILE, M400A_EXPONENT)
+    if optics == "cutoff":
+        box(m, (5.6, -0.3, 4.6), (10.4, 0.02, 10.2), "body", bottom_mat=LENS_MAT)
+    else:
+        half_ellipsoid_down(m, (8.0, 0.05, 7.4), 2.45, 2.1, 3.0, LENS_MAT)
+    box(m, (7.4, -0.2, 3.8), (8.6, 0.2, 4.5), "body")
+    if with_photocell:
+        photocell(m, M250A_PROFILE, 12.6, 6.0)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1485,6 +1519,10 @@ CATALOGUE = [
     ("aeacm", "American Electric AutoConnect ACM", lambda: build_acm(), "streetlight_body_ael_grey"),
     ("aeacmnp", "American Electric AutoConnect ACM (No Photocell)", lambda: build_acm("cap"),
      "streetlight_body_ael_grey"),
+    ("gem250a", "GE M-250A (Standard)", lambda: build_m250a("refractor"), "streetlight_body_ge_grey"),
+    ("gem250acu", "GE M-250A (Cutoff Optics)", lambda: build_m250a("cutoff"), "streetlight_body_ge_grey"),
+    ("gem250acunp", "GE M-250A (Cutoff Optics, No Photocell)", lambda: build_m250a("cutoff", with_photocell=False),
+     "streetlight_body_ge_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1641,6 +1679,10 @@ LENS_FOR = {
     "ltkc2hss": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
     "aeacm": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
     "aeacmnp": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
+    "gem250a": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    # the M-250 family's cutoff glass: the framed panel the M240R2 cutoff wears
+    "gem250acu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
+    "gem250acunp": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
