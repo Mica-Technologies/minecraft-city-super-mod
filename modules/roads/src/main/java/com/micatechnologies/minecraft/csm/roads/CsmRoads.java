@@ -43,6 +43,9 @@ import com.micatechnologies.minecraft.csm.trafficsignals.InRoadwayLightConfigPac
 import com.micatechnologies.minecraft.csm.trafficsignals.APSSoundPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerConfigPacketHandler;
+import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerPlanImportPacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.AdvancedSignalControllerPlanImportPacketHandler;
+import com.micatechnologies.minecraft.csm.trafficsignals.CommandCsmSignal;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlankoutBoxConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
@@ -266,6 +269,14 @@ public class CsmRoads {
         MileMarkerConfigPacketHandler.class,
         MileMarkerConfigPacket.class,
         Side.SERVER);
+    NETWORK.registerMessage(
+        AdvancedSignalControllerPlanImportPacketHandler.class,
+        AdvancedSignalControllerPlanImportPacket.class,
+        Side.SERVER);
+
+    // /csm signal export|import: whole ADVANCED plans as JSON files in the world folder.
+    com.micatechnologies.minecraft.csm.CommandCsm.registerSubcommand("signal",
+        new CommandCsmSignal());
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete

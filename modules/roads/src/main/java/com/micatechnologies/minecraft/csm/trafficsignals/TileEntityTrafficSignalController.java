@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TileEntityTrafficBeacon;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AbstractBlockControllableSignal.SIGNAL_SIDE;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AdvancedPlanJson;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.PreviousFormatTrafficSignalCircuit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerCircuit;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalControllerCircuits;
@@ -2478,6 +2479,63 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
       resetController(affectsProgrammedFlash(action), true);
       syncServerToClient(getWorld());
     }
+  }
+
+  /**
+   * The whole ADVANCED program as plan JSON (SPATT's {@code csm-asc3-plan} format), with the
+   * controller-wide red+amber and green flash times. See {@link AdvancedPlanJson}.
+   *
+   * @param name a name to write into the plan, or {@code null}
+   *
+   * @return the plan JSON
+   *
+   * @since 2026.11
+   */
+  public String exportAdvancedPlanJson(String name) {
+    return AdvancedPlanJson.export(getOrCreateProgrammedPhasePlan(), circuits, redAmberTime,
+        greenFlashTime, name);
+  }
+
+  /**
+   * Loads a whole ADVANCED program from plan JSON (SPATT's {@code csm-asc3-plan} format), as one
+   * edit: the plan is applied to a copy of the program and swapped in only if all of it applies,
+   * then the controller resets its runtime and re-syncs exactly as a panel edit does — unlike a
+   * plan written with {@code /blockdata}, which keeps the running engine. Fields the plan leaves
+   * out keep their values; see {@link AdvancedPlanJson} for the rules.
+   *
+   * @param json the plan text
+   *
+   * @return a one-line summary for the player, with the plan's validation problem appended when
+   *     it does not yet suit this controller's circuits (it is loaded anyway, as a panel edit
+   *     would be, and the controller faults with that message in ADVANCED mode)
+   *
+   * @throws AdvancedPlanJson.PlanFormatException if the text is not a plan; nothing changes
+   * @since 2026.11
+   */
+  public String importAdvancedPlanJson(String json) throws AdvancedPlanJson.PlanFormatException {
+    AdvancedPlanJson.Result result =
+        AdvancedPlanJson.apply(json, getOrCreateProgrammedPhasePlan());
+    programmedPhasePlan = result.plan;
+    if (result.redAmber != null) {
+      redAmberTime = result.redAmber;
+    }
+    if (result.greenFlash != null) {
+      greenFlashTime = result.greenFlash;
+    }
+    if (isInFaultState() && mode == TrafficSignalControllerMode.ADVANCED) {
+      currentFaultMessage = "";
+      operatingMode = mode;
+    }
+    resetController(true, true);
+    syncServerToClient(getWorld());
+    int enabled = 0;
+    for (TrafficSignalProgrammedPhase p : result.plan.getPhases()) {
+      enabled += p.isEnabled() ? 1 : 0;
+    }
+    String summary = "Loaded plan" + (result.name != null ? " \"" + result.name + "\"" : "")
+        + ": " + enabled + " phases enabled.";
+    String problem = result.plan.validate(circuits);
+    return problem == null ? summary : summary + " Warning: " + problem;
   }
 
   /**

@@ -1394,6 +1394,47 @@ The controller then arbitrates automatically, including under coordination: the
 flash runs while the opposing through is green, clears concurrently with it, and is
 held correctly across cycle wrap and into an imminent protected green.
 
+\section{Saving and Loading Whole Plans}\label{sec:planjson}
+
+A controller's whole program --- every phase, the ring sequences, all four
+coordination patterns and the time-of-day schedule, overlaps, preempts and transit
+priority plans, plus the controller's red+amber and green flash times --- can be
+taken out and put back as one JSON file, in the \texttt{csm-asc3-plan} format that
+the SPATT timing tool writes and reads (version 2; version 1 files load too). Times
+are in ticks, as everywhere on the panel.
+
+\subsection{From the panel}
+
+\textbf{Copy Plan} puts the program on the clipboard. \textbf{Paste Plan} loads the
+plan on the clipboard into the controller, as one edit: the controller resets and
+starts the new program cleanly, exactly as after any panel edit. This works on a
+server too, and needs the same permission as any other edit.
+
+\subsection{From the command line}
+
+Look at the controller (or give its position) and run
+\texttt{/csm signal export <name>} to write
+\texttt{<world>/csm/timing/<name>.json}, or \texttt{/csm signal import <name>} to
+load it. Both need operator permission.
+
+\subsection{What a plan changes}
+
+A plan is applied on top of what the controller has. Anything the plan leaves out
+keeps its value: a plan made in SPATT carries timing but not wiring, so circuits,
+movements and flash settings stay as you set them. Phases the plan lists are set;
+phases it does not list are switched off. Pattern slots it does not list are kept,
+and overlaps, preempts and priority plans are replaced only when the plan includes
+them. Times are clamped to 600\,s.
+
+A plan that is not valid changes nothing, and the panel or command says what is
+wrong (for example \texttt{phases[2].recall is "SOMETIMES"; it must be one of NONE,
+MINIMUM, MAXIMUM, PEDESTRIAN, SOFT}). A plan that loads but does not yet suit the
+controller's wiring is reported as a warning, and the controller faults with that
+message until the wiring is fixed, as it would after the same edit on the panel.
+
+Loading a plan this way is preferred to \texttt{/blockdata}: a plan written with
+\texttt{/blockdata} keeps the running engine instead of starting it afresh.
+
 % ================================================================ 8
 \section{Cookbook}\label{sec:cookbook}
 

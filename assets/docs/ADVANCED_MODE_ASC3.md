@@ -841,6 +841,41 @@ reading back with it off. `TransitQueueJumpTest` drives the engine: a bus seen b
 gets its jump (bar lit, general head red, the green exactly the jump later, the bar dark after),
 a bus no sensor counts still calls its phase, and no heads, no bus or a zero jump hold nothing.
 
+## 5e. Whole-plan JSON (SPATT plan format)
+
+A controller's whole program moves in and out as JSON in SPATT's `csm-asc3-plan` format, version 2
+(Mica-Technologies/SPATT `docs/profiles/csm-asc3-plan.schema.json`; version 1's single `priority`
+is read as the first of `priorities`). `logic/AdvancedPlanJson` is the mapper (Gson):
+
+- **Fields.** Every `tcAdv` field has a named JSON field in ticks and enum constant names
+  (`recall: "MINIMUM"`, `movement: "PROTECTED_LEFT"`, `flash: "RED"`, pattern `mode`), plus the
+  controller-level `tcRaT` and `tcGfT` as `redAmber` and `greenFlash`. Circuits are indices. SPATT
+  carries `overlaps`, `preempts` and `priorities` verbatim; their objects use the names
+  `AdvancedPlanJson` writes (`outputCircuit`, `included`, `permissive`, `trackClear`, `dwell`,
+  `triggerOnDetectors`, `transitPhase`, ...). Export writes every phase, all four pattern slots and
+  each phase's informational `hasPedestrianSignals` (from its circuit's ped heads).
+- **Import is "absent means keep".** Fields a plan leaves out keep the controller's values;
+  listed phases are set and unlisted phases disabled; unlisted pattern slots are kept; the three
+  lists are replaced whole when present. Times clamp to 0..12000 as the panel clamps them, a PED
+  preempt trigger becomes THROUGH as on the panel, and a phase's ring follows the sequence it is
+  in. The import is atomic — it works on a copy, and any problem (bad JSON, an unknown enum, a
+  phase out of range or listed twice, a fractional time) throws `PlanFormatException` naming the
+  field, with nothing changed.
+- **Applying it** (`TileEntityTrafficSignalController.importAdvancedPlanJson`) swaps the program
+  in, clears an ADVANCED fault, then resets the runtime and re-syncs as a panel edit does — which
+  `/blockdata` does not. A plan that fails `validate` for this controller's circuits is still
+  loaded, like a panel edit, and the warning is returned to the player.
+- **Transport.** `/csm signal export|import <name> [x y z]` (`CommandCsmSignal`, registered into
+  Core's `/csm` with `CommandCsm.registerSubcommand`) reads and writes
+  `<world>/csm/timing/<name>.json` for the controller looked at. The panel's **Copy Plan** /
+  **Paste Plan** buttons use the clipboard; paste sends `AdvancedSignalControllerPlanImportPacket`,
+  gzip-compressed and capped at 30000 bytes (under the 32767-byte client payload limit; a plan is
+  a few kilobytes and compresses about tenfold), with the reach and op/creative checks of every
+  panel edit.
+- **Tests.** `AdvancedPlanJsonTest`: NBT &rarr; JSON &rarr; NBT is byte-equal for the engine tests'
+  plans and a plan with every part set; the five SPATT fixtures (copied into
+  `modules/roads/src/test/resources/spatt/`) import; refused plans change nothing.
+
 ## 6. Roadmap
 
 Only niche / poor-fit items remain:

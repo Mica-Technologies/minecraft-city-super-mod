@@ -8,7 +8,9 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
@@ -40,12 +42,66 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
  *       incandescent signal lamp takes to reach 90% through a red lens</li>
  *   <li>{@code /csm statecheck} — checks every CSM block's state container against vanilla's,
  *       state by state (see {@code CsmStateCheck}); read only</li>
+ *   <li>a module's own subcommands, registered from its {@code preInit} with
+ *       {@link #registerSubcommand} (Roads adds {@code /csm signal})</li>
  * </ul>
  * <p>
  * Mutations made through this command are persisted to the config file immediately, so they
  * survive restarts without requiring an additional save step.
  */
 public class CommandCsm extends CommandBase {
+
+  /**
+   * A subcommand a module adds to {@code /csm}, so the module's own commands sit under the one
+   * administrative command without Core naming a module class.
+   */
+  public interface Subcommand {
+
+    /**
+     * Runs the subcommand.
+     *
+     * @param server the server
+     * @param sender who ran it
+     * @param args   the arguments after the subcommand's name
+     *
+     * @throws CommandException to report a usage or input problem
+     */
+    void execute(MinecraftServer server, ICommandSender sender, String[] args)
+        throws CommandException;
+
+    /** @return the usage after the name, e.g. {@code "<export|import> <name>"} */
+    String usage();
+
+    /**
+     * Tab completions for the argument being typed.
+     *
+     * @param args the arguments after the subcommand's name, the last one partial
+     *
+     * @return the candidates, or an empty list
+     */
+    default List<String> tabComplete(MinecraftServer server, ICommandSender sender,
+        String[] args) {
+      return Collections.emptyList();
+    }
+  }
+
+  /** Module subcommands by name, in registration order. */
+  private static final Map<String, Subcommand> MODULE_SUBCOMMANDS = new LinkedHashMap<>();
+
+  /**
+   * Adds a module's subcommand to {@code /csm}, from the module's {@code preInit}. It runs with
+   * the command's permission level 2 (op), like every other subcommand.
+   *
+   * @param name    the subcommand's name, lower case; one already taken is an error
+   * @param handler the subcommand
+   */
+  public static synchronized void registerSubcommand(String name, Subcommand handler) {
+    String key = name.toLowerCase();
+    if (MODULE_SUBCOMMANDS.containsKey(key)) {
+      throw new IllegalStateException("/csm " + key + " is already registered");
+    }
+    MODULE_SUBCOMMANDS.put(key, handler);
+  }
 
   private static final String USAGE =
       "/csm <reloadconfig|poleignore <list|add|remove> [block]"
@@ -64,7 +120,11 @@ public class CommandCsm extends CommandBase {
 
   @Override
   public String getUsage(ICommandSender sender) {
-    return USAGE;
+    StringBuilder usage = new StringBuilder(USAGE);
+    for (Map.Entry<String, Subcommand> e : MODULE_SUBCOMMANDS.entrySet()) {
+      usage.append(" | /csm ").append(e.getKey()).append(' ').append(e.getValue().usage());
+    }
+    return usage.toString();
   }
 
   @Override
@@ -120,7 +180,14 @@ public class CommandCsm extends CommandBase {
             com.micatechnologies.minecraft.csm.codeutils.light.CsmLightFootprints.stats());
         return;
       default:
-        throw new WrongUsageException(USAGE);
+        Subcommand module = MODULE_SUBCOMMANDS.get(sub);
+        if (module == null) {
+          throw new WrongUsageException(getUsage(sender));
+        }
+        String[] rest = new String[args.length - 1];
+        System.arraycopy(args, 1, rest, 0, rest.length);
+        module.execute(server, sender, rest);
+        return;
     }
   }
 
@@ -333,8 +400,17 @@ public class CommandCsm extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "reloadconfig", "poleignore", "renderpass",
-          "incandescent", "displaylists", "memstats", "chunkbuffers", "statecheck", "lightfootprints");
+      List<String> names = Lists.newArrayList("reloadconfig", "poleignore", "renderpass",
+          "incandescent", "displaylists", "memstats", "chunkbuffers", "statecheck",
+          "lightfootprints");
+      names.addAll(MODULE_SUBCOMMANDS.keySet());
+      return getListOfStringsMatchingLastWord(args, names);
+    }
+    Subcommand module = MODULE_SUBCOMMANDS.get(args[0].toLowerCase());
+    if (module != null) {
+      String[] rest = new String[args.length - 1];
+      System.arraycopy(args, 1, rest, 0, rest.length);
+      return module.tabComplete(server, sender, rest);
     }
     if (args.length == 2 && "chunkbuffers".equalsIgnoreCase(args[0])) {
       return getListOfStringsMatchingLastWord(args, "trim");
