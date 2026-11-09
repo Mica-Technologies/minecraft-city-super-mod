@@ -1352,6 +1352,7 @@ tile.trusssignalarmdiagonal8galvanized.name=Brazo de Semáforo de Celosía, Diag
 tile.trusssignalarmdiagonal8silver.name=Brazo de Semáforo de Celosía, Diagonal, 8 Bloques (Plateado)
 tile.trusssignalarmdiagonal8black.name=Brazo de Semáforo de Celosía, Diagonal, 8 Bloques (Negro)
 tile.decopolereprofluted.name=Poste de Hierro Fundido Acanalado (Réplica)
+tile.decopolecalheights.name=Poste de Farola California Heights
 tile.traffic_cone.name=Cono de Tráfico
 tile.traffic_cone_lime.name=Cono de Tráfico (Verde Lima)
 tile.traffic_drum.name=Tambor de Tráfico

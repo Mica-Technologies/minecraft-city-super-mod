@@ -1352,6 +1352,7 @@ tile.trusssignalarmdiagonal8galvanized.name=Fachwerk-Signalausleger, diagonal, 8
 tile.trusssignalarmdiagonal8silver.name=Fachwerk-Signalausleger, diagonal, 8 Blöcke (Silber)
 tile.trusssignalarmdiagonal8black.name=Fachwerk-Signalausleger, diagonal, 8 Blöcke (Schwarz)
 tile.decopolereprofluted.name=Kannelierter Gusseisenmast (Nachbau)
+tile.decopolecalheights.name=California-Heights-Laternenmast
 tile.traffic_cone.name=Verkehrskegel
 tile.traffic_cone_lime.name=Verkehrskegel (Hellgrün)
 tile.traffic_drum.name=Verkehrstrommel

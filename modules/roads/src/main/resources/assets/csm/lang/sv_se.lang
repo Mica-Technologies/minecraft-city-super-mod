@@ -1352,6 +1352,7 @@ tile.trusssignalarmdiagonal8galvanized.name=Fackverks-Signalarm, Diagonal, 8 Blo
 tile.trusssignalarmdiagonal8silver.name=Fackverks-Signalarm, Diagonal, 8 Block (Silver)
 tile.trusssignalarmdiagonal8black.name=Fackverks-Signalarm, Diagonal, 8 Block (Svart)
 tile.decopolereprofluted.name=Räfflad Gjutjärnsstolpe (Replika)
+tile.decopolecalheights.name=California Heights lyktstolpe
 tile.traffic_cone.name=Trafikkon
 tile.traffic_cone_lime.name=Trafikkon (Ljusgrön)
 tile.traffic_drum.name=Trafiktrumma

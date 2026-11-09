@@ -226,18 +226,20 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightPoleColoredFactory("postlight2", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.437500, 0.937500), 1));
     initTabBlock(new BlockBrightLightPoleColoredFactory("postlight3", new AxisAlignedBB(-0.125000, 0.000000, -0.125000, 1.125000, 1.437500, 1.125000), 1));
     // Decorative and historic post tops for the decorative poles (gen_decorative_poles.py --fragments)
-    initTabBlock(new BlockBrightLightFactory.PostTop("lawilshirespecial", new AxisAlignedBB(0.093750, 0.001250, 0.093750, 0.906250, 1.500000, 0.906250), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("lawilshirespecial", new AxisAlignedBB(0.211520, 0.001250, 0.211520, 0.788480, 1.500000, 0.788480), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lametropolitan", new AxisAlignedBB(0.058999, 0.001250, 0.058999, 0.941001, 1.500000, 0.941001), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lawestwoodlantern", new AxisAlignedBB(0.106250, 0.001250, 0.159002, 0.893750, 1.500000, 0.840998), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("labroadwayrosehead", new AxisAlignedBB(-0.192333, 0.001250, 0.222296, 1.192333, 1.137500, 0.777704), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("laum1906twin", new AxisAlignedBB(-0.168750, 0.001250, 0.222296, 1.168750, 1.100000, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lage104globe", new AxisAlignedBB(0.210222, 0.001250, 0.210222, 0.789778, 1.468750, 0.789778), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lage198globe", new AxisAlignedBB(0.089482, 0.001250, 0.089482, 0.910518, 1.125000, 0.910518), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("laparagonjr", new AxisAlignedBB(0.101556, 0.001250, 0.101556, 0.898444, 1.337500, 0.898444), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lallewellyn5", new AxisAlignedBB(-0.066785, 0.001250, -0.066785, 1.066785, 1.262500, 1.066785), 1));
     initTabBlock(new BlockBrightLightFactory.PostTopAimed("lagenie", new AxisAlignedBB(0.222296, 0.001250, -0.321250, 0.777704, 0.975000, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lavinedouble", new AxisAlignedBB(-0.321250, 0.001250, 0.222296, 1.321250, 1.125000, 0.777704), 1));
-    initTabBlock(new BlockBrightLightFactory.PostTop("lahollywoodstar", new AxisAlignedBB(-0.500000, 0.001250, 0.222296, 1.500000, 1.500000, 0.777704), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTopAimed("lahollywoodstar", new AxisAlignedBB(0.222296, 0.001250, -0.500000, 0.777704, 0.931250, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lahollywoodwof", new AxisAlignedBB(-0.137500, 0.001250, 0.222296, 1.137500, 1.500000, 0.777704), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("lbcalheightslantern", new AxisAlignedBB(0.222296, 0.001250, 0.222296, 0.777704, 1.087500, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("reproacorn", new AxisAlignedBB(0.161926, 0.001250, 0.161926, 0.838074, 1.350000, 0.838074), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("reprowashingtonglobe", new AxisAlignedBB(0.113630, 0.001250, 0.113630, 0.886370, 1.262500, 0.886370), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("reprotwin20", new AxisAlignedBB(-0.216481, 0.001250, 0.222296, 1.216481, 1.137500, 0.777704), 1));
