@@ -76,4 +76,25 @@ public class BlockBrightLightFactory extends AbstractBrightLight {
       super(registryName, boundingBox, brightLightXOffset);
     }
   }
+
+  /**
+   * A post-top light whose head is cantilevered to one side of its pole (the GE Evolve EALS on its
+   * pole-top knuckle): its offset runs forward, the way it faces, so the light falls under the
+   * head whichever way the block is turned. The symmetric post tops ({@link PostTop}) keep their
+   * world-X offset, so their placed lights stay where they are.
+   *
+   * @see AbstractBrightLight#isBrightLightOffsetFacingRelative()
+   * @since 2026.11
+   */
+  public static class PostTopAimed extends PostTop {
+
+    public PostTopAimed(String registryName, AxisAlignedBB boundingBox, int forwardOffset) {
+      super(registryName, boundingBox, forwardOffset);
+    }
+
+    @Override
+    public boolean isBrightLightOffsetFacingRelative() {
+      return true;
+    }
+  }
 }
