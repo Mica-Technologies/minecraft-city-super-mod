@@ -85,6 +85,9 @@ SWATCHES = {
     "streetlight_body_westinghouse_silver": ((186, 188, 188), (140, 142, 142)),
     # The SolarMax SMX-LL5's near-white housing (his reference photo).
     "streetlight_body_solarmax_white": ((234, 234, 230), (196, 196, 192)),
+    # Black and dark bronze, the area lights' standard finishes (GE Evolve, Holophane).
+    "streetlight_body_black": ((72, 72, 74), (44, 44, 46)),
+    "streetlight_body_dark_bronze": ((94, 80, 66), (62, 52, 43)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -1521,6 +1524,101 @@ def build_smx_ll5():
     return m
 
 
+# GE Evolve EALS area light (2015-): a square die-cast head carrying a square LED array, five
+# cooling fins across its top rising toward the rear, on a tapering neck with the receptacle.
+# GE's sheet: 25.2 in long, 14.7 wide at the head (16.0 over the fins), 1.9 in thick at the
+# nose, 4.3 over the fins. Four mounts: C1 an integral slipfitter (z 16, any CSM arm), D1 a short
+# arm to a pole plate, V1 a knuckle on a wall plate, S1 a knuckle slipfitter on a pole-top tenon.
+EALS_HEAD, EALS_NECK = 7.5, 5.4   # px
+
+
+def eals_body(m, z0, dy, neck_rear):
+    """The head from z0 and the neck behind it, raised by dy; `neck_rear` = (hw, yb, yt) at the
+    rear. Returns the neck profile (for the photocell)."""
+    zh = z0 + EALS_HEAD
+    head = nose_round(z0, 0.9, 3.8, ((0.1, 0.8), (0.1, 1.05))) + [(z0 + 0.9, 3.8, 0.1, 1.05),
+                                                                  (zh, 3.8, 0.1, 1.1)]
+    hw, yb, yt = neck_rear
+    zr = zh + EALS_NECK - 0.1 if z0 + EALS_HEAD + EALS_NECK < REAR_Z else REAR_Z
+    neck = [(zh - 0.3, 3.5, 0.1, 1.5), (zh + 0.4, 3.2, 0.08, 1.9),
+            (zh + 0.55 * (zr - zh), (3.2 + hw) / 2, (0.08 + yb) / 2, (1.9 + yt) / 2 + 0.2),
+            (zr - 0.6, hw + 0.05, yb, yt), (zr, hw, yb, yt)]
+    head = [(z, w, b + dy, t + dy) for z, w, b, t in head]
+    neck = [(z, w, b + dy, t + dy) for z, w, b, t in neck]
+    loft_housing(m, head, 4.0)
+    loft_housing(m, neck, 3.2)
+    for k, fz in enumerate((1.0, 2.25, 3.5, 4.75, 6.0)):
+        top = 1.45 + 0.1 * k + dy
+        box(m, (4.75, 0.8 + dy, z0 + fz), (11.25, top, z0 + fz + 0.5), "body")
+    box(m, (4.6, dy, z0 + 0.65), (11.4, 0.15 + dy, zh - 0.5), "body", bottom_mat=LENS_MAT)
+    return neck
+
+
+def build_eals(mount):
+    m = Mesh()
+    if mount == "slip":
+        neck = eals_body(m, 16.0 - EALS_HEAD - EALS_NECK, 0.0, (2.1, -0.3, 3.7))
+        check_neck_holds_arm("EALS", neck, 3.2)
+        photocell(m, neck, 12.6, 6.0)
+    elif mount == "arm":
+        # D1: a short flat arm under the neck's end to a pole plate on the block face
+        neck = eals_body(m, 1.6, 0.0, (1.7, 0.05, 2.2))
+        box(m, (7.25, 0.35, neck[-1][0] - 0.5), (8.75, 1.45, 15.5), "body")
+        box(m, (6.9, -0.9, 15.45), (9.1, 2.6, REAR_Z), "body")
+        photocell(m, neck, 12.2, 6.0)
+    elif mount == "wall":
+        # V1: a knuckle hub on a bracket off a square wall plate
+        neck = eals_body(m, 0.8, 0.0, (1.7, 0.05, 2.2))
+        zr = neck[-1][0]
+        box(m, (7.4, 0.55, zr - 0.5), (8.6, 1.75, 13.9), "body")
+        for sx in (1.0, -1.0):
+            cylinder_axis(m, (8.0, 1.15, 14.0), (sx, 0.0, 0.0), 0.8, 0.0, 1.05, "body")
+        box(m, (7.4, 0.6, 14.3), (8.6, 1.7, 15.45), "body")
+        box(m, (6.6, -0.3, 15.4), (9.4, 2.6, REAR_Z), "body")
+        photocell(m, neck, 11.4, 6.0)
+    else:
+        # S1 on a pole-top tenon: a sleeve on the block's centre, a knuckle on it and the fixture
+        # cantilevered north from the knuckle, level (the knuckle aims 0-45; CSM draws it at 0)
+        cylinder_y(m, 8.0, 8.0, 1.05, 0.0, 2.5, "body", sides=12)
+        for sx in (1.0, -1.0):
+            cylinder_axis(m, (8.0, 2.95, 8.0), (sx, 0.0, 0.0), 0.75, 0.0, 0.95, "body")
+        z0 = 7.6 - EALS_HEAD - EALS_NECK
+        neck = eals_body(m, z0, 2.9, (1.6, 0.05, 1.6))
+        box(m, (7.4, 2.55, neck[-1][0] - 0.4), (8.6, 3.35, 7.9), "body")
+        photocell(m, neck, neck[-1][0] - 2.0, 7.0)
+    return m
+
+
+# Holophane Mongoose LED (2014-): a long, flat roadway and area head, its big individual LED
+# optics in a grid under it, a crenellated rim of cooling teeth along both top edges, the driver
+# in a deeper housing over the slipfitter. Holophane's figures: 40.8 x 17.7 x 6.6 in, dark bronze,
+# for 30-50 ft mounting. At CSM's scale it is longer than a block: the head runs on to z -2.
+MONGOOSE_HEAD = nose_round(-2.0, 1.2, 4.0, ((0.45, 1.3), (0.4, 1.6))) + [(-0.8, 4.0, 0.4, 1.6),
+                                                                       (10.0, 4.0, 0.4, 1.6)]
+MONGOOSE_REAR = [
+    (8.6, 3.4, 0.2, 2.0),
+    (9.6, 3.6, -0.1, 3.0),
+    (12.5, 3.3, -0.35, 3.6),
+    (14.8, 2.7, -0.35, 3.7),
+    (REAR_Z, 2.6, -0.35, 3.7),
+]
+
+
+def build_mongoose():
+    m = Mesh()
+    check_neck_holds_arm("Mongoose", MONGOOSE_REAR, 3.2)
+    loft_housing(m, MONGOOSE_HEAD, 4.5)
+    loft_housing(m, MONGOOSE_REAR, 3.2)
+    z = -0.6
+    while z < 8.0:
+        for x0 in (4.25, 11.05):
+            box(m, (x0, 1.15, z), (x0 + 0.7, 2.35, z + 1.0), "body")
+        z += 1.7
+    box(m, (4.55, 0.25, -1.1), (11.45, 0.45, 8.4), "body", bottom_mat=LENS_MAT)
+    photocell(m, MONGOOSE_REAR, 12.4, 6.5)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1632,6 +1730,13 @@ CATALOGUE = [
     ("whl250", "Westinghouse L-250 (Mercury Vapor)", build_l250, "streetlight_body_ge_grey"),
     ("whl250hps", "Westinghouse L-250 (HPS)", build_l250, "streetlight_body_ge_grey"),
     ("smsmxll5", "SolarMax SMX-LL5", build_smx_ll5, "streetlight_body_solarmax_white"),
+    ("geeals", "GE Evolve EALS Area Light (Slipfitter)", lambda: build_eals("slip"), "streetlight_body_black"),
+    ("geealsarm", "GE Evolve EALS Area Light (Arm Mount)", lambda: build_eals("arm"), "streetlight_body_black"),
+    ("geealswall", "GE Evolve EALS Area Light (Wall Knuckle)", lambda: build_eals("wall"),
+     "streetlight_body_black"),
+    ("geealspt", "GE Evolve EALS Area Light (Pole Top Knuckle)", lambda: build_eals("post"),
+     "streetlight_body_black"),
+    ("hpmongoose", "Holophane Mongoose LED", build_mongoose, "streetlight_body_dark_bronze"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1681,6 +1786,14 @@ ENVELOPE_FOR = {
     "gepb": ((2.0, 14.0), (0.0, 12.0), (-16.0, REAR_Z + 1e-9)),
     # The SMX-LL5's paddle is 8 px wide (x 4..12), as the first-generation SMX's head is broad.
     "smsmxll5": ((4.0, 12.0), (-0.5, 5.5), (2.0, REAR_Z + 1e-9)),
+    # The EALS head is 7.6 px wide (x 4.2..11.8); the arm and wall mounts move it forward, the
+    # pole top one sits on its knuckle over the block's centre and runs on north to z -5.3.
+    "geeals": ((4.0, 12.0), (-0.5, 6.0), (3.0, REAR_Z + 1e-9)),
+    "geealsarm": ((4.0, 12.0), (-1.0, 6.0), (1.5, REAR_Z + 1e-9)),
+    "geealswall": ((4.0, 12.0), (-0.5, 6.0), (0.5, REAR_Z + 1e-9)),
+    "geealspt": ((4.0, 12.0), (0.0, 7.0), (-5.5, 9.1)),
+    # The Mongoose is longer than a block: its head runs on to z -2.
+    "hpmongoose": ((4.0, 12.0), (-0.5, 6.5), (-2.0, REAR_Z + 1e-9)),
 }
 
 
@@ -1724,6 +1837,8 @@ GENERATED_LENS = {
     "leotek_kc2": (6, 12, "die"),
     "ael_acm": (5, 9, "amber"),
     "solarmax_smx_ll5": (4, 9, "amber"),
+    "ge_eals": (6, 6, "lens"),
+    "holophane_mongoose": (3, 6, "lens"),
 }
 
 
@@ -1802,6 +1917,11 @@ LENS_FOR = {
     "whl250": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "whl250hps": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "smsmxll5": (art_lens("solarmax_smx_ll5", "on"), art_lens("solarmax_smx_ll5", "off")),
+    "geeals": (art_lens("ge_eals", "on"), art_lens("ge_eals", "off")),
+    "geealsarm": (art_lens("ge_eals", "on"), art_lens("ge_eals", "off")),
+    "geealswall": (art_lens("ge_eals", "on"), art_lens("ge_eals", "off")),
+    "geealspt": (art_lens("ge_eals", "on"), art_lens("ge_eals", "off")),
+    "hpmongoose": (art_lens("holophane_mongoose", "on"), art_lens("holophane_mongoose", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.

@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "190 blocks in this tab"
+!!! info "195 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -53,6 +53,10 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Cree XSP | `csm:creexsp` | 2 | 10 | pickaxe | 1 |
 | Full Ballast Mount | `csm:fbm` | 1 | 10 | pickaxe | 1 |
 | Full Ballast Mount 2 | `csm:fbm2` | 1 | 10 | pickaxe | 1 |
+| GE Evolve EALS Area Light (Arm Mount) | `csm:geealsarm` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EALS Area Light (Pole Top Knuckle) | `csm:geealspt` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EALS Area Light (Slipfitter) | `csm:geeals` | 2 | 10 | pickaxe | 1 |
+| GE Evolve EALS Area Light (Wall Knuckle) | `csm:geealswall` | 2 | 10 | pickaxe | 1 |
 | GE Evolve ESR2 Large (Photocell Outlet) | `csm:geelpo` | 2 | 10 | pickaxe | 1 |
 | GE Evolve ESR2 Large (Smart Node) | `csm:geelsn` | 2 | 10 | pickaxe | 1 |
 | GE Evolve ESR2 Large (Standard) | `csm:geel` | 2 | 10 | pickaxe | 1 |
@@ -87,6 +91,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Half-Shell Wall Sconce (Bronze) | `csm:sconcehalfshellbronze` | 2 | 10 | pickaxe | 1 |
 | Half-Shell Wall Sconce (Brushed Nickel) | `csm:sconcehalfshellnickel` | 2 | 10 | pickaxe | 1 |
 | Highbay Light Mount | `csm:highbaymount` | 1 | 10 | pickaxe | 1 |
+| Holophane Mongoose LED | `csm:hpmongoose` | 2 | 10 | pickaxe | 1 |
 | Industrial Dome Pendant (Black) | `csm:penddomeblack` | 2 | 10 | pickaxe | 1 |
 | Industrial Dome Pendant (Bronze) | `csm:penddomebronze` | 2 | 10 | pickaxe | 1 |
 | Industrial Dome Pendant (Brushed Nickel) | `csm:penddomenickel` | 2 | 10 | pickaxe | 1 |
