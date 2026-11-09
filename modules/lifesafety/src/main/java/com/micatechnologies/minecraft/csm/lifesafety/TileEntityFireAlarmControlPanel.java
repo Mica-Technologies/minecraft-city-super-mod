@@ -64,6 +64,18 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private static final String alarmOriginNameKey = "aoN";
   /** Initiating devices that report to this panel, as a flat IntArray of x, y, z triples. */
   private static final String initiatingDevicesKey = "init";
+  /**
+   * The appliances' zones (#335), as a flat IntArray of x, y, z, zone quads. Only appliances in a
+   * zone other than 0 are listed, so a panel saved before zones existed has every appliance in the
+   * general zone.
+   */
+  private static final String applianceZonesKey = "apZ";
+  /** The zones in alarm, as a {@link FireAlarmZones} mask. Absent in an alarm saved before zones. */
+  private static final String alarmZonesKey = "aZn";
+  /** The zone of the device that raised the alarm. */
+  private static final String alarmOriginZoneKey = "aoZ";
+  /** Whether every report in this alarm was carbon monoxide, which a home sounds in T4. */
+  private static final String carbonMonoxideKey = "aCo";
 
   /**
    * Appliances to add, as a flat int array of x, y, z triples. Never written: it is read once,
@@ -143,6 +155,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private BlockPos alarmOriginPos;
   private String alarmOriginName = "";
   private final ArrayList<BlockPos> initiatingDevices = new ArrayList<>();
+  /** Appliance zones other than 0; an appliance not here is in the general zone. */
+  private final Map<BlockPos, Integer> applianceZones = new HashMap<>();
+  /** The zones in alarm (a {@link FireAlarmZones} mask); 0 when the panel is not in alarm. */
+  private int alarmZones;
+  private int alarmOriginZone;
+  private boolean carbonMonoxideOnly;
   private boolean alarmWasActive = false;
   private int cacheRefreshTickCounter = 0;
 
@@ -168,6 +186,10 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   private transient Map<String, List<BlockPos>> cachedHornGroups;
   private transient List<BlockPos> cachedStrobeOnlyPositions;
   private transient List<BlockPos> cachedAllStrobePositions;
+  /** Every speaker, whatever its zone: the storm warning is not a zoned alarm. */
+  private transient List<BlockPos> cachedAllVoiceEvacPositions;
+  /** Residential alarms indexed as initiating devices whose zone is in alarm; they sound too. */
+  private transient List<BlockPos> cachedResidentialPositions;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
@@ -219,6 +241,26 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       }
     }
     compound.removeTag(appliancesListKey);
+
+    applianceZones.clear();
+    int[] zones = compound.getIntArray(applianceZonesKey);
+    for (int i = 0; i + 3 < zones.length; i += 4) {
+      BlockPos bp = new BlockPos(zones[i], zones[i + 1], zones[i + 2]);
+      int zone = FireAlarmZones.clamp(zones[i + 3]);
+      if (zone != FireAlarmZones.GENERAL && connectedAppliances.contains(bp)) {
+        applianceZones.put(bp, zone);
+      }
+    }
+    // An alarm saved before zones sounded everything, so it still does
+    alarmZones = compound.hasKey(alarmZonesKey) ? compound.getInteger(alarmZonesKey)
+        & FireAlarmZones.ALL : 0;
+    if (alarm && alarmZones == 0) {
+      alarmZones = FireAlarmZones.ALL;
+    } else if (!alarm) {
+      alarmZones = 0;
+    }
+    alarmOriginZone = FireAlarmZones.clamp(compound.getInteger(alarmOriginZoneKey));
+    carbonMonoxideOnly = alarm && compound.getBoolean(carbonMonoxideKey);
 
     cachedVoiceEvacPositions = null;
 
@@ -372,6 +414,27 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
           .append("\n");
     }
     compound.setString(connectedAppliancesKey, connectedAppliancesString.toString());
+
+    if (!applianceZones.isEmpty()) {
+      int[] zones = new int[applianceZones.size() * 4];
+      int i = 0;
+      for (Map.Entry<BlockPos, Integer> e : applianceZones.entrySet()) {
+        zones[i++] = e.getKey().getX();
+        zones[i++] = e.getKey().getY();
+        zones[i++] = e.getKey().getZ();
+        zones[i++] = e.getValue();
+      }
+      compound.setIntArray(applianceZonesKey, zones);
+    }
+    if (alarm) {
+      compound.setInteger(alarmZonesKey, alarmZones);
+      if (alarmOriginZone != FireAlarmZones.GENERAL) {
+        compound.setInteger(alarmOriginZoneKey, alarmOriginZone);
+      }
+      if (carbonMonoxideOnly) {
+        compound.setBoolean(carbonMonoxideKey, true);
+      }
+    }
     return compound;
   }
 
@@ -394,6 +457,144 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   /**
+   * Links an appliance in a zone, or moves an appliance already linked into that zone (#335).
+   * Does not save or sync, like {@link #addLinkedAlarm(BlockPos)}; a single link from the linker
+   * calls {@link #afterBulkLink()} after.
+   *
+   * @param blockPos the appliance's position
+   * @param zone     its zone, 0-8
+   *
+   * @return {@code true} if it was linked now or its zone changed
+   *
+   * @since 2026.11
+   */
+  public synchronized boolean addLinkedAlarm(BlockPos blockPos, int zone) {
+    BlockPos bp = blockPos.toImmutable();
+    boolean added = addLinkedAlarm(bp);
+    int z = FireAlarmZones.clamp(zone);
+    Integer before = applianceZones.get(bp);
+    int was = before == null ? FireAlarmZones.GENERAL : before;
+    if (was == z) {
+      return added;
+    }
+    if (z == FireAlarmZones.GENERAL) {
+      applianceZones.remove(bp);
+    } else {
+      applianceZones.put(bp, z);
+    }
+    cachedVoiceEvacPositions = null;
+    markDirty();
+    return true;
+  }
+
+  /**
+   * Whether an appliance is linked to this panel.
+   *
+   * @param blockPos the appliance's position
+   *
+   * @return {@code true} if it is in the appliance list
+   *
+   * @since 2026.11
+   */
+  public boolean isLinkedAppliance(BlockPos blockPos) {
+    return connectedAppliances.contains(blockPos);
+  }
+
+  /**
+   * A linked appliance's zone, 0 (general) unless one was set.
+   *
+   * @param blockPos the appliance's position
+   *
+   * @return its zone
+   *
+   * @since 2026.11
+   */
+  public int getApplianceZone(BlockPos blockPos) {
+    Integer zone = applianceZones.get(blockPos);
+    return zone == null ? FireAlarmZones.GENERAL : zone;
+  }
+
+  /**
+   * Whether any appliance is in a zone other than general, which is when the display bothers to
+   * say which zones are in alarm.
+   *
+   * @return {@code true} if the panel's appliances are zoned
+   *
+   * @since 2026.11
+   */
+  public boolean hasZonedAppliances() {
+    return !applianceZones.isEmpty();
+  }
+
+  /**
+   * The zones in alarm, as a {@link FireAlarmZones} mask: 0 when the panel is quiet.
+   *
+   * @return the mask
+   *
+   * @since 2026.11
+   */
+  public int getAlarmZones() {
+    return alarm ? alarmZones : 0;
+  }
+
+  /**
+   * The zone of the device that raised the alarm.
+   *
+   * @return the origin's zone, 0 if it had none or there is no origin
+   *
+   * @since 2026.11
+   */
+  public int getAlarmOriginZone() {
+    return alarmOriginZone;
+  }
+
+  /**
+   * Whether every device that reported this alarm was a CO alarm: the home sounds temporal-four
+   * rather than temporal-three, and the display says CO ALARM.
+   *
+   * @return {@code true} for a carbon monoxide alarm
+   *
+   * @since 2026.11
+   */
+  public boolean getCarbonMonoxideOnly() {
+    return alarm && carbonMonoxideOnly;
+  }
+
+  /**
+   * Puts one zone in alarm, with no device as its origin: what {@code /csmfirealarm alarm <panel>
+   * <zone>} does, to test a zoned system. Zone 0 is every zone, as {@link #setAlarmState} is.
+   *
+   * @param zone the zone
+   *
+   * @since 2026.11
+   */
+  public void alarmZone(int zone) {
+    if (!alarm) {
+      carbonMonoxideOnly = false;
+    }
+    addAlarmZones(FireAlarmZones.alarmMaskFor(zone));
+    applyAlarmState(true);
+  }
+
+  /**
+   * Adds zones to those in alarm. The appliance cache is rebuilt on the next tick, and every
+   * channel whose positions change goes out to its players as an update, so a zone joining an
+   * alarm brings its strobes and horns in without restarting the sound already playing (#259).
+   */
+  private void addAlarmZones(int mask) {
+    int next = alarmZones | (mask & FireAlarmZones.ALL);
+    if (next == alarmZones) {
+      return;
+    }
+    alarmZones = next;
+    cachedVoiceEvacPositions = null;
+    markDirty();
+    if (alarm && world != null && !world.isRemote) {
+      syncServerToClient(world);
+    }
+  }
+
+  /**
    * Returns a read-only copy of the connected appliance positions (sounders, strobes, etc.).
    * This is part of the public API for cross-mod integration.
    */
@@ -409,7 +610,22 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     return alarmAnnounced;
   }
 
+  /**
+   * Puts the panel in alarm, or resets it. An alarm raised this way -- redstone, a command, the
+   * external API, the config tool -- puts every zone in alarm (#335); a device reporting goes
+   * through {@link #activateAlarmFrom(BlockPos, String, int, boolean)} instead.
+   *
+   * @param alarmState {@code true} to alarm, {@code false} to reset
+   */
   public void setAlarmState(boolean alarmState) {
+    if (alarmState) {
+      carbonMonoxideOnly = false;
+      addAlarmZones(FireAlarmZones.ALL);
+    }
+    applyAlarmState(alarmState);
+  }
+
+  private void applyAlarmState(boolean alarmState) {
     boolean wasActive = this.alarm;
 
     // New alarm activation while silenced cancels audible silence (re-enables sound)
@@ -429,6 +645,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       drill = false;
       alarmOriginPos = null;
       alarmOriginName = "";
+      alarmOriginZone = FireAlarmZones.GENERAL;
+      carbonMonoxideOnly = false;
+      if (alarmZones != 0) {
+        alarmZones = 0;
+        cachedVoiceEvacPositions = null;
+      }
     }
     alarm = alarmState;
     markDirty();
@@ -466,13 +688,40 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
    *                   the panel GUI
    */
   public void activateAlarmFrom(BlockPos originPos, String originName) {
+    activateAlarmFrom(originPos, originName, FireAlarmZones.GENERAL, false);
+  }
+
+  /**
+   * Activates the alarm from a device in a zone (#335). The device's zone joins the zones in
+   * alarm (zone 0 is every zone), so a second device in another zone adds its zone to an alarm
+   * already sounding.
+   *
+   * @param originPos      the initiating device's position
+   * @param originName     the initiating device's block registry name
+   * @param zone           the device's zone, 0-8
+   * @param carbonMonoxide whether the device reports carbon monoxide rather than fire
+   *
+   * @since 2026.11
+   */
+  public void activateAlarmFrom(BlockPos originPos, String originName, int zone,
+      boolean carbonMonoxide) {
     // Only the first device to report is kept, matching a real panel's "first alarm" display: a
     // second station pulled during an active alarm does not overwrite where it started.
     if (!alarm) {
       alarmOriginPos = originPos;
       alarmOriginName = originName == null ? "" : originName;
+      alarmOriginZone = FireAlarmZones.clamp(zone);
+      carbonMonoxideOnly = carbonMonoxide;
+    } else if (!carbonMonoxide && carbonMonoxideOnly) {
+      // Smoke outranks CO: the home changes to the evacuation signal
+      carbonMonoxideOnly = false;
+      markDirty();
+      if (world != null && !world.isRemote) {
+        syncServerToClient(world);
+      }
     }
-    setAlarmState(true);
+    addAlarmZones(FireAlarmZones.alarmMaskFor(zone));
+    applyAlarmState(true);
   }
 
   /**
@@ -772,6 +1021,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       if (cachedVoiceEvacPositions == null) {
         rebuildApplianceCache();
       }
+      manageResidentialAlarms();
 
       MinecraftServer mcserv = FMLCommonHandler.instance().getMinecraftServerInstance();
       if (mcserv == null) {
@@ -896,8 +1146,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
         // Handle storm alarm (reuses cached voice evac positions — same speakers)
         if (alarmStorm) {
           float stormHearingRange = STORM_VOICE_EVAC_VOLUME * 16.0f;
-          if (!cachedVoiceEvacPositions.isEmpty()) {
-            manageSoundForPlayers(players, cachedVoiceEvacPositions, CHANNEL_STORM,
+          if (!cachedAllVoiceEvacPositions.isEmpty()) {
+            manageSoundForPlayers(players, cachedAllVoiceEvacPositions, CHANNEL_STORM,
                 STORM_SOUND_NAME, stormHearingRange);
           }
         } else {
@@ -1026,6 +1276,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
    * had them, until a new panel reused the same positions.
    */
   private void stopEverythingOnRemoval() {
+    if (world != null && !world.isRemote) {
+      ResidentialInterconnect.setPanel(world, getPos(), null, null);
+    }
     if (world == null || world.isRemote || channelActivePlayers.isEmpty()) {
       return;
     }
@@ -1061,11 +1314,20 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     return n;
   }
 
+  /**
+   * Sorts the linked appliances into the lists the channels play from. Only appliances that sound
+   * for the zones in alarm go in (#335): an appliance in zone 0 sounds for any alarm, one in zone
+   * 1-8 while its zone is in alarm. The speakers are also kept whatever their zone, for the storm
+   * warning, which is not a zoned alarm. Rebuilt whenever the zones in alarm change.
+   */
   private void rebuildApplianceCache() {
     cachedVoiceEvacPositions = new ArrayList<>();
     cachedHornGroups = new HashMap<>();
     cachedStrobeOnlyPositions = new ArrayList<>();
     cachedAllStrobePositions = new ArrayList<>();
+    cachedAllVoiceEvacPositions = new ArrayList<>();
+    cachedResidentialPositions = new ArrayList<>();
+    int zones = getAlarmZones();
 
     for (BlockPos bp : connectedAppliances) {
       if (!world.isBlockLoaded(bp)) continue;
@@ -1078,6 +1340,12 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
       }
 
       boolean hasStrobe = blockAtPos instanceof IStrobeBlock;
+      if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
+        cachedAllVoiceEvacPositions.add(bp);
+      }
+      if (!FireAlarmZones.sounds(getApplianceZone(bp), zones)) {
+        continue;
+      }
 
       if (blockAtPos instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
         cachedVoiceEvacPositions.add(bp);
@@ -1104,12 +1372,44 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
     // Detectors with a strobe built in (the Gentex 710CS-C) are initiating devices, not
     // appliances, but their strobe flashes with the rest in an alarm
+    // ...and residential alarms both detect and sound, so the home's alarms sound with it
     for (BlockPos bp : initiatingDevices) {
-      if (world.isBlockLoaded(bp) && world.getBlockState(bp).getBlock() instanceof IStrobeBlock) {
+      if (!world.isBlockLoaded(bp)) {
+        continue;
+      }
+      Block block = world.getBlockState(bp).getBlock();
+      if (!(block instanceof IStrobeBlock) && !(block instanceof BlockResidentialAlarm)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(bp);
+      int zone = te instanceof TileEntityFireAlarmSensor
+          ? ((TileEntityFireAlarmSensor) te).getZone() : FireAlarmZones.GENERAL;
+      if (!FireAlarmZones.sounds(zone, zones)) {
+        continue;
+      }
+      if (block instanceof IStrobeBlock) {
         cachedStrobeOnlyPositions.add(bp);
         cachedAllStrobePositions.add(bp);
       }
+      if (block instanceof BlockResidentialAlarm) {
+        cachedResidentialPositions.add(bp);
+      }
     }
+  }
+
+  /**
+   * Hands the residential alarms on this panel to {@link ResidentialInterconnect}, which beats
+   * them in step: temporal-three, or temporal-four for an alarm that is CO alone. Silenced with
+   * the horns.
+   */
+  private void manageResidentialAlarms() {
+    ResidentialInterconnect.Pattern pattern = null;
+    if (alarm && !audibleSilence && cachedResidentialPositions != null
+        && !cachedResidentialPositions.isEmpty()) {
+      pattern = carbonMonoxideOnly ? ResidentialInterconnect.Pattern.CO
+          : ResidentialInterconnect.Pattern.SMOKE;
+    }
+    ResidentialInterconnect.setPanel(world, getPos(), pattern, cachedResidentialPositions);
   }
 
   public String getCurrentSoundResourceName() {
@@ -1264,6 +1564,9 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   private void afterUnlink() {
+    if (!applianceZones.isEmpty()) {
+      applianceZones.keySet().retainAll(new HashSet<>(connectedAppliances));
+    }
     cachedVoiceEvacPositions = null;
     int missing = countMissingDevices();
     acknowledgedMissing = Math.min(acknowledgedMissing, missing);

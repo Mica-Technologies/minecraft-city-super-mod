@@ -290,6 +290,18 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     return "CSM 4100";
   }
 
+  /** The words across the header after the model name, from the panel's block. */
+  private String panelSubtitle() {
+    World world = panel.getWorld();
+    if (world != null) {
+      Block block = world.getBlockState(blockPos).getBlock();
+      if (block instanceof BlockFireAlarmControlPanel) {
+        return ((BlockFireAlarmControlPanel) block).getPanelSubtitle();
+      }
+    }
+    return "FIRE ALARM CONTROL PANEL";
+  }
+
   private void send(FireAlarmPanelConfigAction action) {
     CsmLifeSafety.NETWORK.sendToServer(new FireAlarmPanelConfigPacket(blockPos, action.ordinal()));
   }
@@ -406,7 +418,7 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     drawRect(left, top, left + W, top + 18, COLOR_HEADER);
     drawRect(left, top + 18, left + W, top + 19, COLOR_HEADER_EDGE);
     fontRenderer.drawString(panelTitle(), left + 8, top + 5, COLOR_HEADER_TEXT);
-    String subtitle = "FIRE ALARM CONTROL PANEL";
+    String subtitle = panelSubtitle();
     fontRenderer.drawString(subtitle, left + W - 8 - fontRenderer.getStringWidth(subtitle),
         top + 5, COLOR_HEADER_TEXT);
     // Silk-screened label above the message list.
@@ -435,7 +447,7 @@ public class FireAlarmControlPanelGui extends GuiScreen {
       headline = "*** ALARM - SIGNALS SILENCED ***";
       headlineColor = COLOR_AMBER;
     } else if (alarm) {
-      headline = "*** FIRE ALARM ***";
+      headline = panel.getCarbonMonoxideOnly() ? "*** CO ALARM ***" : "*** FIRE ALARM ***";
       // An unacknowledged alarm blinks its headline, the way an unacknowledged point does on a
       // real panel; acknowledging settles it to steady without touching the appliances.
       headlineColor = (panel.getAcknowledged() || flash) ? COLOR_LCD_ALARM : COLOR_AMBER_DIM;
@@ -451,6 +463,15 @@ public class FireAlarmControlPanelGui extends GuiScreen {
       headlineColor = COLOR_AMBER_HEAD;
     }
     fontRenderer.drawString(headline, lcdX + 3, y, headlineColor);
+    // Which zones are in alarm (#335), on a zoned system or for a one-zone alarm, right-aligned
+    // on the headline row so the display keeps its five lines
+    String zones = zonesLine();
+    if (zones != null) {
+      int room = lcdW - 6 - fontRenderer.getStringWidth(headline + "  ");
+      String shown = trim(zones, room);
+      fontRenderer.drawString(shown, lcdX + lcdW - 3 - fontRenderer.getStringWidth(shown), y,
+          COLOR_AMBER);
+    }
     y += 13;
 
     fontRenderer.drawString("DEVICES " + deviceTotal + "   SPKR " + deviceSpeakers
@@ -502,6 +523,19 @@ public class FireAlarmControlPanelGui extends GuiScreen {
   }
 
   /**
+   * The zones in alarm for the headline row: {@code ZONES 1,3}, or {@code ALL ZONES} on a panel
+   * whose appliances are zoned. {@code null} when quiet, and for an unzoned system in a general
+   * alarm, which looks as it always did.
+   */
+  private String zonesLine() {
+    int mask = panel.getAlarmZones();
+    if (mask == 0 || (mask == FireAlarmZones.ALL && !panel.hasZonedAppliances())) {
+      return null;
+    }
+    return FireAlarmZones.describeMask(mask);
+  }
+
+  /**
    * The annunciation line naming the device that raised the alarm, or {@code null} when there is
    * nothing to annunciate -- no alarm, or an alarm with no reporting device (a drill, redstone,
    * or an activation from outside the mod).
@@ -511,7 +545,9 @@ public class FireAlarmControlPanelGui extends GuiScreen {
     if (!panel.getAlarmState() || origin == null) {
       return null;
     }
-    String line = "FROM " + origin.getX() + ", " + origin.getY() + ", " + origin.getZ();
+    int zone = panel.getAlarmOriginZone();
+    String line = (zone != FireAlarmZones.GENERAL ? "ZONE " + zone + " " : "") + "FROM "
+        + origin.getX() + ", " + origin.getY() + ", " + origin.getZ();
     String registryName = panel.getAlarmOriginName();
     if (registryName == null || registryName.isEmpty()) {
       return line;

@@ -98,7 +98,7 @@ public abstract class AbstractBlockFireAlarmDetector extends AbstractBlockFireAl
    *
    * @return the position of a fire block within the covered space, or {@code null} if none
    */
-  private static BlockPos findFire(World world, BlockPos center) {
+  protected static BlockPos findFire(World world, BlockPos center) {
     final int minX = center.getX() - RADIUS_AROUND_BLOCKS_CHECK;
     final int maxX = center.getX() + RADIUS_AROUND_BLOCKS_CHECK;
     final int minZ = center.getZ() - RADIUS_AROUND_BLOCKS_CHECK;

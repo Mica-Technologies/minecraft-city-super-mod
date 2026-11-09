@@ -15,6 +15,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -34,6 +35,9 @@ public class ItemFireAlarmLinker extends AbstractItem {
    * {@link BlockPos} already packs and unpacks itself that way.
    */
   private static final String SELECTED_PANEL_KEY = "SelectedPanelPos";
+
+  /** The zone every link this linker makes is stamped with (#335); absent is zone 0. */
+  private static final String ZONE_KEY = "Zone";
 
   /**
    * The most recent selection made by anybody, kept only to answer the deprecated no-argument
@@ -86,6 +90,35 @@ public class ItemFireAlarmLinker extends AbstractItem {
       tag.removeTag(SELECTED_PANEL_KEY);
     } else {
       tag.setLong(SELECTED_PANEL_KEY, panelPos.toLong());
+    }
+    stack.setTagCompound(tag);
+  }
+
+  /**
+   * The zone a linker stamps on every link it makes (#335): 0, the general zone, until it is
+   * cycled with a right-click in the air.
+   *
+   * @param stack the linker
+   *
+   * @return its zone, 0-8
+   *
+   * @since 2026.11
+   */
+  public static int getZone(ItemStack stack) {
+    NBTTagCompound tag = stack == null ? null : stack.getTagCompound();
+    return tag == null ? FireAlarmZones.GENERAL : FireAlarmZones.clamp(tag.getInteger(ZONE_KEY));
+  }
+
+  static void setZone(ItemStack stack, int zone) {
+    if (stack == null || stack.isEmpty()) {
+      return;
+    }
+    NBTTagCompound tag = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+    int z = FireAlarmZones.clamp(zone);
+    if (z == FireAlarmZones.GENERAL) {
+      tag.removeTag(ZONE_KEY);
+    } else {
+      tag.setInteger(ZONE_KEY, z);
     }
     stack.setTagCompound(tag);
   }
@@ -153,6 +186,16 @@ public class ItemFireAlarmLinker extends AbstractItem {
       return EnumActionResult.SUCCESS;
     }
 
+    // A residential alarm with no panel selected starts, or joins, a home system of its own
+    if (state.getBlock() instanceof BlockResidentialAlarm
+        && !(alarmPanelPos != null
+        && worldIn.getTileEntity(alarmPanelPos) instanceof TileEntityFireAlarmControlPanel)) {
+      if (!worldIn.isRemote) {
+        linkResidential(worldIn, player, heldStack, pos, alarmPanelPos);
+      }
+      return EnumActionResult.SUCCESS;
+    }
+
     // Save panel location if click on panel
     if (state.getBlock() instanceof BlockFireAlarmControlPanel) {
       setSelectedPanel(heldStack, pos);
@@ -204,69 +247,33 @@ public class ItemFireAlarmLinker extends AbstractItem {
           }
         }
         return EnumActionResult.SUCCESS;
-      } else if (state.getBlock() instanceof AbstractBlockFireAlarmSounderVoiceEvac) {
-        boolean didAdd = fireAlarmControlPanel.addLinkedAlarm(pos);
-        if (didAdd && !worldIn.isRemote) {
-          player.sendMessage(
-              new TextComponentString("Successfully linked to voice evac circuit of fire " +
-                  "alarm control panel at " +
-                  "(" +
-                  alarmPanelPos.getX() +
-                  "," +
-                  alarmPanelPos.getY() +
-                  "," +
-                  alarmPanelPos.getZ() +
-                  ")"));
-        }
-        return EnumActionResult.SUCCESS;
       } else if (state.getBlock() instanceof AbstractBlockFireAlarmSounder) {
-        boolean didAdd = fireAlarmControlPanel.addLinkedAlarm(pos);
-        if (didAdd && !worldIn.isRemote) {
-          player.sendMessage(
-              new TextComponentString("Successfully linked to main circuit of fire " +
-                  "alarm control panel at " +
-                  "(" +
-                  alarmPanelPos.getX() +
-                  "," +
-                  alarmPanelPos.getY() +
-                  "," +
-                  alarmPanelPos.getZ() +
-                  ")"));
+        // Every link is stamped with the linker's zone (#335); clicking a linked appliance with
+        // another zone moves it into that zone
+        int zone = getZone(heldStack);
+        boolean wasLinked = fireAlarmControlPanel.isLinkedAppliance(pos);
+        int wasZone = fireAlarmControlPanel.getApplianceZone(pos);
+        if (fireAlarmControlPanel.addLinkedAlarm(pos, zone)) {
+          fireAlarmControlPanel.afterBulkLink();
+        }
+        if (!worldIn.isRemote) {
+          String circuit = state.getBlock() instanceof AbstractBlockFireAlarmSounderVoiceEvac
+              ? "voice evac circuit" : "main circuit";
+          String where = circuit + " of fire alarm control panel at (" + alarmPanelPos.getX()
+              + "," + alarmPanelPos.getY() + "," + alarmPanelPos.getZ() + "), "
+              + FireAlarmZones.describeZone(zone);
+          player.sendMessage(new TextComponentString(!wasLinked
+              ? "Successfully linked to " + where
+              : wasZone != zone ? "Moved from " + FireAlarmZones.describeZone(wasZone) + " to "
+                  + where
+                  : "Already linked to " + where));
         }
         return EnumActionResult.SUCCESS;
       } else if (state.getBlock() instanceof AbstractBlockFireAlarmActivator) {
         TileEntity tileEntityAtClickedPos = worldIn.getTileEntity(pos);
         if (tileEntityAtClickedPos instanceof TileEntityFireAlarmSensor) {
-          TileEntityFireAlarmSensor fireAlarmSensor =
-              (TileEntityFireAlarmSensor) tileEntityAtClickedPos;
-          TileEntityFireAlarmSensor.LinkResult result =
-              fireAlarmSensor.setLinkedPanelPos(alarmPanelPos);
-
-          // Index the device on the panel too. The device stores which panel it reports to; the
-          // panel needs the reverse to reach its devices when it is reset.
-          TileEntity tileEntityAtPanelPos = worldIn.getTileEntity(alarmPanelPos);
-          if (tileEntityAtPanelPos instanceof TileEntityFireAlarmControlPanel) {
-            ((TileEntityFireAlarmControlPanel) tileEntityAtPanelPos)
-                .addLinkedInitiatingDevice(pos);
-          }
-
-          if (!worldIn.isRemote) {
-            String panelDescription = "alarm control panel at (" +
-                alarmPanelPos.getX() + "," + alarmPanelPos.getY() + "," + alarmPanelPos.getZ()
-                + ")";
-            // Every outcome is reported. A device that was already linked used to be refused in
-            // silence, which was indistinguishable from the click not registering.
-            if (result == TileEntityFireAlarmSensor.LinkResult.RELINKED) {
-              player.sendMessage(new TextComponentString(
-                  "Moved activator to " + panelDescription));
-            } else if (result == TileEntityFireAlarmSensor.LinkResult.ALREADY_LINKED) {
-              player.sendMessage(new TextComponentString(
-                  "Activator is already linked to " + panelDescription));
-            } else {
-              player.sendMessage(new TextComponentString(
-                  "Successfully linked activator to " + panelDescription));
-            }
-          }
+          linkInitiatingDevice(worldIn, player, (TileEntityFireAlarmSensor) tileEntityAtClickedPos,
+              pos, alarmPanelPos, getZone(heldStack));
         }
 
         return EnumActionResult.SUCCESS;
@@ -277,6 +284,103 @@ public class ItemFireAlarmLinker extends AbstractItem {
       }
     }
     return EnumActionResult.FAIL;
+  }
+
+  /**
+   * Points an initiating device at a panel in a zone, indexes it there and says what happened.
+   * A residential alarm leaves any home system of alarms it was on: the panel is its system now.
+   */
+  static void linkInitiatingDevice(World world, EntityPlayer player,
+      TileEntityFireAlarmSensor sensor, BlockPos pos, BlockPos panelPos, int zone) {
+    TileEntityFireAlarmSensor.LinkResult result = sensor.setLinkedPanelPos(panelPos);
+    boolean zoneChanged = sensor.setZone(zone);
+    sensor.setInterconnectGroup(null);
+
+    // Index the device on the panel too. The device stores which panel it reports to; the
+    // panel needs the reverse to reach its devices when it is reset.
+    TileEntity tileEntityAtPanelPos = world.getTileEntity(panelPos);
+    if (tileEntityAtPanelPos instanceof TileEntityFireAlarmControlPanel) {
+      TileEntityFireAlarmControlPanel panel = (TileEntityFireAlarmControlPanel) tileEntityAtPanelPos;
+      panel.addLinkedInitiatingDevice(pos);
+      if (zoneChanged) {
+        // the panel reads the zone off the device; a strobe or a residential alarm moved to
+        // another zone joins or leaves the alarm at the next tick
+        panel.afterBulkLink();
+      }
+    }
+
+    if (!world.isRemote) {
+      String panelDescription = "alarm control panel at (" + panelPos.getX() + ","
+          + panelPos.getY() + "," + panelPos.getZ() + "), " + FireAlarmZones.describeZone(zone);
+      // Every outcome is reported. A device that was already linked used to be refused in
+      // silence, which was indistinguishable from the click not registering.
+      if (result == TileEntityFireAlarmSensor.LinkResult.RELINKED) {
+        player.sendMessage(new TextComponentString("Moved activator to " + panelDescription));
+      } else if (result == TileEntityFireAlarmSensor.LinkResult.ALREADY_LINKED) {
+        player.sendMessage(new TextComponentString(zoneChanged
+            ? "Moved activator to " + panelDescription
+            : "Activator is already linked to " + panelDescription));
+      } else {
+        player.sendMessage(new TextComponentString(
+            "Successfully linked activator to " + panelDescription));
+      }
+    }
+  }
+
+  /**
+   * A linker click on a residential alarm with no panel selected (#335). With nothing (or not
+   * another alarm) selected, the alarm becomes the selection: the home system starts from it.
+   * With another alarm selected, this one joins that alarm's system: its panel if it has one,
+   * otherwise its interconnect group, which is created, keyed by the selected alarm's position,
+   * if it had none.
+   */
+  private static void linkResidential(World world, EntityPlayer player, ItemStack stack,
+      BlockPos pos, BlockPos selectedPos) {
+    TileEntity clickedTe = world.getTileEntity(pos);
+    if (!(clickedTe instanceof TileEntityFireAlarmSensor)) {
+      return;
+    }
+    TileEntityFireAlarmSensor clicked = (TileEntityFireAlarmSensor) clickedTe;
+    TileEntity selectedTe = selectedPos == null ? null : world.getTileEntity(selectedPos);
+    boolean selectedIsAlarm = selectedPos != null && !selectedPos.equals(pos)
+        && world.getBlockState(selectedPos).getBlock() instanceof BlockResidentialAlarm
+        && selectedTe instanceof TileEntityFireAlarmSensor;
+    if (!selectedIsAlarm) {
+      setSelectedPanel(stack, pos);
+      player.sendMessage(new TextComponentString("Interconnecting smoke and CO alarms with the "
+          + "alarm at " + describe(pos) + ". Click each other alarm in the home; sneak-click the "
+          + "air when done."));
+      return;
+    }
+    TileEntityFireAlarmSensor head = (TileEntityFireAlarmSensor) selectedTe;
+    BlockPos headPanel = head.getLinkedPanelPos(world);
+    if (headPanel != null && world.getTileEntity(headPanel) instanceof TileEntityFireAlarmControlPanel) {
+      // The selected alarm reports to a panel, so this one does too
+      linkInitiatingDevice(world, player, clicked, pos, headPanel, head.getZone());
+      return;
+    }
+    BlockPos group = head.getInterconnectGroup();
+    if (group == null) {
+      group = selectedPos;
+      head.setInterconnectGroup(group);
+    }
+    // An alarm leaving a panel for a group of alarms is unlinked from the panel
+    BlockPos oldPanel = clicked.getLinkedPanelPos(world);
+    if (oldPanel != null) {
+      clicked.clearLinkedPanel();
+      TileEntity oldPanelTe = world.getTileEntity(oldPanel);
+      if (oldPanelTe instanceof TileEntityFireAlarmControlPanel) {
+        ((TileEntityFireAlarmControlPanel) oldPanelTe).removeLinkedInitiatingDevice(pos);
+      }
+    }
+    boolean changed = clicked.setInterconnectGroup(group);
+    player.sendMessage(new TextComponentString((changed ? "Interconnected with" : "Already "
+        + "interconnected with") + " the alarm at " + describe(selectedPos) + " ("
+        + ResidentialInterconnect.memberCount(world, group) + " alarms in this home)"));
+  }
+
+  private static String describe(BlockPos pos) {
+    return "(" + pos.getX() + "," + pos.getY() + "," + pos.getZ() + ")";
   }
 
   /**
@@ -295,6 +399,17 @@ public class ItemFireAlarmLinker extends AbstractItem {
   private boolean unlink(World world, EntityPlayer player, BlockPos pos, IBlockState state,
       BlockPos panelPos) {
     TileEntity clicked = world.getTileEntity(pos);
+    // A residential alarm on a home system of alarms leaves it
+    if (state.getBlock() instanceof BlockResidentialAlarm
+        && clicked instanceof TileEntityFireAlarmSensor
+        && ((TileEntityFireAlarmSensor) clicked).getInterconnectGroup() != null) {
+      ((TileEntityFireAlarmSensor) clicked).setInterconnectGroup(null);
+      if (!world.isRemote) {
+        player.sendMessage(new TextComponentString(
+            "Disconnected this alarm from the other alarms in the home"));
+      }
+      return true;
+    }
     if (state.getBlock() instanceof BlockFireAlarmControlPanel
         && clicked instanceof TileEntityFireAlarmControlPanel) {
       int removed = ((TileEntityFireAlarmControlPanel) clicked).removeMissingDevices();
@@ -346,6 +461,22 @@ public class ItemFireAlarmLinker extends AbstractItem {
       }
       return new ActionResult<>(EnumActionResult.SUCCESS, heldStack);
     }
+    // A plain right-click in the air cycles the zone the next links get (#335). Only in the air:
+    // the game also offers this to the item after a block click that did not link anything, and
+    // that must not turn the zone.
+    if (!player.isSneaking()) {
+      RayTraceResult hit = rayTrace(worldIn, player, false);
+      if (hit == null || hit.typeOfHit != RayTraceResult.Type.BLOCK) {
+        int zone = FireAlarmZones.next(getZone(heldStack));
+        setZone(heldStack, zone);
+        if (!worldIn.isRemote) {
+          player.sendStatusMessage(new TextComponentString("Linker zone: "
+              + FireAlarmZones.describeZone(zone)
+              + (zone == FireAlarmZones.GENERAL ? ", sounds for every zone" : "")), true);
+        }
+        return new ActionResult<>(EnumActionResult.SUCCESS, heldStack);
+      }
+    }
     return super.onItemRightClick(worldIn, player, hand);
   }
 
@@ -361,6 +492,9 @@ public class ItemFireAlarmLinker extends AbstractItem {
     list.add("Link fire alarm appliances to a fire alarm control panel");
     list.add("Sneak-click a device to unlink it from the selected panel");
     list.add("Sneak-click a panel to unlink its missing devices");
+    list.add("Right-click the air to change the zone");
+    list.add("Click a smoke or CO alarm, then the others, to interconnect a home");
+    list.add("Zone: " + FireAlarmZones.describeZone(getZone(itemstack)));
     BlockPos selected = getSelectedPanel(itemstack);
     list.add(selected == null
         ? "No panel selected"

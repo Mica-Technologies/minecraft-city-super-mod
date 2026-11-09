@@ -39,6 +39,13 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
   private static final String legacyLinkedPanelPosZKey = "lpZ";
   /** Water this head has discharged, as a flat IntArray of x, y, z triples. */
   private static final String dischargedWaterKey = "wtr";
+  /** The device's fire alarm zone, 1-8; absent (zone 0, general) for every device before #335. */
+  private static final String zoneKey = "zn";
+  /**
+   * The home system a residential alarm is interconnected with, when it has no panel: the position
+   * of the alarm the system was started from, as {x, y, z}. Only a key, never looked up.
+   */
+  private static final String interconnectKey = "ig";
 
   /**
    * Y sentinel meaning "not linked to any panel". A real link can never use it: the world floor is
@@ -57,6 +64,8 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
   private int linkedPanelY = UNLINKED_Y;
   private int linkedPanelZ;
   private final List<BlockPos> dischargedWater = new ArrayList<>();
+  private int zone;
+  private BlockPos interconnectGroup;
 
   /**
    * Processes the reading of the tile entity's NBT data from the supplied NBT tag compound.
@@ -92,6 +101,10 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
       dischargedWater.add(new BlockPos(water[i], water[i + 1], water[i + 2]));
     }
 
+    zone = FireAlarmZones.clamp(compound.getInteger(zoneKey));
+    int[] group = compound.getIntArray(interconnectKey);
+    interconnectGroup = group.length == 3 ? new BlockPos(group[0], group[1], group[2]) : null;
+
     // Strip legacy long-form keys so the next save produces only short-form output
     compound.removeTag(legacyLinkedPanelPosXKey);
     compound.removeTag(legacyLinkedPanelPosYKey);
@@ -119,6 +132,13 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
       }
       compound.setIntArray(dischargedWaterKey, water);
     }
+    if (zone != FireAlarmZones.GENERAL) {
+      compound.setInteger(zoneKey, zone);
+    }
+    if (interconnectGroup != null) {
+      compound.setIntArray(interconnectKey, new int[] {interconnectGroup.getX(),
+          interconnectGroup.getY(), interconnectGroup.getZ()});
+    }
     return compound;
   }
 
@@ -127,18 +147,94 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
   public void onLoad() {
     super.onLoad();
     FireAlarmDeviceSampler.add(world, pos);
+    if (interconnectGroup != null) {
+      ResidentialInterconnect.join(world, interconnectGroup, pos);
+    }
   }
 
   @Override
   public void invalidate() {
     super.invalidate();
     FireAlarmDeviceSampler.remove(world, pos);
+    if (interconnectGroup != null) {
+      ResidentialInterconnect.leave(world, interconnectGroup, pos);
+    }
   }
 
   @Override
   public void onChunkUnload() {
     super.onChunkUnload();
     FireAlarmDeviceSampler.remove(world, pos);
+    if (interconnectGroup != null) {
+      ResidentialInterconnect.leave(world, interconnectGroup, pos);
+    }
+  }
+
+  /**
+   * The device's fire alarm zone (#335): 0, the general zone, unless a linker set one.
+   *
+   * @return the zone, 0-8
+   *
+   * @since 2026.11
+   */
+  public int getZone() {
+    return zone;
+  }
+
+  /**
+   * Sets the device's fire alarm zone, as the linker stamps it.
+   *
+   * @param zone the zone, 0-8
+   *
+   * @return {@code true} if it changed
+   *
+   * @since 2026.11
+   */
+  public boolean setZone(int zone) {
+    int z = FireAlarmZones.clamp(zone);
+    if (z == this.zone) {
+      return false;
+    }
+    this.zone = z;
+    markDirty();
+    return true;
+  }
+
+  /**
+   * The home system this residential alarm is interconnected with when it has no panel, or
+   * {@code null}.
+   *
+   * @return the system's key position, or {@code null}
+   *
+   * @since 2026.11
+   */
+  public BlockPos getInterconnectGroup() {
+    return interconnectGroup;
+  }
+
+  /**
+   * Puts this alarm on a home system's interconnect, or takes it off with {@code null}.
+   *
+   * @param group the system's key position, or {@code null}
+   *
+   * @return {@code true} if it changed
+   *
+   * @since 2026.11
+   */
+  public boolean setInterconnectGroup(BlockPos group) {
+    BlockPos g = group == null ? null : group.toImmutable();
+    if (g == null ? interconnectGroup == null : g.equals(interconnectGroup)) {
+      return false;
+    }
+    if (interconnectGroup != null && world != null) {
+      ResidentialInterconnect.leave(world, interconnectGroup, pos);
+    }
+    interconnectGroup = g;
+    if (g != null && world != null) {
+      ResidentialInterconnect.join(world, g, pos);
+    }
+    markDirty();
+    return true;
   }
 
   /**

@@ -20,8 +20,11 @@ import net.minecraft.world.World;
  * one aimed click at a time.
  *
  * <ul>
- *   <li>{@code link <panel x y z> <x1 y1 z1> <x2 y2 z2>} -- links every appliance, initiating
- *   device and follower in the box to the panel (see {@link FireAlarmAreaLink}).</li>
+ *   <li>{@code link <panel x y z> <x1 y1 z1> <x2 y2 z2> [zone]} -- links every appliance,
+ *   initiating device and follower in the box to the panel (see {@link FireAlarmAreaLink}), in a
+ *   zone, 0 (general) if none is given (#335). With a residential smoke or CO alarm in place of
+ *   the panel, it interconnects every such alarm in the box with that alarm's home system.</li>
+ *   <li>{@code alarm <panel x y z> [zone]} -- puts the panel in alarm, every zone or just one.</li>
  *   <li>{@code unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>} -- unlinks every device in the box.</li>
  *   <li>{@code status <panel x y z>} -- how many devices the panel has, and which are missing.</li>
  *   <li>{@code prune <panel x y z>} -- unlinks the missing ones.</li>
@@ -47,8 +50,9 @@ public class CommandFireAlarm extends CommandBase {
 
   @Override
   public String getUsage(ICommandSender sender) {
-    return "/csmfirealarm <link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>"
-        + "|status|prune|alarm|drill|ack|silence|resound|reset <panel x y z>"
+    return "/csmfirealarm <link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2> [zone]"
+        + "|alarm <panel x y z> [zone]"
+        + "|status|prune|drill|ack|silence|resound|reset <panel x y z>"
         + "|trigger <device x y z>>";
   }
 
@@ -70,6 +74,12 @@ public class CommandFireAlarm extends CommandBase {
     }
     BlockPos panelPos = parseBlockPos(sender, args, 1, false);
     TileEntity te = world.getTileEntity(panelPos);
+    if (("link".equals(args[0]) || "unlink".equals(args[0]))
+        && world.getBlockState(panelPos).getBlock() instanceof BlockResidentialAlarm
+        && te instanceof TileEntityFireAlarmSensor) {
+      interconnect(sender, world, args, (TileEntityFireAlarmSensor) te);
+      return;
+    }
     if (!(te instanceof TileEntityFireAlarmControlPanel)) {
       throw new CommandException("No fire alarm control panel at " + describe(panelPos) + ".");
     }
@@ -83,11 +93,14 @@ public class CommandFireAlarm extends CommandBase {
         }
         BlockPos a = parseBlockPos(sender, args, 4, false);
         BlockPos b = parseBlockPos(sender, args, 7, false);
+        int zone = args.length > 10 ? parseInt(args[10], 0, FireAlarmZones.MAX_ZONE)
+            : FireAlarmZones.GENERAL;
         try {
           FireAlarmAreaLink.Result result = "link".equals(args[0])
-              ? FireAlarmAreaLink.link(world, panel, a, b)
+              ? FireAlarmAreaLink.link(world, panel, a, b, zone)
               : FireAlarmAreaLink.unlink(world, panel, a, b);
-          say(sender, ("link".equals(args[0]) ? result.describeLink() : result.describeUnlink())
+          say(sender, ("link".equals(args[0]) ? result.describeLink() + " in "
+              + FireAlarmZones.describeZone(zone) : result.describeUnlink())
               + " for the panel at " + describe(panelPos) + ".");
         } catch (IllegalArgumentException tooBig) {
           throw new CommandException(tooBig.getMessage());
@@ -105,8 +118,14 @@ public class CommandFireAlarm extends CommandBase {
         break;
       }
       case "alarm":
-        // No origin: the panel says only that there is an alarm, as for redstone or the API
-        if (panel.getAlarmState()) {
+        // No origin: the panel says only that there is an alarm, as for redstone or the API.
+        // Every zone, unless a zone is named; a named zone joins an alarm already sounding.
+        if (args.length > 4) {
+          int zone = parseInt(args[4], 0, FireAlarmZones.MAX_ZONE);
+          panel.alarmZone(zone);
+          say(sender, "Put " + FireAlarmZones.describeZone(zone) + " of the panel at "
+              + describe(panelPos) + " in alarm.");
+        } else if (panel.getAlarmState()) {
           say(sender, "The panel at " + describe(panelPos) + " is already in alarm.");
         } else {
           panel.setAlarmState(true);
@@ -171,6 +190,16 @@ public class CommandFireAlarm extends CommandBase {
       throw new CommandException("No pull station or detector at " + describe(devicePos) + ".");
     }
     TileEntity te = world.getTileEntity(devicePos);
+    if (block instanceof BlockResidentialAlarm && te instanceof TileEntityFireAlarmSensor
+        && ((TileEntityFireAlarmSensor) te).getInterconnectGroup() != null) {
+      // A home system of alarms with no panel: the alarm trips its group, as a detection does
+      ((BlockResidentialAlarm) block).trip(world, devicePos, (TileEntityFireAlarmSensor) te);
+      say(sender, "Triggered the alarm at " + describe(devicePos) + "; the "
+          + ResidentialInterconnect.memberCount(world,
+          ((TileEntityFireAlarmSensor) te).getInterconnectGroup())
+          + " alarms interconnected with it are sounding.");
+      return;
+    }
     BlockPos panelPos = te instanceof TileEntityFireAlarmSensor
         ? ((TileEntityFireAlarmSensor) te).getLinkedPanelPos(world) : null;
     if (!((AbstractBlockFireAlarmActivator) block).activateLinkedPanel(world, devicePos, null)) {
@@ -212,7 +241,10 @@ public class CommandFireAlarm extends CommandBase {
         + ", silenced=" + panel.getAudibleSilence()
         + ", trouble=" + panel.getTrouble()
         + (panel.getAlarmOriginPos() != null
-        ? ", origin=" + describe(panel.getAlarmOriginPos()) : ""));
+        ? ", origin=" + describe(panel.getAlarmOriginPos()) : "")
+        + ", zones=" + zoneList(panel.getAlarmZones())
+        + (panel.getAlarmOriginPos() != null ? ", originZone=" + panel.getAlarmOriginZone() : "")
+        + (panel.getCarbonMonoxideOnly() ? ", co=true" : ""));
     say(sender, "  " + count(appliances.size(), "appliance") + " ("
         + count(voiceEvac, "voice evac speaker") + "), "
         + count(initiating.size(), "initiating device"));
@@ -227,6 +259,46 @@ public class CommandFireAlarm extends CommandBase {
     if (missing.size() > LIST_LIMIT) {
       say(sender, "  and " + (missing.size() - LIST_LIMIT) + " more; /csmfirealarm prune "
           + "unlinks them all");
+    }
+  }
+
+  /** The zones in alarm for a script to match: {@code none}, {@code all} or {@code 1,3}. */
+  private static String zoneList(int mask) {
+    if (mask == 0) {
+      return "none";
+    }
+    if ((mask & FireAlarmZones.ALL) == FireAlarmZones.ALL) {
+      return "all";
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int z = 1; z <= FireAlarmZones.MAX_ZONE; z++) {
+      if ((mask & (1 << z)) != 0) {
+        sb.append(sb.length() == 0 ? "" : ",").append(z);
+      }
+    }
+    return sb.toString();
+  }
+
+  /**
+   * {@code link|unlink <alarm x y z> <x1 y1 z1> <x2 y2 z2>} with a residential alarm in place of
+   * a panel: interconnects (or disconnects) every smoke and CO alarm in the box with that alarm's
+   * home system (#335).
+   */
+  private static void interconnect(ICommandSender sender, World world, String[] args,
+      TileEntityFireAlarmSensor head) throws CommandException {
+    if (args.length < 10) {
+      throw new WrongUsageException("/csmfirealarm " + args[0]
+          + " <alarm x y z> <x1 y1 z1> <x2 y2 z2>");
+    }
+    BlockPos a = parseBlockPos(sender, args, 4, false);
+    BlockPos b = parseBlockPos(sender, args, 7, false);
+    try {
+      String text = "link".equals(args[0])
+          ? FireAlarmAreaLink.describeInterconnect(FireAlarmAreaLink.interconnect(world, head, a, b))
+          : FireAlarmAreaLink.disconnect(world, head, a, b).describeUnlink();
+      say(sender, text + " with the alarm at " + describe(head.getPos()) + ".");
+    } catch (IllegalArgumentException tooBig) {
+      throw new CommandException(tooBig.getMessage());
     }
   }
 

@@ -292,6 +292,17 @@ public class BlockFireAlarmControlPanel extends AbstractBlockRotatableNSEW imple
   }
 
   /**
+   * The words across the screen's header after the model name.
+   *
+   * @return the panel's kind
+   *
+   * @since 2026.11
+   */
+  public String getPanelSubtitle() {
+    return "FIRE ALARM CONTROL PANEL";
+  }
+
+  /**
    * The panel's own buzzer while a trouble condition (a linked device gone missing) is
    * unacknowledged.
    *

@@ -21,6 +21,18 @@ Blocks with `TileEntityFireAlarmSoundIndex` (unlimited options): Gentex Commande
 
 For Gentex Commander 3 blocks, the control panel checks for the tile entity via `instanceof` to get the world-aware `getSoundResourceName(World, BlockPos, IBlockState)`.
 
+Zones (#335): `FireAlarmZones` holds the rules (zone 0 = general: an appliance in it sounds for any
+alarm, a device in it alarms every zone). Initiating devices keep their zone on
+`TileEntityFireAlarmSensor` (`zn`), appliances in the panel's `apZ`; the zones in alarm are the
+panel's `aZn` mask. Unzoned NBT reads as zone 0. `rebuildApplianceCache` filters by zone, and a zone
+joining mid-alarm goes out as the #259 update packet, never a restart. The linker's zone cycles with
+a right-click in the air.
+
+Residential alarms (#335): `BlockResidentialAlarm` (`kiddesmoke`, `adt_co_detector`, `nestprotect`,
+converted in place from decorative blocks) detects and sounds; `ResidentialInterconnect` groups them
+(by panel, or by an `ig` key with no panel) and beats every alarm of a home on one tick with
+positional `world.playSound`. Details in `FIRE_ALARM_SYSTEM.md` § Zones and § Residential Smoke and CO Alarms.
+
 Code 3 horn sound targets: ~4.024s total, bursts at ~0.040/1.020/2.000, ~9,900 burst RMS.
 Voice evac sound volume target: ~4,500 RMS.
 
@@ -54,7 +66,8 @@ Voice evac sound volume target: ~4,500 RMS.
 - `gen_emergency_services.py` -- the Emergency Services tab: fire, police and ambulance station
   fittings and community warning, grown a station at a time; `--check`, `--fragments`
 - `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
-  ffmpeg to OGG) so nothing recorded is shipped; adds a `sounds.json` entry for each. No
+  ffmpeg to OGG) so nothing recorded is shipped, among them the residential alarms' temporal-three
+  and temporal-four; adds a `sounds.json` entry for each. No
   `--check` (Vorbis output is not byte-stable): listen, then commit the OGG
 - `build_life_safety_demo.py` -- builds the Life Safety demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street with a fire station
