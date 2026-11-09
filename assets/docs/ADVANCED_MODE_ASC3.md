@@ -893,6 +893,15 @@ rather than relying on in-world checks.
   track-clear / dwell / exit) runs the same `applyFyaLenses` post-pass as the normal build, so a
   dwell serving a left phase shows lens-OFF + green arrow (never red-lens-under-green-arrow), and
   an unserved left flashes permissive while its opposing through dwells green.
+- **Preemption phases drive the programmed overlaps too** (issue #341) — `buildForMovements`
+  evaluates the `tcAdv.ov` overlaps (`applyProgrammedOverlaps`) against the movements each preempt
+  stage serves, the same way the normal build evaluates them against the rings: an overlap whose
+  included phase continues into or dwells in the preempt stays green, an FYA overlap flashes while
+  its permissive parent dwells, and entry, track-clear exit and exit clear an overlap with its
+  parents' yellow and red. The evaluation is stateless inside a preempt (no lag or lead green, no
+  parent-to-parent hold); a head that loses its green at entry still gets its yellow from the
+  output clearance. Before this every overlap head went red for the whole preempt, so a right-turn
+  FYA on the preempted approach showed a red arrow to the emergency vehicle it was clearing for.
 - **Advance-warning beacons and NO-TURN blankouts are driven in ADVANCED mode**
   (`AdvancedPhaseBuilder.applyAccessoryStates`, mirroring NORMAL mode): beacons flash yellow
   whenever their circuit's through is not green, and blankout signs light per-facing wherever the
