@@ -597,7 +597,9 @@ commitment and the coordinated phase's yield (at its yield point or at a waiting
 all apply it (`RingBarrierState.startableIn`). A call that has missed the period waits for the
 phase's next window rather than starting late and being forced off at bare minimum green
 (issue #340), and the coordinated phase no longer clears for a call that cannot be served yet,
-which had it go green, yellow, red and green again for nobody. Over-subscribed splits
+which had it go green, yellow, red and green again for nobody: with a lead left in the
+coordinated ring and no call across the barrier, every cycle at the through's yield point
+(issue #339). Over-subscribed splits
 (`findSplitShortfall`) keep the period open up to the yield point, as before. The choice to hold
 the call rather than let minimum green override force-off follows NEMA practice: overriding
 force-off would push the overrun into the coordinated phase's time every cycle, which add-only

@@ -1094,7 +1094,10 @@ is simply not started that late. The one rule is applied everywhere a call can t
 - **The coordinated yield** yields only to a call startable once its own clearance is over, at
   its yield point and at a waiting phase's window opening (`conflictingWindowOpening`) alike.
   Yielding to a call that has missed its period served nobody, and the coordinated green went
-  green, yellow, red and green again.
+  green, yellow, red and green again. With a lead left in the coordinated ring and nothing on the
+  other barrier, that happened at the through's yield point every cycle, a barrier away from the
+  left's window, which read in game as the left never being served (issue #339); the left is
+  served at the start of its own window, where the through's window-opening yield brings it in.
 
 Before this a call accepted late in its window was started after the coordinated phase had
 cleared for it, past its own yield point, and force-off ended it the moment its minimum green was
