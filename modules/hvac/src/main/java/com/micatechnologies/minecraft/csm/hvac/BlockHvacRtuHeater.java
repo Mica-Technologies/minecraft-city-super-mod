@@ -1,29 +1,23 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockRotatableNSEWUD;
-import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * Rooftop HVAC heater block (white variant). A large industrial heating unit with a 2-block
- * tall bounding box that uses {@link TileEntityHvacRtuHeater} for extended-range vent heating.
+ * The rooftop heater, sandstone finish: a packaged rooftop unit drawn and collided over
+ * 2 1/8 x 2 x 3 blocks from one, vents only, up to 100 blocks away; a
+ * {@link TileEntityHvacRtuHeater}.
  *
  * @author Mica Technologies
  * @since 2026.4
  */
-public class BlockHvacRtuHeater extends AbstractBlockRotatableNSEWUD
-    implements ICsmTileEntityProvider {
+public class BlockHvacRtuHeater extends AbstractBlockHvacUnit {
 
   public BlockHvacRtuHeater() {
     super(Material.IRON, SoundType.METAL, "pickaxe", 1, 3F, 15F, 0F, 0);
@@ -36,29 +30,7 @@ public class BlockHvacRtuHeater extends AbstractBlockRotatableNSEWUD
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return new AxisAlignedBB(-0.5625, 0.0, -1.0, 1.5625, 2.0, 2.0);
-  }
-
-  @Override
-  public boolean getBlockIsOpaqueCube(IBlockState state) {
-    return false;
-  }
-
-  @Override
-  public boolean getBlockIsFullCube(IBlockState state) {
-    return false;
-  }
-
-  @Override
-  public boolean getBlockConnectsRedstone(IBlockState state, IBlockAccess access, BlockPos pos,
-      @Nullable EnumFacing facing) {
-    return true;
-  }
-
-  @Nonnull
-  @Override
-  public BlockRenderLayer getBlockRenderLayer() {
-    return BlockRenderLayer.CUTOUT_MIPPED;
+    return RTU_BOX;
   }
 
   @Override
