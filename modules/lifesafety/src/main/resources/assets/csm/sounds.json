@@ -1,13 +1,4 @@
 {
-  "codetector": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:codetector",
-        "stream": false
-      }
-    ]
-  },
   "et70_chime": {
     "category": "block",
     "sounds": [
@@ -44,15 +35,6 @@
       }
     ]
   },
-  "nest_test": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:nest_protect_test",
-        "stream": false
-      }
-    ]
-  },
   "2910calcode": {
     "category": "block",
     "sounds": [
@@ -67,15 +49,6 @@
     "sounds": [
       {
         "name": "csm:simplex4030_code44",
-        "stream": false
-      }
-    ]
-  },
-  "smokealarm": {
-    "category": "block",
-    "sounds": [
-      {
-        "name": "csm:smokealarm",
         "stream": false
       }
     ]

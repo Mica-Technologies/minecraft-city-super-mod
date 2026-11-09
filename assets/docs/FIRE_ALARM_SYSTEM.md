@@ -573,8 +573,8 @@ panel and zone it reports to; test that home with DRILL.
 
 The sounds (`residential_alarm_t3`, `residential_alarm_t4`, the three keypad sounds) are
 synthesised by `gen_life_safety_sounds.py` (a ~3.1 kHz piezo for the alarms, 2.9 kHz for the
-keypad). The repo's older `smokealarm`, `codetector` and `nest_test` events, from the initial
-import and of unknown origin, are not used.
+keypad). The older `smokealarm`, `codetector` and `nest_test` events, from the initial import
+and of unknown origin, were never used and have been deleted with their recordings.
 
 ## Sound Selection Patterns
 
