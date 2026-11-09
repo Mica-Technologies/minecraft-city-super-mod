@@ -550,6 +550,22 @@ class RingBarrierStateCoordinationTest {
     return plan;
   }
 
+  /**
+   * What the Main St controllers run since the issues were filed: pedestrian recall on every
+   * phase with a walk (the throughs and the side street) and rest in walk on the coordinated
+   * throughs.
+   */
+  static TrafficSignalProgrammedPhasePlan withCorridorPeds(TrafficSignalProgrammedPhasePlan plan) {
+    for (int n : new int[] {2, 4, 6}) {
+      if (plan.getPhase(n).isEnabled()) {
+        plan.getPhase(n).setPedRecall(true);
+      }
+    }
+    plan.getPhase(2).setRestInWalk(true);
+    plan.getPhase(6).setRestInWalk(true);
+    return plan;
+  }
+
   /** The Main x Hammond splits from issue #340. */
   static final long[][] HAMMOND_SPLITS =
       {{1, 320L}, {2, 760L}, {5, 320L}, {6, 760L}, {4, 660L}, {3, 660L}};
@@ -592,13 +608,19 @@ class RingBarrierStateCoordinationTest {
     // to be accepted and served only after the coordinated through had cleared for it, past
     // phase 5's own yield point, and the arrow was forced off the moment its minimum green was
     // up, overrunning the split into phase 6's time. Every call position is tried, with and
-    // without side-street demand: every green must start inside the permissive period and run
-    // at least its minimum green.
+    // without side-street demand, and with and without the corridor's ped recall and rest in
+    // walk: every green must start inside the permissive period and run at least its minimum
+    // green.
     long offset = 1500L;
     long cycle = 2400L;
-    for (boolean side : new boolean[] {false, true}) {
+    for (int variant = 0; variant < 4; variant++) {
+      boolean peds = variant >= 2;
+      boolean side = (variant & 1) != 0;
       for (long pos = 0; pos < cycle; pos += 10) {
         TrafficSignalProgrammedPhasePlan plan = mainStreetPlan(offset, HAMMOND_SPLITS);
+        if (peds) {
+          withCorridorPeds(plan);
+        }
         long from = cycle * 2 + offset + pos; // two cycles in, at local position pos
         RingBarrierStateTest.Demand with = new RingBarrierStateTest.Demand().veh(0, 0, 1, 0);
         RingBarrierStateTest.Demand without = new RingBarrierStateTest.Demand();
@@ -610,16 +632,19 @@ class RingBarrierStateCoordinationTest {
         for (long[] green : g) {
           long local = ((green[0] - offset) % cycle + cycle) % cycle;
           assertTrue(local < 100L, "with the call arriving at cycle position " + pos
-              + (side ? " (side street called)" : "") + ", phase 5 started at cycle position "
+              + (side ? " (side street called)" : "")
+              + (peds ? " (ped recall, rest in walk)" : "") + ", phase 5 started at cycle position "
               + local + ", after its permissive period closed at 100 (yield point 200 less its "
               + "100-tick minimum green)");
           assertTrue(green[1] >= 100L, "with the call arriving at cycle position " + pos
-              + (side ? " (side street called)" : "") + ", phase 5 was green for only "
+              + (side ? " (side street called)" : "")
+              + (peds ? " (ped recall, rest in walk)" : "") + ", phase 5 was green for only "
               + green[1] + " ticks from t=" + green[0] + " (local "
               + ((green[0] - offset) % cycle + cycle) % cycle + "); its minimum green is 100");
         }
         assertTrue(!g.isEmpty(), "phase 5 was never served with its call arriving at cycle "
-            + "position " + pos + (side ? " (side street called)" : ""));
+            + "position " + pos + (side ? " (side street called)" : "")
+            + (peds ? " (ped recall, rest in walk)" : ""));
       }
     }
   }
@@ -668,6 +693,15 @@ class RingBarrierStateCoordinationTest {
     // reached its yield point late in the cycle with the left still calling and cleared for it,
     // but the left's window was a whole barrier away: nothing could be served, so phase 2 went
     // green, yellow, red and green again every cycle, the left keeping its permissive flash.
+    // Run with and without the corridor's ped recall and rest in walk.
+    for (boolean peds : new boolean[] {false, true}) {
+      leadLeftServedWithNoCrossStreetDemand(peds ? withCorridorPeds(keoughPlan()) : keoughPlan(),
+          peds ? " (ped recall, rest in walk)" : "");
+    }
+  }
+
+  private static void leadLeftServedWithNoCrossStreetDemand(TrafficSignalProgrammedPhasePlan plan,
+      String variant) {
     long cycle = 2400L;
     long offset = 1620L;
     RingBarrierState rb = new RingBarrierState();
@@ -677,7 +711,7 @@ class RingBarrierStateCoordinationTest {
     List<Long> leftStarts = new ArrayList<>();
     int was = 0;
     for (long t = 0; t <= cycle * 6; t++) {
-      rb.tick(keoughPlan(), ckts, NO_OVERLAPS, t, left);
+      rb.tick(plan, ckts, NO_OVERLAPS, t, left);
       ServedMovement m1 = rb.getLastServed(1);
       int green = m1 != null && m1.vehicle == VehInterval.GREEN ? m1.phaseNumber : 0;
       long local = ((t - offset) % cycle + cycle) % cycle;
@@ -690,14 +724,15 @@ class RingBarrierStateCoordinationTest {
       was = green;
     }
     assertTrue(leftStarts.size() >= 4, "phase 1 must be served every cycle with a standing call "
-        + "and no cross-street demand: " + ring1Greens);
+        + "and no cross-street demand" + variant + ": " + ring1Greens);
     for (long start : leftStarts) {
-      assertTrue(start < 100L, "phase 1 must start inside its permissive period (0..100): "
-          + ring1Greens);
+      assertTrue(start < 100L, "phase 1 must start inside its permissive period (0..100)"
+          + variant + ": " + ring1Greens);
     }
     for (int i = 1; i < ring1Greens.size(); i++) {
       assertTrue(!ring1Greens.get(i).startsWith("2@") || !ring1Greens.get(i - 1).startsWith("2@"),
-          "phase 2 cleared and went green again with nothing served between: " + ring1Greens);
+          "phase 2 cleared and went green again with nothing served between" + variant + ": "
+              + ring1Greens);
     }
   }
 }
