@@ -277,6 +277,43 @@ and `west` on 6x2). Those few get their own files; the generator compares the me
 separate stub only when it has to, and searches the *large* root's parameter span so the
 comparison is not defeated by a shifted sample grid.
 
+## Luminaire arms
+
+The same machinery carries street lights (GitHub #99): `gen_luminaire_arms.py` writes the Caltrans
+davit arms (6, 8, 10, 12 and 15 ft) and Hapco-style truss arms (8, 10, 12 and 15 ft), each single
+or double, in galvanized and silver: 36 blocks, `luminairearm<size><finish>`. They are
+`BlockTrafficPoleMastArmCurve`s built from a `LuminaireArmProfile` rather than a
+`MastArmCurveProfile`; the block works through `ICurvedArmProfile`, which both enums satisfy (the
+mast arm one through a small adapter, so its generator and output are untouched). Placement,
+all-or-nothing, demolition and the measured hitboxes are the curves' own.
+
+**Scale and shape.** The street lights are drawn about 1.2-1.4 times true size, so the arms are
+too, at 1.4: a 6 ft arm runs 2 blocks from the pole's face, a 15 ft arm 6. The rise is Caltrans'
+tip height above the pole top for that length (Standard Plans ES-6A: 1'6", 2'0", 2'9" (drawn 3'0",
+so the 10 ft root stays on the pole's side), 3'9", 4'3"), at the same 1.4; the centreline is the
+curves' parabola, level at the tip, so every arm leaves its pole at about 30 degrees. The tube is
+4.2 across at the root (a 5.4 boot) and 2.8 at the tip, and the tip ends at `y 1.375` on the last
+cell's far face, the centre of `ARM_TIP` in `gen_streetlight_fixtures.py`: place any street light
+against the tip and its neck takes the arm. The truss arms have a curved upper member (3'3" rise), a
+straight lower member leaving the pole 2'0" lower and meeting the upper two thirds out, and one
+vertical strut a third out. The lower root sits in the block under the arm's root, beside the pole.
+
+**Double arms.** The second arm is the first turned half round about the pole, so its cells are at
+negative `alongArm` (two blocks behind the root and on), each cell's model the first arm's turned
+about its own block centre.
+
+**The pole joint.** A luminaire arm is narrower than every CSM pole, so each member that starts at
+the pole is saddle-cut against the pole's own cylinder for all three `CsmPoleFit` widths: no
+bracket. The generator compares each cell's mesh across the fits and only the cells that differ
+(the roots: one per member at the pole, per arm) get fit variants. `ICurvedArmProfile.poleSide`
+names those cells and which side their pole is on (`1` behind, `-1` ahead for a double arm's
+second root), and the block reads `CsmPoleFit.behind` that way. There is no mount hardware on a
+luminaire arm, so a `shape` value is a slot alone: the cell index, or a slot past the last cell
+for a pole-joint cell on a narrower pole.
+
+**Not done:** the truss signal mast arm (a two-member mast arm curve) is not built yet; mount
+stubs along a luminaire arm; finishes other than galvanized and silver.
+
 ## Geometry details worth not rediscovering
 
 **Boundary crossings get one sample, not a straddling pair.** The sweep injects a sample wherever

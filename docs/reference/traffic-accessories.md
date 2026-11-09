@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "403 blocks in this tab"
+!!! info "439 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -43,6 +43,26 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Cable Barrier | `csm:cable_barrier` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier Anchor | `csm:cable_barrier_anchor` | 1.2 | 6 | pickaxe | 0 |
+| Caltrans Double Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 12 ft (Silver) | `csm:luminairearmcaltrans12ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmcaltrans15ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 15 ft (Silver) | `csm:luminairearmcaltrans15ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 6 ft (Galvanized) | `csm:luminairearmcaltrans6ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 6 ft (Silver) | `csm:luminairearmcaltrans6ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmcaltrans8ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 8 ft (Silver) | `csm:luminairearmcaltrans8ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 12 ft (Silver) | `csm:luminairearmcaltrans12ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmcaltrans15ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 15 ft (Silver) | `csm:luminairearmcaltrans15ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 6 ft (Galvanized) | `csm:luminairearmcaltrans6ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 6 ft (Silver) | `csm:luminairearmcaltrans6ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmcaltrans8ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 8 ft (Silver) | `csm:luminairearmcaltrans8ftsilver` | 2 | 10 | pickaxe | 1 |
 | Channelizer | `csm:channelizer_tube` | 0.6 | 3 | pickaxe | 0 |
 | Channelizer (Lime) | `csm:channelizer_tube_lime` | 0.6 | 3 | pickaxe | 0 |
 | Channelizer-Cade (Keep Left) | `csm:channelizer_cade_left` | 0.6 | 3 | pickaxe | 0 |
@@ -72,6 +92,14 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Doghouse Signal Border (Yellow/Black) | `csm:tldoghouseborderyellowblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Yellow/Yellow) | `csm:tldoghouseborderyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Cover | `csm:tldcover` |  | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmtruss10ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 10 ft (Silver) | `csm:luminairearmtruss10ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmtruss12ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 12 ft (Silver) | `csm:luminairearmtruss12ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmtruss15ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftdoublesilver` | 2 | 10 | pickaxe | 1 |
 | Double Vertical Traffic Pole (Octagon Concrete) | `csm:trafficpolevertdblconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Dynamic Highway Guide Sign | `csm:dynamic_guide_sign` | 2 | 10 | pickaxe | 1 |
 | Dynamic Signal Cover | `csm:tlvcover` | 2.0 | 10.0 | pickaxe | 1 |
@@ -266,6 +294,14 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Traffic Signal Mast Fatigue Mitigator (Style 4) | `csm:tlfatiguemitigator4` | 2 | 10 | pickaxe | 1 |
 | Traffic Signal Pole Mount (Style 2) | `csm:signalpolemount2` |  | 10 | pickaxe | 1 |
 | Traffic Signal Preemption Beacon (Red) | `csm:tlpreemptbeacon` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmtruss10ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 10 ft (Silver) | `csm:luminairearmtruss10ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmtruss12ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 12 ft (Silver) | `csm:luminairearmtruss12ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmtruss15ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftsilver` | 2 | 10 | pickaxe | 1 |
 | Type I Barricade (Keep Left) | `csm:barricade_type_1_left` | 0.6 | 3 | pickaxe | 0 |
 | Type I Barricade (Keep Right) | `csm:barricade_type_1_right` | 0.6 | 3 | pickaxe | 0 |
 | Type II Folding Barricade (Keep Left) | `csm:barricade_type_2_left` | 0.6 | 3 | pickaxe | 0 |

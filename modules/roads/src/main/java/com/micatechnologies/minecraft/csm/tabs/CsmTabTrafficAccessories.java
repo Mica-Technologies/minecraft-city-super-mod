@@ -47,6 +47,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanW
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireGuyAnchor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ItemSpanWireTool;
+import com.micatechnologies.minecraft.csm.trafficaccessories.LuminaireArmProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.MastArmCurveProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
@@ -544,6 +545,44 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2tan", MastArmCurveProfile.P10X2));
     initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2white", MastArmCurveProfile.P10X2));
     initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2unpainted", MastArmCurveProfile.P10X2));
+
+    // --- Luminaire arms (gen_luminaire_arms.py; multi-block, a street light at the tip) ---
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftgalvanized", LuminaireArmProfile.CALTRANS6FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftsilver", LuminaireArmProfile.CALTRANS6FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftdoublegalvanized", LuminaireArmProfile.CALTRANS6FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftdoublesilver", LuminaireArmProfile.CALTRANS6FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans8ftgalvanized", LuminaireArmProfile.CALTRANS8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans8ftsilver", LuminaireArmProfile.CALTRANS8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans8ftdoublegalvanized", LuminaireArmProfile.CALTRANS8FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans8ftdoublesilver", LuminaireArmProfile.CALTRANS8FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans10ftgalvanized", LuminaireArmProfile.CALTRANS10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans10ftsilver", LuminaireArmProfile.CALTRANS10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans10ftdoublegalvanized", LuminaireArmProfile.CALTRANS10FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans10ftdoublesilver", LuminaireArmProfile.CALTRANS10FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans12ftgalvanized", LuminaireArmProfile.CALTRANS12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans12ftsilver", LuminaireArmProfile.CALTRANS12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans12ftdoublegalvanized", LuminaireArmProfile.CALTRANS12FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans12ftdoublesilver", LuminaireArmProfile.CALTRANS12FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans15ftgalvanized", LuminaireArmProfile.CALTRANS15FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans15ftsilver", LuminaireArmProfile.CALTRANS15FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans15ftdoublegalvanized", LuminaireArmProfile.CALTRANS15FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans15ftdoublesilver", LuminaireArmProfile.CALTRANS15FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss8ftgalvanized", LuminaireArmProfile.TRUSS8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss8ftsilver", LuminaireArmProfile.TRUSS8FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss8ftdoublegalvanized", LuminaireArmProfile.TRUSS8FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss8ftdoublesilver", LuminaireArmProfile.TRUSS8FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss10ftgalvanized", LuminaireArmProfile.TRUSS10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss10ftsilver", LuminaireArmProfile.TRUSS10FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss10ftdoublegalvanized", LuminaireArmProfile.TRUSS10FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss10ftdoublesilver", LuminaireArmProfile.TRUSS10FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss12ftgalvanized", LuminaireArmProfile.TRUSS12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss12ftsilver", LuminaireArmProfile.TRUSS12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss12ftdoublegalvanized", LuminaireArmProfile.TRUSS12FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss12ftdoublesilver", LuminaireArmProfile.TRUSS12FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftgalvanized", LuminaireArmProfile.TRUSS15FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftsilver", LuminaireArmProfile.TRUSS15FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftdoublegalvanized", LuminaireArmProfile.TRUSS15FTDOUBLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftdoublesilver", LuminaireArmProfile.TRUSS15FTDOUBLE));
 
     // --- NSEWUD factory blocks: Vertical Double Guy Mounts ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountblack", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));

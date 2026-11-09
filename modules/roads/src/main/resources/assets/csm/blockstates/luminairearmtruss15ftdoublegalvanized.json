@@ -1,0 +1,127 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c0.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficsignals/shared_textures/metal_white",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_white"
+    }
+  },
+  "variants": {
+    "shape": {
+      "0": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c0.obj"
+      },
+      "1": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c1.obj"
+      },
+      "2": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c2.obj"
+      },
+      "3": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c3.obj"
+      },
+      "4": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c4.obj"
+      },
+      "5": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c5.obj"
+      },
+      "6": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c6.obj"
+      },
+      "7": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c7.obj"
+      },
+      "8": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c8.obj"
+      },
+      "9": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c9.obj"
+      },
+      "10": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c10.obj"
+      },
+      "11": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c11.obj"
+      },
+      "12": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c12.obj"
+      },
+      "13": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c13.obj"
+      },
+      "14": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c14.obj"
+      },
+      "15": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c15.obj"
+      },
+      "16": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c16.obj"
+      },
+      "17": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c17.obj"
+      },
+      "18": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c18.obj"
+      },
+      "19": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c19.obj"
+      },
+      "20": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c20.obj"
+      },
+      "21": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c21.obj"
+      },
+      "22": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c0_thin.obj"
+      },
+      "23": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c0_pedestal.obj"
+      },
+      "24": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c1_thin.obj"
+      },
+      "25": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c1_pedestal.obj"
+      },
+      "26": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c11_thin.obj"
+      },
+      "27": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c11_pedestal.obj"
+      },
+      "28": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c12_thin.obj"
+      },
+      "29": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_c12_pedestal.obj"
+      }
+    },
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss15ftdouble_inv.obj",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

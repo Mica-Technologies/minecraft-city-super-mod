@@ -37,7 +37,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Technology](technology.md) | 54 | Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set. |
 | [Technology - Computers & Peripherals](technology-computers.md) | 51 | Gaming rigs, workstations, monitors, keyboards of every kind, mice and the rest of what sits on a desk around a computer. |
 | [Technology - Networking & IT](technology-networking.md) | 41 | Micafi network gear: desktop and rack switches, gateways, wireless access points and bridges, server racks and the cabling a building's network runs on. |
-| [Traffic Accessories](traffic-accessories.md) | 403 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
+| [Traffic Accessories](traffic-accessories.md) | 439 | Poles, mounts, mast arms, span wire hardware, backplates and cameras. |
 | [Traffic Signals](traffic-signals.md) | 105 | Signal heads, crosswalk signals and the controllers that drive them. |
 | [Transit](transit.md) | 146 | Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside. |
 | [Trees & Plants](trees-and-plants.md) | 477 | Street trees built block by block from thin, leaning logs and leaves, the Tree Planting Tool, and plantings. |
@@ -52,7 +52,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Sports & Venues - Golf](venues-golf.md) | 22 | A golf course, a driving range and mini-golf, decor without ball physics: turf in five cuts whose mowing stripes line up across blocks, the cup and a flagstick in four colours, raked bunker sand, tee markers, yardage markers, a tee sign with the hole, par and yards typed in, a ball washer, a bench, the cart path and its curb; a hitting mat, the bay divider, a ball dispenser, a bucket of balls and distance flags; mini-golf carpet in sixteen colours, the cup, a border along any side of a block, a ramp, a windmill, a loop and a scorecard stand. |
 | [Sports & Venues - Skate Park](venues-skate.md) | 6 | Skate park basics in smooth concrete: quarter pipes of 1 m and 2 m, a bowl corner that turns two quarter pipes round an inside corner, a kicker, a bank and a box top for a funbox, a grind rail and a ledge that join into runs. The curves are drawn true; the collision is a staircase under them that a player can walk up. |
 | [Unlisted](unlisted.md) | 148 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **4633** | |
+| **Total** | **4669** | |
 
 ## How to read the table
 
