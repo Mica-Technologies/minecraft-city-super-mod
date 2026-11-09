@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "222 blocks in this tab"
+!!! info "227 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -28,6 +28,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | American Electric Autobahn ATB2 | `csm:aeatb2` | 2 | 10 | pickaxe | 1 |
 | American Electric AutoConnect ACM | `csm:aeacm` | 2 | 10 | pickaxe | 1 |
 | American Electric AutoConnect ACM (No Photocell) | `csm:aeacmnp` | 2 | 10 | pickaxe | 1 |
+| Bishop's Crook with Teardrop | `csm:reprobishopscrook` | 2 | 10 | pickaxe | 1 |
 | Broadway Rose Twin Globes | `csm:labroadwayrosehead` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Black) | `csm:pendcagedblack` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Bronze) | `csm:pendcagedbronze` | 2 | 10 | pickaxe | 1 |
@@ -186,6 +187,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | NOV Tapered Mast (Straight Mount Long) | `csm:novtm4` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Straight Mount Short) | `csm:novtm5` | 2 | 10 | pickaxe | 1 |
 | NOV Tapered Mast (Truss Style) | `csm:novtm` | 2 | 10 | pickaxe | 1 |
+| NYC Type F Reverse Scroll | `csm:reprotypef` | 2 | 10 | pickaxe | 1 |
 | Patterned Lens Troffer (Dashes, 2x2) | `csm:troffer_pattern_dashes_2x2` | 2 | 10 | pickaxe | 1 |
 | Patterned Lens Troffer (Dashes, 2x4) | `csm:troffer_pattern_dashes_2x4` | 2 | 10 | pickaxe | 1 |
 | Patterned Lens Troffer (Dots, 2x2) | `csm:troffer_pattern_dots_2x2` | 2 | 10 | pickaxe | 1 |
@@ -201,6 +203,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Post Light 2 | `csm:postlight2` | 2 | 10 | pickaxe | 1 |
 | Post Light 3 | `csm:postlight3` | 2 | 10 | pickaxe | 1 |
 | Remote Street Light Series Ballast Module | `csm:rbm` | 2 | 10 | pickaxe | 1 |
+| Reproduction Acorn | `csm:reproacorn` | 2 | 10 | pickaxe | 1 |
 | Schoolhouse Pendant (Black) | `csm:pendschoolhouseblack` | 2 | 10 | pickaxe | 1 |
 | Schoolhouse Pendant (Bronze) | `csm:pendschoolhousebronze` | 2 | 10 | pickaxe | 1 |
 | Schoolhouse Pendant (Brushed Nickel) | `csm:pendschoolhousenickel` | 2 | 10 | pickaxe | 1 |
@@ -215,10 +218,12 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Sylvania Ultra LED (Half) | `csm:uledh` | 2 | 10 | pickaxe | 1 |
 | Tall Building Beacon (Red, Flashing) | `csm:obstruction_beacon_red` | 2.0 | 6.0 | pickaxe | 1 |
 | Tall Building Beacon (White, Strobe) | `csm:obstruction_beacon_white` | 2.0 | 6.0 | pickaxe | 1 |
+| Twin-20 Washington Globes | `csm:reprotwin20` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Black) | `csm:sconcevanityblack` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Bronze) | `csm:sconcevanitybronze` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Brushed Nickel) | `csm:sconcevanitynickel` | 2 | 10 | pickaxe | 1 |
 | Vine Double Teardrops | `csm:lavinedouble` | 2 | 10 | pickaxe | 1 |
+| Washington Globe | `csm:reprowashingtonglobe` | 2 | 10 | pickaxe | 1 |
 | Westinghouse L-250 (HPS) | `csm:whl250hps` | 2 | 10 | pickaxe | 1 |
 | Westinghouse L-250 (Mercury Vapor) | `csm:whl250` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV-25 Silverliner (1950s, Mercury Vapor) | `csm:whov25early` | 2 | 10 | pickaxe | 1 |
