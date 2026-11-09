@@ -885,9 +885,10 @@ The actual 3D geometry lives in shared custom models (`models/custom/trafficligh
   `trafficlightvertical` with the center band dropped and the upper band moved down onto it.
 - **RRFB** (`controllablerrfb`): Two rectangular amber indications in one housing for an
   uncontrolled or midblock crossing, linked as a `PEDESTRIAN_BEACON` so a controller drives it
-  exactly as it drives the HAWK. Unlike the configurable heads it has no tile entity and no
-  renderer: the blockstate swaps between `rrfb_off` and the animated `rrfb_flash`, dark only on
-  color 3 and flashing on any called state. The lamps run their sequence *inside* the texture:
+  exactly as it drives the HAWK. Unlike the configurable heads it has no renderer (its tile
+  entity holds only the housing paint and whether it is double sided): the blockstate swaps
+  between `rrfb_off` and the animated `rrfb_flash`, dark only on color 3 and flashing on any
+  called state. The lamps run their sequence *inside* the texture:
   the 16-frame, 800 ms sequence FHWA Interim Approval IA-21 requires — left 50, dark 50, right
   50, dark 50, left 50, dark 50, right 50, dark 50, **both** 50, dark 50, **both** 50, dark 250,
   at 75 sequences per minute. Note the two simultaneous flashes: an RRFB is not a strictly
@@ -896,6 +897,18 @@ The actual 3D geometry lives in shared custom models (`models/custom/trafficligh
   crossing needs. Regenerate with
   `dev-env-utils/scripts/gen_rrfb_textures.py`; the art is drawn to land exactly on the model's
   `uv [1, 5, 15, 11]` band so it maps one texture pixel per model pixel.
+
+  **Reading an RRFB's state from outside** (a test script, MCMCP, a city team's tooling): the
+  block's `color` is *called or not*, never the lamp. It is written once when the call starts
+  (to 1 in the requestable service phases, the colour every flash-on-call block lights on) and
+  once when it ends (back to 3), and nothing in between: the flashes are texture frames on the
+  client, so a flashing beacon costs no block updates and no packets. Read `color != 3` as
+  "flashing", and expect it to match the RRFB's position in the controller's current phase
+  (`tcCp`: `yS` while called, `oS` while dark), read in the same tick. Whether either lamp is lit
+  at a given instant is not server state at all. The controller's flash and fault flash hold a
+  flash-on-call beacon at one colour through both of their halves for the same reason; until
+  2026.11 they switched it with the heads, writing the block twice a second and cutting its
+  sequence in half, and it read 3 in every other half second of the flash.
 - **In-roadway warning light** (`in_roadway_warning_light`): The fixture set flush into the
   pavement at a crosswalk, flashing up and along the road at approaching drivers. A row of them
   goes across the approach. Built on the RRFB's pattern — no tile-entity renderer, the flash

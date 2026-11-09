@@ -531,6 +531,16 @@ public class TrafficSignalPhases {
     }
     phases[PHASE_INDEX_FAULT_2] = faultPhase2;
 
+    // Flash and fault flash alternate their two halves every half second, which is how the heads
+    // flash. A flash-on-call beacon flashes by itself, in its animated texture, so switching it
+    // with the heads cost a block update per flash and cut its own sequence in half. Hold it lit
+    // through both halves instead, as the plain beacons are (the programmed ADVANCED flash keeps
+    // it dark in both already).
+    holdFlashOnCallBeaconsLit(world, trafficSignalControllerCircuits,
+        phases[PHASE_INDEX_FLASH_1], phases[PHASE_INDEX_FLASH_2]);
+    holdFlashOnCallBeaconsLit(world, trafficSignalControllerCircuits,
+        phases[PHASE_INDEX_FAULT_1], phases[PHASE_INDEX_FAULT_2]);
+
     // Create a new TrafficSignalPhase object for all red phase
     TrafficSignalPhase allRedPhase = new TrafficSignalPhase(
         TrafficSignalPhase.CIRCUIT_NOT_APPLICABLE, null,
@@ -1177,6 +1187,72 @@ public class TrafficSignalPhases {
       circuitIndex++;
     }
     phases[PHASE_INDEX_REQUESTABLE_SERVICE_RED] = requestableServiceRedPhase;
+  }
+
+  /**
+   * Gives every flash-on-call beacon ({@link AbstractBlockControllableSignal#isFlashOnCallBeacon()})
+   * the same colour in both halves of a flash pair: the colour it is lit with in either half, or
+   * off if it is lit in neither. The block's colour is only "called or not"; the flashing is its
+   * animated texture, so a beacon switched off and on with the heads is written twice a second
+   * for nothing and shows half of its own sequence.
+   *
+   * @param world    the world the beacons are in, or {@code null}, in which case nothing is
+   *                 known to be flash-on-call and nothing changes
+   * @param circuits the controller's circuits
+   * @param first    the first half of the pair
+   * @param second   the second half of the pair
+   *
+   * @since 2026.11
+   */
+  static void holdFlashOnCallBeaconsLit(World world, TrafficSignalControllerCircuits circuits,
+      TrafficSignalPhase first, TrafficSignalPhase second) {
+    if (world == null || circuits == null || first == null || second == null) {
+      return;
+    }
+    List<BlockPos> beacons = new java.util.ArrayList<>();
+    for (TrafficSignalControllerCircuit circuit : circuits.getCircuits()) {
+      beacons.addAll(circuit.getFlashOnCallBeaconSignals(world));
+    }
+    holdLit(beacons, first, second);
+  }
+
+  /**
+   * {@link #holdFlashOnCallBeaconsLit} for the given positions, apart from any world.
+   *
+   * @param beacons the flash-on-call beacons
+   * @param first   the first half of the pair
+   * @param second  the second half of the pair
+   *
+   * @since 2026.11
+   */
+  static void holdLit(List<BlockPos> beacons, TrafficSignalPhase first,
+      TrafficSignalPhase second) {
+    java.util.Map<BlockPos, Integer> a = first.resolveVehicleSignalStates();
+    java.util.Map<BlockPos, Integer> b = second.resolveVehicleSignalStates();
+    for (BlockPos pos : beacons) {
+      int lit = litColour(a.get(pos));
+      if (lit == AbstractBlockControllableSignal.SIGNAL_OFF) {
+        lit = litColour(b.get(pos));
+      }
+      List<BlockPos> one = java.util.Collections.singletonList(pos);
+      for (TrafficSignalPhase phase : new TrafficSignalPhase[] {first, second}) {
+        phase.removeSignals(one);
+        if (lit == AbstractBlockControllableSignal.SIGNAL_RED) {
+          phase.addRedSignals(one);
+        } else if (lit == AbstractBlockControllableSignal.SIGNAL_YELLOW) {
+          phase.addYellowSignals(one);
+        } else if (lit == AbstractBlockControllableSignal.SIGNAL_GREEN) {
+          phase.addGreenSignals(one);
+        } else {
+          phase.addOffSignals(one);
+        }
+      }
+    }
+  }
+
+  private static int litColour(Integer indication) {
+    return indication == null ? AbstractBlockControllableSignal.SIGNAL_OFF
+        : TrafficSignalPhase.indicationColor(indication);
   }
 
   /**
