@@ -225,6 +225,18 @@ so the unit's own cell is in the room.
   unlinked) by writing its data in place -- `/setblock` with a data tag, `/blockdata` -- registers
   (or unregisters) from `readNBT`, since `onLoad` has already run: it used to join only when its
   chunk next loaded (issue #243).
+- **A thermostat's links survive a build by command** (2026-11). Each step resolves a primary's
+  units, zones, vents and exhaust fans (`HvacSystemControl.resolveLinks`): a link to an unloaded
+  place is a member the system waits for; a link to a loaded place holding **nothing** is kept and
+  skipped, without holding the system back; only a link to a place holding some *other* tile
+  entity is dropped (and the owner marked dirty). Before, every link to a loaded place without the
+  right tile entity was dropped on the first step. A build that wrote the thermostat's `lU`/`lV`/
+  `lZ` first and placed the units, zones or vents after (by `/setblock`, MCMCP, or as their chunks
+  loaded in) lost those links at once, so the thermostat read `tU 0`/`pU 0` and no vents; the
+  shortened lists were then saved with the thermostat's next change, while a chunk reload before
+  that brought the links back from the save, which is why it looked like a load-order problem. A
+  unit broken and placed again at the same spot now rejoins its system on its own.
+  `HvacLinkResolutionTest` holds it.
 - An anchor without a space tries its own cell, then its six neighbours (a full-block heater sits
   beside its room). A failure is retried 5 s later if open to the sky, 30 s if too large.
 - A too-large flood's cells are remembered, so neither a retry nor a neighbouring anchor floods it
