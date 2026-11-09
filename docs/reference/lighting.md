@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "179 blocks in this tab"
+!!! info "181 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -26,6 +26,8 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | American Electric 115 (Standard) | `csm:ae115` | 2 | 10 | pickaxe | 1 |
 | American Electric Autobahn ATB0 | `csm:aeatb0` | 2 | 10 | pickaxe | 1 |
 | American Electric Autobahn ATB2 | `csm:aeatb2` | 2 | 10 | pickaxe | 1 |
+| American Electric AutoConnect ACM | `csm:aeacm` | 2 | 10 | pickaxe | 1 |
+| American Electric AutoConnect ACM (No Photocell) | `csm:aeacmnp` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Black) | `csm:pendcagedblack` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Bronze) | `csm:pendcagedbronze` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Brushed Nickel) | `csm:pendcagednickel` | 2 | 10 | pickaxe | 1 |

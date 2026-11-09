@@ -1357,6 +1357,36 @@ def build_karbon(model, shield=False):
     return m
 
 
+# AEL AutoConnect ACM (2019-), the medium of the ACC / ACM / ACL LED cobra heads: a teardrop in
+# plan, round and widest over the LED array, tapering to the slipfitter, the hood swelling in two
+# lobes (over the array, and higher over the driver, where the receptacle sits). AEL's figures:
+# 24.6 x 10 x 4.1 in; the flat underside carries the array in front and the door behind it.
+ACM_LENGTH, ACM_HW, ACM_EXPONENT = 12.0, 2.6, 2.8
+
+
+def acm_profile():
+    z0, length, hw = 4.05, 11.85, ACM_HW
+    return nose_round(z0, 0.22 * length, hw, ((0.2, 0.6), (0.2, 1.6))) + stations(z0, length, [
+        (0.22, hw, 0.2, 1.75),
+        (0.36, hw, 0.2, 2.3),
+        (0.50, 2.5, 0.2, 2.4),
+        (0.66, 2.32, 0.2, 3.05),
+        (0.82, 2.18, -0.05, 3.75),
+        (0.92, 2.15, -0.25, 3.72),
+        (1.0, 2.15, -0.30, 3.70),
+    ])
+
+
+def build_acm(top="photocell"):
+    profile = acm_profile()
+    m = Mesh()
+    check_neck_holds_arm("AutoConnect ACM", profile, ACM_EXPONENT)
+    loft_housing(m, profile, ACM_EXPONENT)
+    box(m, (8.0 - 1.85, 0.0, 4.9), (8.0 + 1.85, 0.25, 9.5), "body", bottom_mat=LENS_MAT)
+    receptacle_top(m, profile, 13.75, top, 6.0)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1452,6 +1482,9 @@ CATALOGUE = [
     ("ltkc2", "Leotek KarbonCobra KC2", lambda: build_karbon("kc2"), "streetlight_body_leotek_karbon"),
     ("ltkc2hss", "Leotek KarbonCobra KC2 (House Side Shield)", lambda: build_karbon("kc2", shield=True),
      "streetlight_body_leotek_karbon"),
+    ("aeacm", "American Electric AutoConnect ACM", lambda: build_acm(), "streetlight_body_ael_grey"),
+    ("aeacmnp", "American Electric AutoConnect ACM (No Photocell)", lambda: build_acm("cap"),
+     "streetlight_body_ael_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1540,6 +1573,7 @@ GENERATED_LENS = {
     "leotek_kc0": (4, 4, "die"),
     "leotek_kc1": (6, 6, "die"),
     "leotek_kc2": (6, 12, "die"),
+    "ael_acm": (5, 9, "amber"),
 }
 
 
@@ -1605,6 +1639,8 @@ LENS_FOR = {
     "ltkc1hss": (art_lens("leotek_kc1", "on"), art_lens("leotek_kc1", "off")),
     "ltkc2": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
     "ltkc2hss": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
+    "aeacm": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
+    "aeacmnp": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.

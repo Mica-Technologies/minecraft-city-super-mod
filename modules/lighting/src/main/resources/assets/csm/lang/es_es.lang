@@ -1,6 +1,8 @@
 itemGroup.tablighting=CSM: Iluminación
 tile.ae115.name=American Electric 115 (Estándar)
 tile.ae115cu.name=American Electric 115 (Óptica de Corte)
+tile.aeacm.name=American Electric AutoConnect ACM
+tile.aeacmnp.name=American Electric AutoConnect ACM (Sin Fotocélula)
 tile.aeatb0.name=American Electric Autobahn ATB0
 tile.aeatb2.name=American Electric Autobahn ATB2
 tile.altollm.name=Alto Soporte de Luz de Aparcamiento
