@@ -49,7 +49,7 @@ that is gone; see git history before 2026-09-23 for the old design.
 | `HvacStatus` | Calling modes and status flags shared by control, tile entities and screens |
 | `TileEntityHvacThermostatBase` | What both thermostats share: setpoints, vents, the reported status, the anchor |
 | `TileEntityHvacThermostat` / `TileEntityHvacZoneThermostat` | Primary (units, zones, system mode) / zone (link to a primary) |
-| `TileEntityHvacHeater` (+ `Cooler`, `RtuHeater`, `RtuCooler`) | Units: capacity, power, output, standalone behaviour |
+| `TileEntityHvacHeater` (+ `Cooler`, `RtuHeater`, `RtuCooler`, `ComboUnit`) | Units: capacity, power, output, standalone behaviour |
 | `TileEntityHvacVentRelay` | Where a system's air enters a room |
 | `HvacHudPacket` / `HvacHudOverlay` | Server-sent reading for the player's position, and the HUD that draws it |
 | `HvacStatusText` | The status lines on both thermostat screens |
@@ -346,13 +346,25 @@ reads inside the range); nothing runs in between.
 - **No vents at all:** each unit delivers into its own region. Rooftop units then deliver nothing
   (flag "Rooftop units need vents").
 - **Standalone** (unlinked, powered) units hold their own room: heaters at 70°F, coolers at 74°F,
-  like a space heater or window unit (decided with the user).
+  like a space heater or window unit (decided with the user). A combination unit (below) heats
+  below 70°F and cools above 74°F, and does nothing between, as a PTAC on its own thermostat does.
 
 ### One mode at a time
 
 A system with heaters and coolers heats or cools, never both. It reverses only after a minute with
 nothing to do in its current mode, or when the other mode has out-demanded it for five minutes.
 Zones wanting the opposite show "Waiting".
+
+**Combination units** (`TileEntityHvacComboUnit`: the PTAC and the large packaged rooftop units)
+both heat and cool, never at once, as a real packaged unit with a cooling section and a gas heat
+section does. `IHvacUnit.canHeat()` and `canCool()` say which ways a unit goes, and the controllers
+ask those, never `isCoolingUnit()` (which now means "cooling only"): a combination unit counts
+towards a system's heating capacity and its cooling capacity (`HvacSystemControl.Equipment`), runs
+in whichever mode the system has chosen (`runsIn`), and standalone serves whichever its room needs
+(`standaloneDelivery`). A system can mix them freely with heaters and coolers: a cooler and a PTAC
+heat on the PTAC alone and cool on both. In lightweight mode a standalone combination unit runs
+when the weather is below 70°F or above 74°F, and the HUD reads its room at the weather clamped to
+that range. `HvacComboUnitTest` holds all of it.
 
 ### The switch: Auto, Heat, Cool, Off
 
