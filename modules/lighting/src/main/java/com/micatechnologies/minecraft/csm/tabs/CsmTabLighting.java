@@ -186,6 +186,12 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("ltgc1v1", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.437500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgc1v2", new AxisAlignedBB(0.250000, 0.000000, 0.062500, 0.750000, 0.437500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("ltgcm", new AxisAlignedBB(0.312500, 0.000000, 0.250000, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltkc0", new AxisAlignedBB(0.343750, -0.031250, 0.406250, 0.656250, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltkc0hss", new AxisAlignedBB(0.343750, -0.062500, 0.406250, 0.656250, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltkc1", new AxisAlignedBB(0.328125, -0.031250, 0.312500, 0.671875, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltkc1hss", new AxisAlignedBB(0.328125, -0.062500, 0.312500, 0.671875, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltkc2", new AxisAlignedBB(0.296875, -0.031250, 0.125000, 0.703125, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("ltkc2hss", new AxisAlignedBB(0.296875, -0.062500, 0.125000, 0.703125, 0.296875, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory.PostTop("mclaclassicpostlight", new AxisAlignedBB(0.117188, 0.000000, 0.117188, 0.882813, 1.250000, 0.882813), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("mclaparklight", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.000000, 0.937500), 1));
     initTabBlock(new BlockBrightLightPoleColoredFactory("postlight1", new AxisAlignedBB(0.062500, 0.000000, 0.062500, 0.937500, 1.437500, 0.937500), 1));
