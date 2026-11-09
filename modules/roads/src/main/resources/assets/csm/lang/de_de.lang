@@ -412,6 +412,7 @@ tile.signhandicap.name=Behinderten-Schild
 tile.signhandicapaccessibleicon.name=Barrierefreiheit Schild (Accessible Icon)
 tile.signhandicapreservedparking.name=Behinderten/Reserviertes Parken Schild
 tile.signhandicapreservedparkingaccessibleicon.name=Reservierter Parkplatz Schild (Accessible Icon)
+tile.signvanaccessibleplaque.name=Rollstuhlgerechter Van Schild (Zusatzschild)
 tile.signhangglider.name=Drachenflieger-Schild
 tile.signhardleftshift.name=Starke Linksverschwenkung Schild
 tile.signhardrightshift.name=Starke Rechtsverschwenkung Schild

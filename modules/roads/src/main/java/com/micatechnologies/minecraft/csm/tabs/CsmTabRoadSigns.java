@@ -707,6 +707,7 @@ public class CsmTabRoadSigns extends CsmTab {
     initTabBlock(new BlockTrafficSign("signfreewayentrance"));
     initTabBlock(new BlockTrafficSign("signhandicapreservedparking"));
     initTabBlock(new BlockTrafficSign("signhandicapreservedparkingaccessibleicon"));
+    initTabBlock(new BlockTrafficSign("signvanaccessibleplaque"));
     initTabBlock(new BlockTrafficSign("signhm"));
     initTabBlock(new BlockTrafficSign("hwyentrance"));
     initTabBlock(new BlockTrafficSign("signhiking"));

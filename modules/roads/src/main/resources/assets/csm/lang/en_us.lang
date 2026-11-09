@@ -412,6 +412,7 @@ tile.signhandicap.name=Handicap Sign
 tile.signhandicapaccessibleicon.name=Accessibility Sign (Accessible Icon)
 tile.signhandicapreservedparking.name=Handicapped/Reserved Parking Sign
 tile.signhandicapreservedparkingaccessibleicon.name=Reserved Parking Sign (Accessible Icon)
+tile.signvanaccessibleplaque.name=Van Accessible Sign (Plaque)
 tile.signhangglider.name=Hang Glider Sign
 tile.signhardleftshift.name=Hard Left Shift Sign
 tile.signhardrightshift.name=Hard Right Shift Sign
