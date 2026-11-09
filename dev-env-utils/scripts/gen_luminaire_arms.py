@@ -554,6 +554,28 @@ def la_upsweep_members(run, rise):
     ]
 
 
+# Los Angeles' Van Nuys Special (BSL CD-955, early 1970s, Van Nuys Boulevard from Burbank Boulevard
+# to Sherman Way; CD-853 on Westwood Boulevard is its twin): one pole parting at a single point
+# into three slender davits that sweep up and out over the road in one plane, nested: the inner
+# arm the steepest, ending highest and nearest, the outer reaching farthest and ending lowest, a
+# cobra head on each. Each tip lands on TIP_Y of its own row, one row and one block apart, so three
+# street lights fit, each against its own tip.
+VANNUYS_Y0 = 6.0
+VANNUYS_ARMS = [(3, 3), (4, 2), (5, 1)]      # (run in blocks, the row its tip lands in)
+VANNUYS_R = (1.7, 1.3)
+
+
+def van_nuys_members():
+    out = []
+    for run, row in VANNUYS_ARMS:
+        rise = 16.0 * row + TIP_Y - VANNUYS_Y0
+        pt = parabola(VANNUYS_Y0, rise, run)
+        # Three arms in one block's width: fewer rings each than a lone davit gets.
+        out.append(Member(pt, boot_radius(pt, VANNUYS_R[0], VANNUYS_R[1], run), -0.6,
+                          run - INSET / 16.0, pole=True, per_block=8))
+    return out
+
+
 def catalogue():
     out = []
     for pid, run, rise, ft in CALTRANS:
@@ -571,6 +593,8 @@ def catalogue():
                     "Los Angeles Upsweep Luminaire Arm %d ft" % ft, ft, run, rise))
     out.append(("anaheim8ft", anaheim_members, False, "Anaheim Resort Area Luminaire Arm 8 ft", 8,
                 ANAHEIM_RUN, ANAHEIM_RISE))
+    out.append(("vannuystriple", van_nuys_members, False, "Van Nuys Special Triple Luminaire Arm", 15,
+                VANNUYS_ARMS[-1][0], 16.0 * VANNUYS_ARMS[0][1] + TIP_Y - VANNUYS_Y0))
     return out
 
 
