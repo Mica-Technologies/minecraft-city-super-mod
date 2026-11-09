@@ -27,6 +27,15 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   that every neck swallows the CSM arm tip and that nothing leaves the old JSON envelope. The
   glass is the `unshaded_lens` material, which `CsmObjModelLoader` bakes without directional
   shading; `--check`. Run `audit_obj_models.py` on its OBJs after a change
+- `gen_floodlights.py` -- the OBJ floodlights (GitHub #99): Lithonia DSXF1 / DSXF2 / DSXF3 and
+  TFL, GE Evolve EFM, each on a knuckle, a yoke and a slipfitter. Draws each head level in its own
+  frame, then turns it to its aim about the knuckle or the trunnion bolts, so one head serves every
+  mount; writes one OBJ per block (the wall block and its `_g` ground / pole-top, `_c` ceiling and
+  `_x` RealGrid crossarm companions, `BlockFloodlight`), `floodlight.mtl`, the blockstates and the
+  32 px lens sprites with their OptiFine `_e` companions. The housings wear
+  `gen_streetlight_fixtures.py`'s swatches and it imports that script's mesh helpers;
+  `--check`, `--fragments` (tab lines for both Lighting tabs, and the lang). Run
+  `audit_obj_models.py` on its OBJs after a change
 - `gen_obstruction_beacons.py` -- the Lighting tab's tall building beacons (`BlockObstructionBeacon`):
   the red L-864 style flashing beacon and the white L-865 style strobe, each standing on a block or
   a shelf bracket off a wall. It writes the models with the dark lens only: the flash (FAA
