@@ -74,6 +74,8 @@ public class CsmTabParks extends CsmTab {
     initTabBlock(new BlockParkFacing("recycling_bin", new int[]{3, 0, 3, 13, 15, 13}, true));
     initTabBlock(new BlockParkFacing("trash_recycling_station", new int[]{1, 0, 3, 15, 15, 13}, true));
     initTabBlock(new BlockParkFacing("dog_waste_station", new int[]{4, 0, 4, 12, 16, 13}, true));
+    initTabBlock(new BlockParkFacing("bear_proof_food_locker_brown", new int[]{0, 0, 2, 16, 15, 15}, true));
+    initTabBlock(new BlockParkFacing("bear_proof_food_locker_galvanized", new int[]{0, 0, 2, 16, 15, 15}, true));
     initTabBlock(new BlockParkFacing("playground_slide", new int[]{2, 0, 0, 14, 16, 16}, true));
     initTabBlock(new BlockParkFacing("spring_rider", new int[]{4, 0, 2, 12, 14, 14}, true));
     initTabBlock(new BlockParkProp("pergola_post", BlockParkProp.Kind.POST, 16, 5));

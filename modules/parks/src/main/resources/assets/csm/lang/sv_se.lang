@@ -614,3 +614,5 @@ csm.parks.preset.cherryweeping=Hängkörsbär
 tile.ground_cherry_petals.name=Fallna körsbärsblad
 tile.planter_trough_concrete.name=Planteringsränna av betong
 tile.planter_trough_corten.name=Planteringsränna av cortenstål
+tile.bear_proof_food_locker_brown.name=Björnsäkert matskåp (brunt)
+tile.bear_proof_food_locker_galvanized.name=Björnsäkert matskåp (galvaniserat)
