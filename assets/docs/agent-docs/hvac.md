@@ -15,6 +15,13 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   block) and the HVAC Zone Boundary strip (`BlockHvacZoneBoundary`, #305), with their lang lines
   by key; `--check`, `--fragments`. `gen_hvac_exhaust.py` does the same for the exhaust fans (the
   2 x 2 lab fan as a master and parts, upblast, mushroom) and the exhaust grille (#314)
+- `gen_hvac_units.py` -- the heating and cooling units as baked OBJ: the condensing unit worn by
+  the cabinet heaters and coolers, the rooftop unit, the large 3 x 2 x 5 rooftop unit cut into one
+  slice per cell (`slice_mesh`; `BlockHvacPackagedRtu` and its parts), the PTAC and its wall
+  sleeve grille; one 64 px sheet per finish (`#finish`, retextured by each blockstate) and a
+  shared parts sheet (`#parts`), blockstates and lang lines by key; `--check`, `--fragments`,
+  `--report` (quads per model), `--sheet out.png [--old dir]` (an offline contact sheet through
+  `preview_block_model.py`'s rasteriser). Its OBJs pass `audit_obj_models.py`
 - `build_hvac_lab.py` -- builds the HVAC test lab (twelve scenarios from a closet to a replica of a
   real four-zone store) in a Cold Taiga or Desert superflat loaded in the dev client, over MCMCP,
   linked and powered through saved data; refuses any world not named "HVAC Lab". Drive it with

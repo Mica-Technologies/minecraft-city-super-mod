@@ -1,0 +1,32 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/units/ptac.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#finish": "csm:blocks/hvac/units/finish_offwhite",
+      "#parts": "csm:blocks/hvac/units/parts"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

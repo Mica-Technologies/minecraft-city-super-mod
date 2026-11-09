@@ -2,7 +2,7 @@
 
 Heating and cooling that actually simulates room temperature.
 
-!!! info "65 blocks in this tab"
+!!! info "71 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -55,6 +55,9 @@ Heating and cooling that actually simulates room temperature.
 | HVAC Zone Thermostat | `csm:hvac_zone_thermostat` | 3 | 15 | pickaxe | 1 |
 | Lab Exhaust Fan (High Plume) | `csm:hvac_lab_exhaust_fan` | 3 | 15 | pickaxe | 1 |
 | Large Circle Vent | `csm:lcv` |  |  |  |  |
+| Large Rooftop Unit | `csm:hvac_rtu_large` | 3 | 15 | pickaxe | 1 |
+| Large Rooftop Unit (Black) | `csm:hvac_rtu_large_black` | 3 | 15 | pickaxe | 1 |
+| Large Rooftop Unit (Silver) | `csm:hvac_rtu_large_silver` | 3 | 15 | pickaxe | 1 |
 | Modular Vent 1 (Black) | `csm:mvd1` |  |  |  |  |
 | Modular Vent 1 (White) | `csm:mv1` |  |  |  |  |
 | Modular Vent 2 (Black) | `csm:mvd2` |  |  |  |  |
@@ -64,6 +67,9 @@ Heating and cooling that actually simulates room temperature.
 | Panasonic Bath Fan | `csm:pbf` |  |  |  |  |
 | Plaque Vent (Dark) | `csm:pvd` |  |  |  |  |
 | Plaque Vent (White) | `csm:pv` |  |  |  |  |
+| PTAC Unit (Heat and Cool) | `csm:hvac_ptac` | 2 | 10 | pickaxe | 1 |
+| PTAC Unit (Heat and Cool, Almond) | `csm:hvac_ptac_almond` | 2 | 10 | pickaxe | 1 |
+| PTAC Wall Sleeve Grille | `csm:hvac_ptac_wall_grille` | 2 | 10 | pickaxe | 1 |
 | Residential Vent 1 | `csm:rv1` |  |  |  |  |
 | Residential Vent 2 | `csm:rv2` |  |  |  |  |
 | Rooftop HVAC Cooler | `csm:hvac_rtu_cooler` | 3 | 15 | pickaxe | 1 |

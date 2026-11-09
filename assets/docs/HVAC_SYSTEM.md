@@ -163,8 +163,10 @@ the HUD change as you walk across a big room.
 | `U_FACE` | 0.0027 /s/°F | one face of one-block stone wall |
 | capacity | 1 per air cell + 0.5 per envelope face | a 10 x 4 x 10 room: C = 580, UA = 0.97, time constant ~10 min |
 | `MIX_PER_FACE` | 2.0 | air movement between regions of one space |
-| cabinet heater/cooler | 300 /s | holds a ~14 x 14 room against -50°F |
+| cabinet heater/cooler | 300 /s | holds a ~14 x 14 room against -50°F; a 3-ton condensing unit |
+| PTAC | 100 /s | heats and cools; about a ton, a third of a cabinet unit: one hotel room |
 | rooftop unit | 1,200 /s | vents only |
+| large rooftop unit | 3,000 /s | heats and cools, vents only; about 30 tons, two and a half rooftop units |
 | vent | 250 /s max | per vent |
 
 Chosen with the user (2026-09-23): an unheated 10 x 10 x 4 room loses most of its heat to a -50°F
@@ -486,7 +488,7 @@ overshoots by under 1°F, and holds to 0.1°F with delivered = loss. Unit tests
 Unchanged. The `ItemHvacLinker` (`hvaclinker`) stores one thermostat as the source:
 
 1. Click a primary thermostat to select it.
-2. Click a heater/cooler to link it (primary only).
+2. Click a heater/cooler to link it (primary only); any cell of a large rooftop unit will do.
 3. Click a vent to link it to the selected thermostat (primary or zone); within 30 blocks, or 100
    with a rooftop unit in the system.
 4. Click a zone thermostat with a primary selected to link it; with none selected, to select it.
@@ -501,6 +503,9 @@ Sneak+click unlinks: a vent clears its link, a zone its vents and primary, a pri
 | Cabinet coolers | `hvac_cooler`, `_black`, `_silver` | `TileEntityHvacCooler` | 300 /s |
 | Rooftop heaters | `hvac_rtu_heater`, `_black`, `_silver` | `TileEntityHvacRtuHeater` | 1,200 /s, vents only |
 | Rooftop coolers | `hvac_rtu_cooler`, `_black`, `_silver` | `TileEntityHvacRtuCooler` | 1,200 /s, vents only |
+| PTACs | `hvac_ptac` (off-white), `hvac_ptac_almond` | `TileEntityHvacPtac` (combination) | 100 /s, heat and cool |
+| PTAC wall sleeve grille | `hvac_ptac_wall_grille` (decorative) | | |
+| Large rooftop units | `hvac_rtu_large`, `_black`, `_silver` (3 x 2 x 5; cells `hvac_rtu_large_part`) | `TileEntityHvacPackagedRtu` (combination) | 3,000 /s, heat and cool, vents only |
 | Data hall coolers | `hvac_crac_downflow`, `hvac_crac_upflow`, `hvac_crah` | `TileEntityHvacCrac` | 900 /s |
 | Exhaust fans (#314) | `hvac_lab_exhaust_fan` (2 x 2, five tall; cells `hvac_exhaust_fan_part`), `hvac_upblast_exhaust_fan`, `hvac_mushroom_exhaust_fan` | `TileEntityHvacExhaustFan` | 10,000 / 2,500 / 1,200 CFM |
 | Exhaust grille (#314) | `hvac_exhaust_grille` | `TileEntityHvacExhaustGrille` (a vent) | up to 500 CFM out |
@@ -515,6 +520,39 @@ warnings at start-up are expected.
 Units run on redstone or Forge Energy (1,000 FE buffer, 100 FE/t in, up to 10 FE/t at full output
 drawn in proportion to output; redstone is free). `TileEntityHvacRtuCooler` extends
 `TileEntityHvacCooler` so `instanceof` finds it as a cooler.
+
+### What the units look like (2026-11)
+
+Every unit is a baked OBJ from `dev-env-utils/scripts/gen_hvac_units.py` (no tile entity
+renderer); see `assets/docs/agent-docs/hvac.md`. Finishes are a retexture of one material, so
+each model is written once.
+
+- **Cabinet heater and cooler**: one model, a residential condensing unit / heat pump (louvred
+  coil guard on four sides between corner posts, the fan under a round wire guard in the top cap,
+  a service panel with its badge and rating plate on the front-right corner, the line set and
+  electrical whip low on the back, on a composite pad). Told apart only by name. Finishes:
+  sandstone (the warm beige-grey of the standard cabinet, replacing the old blue and orange),
+  black, silver. `AbstractBlockHvacUnit` is the base of these and the rooftop units: they keep
+  their six-way facing so old worlds load, but are placed only on the compass now, and one placed
+  up or down before stands upright facing north (model and box).
+- **Rooftop unit**: a packaged rooftop unit in the old footprint (2 1/8 x 2 x 3, drawn and
+  collided from its one block as before, `ambient: false`): roof curb, base rail with lifting
+  lugs, the outside air hood on the front, filter and economizer louvres, two access doors a
+  side, the condenser coil round the back with two fans on top, the disconnect, the gas flue and
+  riser.
+- **Large rooftop unit** (`BlockHvacPackagedRtu`, a multi-block like the lab exhaust fan): the
+  same unit 3 wide, 2 tall and 5 long with four fans. Every cell is a block that draws its own
+  slice of the model, cut by the generator, so nothing is drawn outside its cell. The master is
+  the middle of the front edge and the unit reaches back from the placer. Its parts
+  (`BlockHvacPackagedRtuPart`) store the facing and finish; which cell a part is (`cell`, actual
+  state only) is found from where its master is, so a part with no master draws nothing.
+  `PackagedRtuTest` holds the footprint, the master search (units side by side too), the
+  collision shares and the blockstate's cell-to-slice mapping. 372 part states.
+- **PTAC** (`BlockHvacPtac`): on the floor against the outside wall, back to the wall the placer
+  faces: intake grille in front, discharge grille on top, the control door top right. The box is
+  the model's (15.5 x 8.25 x 6.25 px), so the room's air passes its cell. **Wall sleeve grille**
+  (`BlockHvacPtacWallGrille`): the architectural louvre on the outside of the wall, at the
+  height of a PTAC inside.
 
 ## Exhaust and room pressure (#314)
 
@@ -572,6 +610,8 @@ step's totals) and "Exhaust grilles, but no exhaust fan running" (`FLAG_NO_EXHAU
 | `hvac_exhaust_fan_part` | never placed by hand: bits 0-1 the unit's facing, bits 2-3 the piece (0 nothing, 1 nozzle, 2 windband) | |
 | `hvac_upblast_exhaust_fan`, `hvac_mushroom_exhaust_fan` | facing, as above | `energy` |
 | `hvac_exhaust_grille` | 0 | the vent's: `{hasLink:1b,linkX:..,linkY:..,linkZ:..}` |
+| `hvac_rtu_large` (and `_black`, `_silver`) | facing, as above (the air hood's side). The master alone: when added it fills every free cell of its 3 x 2 x 5 footprint with parts, one block either side of it and four behind it | `energy` |
+| `hvac_rtu_large_part` | never placed by hand: bits 0-1 the unit's facing, bits 2-3 the finish (0 sandstone, 1 silver, 2 black) | |
 | primary thermostat | | add the grille to `lV` and the fan to `lX`, `[{x:..,y:..,z:..}]` |
 
 Both ends of a grille's link must be written (the grille's `link*` and the thermostat's `lV`), as

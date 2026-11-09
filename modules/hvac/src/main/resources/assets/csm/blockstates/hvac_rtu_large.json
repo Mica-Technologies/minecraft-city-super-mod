@@ -1,0 +1,33 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/units/rtu_large_x0_y0_z0.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#finish": "csm:blocks/hvac/units/finish_sandstone",
+      "#parts": "csm:blocks/hvac/units/parts"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:hvac/units/rtu_large_item.obj",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}
