@@ -187,9 +187,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * <p>1: pedestrian beacons split into HAWK-style and flash-on-call in the requestable
    * phases.</p>
    *
+   * <p>2: flash-on-call beacons held lit through both halves of the flash and fault flash
+   * instead of being switched with the heads.</p>
+   *
    * @since 2026.9
    */
-  private static final int CACHED_PHASES_FORMAT_CURRENT = 1;
+  private static final int CACHED_PHASES_FORMAT_CURRENT = 2;
 
   /**
    * The format the cached phases were built under, from NBT; {@code 0} for a controller saved
