@@ -556,10 +556,15 @@ TEXTURES = {
     "paint_anaheim_green": lambda: _noise_png(16, (40, 104, 88), (26, 78, 66), 4, 13),
     "paint_black": lambda: _noise_png(16, (50, 50, 52), (28, 28, 30), 4, 14),
     "paint_hollywood_grey": lambda: _noise_png(16, (170, 172, 172), (128, 130, 132), 4, 15),
+    # Long Beach's citywide dark navy, and the cast aluminium of the California Heights cages.
+    "paint_navy": lambda: _noise_png(16, (38, 50, 86), (24, 32, 58), 4, 16),
+    "paint_aluminium": lambda: _noise_png(16, (196, 198, 200), (148, 150, 154), 5, 17),
     # Trim: Anaheim's Aztec Gold finial, the brass bands, the bronze lantern frames.
     "trim_gold": lambda: _noise_png(16, (226, 186, 96), (166, 124, 46), 6, 21),
     "trim_brass": lambda: _noise_png(16, (196, 160, 84), (132, 100, 46), 6, 22),
     "trim_bronze": lambda: _noise_png(16, (128, 92, 56), (82, 58, 36), 6, 23),
+    # The Hollywood Special's stars: red plastic, lit from inside the head.
+    "trim_star_red": lambda: _noise_png(16, (226, 78, 70), (196, 52, 50), 5, 24),
     "tile_westwood": _tile_png,
     # Glass, lit and unlit. Opal: the milk-white globes (frames 06, 09). Frosted: the hammered
     # amber-white lantern panels (frames 07, 12, 13). Prism: the ribbed acorn and teardrops.
@@ -807,7 +812,24 @@ ANAHEIM = PoleDesign(
     source="City of Anaheim Street Light Special Design #749 (L 139 rev 5)")
 
 
-POLE_DESIGNS = [LA_FLUTED, BROADWAY_ROSE, CONCRETE_815, WESTWOOD, HOLLYWOOD, REPRO, ANAHEIM]
+# --- California Heights (Long Beach, 1929): a slim navy steel post, an aluminium capital ------
+def cal_heights_base(m):
+    lathe(m, "body", [(4.6, INSET), (4.6, 0.9), (4.0, 1.3), (3.4, 4.0), (3.0, 6.4), (3.2, 6.8),
+                      (3.2, 7.3), (2.64, 7.7), (2.2, 7.7)], bottom=True)
+
+
+CAL_HEIGHTS = PoleDesign(
+    "calheights", "California Heights Lamp Post", 3.0, 2.6, 4.6,
+    tex("paint_navy"), tex("paint_aluminium"), "BLACK",
+    plain_shaft(2.6), cal_heights_base,
+    cap_lathe(2.6, [(2.6, 13.2), (3.0, 13.6), (3.0, 14.2), (1.8, 14.9), (0.0, 15.95)]),
+    capital(2.6, [(2.6, 11.4), (3.0, 11.8), (3.0, 12.4), (2.8, 12.8), (3.6, 14.2), (4.4, 15.2),
+                  (4.4, 15.98)], mat="trim"),
+    source="the California Heights lampposts, Long Beach: navy post, silver leaf capital")
+
+
+POLE_DESIGNS = [LA_FLUTED, BROADWAY_ROSE, CONCRETE_815, WESTWOOD, HOLLYWOOD, REPRO, ANAHEIM,
+                CAL_HEIGHTS]
 
 
 # --- the mount clamp every pole grows toward a device on its flank -----------------------------
@@ -890,11 +912,15 @@ def pole_blockstate(d):
 class Fixture:
     """A post-top fixture: its id, label, builder (standing frame; its fitter starts at y 0 on
     the capital), the glass it wears, whether its light is aimed ahead (a head hung forward of
-    its pole), and the reference it follows."""
+    its pole), and the reference it follows. A third paint, where given in FIXTURE_PAINT, is the
+    ``frame`` material: the mast or arm a head hangs from, when it is not the head's colour."""
 
-    def __init__(self, fid, label, build, glass, aimed=False, source=""):
+    def __init__(self, fid, label, build, glass, aimed=False, source="", reach=-8.5):
         self.fid, self.label, self.build, self.glass = fid, label, build, glass
         self.aimed, self.source = aimed, source
+        # How far ahead of its block (model north, -Z) the head may reach. Half a block unless
+        # the head cannot be drawn that short.
+        self.reach = reach
 
 
 def fitter(m, r=4.6, top=2.4, neck=None, mat="body"):
@@ -962,12 +988,98 @@ def octagon_lantern(m, sides, y0, y_glass0, y_glass1, r_bot, r_mid, r_top, roof,
 
 
 def build_wilshire(m):
-    fitter(m, 4.6, 2.6, 2.8)
-    lathe(m, "body", [(2.8, 2.6), (2.6, 4.0), (3.2, 4.4), (3.2, 4.9)], sides=12)
-    octagon_lantern(m, 8, 4.9, 8.4, 17.0, 3.0, 4.6, 5.8,
-                    ("unshaded_lens", 2.2, 21.0), figures=True,
-                    spire=[(1.3, 22.4), (1.6, 23.0), (1.0, 23.6), (0.6, 25.0), (0.9, 25.4),
-                           (0.3, 26.4), (0.0, 28.6)])
+    """The Wilshire Special (1928), from photos of the survivors by MacArthur Park: a tall
+    four-sided bronze box, about twice as tall as wide, one pane of obscure glass a face; a
+    scrollwork frieze top and bottom; a half-figure at each corner over a tapering pendant; four
+    scrolled brackets under its floor; an overhanging cornice with an urn at each corner, and a
+    stepped square dome under a bud finial."""
+    half = 3.3
+    y0, y1 = 6.4, 17.6
+    fitter(m, 4.6, 2.6, 2.6)
+    lathe(m, "body", [(2.6, 2.6), (2.3, 3.6), (2.9, 4.0), (2.9, 4.5), (2.2, 5.0), (2.2, 5.5)],
+          sides=12)
+    square_stack(m, "body", [(2.2, 5.5), (half + 0.4, 5.9), (half + 0.4, y0), (half, y0)],
+                 bottom=True, top=False)
+    for sx in (1.0, -1.0):
+        for sz in (1.0, -1.0):
+            # a bracket from the stem out under the floor's corner, curling at its end
+            p = lambda r, y, sx=sx, sz=sz: (AXIS + sx * r, y, AXIS + sz * r)
+            tube(m, "trim", [p(1.6, 3.4), p(2.4, 3.6), (p(3.3, 4.4)), p(3.7, 5.4), p(3.4, 5.9)],
+                 0.38, sides=4)
+    # the glass, a hair inside its frame, and the four corner posts
+    lathe(m, "unshaded_lens", [(half * math.sqrt(2.0), y0), (half * math.sqrt(2.0), y1)], sides=4,
+          phase=0.5, uscale=4.0)
+    for sx in (1.0, -1.0):
+        for sz in (1.0, -1.0):
+            cx, cz = AXIS + sx * (half + 0.05), AXIS + sz * (half + 0.05)
+            beam(m, "body", (cx, y0, cz), (cx, y1, cz), 0.7)
+            # the corner figure: a pendant tapering down, a gowned half-figure, a head
+            fx, fz = AXIS + sx * (half + 0.75), AXIS + sz * (half + 0.75)
+            lathe(m, "trim", [(0.0, 9.0), (0.45, 10.4), (0.7, 11.6), (0.55, 12.8), (0.8, 13.6),
+                              (0.35, 14.2)], sides=4, cx=fx, cz=fz, top=True)
+            blob(m, "trim", (fx, 14.75, fz), 0.5, sides=4, rings=2)
+    # the friezes: a band standing proud of the glass at the foot and the head of the panes
+    # (each stands on the floor or under the cornice, so only its open edge gets a ledge)
+    square_stack(m, "trim", [(half + 0.2, y0), (half + 0.2, y0 + 1.1), (half - 0.05, y0 + 1.1)],
+                 top=False, bottom=False)
+    square_stack(m, "trim", [(half - 0.05, y1 - 1.1), (half + 0.2, y1 - 1.1), (half + 0.2, y1)],
+                 top=False, bottom=False)
+    # the cornice, its four urns, the stepped dome and the bud
+    square_stack(m, "body", [(half, y1), (half + 1.1, y1 + 0.4), (half + 1.1, y1 + 1.0),
+                             (half + 0.3, y1 + 1.0)], top=False, bottom=False)
+    for sx in (1.0, -1.0):
+        for sz in (1.0, -1.0):
+            lathe(m, "trim", [(0.35, y1 + 1.0), (0.7, y1 + 1.5), (0.55, y1 + 2.1), (0.2, y1 + 2.4),
+                              (0.0, y1 + 3.0)], sides=5, cx=AXIS + sx * (half + 0.5),
+                  cz=AXIS + sz * (half + 0.5))
+    square_stack(m, "body", [(half + 0.3, y1 + 1.0), (half - 0.5, y1 + 1.9), (half - 0.5, y1 + 2.3),
+                             (half - 1.3, y1 + 3.2), (half - 1.3, y1 + 3.6), (1.0, y1 + 4.4)],
+                 top=False, bottom=False)
+    lathe(m, "trim", [(1.4, y1 + 4.4), (0.8, y1 + 4.9), (1.2, y1 + 5.6), (0.9, y1 + 6.4),
+                      (0.3, y1 + 7.0), (0.0, y1 + 8.0)], sides=8, bottom=True)
+
+
+def build_um1906(m):
+    """Union Metal UM-1906, the twin-lamp electrolier of Figueroa Street (mid-1920s; at Adams, at
+    Washington, and on North Figueroa in Highland Park): two short scrolled bracket arms across the
+    post, an upright opal acorn under a small cap on each, and a finial between them."""
+    fitter(m, 4.6, 2.4, 2.4)
+    lathe(m, "body", [(2.4, 2.4), (2.2, 6.4), (2.8, 6.8), (2.8, 7.6), (1.5, 8.2), (1.1, 11.0),
+                      (1.7, 11.5), (1.0, 12.4), (0.5, 13.6), (0.0, 16.0)], sides=10)
+    for sign in (1, -1):
+        cz = 8.0 - sign * 7.4
+        arm = bezier((8.0, 7.0, 8.0), (8.0, 7.9, 8.0 - sign * 3.0), (8.0, 7.6, 8.0 - sign * 6.4),
+                     (8.0, 6.7, cz), 6)
+        tube(m, "body", arm, 0.6, sides=5, cap0=False)
+        # the scroll under the arm, from the post out and curling up into it
+        tube(m, "body", [(8.0, 3.6, 8.0 - sign * 2.2), (8.0, 3.4, 8.0 - sign * 4.0),
+                         (8.0, 4.2, 8.0 - sign * 5.6), (8.0, 5.6, 8.0 - sign * 6.0),
+                         (8.0, 6.6, 8.0 - sign * 5.0)], 0.38, sides=4)
+        lathe(m, "body", [(0.6, 6.4), (1.7, 7.0), (2.0, 7.9), (1.6, 8.1)], sides=10, cz=cz,
+              bottom=True)
+        lathe(m, "unshaded_lens", [(1.6, 8.1), (2.4, 9.4), (3.1, 11.4), (3.3, 13.2), (3.0, 14.4)],
+              sides=10, cz=cz)
+        lathe(m, "body", [(3.0, 14.4), (3.3, 14.5), (3.2, 15.0), (2.0, 15.7), (0.7, 16.1),
+                          (0.8, 16.6), (0.0, 17.6)], sides=10, cz=cz)
+
+
+def build_cal_heights(m):
+    """The California Heights lamp (Long Beach, 1929; the blue posts south of Bixby Road): an
+    upright frosted acorn in a cage of slim ribs, a pierced band round its widest point, a low
+    ogee roof and a spike. Only the post is blue: cage, band, roof and collar are aluminium."""
+    fitter(m, 4.2, 2.2, 1.9)
+    lathe(m, "body", [(1.9, 2.2), (2.3, 2.8), (2.3, 3.3), (1.9, 3.5)], sides=12)
+    globe = [(1.9, 3.5), (2.5, 4.8), (3.3, 7.0), (3.9, 9.4), (4.0, 10.8)]
+    lathe(m, "unshaded_lens", globe, sides=12)
+    ribs = 8
+    for i in range(ribs):
+        a = 2.0 * math.pi * i / ribs
+        pts = [(AXIS + (r + 0.22) * math.cos(a), y, AXIS + (r + 0.22) * math.sin(a))
+               for r, y in globe]
+        tube(m, "body", pts, 0.2, sides=3, cap0=False, cap1=False)
+    lathe(m, "trim", [(4.0, 10.8), (4.4, 10.8), (4.4, 12.0), (4.0, 12.0)], sides=12)
+    lathe(m, "body", [(4.0, 12.0), (4.6, 12.1), (4.5, 12.6), (3.4, 13.2), (2.0, 13.6), (1.2, 14.4),
+                      (0.5, 14.8), (0.6, 15.3), (0.25, 15.6), (0.0, 17.4)], sides=12)
 
 
 def build_metropolitan(m):
@@ -1125,18 +1237,43 @@ def drum(m, cx, cz, y0, r, h, cap=True):
                           (r * 0.5, y0 + 2.8 + h), (0.0, y0 + 3.0 + h)], sides=10, cx=cx, cz=cz)
 
 
+def flat_star(m, mat, centre, r_out, r_in, facing, points=5):
+    """A star decal standing a hair off a wall, facing ``facing`` (horizontal): its front only."""
+    f = vnorm(facing)
+    side = vnorm(vcross((0.0, 1.0, 0.0), f))
+    outline = []
+    for k in range(points * 2):
+        a = math.pi / 2.0 + math.pi * k / points
+        r = r_out if k % 2 == 0 else r_in
+        outline.append(vadd(centre, vadd(vmul(side, r * math.cos(a)), (0.0, r * math.sin(a), 0.0))))
+    fan(m, mat, centre, outline, f)
+
+
+# The five-star head reaches a full block ahead of its pole: three lamps in a row do not fit in
+# the half block the other heads keep to.
+HOLLYWOOD_STAR_REACH = -15.8
+
+
 def build_hollywood_star(m):
-    """1960s Hollywood Special: a three-lamp head across the street, a five-pointed star at its
-    heart."""
-    fitter(m, 4.6, 2.4, 2.2)
-    lathe(m, "body", [(2.2, 2.4), (2.0, 8.0), (2.4, 8.4), (2.4, 9.0), (1.6, 9.2)], sides=12)
-    tube(m, "body", [(8.0, 8.4, -5.0), (8.0, 8.4, 21.0)], 0.9, sides=8)
-    for z in (-5.0, 21.0):
-        drum(m, 8.0, z, 7.0, 2.6, 4.2)
-    lathe(m, "body", [(1.6, 9.2), (1.2, 10.4)], sides=8)
-    star(m, "trim", (8.0, 13.6, 8.0), 4.4, 1.9, 1.0, facing=(1.0, 0.0, 0.0))
-    drum(m, 8.0, 8.0, 17.6, 2.6, 4.2)
-    tube(m, "body", [(8.0, 15.6, 8.0), (8.0, 17.8, 8.0)], 0.6, sides=6, cap1=False)
+    """1960s Hollywood Special, from the requester's photos of a surviving head and of one in
+    service at Sunset Boulevard: a square black mast with a square-cut elbow, and a long grey box
+    head reaching over the street from it, three prismatic bowl refractors in a row under the box
+    and five red stars along each of its sides."""
+    fitter(m, 4.6, 2.4, 2.3, mat="frame")
+    box(m, "frame", (6.4, 2.3, 6.4), (9.6, 14.7, 9.6))            # the mast
+    box(m, "frame", (6.55, 11.6, 3.2), (9.45, 14.55, 8.0))        # the arm, into the head's end
+    z0, z1 = HOLLYWOOD_STAR_REACH, 3.6
+    box(m, "body", (5.0, 11.2, z0), (11.0, 14.9, z1))             # the head
+    box(m, "body", (4.7, 10.9, z0 - 0.0 + 0.3), (11.3, 11.5, z1 - 0.3))   # the door frame's lip
+    pitch = (z1 - z0 - 1.0) / 3.0
+    for k in range(3):
+        cz = z0 + 0.5 + pitch * (k + 0.5)
+        lathe(m, "unshaded_lens", ellipsoid_profile(10.9, 2.6, 2.4, 5, y_to=10.9), sides=10, cz=cz)
+    pitch = (z1 - z0) / 5.0
+    for k in range(5):
+        cz = z0 + pitch * (k + 0.5)
+        for sign in (1.0, -1.0):
+            flat_star(m, "trim", (8.0 + sign * 3.12, 13.2, cz), 1.35, 0.55, (sign, 0.0, 0.0))
 
 
 def build_hollywood_wof(m):
@@ -1272,14 +1409,17 @@ def along_street(builder):
 # The order is the creative order.
 FIXTURES = [
     Fixture("lawilshirespecial", "Wilshire Special Lantern", build_wilshire, "frosted",
-            source="BSL: solid bronze, 1928, four figures at the corners; lantern form after the "
-                   "octagonal museum lanterns in frame 12"),
+            source="BSL: solid bronze, 1928, four-sided, a figure at each corner; from photos of "
+                   "the survivors on Wilshire Boulevard by MacArthur Park"),
     Fixture("lametropolitan", "Metropolitan Lantern", build_metropolitan, "frosted",
             source="the spear-tipped octagonal lantern in frame 12 (centre), horns at the cornice"),
     Fixture("lawestwoodlantern", "Westwood Village Lantern", build_westwood, "frosted",
             source="the hexagonal lantern in frame 12 (left)"),
     Fixture("labroadwayrosehead", "Broadway Rose Twin Globes", along_street(build_broadway_rose_head), "opal",
             source="BSL: a two-lamp electrolier garlanded with roses"),
+    Fixture("laum1906twin", "UM-1906 Twin Electrolier (Figueroa Street)", along_street(build_um1906),
+            "opal", source="Union Metal UM-1906, as on Figueroa Street (the requester's 'Figueroa "
+                           "Special'; waterandpower.org, Street View of Highland Park)"),
     Fixture("lage104globe", "GE No. 104 Globe with Brass Band", build_ge104, "opal",
             source="museum frame 09"),
     Fixture("lage198globe", "GE No. 198 Globe", build_ge198, "frosted", source="museum frame 13"),
@@ -1291,10 +1431,13 @@ FIXTURES = [
             source="BSL: post-war scroll ('Genie') arm with a skirted teardrop"),
     Fixture("lavinedouble", "Vine Double Teardrops", along_street(build_vine_double), "prism",
             source="BSL: the two-arm Genie, as on Vine Street and Hollywood Boulevard"),
-    Fixture("lahollywoodstar", "Hollywood Special Five-Star Head", along_street(build_hollywood_star), "opal",
-            source="BSL: c. 1960 'Five-Star' three-lamp head (a reconstruction; see the plan)"),
+    Fixture("lahollywoodstar", "Hollywood Special Five-Star Head", build_hollywood_star, "prism",
+            aimed=True, reach=HOLLYWOOD_STAR_REACH - 0.5,
+            source="BSL: c. 1960 'Five-Star' three-lamp head, from photos of a surviving head"),
     Fixture("lahollywoodwof", "Hollywood Walk of Fame Three-Lamp Head", along_street(build_hollywood_wof),
             "frosted", source="the 2005 Walk of Fame 'pitchfork' (a reconstruction; see the plan)"),
+    Fixture("lbcalheightslantern", "California Heights Caged Acorn Lantern", build_cal_heights,
+            "opal", source="Long Beach's California Heights lamps, 1929 (Olive Avenue)"),
     Fixture("reproacorn", "Reproduction Acorn", build_acorn, "prism",
             source="the cast-post acorn of Union Metal / Spring City reproductions"),
     Fixture("reprowashingtonglobe", "Washington Globe", build_washington, "opal",
@@ -1312,14 +1455,16 @@ FIXTURE_PAINT = {
     "lametropolitan": ("paint_la_bronze", "trim_bronze"),
     "lawestwoodlantern": ("paint_la_bronze", "trim_bronze"),
     "labroadwayrosehead": ("paint_la_green", "trim_bronze"),
+    "laum1906twin": ("paint_la_bronze", "trim_bronze"),
     "lage104globe": ("paint_black", "trim_brass"),
     "lage198globe": ("paint_la_bronze", "trim_bronze"),
     "laparagonjr": ("paint_la_green", "trim_bronze"),
     "lallewellyn5": ("paint_black", "trim_bronze"),
     "lagenie": ("paint_la_green", "trim_bronze"),
     "lavinedouble": ("paint_la_green", "trim_bronze"),
-    "lahollywoodstar": ("paint_hollywood_grey", "trim_gold"),
+    "lahollywoodstar": ("paint_hollywood_grey", "trim_star_red", "paint_black"),
     "lahollywoodwof": ("paint_hollywood_grey", "trim_gold"),
+    "lbcalheightslantern": ("paint_aluminium", "paint_aluminium"),
     "reproacorn": ("paint_black", "trim_gold"),
     "reprowashingtonglobe": ("paint_black", "trim_gold"),
     "reprotwin20": ("paint_black", "trim_gold"),
@@ -1349,10 +1494,13 @@ def inventory_mesh(m):
 
 def fixture_blockstate(f):
     model = model_ref(LIGHT_PREFIX, "decolight_" + f.fid)
-    body, trim = FIXTURE_PAINT[f.fid]
+    paint = FIXTURE_PAINT[f.fid]
+    body, trim = paint[0], paint[1]
     off, on = tex("glass_%s_off" % f.glass), tex("glass_%s_on" % f.glass)
     textures = {"#body": tex(body), "#trim": tex(trim), "#unshaded_lens": off,
                 "particle": tex(body)}
+    if len(paint) > 2:
+        textures["#frame"] = tex(paint[2])
     return {
         "forge_marker": 1,
         "defaults": {"model": model, "custom": {"flip-v": True}, "textures": textures},
@@ -1394,7 +1542,7 @@ def outputs():
     files[(ROADS, POLE_MODEL_REL + "/" + POLE_MTL)] = mtl_text(
         ["body", "tile", "trim"], tex("paint_black")).encode()
     files[(LIGHTING, LIGHT_MODEL_REL + "/" + LIGHT_MTL)] = mtl_text(
-        ["body", "trim", "unshaded_lens"], tex("paint_black")).encode()
+        ["body", "trim", "frame", "unshaded_lens"], tex("paint_black")).encode()
     for d in POLE_DESIGNS:
         parts = pole_parts(d)
         for part, (mesh, header) in parts.items():
@@ -1413,7 +1561,7 @@ def outputs():
         mesh = fixture_mesh(f)
         lo, hi = mesh.bounds()
         assert lo[1] >= 0.0, (f.fid, lo)
-        assert -8.5 <= lo[0] and hi[0] <= 24.5 and -8.5 <= lo[2] and hi[2] <= 24.5, (f.fid, lo, hi)
+        assert -8.5 <= lo[0] and hi[0] <= 24.5 and f.reach <= lo[2] and hi[2] <= 24.5, (f.fid, lo, hi)
         name = "decolight_" + f.fid
         files[(LIGHTING, LIGHT_MODEL_REL + "/" + name + ".obj")] = mesh.text(
             name, LIGHT_MTL, "%s (after %s)" % (f.label, f.source)).encode()
