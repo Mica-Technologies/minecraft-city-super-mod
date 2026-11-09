@@ -223,6 +223,11 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("whov50np", new AxisAlignedBB(0.312500, -0.187500, 0.062500, 0.687500, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("whov50shaded", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("whov50shadednp", new AxisAlignedBB(0.125000, -0.187500, 0.062500, 0.875000, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov25", new AxisAlignedBB(0.296875, -0.125000, 0.046875, 0.703125, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov25hps", new AxisAlignedBB(0.296875, -0.125000, 0.046875, 0.703125, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whov25early", new AxisAlignedBB(0.296875, -0.125000, 0.046875, 0.703125, 0.296875, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whl250", new AxisAlignedBB(0.296875, -0.125000, 0.234375, 0.703125, 0.328125, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("whl250hps", new AxisAlignedBB(0.296875, -0.125000, 0.234375, 0.703125, 0.328125, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("wsl", new AxisAlignedBB(0.437500, 0.000000, 0.875000, 0.562500, 1.000000, 1.000000), 0));
     // Aviation obstruction beacons for tall buildings (gen_obstruction_beacons.py --fragments)
     initTabBlock(new BlockObstructionBeacon("obstruction_beacon_red", new double[]{3.4, 0, 3.4, 12.6, 10.2, 12.6}, new double[]{3, 0, 3, 13, 13.2, 16}, 9));

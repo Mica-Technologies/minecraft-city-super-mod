@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "184 blocks in this tab"
+!!! info "189 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -189,6 +189,11 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Vanity Bar Sconce (Black) | `csm:sconcevanityblack` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Bronze) | `csm:sconcevanitybronze` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Brushed Nickel) | `csm:sconcevanitynickel` | 2 | 10 | pickaxe | 1 |
+| Westinghouse L-250 (HPS) | `csm:whl250hps` | 2 | 10 | pickaxe | 1 |
+| Westinghouse L-250 (Mercury Vapor) | `csm:whl250` | 2 | 10 | pickaxe | 1 |
+| Westinghouse OV-25 Silverliner (1950s, Mercury Vapor) | `csm:whov25early` | 2 | 10 | pickaxe | 1 |
+| Westinghouse OV-25 Silverliner (HPS) | `csm:whov25hps` | 2 | 10 | pickaxe | 1 |
+| Westinghouse OV-25 Silverliner (Mercury Vapor) | `csm:whov25` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV20 | `csm:whov20` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV50 (Finned) | `csm:whov50finned` | 2 | 10 | pickaxe | 1 |
 | Westinghouse OV50 (No Photocell) | `csm:whov50np` | 2 | 10 | pickaxe | 1 |

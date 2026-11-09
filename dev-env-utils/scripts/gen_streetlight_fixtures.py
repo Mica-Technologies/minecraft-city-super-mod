@@ -81,6 +81,8 @@ SWATCHES = {
     "streetlight_body_alto_silver": ((120, 120, 120), (96, 96, 96)),
     # Leotek's KarbonCobra grey, RAL 7040 (window grey) on its sheets.
     "streetlight_body_leotek_karbon": ((178, 183, 189), (140, 145, 151)),
+    # The Westinghouse OV-25 "Silverliner": bare cast aluminium.
+    "streetlight_body_westinghouse_silver": ((186, 188, 188), (140, 142, 142)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -1421,6 +1423,75 @@ def build_m250a(optics, with_photocell=True):
     return m
 
 
+# Westinghouse OV-25 "Silverliner" (1950s-70s), the first cobra head: a long cast lid over the
+# whole fixture, rounded down over a deep round refractor in the front half, and under the rear
+# half a narrower wedge (the ballast housing) whose underside climbs from the refractor's rim to
+# the slipfitter. The early (1950s) one is squarer, its lid flat on top; the mid-1960s restyle
+# has "softer lines". Crouse-Hinds sold the line after Cooper bought it in 1982.
+def ov25_lid(early):
+    if early:
+        rows = [(1.0, 1.9, 0.75, 1.85), (1.35, 2.7, 0.62, 2.35), (2.0, 3.1, 0.6, 2.55),
+                (3.0, 3.2, 0.6, 2.6), (9.0, 3.1, 0.6, 2.6)]
+    else:
+        rows = [(1.0, 1.4, 0.75, 1.55), (1.4, 2.3, 0.62, 2.15), (2.2, 2.95, 0.6, 2.6),
+                (3.6, 3.2, 0.6, 2.85), (5.5, 3.25, 0.6, 2.95), (7.5, 3.2, 0.6, 2.95),
+                (9.5, 3.0, 0.6, 2.95)]
+    return rows + [(11.5, 2.8, 0.6, 3.0), (13.2, 2.6, 0.5, 3.15), (14.6, 2.48, -0.25, 3.45),
+                   (REAR_Z, 2.45, -0.45, 3.5)]
+
+
+OV25_WEDGE = [
+    (8.5, 2.35, -1.25, 1.0),
+    (10.5, 2.4, -1.05, 1.0),
+    (12.5, 2.3, -0.75, 1.0),
+    (14.6, 2.2, -0.35, 1.0),
+]
+
+
+def build_ov25(early=False):
+    lid = ov25_lid(early)
+    ex = 4.0 if early else 2.6
+    m = Mesh()
+    check_neck_holds_arm("OV-25", lid, ex)
+    loft_housing(m, lid, ex)
+    loft_housing(m, OV25_WEDGE, 3.2)
+    half_ellipsoid_down(m, (8.0, 0.62, 5.0), 2.85, 2.5, 3.7, LENS_MAT)
+    photocell(m, lid, 11.6, 6.0)
+    return m
+
+
+# Westinghouse L-250 (1970s-80s; Crouse-Hinds after 1982): short, a rounded lid domed over a deep
+# refractor in front, the ballast in a squarer housing behind it tapering to the slipfitter.
+L250_LID = [
+    (4.0, 1.4, 0.75, 1.60),
+    (4.4, 2.3, 0.60, 2.40),
+    (5.2, 2.9, 0.55, 2.90),
+    (6.6, 3.1, 0.55, 3.15),
+    (8.2, 3.1, 0.55, 3.20),
+    (9.6, 2.95, 0.55, 3.10),
+    (10.6, 2.6, 0.60, 2.80),
+]
+L250_REAR = [
+    (9.4, 2.5, -0.20, 2.60),
+    (10.2, 2.7, -0.45, 3.10),
+    (12.5, 2.65, -0.50, 3.30),
+    (14.6, 2.5, -0.45, 3.40),
+    (REAR_Z, 2.45, -0.45, 3.40),
+]
+
+
+def build_l250():
+    m = Mesh()
+    check_neck_holds_arm("L-250", L250_REAR, 3.6)
+    loft_housing(m, L250_LID, 2.2)
+    loft_housing(m, L250_REAR, 3.6)
+    half_ellipsoid_down(m, (8.0, 0.6, 7.3), 2.7, 2.4, 3.0, LENS_MAT)
+    for z in (11.2, 11.9, 12.6):
+        box(m, (6.3, top_at(L250_REAR, z) - 0.4, z - 0.15), (9.7, top_at(L250_REAR, z) + 0.3, z + 0.15), "body")
+    photocell(m, L250_REAR, 13.9, 6.0)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1523,6 +1594,14 @@ CATALOGUE = [
     ("gem250acu", "GE M-250A (Cutoff Optics)", lambda: build_m250a("cutoff"), "streetlight_body_ge_grey"),
     ("gem250acunp", "GE M-250A (Cutoff Optics, No Photocell)", lambda: build_m250a("cutoff", with_photocell=False),
      "streetlight_body_ge_grey"),
+    ("whov25", "Westinghouse OV-25 Silverliner (Mercury Vapor)", lambda: build_ov25(),
+     "streetlight_body_westinghouse_silver"),
+    ("whov25hps", "Westinghouse OV-25 Silverliner (HPS)", lambda: build_ov25(),
+     "streetlight_body_westinghouse_silver"),
+    ("whov25early", "Westinghouse OV-25 Silverliner (1950s, Mercury Vapor)", lambda: build_ov25(early=True),
+     "streetlight_body_westinghouse_silver"),
+    ("whl250", "Westinghouse L-250 (Mercury Vapor)", build_l250, "streetlight_body_ge_grey"),
+    ("whl250hps", "Westinghouse L-250 (HPS)", build_l250, "streetlight_body_ge_grey"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1683,6 +1762,12 @@ LENS_FOR = {
     # the M-250 family's cutoff glass: the framed panel the M240R2 cutoff wears
     "gem250acu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
     "gem250acunp": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
+    # mercury: his olive, as the OV-20 / OV-50 wear it; HPS: his refractor orange
+    "whov25": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whov25hps": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "whov25early": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whl250": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "whl250hps": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
