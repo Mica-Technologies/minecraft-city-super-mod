@@ -623,4 +623,81 @@ class RingBarrierStateCoordinationTest {
       }
     }
   }
+
+  /**
+   * Main x Keough from issue #339: lead left 1 ahead of coordinated 2 in ring 1, coordinated 6
+   * alone on barrier A in ring 2, side street 4 alone on barrier B. Circuit 0 is the SB through
+   * (2), circuit 1 the NB through and left (6, 1), circuit 2 the side street (4).
+   */
+  static TrafficSignalProgrammedPhasePlan keoughPlan() {
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.setRing1Sequence(new int[] {1, 2, 4, 3});
+    plan.setRing2Sequence(new int[] {5, 6, 7, 8});
+    RingBarrierStateTest.enable(plan, 2, 0);
+    RingBarrierStateTest.enable(plan, 6, 1);
+    RingBarrierStateTest.enable(plan, 1, 1);
+    RingBarrierStateTest.enable(plan, 4, 2);
+    TrafficSignalProgrammedPhase left = plan.getPhase(1);
+    left.setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+    left.setPermissivePhase(2);
+    left.setMinGreen(100L);
+    left.setMaxGreen(300L);
+    for (int n : new int[] {2, 6}) {
+      plan.getPhase(n).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    }
+    plan.getPhase(2).setRestInWalk(true);
+    TrafficSignalCoordinationPlan co = plan.getCoordination();
+    co.setMode(TrafficSignalCoordinationMode.COORDINATED);
+    co.setCycleLength(2400L);
+    co.setOffset(1620L);
+    co.setCoordinatedPhases(new int[] {2, 6});
+    co.setSplit(1, 320L);
+    co.setSplit(2, 1420L);
+    co.setSplit(4, 660L);
+    co.setSplit(6, 1740L);
+    return plan;
+  }
+
+  @Test
+  @DisplayName("coordination: a lead left in the coordinated ring is served in its window when "
+      + "the other barrier has no call, and the coordinated through never clears for it "
+      + "outside that window (#339)")
+  void leadLeftServedWithNoCrossStreetDemand() {
+    // Main x Keough: ring 1 is 1 (lead FYA left, window 0..320), 2 (coordinated), 4, 3; ring 2
+    // only 6. A villager in the left bay and nothing on the side street. The coordinated through
+    // reached its yield point late in the cycle with the left still calling and cleared for it,
+    // but the left's window was a whole barrier away: nothing could be served, so phase 2 went
+    // green, yellow, red and green again every cycle, the left keeping its permissive flash.
+    long cycle = 2400L;
+    long offset = 1620L;
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(3);
+    RingBarrierStateTest.Demand left = new RingBarrierStateTest.Demand().veh(1, 0, 1, 0);
+    List<String> ring1Greens = new ArrayList<>();
+    List<Long> leftStarts = new ArrayList<>();
+    int was = 0;
+    for (long t = 0; t <= cycle * 6; t++) {
+      rb.tick(keoughPlan(), ckts, NO_OVERLAPS, t, left);
+      ServedMovement m1 = rb.getLastServed(1);
+      int green = m1 != null && m1.vehicle == VehInterval.GREEN ? m1.phaseNumber : 0;
+      long local = ((t - offset) % cycle + cycle) % cycle;
+      if (green != 0 && green != was && t > cycle) {
+        ring1Greens.add(green + "@" + local);
+        if (green == 1) {
+          leftStarts.add(local);
+        }
+      }
+      was = green;
+    }
+    assertTrue(leftStarts.size() >= 4, "phase 1 must be served every cycle with a standing call "
+        + "and no cross-street demand: " + ring1Greens);
+    for (long start : leftStarts) {
+      assertTrue(start < 100L, "phase 1 must start inside its permissive period (0..100): "
+          + ring1Greens);
+    }
+    for (int i = 1; i < ring1Greens.size(); i++) {
+      assertTrue(!ring1Greens.get(i).startsWith("2@") || !ring1Greens.get(i - 1).startsWith("2@"),
+          "phase 2 cleared and went green again with nothing served between: " + ring1Greens);
+    }
+  }
 }
