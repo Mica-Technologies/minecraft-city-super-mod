@@ -412,6 +412,7 @@ tile.signhandicap.name=Señal de Discapacitados
 tile.signhandicapaccessibleicon.name=Señal de Accesibilidad (Icono Accesible)
 tile.signhandicapreservedparking.name=Señal de Aparcamiento para Discapacitados/Reservado
 tile.signhandicapreservedparkingaccessibleicon.name=Señal de Estacionamiento Reservado (Icono Accesible)
+tile.signvanaccessibleplaque.name=Señal de Accesible para Camionetas (Placa)
 tile.signhangglider.name=Señal de Ala Delta
 tile.signhardleftshift.name=Señal de Desvío Brusco a la Izquierda
 tile.signhardrightshift.name=Señal de Desvío Brusco a la Derecha

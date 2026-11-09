@@ -2,7 +2,7 @@
 
 The MUTCD sign set, grouped the way the manual groups it.
 
-!!! info "697 blocks in this tab"
+!!! info "698 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -685,6 +685,7 @@ The MUTCD sign set, grouped the way the manual groups it.
 | Use Lane with Green Arrow Sign | `csm:signuselanewithgreenarrow` | 2 | 10 | pickaxe | 1 |
 | Utility Vehicles Only | `csm:utilityvehiclesonlysign` | 2 | 10 | pickaxe | 1 |
 | Utility Work Ahead Sign | `csm:signutilityworkahead` | 2 | 10 | pickaxe | 1 |
+| Van Accessible Sign (Plaque) | `csm:signvanaccessibleplaque` | 2 | 10 | pickaxe | 1 |
 | Vehicles with Lugs Prohibited Sign | `csm:signvehiclelugsprohibit` | 2 | 10 | pickaxe | 1 |
 | Visitor Parking No Long Term Parking Sign | `csm:signvisitornolongtermparking` | 2 | 10 | pickaxe | 1 |
 | Walk Left Facing Traffic Sign | `csm:signwalkleft` | 2 | 10 | pickaxe | 1 |

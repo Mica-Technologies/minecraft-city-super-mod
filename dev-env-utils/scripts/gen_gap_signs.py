@@ -628,6 +628,15 @@ CATALOGUE = [
      'portrait', accessible_icon_variant('portrait', 'Regulatory', 93, pick=3,
                                          palette={(74, 87, 120): shs.MOD_COLOURS['blue']}),
      'signhandicapreservedparking'),
+    # R7-8P VAN ACCESSIBLE, the 18 x 9 plaque posted under an R7-8 at a van space: green
+    # legend and border on white like the R7-8 above it. The plaque came with the 2009 MUTCD,
+    # after the 2004 book, and FHWA has published no interim drawing of it, so it is set.
+    ('signvanaccessibleplaque', ('Van Accessible Sign (Plaque)',
+                                 'Señal de Accesible para Camionetas (Placa)',
+                                 'Rollstuhlgerechter Van Schild (Zusatzschild)',
+                                 'Tillgänglig för Minibuss-Vägmärke (Tilläggsskylt)'),
+     'plaque', T('plaque', ['VAN', 'ACCESSIBLE'], WHITE, GREEN),
+     'signhandicapreservedparkingaccessibleicon'),
     # --- custom (photographed, no SHS drawing)
     ('signconstructionaheadliability', ('Construction Ahead Road Use Restricted Sign',
                                         'Señal de Construcción Adelante Uso de Carretera Restringido',

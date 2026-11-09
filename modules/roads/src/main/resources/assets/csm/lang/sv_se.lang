@@ -412,6 +412,7 @@ tile.signhandicap.name=Handikapp-Vägmärke
 tile.signhandicapaccessibleicon.name=Tillgänglighet-Vägmärke (Accessible Icon)
 tile.signhandicapreservedparking.name=Handikapp-/Reserverad Parkering-Vägmärke
 tile.signhandicapreservedparkingaccessibleicon.name=Reserverad Parkering-Vägmärke (Accessible Icon)
+tile.signvanaccessibleplaque.name=Tillgänglig för Minibuss-Vägmärke (Tilläggsskylt)
 tile.signhangglider.name=Hängflygare-Vägmärke
 tile.signhardleftshift.name=Skarp Vänsterförskjutning-Vägmärke
 tile.signhardrightshift.name=Skarp Högerförskjutning-Vägmärke
