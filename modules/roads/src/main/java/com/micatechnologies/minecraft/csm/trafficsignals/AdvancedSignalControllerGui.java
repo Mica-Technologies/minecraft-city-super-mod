@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.AdvancedPlanJson;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationPlan;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPriorityPlan;
@@ -26,6 +27,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 
 /**
@@ -77,6 +80,8 @@ public class AdvancedSignalControllerGui extends GuiScreen {
   private static final int BTN_PE_REMOVE = 243;
   private static final int BTN_PE_PREV = 244;
   private static final int BTN_PE_NEXT = 245;
+  private static final int BTN_PLAN_COPY = 246;
+  private static final int BTN_PLAN_PASTE = 247;
 
   private static final int W = 384;
   private static final int H = 296;
@@ -344,6 +349,13 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     return p != null ? p : TrafficSignalProgrammedPhasePlan.createDefault();
   }
 
+  /** A line in the player's chat, for the plan clipboard buttons. */
+  private void status(TextFormatting color, String text) {
+    if (mc != null && mc.player != null) {
+      mc.player.sendMessage(new TextComponentString(color + "[CSM] " + text));
+    }
+  }
+
   private void send(String action, int index, long value) {
     CsmRoads.NETWORK.sendToServer(
         new AdvancedSignalControllerConfigPacket(blockPos, action, index, value));
@@ -414,6 +426,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     buttonList.add(new GuiButton(BTN_PE_REMOVE, rx + 50, ky + (kh + gap), 46, kh, "P-"));
     buttonList.add(new GuiButton(BTN_PE_PREV, rx, ky + 2 * (kh + gap), 46, kh, "Prev"));
     buttonList.add(new GuiButton(BTN_PE_NEXT, rx + 50, ky + 2 * (kh + gap), 46, kh, "Next"));
+    // Whole-plan JSON through the clipboard (SPATT's csm-asc3-plan format), so a plan moves in
+    // and out on a server too.
+    int jx = rx + 100;
+    buttonList.add(new GuiButton(BTN_PLAN_COPY, jx, ky, 80, kh, "Copy Plan"));
+    buttonList.add(new GuiButton(BTN_PLAN_PASTE, jx, ky + (kh + gap), 80, kh, "Paste Plan"));
     buttonList.add(new GuiButton(BTN_BACK, left + W - 52, top + 6, 46, 14, "Back"));
   }
 
@@ -1086,6 +1103,23 @@ public class AdvancedSignalControllerGui extends GuiScreen {
       rebuildCells();
     } else if (id == BTN_TEMPLATE) {
       send("loadTemplate", 0, 0);
+    } else if (id == BTN_PLAN_COPY) {
+      setClipboardString(AdvancedPlanJson.export(plan(), controller.getCircuits(),
+          controller.getRedAmberTime(), controller.getGreenFlashTime(), null));
+      status(TextFormatting.GREEN, "Plan JSON copied to the clipboard.");
+    } else if (id == BTN_PLAN_PASTE) {
+      String text = getClipboardString();
+      if (text == null || text.trim().isEmpty()) {
+        status(TextFormatting.RED, "The clipboard is empty: copy a plan JSON first.");
+      } else {
+        byte[] compressed = AdvancedSignalControllerPlanImportPacket.compress(text);
+        if (compressed == null) {
+          status(TextFormatting.RED, "That plan is too large to send in one piece.");
+        } else {
+          CsmRoads.NETWORK.sendToServer(
+              new AdvancedSignalControllerPlanImportPacket(blockPos, compressed));
+        }
+      }
     } else if (id == BTN_PE_ADD) {
       // The P+/P-/Prev/Next cluster edits overlaps on the OVL screen, preempts elsewhere.
       send(screen == Screen.OVL ? "ov.add" : "pe.add", 0, 0);
@@ -1928,6 +1962,13 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "Overwrites the plan with a standard NEMA 8-phase dual-ring",
         "layout and auto-assigns phases to your circuits by approach.",
         "The quickest way to get a working ADVANCED program.");
+    addButtonHelp(BTN_PLAN_COPY, "Copy Plan",
+        "Copies the whole program as plan JSON (SPATT's csm-asc3-plan",
+        "format) to the clipboard, with red+amber and green flash.");
+    addButtonHelp(BTN_PLAN_PASTE, "Paste Plan",
+        "Loads plan JSON from the clipboard as one edit. Fields the plan",
+        "leaves out (circuits, overlaps...) keep their values; phases it",
+        "does not list are disabled. A plan that does not parse changes nothing.");
     addButtonHelp(BTN_PE_ADD, "Add Preempt", "Add a new preemption sequence to the list.");
     addButtonHelp(BTN_PE_REMOVE, "Remove Preempt", "Delete the currently selected preempt.");
     addButtonHelp(BTN_PE_PREV, "Previous Preempt", "Select the previous preempt in the list.");

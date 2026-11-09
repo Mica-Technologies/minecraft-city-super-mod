@@ -1,0 +1,160 @@
+{
+  "format": "csm-asc3-plan",
+  "formatVersion": 2,
+  "generator": "SPATT",
+  "name": "Elm St & 3rd Ave",
+  "phases": [
+    {
+      "number": 2,
+      "enabled": true,
+      "barrier": 0,
+      "minGreen": 200,
+      "passage": 60,
+      "maxGreen": 700,
+      "maxGreen2": 0,
+      "yellow": 80,
+      "redClear": 40,
+      "addedInitial": 0,
+      "maxInitial": 0,
+      "minGap": 0,
+      "timeBeforeReduce": 0,
+      "timeToReduce": 0,
+      "recall": "NONE",
+      "pedRecall": false,
+      "restInWalk": false,
+      "dualEntry": false,
+      "conditionalService": false,
+      "lockCall": false,
+      "exclusions": [],
+      "label": "EB",
+      "walk": 140,
+      "pedClear": 320
+    },
+    {
+      "number": 4,
+      "enabled": true,
+      "barrier": 1,
+      "minGreen": 200,
+      "passage": 60,
+      "maxGreen": 500,
+      "maxGreen2": 0,
+      "yellow": 80,
+      "redClear": 40,
+      "addedInitial": 0,
+      "maxInitial": 0,
+      "minGap": 0,
+      "timeBeforeReduce": 0,
+      "timeToReduce": 0,
+      "recall": "NONE",
+      "pedRecall": false,
+      "restInWalk": false,
+      "dualEntry": false,
+      "conditionalService": false,
+      "lockCall": false,
+      "exclusions": [],
+      "label": "SB",
+      "walk": 140,
+      "pedClear": 240
+    },
+    {
+      "number": 6,
+      "enabled": true,
+      "barrier": 0,
+      "minGreen": 200,
+      "passage": 60,
+      "maxGreen": 700,
+      "maxGreen2": 0,
+      "yellow": 80,
+      "redClear": 40,
+      "addedInitial": 0,
+      "maxInitial": 0,
+      "minGap": 0,
+      "timeBeforeReduce": 0,
+      "timeToReduce": 0,
+      "recall": "NONE",
+      "pedRecall": false,
+      "restInWalk": false,
+      "dualEntry": false,
+      "conditionalService": false,
+      "lockCall": false,
+      "exclusions": [],
+      "label": "WB",
+      "walk": 140,
+      "pedClear": 320
+    },
+    {
+      "number": 8,
+      "enabled": true,
+      "barrier": 1,
+      "minGreen": 200,
+      "passage": 60,
+      "maxGreen": 500,
+      "maxGreen2": 0,
+      "yellow": 80,
+      "redClear": 40,
+      "addedInitial": 0,
+      "maxInitial": 0,
+      "minGap": 0,
+      "timeBeforeReduce": 0,
+      "timeToReduce": 0,
+      "recall": "NONE",
+      "pedRecall": false,
+      "restInWalk": false,
+      "dualEntry": false,
+      "conditionalService": false,
+      "lockCall": false,
+      "exclusions": [],
+      "label": "NB",
+      "walk": 140,
+      "pedClear": 240
+    }
+  ],
+  "rings": [
+    [
+      2,
+      4
+    ],
+    [
+      6,
+      8
+    ]
+  ],
+  "patterns": [
+    {
+      "slot": 0,
+      "mode": "COORDINATED",
+      "cycle": 1400,
+      "offset": 0,
+      "coordinatedPhases": [
+        2,
+        6
+      ],
+      "splits": {
+        "2": 800,
+        "4": 600,
+        "6": 800,
+        "8": 600
+      },
+      "name": "All Day"
+    },
+    {
+      "slot": 1,
+      "mode": "FREE",
+      "cycle": 1800,
+      "offset": 0,
+      "coordinatedPhases": [],
+      "splits": {}
+    }
+  ],
+  "schedule": {
+    "enabled": true,
+    "startHours": [
+      6,
+      22,
+      6,
+      6
+    ]
+  },
+  "redAmber": 0,
+  "greenFlash": 0
+}
