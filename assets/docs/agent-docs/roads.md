@@ -77,6 +77,16 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   flash, flashing green pedestrian clearance) and an Austrian one (ADVANCED, both). Every
   controller is programmed by NBT; it drives the game through the orchestrator
   (`--instance run-f2eb58`), never a game port
+- `build_lights_alarms_signals_demo.py` -- builds the demo of the lights, alarms, signals and HVAC
+  batch in a flat creative world named "Lights Alarms Signals Demo" (refuses any other): the
+  condensers, rooftop units, large rooftop units and PTACs; a zoned office fire alarm and two
+  houses (interconnected alarms, home keypad) with command-block buttons; every automatic sliding
+  door; the cell door keypad lock, trash compactor and bear lockers; the 36 luminaire arms with the
+  new street lights on their tips, the LA and Anaheim arms, all 17 post tops and the 15 floodlights
+  on each mounting, switched on; an ADVANCED intersection running Elm's real Alto plan (circuit
+  lists as the live controller has them), the pole-side preempt pieces and the R7-8P plaque.
+  Curved arms take their direction from where the placer stands, so it steps in front of each
+  pole before clicking; `--only <areas>` rebuilds an area in place
 - `gen_sign_truss.py` -- the overhead sign trusses (Roads, `BlockSignTruss`: 1x1 and 2x2
   galvanized box trusses, laced on every face, end frames and base plates from actual state, each
   2x2 block a quarter of the section; the low-profile `BlockSignTrussLight` span and its twin-post
