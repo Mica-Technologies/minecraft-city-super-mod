@@ -246,17 +246,89 @@ final class HvacSystemControl {
     ThermalSpace s = a.space;
     int r = a.region;
     s.activeStep = w.stepId; // a space heater at work keeps its room awake
-    float cap = unit.getHeatCapacity();
-    float q;
-    if (unit.isCoolingUnit()) {
-      float need = s.pendingHeat[r] - s.requiredHeat(r, STANDALONE_COOL_TARGET, TAU);
-      q = -clamp(need, 0, cap);
-    } else {
-      float need = s.requiredHeat(r, STANDALONE_HEAT_TARGET, TAU) - s.pendingHeat[r];
-      q = clamp(need, 0, cap);
-    }
+    float q = standaloneDelivery(unit, s, r);
     s.pendingHeat[r] += q;
-    unit.applyOutput(Math.abs(q) / cap);
+    unit.applyOutput(Math.abs(q) / unit.getHeatCapacity());
+  }
+
+  /**
+   * Heat an unlinked unit delivers into its region this step, positive heating and negative
+   * cooling: a heater holds {@link #STANDALONE_HEAT_TARGET}, a cooler
+   * {@link #STANDALONE_COOL_TARGET}, and a combination unit both, heating below the one and
+   * cooling above the other, idle between them as a PTAC on its own thermostat is. The two
+   * cannot both be wanted: the heat that holds 74°F is always more than the heat that holds 70.
+   */
+  static float standaloneDelivery(IHvacUnit unit, ThermalSpace s, int r) {
+    float cap = unit.getHeatCapacity();
+    if (unit.canHeat()) {
+      float need = s.requiredHeat(r, STANDALONE_HEAT_TARGET, TAU) - s.pendingHeat[r];
+      if (need > 0) {
+        return clamp(need, 0, cap);
+      }
+    }
+    if (unit.canCool()) {
+      float need = s.pendingHeat[r] - s.requiredHeat(r, STANDALONE_COOL_TARGET, TAU);
+      if (need > 0) {
+        return -clamp(need, 0, cap);
+      }
+    }
+    return 0.0f;
+  }
+
+  /** Whether a unit runs in a system mode: heaters heating, coolers cooling, combination either. */
+  static boolean runsIn(IHvacUnit unit, int mode) {
+    return mode == HvacStatus.MODE_HEATING ? unit.canHeat()
+        : mode == HvacStatus.MODE_COOLING && unit.canCool();
+  }
+
+  /**
+   * Whether the outdoor temperature calls for an unlinked unit in lightweight mode: below
+   * {@link #STANDALONE_HEAT_TARGET} for one that heats, above {@link #STANDALONE_COOL_TARGET}
+   * for one that cools.
+   */
+  static boolean standaloneWanted(IHvacUnit unit, float outdoor) {
+    return (unit.canHeat() && outdoor < STANDALONE_HEAT_TARGET)
+        || (unit.canCool() && outdoor > STANDALONE_COOL_TARGET);
+  }
+
+  /**
+   * What an unlinked unit's room reads in lightweight mode: what it holds. A heater holds 70°F
+   * and a cooler 74°F whatever the weather, as before; a combination unit holds whichever the
+   * weather calls for, and between them leaves the room at the outdoor temperature.
+   */
+  static float standaloneHold(IHvacUnit unit, float outdoor) {
+    if (unit.canHeat() && unit.canCool()) {
+      return Math.max(STANDALONE_HEAT_TARGET, Math.min(STANDALONE_COOL_TARGET, outdoor));
+    }
+    return unit.canCool() ? STANDALONE_COOL_TARGET : STANDALONE_HEAT_TARGET;
+  }
+
+  /**
+   * A system's equipment, tallied for the step: whether it can heat and cool at all, and the
+   * powered capacity each way. A combination unit counts both ways, since a system runs one way
+   * at a time.
+   */
+  static final class Equipment {
+    boolean hasHeater;
+    boolean hasCooler;
+    float heatCap;
+    float coolCap;
+    int powered;
+
+    void add(IHvacUnit unit, boolean hasPower) {
+      if (hasPower) {
+        powered++;
+      }
+      float cap = hasPower ? unit.getHeatCapacity() : 0;
+      if (unit.canHeat()) {
+        hasHeater = true;
+        heatCap += cap;
+      }
+      if (unit.canCool()) {
+        hasCooler = true;
+        coolCap += cap;
+      }
+    }
   }
 
   // endregion
@@ -361,24 +433,15 @@ final class HvacSystemControl {
       return;
     }
 
-    boolean hasHeater = false;
-    boolean hasCooler = false;
-    float heatCap = 0;
-    float coolCap = 0;
-    int powered = 0;
+    Equipment eq = new Equipment();
     for (TileEntityHvacHeater u : units) {
-      boolean p = u.hasPower();
-      if (p) {
-        powered++;
-      }
-      if (u.isCoolingUnit()) {
-        hasCooler = true;
-        coolCap += p ? u.getHeatCapacity() : 0;
-      } else {
-        hasHeater = true;
-        heatCap += p ? u.getHeatCapacity() : 0;
-      }
+      eq.add(u, u.hasPower());
     }
+    boolean hasHeater = eq.hasHeater;
+    boolean hasCooler = eq.hasCooler;
+    float heatCap = eq.heatCap;
+    float coolCap = eq.coolCap;
+    int powered = eq.powered;
 
     // The zones' vents, sorted into supply vents and exhaust grilles (#314). Exhaust grilles sit
     // in the vent lists, so only a supply vent makes the system ducted.
@@ -446,9 +509,10 @@ final class HvacSystemControl {
         Served e = served.computeIfAbsent(key(ua.space, ua.region),
             k -> new Served(ua.space, ua.region, zoneOfUnit));
         if (u.hasPower()) {
-          if (u.isCoolingUnit()) {
+          if (u.canCool()) {
             e.coolCapHere += u.getHeatCapacity();
-          } else {
+          }
+          if (u.canHeat()) {
             e.heatCapHere += u.getHeatCapacity();
           }
         }
@@ -528,9 +592,7 @@ final class HvacSystemControl {
     }
     float fraction = cap > 0 ? Math.min(1.0f, delivered / cap) : 0;
     for (TileEntityHvacHeater u : units) {
-      boolean running = mode == HvacStatus.MODE_HEATING ? !u.isCoolingUnit()
-          : mode == HvacStatus.MODE_COOLING && u.isCoolingUnit();
-      u.applyOutput(running && u.hasPower() ? fraction : 0.0f);
+      u.applyOutput(runsIn(u, mode) && u.hasPower() ? fraction : 0.0f);
     }
 
     // Air (#314): what the vents bring in and the exhaust grilles draw out.
@@ -813,8 +875,7 @@ final class HvacSystemControl {
             && ((TileEntityHvacHeater) te).claimStep != w.stepId) {
           TileEntityHvacHeater unit = (TileEntityHvacHeater) te;
           float outdoor = CsmEnvironment.getBaselineTemperatureAt(world, a.pos);
-          boolean wanted = unit.isCoolingUnit() ? outdoor > STANDALONE_COOL_TARGET
-              : outdoor < STANDALONE_HEAT_TARGET;
+          boolean wanted = standaloneWanted(unit, outdoor);
           unit.applyOutput(wanted && unit.hasPower() && !unit.isDuctedOnly()
               ? LIGHTWEIGHT_OUTPUT : 0.0f);
         }
@@ -886,7 +947,7 @@ final class HvacSystemControl {
     for (TileEntityHvacHeater u : units) {
       boolean p = u.hasPower();
       powered += p ? 1 : 0;
-      boolean wanted = u.isCoolingUnit() ? cool : heat;
+      boolean wanted = (u.canCool() && cool) || (u.canHeat() && heat);
       u.applyOutput(wanted && p ? LIGHTWEIGHT_OUTPUT : 0.0f);
       ran |= wanted && p;
       wantedUnpowered |= wanted && !p;

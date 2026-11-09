@@ -1281,8 +1281,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
       return tstat.getCurrentTemperature();
     }
     if (unit != null && unit.hasPower() && !unit.isDuctedOnly()) {
-      return unit.isCoolingUnit() ? HvacSystemControl.STANDALONE_COOL_TARGET
-          : HvacSystemControl.STANDALONE_HEAT_TARGET;
+      return HvacSystemControl.standaloneHold(unit,
+          CsmEnvironment.getBaselineTemperatureAt(world, pos));
     }
     return CsmEnvironment.getBaselineTemperatureAt(world, pos);
   }
