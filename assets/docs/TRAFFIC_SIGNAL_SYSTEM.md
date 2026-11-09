@@ -1258,6 +1258,30 @@ By command, under a mount at `x y+1 z` (detector metadata is the horizontal inde
 /setblock x y z csm:preempt_confirm_dome_red_span 2
 ```
 
+**Pole-side versions (#338).** A junction whose heads stand on corner posts or pedestals has
+neither arm nor wire, and the arm-top devices stacked on a bare pole tip sat above and behind the
+heads. So each of the four also clamps to the side of a vertical pole: `preempt_detector_pole`
+(`BlockPreemptDetectorPole`, Traffic Signals tab) and `preempt_confirm_par_white_pole`,
+`preempt_confirm_par_blue_pole`, `preempt_confirm_dome_red_pole` (`BlockPreemptConfirm*Pole`,
+Traffic Accessories). As with the span versions each subclasses the arm block, so the tile entity,
+linking (Signal Link Tool, DET on the PREEMPT screen, `td`, `tst`, redstone), detection along its
+facing, flash and lighting are unchanged; they add `IPreemptPoleMounted`, a model, a box and, for
+the lights, the `*_POLE_*` lens boxes in `BlockPreemptConfirmationLight`. Place one on the face of
+the pole that looks up the approach: it stands in the cell in front of the pole facing that way
+(`IPreemptPoleMounted.placementFacing` takes the clicked face), on a bracket that runs back into
+the pole's cell and ends in a clamp band round its centre line, sized for the thin pedestal pole
+and hidden inside a thicker one, the way the GridSmart bell camera mounts. Their models
+(`gen_preempt_detector.py`, `<name>_pole`) are the arm devices without the stub, raised 5 px.
+The confirmation lamp is a separate pole-side light a cell above or below the detector on the
+same pole, linked to the same circuit, rather than a lamp built into the detector: the detector
+links as a sensor and the light as a preempt indicator, and one block cannot be both. By command,
+with the pole at `x y z+1` and the device facing north:
+
+```
+/setblock x y z csm:preempt_detector_pole 2
+/setblock x y+1 z csm:preempt_confirm_par_white_pole 2
+```
+
 **The red ones answer every approach.** The beacon and the red dome
 (`BlockPreemptBeacon.isLitForAnyEmergencyPreempt`, true for both, false for the white and blue PAR
 lamps) are also lit while an emergency-vehicle preempt triggered from *any* of the controller's

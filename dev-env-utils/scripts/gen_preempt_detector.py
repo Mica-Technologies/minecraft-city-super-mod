@@ -24,6 +24,13 @@ to the top of the cell, where the mount's drop comes down to meet it (the payloa
 above the can; the detector and the dome hang from their caps. Their lens boxes and bounding boxes
 are the `*_SPAN_*` constants in the Java, which must match SPAN_LIGHTS and the shifts below.
 
+And each has a pole-side version (`<name>_pole`, #338), for a junction whose heads are on posts
+or pedestals with no arm or wire: it stands in the cell in front of a vertical pole, facing the
+approach, on a bracket that runs back into the pole's cell (south in model space, +z) and ends in
+a clamp band round the pole's centre line. The device is drawn without its stub and raised by
+POLE_RAISE; the band is sized for the thin pedestal pole and hides inside anything thicker. Their
+lens boxes are the `*_POLE_*` constants in the Java, which must match POLE_LIGHTS and POLE_RAISE.
+
 Every model is written through model_depth.py (separate, then prune), as the other JSON-model
 generators' are: faces that z-fight move apart by at most 0.65 px and faces the model's own closed
 boxes hide are removed. The confirmation lights' lens faces are kept where they are drawn
@@ -225,8 +232,58 @@ SPAN_LIGHTS = {
 }
 
 
+# --- pole-side versions ----------------------------------------------------------------------
+
+# How far a pole-side device is raised from where the arm-top one stands (its stub removed), so it
+# sits about the middle of its cell.
+POLE_RAISE = 5.0
+# The pole the bracket clamps to: its centre line one cell behind the device, and the band's
+# half-width (the thin pedestal pole is 8 px across).
+POLE_Z = 24.0
+BAND = 4.4
+
+
+def bracket(y0, y1, z0):
+    """The pole bracket: an arm from the device's back (z0) to the pole's centre line, and a clamp
+    band of four straps round the pole at the arm's height."""
+    els = [box((7.3, y0, z0), (8.7, y1, POLE_Z - BAND), METAL)]
+    b0, b1 = y0 - 0.4, y1 + 0.4
+    lo, hi = POLE_Z - BAND - 0.6, POLE_Z + BAND + 0.6
+    els.append(box((8 - BAND - 0.6, b0, lo), (8 + BAND + 0.6, b1, POLE_Z - BAND), METAL))
+    els.append(box((8 - BAND - 0.6, b0, POLE_Z + BAND), (8 + BAND + 0.6, b1, hi), METAL))
+    els.append(box((8 - BAND - 0.6, b0, POLE_Z - BAND), (8 - BAND, b1, POLE_Z + BAND), METAL))
+    els.append(box((8 + BAND, b0, POLE_Z - BAND), (8 + BAND + 0.6, b1, POLE_Z + BAND), METAL))
+    return els
+
+
+def detector_pole_elements():
+    """The detector on a pole bracket, the arm meeting the back of its body."""
+    head = shift_y(elements()[2:], POLE_RAISE)
+    return head + bracket(_sy(5.0) + POLE_RAISE, _sy(8.0) + POLE_RAISE, 8.0 + 2.4 * HEAD_SCALE)
+
+
+def par_pole_elements():
+    """The PAR lamp in its yoke on a pole bracket, the arm under the yoke base."""
+    return (shift_y(par_elements()[2:], POLE_RAISE)
+            + bracket(-2.2 + POLE_RAISE, -1.4 + POLE_RAISE, 8.8))
+
+
+def dome_pole_elements():
+    """The dome on a pole bracket, the arm meeting its base."""
+    return (shift_y(dome_elements()[2:], POLE_RAISE)
+            + bracket(-2.2 + POLE_RAISE, -0.6 + POLE_RAISE, 11.0))
+
+
+POLE_LIGHTS = {
+    'preempt_confirm_par_white_pole': (par_pole_elements, LIGHTS['preempt_confirm_par_white'][1]),
+    'preempt_confirm_par_blue_pole': (par_pole_elements, LIGHTS['preempt_confirm_par_blue'][1]),
+    'preempt_confirm_dome_red_pole': (dome_pole_elements,
+                                      LIGHTS['preempt_confirm_dome_red'][1]),
+}
+
+
 def light_model(name):
-    build, lens = LIGHTS[name] if name in LIGHTS else SPAN_LIGHTS[name]
+    build, lens = (LIGHTS.get(name) or SPAN_LIGHTS.get(name) or POLE_LIGHTS[name])
     return {
         'parent': 'block/block',
         'textures': {'particle': TEX + 'metal_black', 'body': TEX + 'metal_black',
@@ -328,8 +385,11 @@ def files():
            os.path.relpath(BLOCKSTATE, ASSETS): blockstate(),
            os.path.join(rel_models, 'preempt_detector_span.json'): model(detector_span_elements),
            os.path.join('blockstates', 'preempt_detector_span.json'):
-               blockstate('preempt_detector_span')}
-    for name in list(LIGHTS) + list(SPAN_LIGHTS):
+               blockstate('preempt_detector_span'),
+           os.path.join(rel_models, 'preempt_detector_pole.json'): model(detector_pole_elements),
+           os.path.join('blockstates', 'preempt_detector_pole.json'):
+               blockstate('preempt_detector_pole')}
+    for name in list(LIGHTS) + list(SPAN_LIGHTS) + list(POLE_LIGHTS):
         out[os.path.join(rel_models, name + '.json')] = light_model(name)
         out[os.path.join('blockstates', name + '.json')] = light_blockstate(name)
     return out
@@ -338,7 +398,7 @@ def files():
 def keep_lens(rel, face):
     """The confirmation lights' lens faces stay where they are drawn: the beacon renderer glows
     over each light's lens box at the numbers in BlockPreemptConfirmationLight (PAR_LENS_*,
-    DOME_LENS_*, their _SPAN_ twins), and model_depth.py would otherwise move them out by up to
+    DOME_LENS_*, their _SPAN_ and _POLE_ twins), and model_depth.py would otherwise move them out by up to
     0.6 px (the PAR lens forward of its glow, the dome's top above it). The faces they clash
     with move instead, or stay as they were. The detector's lens has no glow and may move."""
     return (os.path.basename(rel).startswith('preempt_confirm_')

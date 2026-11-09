@@ -59,6 +59,26 @@ public abstract class BlockPreemptConfirmationLight extends BlockPreemptBeacon {
   static final float[] DOME_SPAN_LENS_FROM = {5.5f, 5.6f, 5.5f};
   static final float[] DOME_SPAN_LENS_TO = {10.5f, 11.4f, 10.5f};
 
+  // The pole-side versions (#338, IPreemptPoleMounted): each device raised 5 px from where the
+  // arm-top one stands, on a bracket running back into the pole's cell. The boxes stop at this
+  // cell's edge; the bracket and clamp beyond it are drawn only.
+
+  /** The pole-side PAR lamp's box facing north: the yoke, the can and the bracket to the edge. */
+  static final AxisAlignedBB PAR_POLE_BOX =
+      new AxisAlignedBB(4.6 / 16, 2.4 / 16, 4.7 / 16, 11.4 / 16, 12.0 / 16, 1.0);
+
+  /** The pole-side dome's box: base, dome, cap and the bracket to the cell's edge. */
+  static final AxisAlignedBB DOME_POLE_BOX =
+      new AxisAlignedBB(5.0 / 16, 2.4 / 16, 5.0 / 16, 11.0 / 16, 10.6 / 16, 1.0);
+
+  /** The pole-side PAR lamp's lens, facing north. */
+  static final float[] PAR_POLE_LENS_FROM = {5.5f, 6.3f, 4.6f};
+  static final float[] PAR_POLE_LENS_TO = {10.5f, 11.3f, 4.75f};
+
+  /** The pole-side dome's lens, all round. */
+  static final float[] DOME_POLE_LENS_FROM = {5.5f, 4.4f, 5.5f};
+  static final float[] DOME_POLE_LENS_TO = {10.5f, 10.2f, 10.5f};
+
   /**
    * Faces the player placing it, never up or down: it is placed onto the top of an arm, where the
    * clicked face would point it at the sky.

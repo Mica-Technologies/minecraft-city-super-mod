@@ -104,7 +104,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   the same stub the arm-mounted confirmation lights (white and blue PAR lamps in a yoke, a red 360 degree
   dome), whose lens boxes `BlockPreemptConfirmationLight` must match; and the span wire versions
   of all four (`<name>_span`, #321): the device without its stub, hung on a collar and pipe from
-  the top of the cell under a span wire mount; `--check`
+  the top of the cell under a span wire mount; and the pole-side versions (`<name>_pole`, #338):
+  the device on a bracket and clamp band reaching back into a vertical pole's cell; `--check`
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
   tapered base with its access door and the clamp bracket as OBJ, and emits the five
   blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script
