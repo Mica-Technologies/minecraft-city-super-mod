@@ -592,6 +592,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleDecorative("decopolelaconcrete", 4.0, 4.5, 7.0, TRAFFIC_POLE_COLOR.SILVER));
     initTabBlock(new BlockTrafficPoleDecorative("decopolelawestwood", 4.0, 4.0, 6.8, TRAFFIC_POLE_COLOR.BLACK));
     initTabBlock(new BlockTrafficPoleDecorative("decopolelahollywood", 3.0, 3.0, 5.2, TRAFFIC_POLE_COLOR.SILVER));
+    initTabBlock(new BlockTrafficPoleDecorative("decopoleanaheim", 3.0, 3.0, 5.0, TRAFFIC_POLE_COLOR.BLACK));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmanaheim8ftgreen", LuminaireArmProfile.ANAHEIM8FT));
 
     // --- NSEWUD factory blocks: Vertical Double Guy Mounts ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountblack", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));

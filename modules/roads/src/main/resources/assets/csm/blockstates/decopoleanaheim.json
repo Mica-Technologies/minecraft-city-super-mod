@@ -1,0 +1,280 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/decopole_anaheim_shaft.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+      "#trim": "csm:blocks/decorativepoles/trim_gold",
+      "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+      "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+    }
+  },
+  "variants": {
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/decopole_anaheim_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+          "#trim": "csm:blocks/decorativepoles/trim_gold",
+          "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+          "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+        },
+        "transform": "forge:default-block"
+      }
+    ],
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "up": {
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "mounteast": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mounte": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 90
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountwest": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountw": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 0
+                },
+                {
+                  "y": 270
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountup": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountu": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 270
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "mountdown": {
+      "false": {},
+      "true": {
+        "submodel": {
+          "mountd": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_mount.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            },
+            "transform": {
+              "rotation": [
+                {
+                  "x": 90
+                },
+                {
+                  "y": 0
+                },
+                {
+                  "z": 0
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "endn": {
+      "none": {},
+      "cap": {
+        "submodel": {
+          "cap_n": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_cap_n.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            }
+          }
+        }
+      },
+      "tenon": {
+        "submodel": {
+          "tenon_n": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_tenon_n.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            }
+          }
+        }
+      },
+      "base": {
+        "submodel": {
+          "base_n": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_base_n.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            }
+          }
+        }
+      }
+    },
+    "ends": {
+      "none": {},
+      "cap": {
+        "submodel": {
+          "cap_s": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_cap_s.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            }
+          }
+        }
+      },
+      "tenon": {
+        "submodel": {
+          "tenon_s": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_tenon_s.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            }
+          }
+        }
+      },
+      "base": {
+        "submodel": {
+          "base_s": {
+            "model": "csm:trafficaccessories/shared_models/decopole_anaheim_base_s.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "#trim": "csm:blocks/decorativepoles/trim_gold",
+              "#tile": "csm:blocks/decorativepoles/paint_anaheim_green",
+              "particle": "csm:blocks/decorativepoles/paint_anaheim_green"
+            }
+          }
+        }
+      }
+    }
+  }
+}

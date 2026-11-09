@@ -277,7 +277,16 @@ public enum LuminaireArmProfile implements ICurvedArmProfile {
           {0.40417D, 0.83713D, 0.00000D, 0.59583D, 1.00000D, 0.51713D},
           {0.40628D, 0.00000D, 0.49570D, 0.59372D, 0.13881D, 1.00000D},
           {0.40833D, 0.00000D, 0.00000D, 0.59167D, 0.17354D, 0.99938D}},
-      new int[]{0, 1, 11, 12}, new int[]{1, 1, -1, -1});
+      new int[]{0, 1, 11, 12}, new int[]{1, 1, -1, -1}),
+  /** Anaheim Resort Area Luminaire Arm 8 ft: 3 of run, 5 cells. */
+  ANAHEIM8FT("Anaheim Resort Area Luminaire Arm 8 ft",
+      new int[][]{{0, 0}, {0, 1}, {1, 1}, {2, 1}, {2, 2}},
+      new double[][]{{0.33125D, 0.09910D, 0.40392D, 0.66875D, 1.00000D, 1.00000D},
+          {0.40288D, 0.00000D, 0.00000D, 0.59712D, 0.54760D, 0.71617D},
+          {0.40833D, 0.39153D, 0.00000D, 0.59167D, 1.00000D, 1.00000D},
+          {0.41667D, 0.85221D, 0.72857D, 0.58333D, 1.00000D, 1.00000D},
+          {0.41878D, 0.00000D, 0.00061D, 0.58122D, 0.16094D, 0.76501D}},
+      new int[]{0}, new int[]{1});
 
   private final String label;
   private final int[][] cells;
