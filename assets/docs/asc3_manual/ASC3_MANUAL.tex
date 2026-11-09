@@ -1432,8 +1432,10 @@ MINIMUM, MAXIMUM, PEDESTRIAN, SOFT}). A plan that loads but does not yet suit th
 controller's wiring is reported as a warning, and the controller faults with that
 message until the wiring is fixed, as it would after the same edit on the panel.
 
-Loading a plan this way is preferred to \texttt{/blockdata}: a plan written with
-\texttt{/blockdata} keeps the running engine instead of starting it afresh.
+Loading a plan into a running controller, this way or with \texttt{/blockdata},
+restarts it safely: every signal that is green or flashing yellow gets its yellow,
+the junction holds all red for one red clearance, and then the new program starts on
+the main street. A plan that changes nothing does not restart it.
 
 % ================================================================ 8
 \section{Cookbook}\label{sec:cookbook}

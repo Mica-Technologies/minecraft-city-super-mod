@@ -447,6 +447,23 @@ public class RingBarrierState {
     this.tickPlan = plan;
     this.demand = demandSource;
 
+    // Taking over from a phase another program was showing (beginAfter): clear it to all red
+    // before the rings start, the old greens through their yellow (the output clearance).
+    if (entryClearance) {
+      if (entryClearanceStart < 0L) {
+        entryClearanceStart = now;
+      }
+      if (now - entryClearanceStart
+          < outputClearanceYellow(plan) + entryClearanceRed(plan)) {
+        lastServed1 = null;
+        lastServed2 = null;
+        return changedOrNull(enforceOutputClearance(AdvancedPhaseBuilder.buildForPhases(
+            world, plan, circuits, overlaps, java.util.Collections.<Integer>emptyList(),
+            VehInterval.RED), plan, now));
+      }
+      entryClearance = false;
+    }
+
     // Compute coordination windows for this tick (no-op in FREE mode).
     computeCoordination(plan, now, world);
 
@@ -1669,6 +1686,53 @@ public class RingBarrierState {
    */
   public void beginOnRestPhases() {
     startOnRestPhases = true;
+  }
+
+  /**
+   * Whether this engine first clears whatever {@link #beginAfter} said was showing, and the tick
+   * the clearance began on ({@code -1} until its first tick).
+   */
+  private boolean entryClearance = false;
+  private long entryClearanceStart = -1L;
+
+  /**
+   * Makes this engine, which must not have ticked yet, take over from {@code shown}, the phase
+   * the controller is displaying, instead of cold-starting over it: its first ticks show every
+   * vehicle head red, the heads that were green or flashing yellow getting their yellow first
+   * (the output clearance, timed by the plan's longest yellow), then hold all red for the plan's
+   * longest red clearance, and only then start the rings. A plan rewritten on a running
+   * controller (an NBT write such as {@code /blockdata}, or a whole-plan import) restarts the
+   * engine this way, so a head is never taken from green or FYA straight to red and the new
+   * program's first greens never come up beside the old program's. A chunk load has nothing
+   * showing yet and cold-starts as before.
+   *
+   * @param shown the phase the controller shows now; {@code null} cold-starts as before
+   *
+   * @since 2026.11
+   */
+  public void beginAfter(TrafficSignalPhase shown) {
+    if (shown != null) {
+      lastApplied = shown;
+      entryClearance = true;
+      entryClearanceStart = -1L;
+    }
+  }
+
+  /** The longest red clearance programmed on any phase of the plan (ticks), or the preempt one. */
+  static long entryClearanceRed(TrafficSignalProgrammedPhasePlan plan) {
+    long red = 0L;
+    for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+      TrafficSignalProgrammedPhase phase = plan.getPhase(n);
+      if (phase != null) {
+        red = Math.max(red, phase.getRedClear());
+      }
+    }
+    return red > 0L ? red : PREEMPT_REDCLEAR_TICKS;
+  }
+
+  /** Whether the engine is still in the clearance {@link #beginAfter} starts it with. */
+  public boolean isInEntryClearance() {
+    return entryClearance;
   }
 
   private int firstBarrier(TrafficSignalProgrammedPhasePlan plan) {

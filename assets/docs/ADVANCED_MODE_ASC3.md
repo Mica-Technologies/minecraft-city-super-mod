@@ -446,9 +446,28 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   when no other barrier has demand even before coordination's window gate (issue #318): the
   wrap is decided when the ring goes idle, and under coordination the cross street's call is
   accepted just as the through's clearance ends, so a wrap predicted from the gated calls
-  mid-clearance did not happen. A plan re-sent with `/blockdata` keeps the running engine, and a
-  lead left served in FREE just before the switch into coordination was accepted again in its
-  window, which made that case show up on the first cycle after programming.
+  mid-clearance did not happen. A plan re-sent with `/blockdata` used to keep the running engine
+  (fixed since: see "Rewriting the plan of a running controller" below), and a lead left served
+  in FREE just before the switch into coordination was accepted again in its window, which made
+  that case show up on the first cycle after programming.
+
+- **Rewriting the plan of a running controller** — `/blockdata` (which merges into the tile
+  entity's NBT and re-reads it, whether the write is the whole `tcAdv` or only `tcAdv:{co:...}` or
+  `tcAdv:{ph:[...]}`), or any other NBT write into a live controller, used to swap the program
+  under the engine and leave the old `RingBarrierState` running on it: its rings, windows,
+  acceptances and commitments all from the old program. `readNBT` now compares what the engine
+  runs on (the plan, the circuits, red+amber and green flash) before and after, and when it
+  changed on a controller whose engine is running it restarts the engine
+  (`restartAdvancedRuntime`, also used by the whole-plan import). The fresh engine takes over
+  from the phase on display (`RingBarrierState.beginAfter`): every vehicle head goes to red,
+  the green and FYA ones through their yellow (the output clearance, timed by the plan's longest
+  yellow), all red holds for the plan's longest red clearance, and the rings then come up on the
+  rest phases as out of flash. The conflict monitor checks the whole changeover. A re-read that
+  changes nothing leaves the engine alone, and a chunk load (no engine yet) cold-starts on its
+  first tick as before. A write that also sets `tcOm` to something other than ADVANCED (a full
+  write with `tcOm:0`) was already a mode change: the next tick leaves FLASH for ADVANCED and the
+  engine restarts there. Pedestrian heads showing WALK or FDW go straight to don't walk at the
+  changeover, as at preempt entry. Single panel edits still reset the engine the old way.
 
 - **Phase next (call commitment)** — when a phase begins terminating (green → yellow), every
   called, unserved phase that conflicts with it is latched in `committedCalls`
@@ -862,8 +881,9 @@ is read as the first of `priorities`). `logic/AdvancedPlanJson` is the mapper (G
   phase out of range or listed twice, a fractional time) throws `PlanFormatException` naming the
   field, with nothing changed.
 - **Applying it** (`TileEntityTrafficSignalController.importAdvancedPlanJson`) swaps the program
-  in, clears an ADVANCED fault, then resets the runtime and re-syncs as a panel edit does — which
-  `/blockdata` does not. A plan that fails `validate` for this controller's circuits is still
+  in, clears an ADVANCED fault, then restarts the runtime through the same changeover clearance
+  as an NBT rewrite (`restartAdvancedRuntime`; a faulted or non-ADVANCED controller resets as a
+  panel edit does) and re-syncs. A plan that fails `validate` for this controller's circuits is still
   loaded, like a panel edit, and the warning is returned to the player.
 - **Transport.** `/csm signal export|import <name> [x y z]` (`CommandCsmSignal`, registered into
   Core's `/csm` with `CommandCsm.registerSubcommand`) reads and writes
