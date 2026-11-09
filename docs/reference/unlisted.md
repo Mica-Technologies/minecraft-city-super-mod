@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "169 blocks in this tab"
+!!! info "176 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -79,6 +79,13 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk_c` | 2 | 10 | pickaxe | 1 |
 | Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk_g` | 2 | 10 | pickaxe | 1 |
 | Lithonia DSXF3 LED Floodlight (Yoke) | `csm:lithdsxf3yk_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Knuckle) | `csm:lithtflkn_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Knuckle) | `csm:lithtflkn_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Knuckle) | `csm:lithtflkn_x` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Slipfitter) | `csm:lithtflsf_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Yoke) | `csm:lithtflyk_c` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Yoke) | `csm:lithtflyk_g` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Yoke) | `csm:lithtflyk_x` | 2 | 10 | pickaxe | 1 |
 | MCLAGlowAir | `csm:lightupair` | 2 | 10 | pickaxe | 1 |
 | NOV Octagon Concrete Pole | `csm:ocpb` | 1 | 10 | pickaxe | 1 |
 | NOV Octagon Concrete Pole (Middle) | `csm:ocpm` | 1 | 10 | pickaxe | 1 |

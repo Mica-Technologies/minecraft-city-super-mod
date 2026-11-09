@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "204 blocks in this tab"
+!!! info "207 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -151,6 +151,9 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Lithonia Strip Light (Full, Edge-Lit) | `csm:slfe` | 2 | 10 | pickaxe | 1 |
 | Lithonia Strip Light (Half, Edge-Lit) | `csm:slhe` | 2 | 10 | pickaxe | 1 |
 | Lithonia Strip Light Half | `csm:slh` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Knuckle) | `csm:lithtflkn` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Slipfitter) | `csm:lithtflsf` | 2 | 10 | pickaxe | 1 |
+| Lithonia TFL Metal Halide Floodlight (Yoke) | `csm:lithtflyk` | 2 | 10 | pickaxe | 1 |
 | Lithonia Wall Strip Light | `csm:wsl` | 2 | 10 | pickaxe | 1 |
 | Louvered Linear LED Light (Black) | `csm:linear_light_louver_black` | 2 | 10 | pickaxe | 1 |
 | Louvered Linear LED Light (Charcoal) | `csm:linear_light_louver_charcoal` | 2 | 10 | pickaxe | 1 |
