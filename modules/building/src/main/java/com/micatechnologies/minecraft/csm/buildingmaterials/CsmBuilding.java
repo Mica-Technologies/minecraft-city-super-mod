@@ -80,6 +80,8 @@ public class CsmBuilding {
     DoorClickThrough.register();
     // Automatic sliding doors open as a player approaches (their header sensor).
     AutoDoorSensors.register();
+    // Other modules' doors (the holding cell door) link to the door controls and keypad locks.
+    DoorControlService.register();
     CsmGuiRegistry.register(new BuildingGuiProvider());
     // The packet order here fixes this channel's discriminators; only append to it.
     NETWORK.registerMessage(CraneHeadConfigPacketHandler.class, CraneHeadConfigPacket.class,

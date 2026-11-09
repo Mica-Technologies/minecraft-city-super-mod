@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.api.CsmDoorControl;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +57,8 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
     }
     this.target = target.toImmutable();
     Block door = world.getBlockState(this.target).getBlock();
-    if (keypad && (door instanceof BlockBuildingDoor || door instanceof BlockCathedralDoor)) {
+    if (keypad && (door instanceof BlockBuildingDoor || door instanceof BlockCathedralDoor
+        || door instanceof CsmDoorControl.Door && ((CsmDoorControl.Door) door).isLockable())) {
       DoorLocks.get(world).lock(this.target, pos);
     }
     markDirtySync(world, pos, true);
@@ -152,6 +154,11 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
     }
     if (state.getBlock() instanceof BlockGarageDoorOpener) {
       return ((BlockGarageDoorOpener) state.getBlock()).operate(world, target, state, command);
+    }
+    if (state.getBlock() instanceof CsmDoorControl.Door) {
+      ((CsmDoorControl.Door) state.getBlock()).doorCommand(world, target,
+          DoorControlService.of(command));
+      return true;
     }
     return false;
   }

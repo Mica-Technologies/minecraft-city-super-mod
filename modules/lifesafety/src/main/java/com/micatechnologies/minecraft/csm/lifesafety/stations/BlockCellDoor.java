@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety.stations;
 
+import com.micatechnologies.minecraft.csm.api.CsmDoorControl;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.lifesafety.fireprotection.BlockFireProtectionProp;
 import java.util.List;
@@ -18,6 +19,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -26,11 +28,16 @@ import net.minecraft.world.World;
  * whole stack slides open or shut; a redstone signal holds it open, as a control desk's switch
  * would. Open, the bars have slid aside into the wall beside the doorway and the way is clear.
  *
+ * <p>With Building installed, a keypad, push button or control station links to it like any door
+ * (sneak-click the control, then the cell door). A linked keypad locks it from both sides: a cell
+ * has no inside a prisoner may open it from, so it then opens only by the code, the control or
+ * redstone ({@link CsmDoorControl}, #336).</p>
+ *
  * <p>Stored in metadata: the facing, {@link #OPEN} and {@link #POWERED}.</p>
  *
  * @since 2026.9
  */
-public class BlockCellDoor extends BlockFireProtectionProp {
+public class BlockCellDoor extends BlockFireProtectionProp implements CsmDoorControl.Door {
 
   public static final PropertyBool OPEN = PropertyBool.create("open");
   public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -98,10 +105,65 @@ public class BlockCellDoor extends BlockFireProtectionProp {
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-    if (hand == EnumHand.MAIN_HAND && !world.isRemote) {
+    if (hand != EnumHand.MAIN_HAND) {
+      return true;
+    }
+    BlockPos key = doorKey(world, pos);
+    // A sneak-click while linking a keypad, button or control station links it to this door.
+    if (player.isSneaking() && CsmDoorControl.finishLink(player, world, key)) {
+      return true;
+    }
+    if (!world.isRemote) {
+      // A locked cell opens from neither side by hand: only its keypad's code, its control or a
+      // redstone signal opens it. Shutting it by hand is always allowed.
+      if (!state.getValue(OPEN) && CsmDoorControl.isLocked(world, key)) {
+        player.sendStatusMessage(new TextComponentTranslation("gui.csm.door.locked"), true);
+        world.playSound(null, pos, SoundEvents.BLOCK_IRON_TRAPDOOR_CLOSE, SoundCategory.BLOCKS,
+            0.4F, 1.6F);
+        return true;
+      }
       setStack(world, pos, !state.getValue(OPEN));
     }
     return true;
+  }
+
+  /** The lowest door of the stack: what a control links to and a keypad locks. */
+  @Override
+  public BlockPos doorKey(World world, BlockPos pos) {
+    BlockPos bottom = pos;
+    while (world.getBlockState(bottom.down()).getBlock() == this) {
+      bottom = bottom.down();
+    }
+    return bottom.toImmutable();
+  }
+
+  @Override
+  public void doorCommand(World world, BlockPos key, CsmDoorControl.Command command) {
+    if (world.getBlockState(key).getBlock() != this) {
+      return;
+    }
+    switch (command) {
+      case OPEN:
+        setStack(world, key, true);
+        break;
+      case CLOSE:
+        setStack(world, key, false);
+        break;
+      case TOGGLE:
+        setStack(world, key, !world.getBlockState(key).getValue(OPEN));
+        break;
+      default:
+        break;
+    }
+  }
+
+  /** The bottom door of a stack going takes its lock with it, so a door put back is not locked. */
+  @Override
+  public void breakBlock(World world, BlockPos pos, IBlockState state) {
+    if (!world.isRemote && world.getBlockState(pos.down()).getBlock() != this) {
+      CsmDoorControl.doorRemoved(world, pos);
+    }
+    super.breakBlock(world, pos, state);
   }
 
   @Override
