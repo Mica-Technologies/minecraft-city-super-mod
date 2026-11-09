@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "173 blocks in this tab"
+!!! info "179 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -97,6 +97,12 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Leotek GreenCobra GCL | `csm:ltgcl` | 2 | 10 | pickaxe | 1 |
 | Leotek GreenCobra GCM (Smart Node) | `csm:ltgcmsn` | 2 | 10 | pickaxe | 1 |
 | Leotek GreenCobra GCM (Standard) | `csm:ltgcm` | 2 | 10 | pickaxe | 1 |
+| Leotek KarbonCobra KC0 | `csm:ltkc0` | 2 | 10 | pickaxe | 1 |
+| Leotek KarbonCobra KC0 (House Side Shield) | `csm:ltkc0hss` | 2 | 10 | pickaxe | 1 |
+| Leotek KarbonCobra KC1 | `csm:ltkc1` | 2 | 10 | pickaxe | 1 |
+| Leotek KarbonCobra KC1 (House Side Shield) | `csm:ltkc1hss` | 2 | 10 | pickaxe | 1 |
+| Leotek KarbonCobra KC2 | `csm:ltkc2` | 2 | 10 | pickaxe | 1 |
+| Leotek KarbonCobra KC2 (House Side Shield) | `csm:ltkc2hss` | 2 | 10 | pickaxe | 1 |
 | Linear LED Light (Black) | `csm:linear_light_black` | 2 | 10 | pickaxe | 1 |
 | Linear LED Light (Charcoal) | `csm:linear_light_charcoal` | 2 | 10 | pickaxe | 1 |
 | Linear LED Light (Light Grey) | `csm:linear_light_light_grey` | 2 | 10 | pickaxe | 1 |

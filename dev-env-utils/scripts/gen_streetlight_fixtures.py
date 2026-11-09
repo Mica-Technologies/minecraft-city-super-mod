@@ -79,6 +79,8 @@ SWATCHES = {
     "streetlight_body_solarmax": ((196, 191, 180), (150, 149, 142)),
     # The Alto lot lights' housing: metal_silver, a brushed grey from 94 to 116 (106 on average).
     "streetlight_body_alto_silver": ((120, 120, 120), (96, 96, 96)),
+    # Leotek's KarbonCobra grey, RAL 7040 (window grey) on its sheets.
+    "streetlight_body_leotek_karbon": ((178, 183, 189), (140, 145, 151)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -1274,6 +1276,87 @@ def build_powerbracket():
     return m
 
 
+# =========================================================================== new fixtures (#99)
+# Fixtures CSM never had as JSON, drawn from the makers' published drawings. They keep the cobra
+# heads' conventions (north-facing, slipfitter at z 16, the neck swallowing ARM_TIP) and their
+# scale: about 2 in to the pixel, the M-400A's 31.8 in being its 15 px. An LED head is only ~4 in
+# tall, 2 px, so its rear is drawn taller than scale where it has to swallow the arm's 3 px end,
+# as the GreenCobra GCJ's is.
+def nose_round(z0, radius, hw, ends, steps=(0.06, 0.25, 0.5, 0.78)):
+    """Sections rounding a nose in plan: the half-width follows a quarter ellipse from the tip
+    (z0) to `hw` at z0 + radius. `ends` = ((yb, yt) at the tip, (yb, yt) at full width)."""
+    (yb0, yt0), (yb1, yt1) = ends
+    out = []
+    for t in steps:
+        out.append((z0 + t * radius, hw * math.sqrt(1.0 - (1.0 - t) ** 2),
+                    yb0 + (yb1 - yb0) * t, yt0 + (yt1 - yt0) * t))
+    return out
+
+
+def stations(z0, length, rows):
+    """(fraction of the length from the nose, half-width, bottom y, top y) -> profile rows; the
+    rear fraction 1.0 lands on REAR_Z."""
+    return [(min(z0 + f * length, REAR_Z), hw, yb, yt) for f, hw, yb, yt in rows]
+
+
+def pedestal_photocell(m, profile, pz, deck, cell_h=1.7):
+    """A photocell on a raised receptacle boss: the LED heads' receptacle stands on a boss at the
+    front of the driver hump, so the cell stands clear of the low hood in front of it."""
+    base = top_at(profile, pz) - 0.35
+    deck = max(deck, base + 0.5)
+    cylinder_y(m, 8.0, pz, 1.1, base, deck, "body", sides=12)
+    cylinder_y(m, 8.0, pz, 0.95, deck - 0.05, deck + cell_h, "photocell", sides=12)
+
+
+# Leotek KarbonCobra (2023-), the GreenCobra's successor: a die-cast paddle, round-nosed and
+# widest over the LED array in front, pinched at a waist behind it and flaring a little at the
+# slipfitter; the hood a low wedge rising to a hump over the driver, the 7-pin receptacle on a boss
+# at the front of the hump, a tool-free door under the rear. Leotek's sheets (KC0 / KC1 / KC2):
+# 15.9 x 7.6, 18.0 x 9.0 and 24.4 x 10.8 in, all 4.1 in tall; the array 16, 36 and 72 LEDs.
+# model -> (length px, head half-width, receptacle at (fraction from the nose), the array:
+#           (half-width as a fraction of the head's, from, to as fractions), LED grid (across, along))
+KARBON = {
+    "kc0": (9.5, 2.3, 0.50, (0.64, 0.10, 0.42), (4, 4)),
+    "kc1": (11.0, 2.6, 0.52, (0.68, 0.09, 0.45), (6, 6)),
+    "kc2": (14.0, 3.1, 0.58, (0.72, 0.08, 0.48), (6, 12)),
+}
+KARBON_EXPONENT = 3.0
+KARBON_NECK = 2.1  # the rear half-width: the waist, held as narrow as the arm's end allows
+
+
+def karbon_profile(length, hw):
+    z0 = 16.0 - length + 0.05
+    rn = 0.2 * length
+    return nose_round(z0, rn, hw, ((0.15, 0.55), (0.15, 1.0))) + stations(z0, length, [
+        (0.2, hw, 0.15, 1.0),
+        (0.36, hw, 0.15, 1.3),
+        (0.50, (hw + KARBON_NECK) / 2 + 0.15, 0.15, 1.7),
+        (0.64, KARBON_NECK + 0.1, 0.15, 2.4),
+        (0.76, KARBON_NECK, 0.05, 3.2),
+        (0.86, KARBON_NECK, -0.2, 3.62),
+        (1.0, KARBON_NECK + 0.08, -0.30, 3.7),
+    ])
+
+
+def build_karbon(model, shield=False):
+    """shield: Leotek's snap-on house side shield, a plate hung along the array's pole side."""
+    length, hw, rf, (aw, af0, af1), _ = KARBON[model]
+    profile = karbon_profile(length, hw)
+    z0 = 16.0 - length
+    m = Mesh()
+    check_neck_holds_arm("KarbonCobra " + model.upper(), profile, KARBON_EXPONENT)
+    loft_housing(m, profile, KARBON_EXPONENT)
+    ax = hw * aw
+    az0, az1 = z0 + af0 * length, z0 + af1 * length
+    box(m, (8.0 - ax, 0.0, az0), (8.0 + ax, 0.25, az1), "body", bottom_mat=LENS_MAT)
+    # the door release under the rear, just behind the array
+    box(m, (7.3, 0.0, az1 + 0.5), (8.7, 0.2, az1 + 0.9), "body")
+    if shield:
+        box(m, (8.0 - ax - 0.1, -0.8, az1 + 0.02), (8.0 + ax + 0.1, 0.2, az1 + 0.18), "body")
+    pedestal_photocell(m, profile, z0 + rf * length, 2.9, 1.6)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1359,6 +1442,16 @@ CATALOGUE = [
     ("altomvwlslim", "Alto Slim Mercury Vapor Wall Light", lambda: build_alto_mv_wall(True),
      "streetlight_body_merc_grey"),
     ("gepb", "GE Powerbracket", build_powerbracket, "streetlight_body_merc_grey"),
+    # New fixtures (#99), from the makers' drawings.
+    ("ltkc0", "Leotek KarbonCobra KC0", lambda: build_karbon("kc0"), "streetlight_body_leotek_karbon"),
+    ("ltkc0hss", "Leotek KarbonCobra KC0 (House Side Shield)", lambda: build_karbon("kc0", shield=True),
+     "streetlight_body_leotek_karbon"),
+    ("ltkc1", "Leotek KarbonCobra KC1", lambda: build_karbon("kc1"), "streetlight_body_leotek_karbon"),
+    ("ltkc1hss", "Leotek KarbonCobra KC1 (House Side Shield)", lambda: build_karbon("kc1", shield=True),
+     "streetlight_body_leotek_karbon"),
+    ("ltkc2", "Leotek KarbonCobra KC2", lambda: build_karbon("kc2"), "streetlight_body_leotek_karbon"),
+    ("ltkc2hss", "Leotek KarbonCobra KC2 (House Side Shield)", lambda: build_karbon("kc2", shield=True),
+     "streetlight_body_leotek_karbon"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1439,6 +1532,17 @@ def art_lens(art, state):
     return "streetlight_lens_%s_%s" % (art, state)
 
 
+# The new fixtures' LED arrays, drawn rather than cut (their JSON never existed): art name ->
+# (LEDs across, LEDs along, style). "die" is a chip-on-board square die on a pale optic (the
+# requester's array style), "amber" the same with the SMX-LL5's yellow phosphor showing unlit,
+# "lens" a grid of round optics, one per LED (the area lights).
+GENERATED_LENS = {
+    "leotek_kc0": (4, 4, "die"),
+    "leotek_kc1": (6, 6, "die"),
+    "leotek_kc2": (6, 12, "die"),
+}
+
+
 # Each fixture's (lit, unlit) lens. Drop refractors wear the generated prismatic glass; flat
 # glass the requester's lens art where the JSON fixture had some, else the generated HPS glass.
 LENS_FOR = {
@@ -1495,6 +1599,12 @@ LENS_FOR = {
     "altomvwl": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altomvwlslim": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "gepb": (LENS_POWERBRACKET_ON, LENS_POWERBRACKET_OFF),
+    "ltkc0": (art_lens("leotek_kc0", "on"), art_lens("leotek_kc0", "off")),
+    "ltkc0hss": (art_lens("leotek_kc0", "on"), art_lens("leotek_kc0", "off")),
+    "ltkc1": (art_lens("leotek_kc1", "on"), art_lens("leotek_kc1", "off")),
+    "ltkc1hss": (art_lens("leotek_kc1", "on"), art_lens("leotek_kc1", "off")),
+    "ltkc2": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
+    "ltkc2hss": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
@@ -1621,8 +1731,54 @@ def art_lens_png(art, state):
     return img
 
 
+def led_array_png(across, along, style, state):
+    """A drawn LED array, 32 px, u across the fixture and v along it (as the box lens maps it): a
+    frame round a pale optic and an even grid of LEDs (each cell a whole number of pixels, so the
+    grid does not wander). Lit, the LEDs are near white on the optic; unlit the whole is painted
+    at about half (the art lenses' rule) with the LEDs dark, or the amber phosphor where the style
+    shows it. A "lens" LED is a rounded optic, a dark rim round its bright centre."""
+    lit = state == "on"
+    frame = (140, 140, 142)
+    optic = (196, 196, 194)
+    if lit:
+        led = (255, 250, 232) if style == "amber" else (255, 255, 252)
+    else:
+        frame = tuple(c // 2 for c in frame)
+        optic = tuple(c // 2 for c in optic)
+        led = (140, 100, 36) if style == "amber" else (36, 36, 38)
+    rim = tuple(int(c * 0.62) for c in optic)
+    img = Image.new("RGBA", (32, 32), frame + (255,))
+    px = img.load()
+    for y in range(1, 31):
+        for x in range(1, 31):
+            px[x, y] = optic + (255,)
+    cw, ch = 30 // across, 30 // along
+    ox, oy = (32 - cw * across) // 2, (32 - ch * along) // 2
+    for i in range(across):
+        for j in range(along):
+            if style == "lens":
+                n = max(3, min(cw, ch) - 1)
+                x0, y0 = ox + i * cw + (cw - n) // 2, oy + j * ch + (ch - n) // 2
+                for y in range(n):
+                    for x in range(n):
+                        edge = x in (0, n - 1) or y in (0, n - 1)
+                        if edge and (x in (0, n - 1) and y in (0, n - 1)) and n > 3:
+                            continue  # round the optic's corners
+                        px[x0 + x, y0 + y] = (rim if edge else led) + (255,)
+            else:
+                n = max(1, min(cw, ch) // 2)
+                x0, y0 = ox + i * cw + (cw - n) // 2, oy + j * ch + (ch - n) // 2
+                for y in range(n):
+                    for x in range(n):
+                        px[x0 + x, y0 + y] = led + (255,)
+    return img
+
+
 def all_textures():
     out = {name: swatch_png(*grad) for name, grad in SWATCHES.items()}
+    for art, (across, along, style) in GENERATED_LENS.items():
+        for state in ("on", "off"):
+            out[art_lens(art, state)] = led_array_png(across, along, style, state)
     out[LENS_ON] = lens_png(True)
     out[LENS_OFF] = lens_png(False)
     out[LENS_REFRACTOR_OFF] = refractor_off_png()
