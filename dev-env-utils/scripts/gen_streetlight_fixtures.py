@@ -90,6 +90,9 @@ SWATCHES = {
     # Black and dark bronze, the area lights' standard finishes (GE Evolve, Holophane).
     "streetlight_body_black": ((72, 72, 74), (44, 44, 46)),
     "streetlight_body_dark_bronze": ((94, 80, 66), (62, 52, 43)),
+    # City of Anaheim P7-Green (Pantone 330 C), the decorative poles' paint_anaheim_green: the
+    # cobra head on an Anaheim Resort Area pole is painted with its pole.
+    "streetlight_body_anaheim_green": ((40, 104, 88), (26, 78, 66)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -1629,6 +1632,8 @@ CATALOGUE = [
      "streetlight_body_ge_grey"),
     ("gem400acunp", "GE M-400A (Cutoff Optics, No Photocell)",
      lambda: build_m400a("cutoff", photocell=False), "streetlight_body_ge_grey"),
+    ("gem400acugreen", "GE M-400A (Cutoff Optics, Anaheim Green)", lambda: build_m400a("cutoff"),
+     "streetlight_body_anaheim_green"),
     # Converted in place from the JSON models (D2): same registry names, classes and bounding boxes.
     ("gem400r3", "GE M400R3 (Standard)", lambda: build_m400r3("refractor"),
      "streetlight_body_ge_grey"),
