@@ -65,6 +65,7 @@ tile.gem400r3cunp.name=GE M400R3 (Cutoff Optics, No Photocell)
 tile.gem400a.name=GE M-400A (Standard)
 tile.gem400acu.name=GE M-400A (Cutoff Optics)
 tile.gem400acunp.name=GE M-400A (Cutoff Optics, No Photocell)
+tile.gem400acugreen.name=GE M-400A (Cutoff Optics, Anaheim Green)
 tile.gepb.name=GE Powerbracket
 tile.hb1.name=Alto LED Highbay Light 1
 tile.hb2.name=Alto LED Highbay Light 2
