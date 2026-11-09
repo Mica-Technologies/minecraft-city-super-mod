@@ -95,7 +95,7 @@ public final class AdvancedPhaseBuilder {
     }
     applyFyaLenses(phase, plan, circuits, served, holdFlash);
     applyOverlaps(phase, overlaps);
-    applyProgrammedOverlaps(phase, plan, circuits, ring1, ring2, overlapIntervals);
+    applyProgrammedOverlaps(phase, plan, circuits, served, overlapIntervals);
     // No preempt is running on this path — preempt-driven blankout legends stay dark.
     applyAccessoryStates(world, phase, circuits, null);
     return phase;
@@ -106,12 +106,16 @@ public final class AdvancedPhaseBuilder {
    * drives its output circuit+movement heads green while any included phase is green, yellow while an
    * included phase is in yellow clearance (and none green), and red otherwise. The classic use is a
    * right-turn overlap that runs with both its own through and a non-conflicting opposing left.
+   *
+   * <p>{@code served} is what the rings serve this tick, or, during a preempt, the movements the
+   * preempt stage serves (any number), so an overlap follows the phases a preempt runs exactly as
+   * it follows the rings: green while an included phase dwells, an FYA overlap flashing while its
+   * permissive parent does, and the parents' own clearance at entry and exit (issue #341).</p>
    */
   private static void applyProgrammedOverlaps(TrafficSignalPhase phase,
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
-      RingBarrierState.ServedMovement ring1,
-      RingBarrierState.ServedMovement ring2,
+      List<RingBarrierState.ServedMovement> served,
       List<RingBarrierState.VehInterval> overlapIntervals) {
     List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
     for (int i = 0; i < ovs.size(); i++) {
@@ -128,7 +132,7 @@ public final class AdvancedPhaseBuilder {
       if (ov.getOutputMovement() == TrafficSignalPhaseMovement.PED) {
         // Pedestrian overlap: the ped head walks/clears with its included phases' ped intervals.
         phase.removeSignals(heads);
-        switch (overlapPedState(ov.getIncludedPhases(), ring1, ring2)) {
+        switch (overlapPedState(ov.getIncludedPhases(), served)) {
           case WALK:
             phase.addWalkSignals(heads);
             break;
@@ -145,9 +149,9 @@ public final class AdvancedPhaseBuilder {
       RingBarrierState.VehInterval precomputed =
           overlapIntervals != null && i < overlapIntervals.size() ? overlapIntervals.get(i) : null;
       RingBarrierState.VehInterval state =
-          precomputed != null ? precomputed : overlapState(ov.getIncludedPhases(), ring1, ring2);
+          precomputed != null ? precomputed : overlapState(ov.getIncludedPhases(), served);
       if (ov.getPermissivePhases().length > 0) {
-        applyFyaOverlap(phase, ov, circuit, heads, state, ring1, ring2);
+        applyFyaOverlap(phase, ov, circuit, heads, state, served);
         continue;
       }
       phase.removeSignals(heads);
@@ -185,7 +189,7 @@ public final class AdvancedPhaseBuilder {
   private static void applyFyaOverlap(TrafficSignalPhase phase,
       TrafficSignalProgrammedOverlap ov, TrafficSignalControllerCircuit circuit,
       List<BlockPos> heads, RingBarrierState.VehInterval protectedInterval,
-      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+      List<RingBarrierState.ServedMovement> served) {
     FyaLensState state;
     switch (protectedInterval) {
       case GREEN:
@@ -199,10 +203,10 @@ public final class AdvancedPhaseBuilder {
         // The precomputed protected interval is already -GRN/YEL-aware, but its forced RED must
         // not be overridden by the permissive flash — re-check the modifier here.
         boolean modRed = ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
-            && anyServedActive(ov.getModifierPhases(), ring1, ring2);
+            && anyServedActive(ov.getModifierPhases(), served);
         RingBarrierState.VehInterval perm =
             modRed ? RingBarrierState.VehInterval.RED
-                : overlapState(ov.getPermissivePhases(), ring1, ring2);
+                : overlapState(ov.getPermissivePhases(), served);
         state = perm == RingBarrierState.VehInterval.GREEN ? FyaLensState.FLASH
             : perm == RingBarrierState.VehInterval.YELLOW ? FyaLensState.SOLID_YELLOW
                 : FyaLensState.RED;
@@ -270,9 +274,16 @@ public final class AdvancedPhaseBuilder {
    */
   static RingBarrierState.PedInterval overlapPedState(int[] includedPhases,
       RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    return overlapPedState(includedPhases, pair(ring1, ring2));
+  }
+
+  /** {@link #overlapPedState(int[], RingBarrierState.ServedMovement,
+   * RingBarrierState.ServedMovement)} over any number of served movements. */
+  static RingBarrierState.PedInterval overlapPedState(int[] includedPhases,
+      List<RingBarrierState.ServedMovement> served) {
     boolean anyFdw = false;
     for (int p : includedPhases) {
-      RingBarrierState.PedInterval pi = servedPed(p, ring1, ring2);
+      RingBarrierState.PedInterval pi = servedPed(p, served);
       if (pi == RingBarrierState.PedInterval.WALK) {
         return RingBarrierState.PedInterval.WALK;
       }
@@ -285,14 +296,22 @@ public final class AdvancedPhaseBuilder {
 
   /** The pedestrian interval the given phase is served with this tick, or NONE. */
   private static RingBarrierState.PedInterval servedPed(int phaseNumber,
-      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
-    if (ring1 != null && ring1.phaseNumber == phaseNumber) {
-      return ring1.pedestrian;
-    }
-    if (ring2 != null && ring2.phaseNumber == phaseNumber) {
-      return ring2.pedestrian;
+      List<RingBarrierState.ServedMovement> served) {
+    for (RingBarrierState.ServedMovement m : served) {
+      if (m != null && m.phaseNumber == phaseNumber) {
+        return m.pedestrian;
+      }
     }
     return RingBarrierState.PedInterval.NONE;
+  }
+
+  /** The two rings' movements as a list (either may be {@code null}). */
+  private static List<RingBarrierState.ServedMovement> pair(RingBarrierState.ServedMovement ring1,
+      RingBarrierState.ServedMovement ring2) {
+    List<RingBarrierState.ServedMovement> served = new ArrayList<>(2);
+    served.add(ring1);
+    served.add(ring2);
+    return served;
   }
 
   /**
@@ -301,9 +320,16 @@ public final class AdvancedPhaseBuilder {
    */
   static RingBarrierState.VehInterval overlapState(int[] includedPhases,
       RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
+    return overlapState(includedPhases, pair(ring1, ring2));
+  }
+
+  /** {@link #overlapState(int[], RingBarrierState.ServedMovement,
+   * RingBarrierState.ServedMovement)} over any number of served movements (a preempt stage). */
+  static RingBarrierState.VehInterval overlapState(int[] includedPhases,
+      List<RingBarrierState.ServedMovement> served) {
     boolean anyYellow = false;
     for (int p : includedPhases) {
-      RingBarrierState.VehInterval iv = servedInterval(p, ring1, ring2);
+      RingBarrierState.VehInterval iv = servedInterval(p, served);
       if (iv == RingBarrierState.VehInterval.GREEN) {
         return RingBarrierState.VehInterval.GREEN;
       }
@@ -465,8 +491,14 @@ public final class AdvancedPhaseBuilder {
    */
   static boolean anyServedActive(int[] phases, RingBarrierState.ServedMovement ring1,
       RingBarrierState.ServedMovement ring2) {
+    return anyServedActive(phases, pair(ring1, ring2));
+  }
+
+  /** {@link #anyServedActive(int[], RingBarrierState.ServedMovement,
+   * RingBarrierState.ServedMovement)} over any number of served movements. */
+  static boolean anyServedActive(int[] phases, List<RingBarrierState.ServedMovement> served) {
     for (int p : phases) {
-      RingBarrierState.VehInterval iv = servedInterval(p, ring1, ring2);
+      RingBarrierState.VehInterval iv = servedInterval(p, served);
       if (iv == RingBarrierState.VehInterval.GREEN || iv == RingBarrierState.VehInterval.YELLOW) {
         return true;
       }
@@ -474,23 +506,9 @@ public final class AdvancedPhaseBuilder {
     return false;
   }
 
-  /** The interval the given phase is served at this tick by either ring, or {@code null}. */
-  private static RingBarrierState.VehInterval servedInterval(int phaseNumber,
-      RingBarrierState.ServedMovement ring1, RingBarrierState.ServedMovement ring2) {
-    if (ring1 != null && ring1.phaseNumber == phaseNumber) {
-      return ring1.vehicle;
-    }
-    if (ring2 != null && ring2.phaseNumber == phaseNumber) {
-      return ring2.vehicle;
-    }
-    return null;
-  }
-
   /**
-   * The interval the given phase is served at this tick among {@code served} movements, or
-   * {@code null}. List form of {@link #servedInterval(int, RingBarrierState.ServedMovement,
-   * RingBarrierState.ServedMovement)} for callers that serve more than two movements at once
-   * (preemption's track-clear/dwell phase sets).
+   * The interval the given phase is served at this tick among {@code served} movements (the two
+   * rings', or a preempt stage's, which may be more than two), or {@code null}.
    */
   private static RingBarrierState.VehInterval servedInterval(int phaseNumber,
       List<RingBarrierState.ServedMovement> served) {
@@ -568,6 +586,12 @@ public final class AdvancedPhaseBuilder {
     if (anyGreen) {
       applyOverlaps(phase, overlaps);
     }
+    // The programmed (tcAdv.ov) overlaps follow the preempt's movements too: an overlap whose
+    // included phase dwells is green with it, an FYA overlap flashes while its permissive parent
+    // dwells, and entry and exit clear it with its parents. Left out, every overlap head went red
+    // for the whole preempt, even on the approach being preempted (issue #341). Stateless here:
+    // no lag, lead or parent-to-parent hold is run inside a preempt.
+    applyProgrammedOverlaps(phase, plan, circuits, served, null);
     applyAccessoryStates(world, phase, circuits, activePreempt);
     return phase;
   }

@@ -87,6 +87,113 @@ class AdvancedModeAccessoryAndPreemptTest {
   }
 
   @Nested
+  @DisplayName("programmed overlaps follow the phases a preempt serves (#341)")
+  class PreemptOverlapTest {
+
+    /** The 3-section FYA right head, linked as both the flashing and the solid right (fR + sR). */
+    private final BlockPos fyaRight = new BlockPos(20, 0, 0);
+    /** A plain right-turn overlap head on another circuit. */
+    private final BlockPos right = new BlockPos(21, 0, 0);
+
+    /**
+     * Main x Hammond's NB approach: through 6 on circuit 0, side street 3 on circuit 1, NB left 1
+     * on circuit 2 (and 2 on circuit 3). Overlap 1 is the FYA right on circuit 0 ({@code in:[3],
+     * pm:[6]}); overlap 2 a NORMAL right on circuit 3 with {@code in:[6]}. The NB preempt is
+     * triggered by circuit 4's through zone and dwells 6 + 1.
+     */
+    private TrafficSignalProgrammedPhasePlan plan() {
+      TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+      RingBarrierStateTest.enable(plan, 6, 0);
+      RingBarrierStateTest.enable(plan, 3, 1);
+      plan.getPhase(3).setMovement(TrafficSignalPhaseMovement.THROUGH);
+      RingBarrierStateTest.enable(plan, 1, 2);
+      RingBarrierStateTest.enable(plan, 2, 3);
+      plan.getPhase(6).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      TrafficSignalProgrammedOverlap fya = new TrafficSignalProgrammedOverlap();
+      fya.setEnabled(true);
+      fya.setOutputCircuitIndex(0);
+      fya.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+      fya.setIncludedPhases(new int[] {3});
+      fya.setPermissivePhases(new int[] {6});
+      plan.getVehicleOverlaps().add(fya);
+      TrafficSignalProgrammedOverlap normal = new TrafficSignalProgrammedOverlap();
+      normal.setEnabled(true);
+      normal.setOutputCircuitIndex(3);
+      normal.setOutputMovement(TrafficSignalPhaseMovement.RIGHT);
+      normal.setIncludedPhases(new int[] {6});
+      plan.getVehicleOverlaps().add(normal);
+      TrafficSignalPreempt pe = new TrafficSignalPreempt();
+      pe.setEnabled(true);
+      pe.setTriggerCircuitIndex(4);
+      pe.setTriggerMovement(TrafficSignalPhaseMovement.THROUGH);
+      pe.setDwellPhases(new int[] {6, 1});
+      plan.getPreempts().add(pe);
+      return plan;
+    }
+
+    private TrafficSignalControllerCircuits circuits() {
+      TrafficSignalControllerCircuits circuits = RingBarrierStateTest.circuits(5);
+      circuits.getCircuit(0).getThroughSignals().add(new BlockPos(30, 0, 0));
+      circuits.getCircuit(0).getFlashingRightSignals().add(fyaRight);
+      circuits.getCircuit(0).getRightSignals().add(fyaRight);
+      circuits.getCircuit(1).getThroughSignals().add(new BlockPos(31, 0, 0));
+      circuits.getCircuit(2).getLeftSignals().add(new BlockPos(32, 0, 0));
+      circuits.getCircuit(3).getThroughSignals().add(new BlockPos(33, 0, 0));
+      circuits.getCircuit(3).getRightSignals().add(right);
+      return circuits;
+    }
+
+    @Test
+    @DisplayName("builder: a dwell serving the permissive parent flashes the FYA overlap and "
+        + "greens a NORMAL overlap of it")
+    void dwellDrivesOverlaps() {
+      TrafficSignalPhase phase = AdvancedPhaseBuilder.buildForPhases(null, plan(), circuits(),
+          NO_OVERLAPS, java.util.Arrays.asList(6, 1), VehInterval.GREEN);
+      assertEquals(Integer.valueOf(TrafficSignalPhase.INDICATION_FYA),
+          phase.resolveVehicleSignalStates().get(fyaRight),
+          "the FYA right overlap must flash while its permissive parent 6 dwells");
+      assertTrue(phase.getGreenSignals().contains(right),
+          "an overlap including phase 6 must be green while 6 dwells");
+      TrafficSignalPhase exit = AdvancedPhaseBuilder.buildForPhases(null, plan(), circuits(),
+          NO_OVERLAPS, java.util.Arrays.asList(6, 1), VehInterval.YELLOW);
+      assertTrue(exit.getYellowSignals().contains(right),
+          "the overlap clears with its parent's preempt exit yellow");
+    }
+
+    @Test
+    @DisplayName("engine: the FYA right overlap never goes red while its parent enters and "
+        + "dwells in the preempt")
+    void preemptKeepsOverlapThroughDwell() {
+      TrafficSignalProgrammedPhasePlan plan = plan();
+      TrafficSignalControllerCircuits ckts = circuits();
+      RingBarrierState rb = new RingBarrierState();
+      RingBarrierStateTest.Demand none = new RingBarrierStateTest.Demand();
+      RingBarrierStateTest.Demand preempt = new RingBarrierStateTest.Demand().veh(4, 1, 0, 0);
+      TrafficSignalPhase shown = null;
+      for (long t = 0; t < 600; t++) {
+        boolean calling = t >= 200;
+        TrafficSignalPhase p = rb.tick(plan, ckts, NO_OVERLAPS, t, calling ? preempt : none);
+        if (p != null) {
+          shown = p;
+        }
+        if (t == 150) {
+          assertEquals(Integer.valueOf(TrafficSignalPhase.INDICATION_FYA),
+              shown.resolveVehicleSignalStates().get(fyaRight),
+              "sanity: the FYA right flashes while 6 is green in normal operation");
+        }
+        if (calling) {
+          Integer state = shown.resolveVehicleSignalStates().get(fyaRight);
+          assertEquals(Integer.valueOf(TrafficSignalPhase.INDICATION_FYA), state,
+              "t=" + t + ": the FYA right must keep flashing through preempt entry and the "
+                  + "dwell of its permissive parent 6, not clear to red");
+          assertTrue(shown.getGreenSignals().contains(right),
+              "t=" + t + ": the overlap of 6 must stay green while 6 continues into the dwell");
+        }
+      }
+    }
+  }
+
+  @Nested
   @DisplayName("beacons and NO-TURN blankouts are driven in ADVANCED mode")
   class AccessoryDriveTest {
 
