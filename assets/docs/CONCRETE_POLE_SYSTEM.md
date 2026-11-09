@@ -222,6 +222,7 @@ and `base`, as here, so a post light in Lighting needs nothing new to sit on one
 | `decopolelahollywood` | Hollywood Boulevard: a slim grey steel shaft on a round base cover | 3 (pedestal) |
 | `decopoleanaheim` | City of Anaheim Special Design #749: 12-flute green pole, two-piece cast base with its door, a cast ring with two banner arm mounts and the Aztec Gold finial as its cap; carries `luminairearmanaheim8ftgreen` (MAST_ARM_CURVE_SYSTEM.md, "Luminaire arms") | 3 |
 | `decopolereprofluted` | the reproduction fluted cast-iron post (black, 12 flutes, ball finial) | 3 |
+| `decopolecalheights` | Long Beach's California Heights lamp post: a slim navy steel shaft, a flared base, an aluminium capital under `lbcalheightslantern` | 3 |
 
 What differs from the concrete pole:
 

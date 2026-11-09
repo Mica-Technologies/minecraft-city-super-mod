@@ -309,6 +309,13 @@ smoothly into the arm, with a curl hung in the angle; it comes in Anaheim green 
 specifies. The brace and the tie rod are pole members, so they get saddle cuts per fit like the
 truss's lower member.
 
+**The Van Nuys Special.** `vannuystriple` is Los Angeles' three-headed davit (BSL CD-955, Van
+Nuys Boulevard, early 1970s): three slim arms parting at one point on the pole and sweeping up and
+out in one plane, nested, with runs of 3, 4 and 5 blocks. Each tip lands on the fixtures' tip
+height in its own row (rows 3, 2 and 1 above the root), so three street lights fit, each against
+its own tip, a block apart and a block lower each time going out. It is what the requester
+remembered as the Hollywood "pitchfork".
+
 **Double arms.** The second arm is the first turned half round about the pole, so its cells are at
 negative `alongArm` (two blocks behind the root and on), each cell's model the first arm's turned
 about its own block centre.
@@ -322,9 +329,56 @@ second root), and the block reads `CsmPoleFit.behind` that way. There is no moun
 luminaire arm, so a `shape` value is a slot alone: the cell index, or a slot past the last cell
 for a pole-joint cell on a narrower pole.
 
-**Not done:** the truss signal mast arm (a two-member mast arm curve) is not built yet; mount
-stubs along a luminaire arm; finishes beyond galvanized and silver (black on the LA arms, green on
-the Anaheim arm) for the Caltrans and truss arms.
+**Not done:** mount stubs along a luminaire arm; finishes beyond galvanized and silver (black on
+the LA arms, green on the Anaheim arm) for the Caltrans and truss arms.
+
+## Truss signal mast arms
+
+The two-chord signal arms of Massachusetts, New Hampshire and New Jersey (GitHub #99), where a
+monotube arm would be used elsewhere: `gen_truss_signal_arms.py`, 24 blocks,
+`trusssignalarm<id><finish>` in galvanized, silver and black. One block places the whole arm,
+pole to tip; there is no upsweep handing off to `trafficpolehorizontal`.
+
+| Id | Shape | Cells |
+|---|---|---|
+| `level6`, `level8`, `level10`, `level12` | top chord straight and level, bottom chord climbing from 20 px lower on the pole to meet it at the tip (Boston, MassDOT) | 10, 13, 16, 19 |
+| `sloped8`, `sloped12` | both chords climbing 1 and 2 blocks over the run and converging at the tip (New Jersey) | 14, 21 |
+| `diagonal5`, `diagonal8` | a level-top arm at 45 degrees in plan, 5 and 8 diagonal steps (7.1 and 11.3 blocks) | 8, 13 |
+
+They are `BlockTrafficPoleMastArmCurve`s built from the generated `TrussSignalArmProfile`.
+
+**Every member is a straight pipe**, so a member is cut only where it crosses a cell boundary: one
+band per member per cell. A 12 block arm is about 800 triangles in all. The top chord is 5.2
+across, the bottom 4.2, the struts 2.5; a level top chord is centred in its row exactly as
+`trafficpolehorizontal` is, so a signal head against it lines up as on a monotube arm.
+
+**The pole joint** is the luminaire arms': each chord saddle-cut against the pole's cylinder per
+`CsmPoleFit`, plus a clamp collar round the pole. The two cells holding a chord's pole end are the
+only ones with fit variants.
+
+**A diagonal arm moves itself on placement.** Its first cell is diagonal to the pole, where there
+is no face to click. So it is placed against a pole's face like every other arm, and
+`onBlockPlacedBy` then removes the placed block and lays the arm from one step to its right:
+placed on the north face it reaches north-east, on the east face south-east, and so on round. The
+profile expresses that as a non-zero offset for cell 0 (`getCellOffset` may return a third,
+sideways value) and a `getPoleOffset` of one back and one left. Its cells sit on the lattice the
+angled thin traffic pole uses (`trafficpolehorizontalangle*`), one per diagonal step; consecutive
+cells touch only at an edge, which is that family's rule and why the generator does not assert
+face adjacency for it.
+
+**Mount hardware is per cell, and so is the packing.** `ICurvedArmProfile.getMountDirections(cell)`
+names the sides a cell can grow a stub on, out of six (down, up, east, west, ahead, back); the
+block tests only those. A side that is another cell of the same arm never can, a cell holding only
+the bottom chord hangs things below it, and only a diagonal arm uses ahead and back. A `shape`
+value is `base[cell] + fit * 2^n + mask`, the mask holding that cell's own `n` sides, so a level
+12 arm is 170 shape values where a uniform `cell * 16 + mask` would be over 300. A stub clamps to
+whichever chord is nearest the face it reaches (a sign under the arm hangs from the bottom chord)
+and identical stub meshes are written once (`trusssignalarm_stub_<n>.obj`) and shared across
+cells and arms.
+
+**Not done:** the curved-top truss (Boston City Hall; New Hampshire's signal arms); a mirrored
+diagonal (the arm always turns to the right of the face it was placed on, so the other diagonal is
+reached from the next face round).
 
 ## Geometry details worth not rediscovering
 

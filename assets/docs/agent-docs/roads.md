@@ -106,11 +106,20 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
 - `gen_luminaire_arms.py` -- the luminaire arms (GitHub #99): Caltrans davit arms 6/8/10/12/15 ft
   and Hapco-style truss arms 8/10/12/15 ft, single and double, in galvanized and silver; the
   Los Angeles upsweep arms 8/10/12 ft (with a tie rod; galvanized, silver, black) and the
-  Anaheim Resort Area 8 ft scroll arm (green only: `FINISHES_FOR` sets a profile's finishes). Built
+  Anaheim Resort Area 8 ft scroll arm (green only: `FINISHES_FOR` sets a profile's finishes); the
+  Van Nuys Special triple davit (three nested arms, a fixture tip each). Built
   like the mast arm curves (one block per cell, cell list and hitboxes in the generated
   `LuminaireArmProfile.java`) and placed by the same block class; the tip lands where every
   street light's neck expects an arm. Writes the per-cell OBJs, the pole-joint cells once per
-  `CsmPoleFit`, the inventory icons, the 36 blockstates and the enum; `--check`, `--fragments`
+  `CsmPoleFit`, the inventory icons, the blockstates and the enum; `--check`, `--fragments`
+- `gen_truss_signal_arms.py` -- the truss signal mast arms (GitHub #99): two-chord signal arms,
+  level top 6/8/10/12 blocks, sloped 8/12, and diagonal across a corner 5/8 steps, in galvanized,
+  silver and black (`trusssignalarm<id><finish>`, 24 blocks). Straight pipes cut at cell
+  boundaries, saddle-cut pole ends with a clamp collar per `CsmPoleFit`, mount stubs per cell and
+  side (identical ones shared as `trusssignalarm_stub_<n>.obj`). Writes the OBJs, the blockstates
+  and `TrussSignalArmProfile.java`, whose `shape` packing is per cell; a diagonal arm's cell 0 has
+  a sideways offset, which is how the block knows to move itself on placement. `--check`,
+  `--fragments`. MAST_ARM_CURVE_SYSTEM.md, "Truss signal mast arms"
 - `gen_decorative_poles.py` -- the decorative and historic street light poles
   (`decopole<id>`, `BlockTrafficPoleDecorative`: the LA electroliers, Hollywood, Anaheim #749,
   the reproduction post) AND their post-top fixtures in Lighting (`la*`, `repro*`). Lathes,

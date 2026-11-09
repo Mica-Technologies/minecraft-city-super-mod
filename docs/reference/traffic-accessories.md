@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "456 blocks in this tab"
+!!! info "483 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -46,6 +46,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Cable Barrier | `csm:cable_barrier` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier Anchor | `csm:cable_barrier_anchor` | 1.2 | 6 | pickaxe | 0 |
+| California Heights Lamp Post | `csm:decopolecalheights` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftdoublesilver` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
@@ -318,6 +319,30 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftsilver` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Diagonal, 5 Blocks (Black) | `csm:trusssignalarmdiagonal5black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Diagonal, 5 Blocks (Galvanized) | `csm:trusssignalarmdiagonal5galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Diagonal, 5 Blocks (Silver) | `csm:trusssignalarmdiagonal5silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Diagonal, 8 Blocks (Black) | `csm:trusssignalarmdiagonal8black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Diagonal, 8 Blocks (Galvanized) | `csm:trusssignalarmdiagonal8galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Diagonal, 8 Blocks (Silver) | `csm:trusssignalarmdiagonal8silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 10 Blocks (Black) | `csm:trusssignalarmlevel10black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 10 Blocks (Galvanized) | `csm:trusssignalarmlevel10galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 10 Blocks (Silver) | `csm:trusssignalarmlevel10silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 12 Blocks (Black) | `csm:trusssignalarmlevel12black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 12 Blocks (Galvanized) | `csm:trusssignalarmlevel12galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 12 Blocks (Silver) | `csm:trusssignalarmlevel12silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 6 Blocks (Black) | `csm:trusssignalarmlevel6black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 6 Blocks (Galvanized) | `csm:trusssignalarmlevel6galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 6 Blocks (Silver) | `csm:trusssignalarmlevel6silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 8 Blocks (Black) | `csm:trusssignalarmlevel8black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 8 Blocks (Galvanized) | `csm:trusssignalarmlevel8galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Level Top, 8 Blocks (Silver) | `csm:trusssignalarmlevel8silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Sloped, 12 Blocks (Black) | `csm:trusssignalarmsloped12black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Sloped, 12 Blocks (Galvanized) | `csm:trusssignalarmsloped12galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Sloped, 12 Blocks (Silver) | `csm:trusssignalarmsloped12silver` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Sloped, 8 Blocks (Black) | `csm:trusssignalarmsloped8black` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Sloped, 8 Blocks (Galvanized) | `csm:trusssignalarmsloped8galvanized` | 2 | 10 | pickaxe | 1 |
+| Truss Signal Mast Arm, Sloped, 8 Blocks (Silver) | `csm:trusssignalarmsloped8silver` | 2 | 10 | pickaxe | 1 |
 | Type I Barricade (Keep Left) | `csm:barricade_type_1_left` | 0.6 | 3 | pickaxe | 0 |
 | Type I Barricade (Keep Right) | `csm:barricade_type_1_right` | 0.6 | 3 | pickaxe | 0 |
 | Type II Folding Barricade (Keep Left) | `csm:barricade_type_2_left` | 0.6 | 3 | pickaxe | 0 |
@@ -336,6 +361,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Unpainted Pedestal Traffic Pole | `csm:trafficpolepedestalunpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Signal Mount | `csm:tlpmunpainted` |  | 10 | pickaxe | 1 |
 | Unpainted Vertical Traffic Pole with Double Connector | `csm:trafficpoleverticalconnectordoubleunpainted` |  | 10 | pickaxe | 1 |
+| Van Nuys Special Triple Luminaire Arm (Galvanized) | `csm:luminairearmvannuystriplegalvanized` | 2 | 10 | pickaxe | 1 |
+| Van Nuys Special Triple Luminaire Arm (Silver) | `csm:luminairearmvannuystriplesilver` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Black) | `csm:tlborder5addonblackblack` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Blue) | `csm:tlborder5addonblackblue` | 2 | 10 | pickaxe | 1 |
 | Vertical 5-Tall Add-On Signal Border (Black/Green) | `csm:tlborder5addonblackgreen` | 2 | 10 | pickaxe | 1 |
