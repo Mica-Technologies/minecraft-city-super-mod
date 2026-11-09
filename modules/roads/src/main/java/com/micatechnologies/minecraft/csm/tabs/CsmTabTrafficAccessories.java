@@ -49,6 +49,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanW
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ItemSpanWireTool;
 import com.micatechnologies.minecraft.csm.trafficaccessories.LuminaireArmProfile;
+import com.micatechnologies.minecraft.csm.trafficaccessories.TrussSignalArmProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.MastArmCurveProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallGray;
@@ -546,6 +547,32 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2tan", MastArmCurveProfile.P10X2));
     initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2white", MastArmCurveProfile.P10X2));
     initTabBlock(new BlockTrafficPoleMastArmCurve("trafficpolemastarmcurve10x2unpainted", MastArmCurveProfile.P10X2));
+
+    // --- Truss signal mast arms (level top, sloped, diagonal): gen_truss_signal_arms.py ---
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel6galvanized", TrussSignalArmProfile.LEVEL6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel6silver", TrussSignalArmProfile.LEVEL6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel6black", TrussSignalArmProfile.LEVEL6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel8galvanized", TrussSignalArmProfile.LEVEL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel8silver", TrussSignalArmProfile.LEVEL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel8black", TrussSignalArmProfile.LEVEL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel10galvanized", TrussSignalArmProfile.LEVEL10));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel10silver", TrussSignalArmProfile.LEVEL10));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel10black", TrussSignalArmProfile.LEVEL10));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel12galvanized", TrussSignalArmProfile.LEVEL12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel12silver", TrussSignalArmProfile.LEVEL12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmlevel12black", TrussSignalArmProfile.LEVEL12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmsloped8galvanized", TrussSignalArmProfile.SLOPED8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmsloped8silver", TrussSignalArmProfile.SLOPED8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmsloped8black", TrussSignalArmProfile.SLOPED8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmsloped12galvanized", TrussSignalArmProfile.SLOPED12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmsloped12silver", TrussSignalArmProfile.SLOPED12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmsloped12black", TrussSignalArmProfile.SLOPED12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal5galvanized", TrussSignalArmProfile.DIAGONAL5));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal5silver", TrussSignalArmProfile.DIAGONAL5));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal5black", TrussSignalArmProfile.DIAGONAL5));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal8galvanized", TrussSignalArmProfile.DIAGONAL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal8silver", TrussSignalArmProfile.DIAGONAL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal8black", TrussSignalArmProfile.DIAGONAL8));
 
     // --- Luminaire arms (gen_luminaire_arms.py; multi-block, a street light at the tip) ---
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftgalvanized", LuminaireArmProfile.CALTRANS6FT));

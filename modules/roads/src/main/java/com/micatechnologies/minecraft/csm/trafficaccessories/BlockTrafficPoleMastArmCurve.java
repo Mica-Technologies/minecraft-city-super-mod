@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -116,6 +117,18 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    * @param profile      the arm this block places
    */
   public BlockTrafficPoleMastArmCurve(String registryName, LuminaireArmProfile profile) {
+    this(registryName, profile, null);
+  }
+
+  /**
+   * Constructs a truss signal mast arm block: a two-chord signal arm, level, sloped or diagonal
+   * across a corner (GitHub #99). The same multi-block machinery again, from
+   * gen_truss_signal_arms.py's profiles.
+   *
+   * @param registryName the block's registry name
+   * @param profile      the arm this block places
+   */
+  public BlockTrafficPoleMastArmCurve(String registryName, TrussSignalArmProfile profile) {
     this(registryName, profile, null);
   }
 
@@ -228,7 +241,8 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    */
   private BlockPos cellPos(BlockPos root, EnumFacing facing, int index) {
     int[] offset = profile.getCellOffset(index);
-    return root.offset(facing, offset[0]).up(offset[1]);
+    BlockPos pos = root.offset(facing, offset[0]).up(offset[1]);
+    return offset.length > 2 ? pos.offset(facing.rotateY(), offset[2]) : pos;
   }
 
   /**
@@ -243,7 +257,17 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    */
   private BlockPos rootPos(BlockPos pos, EnumFacing facing, int index) {
     int[] offset = profile.getCellOffset(index);
-    return pos.down(offset[1]).offset(facing, -offset[0]);
+    BlockPos root = pos.down(offset[1]).offset(facing, -offset[0]);
+    return offset.length > 2 ? root.offset(facing.rotateY(), -offset[2]) : root;
+  }
+
+  /**
+   * Whether cell 0 sits at the position the arm is placed at. It does for every arm but the
+   * diagonal truss arms, whose first cell is diagonal to the pole and so one step aside.
+   */
+  private boolean rootIsPlacedCell() {
+    int[] offset = profile.getCellOffset(0);
+    return offset[0] == 0 && offset[1] == 0 && (offset.length < 3 || offset[2] == 0);
   }
 
   private int cellIndexAt(IBlockAccess world, BlockPos pos) {
@@ -274,7 +298,8 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     }
 
     EnumFacing facing = state.getValue(FACING);
-    for (int i = 1; i < profile.getCellCount(); i++) {
+    boolean rootHere = rootIsPlacedCell();
+    for (int i = rootHere ? 1 : 0; i < profile.getCellCount(); i++) {
       BlockPos cell = cellPos(pos, facing, i);
       if (!world.getBlockState(cell).getBlock().isReplaceable(world, cell)) {
         refuse(world, pos, placer, cell);
@@ -282,8 +307,19 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
       }
     }
 
-    setCellIndex(world, pos, 0);
-    for (int i = 1; i < profile.getCellCount(); i++) {
+    if (rootHere) {
+      setCellIndex(world, pos, 0);
+    } else {
+      // The block just placed only marked the spot: the arm's first cell is beside it. Remove it
+      // without starting a demolition of the arm that is about to be laid from here.
+      DEMOLISHING.set(true);
+      try {
+        world.setBlockToAir(pos);
+      } finally {
+        DEMOLISHING.set(false);
+      }
+    }
+    for (int i = rootHere ? 1 : 0; i < profile.getCellCount(); i++) {
       BlockPos cell = cellPos(pos, facing, i);
       world.setBlockState(cell, getDefaultState().withProperty(FACING, facing), 3);
       setCellIndex(world, cell, i);
@@ -375,28 +411,34 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
       @NotNull IBlockAccess worldIn,
       @NotNull BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
+    EnumFacing right = facing.rotateY();
     Class<?>[] ignore = AbstractBlockTrafficPole.IGNORE_BLOCK;
-    int mask = 0;
-    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.down(), ignore)) {
-      mask |= MastArmCurveProfile.MOUNT_DOWN;
-    }
-    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.up(), ignore)) {
-      mask |= MastArmCurveProfile.MOUNT_UP;
-    }
-    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.offset(facing.rotateY()),
-        ignore)) {
-      mask |= MastArmCurveProfile.MOUNT_EAST;
-    }
-    if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, pos.offset(facing.rotateYCCW()),
-        ignore)) {
-      mask |= MastArmCurveProfile.MOUNT_WEST;
-    }
     int cell = cellIndexAt(worldIn, pos);
+    // Only the sides this cell can grow hardware on are tested: the mast arm curves' four, or
+    // whatever a truss arm's cell has free (a side that is another cell of the arm never is).
+    int directions = profile.getMountDirections(cell);
+    int mask = 0;
+    for (int bit = 0; bit < ICurvedArmProfile.MOUNT_DIRECTION_COUNT; bit++) {
+      if ((directions & (1 << bit)) == 0) {
+        continue;
+      }
+      int[] to = ICurvedArmProfile.MOUNT_DIRECTION_OFFSETS[bit];
+      BlockPos neighbour = pos.offset(facing, to[0]).up(to[1]).offset(right, to[2]);
+      if (AbstractBlockTrafficPole.isMountableAdjacent(worldIn, neighbour, ignore)) {
+        mask |= 1 << bit;
+      }
+    }
     // A cell holding a pole joint reads the pole's width: the root, behind it; a double luminaire
-    // arm's second root, ahead of it, past the pole.
-    int side = profile.poleSide(cell);
-    CsmPoleFit fit = side == 0 ? CsmPoleFit.LARGE
-        : CsmPoleFit.behind(worldIn, pos, side > 0 ? facing : facing.getOpposite());
+    // arm's second root, ahead of it, past the pole; a diagonal truss arm's, diagonally behind.
+    int[] poleAt = profile.getPoleOffset(cell);
+    CsmPoleFit fit = CsmPoleFit.LARGE;
+    if (poleAt != null) {
+      Block pole = worldIn.getBlockState(pos.offset(facing, poleAt[0]).offset(right, poleAt[1]))
+          .getBlock();
+      if (pole instanceof AbstractBlockTrafficPole) {
+        fit = CsmPoleFit.forPoleRadius(((AbstractBlockTrafficPole) pole).getPoleRadius());
+      }
+    }
     return state.withProperty(shapeProperty, profile.shapeIndex(cell, mask, fit));
   }
 
