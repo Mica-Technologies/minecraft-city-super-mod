@@ -83,6 +83,8 @@ SWATCHES = {
     "streetlight_body_leotek_karbon": ((178, 183, 189), (140, 145, 151)),
     # The Westinghouse OV-25 "Silverliner": bare cast aluminium.
     "streetlight_body_westinghouse_silver": ((186, 188, 188), (140, 142, 142)),
+    # The SolarMax SMX-LL5's near-white housing (his reference photo).
+    "streetlight_body_solarmax_white": ((234, 234, 230), (196, 196, 192)),
 }
 LENS_ON = "streetlight_lens_hps_on"
 LENS_OFF = "streetlight_lens_hps_off"
@@ -1492,6 +1494,33 @@ def build_l250():
     return m
 
 
+# SolarMax SMX-LL5 (2nd generation SolarMax, confirmed by AngelWingsPanda): a thin round-nosed
+# paddle carrying the LED module under its front half, its top running flat into a deep, square
+# driver box behind, the photocell receptacle at the front edge of the box. SolarMax's sheet:
+# 19.4 x 12.4 x 4.8 in; drawn at the first-generation smsmx's breadth (8 px), its look refined.
+LL5_PADDLE = nose_round(2.55, 2.6, 4.0, ((1.8, 2.55), (1.8, 3.05))) + [
+    (5.15, 4.0, 1.8, 3.05),
+    (11.0, 4.0, 1.8, 3.05),
+]
+LL5_BOX = [
+    (8.4, 2.6, 0.0, 2.9),
+    (8.7, 3.0, -0.3, 3.15),
+    (15.0, 3.0, -0.35, 3.15),
+    (REAR_Z, 2.9, -0.35, 3.10),
+]
+
+
+def build_smx_ll5():
+    m = Mesh()
+    check_neck_holds_arm("SMX-LL5", LL5_BOX, 5.0)
+    loft_housing(m, LL5_PADDLE, 3.0)
+    loft_housing(m, LL5_BOX, 5.0)
+    # the LED module: a raised block under the paddle, its underside the array
+    box(m, (5.4, 1.25, 3.7), (10.6, 1.85, 8.5), "body", bottom_mat=LENS_MAT)
+    photocell(m, LL5_BOX, 9.9, 5.3)
+    return m
+
+
 # registry name -> (display name, builder, body texture, bounding box comment)
 CATALOGUE = [
     ("gem400a", "GE M-400A", lambda: build_m400a("refractor"),
@@ -1602,6 +1631,7 @@ CATALOGUE = [
      "streetlight_body_westinghouse_silver"),
     ("whl250", "Westinghouse L-250 (Mercury Vapor)", build_l250, "streetlight_body_ge_grey"),
     ("whl250hps", "Westinghouse L-250 (HPS)", build_l250, "streetlight_body_ge_grey"),
+    ("smsmxll5", "SolarMax SMX-LL5", build_smx_ll5, "streetlight_body_solarmax_white"),
 ]
 
 # The cobra heads' envelope (x 5..11, z 1..16 with a little slack) is every fixture's, except a
@@ -1649,6 +1679,8 @@ ENVELOPE_FOR = {
     "altomvwlslim": ((6.5, 10.5), (4.0, 12.0), (13.0, REAR_Z + 1e-9)),
     # The Powerbracket is two blocks long: its box runs z -16..18, x 2..14, y 0..12.
     "gepb": ((2.0, 14.0), (0.0, 12.0), (-16.0, REAR_Z + 1e-9)),
+    # The SMX-LL5's paddle is 8 px wide (x 4..12), as the first-generation SMX's head is broad.
+    "smsmxll5": ((4.0, 12.0), (-0.5, 5.5), (2.0, REAR_Z + 1e-9)),
 }
 
 
@@ -1691,6 +1723,7 @@ GENERATED_LENS = {
     "leotek_kc1": (6, 6, "die"),
     "leotek_kc2": (6, 12, "die"),
     "ael_acm": (5, 9, "amber"),
+    "solarmax_smx_ll5": (4, 9, "amber"),
 }
 
 
@@ -1768,12 +1801,15 @@ LENS_FOR = {
     "whov25early": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "whl250": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "whl250hps": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "smsmxll5": (art_lens("solarmax_smx_ll5", "on"), art_lens("solarmax_smx_ll5", "off")),
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
 PHOTOCELL_FOR = {
     "ltgcjsn": "streetlight_smartnode",
     "ltgcmsn": "streetlight_smartnode",
+    # the SMX-LL5 in his photo carries a blue photocell, the smart node's blue
+    "smsmxll5": "streetlight_smartnode",
 }
 
 

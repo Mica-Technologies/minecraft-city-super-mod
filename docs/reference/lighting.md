@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "189 blocks in this tab"
+!!! info "190 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -181,6 +181,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Sears Light Fixture 3 | `csm:searslf3` | 2 | 10 | pickaxe | 1 |
 | Sears Light Fixture 4 | `csm:searslf4` | 2 | 10 | pickaxe | 1 |
 | Solarmax SMX | `csm:smsmx` | 2 | 10 | pickaxe | 1 |
+| SolarMax SMX-LL5 | `csm:smsmxll5` | 2 | 10 | pickaxe | 1 |
 | Street Light Photocell Relay Module | `csm:pcrm` | 2 | 10 | pickaxe | 1 |
 | Sylvania Ultra LED (Full) | `csm:uledf` | 2 | 10 | pickaxe | 1 |
 | Sylvania Ultra LED (Half) | `csm:uledh` | 2 | 10 | pickaxe | 1 |
