@@ -391,3 +391,4 @@ tile.sprinkler_drop_silver.name=Sprinklernedstick (Silverfärgad)
 tile.smoke_detector_photoelectric.black.name=Optisk rökdetektor (svart)
 tile.eyewash_station_wall.name=Ögondusch (väggmonterad)
 tile.eyewash_station_deck.name=Ögondusch (bänkmonterad, nedfällbar)
+tile.home_fire_alarm_keypad.name=Manöverpanel för hemmets brand- och inbrottslarm

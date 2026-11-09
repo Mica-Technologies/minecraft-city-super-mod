@@ -31,7 +31,8 @@ a right-click in the air.
 Residential alarms (#335): `BlockResidentialAlarm` (`kiddesmoke`, `adt_co_detector`, `nestprotect`,
 converted in place from decorative blocks) detects and sounds; `ResidentialInterconnect` groups them
 (by panel, or by an `ig` key with no panel) and beats every alarm of a home on one tick with
-positional `world.playSound`. Details in `FIRE_ALARM_SYSTEM.md` § Zones and § Residential Smoke and CO Alarms.
+positional `world.playSound`. `BlockFireAlarmHomePanel` (`home_fire_alarm_keypad`) is the optional
+keypad. Details in `FIRE_ALARM_SYSTEM.md` § Zones and § Residential Smoke and CO Alarms.
 
 Code 3 horn sound targets: ~4.024s total, bursts at ~0.040/1.020/2.000, ~9,900 burst RMS.
 Voice evac sound volume target: ~4,500 RMS.
@@ -50,7 +51,7 @@ Voice evac sound volume target: ~4,500 RMS.
   rectangles, two turned 45 degrees, since a square plus the same square turned 45 is a star
 - `gen_fire_protection.py` -- the Fire Protection tab (extinguishers, cabinets with doors that
   open, standpipe, fire department connections, riser room valves, the water motor gong, door
-  holders, sign plates, the lab's wall and deck eyewashes) and the new detectors and remote annunciator in Fire Alarm & Detection;
+  holders, sign plates, the lab's wall and deck eyewashes) and the new detectors, remote annunciator and home fire and security keypad in Fire Alarm & Detection;
   `--check`, `--fragments`
 - `gen_standpipe_system.py` -- the connectable dry standpipe in Fire Protection: free-standing
   (`BlockStandpipePipe`, six-way) and wall-run (`BlockStandpipeWallPipe`, axis set back to the
@@ -67,7 +68,7 @@ Voice evac sound volume target: ~4,500 RMS.
   fittings and community warning, grown a station at a time; `--check`, `--fragments`
 - `gen_life_safety_sounds.py` -- the Life Safety module's own sounds, synthesised (numpy to
   ffmpeg to OGG) so nothing recorded is shipped, among them the residential alarms' temporal-three
-  and temporal-four; adds a `sounds.json` entry for each. No
+  and temporal-four and the home keypad's beeps; adds a `sounds.json` entry for each. No
   `--check` (Vorbis output is not byte-stable): listen, then commit the OGG
 - `build_life_safety_demo.py` -- builds the Life Safety demo world in a flat creative world loaded
   in the dev client, over MCMCP (borrowing `csm_bench.py`'s client): a street with a fire station

@@ -53,7 +53,7 @@ All fire alarm code lives in `src/main/java/com/micatechnologies/minecraft/csm/l
   connected appliance positions in NBT. State transitions (alarm, storm, audible silence,
   acknowledgement) call `syncServerToClient` so an open GUI tracks alarms raised elsewhere.
 
-### Panel makes: Simplex 4100 and Edwards iO
+### Panel makes: Simplex 4100, Edwards iO and the home keypad
 
 The original panel is a Simplex 4100. `BlockFireAlarmEdwardsIOPanel` (registry names
 `firealarmedwardsiopanelred` / `firealarmedwardsiopanelwhite`) is an Edwards iO64 in red or white:
@@ -62,6 +62,13 @@ cabinet (15.6 x 26 x 3 px, 1.625 blocks tall, rising into the block above -- the
 width-to-height ratio, at the tallest that stays one block wide), its GUI title and its buzzer
 sounds. The linker and config tool test `instanceof BlockFireAlarmControlPanel`, so a subclass
 needs nothing else. Red and white are separate blocks, like the mod's other red/white devices.
+
+`BlockFireAlarmHomePanel` (`home_fire_alarm_keypad`, "Home Fire & Security Keypad") is the third:
+a house's alarm keypad by the front door, built the same way, with a 10 x 7 px cabinet from
+`gen_fire_protection.py`, the screen titled "CSM HOME / HOME FIRE & SECURITY"
+(`getPanelSubtitle`), and keypad beeps synthesised by `gen_life_safety_sounds.py`
+(`home_keypad_alarm` in temporal-three, `home_keypad_trouble`, `home_keypad_reset`). See
+Residential Smoke and CO Alarms below.
 
 ### The panel's own buzzer and trouble
 

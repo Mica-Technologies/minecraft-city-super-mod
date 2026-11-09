@@ -253,6 +253,22 @@ def residential_alarm_t4():
     return beeps(3150, 0.1, 0.1, 4, tail=0.05)
 
 
+def home_keypad_alarm():
+    """A home keypad's fire alarm: its small 2.9 kHz sounder in temporal-three, the full 4 s
+    cycle, looped while the alarm is unacknowledged."""
+    return beeps(2900, 0.5, 0.5, 3, tail=1.5)
+
+
+def home_keypad_trouble():
+    """A home keypad's trouble: four quick beeps and a pause, looped until ACK."""
+    return beeps(2900, 0.12, 0.12, 4, tail=0.6)
+
+
+def home_keypad_reset():
+    """A home keypad's reset: two short confirmation beeps."""
+    return beeps(2900, 0.08, 0.08, 2, tail=0.02)
+
+
 # Levels are RMS of 32767. The station alerting sounds are at the fire alarm horns' level (about
 # 10,000; FIRE_ALARM_SYSTEM.md § Sound File Standards): at 6,000 they were too soft to carry
 # through a station.
@@ -272,9 +288,13 @@ SOUNDS = {
     'aed_cabinet_alarm': (aed_cabinet_alarm, 7000),
     'station_bell': (station_bell, 9000),
     'water_motor_gong': (water_motor_gong, 9900),
-    # The residential alarms are at the horns' level
+    # The residential alarms are at the horns' level; the keypad, a small sounder by the door,
+    # well under it
     'residential_alarm_t3': (residential_alarm_t3, 9000),
     'residential_alarm_t4': (residential_alarm_t4, 9000),
+    'home_keypad_alarm': (home_keypad_alarm, 5500),
+    'home_keypad_trouble': (home_keypad_trouble, 5500),
+    'home_keypad_reset': (home_keypad_reset, 5500),
 }
 
 
