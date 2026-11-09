@@ -238,6 +238,11 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory.PostTop("lavinedouble", new AxisAlignedBB(-0.321250, 0.001250, 0.222296, 1.321250, 1.125000, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lahollywoodstar", new AxisAlignedBB(-0.500000, 0.001250, 0.222296, 1.500000, 1.500000, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory.PostTop("lahollywoodwof", new AxisAlignedBB(-0.137500, 0.001250, 0.222296, 1.137500, 1.500000, 0.777704), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("reproacorn", new AxisAlignedBB(0.161926, 0.001250, 0.161926, 0.838074, 1.350000, 0.838074), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("reprowashingtonglobe", new AxisAlignedBB(0.113630, 0.001250, 0.113630, 0.886370, 1.262500, 0.886370), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTop("reprotwin20", new AxisAlignedBB(-0.216481, 0.001250, 0.222296, 1.216481, 1.137500, 0.777704), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTopAimed("reprobishopscrook", new AxisAlignedBB(0.258519, 0.001250, -0.352187, 0.741481, 1.500000, 0.741481), 1));
+    initTabBlock(new BlockBrightLightFactory.PostTopAimed("reprotypef", new AxisAlignedBB(0.222296, 0.001250, -0.494375, 0.777704, 0.937500, 0.777704), 1));
     initTabBlock(new BlockBrightLightFactory("slf", new AxisAlignedBB(0.421875, 0.875000, -1.000000, 0.578125, 1.000000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("slfe", new AxisAlignedBB(0.859375, 0.875000, -1.000000, 1.000000, 1.000000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("slh", new AxisAlignedBB(0.421875, 0.875000, 0.000000, 0.578125, 1.000000, 1.000000), 0));

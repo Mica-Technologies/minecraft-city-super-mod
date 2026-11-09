@@ -1325,6 +1325,7 @@ tile.luminairearmlaupsweep10ftblack.name=Los-Angeles-Schwungausleger 10 ft (Schw
 tile.luminairearmlaupsweep12ftgalvanized.name=Los-Angeles-Schwungausleger 12 ft (Verzinkt)
 tile.luminairearmlaupsweep12ftsilver.name=Los-Angeles-Schwungausleger 12 ft (Silber)
 tile.luminairearmlaupsweep12ftblack.name=Los-Angeles-Schwungausleger 12 ft (Schwarz)
+tile.decopolereprofluted.name=Kannelierter Gusseisenmast (Nachbau)
 tile.traffic_cone.name=Verkehrskegel
 tile.traffic_cone_lime.name=Verkehrskegel (Hellgrün)
 tile.traffic_drum.name=Verkehrstrommel

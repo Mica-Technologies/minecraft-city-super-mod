@@ -753,6 +753,25 @@ HOLLYWOOD = PoleDesign(
     source="the slim steel poles of Hollywood Boulevard")
 
 
+# --- Reproduction cast-iron post: slim, twelve flutes, a moulded base, a ball finial ---------
+def repro_base(m):
+    square_stack(m, "body", [(6.0, INSET), (6.0, 1.2), (5.4, 1.2), (5.4, 1.8)])
+    lathe(m, "body", [(4.8, 1.8), (4.8, 2.4), (4.2, 3.0), (4.0, 4.0), (4.6, 4.6), (4.6, 5.2),
+                      (3.9, 5.8), (3.6, 8.0), (3.9, 8.4), (3.9, 9.0), (3.4, 9.6), (3.2, 10.2),
+                      (2.5, 10.2)])
+
+
+REPRO = PoleDesign(
+    "reprofluted", "Reproduction Fluted Cast Iron Post", 3.0, 3.0, 6.0,
+    tex("paint_black"), tex("trim_gold"), "BLACK",
+    fluted_shaft(3.0, 12, 0.35), repro_base,
+    cap_lathe(3.0, [(3.0, 12.4), (3.5, 12.8), (3.5, 13.4), (2.6, 13.8), (1.2, 14.2), (1.5, 14.5),
+                    (1.9, 15.0), (1.5, 15.6), (0.0, 15.95)]),
+    capital(3.0, [(3.0, 11.4), (3.6, 11.8), (3.6, 12.4), (3.2, 12.8), (4.2, 14.0), (5.0, 15.0),
+                  (5.0, 15.98)]),
+    source="the Union Metal / Spring City reproductions of the cast-iron post")
+
+
 # --- Anaheim Resort Area, City of Anaheim Street Light Design #749 --------------------------
 # A 12-flute galvanized steel pole, 7.5 in at the base, in Anaheim P7-Green; a two-piece cast
 # base with a door, 43 in tall; a cast ring with two banner arm mounts under the 8 ft arm; an
@@ -788,7 +807,7 @@ ANAHEIM = PoleDesign(
     source="City of Anaheim Street Light Special Design #749 (L 139 rev 5)")
 
 
-POLE_DESIGNS = [LA_FLUTED, BROADWAY_ROSE, CONCRETE_815, WESTWOOD, HOLLYWOOD, ANAHEIM]
+POLE_DESIGNS = [LA_FLUTED, BROADWAY_ROSE, CONCRETE_815, WESTWOOD, HOLLYWOOD, REPRO, ANAHEIM]
 
 
 # --- the mount clamp every pole grows toward a device on its flank -----------------------------
@@ -1164,6 +1183,83 @@ def build_broadway_rose_head(m):
               cz=cz)
 
 
+# --- reproductions -------------------------------------------------------------------------
+def build_acorn(m):
+    """A reproduction acorn: a ribbed prismatic acorn on a cast fitter, a crown and finial."""
+    fitter(m, 4.6, 2.4, 3.0)
+    lathe(m, "body", [(3.0, 2.4), (4.6, 3.6), (4.8, 4.4), (4.2, 4.6)], sides=12)
+    lathe(m, "body", [(4.2, 4.6), (4.0, 4.6)], sides=12)
+    lathe(m, "unshaded_lens", [(4.0, 4.6), (5.2, 7.0), (5.6, 10.0), (5.4, 12.6), (4.6, 15.0)],
+          sides=12)
+    lathe(m, "body", [(4.6, 15.0), (5.0, 15.2), (5.0, 16.0), (3.6, 17.2), (1.6, 18.0), (1.0, 18.6),
+                      (1.4, 19.2), (0.6, 20.0), (0.0, 21.6)], sides=12)
+
+
+def build_washington(m):
+    """Washington Globe: an opal globe narrowing to a small cast top, on a leafy fitter."""
+    fitter(m, 4.6, 2.2, 3.0)
+    lathe(m, "body", [(3.0, 2.2), (3.6, 3.0), (4.4, 3.4), (4.4, 4.2), (3.8, 4.4)], sides=12)
+    for i in range(8):
+        a = 2.0 * math.pi * (i + 0.5) / 8
+        blob(m, "body", (AXIS + 3.6 * math.cos(a), 3.8, AXIS + 3.6 * math.sin(a)), 0.8)
+    lathe(m, "body", [(3.8, 4.4), (3.6, 4.4)], sides=12)
+    lathe(m, "unshaded_lens", [(3.6, 4.4), (5.2, 6.0), (6.2, 8.6), (6.4, 11.0), (5.8, 13.6),
+                               (4.2, 15.8), (2.6, 16.8)], sides=12)
+    lathe(m, "body", [(2.6, 16.8), (2.9, 17.0), (2.9, 17.6), (1.6, 18.4), (0.9, 18.8),
+                      (1.1, 19.4), (0.0, 20.2)], sides=12)
+
+
+def wash_globe_small(m, cz, y0):
+    lathe(m, "body", [(0.8, y0), (2.4, y0 + 0.8), (2.6, y0 + 1.6), (2.2, y0 + 1.8)], sides=12,
+          cz=cz, bottom=True)
+    lathe(m, "unshaded_lens", [(2.2, y0 + 1.8), (3.4, y0 + 3.2), (4.0, y0 + 5.4), (3.6, y0 + 7.4),
+                               (2.4, y0 + 8.8), (1.4, y0 + 9.4)], sides=12, cz=cz)
+    lathe(m, "body", [(1.4, y0 + 9.4), (1.6, y0 + 9.6), (1.0, y0 + 10.2), (0.0, y0 + 11.0)],
+          sides=8, cz=cz)
+
+
+def build_twin20(m):
+    """Twin-20: a cast T-bar across the street with a Washington globe at each end, a finial
+    between them."""
+    fitter(m, 4.6, 2.4, 2.4)
+    lathe(m, "body", [(2.4, 2.4), (2.2, 6.0), (2.8, 6.4), (2.8, 7.4), (1.2, 8.0), (0.9, 10.6),
+                      (1.4, 11.0), (0.0, 13.0)], sides=8)
+    tube(m, "body", [(8.0, 7.0, 0.4), (8.0, 7.0, 15.6)], 0.75, sides=8)
+    for sign in (1, -1):
+        cz = 8.0 - sign * 7.6
+        tube(m, "body", [(8.0, 6.4, 8.0 - sign * 2.4), (8.0, 4.6, 8.0 - sign * 4.6),
+                         (8.0, 5.6, 8.0 - sign * 6.6), (8.0, 6.6, cz)], 0.4, sides=4)
+        wash_globe_small(m, cz, 7.2)
+
+
+def build_bishops_crook(m):
+    """Bishop's crook: the post's tip rises and bends over in a crook, a scroll inside its curve,
+    a teardrop hung from its end."""
+    fitter(m, 4.0, 2.4, 0.9)
+    rc = 5.5
+    straight = [(8.0, 2.0, 8.0), (8.0, 18.0, 8.0)]
+    crook = arc_pts((8.0, 18.0, 8.0 - rc), rc, 0.0, 180.0, 10)
+    pts = straight + crook[1:]
+    tube(m, "body", pts, 0.9, sides=8, cap0=False)
+    sc = spiral_pts((8.0, 17.0, 8.0 - rc), 2.6, 0.9, 0.0, -400.0, 12)
+    tube(m, "body", sc, 0.35, sides=4)
+    zt = 8.0 - 2.0 * rc
+    teardrop(m, 8.0, zt, 18.0, 0.85, skirt=False)
+
+
+def build_type_f(m):
+    """NYC Type F (the 1913 Reverse Scroll Bracket): a scroll arm whose curl turns back under
+    itself toward the post, carrying a pendant from its tip."""
+    fitter(m, 4.6, 2.4, 2.4)
+    lathe(m, "body", [(2.4, 2.4), (2.2, 11.0), (2.8, 11.4), (2.8, 12.2), (1.6, 12.6),
+                      (1.2, 14.0), (0.0, 15.0)], sides=12)
+    arm = bezier((8.0, 12.0, 8.0), (8.0, 13.6, 4.0), (8.0, 13.6, -1.4), (8.0, 12.6, -4.0), 10)
+    tube(m, "body", arm, 0.75, sides=6)
+    sc = spiral_pts((8.0, 9.4, 1.6), 3.0, 1.1, 90.0, 400.0, 14)
+    tube(m, "body", [(8.0, 11.2, 7.0)] + sc, 0.45, sides=4)
+    teardrop(m, 8.0, -4.0, 12.4, 0.85)
+
+
 def along_street(builder):
     """A symmetric head is drawn with its arms along z, then turned so they run along x: across
     the block's facing, parallel to the kerb of a street it faces."""
@@ -1199,6 +1295,16 @@ FIXTURES = [
             source="BSL: c. 1960 'Five-Star' three-lamp head (a reconstruction; see the plan)"),
     Fixture("lahollywoodwof", "Hollywood Walk of Fame Three-Lamp Head", along_street(build_hollywood_wof),
             "frosted", source="the 2005 Walk of Fame 'pitchfork' (a reconstruction; see the plan)"),
+    Fixture("reproacorn", "Reproduction Acorn", build_acorn, "prism",
+            source="the cast-post acorn of Union Metal / Spring City reproductions"),
+    Fixture("reprowashingtonglobe", "Washington Globe", build_washington, "opal",
+            source="Washington, DC's Washington Globe"),
+    Fixture("reprotwin20", "Twin-20 Washington Globes", along_street(build_twin20), "opal",
+            source="Washington, DC's Twin-20"),
+    Fixture("reprobishopscrook", "Bishop's Crook with Teardrop", build_bishops_crook, "prism",
+            aimed=True, source="New York's Bishop's Crook"),
+    Fixture("reprotypef", "NYC Type F Reverse Scroll", build_type_f, "prism", aimed=True,
+            source="NYC DOT Type F, the 1913 Reverse Scroll Bracket"),
 ]
 
 FIXTURE_PAINT = {
@@ -1214,6 +1320,11 @@ FIXTURE_PAINT = {
     "lavinedouble": ("paint_la_green", "trim_bronze"),
     "lahollywoodstar": ("paint_hollywood_grey", "trim_gold"),
     "lahollywoodwof": ("paint_hollywood_grey", "trim_gold"),
+    "reproacorn": ("paint_black", "trim_gold"),
+    "reprowashingtonglobe": ("paint_black", "trim_gold"),
+    "reprotwin20": ("paint_black", "trim_gold"),
+    "reprobishopscrook": ("paint_black", "trim_gold"),
+    "reprotypef": ("paint_black", "trim_gold"),
 }
 
 

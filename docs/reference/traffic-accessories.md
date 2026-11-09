@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "455 blocks in this tab"
+!!! info "456 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -199,6 +199,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Red Light Camera (Pole Top, White) | `csm:enforcement_red_light_camera_top_white` | 2 | 10 | pickaxe | 1 |
 | Red Light Camera (Side Arm, Black) | `csm:enforcement_red_light_camera_side_black` | 2 | 10 | pickaxe | 1 |
 | Red Light Camera (Side Arm, White) | `csm:enforcement_red_light_camera_side_white` | 2 | 10 | pickaxe | 1 |
+| Reproduction Fluted Cast Iron Post | `csm:decopolereprofluted` | 2 | 10 | pickaxe | 1 |
 | Safety Fence | `csm:safety_fence` | 0.6 | 3 | pickaxe | 0 |
 | Sand Barrel | `csm:sand_barrel_array` | 0.6 | 3 | pickaxe | 0 |
 | School Zone Beacon Assembly | `csm:school_zone_beacon` | 2 | 10 | pickaxe | 1 |

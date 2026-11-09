@@ -1,0 +1,66 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/shared_models/decolight_reprotypef.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/decorativepoles/paint_black",
+      "#trim": "csm:blocks/decorativepoles/trim_gold",
+      "#unshaded_lens": "csm:blocks/decorativepoles/glass_prism_off",
+      "particle": "csm:blocks/decorativepoles/paint_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "state": {
+      "0": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/decorativepoles/glass_prism_off"
+        }
+      },
+      "1": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/decorativepoles/glass_prism_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/decorativepoles/glass_prism_off"
+        }
+      },
+      "3": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/decorativepoles/glass_prism_on"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:lighting/shared_models/decolight_reprotypef_inv.obj",
+        "custom": {
+          "flip-v": true
+        },
+        "textures": {
+          "#body": "csm:blocks/decorativepoles/paint_black",
+          "#trim": "csm:blocks/decorativepoles/trim_gold",
+          "#unshaded_lens": "csm:blocks/decorativepoles/glass_prism_off",
+          "particle": "csm:blocks/decorativepoles/paint_black"
+        },
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}
