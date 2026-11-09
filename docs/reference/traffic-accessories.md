@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "446 blocks in this tab"
+!!! info "455 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -135,6 +135,15 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Lane Control Signal | `csm:lane_control_signal` |  |  |  |  |
 | Los Angeles Concrete Electrolier Pole | `csm:decopolelaconcrete` | 2 | 10 | pickaxe | 1 |
 | Los Angeles Fluted Electrolier Pole | `csm:decopolelafluted` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 10 ft (Black) | `csm:luminairearmlaupsweep10ftblack` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmlaupsweep10ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 10 ft (Silver) | `csm:luminairearmlaupsweep10ftsilver` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 12 ft (Black) | `csm:luminairearmlaupsweep12ftblack` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmlaupsweep12ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 12 ft (Silver) | `csm:luminairearmlaupsweep12ftsilver` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 8 ft (Black) | `csm:luminairearmlaupsweep8ftblack` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmlaupsweep8ftgalvanized` | 2 | 10 | pickaxe | 1 |
+| Los Angeles Upsweep Luminaire Arm 8 ft (Silver) | `csm:luminairearmlaupsweep8ftsilver` | 2 | 10 | pickaxe | 1 |
 | Low-Profile Sign Truss | `csm:sign_truss_light` | 3.0 | 12.0 | pickaxe | 1 |
 | Metal Wire (Centered, Bottom) | `csm:metalwirecenter` |  | 10 | pickaxe | 1 |
 | Metal Wire (Centered, Top) | `csm:metalwirecentertop` |  | 10 | pickaxe | 1 |
