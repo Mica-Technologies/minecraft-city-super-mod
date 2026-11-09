@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "227 blocks in this tab"
+!!! info "230 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -33,6 +33,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Caged Edison Pendant (Black) | `csm:pendcagedblack` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Bronze) | `csm:pendcagedbronze` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Brushed Nickel) | `csm:pendcagednickel` | 2 | 10 | pickaxe | 1 |
+| California Heights Caged Acorn Lantern | `csm:lbcalheightslantern` | 2 | 10 | pickaxe | 1 |
 | Carriage Lantern Sconce (Black) | `csm:sconcelanternblack` | 2 | 10 | pickaxe | 1 |
 | Carriage Lantern Sconce (Bronze) | `csm:sconcelanternbronze` | 2 | 10 | pickaxe | 1 |
 | Carriage Lantern Sconce (Brushed Nickel) | `csm:sconcelanternnickel` | 2 | 10 | pickaxe | 1 |
@@ -75,6 +76,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | GE M-250A (Cutoff Optics, No Photocell) | `csm:gem250acunp` | 2 | 10 | pickaxe | 1 |
 | GE M-250A (Standard) | `csm:gem250a` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Cutoff Optics) | `csm:gem400acu` | 2 | 10 | pickaxe | 1 |
+| GE M-400A (Cutoff Optics, Anaheim Green) | `csm:gem400acugreen` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Cutoff Optics, No Photocell) | `csm:gem400acunp` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Standard) | `csm:gem400a` | 2 | 10 | pickaxe | 1 |
 | GE M240R1 (Standard) | `csm:gem240r1` | 2 | 10 | pickaxe | 1 |
@@ -219,6 +221,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Tall Building Beacon (Red, Flashing) | `csm:obstruction_beacon_red` | 2.0 | 6.0 | pickaxe | 1 |
 | Tall Building Beacon (White, Strobe) | `csm:obstruction_beacon_white` | 2.0 | 6.0 | pickaxe | 1 |
 | Twin-20 Washington Globes | `csm:reprotwin20` | 2 | 10 | pickaxe | 1 |
+| UM-1906 Twin Electrolier (Figueroa Street) | `csm:laum1906twin` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Black) | `csm:sconcevanityblack` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Bronze) | `csm:sconcevanitybronze` | 2 | 10 | pickaxe | 1 |
 | Vanity Bar Sconce (Brushed Nickel) | `csm:sconcevanitynickel` | 2 | 10 | pickaxe | 1 |

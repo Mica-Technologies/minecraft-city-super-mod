@@ -58,6 +58,26 @@ Each comes in the full set of pole colours. All of them are in the
 The curve arrives at horizontal with zero slope, so the straight run continues from it without a
 visible kink.
 
+## Truss signal arms
+
+In Massachusetts, New Hampshire and New Jersey a signal arm is often a truss: two pipes that leave
+the pole one above the other and meet at the tip, with a few struts between them. CSM has them as
+single blocks that place the whole arm, pole to tip, in galvanized, silver and black:
+
+| Arm | Lengths | Shape |
+|---|---|---|
+| Level Top | 6, 8, 10, 12 blocks | The top pipe is level; the bottom one climbs to meet it. Every signal head sits at one height. |
+| Sloped | 8, 12 blocks | Both pipes climb away from the pole. |
+| Diagonal | 5, 8 blocks | A level-top arm that crosses the corner at 45 degrees. |
+
+Place one against the side of a pole, at the height the top pipe should leave it; the pole must
+reach at least one block lower, where the bottom pipe lands. Signal heads, signs and cameras mount
+against the top pipe, and a sign placed under the arm hangs from the bottom pipe.
+
+A **diagonal** arm always turns to the right of the face you place it on: on a pole's north face it
+reaches north-east, on its east face south-east. Pick the face one turn to the left of the corner
+you want it to cross.
+
 ## Mounting hardware
 
 Every cell can grow a bracket toward any of its four sides — up, down, and both sides — wherever

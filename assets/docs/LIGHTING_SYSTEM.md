@@ -537,6 +537,7 @@ the roadway heads, and with them the Alto lot, wall and underpass lights and the
 | `gem400a` | GE M-400A, drop refractor |
 | `gem400acu` | GE M-400A, flat cutoff glass |
 | `gem400acunp` | GE M-400A, flat cutoff glass, no photocell |
+| `gem400acugreen` | GE M-400A, flat cutoff glass, in City of Anaheim P7-Green: the cobra head for the Anaheim Resort Area pole and arm |
 | `gem400r3`, `gem400r3cu`, `gem400r3cunp` | GE M400R3 refractor, cutoff, cutoff without photocell: **converted in place** from JSON |
 | `gem240r1`, `gem240r1np` | GE M-250R (CSM's "M240R1"), the long early body, drop refractor, with and without photocell: converted in place |
 | `gem240r2`, `gem240r2cu` | GE M-250R2 (CSM's "M240R2"), the short body, drop refractor or flat cutoff glass (his M240 lens art): converted in place |
@@ -744,18 +745,20 @@ The heads hung forward of their pole (the Genie, the bishop's crook, NYC Type F)
 
 | Registry name | Fixture | Reference |
 |---|---|---|
-| `lawilshirespecial` | Wilshire Special (1928): an octagonal bronze lantern, frosted panels widening upward, a glass roof, four cast figures at its corners, a tall finial | BSL history (solid bronze, the corner figures); lantern form after museum frame 12 |
+| `lawilshirespecial` | Wilshire Special (1928): a tall four-sided bronze box lantern, one pane a face, a frieze top and bottom, a half-figure over a pendant at each corner, four scrolled brackets under its floor, a cornice with corner urns and a stepped dome under a bud finial | photos of the survivors by MacArthur Park (it was eight-sided, after museum frame 12, until 2026-11) |
 | `lametropolitan` | Metropolitan: a narrower octagonal lantern with cornice horns and a spear tip | museum frame 12 (centre) |
 | `lawestwoodlantern` | Westwood Village: a hexagonal lantern | museum frame 12 (left) |
 | `labroadwayrosehead` | Broadway Rose: two opal globes on swept arms, a rose at each elbow, a spear between | BSL: a two-lamp electrolier garlanded with roses |
+| `laum1906twin` | Union Metal UM-1906, the twin-lamp electrolier of Figueroa Street (mid-1920s): two short scrolled bracket arms, an upright opal acorn under a cap on each, a finial between. What the requester called the "Figueroa Special", a name no source uses | waterandpower.org; Street View of North Figueroa (Highland Park); confirmed by the requester |
 | `lage104globe` | GE No. 104 globe with brass band | museum frame 09 |
 | `lage198globe` | GE No. 198 globe | museum frame 13 |
 | `laparagonjr` | Westinghouse Paragon Jr. (1920s) | museum frame 01 |
 | `lallewellyn5` | the five-globe Llewellyn electrolier (c. 1900) | museum frame 06 |
 | `lagenie` | Genie: a scroll arm and a skirted teardrop | BSL history |
 | `lavinedouble` | Vine Double: two Genie arms | BSL history |
-| `lahollywoodstar` | Hollywood Special, c. 1960: a bar of two drum lamps with a third over a gold five-pointed star | BSL ("5-Star" heads); reconstructed |
-| `lahollywoodwof` | Hollywood Walk of Fame (2005) "pitchfork": three tines, a lantern on each | requester's description; reconstructed |
+| `lahollywoodstar` | Hollywood Special, c. 1960 to 2005: a square black mast with a square-cut elbow and a long grey box head over the street, three prismatic bowl refractors under it and five red stars along each side. `PostTopAimed`; the one head that reaches a full block ahead of its pole (`Fixture.reach`) | the requester's photos of a surviving head and of one in service at Sunset Boulevard |
+| `lahollywoodwof` | three tines, a lantern on each. It matches no real light: the 2005 Hollywood Boulevard light is the twin teardrop (`lavinedouble`), and the "pitchfork" it was built from a description of is the Van Nuys Special, which is the luminaire arm `luminairearmvannuystriple*` (Roads). Kept because it shipped | none |
+| `lbcalheightslantern` | Long Beach's California Heights lamp (1929): a frosted acorn in a cage of eight slim ribs, a band at its widest point, a low ogee roof and a spike, all aluminium; on `decopolecalheights` | Street View of Olive Avenue; the requester's "blue lights by Bixby Knolls" |
 | `reproacorn`, `reprowashingtonglobe`, `reprotwin20`, `reprobishopscrook`, `reprotypef` | the reproduction set: ribbed acorn, Washington Globe, Twin-20, bishop's crook with teardrop, NYC Type F (the 1913 Reverse Scroll Bracket) | maker and city descriptions |
 
 **Scale.** These are drawn at about half the roadway fixtures' 1.4 (a Wilshire lantern is 7.5 ft
@@ -763,7 +766,8 @@ to its finial, which at 1.4 would be over three blocks): a lantern stands one an
 blocks over its pole, and a multi-lamp head stays within half a block of its own block each way
 (the generator asserts it). Their boxes are clamped to -0.5..1.5.
 
-**Materials.** One `decolight.mtl`: `body` (the paint), `trim` (brass, bronze or gold),
+**Materials.** One `decolight.mtl`: `body` (the paint), `trim` (brass, bronze or gold), `frame`
+(a mast or arm that is not the head's colour: a third paint in `FIXTURE_PAINT`, black otherwise),
 `unshaded_lens` (glass: `glass_opal_*` for the milk globes, `glass_frosted_*` for the hammered
 lantern panels, `glass_prism_*` for the ribbed acorns and teardrops, each `_on` / `_off` per
 STATE). Paints and glass are generated 16 px swatches (32 px for the frosted panels and the
