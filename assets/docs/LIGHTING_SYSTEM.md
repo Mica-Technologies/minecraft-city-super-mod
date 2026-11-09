@@ -6,7 +6,8 @@ Technical documentation for the lighting subsystem in the City Super Mod.
 
 The lighting system provides 119 realistic light fixture blocks (street lights, ceiling lights,
 wall-mounted fixtures) with a 4-state on/off system combining redstone control and manual
-override. Lights can project illumination downward using invisible "light-up air" blocks.
+override. Lights can project illumination downward using invisible "light-up air" blocks, and the
+floodlights along their aim ("Floodlights").
 
 The fixtures live in the Lighting module, `modules/lighting/src/main/java/com/micatechnologies/minecraft/csm/lighting/`.
 The light-up air they project is **Core's**: the block, its column projection and the stadium
@@ -165,7 +166,7 @@ What Core holds, in `codeutils/light/`:
 | Class | What it is |
 |---|---|
 | `BlockLightupAir` | the block, registered from `tabs/CsmTabCoreHidden` |
-| `CsmLightupAir` | the column projection, `firstBelow` (the light-up air a column scan meets before anything else) and `claimedBySource` |
+| `CsmLightupAir` | the column projection, the floodlights' beam projection (`beamPath`, `beamTargets`, `settle`, `beamLights`, `projectBeam`; see "Floodlights"), `firstBelow` (the light-up air a column scan meets before anything else) and `claimedBySource` |
 | `ICsmLightupAirSource` | implemented by `AbstractBrightLight`: "do you, lit, rely on this light-up air?" |
 | `AbstractLightFootprintTileEntity`, `CsmLightFootprints` | a light that lights a grid of columns (the stadium heads), placed and removed a few a tick; see `VENUES_SYSTEM.md` |
 
@@ -613,6 +614,123 @@ materials called plain `lens` (pendants, cameras) are unchanged. With the part b
 the usual tab line (bounding box from the generated geometry), lang in four locales and
 `gen_wiki_reference.py`. Run `audit_obj_models.py` on the new OBJ: winding, coplanar faces,
 faces on the block boundary and see-through faces should all be 0.
+
+## Floodlights
+
+Fifteen floods (GitHub #99), each an OBJ written by `dev-env-utils/scripts/gen_floodlights.py`
+(`--check`, `--fragments`) from the makers' sheets, at the #99 fixtures' 1.75 in to the pixel:
+
+| Family | Registry names (knuckle, yoke, slipfitter) | Head | Beam reach |
+|---|---|---|---|
+| Lithonia D-Series DSXF1 LED | `lithdsxf1kn`, `lithdsxf1yk`, `lithdsxf1sf` | 8-7/8 x 8-1/2 x 3-1/8 in; two COB engines in a window over a finned driver housing | 16 |
+| Lithonia D-Series DSXF2 LED | `lithdsxf2kn`, `lithdsxf2yk`, `lithdsxf2sf` | 12-7/8 x 7-3/4 x 3-1/8 in, landscape; four engines | 20 |
+| Lithonia D-Series DSXF3 LED | `lithdsxf3kn`, `lithdsxf3yk`, `lithdsxf3sf` | 13 x 13-5/8 x 5 in; six engines | 24 |
+| Lithonia TFL (metal halide) | `lithtflkn`, `lithtflyk`, `lithtflsf` | 16 x 15-3/4 x 6 in; a door frame round the glass over the lamp and reflector, ribbed ballast housing | 24 |
+| GE Evolve EFM LED | `geefmkn`, `geefmyk`, `geefmsf` | ~16.4 x 15.7 x 5.5 in; a grid of LED optics, a finned heat sink behind | 28 |
+
+They are `BlockFloodlight`, an `AbstractBrightLight`: the 4-state STATE, redstone, the click
+cycle, the random-tick heal and `/csmlighting relight` are all inherited. What is new is where the
+light goes and how a flood is placed on any face.
+
+### Placed on any face: one block per surface
+
+Metadata holds facing (4) x STATE (4), which is full, so a flood's six ways onto a block are
+separate blocks, as vanilla's standing and wall signs are. The visible block (in the Lighting tab,
+after the area lights) is the one against a wall, a pole's side or an arm's end; its item's
+`getStateForPlacement` puts down a companion for the other faces, registered in
+`CsmTabLightingHidden`:
+
+| Block | Placed | Aim (`BlockFloodlight.Surface`) |
+|---|---|---|
+| `<name>` | against the side of a block, the plate on it | out from it, 35 degrees down |
+| `<name>_g` | on top of a block; on a knuckle or yoke a ground uplight, on a slipfitter a pole top (`BlockFloodlight.PostTop`, an `ICsmPostTopFixture`) | the way the placer looks; 50 degrees up (uplight) or 35 down (pole top) |
+| `<name>_c` | under a block (knuckle and yoke only) | the way the placer looks, 50 degrees down |
+| `<name>_x` | against the front of a RealGrid crossarm (knuckle and yoke) | as on a wall |
+
+A companion carries its flood's name (its own lang lines, the same text), drops and is picked as
+the visible block, and finds its siblings by name at placement time, so the two tabs' load order
+does not matter. 50 blocks in all, 15 visible. Every model faces north with its back toward
+z = 16, as every CSM fixture does; the ceiling model is the ground one turned 180 degrees about z,
+so it still aims north. The heads are drawn level in their own frame and turned to their aim about
+the knuckle's hub or the yoke's trunnion bolts, so the aim the model shows is the aim the light
+uses. 318 to 406 triangles each; `audit_obj_models.py` clean.
+
+**Materials.** `floodlight.mtl`: `body` (the street lights' swatches: dark bronze for Lithonia,
+black for GE) and `unshaded_lens` (drawn unshaded, as the roadway fixtures' glass is), the lens
+`floodlight_lens_<head>_on` in STATE 1 and 3 and `_off` in 0 and 2. Ten 32 px lens sprites (the
+D-Series COB windows and the TFL's lamp drawn by the generator; the EFM's optics by
+`gen_streetlight_fixtures.led_array_png`).
+
+**"Shaders".** Each lit lens has an OptiFine `_e` emissive companion holding only its LEDs or
+lamp (`emissive_of`, every channel at 200 or more), so with OptiFine and a shader pack the lamps
+glow and the trim does not; without OptiFine the `_e` sprites are never stitched. No renderer.
+
+### The light: a beam, laid along the floor
+
+Lit, a flood casts a beam from its centre along its aim (Core's `CsmLightupAir.projectBeam`), the
+column projection generalised from straight down to any direction:
+
+1. `beamPath` walks every cell the line enters (Amanatides and Woo), passing through air and
+   light-up air, until it meets anything else or runs the flood's reach. A beam that runs out of
+   reach, leaves the world or reaches an unloaded chunk lights nothing (a beam is never half-lit;
+   an uplight with open sky above it lights only its own cell).
+2. `beamTargets`: the last cell, the one just in front of what the beam hits, then a cell every
+   `BEAM_SPACING` (4) blocks back along the beam, `BEAM_COUNT` (3) in all, none within 2 blocks of
+   the flood.
+3. `beamLights`: on a beam aimed below level, the row behind the lit spot `settle`s down its
+   column onto the floor under the beam (stopping on a light-up air already there). The lit spot
+   stays where the beam lands, so a wall it hits is lit where it is hit. An up-aimed beam keeps its
+   row on the beam.
+4. On, light-up air goes in each of those cells that is still air; off, every light-up air on the
+   path is removed, and the first down the column under each row cell.
+
+All on a state change and from the heal only: nothing ticks. The beam is recomputed each time,
+so a flood whose beam is blocked later lights where it now lands at its next heal, as a street
+light does; a light-up air left behind where the old beam fell (the floor raised under it, say) is
+the same orphan a street light leaves, and the same fix applies.
+
+**Why a floor row of three (plan decision D9), measured.** `CsmLightupAirBeamTest` builds a real
+vanilla light engine on chunks in memory (`LightTestWorld`: a stone floor, a wall, sky light) and
+switches fifty floods on and off together, 8 blocks above the floor on a wall, 6 apart, aimed 35 degrees
+down. Server light engine only, best of 5, on the dev machine while other builds ran:
+
+| Projection | Light-up air a flood | On, 50 floods | Off | Floor at light 8+ / 12+, a flood (pools overlap) |
+|---|---|---|---|---|
+| Street light column (baseline) | 1 | 137.6 ms (2.75 ms a flood) | 320.6 ms | 72.8 / 24.0 |
+| Beam, 1 light | 1 | 128.0 ms (2.56) | 277.8 ms | 72.8 / 24.0 |
+| Beam, floor row of 2 | 2 | 141.2 ms (2.82) | 361.5 ms | 97.4 / 43.0 |
+| **Beam, floor row of 3 (chosen)** | **3** | **155.8 ms (3.12)** | **406.0 ms** | **111.8 / 59.1** |
+| Immersive Engineering's 13-ray fan (a light every 3rd cell, reach 32) | 75.2 | 746.5 ms (14.93) | 1,772.5 ms | 209.7 / 150.9 |
+
+Each time includes the flood's own lamp going to light 15. One flood alone, 10 blocks up: a single
+light lights 113 floor cells to 8+ (25 to 12+), about a street light's pool; a row of three in the
+air on the beam 145 / 29, barely more, because they hang above the floor; the same three settled on
+the floor 216 / 65. So the row is laid on the floor: about twice the pool for 22% more time than a
+single light, and the IE fan would cost 4.8 times the chosen row and 25 times the light-up air for
+under twice its floor. Not measured here: the block-change packets and the client's re-mesh of each
+16-block section a light change touches, which grow with the light-up air count (three a flood
+here, usually in the same one to four sections).
+
+**In game** (not yet done): fifty `lithdsxf3kn` on a wall, 8-10 up, on one lever, against fifty
+street lights on the same lever; watch the server tick (`server_tick_stats` over MCMCP) and the
+client's frame time on the toggle, both ways, a few times each.
+
+**Sharing.** A flood's light-up air is ordinary light-up air. The stadium footprints' "is a
+fixture still using this cell" check (`claimedBySource`) looks only up the column above a cell, so
+it does not see a flood: if a flood's lit spot falls on a cell a stadium head placed, the head
+turning off removes it and the flood relights it at its next heal. A flood turning off removes any
+light-up air lying in its beam, whoever placed it; that light heals the same way.
+
+### RealGrid crossarms (optional)
+
+RealGrid (mod id `realgrid`) is an optional dependency, reached without linking to it
+(`RealGridCompat`): only when `Loader.isModLoaded("realgrid")`, a block is a crossarm segment if its
+registry name is `realgrid:crossarm_<material>` (not a brace, spacer or guy mount), and its front is
+read from its `facing` property. Placing a knuckle or yoke flood against that front face puts down
+its `_x` block: the wall model with a bracket reaching back 10 px to the arm, which RealGrid draws
+as a 6 px square at the top back of its block (y 10..16; `BlockCrossarm.ARM_BOUNDS` in its source).
+Without RealGrid nothing changes, and a flood placed on top of an arm is a ground flood. **Not
+tested in game:** written against RealGrid's source, with no RealGrid jar in the dev run.
 
 ## Lit and Unlit Textures on the Older Fixtures
 
