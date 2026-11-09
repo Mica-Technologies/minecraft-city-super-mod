@@ -92,7 +92,9 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
   private static final ThreadLocal<Boolean> DEMOLISHING = ThreadLocal.withInitial(() -> false);
 
   private final String registryName;
-  private final MastArmCurveProfile profile;
+  private final ICurvedArmProfile profile;
+  @Nullable
+  private final MastArmCurveProfile mastArmProfile;
   private final PropertyInteger shapeProperty;
 
   /**
@@ -102,16 +104,77 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    * @param profile      the size of curve this block places
    */
   public BlockTrafficPoleMastArmCurve(String registryName, MastArmCurveProfile profile) {
+    this(registryName, curvedArm(profile), profile);
+  }
+
+  /**
+   * Constructs a luminaire arm block: a Caltrans davit arm or a truss arm, single or double
+   * (GitHub #99). The same multi-block machinery as the mast arm curves, from
+   * gen_luminaire_arms.py's profiles.
+   *
+   * @param registryName the block's registry name
+   * @param profile      the arm this block places
+   */
+  public BlockTrafficPoleMastArmCurve(String registryName, LuminaireArmProfile profile) {
+    this(registryName, profile, null);
+  }
+
+  private BlockTrafficPoleMastArmCurve(String registryName, ICurvedArmProfile profile,
+      @Nullable MastArmCurveProfile mastArmProfile) {
     super(stash(registryName, profile), SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);
     this.registryName = registryName;
     this.profile = profile;
+    this.mastArmProfile = mastArmProfile;
     this.shapeProperty = shapeProperty(profile.getShapeCount());
     PENDING.remove();
   }
 
-  private static Material stash(String registryName, MastArmCurveProfile profile) {
+  private static Material stash(String registryName, ICurvedArmProfile profile) {
     PENDING.set(new Object[]{registryName, profile});
     return Material.ROCK;
+  }
+
+  /**
+   * A mast arm curve profile seen as an {@link ICurvedArmProfile}: its root is its only pole
+   * joint, and its shape packs the mount mask as it always has.
+   */
+  private static ICurvedArmProfile curvedArm(MastArmCurveProfile p) {
+    return new ICurvedArmProfile() {
+      @Override
+      public int getCellCount() {
+        return p.getCellCount();
+      }
+
+      @Override
+      public int[] getCellOffset(int index) {
+        return p.getCellOffset(index);
+      }
+
+      @Override
+      public double[] getCellBox(int index) {
+        return p.getCellBox(index);
+      }
+
+      @Override
+      public int getShapeCount() {
+        return p.getShapeCount();
+      }
+
+      @Override
+      public int poleSide(int cell) {
+        return cell == 0 ? 1 : 0;
+      }
+
+      @Override
+      public int shapeIndex(int cell, int mountMask, CsmPoleFit fit) {
+        return p.shapeIndex(cell, mountMask, fit);
+      }
+
+      @Override
+      public String describe() {
+        return String.format("%dx%d mast arm curve", p.getRun(), p.getRise());
+      }
+    };
   }
 
   private static synchronized PropertyInteger shapeProperty(int shapeCount) {
@@ -130,17 +193,27 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
   /**
    * Gets the size of curve this block places.
    *
-   * @return the curve profile
+   * @return the curve profile, or {@code null} for a luminaire arm
    */
+  @Nullable
   public MastArmCurveProfile getProfile() {
+    return mastArmProfile;
+  }
+
+  /**
+   * Gets the cells, hitboxes and shapes of the arm this block places.
+   *
+   * @return the arm's profile
+   */
+  public ICurvedArmProfile getArmProfile() {
     return profile;
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    MastArmCurveProfile pending =
-        profile != null ? profile : (MastArmCurveProfile) PENDING.get()[1];
+    ICurvedArmProfile pending =
+        profile != null ? profile : (ICurvedArmProfile) PENDING.get()[1];
     return new CsmBlockStateContainer(this, FACING, shapeProperty(pending.getShapeCount()));
   }
 
@@ -231,9 +304,8 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
         player.inventory.addItemStackToInventory(new ItemStack(this));
       }
       player.sendStatusMessage(new TextComponentString(
-          String.format("Not enough room for a %dx%d mast arm curve -- blocked at %d, %d, %d",
-              profile.getRun(), profile.getRise(), blockedBy.getX(), blockedBy.getY(),
-              blockedBy.getZ())), true);
+          String.format("Not enough room for a %s -- blocked at %d, %d, %d",
+              profile.describe(), blockedBy.getX(), blockedBy.getY(), blockedBy.getZ())), true);
     }
   }
 
@@ -320,7 +392,11 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
       mask |= MastArmCurveProfile.MOUNT_WEST;
     }
     int cell = cellIndexAt(worldIn, pos);
-    CsmPoleFit fit = cell == 0 ? CsmPoleFit.behind(worldIn, pos, facing) : CsmPoleFit.LARGE;
+    // A cell holding a pole joint reads the pole's width: the root, behind it; a double luminaire
+    // arm's second root, ahead of it, past the pole.
+    int side = profile.poleSide(cell);
+    CsmPoleFit fit = side == 0 ? CsmPoleFit.LARGE
+        : CsmPoleFit.behind(worldIn, pos, side > 0 ? facing : facing.getOpposite());
     return state.withProperty(shapeProperty, profile.shapeIndex(cell, mask, fit));
   }
 

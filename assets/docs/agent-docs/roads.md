@@ -93,6 +93,12 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   cell plus all 30 blockstates AND the Java enum holding the cell layout, so the placement code
   cannot disagree with the geometry it was split on. It has no `--check`: running it rewrites
   the tree, so `git status` afterwards is the check
+- `gen_luminaire_arms.py` -- the luminaire arms (GitHub #99): Caltrans davit arms 6/8/10/12/15 ft
+  and Hapco-style truss arms 8/10/12/15 ft, single and double, in galvanized and silver. Built
+  like the mast arm curves (one block per cell, cell list and hitboxes in the generated
+  `LuminaireArmProfile.java`) and placed by the same block class; the tip lands where every
+  street light's neck expects an arm. Writes the per-cell OBJs, the pole-joint cells once per
+  `CsmPoleFit`, the inventory icons, the 36 blockstates and the enum; `--check`, `--fragments`
 - `gen_concrete_poles.py` -- the concrete traffic poles (round and octagon, thick and thin):
   each end's model carrying its own half of the shaft (plinth, cap, tenon, plain), the four
   blockstates, the concrete accessories (silver blockstates retextured, their 16-gon body
