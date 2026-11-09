@@ -156,6 +156,25 @@ public class CsmTabConstructionSite extends CsmTab {
     initTabBlock(new BlockSiteShell("dumpster_maroon")); // Roll-Off Dumpster (Maroon)
     initTabBlock(new BlockSiteShell("dumpster_green")); // Roll-Off Dumpster (Green)
     initTabBlock(new BlockSiteShell("dumpster_grey")); // Roll-Off Dumpster (Grey)
+    // A store's stationary trash compactor: the closed roll-off receiver it packs into, built to
+    // size like the dumpsters, and the machine in line with it -- power unit, charge box with its
+    // hopper on top -- and the keyed control station.
+    initTabBlock(new BlockSiteShell("compactor_container_blue")); // Compactor Receiver Container (Blue)
+    initTabBlock(new BlockSiteShell("compactor_container_maroon")); // Compactor Receiver Container (Maroon)
+    initTabBlock(new BlockSiteShell("compactor_container_green")); // Compactor Receiver Container (Green)
+    initTabBlock(new BlockSiteShell("compactor_container_grey")); // Compactor Receiver Container (Grey)
+    initTabBlock(new BlockSiteFacingProp("trash_compactor_power_unit", Material.IRON,
+        SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(0, 0, 0, 16, 15, 16))); // Trash Compactor Power Unit
+    initTabBlock(new BlockSiteFacingProp("trash_compactor_charge_box", Material.IRON,
+        SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(0, 0, 0, 16, 16, 16))); // Trash Compactor Charge Box
+    initTabBlock(new BlockSiteFacingProp("trash_compactor_hopper", Material.IRON,
+        SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(0, 0, 0, 16, 13, 16))); // Trash Compactor Hopper
+    initTabBlock(new BlockSiteFacingProp("trash_compactor_control", Material.IRON,
+        SoundType.METAL, "pickaxe",
+        BlockSiteProp.box16(3, 0, 7, 13, 16, 11))); // Trash Compactor Control Station
     initTabBlock(new BlockJobTrailer("job_trailer_wall")); // Job Trailer Wall
     initTabBlock(new BlockJobTrailer("job_trailer_window")); // Job Trailer Window
     initTabBlock(new BlockBuildingDoor("job_trailer_door")); // Job Trailer Door

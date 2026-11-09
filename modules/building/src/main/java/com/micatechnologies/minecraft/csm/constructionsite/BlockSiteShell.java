@@ -42,6 +42,8 @@ import net.minecraft.world.World;
  *       it -- and corrugated walls everywhere else.</li>
  *   <li>A <b>dumpster</b> is the same with the top left open: its walls are drawn inside and out,
  *       with a lip along the top, and only its walls and floor collide, so it can be filled.</li>
+ *   <li>A <b>compactor receiver</b> ({@code compactor_container_*}) is a container in the
+ *       roll-off's plate and frame: closed and solid, with its rear door on the end it faces.</li>
  * </ul>
  *
  * <p>Stored: the facing, which only a container uses. The six neighbours are actual state. The
@@ -72,8 +74,8 @@ public class BlockSiteShell extends AbstractBlock implements ICsmTrafficPoleByst
   /**
    * Constructs a {@link BlockSiteShell}.
    *
-   * @param registryName the registry name; {@code container_*} and {@code dumpster_*} each join
-   *                     only their own block
+   * @param registryName the registry name; {@code container_*}, {@code dumpster_*} and
+   *                     {@code compactor_container_*} each join only their own block
    *
    * @since 1.0
    */

@@ -14,7 +14,9 @@ Two kinds of block:
   trailer. A container has doors on the side it faces; a dumpster is a container with the top left
   open, its walls drawn inside and out; a trailer's windows and door are blocks of their own,
   placed where you want them.
-- Props with a front (BlockSiteFacingProp): the portable toilet, gang box and concrete washout.
+- Props with a front (BlockSiteFacingProp): the portable toilet, gang box and concrete washout,
+  and the store trash compactor's power unit, charge box, hopper and control station, which stand
+  in line with its receiver, a closed roll-off shell built to size like a container.
 
 Walls are zero-thickness planes set half a pixel in from the cell face, so the frame rails stand
 proud of them; every face takes gen_scaffold's fitted, positional UVs, so a wall's texture runs
@@ -56,6 +58,14 @@ for _c, (_rgb, _names) in COLOURS.items():
     BLOCKS["container_" + _c] = tuple("%s (%s)" % (a, b) for a, b in zip(CONTAINER, _names))
 for _c, (_rgb, _names) in COLOURS.items():
     BLOCKS["dumpster_" + _c] = tuple("%s (%s)" % (a, b) for a, b in zip(DUMPSTER, _names))
+# A stationary compactor's receiver: the closed roll-off box it packs into, hauled on the same
+# trucks as a dumpster, so it shares the dumpster's walls and colours and is built to size the same
+# way. "container" in the id is what prices it as one (CsmFabricatorCosts).
+RECEIVER = ("Compactor Receiver Container", "Contenedor Receptor de Compactadora",
+            "Pressencontainer", "Komprimatorcontainer")
+for _c, (_rgb, _names) in COLOURS.items():
+    BLOCKS["compactor_container_" + _c] = tuple("%s (%s)" % (a, b)
+                                                for a, b in zip(RECEIVER, _names))
 BLOCKS.update({
     "job_trailer_wall": ("Job Trailer Wall", "Oficina de Obra (Pared)", "Baucontainer (Wand)",
                          "Bodvagn (Vägg)"),
@@ -65,6 +75,23 @@ BLOCKS.update({
     "gang_box": ("Gang Box", "Caja de Herramientas de Obra", "Baustellenbox", "Verktygsbox"),
     "concrete_washout": ("Concrete Washout", "Lavadero de Hormigón", "Betonauswaschstation",
                          "Betongtvätt"),
+    # The stationary compactor at a store's truck court, in the three blocks it stands in along
+    # its axis -- power unit, charge box with its hopper on top, then the receiver -- and the
+    # keyed control station beside it.
+    "trash_compactor_power_unit": ("Trash Compactor Power Unit",
+                                   "Compactadora de Basura (Unidad Hidráulica)",
+                                   "Müllpresse (Hydraulikaggregat)",
+                                   "Avfallskomprimator (Hydraulaggregat)"),
+    "trash_compactor_charge_box": ("Trash Compactor Charge Box",
+                                   "Compactadora de Basura (Cámara de Carga)",
+                                   "Müllpresse (Füllkammer)",
+                                   "Avfallskomprimator (Laddkammare)"),
+    "trash_compactor_hopper": ("Trash Compactor Hopper", "Compactadora de Basura (Tolva)",
+                               "Müllpresse (Einfülltrichter)", "Avfallskomprimator (Tratt)"),
+    "trash_compactor_control": ("Trash Compactor Control Station",
+                                "Compactadora de Basura (Estación de Control)",
+                                "Müllpresse (Bedienstation)",
+                                "Avfallskomprimator (Manöverstation)"),
 })
 
 # The facing props' boxes, front to the north, in sixteenths -- the Java registration uses these.
@@ -72,6 +99,11 @@ BOXES = {
     "portable_toilet": (0.25, 0, 0.25, 15.75, 16, 15.75),   # its lower half; see BlockPortableToilet
     "gang_box": (0, 0, 2.5, 16, 10.5, 13.5),
     "concrete_washout": (0, 0, 0, 16, 5, 16),
+    # The compactor: the operator's end (the power unit) to the north, the receiver to the south.
+    "trash_compactor_power_unit": (0, 0, 0, 16, 15, 16),
+    "trash_compactor_charge_box": (0, 0, 0, 16, 16, 16),
+    "trash_compactor_hopper": (0, 0, 0, 16, 13, 16),
+    "trash_compactor_control": (3, 0, 7, 13, 16, 11),
 }
 
 
@@ -307,8 +339,73 @@ def washout_sign():
     return img
 
 
+COMPACTOR = (66, 94, 122)     # the compactor's paint: a slate blue, as a store's unit often is
+
+
+def compactor_body():
+    """The compactor's painted plate, a stiffener every eight pixels like the roll-off's."""
+    return dumpster_wall(COMPACTOR, 20261571)
+
+
+def compactor_hazard():
+    """Yellow and black diagonal bands: the hopper's rim."""
+    img, px, rng = _canvas(20261572, (226, 186, 34), 3)
+    for y in range(16):
+        for x in range(16):
+            if (x + y) % 8 < 4:
+                px[x, y] = _shift((34, 34, 32), rng.uniform(-3, 3))
+    return img
+
+
+def compactor_mouth():
+    """The charge box's end against the receiver: the flange round the discharge opening, the
+    opening dark, the ram's platen just visible inside."""
+    img, px, rng = _canvas(20261573, _shift(COMPACTOR, -28), 4)
+    for y in range(3, 14):
+        for x in range(2, 14):
+            px[x, y] = _shift((22, 22, 22), rng.uniform(-2, 2))
+    for y in range(5, 12):
+        for x in range(4, 12):
+            px[x, y] = _shift((70, 72, 74), rng.uniform(-4, 4))
+    return img
+
+
+def compactor_chamber():
+    """Looking down into the charge chamber: scuffed, dark steel."""
+    img, px, rng = _canvas(20261574, (58, 56, 52), 6)
+    for _ in range(18):
+        px[rng.randrange(16), rng.randrange(16)] = _shift((104, 98, 90), rng.uniform(-8, 8))
+    return img
+
+
+def compactor_panel():
+    """The control station's front: a grey enclosure with the key switch, the green START, the red
+    mushroom STOP, and the amber light that comes on when the receiver is full."""
+    img, px, rng = _canvas(20261575, (178, 180, 178), 3)
+    for i in range(16):
+        for a, b in ((i, 0), (i, 15), (0, i), (15, i)):
+            px[a, b] = _shift((136, 138, 136), rng.uniform(-2, 2))
+    for x in range(3, 13):                     # the legend plate
+        px[x, 3] = (236, 236, 230, 255)
+        px[x, 4] = (236, 236, 230, 255)
+    for (x, y) in ((4, 7), (5, 7), (4, 8), (5, 8)):
+        px[x, y] = (30, 30, 30, 255)             # key switch
+    px[5, 7] = (190, 170, 90, 255)
+    for (x, y) in ((8, 7), (9, 7), (8, 8), (9, 8)):
+        px[x, y] = (54, 160, 70, 255)            # START
+    for (x, y) in ((11, 7), (12, 7), (11, 8), (12, 8), (11, 6), (12, 9)):
+        px[x, y] = (196, 40, 36, 255)            # STOP
+    for (x, y) in ((7, 11), (8, 11), (7, 12), (8, 12)):
+        px[x, y] = (236, 150, 30, 255)           # receiver full
+    return img
+
+
 def textures():
     out = {"shell_floor": shell_floor(), "dumpster_floor": dumpster_floor(),
+           "compactor_body": compactor_body(), "compactor_frame": frame(COMPACTOR, 20261576),
+           "compactor_hazard": compactor_hazard(), "compactor_mouth": compactor_mouth(),
+           "compactor_chamber": compactor_chamber(), "compactor_panel": compactor_panel(),
+           "compactor_enclosure": _canvas(20261577, (170, 172, 170), 3)[0],
            "trailer_wall": trailer_wall(), "trailer_window": trailer_window(),
            "trailer_window_bottom": trailer_window(top=False),
            "trailer_window_top": trailer_window(bottom=False),
@@ -444,6 +541,65 @@ def concrete_washout():
            box(7.5, 5, 0.3, 8.5, 9, 0.8, "#pan"),
            retex(box(4, 9, 0.2, 12, 14, 0.7, "#pan"), {"north": "#sign"})]
     return els
+
+
+# The stationary compactor, one block each along its axis: the operator's end to the north, the
+# receiver to the south. Both base blocks stand on the same pair of skids, so placed in a line
+# they read as one machine; the hopper stands on the charge box.
+
+def _compactor_skids():
+    return [box(0.5, 0, 0, 2.5, 1.5, 16, "#frame"), box(13.5, 0, 0, 15.5, 1.5, 16, "#frame")]
+
+
+def compactor_power_unit():
+    """The ram's housing, with the hydraulic power unit on top of it: the oil reservoir with its
+    filler cap, the electric motor and pump beside it, and the two hoses running on to the ram
+    in the charge box."""
+    return _compactor_skids() + [
+        box(2.5, 0, 0.5, 13.5, 1.5, 2, "#frame"),
+        box(1, 1.5, 1.5, 15, 10, 16, "#body"),
+        box(2, 10, 3, 9, 14, 13, "#frame"),          # reservoir
+        box(4, 14, 5, 5.5, 15, 6.5, "#dark"),        # filler cap
+        box(10, 10, 4, 14, 14, 12, "#dark"),         # motor
+        box(10.5, 10.5, 3, 13.5, 13.5, 4, "#dark"),  # its fan cover
+        box(9, 10, 7, 10, 12, 9, "#dark"),           # pump
+        box(4, 10, 13, 5, 11, 16, "#dark"),          # hoses on to the ram
+        box(6, 10, 13, 7, 11, 16, "#dark"),
+    ]
+
+
+def compactor_charge_box():
+    """The charge chamber the ram sweeps, open at the top under the hopper, with the flange round
+    the discharge opening at the end that docks against the receiver."""
+    return _compactor_skids() + [
+        retex(box(0.5, 1.5, 0, 15.5, 14, 15, "#body"), {"up": "#chamber"}),
+        retex(box(0, 0, 15, 16, 15, 16, "#frame"), {"south": "#mouth"}),
+        # the rim the hopper stands on
+        box(0.5, 14, 0, 15.5, 16, 1, "#frame"),
+        box(0.5, 14, 14, 15.5, 16, 15, "#frame"),
+        box(0.5, 14, 1, 1.5, 16, 14, "#frame"),
+        box(14.5, 14, 1, 15.5, 16, 14, "#frame"),
+    ]
+
+
+def compactor_hopper():
+    """The loading hopper on top of the charge box: four walls, painted outside and dark inside,
+    under a yellow-and-black striped rim."""
+    walls = [retex(box(1, 0, 1, 15, 11, 2, "#body"), {"south": "#chamber"}),
+             retex(box(1, 0, 14, 15, 11, 15, "#body"), {"north": "#chamber"}),
+             retex(box(1, 0, 2, 2, 11, 14, "#body"), {"east": "#chamber"}),
+             retex(box(14, 0, 2, 15, 11, 14, "#body"), {"west": "#chamber"})]
+    rim = [box(0, 11, 0, 16, 12.5, 2, "#hazard"), box(0, 11, 14, 16, 12.5, 16, "#hazard"),
+           box(0, 11, 2, 2, 12.5, 14, "#hazard"), box(14, 11, 2, 16, 12.5, 14, "#hazard")]
+    return walls + rim
+
+
+def compactor_control():
+    """The keyed control station on its post, under a rain hood."""
+    return [box(5.5, 0, 7.5, 10.5, 0.5, 11.5, "#post"),
+            box(7, 0.5, 8.5, 9, 8.5, 10.5, "#post"),
+            retex(box(3.5, 8.5, 7, 12.5, 15, 11, "#side"), {"north": "#panel"}),
+            box(3, 15, 6.5, 13, 16, 11.5, "#side")]
 
 
 # --------------------------------------------------------------------------------------------
@@ -728,20 +884,28 @@ def trailer_state(key):
 def models():
     out = {}
     for c in COLOURS:
-        p = "container_" + c
-        tex = {"wall": _t(p + "_wall"), "door": _t(p + "_door"), "roof": _t(p + "_roof"),
-               "frame": _t(p + "_frame"), "floor": _t("shell_floor")}
-        out[p + "_wall"] = _model(wall_plane("#wall"), tex, "wall")
-        out[p + "_door"] = _model(wall_plane("#door"), tex, "wall")
-        out[p + "_roof"] = _model(roof_plane("#roof"), tex, "wall")
-        out[p + "_floor"] = _model(floor_plane("#floor"), tex, "wall")
-        out[p + "_post"] = _model(rail_vertical(), tex, "wall")
-        out[p + "_rail_top"] = _model(rail_top(), tex, "wall")
-        out[p + "_rail_bottom"] = _model(rail_bottom(), tex, "wall")
-        lone = (_turn(wall_plane("#door"), 0) + _around(wall_plane("#wall"))[1:]
-                + roof_plane("#roof") + floor_plane("#floor") + _around(rail_vertical())
-                + _around(rail_top()) + _around(rail_bottom()))
-        out[p + "_inventory"] = _model(lone, tex, "wall", parent="block/block")
+        # A compactor receiver is built as a container is -- closed, its door on the end it faces
+        # -- but in the roll-off's plate and frame: the door is the rear door it is emptied by.
+        for p, tex in (
+                ("container_" + c,
+                 {"wall": _t("container_%s_wall" % c), "door": _t("container_%s_door" % c),
+                  "roof": _t("container_%s_roof" % c), "frame": _t("container_%s_frame" % c),
+                  "floor": _t("shell_floor")}),
+                ("compactor_container_" + c,
+                 {"wall": _t("dumpster_%s_wall" % c), "door": _t("container_%s_door" % c),
+                  "roof": _t("container_%s_roof" % c), "frame": _t("dumpster_%s_frame" % c),
+                  "floor": _t("shell_floor")})):
+            out[p + "_wall"] = _model(wall_plane("#wall"), tex, "wall")
+            out[p + "_door"] = _model(wall_plane("#door"), tex, "wall")
+            out[p + "_roof"] = _model(roof_plane("#roof"), tex, "wall")
+            out[p + "_floor"] = _model(floor_plane("#floor"), tex, "wall")
+            out[p + "_post"] = _model(rail_vertical(), tex, "wall")
+            out[p + "_rail_top"] = _model(rail_top(), tex, "wall")
+            out[p + "_rail_bottom"] = _model(rail_bottom(), tex, "wall")
+            lone = (_turn(wall_plane("#door"), 0) + _around(wall_plane("#wall"))[1:]
+                    + roof_plane("#roof") + floor_plane("#floor") + _around(rail_vertical())
+                    + _around(rail_top()) + _around(rail_bottom()))
+            out[p + "_inventory"] = _model(lone, tex, "wall", parent="block/block")
 
         d = "dumpster_" + c
         tex = {"wall": _t(d + "_wall"), "inside": _t(d + "_inside"), "frame": _t(d + "_frame"),
@@ -772,6 +936,18 @@ def models():
     out["concrete_washout"] = _model(concrete_washout(), {
         "pan": _t("site_dark_steel"), "slurry": _t("washout_slurry"),
         "sign": _t("washout_sign")}, "slurry", parent="block/block")
+    ctex = {"body": _t("compactor_body"), "frame": _t("compactor_frame"),
+            "hazard": _t("compactor_hazard"), "mouth": _t("compactor_mouth"),
+            "chamber": _t("compactor_chamber"), "dark": _t("site_dark_steel")}
+    out["trash_compactor_power_unit"] = _model(compactor_power_unit(), ctex, "body",
+                                               parent="block/block")
+    out["trash_compactor_charge_box"] = _model(compactor_charge_box(), ctex, "body",
+                                               parent="block/block")
+    out["trash_compactor_hopper"] = _model(compactor_hopper(), ctex, "body",
+                                           parent="block/block")
+    out["trash_compactor_control"] = _model(compactor_control(), {
+        "panel": _t("compactor_panel"), "side": _t("compactor_enclosure"),
+        "post": _t("site_dark_steel")}, "side", parent="block/block")
     return out
 
 
@@ -799,17 +975,18 @@ def blockstates():
     out = {}
     others = {s: "|".join(o for o, _ in SIDES if o != s) for s, _ in SIDES}
     for c in COLOURS:
-        p = "container_" + c
-        parts = []
-        for side, rot in SIDES:
-            parts.append({"when": {"facing": side, side: "false"}, "apply": _apply(p + "_door", rot)})
-            parts.append({"when": {"facing": others[side], side: "false"},
-                          "apply": _apply(p + "_wall", rot)})
-        parts.append({"when": {"up": "false"}, "apply": _apply(p + "_roof", 0)})
-        parts.append({"when": {"down": "false"}, "apply": _apply(p + "_floor", 0)})
-        parts += _rails(p)
-        out[p] = {"variants": {"inventory": {"model": MODEL_REF % (p + "_inventory")}},
-                  "multipart": parts}
+        for p in ("container_" + c, "compactor_container_" + c):
+            parts = []
+            for side, rot in SIDES:
+                parts.append({"when": {"facing": side, side: "false"},
+                              "apply": _apply(p + "_door", rot)})
+                parts.append({"when": {"facing": others[side], side: "false"},
+                              "apply": _apply(p + "_wall", rot)})
+            parts.append({"when": {"up": "false"}, "apply": _apply(p + "_roof", 0)})
+            parts.append({"when": {"down": "false"}, "apply": _apply(p + "_floor", 0)})
+            parts += _rails(p)
+            out[p] = {"variants": {"inventory": {"model": MODEL_REF % (p + "_inventory")}},
+                      "multipart": parts}
 
         d = "dumpster_" + c
         parts = []
