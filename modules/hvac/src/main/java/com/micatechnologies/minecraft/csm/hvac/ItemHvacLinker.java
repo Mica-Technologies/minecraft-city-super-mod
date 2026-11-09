@@ -54,6 +54,14 @@ public class ItemHvacLinker extends AbstractItem {
         pos = master;
         te = worldIn.getTileEntity(master);
       }
+    } else if (te == null
+        && worldIn.getBlockState(pos).getBlock() instanceof BlockHvacPackagedRtuPart) {
+      // a large rooftop unit's other cells: the unit is its master's
+      BlockPos master = BlockHvacPackagedRtu.findMaster(worldIn, pos);
+      if (master != null) {
+        pos = master;
+        te = worldIn.getTileEntity(master);
+      }
     }
 
     // === Sneak+click: clear links ===

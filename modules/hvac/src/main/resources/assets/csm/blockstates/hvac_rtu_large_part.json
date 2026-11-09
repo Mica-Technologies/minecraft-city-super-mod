@@ -1,0 +1,145 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:hvac/units/unit_part_none",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#finish": "csm:blocks/hvac/units/finish_sandstone",
+      "#parts": "csm:blocks/hvac/units/parts"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "finish": {
+      "sandstone": {
+        "textures": {
+          "#finish": "csm:blocks/hvac/units/finish_sandstone",
+          "#parts": "csm:blocks/hvac/units/parts"
+        }
+      },
+      "black": {
+        "textures": {
+          "#finish": "csm:blocks/hvac/units/finish_black",
+          "#parts": "csm:blocks/hvac/units/parts"
+        }
+      },
+      "silver": {
+        "textures": {
+          "#finish": "csm:blocks/hvac/units/finish_silver",
+          "#parts": "csm:blocks/hvac/units/parts"
+        }
+      }
+    },
+    "cell": {
+      "0": {
+        "model": "csm:hvac/units/rtu_large_xm1_y0_z0.obj"
+      },
+      "1": {
+        "model": "csm:hvac/units/rtu_large_x1_y0_z0.obj"
+      },
+      "2": {
+        "model": "csm:hvac/units/rtu_large_xm1_y0_z1.obj"
+      },
+      "3": {
+        "model": "csm:hvac/units/rtu_large_x0_y0_z1.obj"
+      },
+      "4": {
+        "model": "csm:hvac/units/rtu_large_x1_y0_z1.obj"
+      },
+      "5": {
+        "model": "csm:hvac/units/rtu_large_xm1_y0_z2.obj"
+      },
+      "6": {
+        "model": "csm:hvac/units/rtu_large_x0_y0_z2.obj"
+      },
+      "7": {
+        "model": "csm:hvac/units/rtu_large_x1_y0_z2.obj"
+      },
+      "8": {
+        "model": "csm:hvac/units/rtu_large_xm1_y0_z3.obj"
+      },
+      "9": {
+        "model": "csm:hvac/units/rtu_large_x0_y0_z3.obj"
+      },
+      "10": {
+        "model": "csm:hvac/units/rtu_large_x1_y0_z3.obj"
+      },
+      "11": {
+        "model": "csm:hvac/units/rtu_large_xm1_y0_z4.obj"
+      },
+      "12": {
+        "model": "csm:hvac/units/rtu_large_x0_y0_z4.obj"
+      },
+      "13": {
+        "model": "csm:hvac/units/rtu_large_x1_y0_z4.obj"
+      },
+      "14": {
+        "model": "csm:hvac/units/rtu_large_xm1_y1_z0.obj"
+      },
+      "15": {
+        "model": "csm:hvac/units/rtu_large_x0_y1_z0.obj"
+      },
+      "16": {
+        "model": "csm:hvac/units/rtu_large_x1_y1_z0.obj"
+      },
+      "17": {
+        "model": "csm:hvac/units/rtu_large_xm1_y1_z1.obj"
+      },
+      "18": {
+        "model": "csm:hvac/units/rtu_large_x0_y1_z1.obj"
+      },
+      "19": {
+        "model": "csm:hvac/units/rtu_large_x1_y1_z1.obj"
+      },
+      "20": {
+        "model": "csm:hvac/units/rtu_large_xm1_y1_z2.obj"
+      },
+      "21": {
+        "model": "csm:hvac/units/rtu_large_x0_y1_z2.obj"
+      },
+      "22": {
+        "model": "csm:hvac/units/rtu_large_x1_y1_z2.obj"
+      },
+      "23": {
+        "model": "csm:hvac/units/rtu_large_xm1_y1_z3.obj"
+      },
+      "24": {
+        "model": "csm:hvac/units/rtu_large_x0_y1_z3.obj"
+      },
+      "25": {
+        "model": "csm:hvac/units/rtu_large_x1_y1_z3.obj"
+      },
+      "26": {
+        "model": "csm:hvac/units/rtu_large_xm1_y1_z4.obj"
+      },
+      "27": {
+        "model": "csm:hvac/units/rtu_large_x0_y1_z4.obj"
+      },
+      "28": {
+        "model": "csm:hvac/units/rtu_large_x1_y1_z4.obj"
+      },
+      "29": {
+        "model": "csm:hvac/units/unit_part_none"
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:hvac/units/rtu_large_item.obj",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}

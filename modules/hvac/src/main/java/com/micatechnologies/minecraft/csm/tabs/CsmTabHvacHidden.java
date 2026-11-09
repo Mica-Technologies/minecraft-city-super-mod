@@ -2,12 +2,13 @@ package com.micatechnologies.minecraft.csm.tabs;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacExhaustFanPart;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacPackagedRtuPart;
 import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * The HVAC module's hidden tab: the cells a multi-block unit places for itself (the lab exhaust
- * fan's), which no player picks from the inventory.
+ * fan's and the large rooftop unit's), which no player picks from the inventory.
  *
  * @version 1.0
  * @since 2026.10
@@ -39,5 +40,7 @@ public class CsmTabHvacHidden extends CsmTab {
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     // --- gen_hvac_exhaust.py --fragments ---
     initTabBlock(new BlockHvacExhaustFanPart());
+    // --- gen_hvac_units.py --fragments ---
+    initTabBlock(new BlockHvacPackagedRtuPart("hvac_rtu_large_part"));
   }
 }

@@ -21,6 +21,9 @@ import com.micatechnologies.minecraft.csm.hvac.BlockHvacCrac;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacExhaustFan;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacExhaustGrille;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacLabExhaustFan;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacPackagedRtu;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacPtac;
+import com.micatechnologies.minecraft.csm.hvac.BlockHvacPtacWallGrille;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacZoneBoundary;
 import com.micatechnologies.minecraft.csm.hvac.BlockExposedServiceHanger;
 import com.micatechnologies.minecraft.csm.hvac.BlockHvacVentRelay;
@@ -137,6 +140,10 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(BlockHvacCooler.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacCoolerBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacCoolerSilver.class, fmlPreInitializationEvent);
+    // PTACs and the wall sleeve grille (gen_hvac_units.py --fragments)
+    initTabBlock(new BlockHvacPtac("hvac_ptac")); // PTAC Unit (Heat and Cool)
+    initTabBlock(new BlockHvacPtac("hvac_ptac_almond")); // PTAC Unit (Heat and Cool, Almond)
+    initTabBlock(new BlockHvacPtacWallGrille()); // PTAC Wall Sleeve Grille
 
     // Functional HVAC blocks — Rooftop units
     initTabBlock(BlockHvacRtuHeater.class, fmlPreInitializationEvent);
@@ -145,6 +152,10 @@ public class CsmTabHvac extends CsmTab {
     initTabBlock(BlockHvacRtuCooler.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacRtuCoolerBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockHvacRtuCoolerSilver.class, fmlPreInitializationEvent);
+    // Large packaged rooftop units, multi-block (gen_hvac_units.py --fragments)
+    initTabBlock(new BlockHvacPackagedRtu("hvac_rtu_large")); // Large Rooftop Unit
+    initTabBlock(new BlockHvacPackagedRtu("hvac_rtu_large_black")); // Large Rooftop Unit (Black)
+    initTabBlock(new BlockHvacPackagedRtu("hvac_rtu_large_silver")); // Large Rooftop Unit (Silver)
     // Data hall CRAC/CRAH units (#305; gen_hvac_data_hall.py --fragments)
     initTabBlock(new BlockHvacCrac("hvac_crac_downflow")); // CRAC Unit (Downflow)
     initTabBlock(new BlockHvacCrac("hvac_crac_upflow")); // CRAC Unit (Upflow)

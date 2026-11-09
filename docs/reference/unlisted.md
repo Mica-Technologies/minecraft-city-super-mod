@@ -2,7 +2,7 @@
 
 Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves.
 
-!!! info "147 blocks in this tab"
+!!! info "148 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -56,6 +56,7 @@ Blocks that appear in no creative tab: retired ones kept so old worlds still loa
 | Lab Exhaust Fan | `csm:hvac_exhaust_fan_part` | 3 | 15 | pickaxe | 1 |
 | Large Ad Kiosk | `csm:ad_kiosk_large_part` | 1.5 | 10 | pickaxe | 0 |
 | Large Ad Kiosk | `csm:ad_kiosk_large_service` | 1.5 | 10 | pickaxe | 0 |
+| Large Rooftop Unit | `csm:hvac_rtu_large_part` | 3 | 15 | pickaxe | 1 |
 | Light Switch Relay | `csm:switch_relay` | -1.0 | 18.0 | pickaxe | 0 |
 | MCLAGlowAir | `csm:lightupair` | 2 | 10 | pickaxe | 1 |
 | NOV Octagon Concrete Pole | `csm:ocpb` | 1 | 10 | pickaxe | 1 |
