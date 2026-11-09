@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "444 blocks in this tab"
+!!! info "446 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,8 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Anaheim Resort Area Luminaire Arm 8 ft (Anaheim Green) | `csm:luminairearmanaheim8ftgreen` | 2 | 10 | pickaxe | 1 |
+| Anaheim Resort Area Pole | `csm:decopoleanaheim` | 2 | 10 | pickaxe | 1 |
 | Angled Thin Traffic Pole (Concrete) | `csm:trafficpolehorizontalangleconcrete` | 2 | 10 | pickaxe | 1 |
 | Arrow Board | `csm:arrow_board` | 0.6 | 3 | pickaxe | 0 |
 | Black Angled Thin Traffic Pole | `csm:trafficpolehorizontalangleblack` | 2 | 10 | pickaxe | 1 |

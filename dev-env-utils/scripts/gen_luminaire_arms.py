@@ -72,6 +72,18 @@ FINISHES = [
     ("silver", "csm:blocks/trafficsignals/shared_textures/metal_silver", "Silver"),
 ]
 
+# Finishes a profile is offered in, where it is not FINISHES: the Anaheim arm only ever comes in
+# the city's P7-Green (the decorative poles' swatch, in Core).
+ANAHEIM_GREEN = ("green", "csm:blocks/decorativepoles/paint_anaheim_green", "Anaheim Green")
+FINISHES_FOR = {
+    "anaheim8ft": [ANAHEIM_GREEN],
+}
+
+
+def finishes_of(pid):
+    return FINISHES_FOR.get(pid, FINISHES)
+
+
 SCALE = 1.4                 # the arms are drawn 1.4 times true size, as the fixtures are
 PX_PER_M = 16.0
 FT = 0.3048
@@ -473,6 +485,41 @@ def build(pid, members, double):
             "sides": sides, "boxes": boxes, "whole": whole}
 
 
+# City of Anaheim Special Design #749 (Anaheim Resort Area): an 8 ft arm whose tip stands 3'3" over
+# the pole top (26'4" against the 23'1" pole), with cast scroll work under its root. The arm is a
+# slimmer tube than the Caltrans davit; the scroll is a brace from the pole, lower down, rising into
+# the arm, with a curl hung inside the angle between them.
+ANAHEIM_RUN, ANAHEIM_RISE = 3, ft_px(3.25)
+ANAHEIM_R = (1.6, 1.2)
+
+
+def anaheim_members():
+    y0 = start_y(ANAHEIM_RISE)
+    up = parabola(y0, ANAHEIM_RISE, ANAHEIM_RUN)
+    t_end = 0.85
+    y_end = up(t_end)[0] - 1.0
+    yl = y0 - 9.0
+
+    def brace(t):
+        k = min(1.0, max(0.0, t / t_end))
+        k = k * k * (3.0 - 2.0 * k)
+        return (yl + (y_end - yl) * k, 16.0 - 16.0 * t)
+
+    cy, cz = yl + 4.2, 16.0 - 16.0 * 0.42
+
+    def curl(u):
+        a = math.radians(-70.0 - 430.0 * u)
+        r = 2.6 - 1.7 * u
+        return (cy + r * math.sin(a), cz + r * math.cos(a))
+
+    return [
+        Member(up, boot_radius(up, ANAHEIM_R[0], ANAHEIM_R[1], ANAHEIM_RUN), -0.6,
+               ANAHEIM_RUN - INSET / 16.0, pole=True),
+        Member(brace, lambda t: 0.6, -0.6, t_end + 0.05, pole=True),
+        Member(curl, lambda u: 0.45, 0.0, 1.0, per_block=20),
+    ]
+
+
 def catalogue():
     out = []
     for pid, run, rise, ft in CALTRANS:
@@ -485,6 +532,8 @@ def catalogue():
             label = "%sTruss Luminaire Arm %d ft" % ("Double " if double else "", ft)
             out.append((pid + ("double" if double else ""), lambda run=run: truss_members(run), double,
                         label, ft, run, TRUSS_RISE))
+    out.append(("anaheim8ft", anaheim_members, False, "Anaheim Resort Area Luminaire Arm 8 ft", 8,
+                ANAHEIM_RUN, ANAHEIM_RISE))
     return out
 
 
@@ -656,7 +705,7 @@ def outputs():
                     "%s, cell %d on the %s pole (radius %.0f)" % (label, idx, fit, r))
         files[("asset", MODEL_REL + "/luminairearm_%s_inv.obj" % pid)] = inventory_mesh(
             prof["whole"]).text("luminairearm_%s_inv" % pid, "%s, inventory icon" % label)
-        for fid, tex, _flabel in FINISHES:
+        for fid, tex, _flabel in finishes_of(pid):
             files[("asset", "blockstates/%s.json" % registry(pid, fid))] = json.dumps(
                 blockstate(prof, tex), indent=2) + "\n"
         profiles.append((meta, prof))
@@ -673,12 +722,12 @@ def path_of(kind, rel):
 def fragments(profiles):
     for meta, prof in profiles:
         pid, _b, _d, label, *_ = meta
-        for fid, _t, flabel in FINISHES:
+        for fid, _t, flabel in finishes_of(pid):
             print('    initTabBlock(new BlockTrafficPoleMastArmCurve("%s", LuminaireArmProfile.%s));'
                   % (registry(pid, fid), pid.upper()))
     for meta, prof in profiles:
         pid, _b, _d, label, *_ = meta
-        for fid, _t, flabel in FINISHES:
+        for fid, _t, flabel in finishes_of(pid):
             print("tile.%s.name=%s (%s)" % (registry(pid, fid), label, flabel))
 
 

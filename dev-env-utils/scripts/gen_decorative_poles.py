@@ -552,6 +552,8 @@ TEXTURES = {
     # Painted cast iron and steel. Each a gentle vertical gradient with grain, the swatch rule.
     "paint_la_bronze": lambda: _noise_png(16, (92, 82, 58), (64, 56, 40), 5, 11),
     "paint_la_green": lambda: _noise_png(16, (52, 74, 58), (34, 50, 40), 5, 12),
+    # Anaheim P7-Green (Pantone 330 C), semi-gloss.
+    "paint_anaheim_green": lambda: _noise_png(16, (40, 104, 88), (26, 78, 66), 4, 13),
     "paint_black": lambda: _noise_png(16, (50, 50, 52), (28, 28, 30), 4, 14),
     "paint_hollywood_grey": lambda: _noise_png(16, (170, 172, 172), (128, 130, 132), 4, 15),
     # Trim: Anaheim's Aztec Gold finial, the brass bands, the bronze lantern frames.
@@ -751,7 +753,42 @@ HOLLYWOOD = PoleDesign(
     source="the slim steel poles of Hollywood Boulevard")
 
 
-POLE_DESIGNS = [LA_FLUTED, BROADWAY_ROSE, CONCRETE_815, WESTWOOD, HOLLYWOOD]
+# --- Anaheim Resort Area, City of Anaheim Street Light Design #749 --------------------------
+# A 12-flute galvanized steel pole, 7.5 in at the base, in Anaheim P7-Green; a two-piece cast
+# base with a door, 43 in tall; a cast ring with two banner arm mounts under the 8 ft arm; an
+# Aztec Gold finial (drawing L 139 rev 5, 2019).
+def anaheim_base(m):
+    square_stack(m, "body", [(5.0, INSET), (5.0, 1.4), (4.5, 1.4), (4.5, 2.0)])
+    lathe(m, "body", [(4.4, 1.9), (4.4, 2.6), (4.0, 3.2), (4.0, 3.6), (3.4, 3.6)])
+    lathe(m, "body", [(4.0, 3.6), (3.8, 11.0)], sides=36, flutes=12, depth=0.35, phase=0.0)
+    lathe(m, "body", [(3.3, 11.0), (3.8, 11.0), (4.3, 11.4), (4.3, 12.0), (3.7, 12.6),
+                      (3.3, 13.6), (3.04, 14.2), (2.5, 14.2)])
+    box(m, "body", (6.7, 5.0, 11.6), (9.3, 9.4, 12.05))       # the access door, street side
+
+
+def anaheim_ring(m):
+    """The cast ring's two banner arm mounts, and the Aztec Gold finial over the collar."""
+    for sign in (1, -1):
+        x0, x1 = AXIS + sign * 3.9, AXIS + sign * 6.6
+        tube(m, "body", [(x0, 4.0, AXIS), (x1, 4.0, AXIS)], 0.4, sides=6, cap0=False)
+        blob(m, "trim", (x1 + sign * 0.5, 4.0, AXIS), 0.7, sides=6, rings=3)
+    lathe(m, "trim", [(1.2, 13.0), (1.7, 13.6), (1.0, 14.4), (1.9, 15.4), (2.1, 16.4),
+                      (1.5, 17.4), (0.7, 18.6), (0.9, 19.3), (0.0, 21.0)], sides=12, bottom=True)
+
+
+ANAHEIM = PoleDesign(
+    "anaheim", "Anaheim Resort Area Pole", 3.0, 3.0, 5.0,
+    tex("paint_anaheim_green"), tex("trim_gold"), "BLACK",
+    fluted_shaft(3.0, 12, 0.35), anaheim_base,
+    cap_lathe(3.0, [(3.0, 2.8), (3.9, 3.2), (4.2, 3.8), (4.2, 4.2), (3.9, 4.8), (3.04, 5.2),
+                    (3.04, 11.6), (3.6, 12.0), (3.6, 12.8), (2.2, 13.3), (1.2, 13.3)],
+              extra=anaheim_ring),
+    capital(3.0, [(3.0, 11.0), (3.6, 11.5), (3.6, 12.2), (3.2, 12.6), (4.2, 14.0), (4.8, 15.2),
+                  (4.8, 15.98)]),
+    source="City of Anaheim Street Light Special Design #749 (L 139 rev 5)")
+
+
+POLE_DESIGNS = [LA_FLUTED, BROADWAY_ROSE, CONCRETE_815, WESTWOOD, HOLLYWOOD, ANAHEIM]
 
 
 # --- the mount clamp every pole grows toward a device on its flank -----------------------------
