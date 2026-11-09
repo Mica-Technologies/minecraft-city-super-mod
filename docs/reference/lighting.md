@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "181 blocks in this tab"
+!!! info "184 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -61,6 +61,9 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | GE Evolve ESR2 Small (Standard) | `csm:gees` | 2 | 10 | pickaxe | 1 |
 | GE Form 109 (Regular) | `csm:geform109` | 2 | 10 | pickaxe | 1 |
 | GE Form 109 (Teardrop) | `csm:geform109td` | 2 | 10 | pickaxe | 1 |
+| GE M-250A (Cutoff Optics) | `csm:gem250acu` | 2 | 10 | pickaxe | 1 |
+| GE M-250A (Cutoff Optics, No Photocell) | `csm:gem250acunp` | 2 | 10 | pickaxe | 1 |
+| GE M-250A (Standard) | `csm:gem250a` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Cutoff Optics) | `csm:gem400acu` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Cutoff Optics, No Photocell) | `csm:gem400acunp` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Standard) | `csm:gem400a` | 2 | 10 | pickaxe | 1 |
