@@ -150,8 +150,38 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW imp
    * @return {@code true} if a light-up air was placed
    */
   protected boolean handleAirLightBlock(boolean on, World world, BlockPos pos) {
-    return CsmLightupAir.projectColumn(on, world, pos, getBrightLightXOffset(),
-        getBrightLightZOffset());
+    return handleAirLightBlock(on, world, pos, null);
+  }
+
+  /**
+   * As {@link #handleAirLightBlock(boolean, World, BlockPos)}, with the light's state given: a
+   * light whose offset turns with its facing reads the facing from it, and while the block is being
+   * broken the world no longer holds it. {@code null} reads the state from the world when needed.
+   */
+  protected boolean handleAirLightBlock(boolean on, World world, BlockPos pos,
+      @Nullable IBlockState state) {
+    int[] offset = lightColumnOffset(world, pos, state);
+    return CsmLightupAir.projectColumn(on, world, pos, offset[0], offset[1]);
+  }
+
+  /**
+   * Whether this light's column offset turns with its {@link #FACING}: its X offset then runs
+   * forward, the way the fixture faces, and its Z offset to the right ({@link BrightLightOffset}).
+   * Default {@code false}: the offsets are world X and Z, which is what every light placed before
+   * this existed relies on.
+   */
+  public boolean isBrightLightOffsetFacingRelative() {
+    return false;
+  }
+
+  /** The world (x, z) offset of this light's column, for the light in {@code state}. */
+  private int[] lightColumnOffset(IBlockAccess world, BlockPos pos, @Nullable IBlockState state) {
+    if (!isBrightLightOffsetFacingRelative()) {
+      return new int[]{getBrightLightXOffset(), getBrightLightZOffset()};
+    }
+    IBlockState s = state != null ? state : world.getBlockState(pos);
+    EnumFacing facing = s.getBlock() == this ? s.getValue(FACING) : EnumFacing.NORTH;
+    return BrightLightOffset.worldOffset(getBrightLightXOffset(), getBrightLightZOffset(), facing);
   }
 
   /**
@@ -162,8 +192,9 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW imp
    */
   @Override
   public boolean claimsLightupAir(World world, BlockPos pos, IBlockState state, BlockPos air) {
-    if (!isLit(state) || air.getX() != pos.getX() + getBrightLightXOffset()
-        || air.getZ() != pos.getZ() + getBrightLightZOffset()) {
+    int[] offset = lightColumnOffset(world, pos, state);
+    if (!isLit(state) || air.getX() != pos.getX() + offset[0]
+        || air.getZ() != pos.getZ() + offset[1]) {
       return false;
     }
     return air.equals(CsmLightupAir.firstBelow(world, air.getX(), pos.getY() - 1, air.getZ(),
@@ -259,7 +290,7 @@ public abstract class AbstractBrightLight extends AbstractBlockRotatableNSEW imp
   public void breakBlock(World p_breakBlock_1_, BlockPos p_breakBlock_2_,
       IBlockState p_breakBlock_3_) {
     // Cleanup existing light block (if present)
-    handleAirLightBlock(false, p_breakBlock_1_, p_breakBlock_2_);
+    handleAirLightBlock(false, p_breakBlock_1_, p_breakBlock_2_, p_breakBlock_3_);
 
     super.breakBlock(p_breakBlock_1_, p_breakBlock_2_, p_breakBlock_3_);
   }

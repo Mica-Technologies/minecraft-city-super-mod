@@ -132,6 +132,14 @@ public int getBrightLightXOffset() { return 0; }  // Default: straight down
 public int getBrightLightXOffset() { return 1; }  // 1 block to the side
 ```
 
+A post top whose head is cantilevered off to one side (the GE Evolve EALS on its pole-top
+knuckle) wants its light under the head, whichever way it is turned. Such a light returns
+`true` from `isBrightLightOffsetFacingRelative()` (`BlockBrightLightFactory.PostTopAimed`): its X
+offset then runs forward along `FACING` and its Z offset to the right (`BrightLightOffset`).
+Every other light keeps the world-X offset above, so the symmetric post tops (`mclaclassicpostlight`,
+`mclaparklight`, `postlight1-3`) still light the cell east of their pole, where their placed
+light-up air already is.
+
 ### BlockLightupAir
 
 - Core's: `codeutils.light.BlockLightupAir`, registry name `lightupair`, registered from Core's
@@ -559,7 +567,7 @@ the roadway heads, and with them the Alto lot, wall and underpass lights and the
 | `whov25`, `whov25hps`, `whov25early` | **New:** Westinghouse OV-25 "Silverliner", the first cobra head (later sold as Crouse-Hinds): a long cast lid rounded down over a deep round refractor, a narrower ballast wedge under the rear whose underside climbs to the slipfitter; the mid-1960s body in mercury (his olive) and HPS (his orange), and the squarer, flat-lidded 1950s body in mercury. Bare aluminium swatch (`streetlight_body_westinghouse_silver`) |
 | `whl250`, `whl250hps` | **New:** Westinghouse L-250 (Crouse-Hinds after 1982): a domed lid over a deep refractor and a squarer, finned ballast housing behind it; mercury and HPS |
 | `smsmxll5` | **New:** SolarMax SMX-LL5, the second-generation SolarMax the requester confirmed, a new block beside `smsmx` (unchanged): a thin round-nosed paddle 8 px wide with the LED module under its front half, its top running flat into a deep square driver box, the blue photocell (`PHOTOCELL_FOR`, the smart node's blue) at the box's front edge. Near-white swatch (`streetlight_body_solarmax_white`); its box (x 4..12) is its envelope |
-| `geeals`, `geealsarm`, `geealswall`, `geealspt` | **New:** GE Evolve EALS area light (25.2 x 14.7 in, 4.3 in over the fins): a square head with a square LED array and five fins rising toward the rear, on a tapering neck, in GE's C1 slipfitter (any CSM arm), D1 arm mount (a short arm to a pole plate on the block face), V1 wall knuckle (a hub off a wall plate) and S1 pole-top knuckle (a sleeve over a tenon, the head cantilevered north to z -5.3; a `BlockBrightLightFactory.PostTop` with the post-top lights' x offset of 1). Black swatch (`streetlight_body_black`) |
+| `geeals`, `geealsarm`, `geealswall`, `geealspt` | **New:** GE Evolve EALS area light (25.2 x 14.7 in, 4.3 in over the fins): a square head with a square LED array and five fins rising toward the rear, on a tapering neck, in GE's C1 slipfitter (any CSM arm), D1 arm mount (a short arm to a pole plate on the block face), V1 wall knuckle (a hub off a wall plate) and S1 pole-top knuckle (a sleeve over a tenon, the head cantilevered north to z -5.3; a `BlockBrightLightFactory.PostTopAimed`: its light falls one block ahead, under the head, whichever way it faces). Black swatch (`streetlight_body_black`) |
 | `hpmongoose` | **New:** Holophane Mongoose LED (40.8 x 17.7 x 6.6 in): a long flat head with a crenellated rim of cooling teeth along both top edges and big round optics under it, the driver in a deeper housing over the slipfitter. Longer than a block: the head runs on to z -2 (`ENVELOPE_FOR`). Dark bronze swatch (`streetlight_body_dark_bronze`) |
 
 **Converting a JSON fixture** keeps its registry name, class, bounding box and STATE; only its
