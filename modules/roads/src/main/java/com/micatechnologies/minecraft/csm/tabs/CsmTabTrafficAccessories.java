@@ -10,10 +10,13 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockEnforcementCam
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockMiniSolarPanel;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmDomeRed;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmDomeRedPole;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmDomeRedSpan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParBlue;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParBluePole;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParBlueSpan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParWhite;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParWhitePole;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockPreemptConfirmParWhiteSpan;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockSnowBeacon;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficAccessoryBackplate;
@@ -589,6 +592,9 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(BlockPreemptConfirmParWhiteSpan.class, fmlPreInitializationEvent);
     initTabBlock(BlockPreemptConfirmParBlueSpan.class, fmlPreInitializationEvent);
     initTabBlock(BlockPreemptConfirmDomeRedSpan.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPreemptConfirmParWhitePole.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPreemptConfirmParBluePole.class, fmlPreInitializationEvent);
+    initTabBlock(BlockPreemptConfirmDomeRedPole.class, fmlPreInitializationEvent);
     initTabBlock(BlockSnowBeacon.class, fmlPreInitializationEvent);
     initTabBlock(com.micatechnologies.minecraft.csm.trafficaccessories.BlockRailroadCrossingFlasher.class,
         fmlPreInitializationEvent);
