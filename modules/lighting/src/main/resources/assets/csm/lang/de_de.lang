@@ -1,6 +1,8 @@
 itemGroup.tablighting=CSM: Beleuchtung
 tile.ae115.name=American Electric 115 (Standard)
 tile.ae115cu.name=American Electric 115 (Cutoff-Optik)
+tile.aeacm.name=American Electric AutoConnect ACM
+tile.aeacmnp.name=American Electric AutoConnect ACM (Ohne Fotozelle)
 tile.aeatb0.name=American Electric Autobahn ATB0
 tile.aeatb2.name=American Electric Autobahn ATB2
 tile.altollm.name=Alto Parkplatzleuchten-Halterung
