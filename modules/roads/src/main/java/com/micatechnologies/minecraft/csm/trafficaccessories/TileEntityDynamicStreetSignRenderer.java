@@ -339,6 +339,12 @@ public class TileEntityDynamicStreetSignRenderer
     final StreetSignData data;
     final Layout layout;
     final byte[][] legendKinds = new byte[4][];
+    /**
+     * The pipes of a curved or truss arm over a hanging blade, and the world time they were
+     * looked up at. Not part of the data: an arm can be built over a sign that never changes.
+     */
+    float[] hangRails;
+    long hangRailsTime;
 
     private Memo(StreetSignData data, Layout layout) {
       this.data = data;
@@ -373,6 +379,16 @@ public class TileEntityDynamicStreetSignRenderer
   private int ambientSkyLight;
   private int ambientBlockLight;
   private boolean lightOn;
+  /** The pipes over the blade being drawn; see {@link StreetSignHangerRails}. */
+  private float[] hangRails = StreetSignHangerRails.NONE;
+  private final float[] railScratch = new float[2];
+
+  /** How often, in ticks, a hanging blade looks again for an arm over it. */
+  private static final long HANG_RAILS_REFRESH_TICKS = 20L;
+  /** How far under a pipe's centre its saddle clamp reaches past the pipe's own skin. */
+  private static final float SADDLE_CLAMP_LIP = 0.8f;
+  /** How much deeper than the pipe its saddle clamp is. */
+  private static final float SADDLE_CLAMP_GROW = 1.0f;
 
   @Override
   public void render(TileEntityDynamicStreetSign te, double x, double y, double z,
@@ -430,7 +446,23 @@ public class TileEntityDynamicStreetSignRenderer
       memo = new Memo(data, computeLayout(data));
       te.setRenderCache(memo);
     }
+    hangRails = StreetSignHangerRails.NONE;
+    if (data.getMountType().isHanging()) {
+      // Looked up about once a second, not per frame: it is a few block reads, and the answer
+      // only changes when someone builds or breaks an arm.
+      long now = te.getWorld().getTotalWorldTime();
+      if (memo.hangRails == null || now - memo.hangRailsTime >= HANG_RAILS_REFRESH_TICKS
+          || now < memo.hangRailsTime) {
+        Layout layout = memo.layout;
+        memo.hangRails = StreetSignHangerRails.find(te.getWorld(), te.getPos(), rotY,
+            layout.signWidth / 2.0f + layout.borderInset + layout.frameOverhangX
+                + layout.mountOverhangX);
+        memo.hangRailsTime = now;
+      }
+      hangRails = memo.hangRails;
+    }
     renderSign(data, farLod, te.getPos(), te.isStateDirty(), combinedLight, memo);
+    hangRails = StreetSignHangerRails.NONE;
     te.clearStateDirty();
 
     GlStateManager.popMatrix();
@@ -484,6 +516,7 @@ public class TileEntityDynamicStreetSignRenderer
     // The preview has no world to read redstone or the time of day from, so show the blade
     // energized whenever it is wired for light at all -- that is what the player is checking.
     lightOn = data.hasInternalLight() && data.getLightMode() != SignLightMode.OFF;
+    hangRails = StreetSignHangerRails.NONE;
     renderSign(data, false, null, true, 0, new Memo(data, computeLayout(data)));
   }
 
@@ -1495,22 +1528,47 @@ public class TileEntityDynamicStreetSignRenderer
     float shoeBottom = bladeTop(l) - JOINT_OVERLAP;
     float shoeTop = shoeBottom + HANGER_SHOE_HEIGHT;
     // The clamp grips at the TOP of the run, not at the block boundary, so whatever the run
-    // reaches is what it appears to hang from.
-    float hangerTop = l.assemblyTop;
-    float clampBottom = hangerTop - HANGER_CLAMP_HEIGHT;
-
+    // reaches is what it appears to hang from. Under a curved or truss arm each hanger runs to
+    // the pipe that is really over it, so the two can differ in length, as they do on the street.
     List<RenderHelper.Box> parts = new ArrayList<>();
     for (float hx : hangerCenters(l, HANGER_INSET_FRACTION)) {
       addHangerShoe(parts, hx, shoeBottom);
+      float clampBottom = addHangerGrip(parts, l, hx, shoeTop);
       parts.add(new RenderHelper.Box(
           new float[]{hx - HANGER_ROD_WIDTH / 2, shoeTop - JOINT_OVERLAP,
               CZ - HANGER_ROD_WIDTH / 2},
           new float[]{hx + HANGER_ROD_WIDTH / 2, clampBottom + JOINT_OVERLAP,
               CZ + HANGER_ROD_WIDTH / 2}));
-      addHangerClamp(parts, hx, clampBottom, hangerTop);
     }
 
     drawMetalwork(parts);
+  }
+
+  /**
+   * The top of a hanger: a saddle clamp on the pipe over it when a curved or truss arm is
+   * there, the plain clamp at the fixed reach otherwise.
+   *
+   * @param below the lowest the clamp's underside may be: the top of whatever the run rises from
+   *
+   * @return the clamp's underside, where the rod or post ends
+   */
+  private float addHangerGrip(List<RenderHelper.Box> parts, Layout l, float hx, float below) {
+    if (StreetSignHangerRails.lowestOver(hangRails, hx, CZ,
+        below + SADDLE_CLAMP_LIP + JOINT_OVERLAP, railScratch)) {
+      float centre = railScratch[0];
+      float radius = railScratch[1];
+      float clampBottom = centre - radius - SADDLE_CLAMP_LIP;
+      float half = radius + SADDLE_CLAMP_GROW / 2;
+      // A saddle: it cups the pipe's lower half, wider and deeper than the pipe so no face of
+      // it lies in the pipe's skin.
+      parts.add(new RenderHelper.Box(
+          new float[]{hx - HANGER_CLAMP_WIDTH / 2, clampBottom, CZ - half},
+          new float[]{hx + HANGER_CLAMP_WIDTH / 2, centre, CZ + half}));
+      return clampBottom;
+    }
+    float clampBottom = l.assemblyTop - HANGER_CLAMP_HEIGHT;
+    addHangerClamp(parts, hx, clampBottom, l.assemblyTop);
+    return clampBottom;
   }
 
   /**
@@ -1567,18 +1625,16 @@ public class TileEntityDynamicStreetSignRenderer
     // whatever is above -- at the same height the two-hanger mount's clamps reach, so either
     // mount appears to hang from the same thing.
     float saddleTop = beamTop + DROP_SADDLE_HEIGHT;
-    float hangerTop = l.assemblyTop;
-    float clampBottom = hangerTop - HANGER_CLAMP_HEIGHT;
     parts.add(new RenderHelper.Box(
         new float[]{CX - DROP_SADDLE_WIDTH / 2, beamBottom - BEAM_COLLAR_GROW,
             beamNear - BEAM_COLLAR_GROW},
         new float[]{CX + DROP_SADDLE_WIDTH / 2, saddleTop, beamFar + BEAM_COLLAR_GROW}));
+    float clampBottom = addHangerGrip(parts, l, CX, saddleTop);
     parts.add(new RenderHelper.Box(
         new float[]{CX - DROP_POST_WIDTH / 2, saddleTop - JOINT_OVERLAP,
             CZ - DROP_POST_WIDTH / 2},
         new float[]{CX + DROP_POST_WIDTH / 2, clampBottom + JOINT_OVERLAP,
             CZ + DROP_POST_WIDTH / 2}));
-    addHangerClamp(parts, CX, clampBottom, hangerTop);
 
     drawMetalwork(parts);
   }
@@ -1667,6 +1723,18 @@ public class TileEntityDynamicStreetSignRenderer
     float topY = mount == StreetSignMount.HANGING_BRACKET
         ? beamBottom(l) + BEAM_THICKNESS / 2.0f
         : l.assemblyTop;
+    if (mount != StreetSignMount.HANGING_BRACKET) {
+      // Under a curved or truss arm the cable runs into the pipe its end of the blade hangs
+      // from: the one over the cable itself if there is one, else the one over the hanger
+      // beside it.
+      float[] centers = hangerCenters(l, HANGER_INSET_FRACTION);
+      float floor = bladeTop(l) + HANGER_SHOE_HEIGHT;
+      if (StreetSignHangerRails.lowestOver(hangRails, cableX(l), CZ, floor, railScratch)
+          || StreetSignHangerRails.lowestOver(hangRails, centers[centers.length - 1], CZ, floor,
+          railScratch)) {
+        topY = railScratch[0];
+      }
+    }
     renderCableRun(cableX(l), bladeTop(l) - JOINT_OVERLAP, topY);
   }
 

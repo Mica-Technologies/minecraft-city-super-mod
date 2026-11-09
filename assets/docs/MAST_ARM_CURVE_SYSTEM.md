@@ -376,6 +376,24 @@ whichever chord is nearest the face it reaches (a sign under the arm hangs from 
 and identical stub meshes are written once (`trusssignalarm_stub_<n>.obj`) and shared across
 cells and arms.
 
+**A head hung from the tip.** Put a wire mount (`tlitevertwiremount` / `tlitehorzwiremount`)
+under a cell and a signal head under the mount, and the cell grows its down hardware to the
+mount's bracket: the New Jersey arrangement, a head swinging under the end of the arm. Poles
+ignore the whole accessory family the wire mounts belong to, so `isMountableAdjacent` says no;
+`BlockTrafficPoleMastArmCurve.isHangingWireMount` is the one exception, for the down side only,
+and only while the mount is not linked into a span (a linked mount hides its bracket and is
+carried by the span's own hardware, which this must not touch). It applies to the mast arm curves
+too. A head placed directly under a cell, with no mount between, stands half a block into the
+cell and through the pipe: the mount is what gives it room.
+
+**Each cell says where its pipes are.** `ICurvedArmProfile.getCellRails(cell)` returns the
+centreline segments passing through a cell (`{x0, y0, z0, x1, y1, z1, radius}`, cell frame), and
+`BlockTrafficPoleMastArmCurve.getWorldRails` turns them to the arm's facing. The truss profile
+carries them generated; a mast arm curve's are two chords of its parabola a block, computed in
+the block from the run and rise (the generator's `centre` and `radius`, restated there: change
+one, change the other). Luminaire arms return none. The one user is the dynamic street name
+sign, whose hangers stop at the pipe over them: DYNAMIC_STREET_SIGN_SYSTEM.md, "Hangers".
+
 **Not done:** the curved-top truss (Boston City Hall; New Hampshire's signal arms); a mirrored
 diagonal (the arm always turns to the right of the face it was placed on, so the other diagonal is
 reached from the next face round).
