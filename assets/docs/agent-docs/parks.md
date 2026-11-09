@@ -20,7 +20,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   nursery bench, potting bench, stacked pots, seedling flats, compost bin, wheelbarrow, crop rows,
   trellis) from one catalogue whose tab lines carry each block's size; `--check`, `--fragments`
 - `gen_park_amenities.py` -- the Parks tab: benches and picnic tables (end frames only at a run's
-  ends), bins, playground, pergola, fountains with animated water, irrigation; borrows
+  ends), bins, bear-proof food lockers, playground, pergola, fountains with animated water,
+  irrigation; borrows
   gen_park_plantings.py's helpers; `--check`, `--fragments`
 - `gen_park_legacy_amenities.py` -- the five Parks amenities that kept their old ids: both swing
   sets (OBJ, 2.78 m to the beam), the teeter totter, the slatted trash can and the low-poly bird

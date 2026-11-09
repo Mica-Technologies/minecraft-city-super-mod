@@ -257,7 +257,73 @@ def gazebo_icon():
     return img
 
 
+LOCKER_BROWN = [(112, 82, 56), (108, 79, 54), (104, 76, 52), (99, 72, 49)]
+LOCKER_GALVANIZED = [(176, 180, 181), (169, 173, 174), (162, 166, 168), (154, 158, 160)]
+
+
+def locker_side(palette, seed):
+    """A bear locker's painted or galvanized steel skin, with a faint pressed stiffening rib."""
+    img = noise_tex(palette, seed, grain=0.35)
+    px = img.load()
+    for x in (5, 10):
+        for y in range(16):
+            px[x, y] = clamp(tuple(c * 0.93 for c in palette[-1])) + (255,)
+    return img
+
+
+def locker_front(palette, seed):
+    """The front of a campground bear locker as box() maps it onto the body (texture u = 16 - x,
+    v = 16 - y; the body runs x 0.5..15.5, y 3..14.5, so u 0.5..15.5, v 1.5..13, rows 1-12):
+    two plain steel doors meeting at the middle in a narrow gap, each with a pressed panel (lit
+    along its top and left edge, shadowed along the others), hinge knuckles at the outer edges,
+    and a small food storage label on the right door. The bear-proof latch is a model element,
+    the hood across the top of the seam."""
+    img = noise_tex(palette, seed, grain=0.3)
+    px = img.load()
+    shadow = clamp(tuple(c * 0.72 for c in palette[-1])) + (255,)
+    light = clamp(tuple(min(255, c * 1.16) for c in palette[0])) + (255,)
+    for u in range(16):
+        px[u, 2] = shadow                  # under the lid
+        px[u, 12] = shadow                 # the door bottoms
+    for v in range(2, 13):
+        px[1, v] = shadow                  # the cabinet's side flanges
+        px[14, v] = shadow
+        px[7, v] = (28, 26, 24, 255)       # the gap between the doors
+        px[8, v] = light                   # the right door's lit edge
+    for v in (4, 7, 10):                   # hinge knuckles
+        px[2, v] = shadow
+        px[13, v] = shadow
+    for u0, u1 in ((3, 6), (10, 13)):      # a pressed panel on each door
+        for u in range(u0, u1):
+            px[u, 4] = light
+            px[u, 10] = shadow
+        for v in range(4, 11):
+            px[u0, v] = light
+            px[u1 - 1, v] = shadow
+    label = (232, 196, 60, 255) if palette is LOCKER_BROWN else (236, 236, 230, 255)
+    for u in (10, 11):
+        px[u, 6] = label
+        px[u, 7] = label
+    return img
+
+
+def locker_top(palette, seed):
+    """The lid seen from above: the sheet with a pressed rim round it."""
+    img = noise_tex(palette, seed, grain=0.3)
+    px = img.load()
+    rim = clamp(tuple(c * 0.84 for c in palette[-1])) + (255,)
+    for i in range(16):
+        px[i, 1] = px[i, 14] = px[1, i] = px[14, i] = rim
+    return img
+
+
 TEXTURES = {
+    "locker_brown": lambda: locker_side(LOCKER_BROWN, 140),
+    "locker_brown_front": lambda: locker_front(LOCKER_BROWN, 141),
+    "locker_brown_top": lambda: locker_top(LOCKER_BROWN, 142),
+    "locker_galvanized": lambda: locker_side(LOCKER_GALVANIZED, 143),
+    "locker_galvanized_front": lambda: locker_front(LOCKER_GALVANIZED, 144),
+    "locker_galvanized_top": lambda: locker_top(LOCKER_GALVANIZED, 145),
     "gazebo_shingle": lambda: shingles(131),
     "gazebo_ceiling": lambda: beadboard(132),
     "white_paint": lambda: white_paint(133),
@@ -448,6 +514,37 @@ facing_block("dog_waste_station", [4, 0, 4, 12, 16, 13],
               box([4.5, 0, 4], [11.5, 10, 10.5], "steel"),
               box([4.25, 10, 3.75], [11.75, 11, 10.75], "steel", per={"up": "lid"})],
              {"steel": T("green_steel"), "sign": T("dog_sign"), "lid": T("lid_green")})
+
+# --- bear-proof food lockers: the steel campground box, about 4 ft wide, 3 ft tall and 2 1/2 ft
+# deep, standing on angle legs. Drawn a block wide, so a row of them reads as the bank of
+# lockers at a campsite. Two finishes: brown paint (most parks) and bare galvanized steel.
+for finish, (en, de, es, sv) in (
+        ("brown", ("Bear-Proof Food Locker (Brown)",
+                   "Bärensicherer Lebensmittelschrank (Braun)",
+                   "Taquilla de alimentos a prueba de osos (marrón)",
+                   "Björnsäkert matskåp (brunt)")),
+        ("galvanized", ("Bear-Proof Food Locker (Galvanized)",
+                        "Bärensicherer Lebensmittelschrank (Verzinkt)",
+                        "Taquilla de alimentos a prueba de osos (galvanizada)",
+                        "Björnsäkert matskåp (galvaniserat)"))):
+    legs = [box([x0, 0, z0], [x0 + 1.5, 3, z0 + 1.5], "leg")
+            for x0 in (1, 13.5) for z0 in (3, 12.5)]
+    facing_block("bear_proof_food_locker_" + finish,
+                 [0, 0, 2, 16, 15, 15],
+                 (en, de, es, sv),
+                 legs + [
+                     # skids the legs stand on, so the box reads as anchored to its pad
+                     box([0.5, 0, 3], [15.5, 0.5, 4.5], "leg"),
+                     box([0.5, 0, 12.5], [15.5, 0.5, 14], "leg"),
+                     box([0.5, 3, 2.5], [15.5, 14.5, 14.5], "body", per={"north": "front"}),
+                     # the lid overhangs the doors to shed rain
+                     box([0.25, 14.5, 2], [15.75, 15.25, 14.75], "body", per={"up": "top"}),
+                     # the latch: a hood over the top of the seam, open only underneath, where
+                     # a hand reaches up to lift the bar that holds both doors
+                     box([5.5, 11, 1.5], [10.5, 13.5, 2.5], "leg"),
+                 ],
+                 {"body": T("locker_" + finish), "front": T("locker_%s_front" % finish),
+                  "top": T("locker_%s_top" % finish), "leg": T("iron")})
 
 # --- playground ---
 chute_len = 26.5

@@ -929,6 +929,12 @@ saved worlds store) but draw the Trees & Plants tab's `planter_concrete` and
   facing out. A picnic table seats one on each side: the bench on the player's side, facing across
   the table, and you step out on that side. That second seat is why `EntityCsmSeat.sit` has an
   overload taking the box another seat must be in to count as taken.
+- **Bear-proof food lockers** (`bear_proof_food_locker_brown`, `_galvanized`) are the steel
+  campground box, about 4 ft wide, 3 ft tall and 2 1/2 ft deep, on angle legs and skids: two
+  doors, and the latch hood across the top of their seam that a hand reaches under and a paw
+  cannot. Drawn a block wide, so a row of them is the bank of lockers at a campsite. Decorative
+  (`BlockParkFacing`), since no block in the module stores items yet; opening one like a chest
+  would be the module's first inventory.
 - **Pergola.** Timber posts, and a joining roof that sits straight on them: a beam along each
   outer row, centred over the post line, and rafters across on top. Where two beams cross at a
   corner the turned one is drawn with `uvlock`, so the shared faces carry identical pixels and

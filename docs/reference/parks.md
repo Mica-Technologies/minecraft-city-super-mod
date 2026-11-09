@@ -2,7 +2,7 @@
 
 Park amenities: benches, tables, bins, playground pieces, fountains and irrigation.
 
-!!! info "32 blocks in this tab"
+!!! info "34 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -13,6 +13,8 @@ Park amenities: benches, tables, bins, playground pieces, fountains and irrigati
 |---|---|---|---|---|---|
 | Backflow Preventer | `csm:backflow_preventer` | 1.0 | 2.0 | axe | 0 |
 | Backless Park Bench | `csm:park_bench_backless` | 1.5 | 3.0 | axe | 0 |
+| Bear-Proof Food Locker (Brown) | `csm:bear_proof_food_locker_brown` | 1.0 | 2.0 | axe | 0 |
+| Bear-Proof Food Locker (Galvanized) | `csm:bear_proof_food_locker_galvanized` | 1.0 | 2.0 | axe | 0 |
 | Bird Bath | `csm:birdbath` | 2 | 10 | pickaxe | 1 |
 | Dog Waste Station | `csm:dog_waste_station` | 1.0 | 2.0 | axe | 0 |
 | Fountain Basin | `csm:fountain_basin` |  |  |  |  |
