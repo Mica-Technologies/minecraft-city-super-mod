@@ -103,6 +103,18 @@ public final class FireAlarmAreaLink {
    */
   public static Result link(World world, TileEntityFireAlarmControlPanel panel, BlockPos a,
       BlockPos b) {
+    return link(world, panel, a, b, FireAlarmZones.GENERAL);
+  }
+
+  /**
+   * Links every device in the box to a panel in one zone (#335): appliances and initiating
+   * devices are stamped with it, and ones already linked move into it. Followers have no zone.
+   *
+   * @throws IllegalArgumentException if the box is larger than {@link #MAX_VOLUME}
+   * @since 2026.11
+   */
+  public static Result link(World world, TileEntityFireAlarmControlPanel panel, BlockPos a,
+      BlockPos b, int zone) {
     checkVolume(a, b);
     BlockPos panelPos = panel.getPos();
     Result result = new Result();
@@ -131,7 +143,7 @@ public final class FireAlarmAreaLink {
           }
         }
       } else if (block instanceof AbstractBlockFireAlarmSounder) {
-        if (panel.addLinkedAlarm(cell.toImmutable())) {
+        if (panel.addLinkedAlarm(cell.toImmutable(), zone)) {
           result.appliancesLinked++;
         } else {
           result.appliancesAlready++;
@@ -139,12 +151,16 @@ public final class FireAlarmAreaLink {
       } else if (block instanceof AbstractBlockFireAlarmActivator) {
         TileEntity te = world.getTileEntity(cell);
         if (te instanceof TileEntityFireAlarmSensor) {
-          TileEntityFireAlarmSensor.LinkResult linked =
-              ((TileEntityFireAlarmSensor) te).setLinkedPanelPos(panelPos);
+          TileEntityFireAlarmSensor sensor = (TileEntityFireAlarmSensor) te;
+          TileEntityFireAlarmSensor.LinkResult linked = sensor.setLinkedPanelPos(panelPos);
+          boolean rezoned = sensor.setZone(zone);
+          // a residential alarm's system is the panel now, not its old group of alarms
+          sensor.setInterconnectGroup(null);
           boolean indexed = panel.addLinkedInitiatingDevice(cell.toImmutable());
           if (linked == TileEntityFireAlarmSensor.LinkResult.RELINKED) {
             result.initiatingMoved++;
-          } else if (linked == TileEntityFireAlarmSensor.LinkResult.ALREADY_LINKED && !indexed) {
+          } else if (linked == TileEntityFireAlarmSensor.LinkResult.ALREADY_LINKED && !indexed
+              && !rezoned) {
             result.initiatingAlready++;
           } else {
             result.initiatingLinked++;
@@ -196,6 +212,97 @@ public final class FireAlarmAreaLink {
       }
     }
     return result;
+  }
+
+  /**
+   * Interconnects every residential alarm in the box with a home system of alarms that has no
+   * panel (#335): the area form of clicking one alarm and then each of the others. Alarms that
+   * report to a panel are moved off it. Server side only.
+   *
+   * @param head the alarm the system is keyed by: its group if it has one, else its own position
+   *
+   * @return how many joined ({@link Result#initiatingLinked}) and how many already had
+   *     ({@link Result#initiatingAlready})
+   * @throws IllegalArgumentException if the box is larger than {@link #MAX_VOLUME}
+   * @since 2026.11
+   */
+  public static Result interconnect(World world, TileEntityFireAlarmSensor head, BlockPos a,
+      BlockPos b) {
+    checkVolume(a, b);
+    Result result = new Result();
+    BlockPos group = head.getInterconnectGroup();
+    if (group == null) {
+      group = head.getPos();
+      head.setInterconnectGroup(group);
+    }
+    for (BlockPos.MutableBlockPos cell : BlockPos.getAllInBoxMutable(a, b)) {
+      if (!world.isBlockLoaded(cell)) {
+        result.unloaded++;
+        continue;
+      }
+      if (!(world.getBlockState(cell).getBlock() instanceof BlockResidentialAlarm)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(cell);
+      if (!(te instanceof TileEntityFireAlarmSensor)) {
+        continue;
+      }
+      TileEntityFireAlarmSensor alarm = (TileEntityFireAlarmSensor) te;
+      BlockPos oldPanel = alarm.getLinkedPanelPos(world);
+      if (oldPanel != null) {
+        alarm.clearLinkedPanel();
+        TileEntity panelTe = world.getTileEntity(oldPanel);
+        if (panelTe instanceof TileEntityFireAlarmControlPanel) {
+          ((TileEntityFireAlarmControlPanel) panelTe).removeLinkedInitiatingDevice(
+              cell.toImmutable());
+        }
+      }
+      if (alarm.setInterconnectGroup(group)) {
+        result.initiatingLinked++;
+      } else {
+        result.initiatingAlready++;
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Takes every residential alarm in the box off the home system a head alarm is on.
+   *
+   * @throws IllegalArgumentException if the box is larger than {@link #MAX_VOLUME}
+   * @since 2026.11
+   */
+  public static Result disconnect(World world, TileEntityFireAlarmSensor head, BlockPos a,
+      BlockPos b) {
+    checkVolume(a, b);
+    Result result = new Result();
+    BlockPos group = head.getInterconnectGroup();
+    for (BlockPos.MutableBlockPos cell : BlockPos.getAllInBoxMutable(a, b)) {
+      if (!world.isBlockLoaded(cell)) {
+        result.unloaded++;
+        continue;
+      }
+      if (group == null
+          || !(world.getBlockState(cell).getBlock() instanceof BlockResidentialAlarm)) {
+        continue;
+      }
+      TileEntity te = world.getTileEntity(cell);
+      if (te instanceof TileEntityFireAlarmSensor
+          && group.equals(((TileEntityFireAlarmSensor) te).getInterconnectGroup())) {
+        ((TileEntityFireAlarmSensor) te).setInterconnectGroup(null);
+        result.unlinked++;
+      }
+    }
+    return result;
+  }
+
+  /** One line for chat after {@link #interconnect}. */
+  public static String describeInterconnect(Result result) {
+    String text = "Interconnected " + result.initiatingLinked + " alarm"
+        + (result.initiatingLinked == 1 ? "" : "s") + "; " + result.initiatingAlready
+        + " already were";
+    return result.unloaded > 0 ? text + "; " + result.unloaded
+        + " blocks not loaded were skipped" : text;
   }
 
   private static void checkVolume(BlockPos a, BlockPos b) {

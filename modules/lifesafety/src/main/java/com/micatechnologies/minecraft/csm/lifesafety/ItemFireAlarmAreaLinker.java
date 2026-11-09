@@ -54,7 +54,20 @@ public class ItemFireAlarmAreaLinker extends ItemFireAlarmLinker {
 
     BlockPos panelPos = getSelectedPanel(stack);
     TileEntity panelTe = panelPos == null ? null : world.getTileEntity(panelPos);
-    if (!(panelTe instanceof TileEntityFireAlarmControlPanel)) {
+
+    // With nothing selected, a residential alarm is selected as the head of a home system of
+    // alarms, and the box interconnects every smoke and CO alarm in it with it (#335)
+    if (panelTe == null && getCorner(stack) == null
+        && world.getBlockState(pos).getBlock() instanceof BlockResidentialAlarm) {
+      setSelectedPanel(stack, pos);
+      say(world, player, "Area interconnecting smoke and CO alarms with the alarm at "
+          + describe(pos) + ". Click two opposite corners of the home.");
+      return EnumActionResult.SUCCESS;
+    }
+    boolean residential = panelPos != null && panelTe instanceof TileEntityFireAlarmSensor
+        && world.getBlockState(panelPos).getBlock() instanceof BlockResidentialAlarm;
+
+    if (!(panelTe instanceof TileEntityFireAlarmControlPanel) && !residential) {
       say(world, player, panelPos == null ? "No panel selected!"
           : "The area linker links to a fire alarm control panel; click one first");
       return EnumActionResult.SUCCESS;
@@ -70,12 +83,23 @@ public class ItemFireAlarmAreaLinker extends ItemFireAlarmLinker {
 
     setCorner(stack, null);
     if (!world.isRemote) {
-      TileEntityFireAlarmControlPanel panel = (TileEntityFireAlarmControlPanel) panelTe;
       try {
-        FireAlarmAreaLink.Result result = player.isSneaking()
-            ? FireAlarmAreaLink.unlink(world, panel, corner, pos)
-            : FireAlarmAreaLink.link(world, panel, corner, pos);
-        say(world, player, (player.isSneaking() ? result.describeUnlink() : result.describeLink())
+        String text;
+        if (residential) {
+          TileEntityFireAlarmSensor head = (TileEntityFireAlarmSensor) panelTe;
+          text = player.isSneaking()
+              ? FireAlarmAreaLink.disconnect(world, head, corner, pos).describeUnlink()
+              : FireAlarmAreaLink.describeInterconnect(
+                  FireAlarmAreaLink.interconnect(world, head, corner, pos));
+        } else {
+          TileEntityFireAlarmControlPanel panel = (TileEntityFireAlarmControlPanel) panelTe;
+          int zone = getZone(stack);
+          text = player.isSneaking() ? FireAlarmAreaLink.unlink(world, panel, corner, pos)
+              .describeUnlink()
+              : FireAlarmAreaLink.link(world, panel, corner, pos, zone).describeLink() + " in "
+                  + FireAlarmZones.describeZone(zone);
+        }
+        say(world, player, text
             + " (" + FireAlarmAreaLink.volume(corner, pos) + " blocks from " + describe(corner)
             + " to " + describe(pos) + ")");
       } catch (IllegalArgumentException tooBig) {
@@ -105,6 +129,9 @@ public class ItemFireAlarmAreaLinker extends ItemFireAlarmLinker {
     list.add("Click a panel, then two opposite corners");
     list.add("Sneak-click the second corner to unlink the box");
     list.add("Sneak-click the air to clear the corner, then the panel");
+    list.add("Right-click the air to change the zone");
+    list.add("Or click a smoke or CO alarm first to interconnect a home");
+    list.add("Zone: " + FireAlarmZones.describeZone(getZone(stack)));
     BlockPos selected = getSelectedPanel(stack);
     list.add(selected == null ? "No panel selected" : "Panel selected at " + describe(selected));
     BlockPos corner = getCorner(stack);

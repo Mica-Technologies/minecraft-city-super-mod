@@ -74,6 +74,8 @@ public class CsmLifeSafety {
     // The detectors' fire census drops its counts with their chunk (see FireCensus).
     MinecraftForge.EVENT_BUS.register(new FireCensus.Events());
     MinecraftForge.EVENT_BUS.register(new FireAlarmDeviceSampler.Events());
+    // Residential smoke and CO alarms beat in step across a home (#335)
+    MinecraftForge.EVENT_BUS.register(new ResidentialInterconnect.Events());
     // Other modules' blocks that follow a panel (fare gates, station gates) ask through Core,
     // every few ticks during an alarm: a membership test, never a copy of the set.
     com.micatechnologies.minecraft.csm.api.CsmFireAlarmLink.setPanelQuery(

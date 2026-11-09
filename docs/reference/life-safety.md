@@ -11,7 +11,7 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
-| ADT Carbon Monoxide Detector | `csm:adt_co_detector` |  |  |  |  |
+| ADT Carbon Monoxide Detector | `csm:adt_co_detector` | 2 | 10 | pickaxe | 1 |
 | Beam Smoke Detector | `csm:beam_smoke_detector` | 2 | 10 | pickaxe | 1 |
 | Cerberus Pyrotronics Pull Station | `csm:firealarmpyrotronicspull` | 2 | 10 | pickaxe | 1 |
 | Duct Smoke Detector | `csm:duct_smoke_detector` | 2 | 10 | pickaxe | 1 |
@@ -56,8 +56,8 @@ Fire alarm panels, pull stations, horns, strobes, speakers and detectors.
 | Honeywell Addressable Module | `csm:hwam` |  |  |  |  |
 | KAC Call Point | `csm:firealarmkaccallpoint` | 2 | 10 | pickaxe | 1 |
 | KAC Sounder Red (Horn) | `csm:firealarmkacsounderred` | 2 | 10 | pickaxe | 1 |
-| Kidde Smoke Alarm | `csm:kiddesmoke` |  |  |  |  |
-| Nest Protect 2nd Generation | `csm:nestprotect` |  |  |  |  |
+| Kidde Smoke Alarm | `csm:kiddesmoke` | 2 | 10 | pickaxe | 1 |
+| Nest Protect 2nd Generation | `csm:nestprotect` | 2 | 10 | pickaxe | 1 |
 | Old Local Fire Alarm Pull Station | `csm:firealarmoldlocalpull` | 2 | 10 | pickaxe | 1 |
 | Photoelectric Smoke Detector | `csm:smoke_detector_photoelectric` | 2 | 10 | pickaxe | 1 |
 | Remote Fire Alarm Annunciator | `csm:remote_annunciator` | 2.0 | 6.0 | pickaxe | 0 |

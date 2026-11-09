@@ -89,13 +89,26 @@ public abstract class AbstractBlockFireAlarmActivator extends AbstractBlockRotat
           // first time it fires, so existing worlds need no migration.
           fireAlarmControlPanel.addLinkedInitiatingDevice(blockPos);
           // Tell the panel which device is reporting, so it can annunciate the origin rather
-          // than only the fact of an alarm.
-          fireAlarmControlPanel.activateAlarmFrom(blockPos, getRegistryNameString(world, blockPos));
+          // than only the fact of an alarm, and its zone, which says what sounds (#335).
+          fireAlarmControlPanel.activateAlarmFrom(blockPos, getRegistryNameString(world, blockPos),
+              tileEntityFireAlarmSensor.getZone(), reportsCarbonMonoxide());
           activated = true;
         }
       }
     }
     return activated;
+  }
+
+  /**
+   * Whether this device reports carbon monoxide rather than fire. A panel whose every report in
+   * an alarm was CO sounds its residential alarms in temporal-four.
+   *
+   * @return {@code true} for a CO alarm
+   *
+   * @since 2026.11
+   */
+  protected boolean reportsCarbonMonoxide() {
+    return false;
   }
 
   /**

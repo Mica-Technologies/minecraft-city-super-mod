@@ -781,5 +781,23 @@
         "stream": false
       }
     ]
+  },
+  "residential_alarm_t3": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:residential_alarm_t3",
+        "stream": false
+      }
+    ]
+  },
+  "residential_alarm_t4": {
+    "category": "block",
+    "sounds": [
+      {
+        "name": "csm:residential_alarm_t4",
+        "stream": false
+      }
+    ]
   }
 }

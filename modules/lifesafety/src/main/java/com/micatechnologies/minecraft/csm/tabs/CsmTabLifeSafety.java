@@ -7,6 +7,7 @@ import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmBeaconFactory
 import com.micatechnologies.minecraft.csm.lifesafety.IStrobeBlock;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmControlPanel;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmEdwardsIOPanel;
+import com.micatechnologies.minecraft.csm.lifesafety.BlockResidentialAlarm;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorFactory;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmSmokeDetector;
 import com.micatechnologies.minecraft.csm.lifesafety.BlockFireAlarmDetectorStrobe;
@@ -176,12 +177,12 @@ public class CsmTabLifeSafety extends CsmTab {
     initTabBlock(new BlockFireAlarmDetectorFactory("systemsensor_5601_heat_detector", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorFactory("gentex_smoke_alarm", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000)));
     initTabBlock(new BlockFireAlarmDetectorStrobe("gentex710csc", new AxisAlignedBB(0.040000, 0.040000, 0.625000, 0.960000, 0.960000, 1.000000), new float[]{0.96f, 1.44f, 9.5f}, new float[]{4.736f, 15.36f, 11.5f}));
-    initTabBlock(new BlockRotatableNSEWUDFactory("adt_co_detector", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000), false, false, true, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockResidentialAlarm("adt_co_detector", new AxisAlignedBB(0.125000, 0.125000, 0.900000, 0.875000, 0.875000, 1.000000), BlockResidentialAlarm.Kind.CARBON_MONOXIDE, 0));
     initTabBlock(new BlockRotatableNSEWUDFactory("hwam", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.125000, 0.312500, 0.937500, 0.875000, 0.937500, 1.000000), false, false, true, BlockRenderLayer.SOLID, false, false));
     initTabBlock(BlockFireAlarmKACCallPoint.class, fmlPreInitializationEvent);
     initTabBlock(BlockFireAlarmKACSounderRed.class, fmlPreInitializationEvent);
-    initTabBlock(new BlockRotatableNSEWUDFactory("kiddesmoke", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0, new AxisAlignedBB(0.000000, 0.900000, 0.000000, 1.000000, 1.000000, 1.000000), false, false, true, BlockRenderLayer.CUTOUT_MIPPED, false, false));
-    initTabBlock(new BlockRotatableNSEWUDFactory("nestprotect", Material.ROCK, SoundType.STONE, "pickaxe", 1, 2F, 10F, 0.1F, 0, new AxisAlignedBB(0.125000, 0.900000, 0.125000, 0.875000, 1.000000, 0.875000), false, false, true, BlockRenderLayer.CUTOUT_MIPPED, false, false));
+    initTabBlock(new BlockResidentialAlarm("kiddesmoke", new AxisAlignedBB(0.000000, 0.900000, 0.000000, 1.000000, 1.000000, 1.000000), BlockResidentialAlarm.Kind.SMOKE, 0));
+    initTabBlock(new BlockResidentialAlarm("nestprotect", new AxisAlignedBB(0.125000, 0.900000, 0.125000, 0.875000, 1.000000, 0.875000), BlockResidentialAlarm.Kind.COMBINATION, 1));
     initTabBlock(new BlockFireAlarmSounderFactory("firealarmsimplex2901hornred", "csm:2910calcode", new AxisAlignedBB(0.187500, 0.312500, 0.875000, 0.812500, 1.000000, 1.000000)));
     initTabBlock(new BlockFireAlarmSounderStrobeFactory("firealarmsimplex2901hornstrobered", "csm:2910calcode", new AxisAlignedBB(0.187500, 0.125000, 0.750000, 0.812500, 1.000000, 1.000000), new float[]{3.8f, 12.5f, 12f}, new float[]{12f, 15.5f, 14f}));
     initTabBlock(BlockFireAlarmSimplex4050Red.class, fmlPreInitializationEvent);

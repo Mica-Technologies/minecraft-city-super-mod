@@ -122,6 +122,52 @@ device -- drills, redstone, external API callers -- have no origin and the line 
 GUI resolves the registry name to a localised name client-side and elides it to fit, so the
 coordinates always survive truncation.
 
+### Zones (#335)
+
+A panel has zones 1 to 8 and zone 0, the general zone (`FireAlarmZones`). Every device linked to
+it carries a zone:
+
+- **Initiating devices** keep theirs on `TileEntityFireAlarmSensor` (`zn`, written only when not 0).
+- **Appliances** keep theirs in the panel's link data (`apZ`, a flat IntArray of x, y, z, zone
+  quads listing only the appliances not in zone 0), because most appliances are not tile entities.
+
+A link made before zones existed has no zone and reads as 0, and a panel saved mid-alarm before
+zones (no `aZn`) reads as every zone in alarm, so an existing world sounds exactly as it did.
+
+| What | Zones it puts in alarm |
+|---|---|
+| A device in zone 1-8 | its own zone |
+| A device in zone 0 | every zone |
+| DRILL, redstone, `/csmfirealarm alarm`, the config tool, the external API (`setAlarmState(true)`) | every zone |
+| `/csmfirealarm alarm <panel> <zone>` | that zone (0 = every zone) |
+
+An appliance (horn, strobe, speaker, the strobe-only channel, voice evac) sounds or flashes when its
+zone is 0 or is in alarm. A detector with a built-in strobe and a residential alarm (below) are
+initiating devices, and use their own zone the same way. A second device in another zone adds its
+zone to the alarm (`aZn`, a mask, bit *n* for zone *n*); the first device stays the origin. RESET
+clears the zones with the rest.
+
+**How the channels take it.** `rebuildApplianceCache` sorts only the appliances that sound for the
+zones in alarm into the channel lists, and adding a zone clears the cache. On the next tick every
+channel whose positions changed goes out to the players already on it as the #259 update packet
+(`FireAlarmSoundPacket.update`), so the strobes and speakers of a zone joining mid-alarm come in
+without the sound already playing restarting; a horn tone that was not playing before starts its
+own channel. The speakers are also cached whatever their zone (`cachedAllVoiceEvacPositions`) for
+the storm warning, which is not a zoned alarm.
+
+**The display** shows the origin's zone, `ZONE 3 FROM 12, 64, -30  <device>`, and the zones in
+alarm right-aligned on the headline row (`ZONES 1,3`, or `ALL ZONES` on a panel whose appliances
+are zoned). An unzoned panel in a general alarm shows neither, as before. `/csmfirealarm status`
+adds `zones=` (`none`, `all` or `1,3`) and `originZone=` to its `state:` line.
+
+**Setting zones.** The linker and the area linker carry a zone: right-click in the **air** (not
+sneaking) cycles it 0, 1 ... 8, 0, shown in the action bar and the tooltip. Sneak-right-click in the
+air was taken (it clears the selected panel), and a click on a block that linked nothing is also
+offered to the item by the game, so the cycle checks that the player is not looking at a block.
+Every link either tool makes is stamped with that zone; clicking a device already linked moves it
+into the linker's zone and says so ("Moved from zone 2 to ..."). `/csmfirealarm link <panel>
+<corner> <corner> [zone]` takes it as a tenth argument.
+
 ### Initiating Devices and the Reverse Index
 The link itself lives on the **device** (`TileEntityFireAlarmSensor.lp`), which stores the one
 panel it reports to. The panel additionally keeps a reverse index of its initiating devices
@@ -344,10 +390,12 @@ click on it would:
   device by device) and a mode one stray click into the air could flip would turn the next device
   click into a corner. It extends `ItemFireAlarmLinker`, so every block that steps aside for a
   linker in hand steps aside for it.
-- **`/csmfirealarm`** (permission level 2): `link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2>`,
+- **`/csmfirealarm`** (permission level 2): `link|unlink <panel x y z> <x1 y1 z1> <x2 y2 z2> [zone]`
+  (with a residential alarm's position in place of the panel's, it interconnects every smoke and
+  CO alarm in the box with that alarm's home system),
   `status <panel x y z>` (counts, missing devices, how many are unloaded) and
   `prune <panel x y z>` (unlinks the missing ones, as a sneak-click on the panel does).
-  `alarm|drill|ack|silence|resound|reset <panel x y z>` call the same panel methods the
+  `alarm|drill|ack|silence|resound|reset <panel x y z>` (`alarm` takes an optional zone) call the same panel methods the
   config packet handler does (`setAlarmState`, `startDrill`, `acknowledge`, `setAudibleSilence`),
   and `trigger <device x y z>` calls the device's `activateLinkedPanel` with no player, so a
   system is tested by script without a player's hotbar (#330). `status` prints a `state:` line
@@ -435,6 +483,91 @@ ordinary sounder (`BlockFireAlarmSounderFactory` with its own `water_motor_gong`
 struck about three times a second, synthesised by `gen_life_safety_sounds.py`), so it links to a
 panel with the linker and rings with the panel's horns; a real one rings on sprinkler water flow,
 which the mod does not model separately.
+
+## Residential Smoke and CO Alarms (#335)
+
+`BlockResidentialAlarm` is a detector (`AbstractBlockFireAlarmDetector`, so a
+`TileEntityFireAlarmSensor` and a place on `FireAlarmDeviceSampler`'s 25 s roster) that also
+sounds. Three existing blocks became one **in place**, same registry ids:
+
+| Block | Kind | Sounds |
+|---|---|---|
+| `kiddesmoke` (Kidde Smoke Alarm) | smoke | temporal-three |
+| `adt_co_detector` (ADT Carbon Monoxide Detector) | carbon monoxide | temporal-four |
+| `nestprotect` (Nest Protect 2nd Generation) | combination | temporal-three (smoke outranks CO); keeps its light value 1 |
+
+They were decorative `BlockRotatableNSEWUDFactory` blocks on the same `AbstractBlockRotatableNSEWUD`
+base, so the metadata (the facing) and the blockstates are unchanged. A placed one has no tile
+entity and gets none until a linker touches it (the right-click handler looks with `CHECK`, not
+`world.getTileEntity`, so it does not make one either); an unlinked alarm, even with a tile entity,
+skips its scan and ignores a right-click. Every alarm already in a world therefore does exactly
+what it did -- nothing -- until a player links it.
+
+`gentex_smoke_alarm` stays a plain reporting detector: it was already one, and existing ones linked
+to commercial panels would otherwise start sounding with them.
+
+Smoke and CO do not exist in the game, so both kinds look for fire as every detector does (a fire
+is a source of both). Neither sends the server-wide "A fire has been detected" chat line.
+
+### Systems: a panel, a group of alarms, or nothing
+
+`ResidentialInterconnect` resolves each alarm's system from its sensor tile entity:
+
+1. **Linked to a panel** (`lp`): the home keypad, or any panel. The alarm is an ordinary initiating
+   device: it reports (with its zone and, for a CO alarm, `reportsCarbonMonoxide`), and the panel
+   sounds it. `rebuildApplianceCache` collects the panel's indexed residential alarms whose zone is
+   in alarm, and once a second `manageResidentialAlarms` hands them to `ResidentialInterconnect
+   .setPanel` with temporal-three, or temporal-four when every report in the alarm was CO
+   (`aCo`; any smoke report, a drill or an external alarm makes it a fire alarm). SILENCE and RESET
+   stop them with the horns. The display says `*** CO ALARM ***` for a CO-only alarm. An alarm
+   whose panel cannot be reached sounds on its own, as a real alarm sounds where it detects.
+2. **An interconnect group** (`ig` on the sensor, no panel): the hard-wired interconnect of a home
+   with no panel. The group's key is the position of the alarm it was started from; it is only a
+   key, never looked up, so breaking that alarm leaves the others joined. Members join an in-memory
+   map as their tile entities load and leave as they unload.
+3. **Neither**: does nothing.
+
+Why groups rather than a hidden implicit panel: a panel would need a tile entity that ticks, a
+place in the world and NBT for every home, and the Alto homes have none. A group is two ints on
+each alarm and a map rebuilt from loaded tile entities, so it has nothing to keep consistent.
+
+### Sounding
+
+The sound is positional `world.playSound` at each alarm (volume 1, about 16 blocks), not the
+panel's `MovingSound` channels: a house is small, and each alarm should be heard from where it is.
+`ResidentialInterconnect.Events` (a world tick) plays one cycle at every member of a sounding group
+whenever `(now - start) % period == 0`, so every alarm in a house beeps together. The OGG holds
+the beeps only; the period is code: 80 ticks for temporal-three (3 x 0.5 s on, 0.5 s off, 1.5 s
+pause = 4 s), 114 for temporal-four (4 x 0.1 s on, 0.1 s off, 5 s pause = 5.7 s).
+
+A group sounds while a member keeps detecting: each detection holds it up for
+`CLEAR_TICKS` (600, one and a half detector periods), so it falls quiet within about half a minute of
+the fire going out. Nothing latches: residential alarms are self-restoring. A smoke trip outranks a
+CO trip and restarts the beat in temporal-three. An alarm on two systems at once plays once, the
+stronger signal. Nothing here is saved: a fire still burning trips its alarms again within one look.
+
+**The test button** is a right-click (empty hand or anything but a linker or config tool) on an
+alarm in a group: quiet, it sounds the group for two cycles; sounding, it hushes the group for ten
+minutes (`HUSH_TICKS`), during which detections are ignored. On a panel-linked alarm it says which
+panel and zone it reports to; test that home with DRILL.
+
+### Building a home system
+
+- **No panel:** with no panel selected, linker-click one alarm (it becomes the selection), then
+  each other alarm in the house. Each joins the first alarm's group (created on the second click).
+  Sneak-click an alarm to take it off its group. The area linker does a whole house: with nothing
+  selected click one alarm, then two corners (sneak-click the second corner to disconnect instead);
+  so does `/csmfirealarm link <alarm x y z> <corner> <corner>`.
+- **With a keypad:** select the keypad with the linker and click the alarms, horns and strobes as on
+  any panel; the linker's zone applies. Clicking an alarm with an alarm that already reports to a
+  panel selected links the new one to the same panel, in the selected alarm's zone. Linking an
+  alarm to a panel takes it off any group; joining a group unlinks it from its panel.
+- `/csmfirealarm trigger <alarm>` trips a group alarm's group, or a panel alarm's panel.
+
+The sounds (`residential_alarm_t3`, `residential_alarm_t4`, the three keypad sounds) are
+synthesised by `gen_life_safety_sounds.py` (a ~3.1 kHz piezo for the alarms, 2.9 kHz for the
+keypad). The repo's older `smokealarm`, `codetector` and `nest_test` events, from the initial
+import and of unknown origin, are not used.
 
 ## Sound Selection Patterns
 

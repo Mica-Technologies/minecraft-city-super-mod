@@ -229,6 +229,30 @@ def call_box_ring():
                            click * 0.8, silence(0.2)])
 
 
+def beeps(freq, on, off, count, tail=0.0):
+    """count piezo beeps of `on` seconds, `off` seconds apart, then `tail` seconds of quiet."""
+    parts = []
+    for i in range(count):
+        parts.append(piezo(freq, on))
+        if i < count - 1:
+            parts.append(silence(off))
+    parts.append(silence(tail))
+    return np.concatenate(parts)
+
+
+def residential_alarm_t3():
+    """A residential smoke alarm's temporal-three (NFPA 72): three 0.5 s beeps of its ~3.1 kHz
+    piezo horn, 0.5 s apart. One cycle without its 1.5 s pause: the interconnect replays it every
+    4 s (80 ticks), so every alarm in a house beeps on the same beat."""
+    return beeps(3150, 0.5, 0.5, 3, tail=0.05)
+
+
+def residential_alarm_t4():
+    """A residential CO alarm's temporal-four (NFPA 720): four 0.1 s beeps, 0.1 s apart. One
+    cycle without its 5 s pause: replayed every 5.7 s (114 ticks)."""
+    return beeps(3150, 0.1, 0.1, 4, tail=0.05)
+
+
 # Levels are RMS of 32767. The station alerting sounds are at the fire alarm horns' level (about
 # 10,000; FIRE_ALARM_SYSTEM.md § Sound File Standards): at 6,000 they were too soft to carry
 # through a station.
@@ -248,6 +272,9 @@ SOUNDS = {
     'aed_cabinet_alarm': (aed_cabinet_alarm, 7000),
     'station_bell': (station_bell, 9000),
     'water_motor_gong': (water_motor_gong, 9900),
+    # The residential alarms are at the horns' level
+    'residential_alarm_t3': (residential_alarm_t3, 9000),
+    'residential_alarm_t4': (residential_alarm_t4, 9000),
 }
 
 
