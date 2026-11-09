@@ -22,7 +22,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [HVAC](hvac.md) | 71 | Heating and cooling that actually simulates room temperature. |
 | [Interior Finishes](interior-finishes.md) | 128 | The surfaces that go on last: ceiling finishes, and the floor and wall finishes that join them. |
 | [Fire Alarm & Detection](life-safety.md) | 153 | Fire alarm panels, pull stations, horns, strobes, speakers and detectors. |
-| [Lighting](lighting.md) | 204 | Street lights, floodlights, pendants and sconces, all switchable. |
+| [Lighting](lighting.md) | 207 | Street lights, floodlights, pendants and sconces, all switchable. |
 | [Market & Store](market-store.md) | 149 | Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 19 | Decorative oddities that did not belong anywhere else. |
@@ -51,8 +51,8 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Sports & Venues - Courts, Track & Pool](venues-courts.md) | 43 | Courts, a running track and a competition pool, one block a metre, every line where it really falls (worked out per cell, at the true radii on a track's bends): acrylic courts in sixteen colours for tennis, pickleball (alone or over tennis in a second line colour), basketball full and half court, volleyball and sand volleyball, laid from an anchor and painted cells; the tennis, pickleball and volleyball nets, the umpire chair, players' benches, a chain-link fence with windscreen, a divider curtain, a ball machine, the courtside scoreboard and a pole-mounted hoop; a World Athletics 400 m track in polyurethane with its staggers, relay zones, hurdle marks and lane numbers, the jumps and throws, hurdles, starting blocks, the finish camera tower, a lap counter and bell, the high jump and pole vault landing areas, the shot put toe board, the discus and hammer cage and the steeplechase barrier; a 25 m or 50 m pool round real water: tile, deck and a deck-level gutter, the floor's lane lines, the end walls' targets and touch pads, lane ropes at the water line, backstroke flags, numbered starting blocks, a lifeguard chair, ladders, 1 m and 3 m springboards and a 5 m platform, a pace clock and the scoreboard. |
 | [Sports & Venues - Golf](venues-golf.md) | 22 | A golf course, a driving range and mini-golf, decor without ball physics: turf in five cuts whose mowing stripes line up across blocks, the cup and a flagstick in four colours, raked bunker sand, tee markers, yardage markers, a tee sign with the hole, par and yards typed in, a ball washer, a bench, the cart path and its curb; a hitting mat, the bay divider, a ball dispenser, a bucket of balls and distance flags; mini-golf carpet in sixteen colours, the cup, a border along any side of a block, a ramp, a windmill, a loop and a scorecard stand. |
 | [Sports & Venues - Skate Park](venues-skate.md) | 6 | Skate park basics in smooth concrete: quarter pipes of 1 m and 2 m, a bowl corner that turns two quarter pipes round an inside corner, a kicker, a bank and a box top for a funbox, a grind rail and a ledge that join into runs. The curves are drawn true; the collision is a staircase under them that a player can walk up. |
-| [Unlisted](unlisted.md) | 169 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **4699** | |
+| [Unlisted](unlisted.md) | 176 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
+| **Total** | **4709** | |
 
 ## How to read the table
 

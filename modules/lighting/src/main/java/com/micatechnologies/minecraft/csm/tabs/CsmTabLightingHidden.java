@@ -117,5 +117,12 @@ public class CsmTabLightingHidden extends CsmTab {
     initTabBlock(new BlockFloodlight("lithdsxf3yk_c", BlockFloodlight.Surface.CEILING, new AxisAlignedBB(0.203125, 0.531250, 0.281250, 0.796875, 1.000000, 0.718750), 24));
     initTabBlock(new BlockFloodlight("lithdsxf3yk_x", BlockFloodlight.Surface.CROSSARM, new AxisAlignedBB(0.203125, 0.265625, 0.546875, 0.796875, 0.968750, 1.000000), 24));
     initTabBlock(new BlockFloodlight.PostTop("lithdsxf3sf_g", new AxisAlignedBB(0.265625, 0.000000, 0.078125, 0.734375, 0.687500, 0.578125), 24));
+    initTabBlock(new BlockFloodlight("lithtflkn_g", BlockFloodlight.Surface.GROUND, new AxisAlignedBB(0.203125, 0.000000, 0.203125, 0.796875, 0.656250, 0.796875), 24));
+    initTabBlock(new BlockFloodlight("lithtflkn_c", BlockFloodlight.Surface.CEILING, new AxisAlignedBB(0.203125, 0.343750, 0.203125, 0.796875, 1.000000, 0.796875), 24));
+    initTabBlock(new BlockFloodlight("lithtflkn_x", BlockFloodlight.Surface.CROSSARM, new AxisAlignedBB(0.203125, 0.187500, 0.312500, 0.796875, 0.968750, 1.000000), 24));
+    initTabBlock(new BlockFloodlight("lithtflyk_g", BlockFloodlight.Surface.GROUND, new AxisAlignedBB(0.140625, 0.000000, 0.234375, 0.859375, 0.546875, 0.765625), 24));
+    initTabBlock(new BlockFloodlight("lithtflyk_c", BlockFloodlight.Surface.CEILING, new AxisAlignedBB(0.140625, 0.453125, 0.234375, 0.859375, 1.000000, 0.765625), 24));
+    initTabBlock(new BlockFloodlight("lithtflyk_x", BlockFloodlight.Surface.CROSSARM, new AxisAlignedBB(0.140625, 0.218750, 0.484375, 0.859375, 0.968750, 1.000000), 24));
+    initTabBlock(new BlockFloodlight.PostTop("lithtflsf_g", new AxisAlignedBB(0.203125, 0.000000, 0.000000, 0.796875, 0.765625, 0.578125), 24));
   }
 }
