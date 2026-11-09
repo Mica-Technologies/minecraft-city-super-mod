@@ -16,9 +16,11 @@ WHAT IT WRITES (per catalogue entry)
   models/block/lighting/shared_models/streetlight_<model>.obj    the fixture, 0..1 block space
   models/block/lighting/shared_models/streetlight.mtl             shared: body, lens, photocell
   blockstates/<registry>.json                                     facing x STATE, the lens per state
-  textures/blocks/lighting/shared_textures/streetlight_*.png      16 px swatches, shared by all
+  textures/blocks/lighting/shared_textures/streetlight_*.png      16 px swatches, shared by all,
+                                                                  and 32 px lens sprites
 
-Every fixture wears the same three materials, so a new fixture adds geometry and no sprites:
+Every fixture wears the same three materials, so a new fixture adds geometry and at most a small
+lens sprite (cut from the requester's art, or an LED array drawn by `led_array_png`):
   body       the housing paint, overridden per fixture by the blockstate (`#body`)
   unshaded_lens  the glass, `streetlight_lens_hps_on` in STATE 1 and 3, `_off` in 0 and 2;
                  drawn without directional shading (CsmObjModelLoader.UNSHADED_PREFIX)
