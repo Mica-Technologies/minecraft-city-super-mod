@@ -628,6 +628,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep12ftgalvanized", LuminaireArmProfile.LAUPSWEEP12FT));
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep12ftsilver", LuminaireArmProfile.LAUPSWEEP12FT));
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmlaupsweep12ftblack", LuminaireArmProfile.LAUPSWEEP12FT));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmvannuystriplegalvanized", LuminaireArmProfile.VANNUYSTRIPLE));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmvannuystriplesilver", LuminaireArmProfile.VANNUYSTRIPLE));
     initTabBlock(new BlockTrafficPoleDecorative("decopoleanaheim", 3.0, 3.0, 5.0, TRAFFIC_POLE_COLOR.BLACK));
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmanaheim8ftgreen", LuminaireArmProfile.ANAHEIM8FT));
     initTabBlock(new BlockTrafficPoleDecorative("decopolereprofluted", 3.0, 3.0, 6.0, TRAFFIC_POLE_COLOR.BLACK));
