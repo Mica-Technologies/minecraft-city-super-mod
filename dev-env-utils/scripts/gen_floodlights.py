@@ -382,6 +382,7 @@ FAMILIES = [
     ("dsxf2", "lithdsxf2", "Lithonia DSXF2 LED Floodlight", "streetlight_body_dark_bronze", 20),
     ("dsxf3", "lithdsxf3", "Lithonia DSXF3 LED Floodlight", "streetlight_body_dark_bronze", 24),
     ("tfl", "lithtfl", "Lithonia TFL Metal Halide Floodlight", "streetlight_body_dark_bronze", 24),
+    ("efm", "geefm", "GE Evolve EFM LED Floodlight", "streetlight_body_black", 28),
 ]
 MOUNTS = [("kn", "Knuckle"), ("yk", "Yoke"), ("sf", "Slipfitter")]
 # the surfaces each mount has, with the Java surface and the block suffix
