@@ -968,6 +968,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // tile entity; this covers a re-read into an existing one.)
     invalidateConfigValidation();
 
+    // A re-read into a controller whose ADVANCED engine is already running (/blockdata, or any
+    // other NBT write into the live tile entity) must restart that engine if it changes what the
+    // engine runs, as a panel edit does; see the end of this method. A chunk load has no engine
+    // yet, and cold-starts on its first tick as it always has.
+    String runningBefore = advancedRuntime != null ? advancedProgramFingerprint() : null;
+
     // Load the traffic signal controller mode (key unchanged — "tcMode")
     if (compound.hasKey(TrafficSignalControllerNBTKeys.MODE)) {
       mode = TrafficSignalControllerMode.fromNBT(
@@ -1237,6 +1243,48 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Check for any previous NBT data format keys
     if (!upgradedPreviousNBTFormat && hasPreviousNBTDataFormat(compound)) {
       previousNbt = compound;
+    }
+
+    if (runningBefore != null && !runningBefore.equals(advancedProgramFingerprint())) {
+      restartAdvancedRuntime();
+    }
+  }
+
+  /**
+   * What the running ADVANCED engine depends on, as one comparable value: the program, the
+   * circuits it drives and the controller-wide red+amber and green flash times.
+   */
+  private String advancedProgramFingerprint() {
+    return (programmedPhasePlan == null ? "" : programmedPhasePlan.toNBT().toString()) + "|"
+        + (circuits == null ? "" : circuits.toNBT().toString()) + "|" + redAmberTime + "|"
+        + greenFlashTime;
+  }
+
+  /**
+   * Restarts the ADVANCED engine on a controller whose program was replaced while it ran (an NBT
+   * write such as {@code /blockdata}, or a whole-plan import), without the snap a plain reset
+   * makes. Before this an NBT write kept the old engine running on the new program, its rings,
+   * windows, acceptances and commitments all from the old one (issue #318 traced one symptom to
+   * it). The new engine takes over from the phase on display ({@link RingBarrierState#beginAfter}):
+   * every head clears to red, the green and FYA ones through their yellow, holds all red for the
+   * longest red clearance, and the rings then come up on the rest phases, as out of flash. The
+   * conflict monitor watches the whole changeover, so nothing goes from green to red unseen.
+   * With nothing on display, or out of ADVANCED operation, the engine is simply dropped and
+   * cold-starts on its next tick as it always has.
+   */
+  private void restartAdvancedRuntime() {
+    invalidateConfigValidation();
+    if (getWorld() != null && programmedPhasePlan != null) {
+      // The flash program is precomputed from the plan's FLSH overrides.
+      cachedPhases = new TrafficSignalPhases(getWorld(), circuits, programmedPhasePlan);
+    }
+    if (operatingMode == TrafficSignalControllerMode.ADVANCED && currentPhase != null) {
+      RingBarrierState fresh = new RingBarrierState();
+      fresh.beginAfter(currentPhase);
+      fresh.beginOnRestPhases();
+      advancedRuntime = fresh;
+    } else {
+      advancedRuntime = null;
     }
   }
 
@@ -2522,11 +2570,19 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     if (result.greenFlash != null) {
       greenFlashTime = result.greenFlash;
     }
-    if (isInFaultState() && mode == TrafficSignalControllerMode.ADVANCED) {
+    boolean wasFaulted = isInFaultState();
+    if (wasFaulted && mode == TrafficSignalControllerMode.ADVANCED) {
       currentFaultMessage = "";
       operatingMode = mode;
     }
-    resetController(true, true);
+    if (wasFaulted || operatingMode != TrafficSignalControllerMode.ADVANCED) {
+      resetController(true, true);
+    } else {
+      // Running: clear what is showing to all red before the new program starts, rather than
+      // snapping it (restartAdvancedRuntime).
+      restartAdvancedRuntime();
+      markDirtySync(getWorld(), getPos());
+    }
     syncServerToClient(getWorld());
     int enabled = 0;
     for (TrafficSignalProgrammedPhase p : result.plan.getPhases()) {

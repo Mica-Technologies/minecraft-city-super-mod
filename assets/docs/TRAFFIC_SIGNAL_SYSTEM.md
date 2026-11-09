@@ -1425,7 +1425,11 @@ Rules the phase builders follow so the monitor never trips:
   barrier — so `onTick` tracks `advancedRuntimeColdStart` and skips the conflict-monitor check for
   the one phase produced right after `advancedRuntime` is (re)constructed, the same as a reset.
   This still lets that first post-reload phase visually snap heads straight to red without a
-  yellow (pre-existing behavior, unchanged) — only the false fault is suppressed.
+  yellow (pre-existing behavior, unchanged) — only the false fault is suppressed. A plan
+  rewritten into a *running* controller's NBT (`/blockdata`) is not a cold start: the engine is
+  restarted through an entry clearance from the phase on display, under the conflict monitor
+  (`RingBarrierState.beginAfter`; see ADVANCED_MODE_ASC3.md, "Rewriting the plan of a running
+  controller").
 
 ## European Vehicle Heads
 
