@@ -1212,6 +1212,22 @@ public class RingBarrierState {
           // for its next window, so committing it would start it too late; see startableIn).
           commitConflictingCalls(phase, ringNum, plan, startableAfter(plan, called,
               phase.getYellow() + phase.getRedClear() + greenFlashTicks));
+          if (coordYieldDue && windowOpeningFor == 0) {
+            // The coordinated yield point is decided on RAW demand, because the waiting phase's
+            // window has not opened yet and so cannot have accepted its call; the commitment
+            // above, made from accepted calls, therefore misses exactly the call this yield is
+            // for. Commit it too (NEMA phase next is fixed at the start of yellow): otherwise a
+            // call that drops during the clearance -- a car turning away, a presence call
+            // clearing -- left nothing to serve, and the coordinated phases went yellow, red and
+            // green again for nobody (the Main St corridor's phantom clearances). Only calls
+            // that will still be startable once the clearance is over, as for the yield itself.
+            boolean[] raw = new boolean[tickRawCalled.length];
+            for (int n = 1; n < raw.length; n++) {
+              raw[n] = tickRawCalled[n] && !(coordinated && coordPhase[n]);
+            }
+            commitConflictingCalls(phase, ringNum, plan, startableAfter(plan, raw,
+                phase.getYellow() + phase.getRedClear() + greenFlashTicks));
+          }
           if (windowOpeningFor != 0 && coordYieldDue) {
             // Its window has not opened yet, so its call is not accepted and the commitment
             // above missed it; without this the idle ring would re-serve the coordinated phase.

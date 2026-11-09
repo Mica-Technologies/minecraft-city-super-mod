@@ -478,6 +478,17 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   dual-entry companion could re-enter beside the same green. A committed call was accepted when
   it was committed, so `isCalled` does not re-gate it on the coordination window. Soft calls are
   committed the same way, which is what carries one through the clearance it caused.
+  The coordinated yield commits its call too. Its yield point is decided on *raw* demand,
+  because the waiting phase's window has not opened and so cannot have accepted the call; the
+  commitment made from accepted calls therefore missed exactly the call the yield was for. When
+  that call dropped during the clearance (a presence call clearing, a car turning away), nothing
+  was left to serve and the coordinated phases went yellow, red and green again for nobody: the
+  phantom clearances seen on the Alto Springs Main St corridor. At yield time the engine now also
+  commits every raw conflicting call that will be startable once the clearance is over
+  (`startableIn`, the same test the yield itself uses), so the phase it yielded for is served.
+  `PhantomClearanceTest` replays the corridor's eight real plans: seeded random demand over 20
+  cycles and 6 seeds per junction found 177 such clearances before (16 to 34 per junction) and
+  none after.
 - **FYA permissive pairing is validated** — `validate` rejects a left whose permissive phase is
   itself, not a phase, or on the *same barrier in the other ring*: the rings can serve such a pair
   concurrently and nothing on the service path consults `conflicts()`, so a hand-set pairing like
