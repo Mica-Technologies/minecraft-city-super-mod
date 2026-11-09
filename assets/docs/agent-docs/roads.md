@@ -94,11 +94,22 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   cannot disagree with the geometry it was split on. It has no `--check`: running it rewrites
   the tree, so `git status` afterwards is the check
 - `gen_luminaire_arms.py` -- the luminaire arms (GitHub #99): Caltrans davit arms 6/8/10/12/15 ft
-  and Hapco-style truss arms 8/10/12/15 ft, single and double, in galvanized and silver. Built
+  and Hapco-style truss arms 8/10/12/15 ft, single and double, in galvanized and silver; the
+  Los Angeles upsweep arms 8/10/12 ft (with a tie rod; galvanized, silver, black) and the
+  Anaheim Resort Area 8 ft scroll arm (green only: `FINISHES_FOR` sets a profile's finishes). Built
   like the mast arm curves (one block per cell, cell list and hitboxes in the generated
   `LuminaireArmProfile.java`) and placed by the same block class; the tip lands where every
   street light's neck expects an arm. Writes the per-cell OBJs, the pole-joint cells once per
   `CsmPoleFit`, the inventory icons, the 36 blockstates and the enum; `--check`, `--fragments`
+- `gen_decorative_poles.py` -- the decorative and historic street light poles
+  (`decopole<id>`, `BlockTrafficPoleDecorative`: the LA electroliers, Hollywood, Anaheim #749,
+  the reproduction post) AND their post-top fixtures in Lighting (`la*`, `repro*`). Lathes,
+  fluted lathes, tubes and lantern frames into OBJ: per pole the shaft, base, cap and capital
+  at each model end, the flank clamp and the inventory icon; per fixture the model and a shrunk
+  `_inv`; the two MTLs, the blockstates and the paint and glass swatches in Core
+  (`textures/blocks/decorativepoles`). `--check`, `--fragments` (tab lines for both modules and
+  the English lang), `--stats` (triangles and boxes). See CONCRETE_POLE_SYSTEM.md, "Decorative
+  and historic poles", and LIGHTING_SYSTEM.md, "Decorative and Historic Post Tops"
 - `gen_concrete_poles.py` -- the concrete traffic poles (round and octagon, thick and thin):
   each end's model carrying its own half of the shaft (plinth, cap, tenon, plain), the four
   blockstates, the concrete accessories (silver blockstates retextured, their 16-gon body

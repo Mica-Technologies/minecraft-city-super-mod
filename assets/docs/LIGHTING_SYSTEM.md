@@ -732,6 +732,51 @@ as a 6 px square at the top back of its block (y 10..16; `BlockCrossarm.ARM_BOUN
 Without RealGrid nothing changes, and a flood placed on top of an arm is a ground flood. **Not
 tested in game:** written against RealGrid's source, with no RealGrid jar in the dev run.
 
+## Decorative and Historic Post Tops
+
+The lanterns, globes and multi-lamp heads that sit on the decorative poles (GitHub #99; the poles
+are in CONCRETE_POLE_SYSTEM.md, "Decorative and historic poles"). They come from
+`dev-env-utils/scripts/gen_decorative_poles.py`, which writes the poles too, and are ordinary
+`BlockBrightLightFactory.PostTop` blocks: `ICsmPostTopFixture`, so a decorative or concrete pole
+under one shows its capital; 4-state STATE; light-up air one block east (`PostTop`'s X offset 1).
+The heads hung forward of their pole (the Genie, the bishop's crook, NYC Type F) are
+`PostTopAimed`, so their light falls one block ahead, under the lamp, whichever way they face.
+
+| Registry name | Fixture | Reference |
+|---|---|---|
+| `lawilshirespecial` | Wilshire Special (1928): an octagonal bronze lantern, frosted panels widening upward, a glass roof, four cast figures at its corners, a tall finial | BSL history (solid bronze, the corner figures); lantern form after museum frame 12 |
+| `lametropolitan` | Metropolitan: a narrower octagonal lantern with cornice horns and a spear tip | museum frame 12 (centre) |
+| `lawestwoodlantern` | Westwood Village: a hexagonal lantern | museum frame 12 (left) |
+| `labroadwayrosehead` | Broadway Rose: two opal globes on swept arms, a rose at each elbow, a spear between | BSL: a two-lamp electrolier garlanded with roses |
+| `lage104globe` | GE No. 104 globe with brass band | museum frame 09 |
+| `lage198globe` | GE No. 198 globe | museum frame 13 |
+| `laparagonjr` | Westinghouse Paragon Jr. (1920s) | museum frame 01 |
+| `lallewellyn5` | the five-globe Llewellyn electrolier (c. 1900) | museum frame 06 |
+| `lagenie` | Genie: a scroll arm and a skirted teardrop | BSL history |
+| `lavinedouble` | Vine Double: two Genie arms | BSL history |
+| `lahollywoodstar` | Hollywood Special, c. 1960: a bar of two drum lamps with a third over a gold five-pointed star | BSL ("5-Star" heads); reconstructed |
+| `lahollywoodwof` | Hollywood Walk of Fame (2005) "pitchfork": three tines, a lantern on each | requester's description; reconstructed |
+| `reproacorn`, `reprowashingtonglobe`, `reprotwin20`, `reprobishopscrook`, `reprotypef` | the reproduction set: ribbed acorn, Washington Globe, Twin-20, bishop's crook with teardrop, NYC Type F (the 1913 Reverse Scroll Bracket) | maker and city descriptions |
+
+**Scale.** These are drawn at about half the roadway fixtures' 1.4 (a Wilshire lantern is 7.5 ft
+to its finial, which at 1.4 would be over three blocks): a lantern stands one and a half to two
+blocks over its pole, and a multi-lamp head stays within half a block of its own block each way
+(the generator asserts it). Their boxes are clamped to -0.5..1.5.
+
+**Materials.** One `decolight.mtl`: `body` (the paint), `trim` (brass, bronze or gold),
+`unshaded_lens` (glass: `glass_opal_*` for the milk globes, `glass_frosted_*` for the hammered
+lantern panels, `glass_prism_*` for the ribbed acorns and teardrops, each `_on` / `_off` per
+STATE). Paints and glass are generated 16 px swatches (32 px for the frosted panels and the
+Westwood tile) in Core's `textures/blocks/decorativepoles/`.
+
+**Weight.** 440 to 1,260 triangles. The plain globes are 440 to 570; the lanterns and multi-lamp
+heads reach 800 to 1,260 (the five-globe Llewellyn is the heaviest) because each lamp is its own
+lathe. A street carries one per pole, not one per lane, and none has a renderer.
+
+**Each fixture writes two OBJs**: the model, and `_inv`, the same shrunk to fit one block for the
+inventory icon. Every fixture's fitter ends in exactly the ring the next part starts from, so no
+annulus is left open to look into; run `audit_obj_models.py` after a change.
+
 ## Lit and Unlit Textures on the Older Fixtures
 
 The JSON fixtures that predate the decorative family reach the same result by a different route,

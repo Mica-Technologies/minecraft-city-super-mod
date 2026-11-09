@@ -203,6 +203,47 @@ The legacy blocks stay in Lighting; their replacements are in Roads. On an insta
 but not Roads, `CsmRegistry.getBlock` finds no replacement and the legacy pieces simply stay as
 they are.
 
+## Decorative and historic poles
+
+The same idea carries the decorative street light poles of GitHub #99
+(`BlockTrafficPoleDecorative`, Traffic Accessories after the luminaire arms). Each design is one
+block stacked to any height whose ends are decided from its neighbours, in the concrete pole's
+order: another decorative pole beyond an end (any design) is a plain joint, an
+`ICsmPostTopFixture` gets the design's **capital**, the open air its **cap**, and the bottom of a
+vertical pole standing on the ground its cast **base**. The values are `none`, `cap`, `tenon`
+and `base`, as here, so a post light in Lighting needs nothing new to sit on one.
+
+| Block | Design | Fit radius |
+|---|---|---|
+| `decopolelafluted` | the 1920s Los Angeles fluted cast electrolier column (16 flutes), moulded base, bronze paint | 4 (thin) |
+| `decopolelabroadwayrose` | Broadway Rose: 12 flutes and three rose garlands climbing the shaft a third of a turn a block, so they run on unbroken through a stack | 4 |
+| `decopolelaconcrete` | City Design 815 concrete electrolier (museum frames 09, 13): plain concrete shaft, plinth, a flared capital | 4 |
+| `decopolelawestwood` | Westwood Village: bronze column on a base tiled in UCLA blue and gold | 4 |
+| `decopolelahollywood` | Hollywood Boulevard: a slim grey steel shaft on a round base cover | 3 (pedestal) |
+| `decopoleanaheim` | City of Anaheim Special Design #749: 12-flute green pole, two-piece cast base with its door, a cast ring with two banner arm mounts and the Aztec Gold finial as its cap; carries `luminairearmanaheim8ftgreen` (MAST_ARM_CURVE_SYSTEM.md, "Luminaire arms") | 3 |
+| `decopolereprofluted` | the reproduction fluted cast-iron post (black, 12 flutes, ball finial) | 3 |
+
+What differs from the concrete pole:
+
+- **The shaft is drawn by every block** (the pedestal pole's arrangement) and the ends are
+  submodels over it, because every cap, capital and base here is wider than the shaft. The shaft's
+  walls run the whole block, so a stack has no seam; only its end discs are inset.
+- **One class for every design.** Registry name, the radius the arms fit to, the drawn shaft and
+  base radii and the post-light colour are constructor arguments (`ThreadLocal` trick).
+  `getPoleRadius()` returns the fit radius, so a luminaire arm or a pole-fitted arm meets a
+  4-across fluted shaft with its thin-pole saddle.
+- **Assets come from `gen_decorative_poles.py`**, which also writes the post-top fixtures for
+  Lighting (LIGHTING_SYSTEM.md, "Decorative and Historic Post Tops"). Parts per design:
+  `decopole_<id>_shaft`, `_base_n/_s`, `_cap_n/_s`, `_tenon_n/_s`, `_mount`, `_inv` (OBJ), one
+  `decopole.mtl` with `body`, `trim` and `tile`, and `blockstates/decopole<id>.json`. The paint
+  swatches live in Core (`textures/blocks/decorativepoles/`) because both modules use them.
+- **Flutes and ledges.** A fluted lathe cuts rounded grooves (three samples a flute). Wherever a
+  fluted section meets a round moulding, the moulding carries a ledge reaching in past the groove
+  depth, or the grooves leave slivers to see through. The audit's see-through warnings on the end
+  parts are expected: each is an open ring round a shaft drawn by another submodel.
+- **Caps may rise above the block.** The Anaheim finial reaches y 21; nothing else leaves its
+  block. The generator asserts every other part inside it.
+
 ## Traps
 
 - **A multi-block accessory model leaves air in the world.** The signal mount is three blocks

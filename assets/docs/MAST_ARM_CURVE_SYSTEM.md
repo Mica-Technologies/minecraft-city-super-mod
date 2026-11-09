@@ -298,6 +298,17 @@ against the tip and its neck takes the arm. The truss arms have a curved upper m
 straight lower member leaving the pole 2'0" lower and meeting the upper two thirds out, and one
 vertical strut a third out. The lower root sits in the block under the arm's root, beside the pole.
 
+**Los Angeles and Anaheim arms.** `laupsweep8ft/10ft/12ft` are the 1950s-60s Los Angeles upsweep
+davits (the black museum pole in BSL frame 02): the Caltrans tube with a steeper rise (4'6", 5'0",
+5'6" at 1.4), and a thin straight tie rod leaving the pole 14 px under the root and meeting the arm
+45% of the way out; galvanized, silver and black. `anaheim8ft` is City of Anaheim Special Design
+#749's arm: an 8 ft run whose tip stands 3'3" over the pole top (26'4" against the 23'1" pole), a
+slimmer tube, and the cast scroll work under it drawn as a brace from lower on the pole rising
+smoothly into the arm, with a curl hung in the angle; it comes in Anaheim green only
+(`FINISHES_FOR`), and sits on `decopoleanaheim` with a GE cobra head at its tip, as the drawing
+specifies. The brace and the tie rod are pole members, so they get saddle cuts per fit like the
+truss's lower member.
+
 **Double arms.** The second arm is the first turned half round about the pole, so its cells are at
 negative `alongArm` (two blocks behind the root and on), each cell's model the first arm's turned
 about its own block centre.
@@ -312,7 +323,8 @@ luminaire arm, so a `shape` value is a slot alone: the cell index, or a slot pas
 for a pole-joint cell on a narrower pole.
 
 **Not done:** the truss signal mast arm (a two-member mast arm curve) is not built yet; mount
-stubs along a luminaire arm; finishes other than galvanized and silver.
+stubs along a luminaire arm; finishes beyond galvanized and silver (black on the LA arms, green on
+the Anaheim arm) for the Caltrans and truss arms.
 
 ## Geometry details worth not rediscovering
 

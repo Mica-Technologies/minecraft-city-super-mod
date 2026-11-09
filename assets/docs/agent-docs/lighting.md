@@ -27,6 +27,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   that every neck swallows the CSM arm tip and that nothing leaves the old JSON envelope. The
   glass is the `unshaded_lens` material, which `CsmObjModelLoader` bakes without directional
   shading; `--check`. Run `audit_obj_models.py` on its OBJs after a change
+- `gen_decorative_poles.py` (entry in `roads.md`) -- also writes the decorative post tops: the
+  LA lanterns and globes (`la*`) and the reproduction set (`repro*`), `PostTop` / `PostTopAimed`
+  blocks on the decorative poles; LIGHTING_SYSTEM.md, "Decorative and Historic Post Tops"
 - `gen_floodlights.py` -- the OBJ floodlights (GitHub #99): Lithonia DSXF1 / DSXF2 / DSXF3 and
   TFL, GE Evolve EFM, each on a knuckle, a yoke and a slipfitter. Draws each head level in its own
   frame, then turns it to its aim about the knuckle or the trunnion bolts, so one head serves every
