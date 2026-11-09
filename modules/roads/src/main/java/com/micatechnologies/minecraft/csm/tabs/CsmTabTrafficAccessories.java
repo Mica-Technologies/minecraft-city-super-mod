@@ -39,6 +39,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleFinial;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleConcrete;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleDecorative;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleConcrete;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPolePedestal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
@@ -583,6 +584,14 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftsilver", LuminaireArmProfile.TRUSS15FT));
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftdoublegalvanized", LuminaireArmProfile.TRUSS15FTDOUBLE));
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmtruss15ftdoublesilver", LuminaireArmProfile.TRUSS15FTDOUBLE));
+
+    // --- Decorative and historic street light poles (GitHub #99; OBJ, one block stacked, base,
+    // cap and capital decided per block from its neighbours -- gen_decorative_poles.py) ---
+    initTabBlock(new BlockTrafficPoleDecorative("decopolelafluted", 4.0, 4.0, 7.2, TRAFFIC_POLE_COLOR.BLACK));
+    initTabBlock(new BlockTrafficPoleDecorative("decopolelabroadwayrose", 4.0, 4.0, 7.0, TRAFFIC_POLE_COLOR.BLACK));
+    initTabBlock(new BlockTrafficPoleDecorative("decopolelaconcrete", 4.0, 4.5, 7.0, TRAFFIC_POLE_COLOR.SILVER));
+    initTabBlock(new BlockTrafficPoleDecorative("decopolelawestwood", 4.0, 4.0, 6.8, TRAFFIC_POLE_COLOR.BLACK));
+    initTabBlock(new BlockTrafficPoleDecorative("decopolelahollywood", 3.0, 3.0, 5.2, TRAFFIC_POLE_COLOR.SILVER));
 
     // --- NSEWUD factory blocks: Vertical Double Guy Mounts ---
     initTabBlock(new BlockTrafficAccessoryNSEWUD("trafficpoleverticaldoubleguymountblack", BB_TRAFFIC_POLE_VERT_DOUBLE_GUY_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
