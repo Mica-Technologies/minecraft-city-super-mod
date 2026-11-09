@@ -121,6 +121,11 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("gees", new AxisAlignedBB(0.312500, 0.000000, 0.500000, 0.687500, 0.250000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("geespo", new AxisAlignedBB(0.312500, 0.000000, 0.500000, 0.687500, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("geesn", new AxisAlignedBB(0.312500, 0.000000, 0.500000, 0.687500, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geeals", new AxisAlignedBB(0.250000, -0.031250, 0.187500, 0.750000, 0.265625, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geealsarm", new AxisAlignedBB(0.250000, -0.062500, 0.093750, 0.750000, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("geealswall", new AxisAlignedBB(0.250000, -0.031250, 0.046875, 0.750000, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory.PostTop("geealspt", new AxisAlignedBB(0.250000, -0.015625, -0.328125, 0.750000, 0.406250, 0.578125), 1));
+    initTabBlock(new BlockBrightLightFactory("hpmongoose", new AxisAlignedBB(0.234375, -0.031250, -0.125000, 0.765625, 0.328125, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("geform109", new AxisAlignedBB(0.312500, -0.156250, 0.437500, 0.687500, 0.312500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("geform109td", new AxisAlignedBB(0.187500, -0.468750, 0.250000, 0.812500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem400r3", new AxisAlignedBB(0.312500, -0.156250, 0.062500, 0.687500, 0.406250, 1.000000), 0));
