@@ -909,6 +909,17 @@ The actual 3D geometry lives in shared custom models (`models/custom/trafficligh
   flash-on-call beacon at one colour through both of their halves for the same reason; until
   2026.11 they switched it with the heads, writing the block twice a second and cutting its
   sequence in half, and it read 3 in every other half second of the flash.
+
+  In requestable mode the RRFB is lit for the service green (`ap` 19), its pedestrian clearance
+  (20) and the clearance's last interval (21), and dark in every other phase, the main street's
+  clearance (15) and rest (14) included. Two things make a reading look wrong when it is not:
+  block and phase read at different moments (the lit window is only the service and its
+  clearance, so a sample a second or two off can land outside it), and a beacon whose chunk was
+  unloaded when the call started. The controller cannot write an unloaded block, so it keeps the
+  position and writes it on its first tick after the chunk loads; a tool that loads the chunk
+  only to read it sees the old 3 in that moment. `RrfbRequestableEngineTest` runs the whole call
+  through the real controller tick by tick, beacons on either circuit, linked by tool or by NBT,
+  and in an unloaded chunk.
 - **In-roadway warning light** (`in_roadway_warning_light`): The fixture set flush into the
   pavement at a crosswalk, flashing up and along the road at approaching drivers. A row of them
   goes across the approach. Built on the RRFB's pattern — no tile-entity renderer, the flash
