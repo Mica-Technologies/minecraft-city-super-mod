@@ -15,7 +15,7 @@ facilities, and a tower crane. One creative tab, **Construction Site**, shipped 
 | Earthworks | Trench Plate, Trench Box, Soil / Gravel / Sand Stockpile | `gen_earthworks.py` |
 | Fencing | Temporary Fence (plain and with privacy screen), Silt Fence; in Building Materials, Chain-Link Fence (galvanized, black) and its Barbed Wire Top | `gen_fencing.py` |
 | Logistics | Brick, Concrete Block, Drywall and Bagged Concrete Pallets; Lumber Stack; Insulation Rolls; PVC Pipe and Conduit Bundles; Wire Spool | `gen_logistics.py` |
-| Facilities | Shipping Container and Roll-Off Dumpster (blue, maroon, green, grey); Job Trailer Wall, Window, Door; Portable Toilet; Gang Box; Concrete Washout | `gen_facilities.py` |
+| Facilities | Shipping Container, Roll-Off Dumpster and Compactor Receiver Container (blue, maroon, green, grey); Job Trailer Wall, Window, Door; Portable Toilet; Gang Box; Concrete Washout; Trash Compactor Power Unit, Charge Box, Hopper and Control Station | `gen_facilities.py` |
 
 Classes are in `modules/building/src/main/java/com/micatechnologies/minecraft/csm/constructionsite/`,
 the tab in `tabs/CsmTabConstructionSite.java`. Every generator has `--check`.
@@ -207,6 +207,29 @@ object, with no seams inside it.
   block of a twelve-block wall and reads as polka dots; the shell walls have none.
 - Priced per block, as they are built: container and dumpster 2 Sheet Metal, trailer Sheet Metal +
   planks.
+
+### The trash compactor
+
+A store's stationary compactor at its truck court, which packs the store's waste into a closed
+roll-off receiver that a roll-off truck swaps when it is full. It is built from the pieces it is
+made of, in line, as the other facilities are:
+
+- **The receiver** (`compactor_container_<colour>`, four colours) is a `BlockSiteShell` built to
+  size like a container -- closed, solid, its rear door on the end it faces -- in the roll-off's
+  plate and frame. A real one is 8 ft wide and tall and 20 to 30 ft long: two by two by six to
+  nine blocks. It shares every texture with the container and the dumpster of its colour, so it
+  adds models only. `container` in the id is what prices it as one.
+- **The compactor** is three `BlockSiteFacingProp` blocks, drawn with the operator's end to the
+  north and the receiver to the south, so placed in a line from the operator's end they face the
+  same way: the **power unit** (the ram's housing with the hydraulic reservoir, motor and pump on
+  it), the **charge box** (the chamber the ram sweeps, with the flange round the discharge opening
+  at its receiver end) and the **hopper** standing on the charge box, its rim striped. Both base
+  blocks stand on the same skids, so the two read as one machine. Butt the charge box against the
+  middle of the receiver's front end.
+- **The control station** is the keyed panel on its post under a rain hood: key switch, START,
+  the red mushroom STOP and the amber light that says the receiver is full.
+
+All of it is decorative: nothing compacts.
 
 ### The job trailer: built hollow, walked into
 

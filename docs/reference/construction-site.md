@@ -2,7 +2,7 @@
 
 What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities.
 
-!!! info "42 blocks in this tab"
+!!! info "50 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -14,6 +14,10 @@ What stands around a building while it goes up: scaffolding, formwork, earthwork
 | Bagged Concrete Pallet | `csm:pallet_concrete_bags` |  |  |  |  |
 | Brick Pallet | `csm:pallet_brick` |  |  |  |  |
 | Column Formwork | `csm:formwork_column` |  |  |  |  |
+| Compactor Receiver Container (Blue) | `csm:compactor_container_blue` | 2 | 10 | pickaxe | 0 |
+| Compactor Receiver Container (Green) | `csm:compactor_container_green` | 2 | 10 | pickaxe | 0 |
+| Compactor Receiver Container (Grey) | `csm:compactor_container_grey` | 2 | 10 | pickaxe | 0 |
+| Compactor Receiver Container (Maroon) | `csm:compactor_container_maroon` | 2 | 10 | pickaxe | 0 |
 | Concrete Block Pallet | `csm:pallet_cmu` |  |  |  |  |
 | Concrete Washout | `csm:concrete_washout` |  |  |  |  |
 | Conduit Bundle | `csm:conduit_bundle` |  |  |  |  |
@@ -49,6 +53,10 @@ What stands around a building while it goes up: scaffolding, formwork, earthwork
 | Tower Crane Head | `csm:crane_head` | 3 | 12 | pickaxe | 1 |
 | Tower Crane Mast | `csm:crane_mast` | 3 | 12 | pickaxe | 1 |
 | Tower Crane Mast (2x2) | `csm:crane_mast_large` | 3 | 12 | pickaxe | 1 |
+| Trash Compactor Charge Box | `csm:trash_compactor_charge_box` |  |  |  |  |
+| Trash Compactor Control Station | `csm:trash_compactor_control` |  |  |  |  |
+| Trash Compactor Hopper | `csm:trash_compactor_hopper` |  |  |  |  |
+| Trash Compactor Power Unit | `csm:trash_compactor_power_unit` |  |  |  |  |
 | Trench Box | `csm:trench_box` |  |  |  |  |
 | Trench Plate | `csm:trench_plate` | 3 | 12 | pickaxe | 0 |
 | Wall Formwork | `csm:formwork_wall` |  |  |  |  |

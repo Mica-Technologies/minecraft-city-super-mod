@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "csm:constructionsite/trash_compactor_power_unit"
+    },
+    "facing=east": {
+      "model": "csm:constructionsite/trash_compactor_power_unit",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "csm:constructionsite/trash_compactor_power_unit",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "csm:constructionsite/trash_compactor_power_unit",
+      "y": 270
+    },
+    "inventory": {
+      "model": "csm:constructionsite/trash_compactor_power_unit"
+    }
+  }
+}
