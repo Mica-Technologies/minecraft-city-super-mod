@@ -1052,9 +1052,14 @@ public class RingBarrierState {
           ring.coordYieldFor = 0; // the waiting phase's demand went away before the clearance
         }
         int windowOpeningFor = isCoord && !ring.dualEntry ? ring.coordYieldFor : 0;
+        // The yield point yields only to a call that can still be served once the clearance is
+        // over: one whose permissive period will still be open then (startableIn). Yielding to a
+        // call that has missed its period this cycle served nobody -- the call waits for its next
+        // window -- and the coordinated green went green, yellow, red and green again.
         boolean coordYieldDue = isCoord && !ring.dualEntry
             && ((coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)
-            && demandConflictsWith(phase, ringNum, plan, tickRawCalled))
+            && demandConflictsWith(phase, ringNum, plan,
+                startableAfter(plan, tickRawCalled, coordClearance)))
             || windowOpeningFor != 0);
         // While a coordinated phase is holding for its yield point, ordinary gap-out/conflict
         // termination must not take it off green — that is what the hold IS.
@@ -1185,8 +1190,11 @@ public class RingBarrierState {
           terminate = false;
         }
         if (terminate && minMet) {
-          // Phase next: commit to the calls this termination is for.
-          commitConflictingCalls(phase, ringNum, plan, called);
+          // Phase next: commit to the calls this termination is for -- those that can still
+          // start once this phase has cleared (a call past its permissive period by then waits
+          // for its next window, so committing it would start it too late; see startableIn).
+          commitConflictingCalls(phase, ringNum, plan, startableAfter(plan, called,
+              phase.getYellow() + phase.getRedClear() + greenFlashTicks));
           if (windowOpeningFor != 0 && coordYieldDue) {
             // Its window has not opened yet, so its call is not accepted and the commitment
             // above missed it; without this the idle ring would re-serve the coordinated phase.
@@ -2162,7 +2170,8 @@ public class RingBarrierState {
   /**
    * Whether a phase's permissive window is open for <em>accepting</em> a new call. A call is only
    * worth accepting while the phase could still be served this cycle, so acceptance closes at the
-   * same yield point that force-off uses — not at the window end.
+   * end of its permissive period ({@link #startableIn}): the yield point force-off uses, less the
+   * minimum green the phase would need — not at the window end.
    *
    * <p>Gating acceptance on the window end instead re-granted acceptance to a phase during its own
    * clearance (its yellow and red-clear still fall inside its window), handing it a standing call
@@ -2173,14 +2182,81 @@ public class RingBarrierState {
    * its own clearance still gets served rather than starving. Minimum green is guaranteed
    * separately by the {@code terminate && minMet} guard.</p>
    */
-  private boolean acceptanceOpen(TrafficSignalProgrammedPhasePlan plan, int phaseNumber,
-      long clearance) {
+  private boolean acceptanceOpen(TrafficSignalProgrammedPhasePlan plan, int phaseNumber) {
+    return startableIn(plan, phaseNumber, 0L);
+  }
+
+  /**
+   * Whether a non-coordinated phase could start its green {@code ahead} ticks from now and still
+   * run its minimum green (and the pedestrian service it would start with) before its yield
+   * point: the close of its <em>permissive period</em>. NEMA/ASC-3 practice ends a phase's
+   * permissive period at its force-off point less its minimum green (and, for a phase starting
+   * with a walk, less its walk and pedestrian clearance), so a phase that starts is never cut
+   * short at force-off: it simply is not started that late, and its call waits for the next
+   * cycle (issue #340). Before this a call accepted near the end of the window was started past
+   * its yield point and forced off the moment its minimum green was up, overrunning its split by
+   * its whole clearance.
+   *
+   * <p>A split too short to hold the phase at all (an over-subscribed split, reported by
+   * {@link #findSplitShortfall}) keeps the old rule, open up to the yield point itself: closing
+   * it at its start would starve the phase on any cycle the rings arrived a tick late.</p>
+   *
+   * <p>Coordinated phases, and everything in free operation, are always startable.</p>
+   */
+  private boolean startableIn(TrafficSignalProgrammedPhasePlan plan, int phaseNumber,
+      long ahead) {
+    if (!coordinated || phaseNumber < 1 || phaseNumber >= PHASE_SLOTS || coordPhase[phaseNumber]) {
+      return true;
+    }
+    TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
+    if (phase == null) {
+      return false;
+    }
     long start = effectiveWindowStart(plan, phaseNumber);
     long windowLen = windowEnd[phaseNumber] - start;
     if (windowLen <= 0L) {
       return false;
     }
-    return windowPos(start) < Math.max(1L, windowLen - Math.max(0L, clearance));
+    long room = windowLen
+        - Math.max(0L, phase.getYellow() + phase.getRedClear() + greenFlashTicks);
+    long need = startNeed(phase);
+    long latestStart = room - need >= 1L ? room - need : Math.max(1L, room);
+    long pos = ((localCycle + Math.max(0L, ahead) - start) % cycleTicks + cycleTicks) % cycleTicks;
+    return pos < latestStart;
+  }
+
+  /**
+   * {@code calls} with every non-coordinated phase that could not start {@code ahead} ticks from
+   * now ({@link #startableIn}) taken out; a new array, or {@code calls} itself in free operation.
+   */
+  private boolean[] startableAfter(TrafficSignalProgrammedPhasePlan plan, boolean[] calls,
+      long ahead) {
+    if (!coordinated) {
+      return calls;
+    }
+    boolean[] out = new boolean[calls.length];
+    for (int n = 1; n < calls.length; n++) {
+      out[n] = calls[n] && startableIn(plan, n, ahead);
+    }
+    return out;
+  }
+
+  /**
+   * How long a phase started now must run before force-off may end it: its delay (DLY GRN or a
+   * queue jump) and red+amber, then its minimum green less the green flash (which the clearance
+   * budgets), or, when it would start with a pedestrian service, the walk and its clearance if
+   * those run longer. Added initial and bike minimum green are judged at green start from the
+   * queue, so they are not predicted here.
+   */
+  private long startNeed(TrafficSignalProgrammedPhase phase) {
+    boolean ped = pedServiceAtStart(phase);
+    long delay = startDelay(phase, ped);
+    long need = delay + redAmberTicks + Math.max(0L, phase.getMinGreen() - greenFlashTicks);
+    if (ped) {
+      long walkHold = Math.max(phase.getWalk(), delay);
+      need = Math.max(need, walkHold + phase.getPedClear() + (delay > 0L ? 0L : redAmberTicks));
+    }
+    return need;
   }
 
   /**
@@ -2248,7 +2324,10 @@ public class RingBarrierState {
         continue;
       }
       long arc = ((windowStart[m] - localCycle) % cycleTicks + cycleTicks) % cycleTicks;
-      if (arc > 0L && arc <= Math.max(0L, clearance) && arc < bestArc) {
+      // Too late to yield in time when the clearance would end past the phase's permissive
+      // period: then the call waits for the next cycle (startableIn).
+      if (arc > 0L && arc <= Math.max(0L, clearance) && arc < bestArc
+          && startableIn(plan, m, clearance)) {
         best = m;
         bestArc = arc;
       }
@@ -2339,11 +2418,13 @@ public class RingBarrierState {
       windowAccepted[n] = false;
       return false;
     }
-    if (acceptanceOpen(plan, n, phase.getYellow() + phase.getRedClear())
-        && servedWindow[n] != windowInstance(n)) {
+    if (acceptanceOpen(plan, n) && servedWindow[n] != windowInstance(n)) {
       windowAccepted[n] = true;
     }
-    return windowAccepted[n];
+    // An accepted call still waits if the phase could no longer be started in time to run its
+    // minimum green before its yield point (the permissive period has closed; see startableIn).
+    // The acceptance stands, so the call is served at the start of the phase's next window.
+    return windowAccepted[n] && startableIn(plan, n, 0L);
   }
 
   /**

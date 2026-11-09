@@ -505,4 +505,122 @@ class RingBarrierStateCoordinationTest {
           "the side street must still start at its window start every cycle: " + starts);
     }
   }
+
+  /**
+   * The coordinated Main St corridor plan from issues #339 and #340: lead FYA lefts 1 and 5 ahead
+   * of the coordinated throughs 2 and 6, side street 4 then 3 in ring 1 only. Circuit 0 carries
+   * phases 2 and 5, circuit 1 phases 6 and 1, circuit 2 phases 4 and 3.
+   */
+  static TrafficSignalProgrammedPhasePlan mainStreetPlan(long offset, long[][] splits) {
+    TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+    plan.setRing1Sequence(new int[] {1, 2, 4, 3});
+    plan.setRing2Sequence(new int[] {5, 6, 7, 8});
+    RingBarrierStateTest.enable(plan, 2, 0);
+    RingBarrierStateTest.enable(plan, 5, 0);
+    RingBarrierStateTest.enable(plan, 6, 1);
+    RingBarrierStateTest.enable(plan, 1, 1);
+    RingBarrierStateTest.enable(plan, 4, 2);
+    RingBarrierStateTest.enable(plan, 3, 2);
+    for (int n : new int[] {1, 5}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+      p.setPermissivePhase(n == 1 ? 2 : 6);
+      p.setMinGreen(100L);
+      p.setMaxGreen(300L);
+      p.setYellow(80L);
+      p.setRedClear(40L);
+      p.setPassage(40L);
+    }
+    for (int n : new int[] {2, 6}) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      p.setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      p.setMinGreen(360L);
+      p.setMaxGreen(900L);
+      p.setWalk(140L);
+      p.setPedClear(200L);
+    }
+    TrafficSignalCoordinationPlan co = plan.getCoordination();
+    co.setMode(TrafficSignalCoordinationMode.COORDINATED);
+    co.setCycleLength(2400L);
+    co.setOffset(offset);
+    co.setCoordinatedPhases(new int[] {2, 6});
+    for (long[] s : splits) {
+      co.setSplit((int) s[0], s[1]);
+    }
+    return plan;
+  }
+
+  /** The Main x Hammond splits from issue #340. */
+  static final long[][] HAMMOND_SPLITS =
+      {{1, 320L}, {2, 760L}, {5, 320L}, {6, 760L}, {4, 660L}, {3, 660L}};
+
+  /**
+   * Runs {@code plan} from t=0 to {@code end} with {@code demand(t)} and returns every green
+   * {@code phase} received as {startTick, length} pairs (a green still running at the end is not
+   * counted).
+   */
+  private static List<long[]> greens(TrafficSignalProgrammedPhasePlan plan, int circuits,
+      java.util.function.LongFunction<RingBarrierStateTest.Demand> demand, int phase, long end) {
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(circuits);
+    List<long[]> out = new ArrayList<>();
+    long start = -1L;
+    for (long t = 0; t <= end; t++) {
+      rb.tick(plan, ckts, NO_OVERLAPS, t, demand.apply(t));
+      boolean green = false;
+      for (int ring = 1; ring <= 2; ring++) {
+        ServedMovement m = rb.getLastServed(ring);
+        green |= m != null && m.phaseNumber == phase && m.vehicle == VehInterval.GREEN;
+      }
+      if (green && start < 0L) {
+        start = t;
+      } else if (!green && start >= 0L) {
+        out.add(new long[] {start, t - start});
+        start = -1L;
+      }
+    }
+    return out;
+  }
+
+  @Test
+  @DisplayName("coordination: a lead left called late in its window waits for the next cycle "
+      + "instead of starting too late to run its minimum green (#340)")
+  void lateLeftCallNeverCutsMinimumGreen() {
+    // Main x Hammond: phase 5's window is cycle positions 0..320, its yield point 200 (split less
+    // yellow 80 + red 40), so its permissive period closes at 100: a green starting later cannot
+    // run its 100-tick minimum before the yield point. A call arriving late in the window used
+    // to be accepted and served only after the coordinated through had cleared for it, past
+    // phase 5's own yield point, and the arrow was forced off the moment its minimum green was
+    // up, overrunning the split into phase 6's time. Every call position is tried, with and
+    // without side-street demand: every green must start inside the permissive period and run
+    // at least its minimum green.
+    long offset = 1500L;
+    long cycle = 2400L;
+    for (boolean side : new boolean[] {false, true}) {
+      for (long pos = 0; pos < cycle; pos += 10) {
+        TrafficSignalProgrammedPhasePlan plan = mainStreetPlan(offset, HAMMOND_SPLITS);
+        long from = cycle * 2 + offset + pos; // two cycles in, at local position pos
+        RingBarrierStateTest.Demand with = new RingBarrierStateTest.Demand().veh(0, 0, 1, 0);
+        RingBarrierStateTest.Demand without = new RingBarrierStateTest.Demand();
+        if (side) {
+          with.veh(2, 1, 0, 0);
+          without.veh(2, 1, 0, 0);
+        }
+        List<long[]> g = greens(plan, 3, t -> t >= from ? with : without, 5, from + cycle * 3);
+        for (long[] green : g) {
+          long local = ((green[0] - offset) % cycle + cycle) % cycle;
+          assertTrue(local < 100L, "with the call arriving at cycle position " + pos
+              + (side ? " (side street called)" : "") + ", phase 5 started at cycle position "
+              + local + ", after its permissive period closed at 100 (yield point 200 less its "
+              + "100-tick minimum green)");
+          assertTrue(green[1] >= 100L, "with the call arriving at cycle position " + pos
+              + (side ? " (side street called)" : "") + ", phase 5 was green for only "
+              + green[1] + " ticks from t=" + green[0] + " (local "
+              + ((green[0] - offset) % cycle + cycle) % cycle + "); its minimum green is 100");
+        }
+        assertTrue(!g.isEmpty(), "phase 5 was never served with its call arriving at cycle "
+            + "position " + pos + (side ? " (side street called)" : ""));
+      }
+    }
+  }
 }

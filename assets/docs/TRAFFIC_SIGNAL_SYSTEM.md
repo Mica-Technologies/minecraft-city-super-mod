@@ -1053,8 +1053,9 @@ their yield point (never truncating an in-progress ped clearance), and rests the
 accepted it **sticks** (`RingBarrierState.windowAccepted`) until the phase is served, the demand
 drops, or the phase is forced off — serving it takes real time (the mains' rest-in-walk ped
 clearance alone can outlast a tight window), so re-gating each tick would erase the call
-mid-sequence and the side street would never be served. A phase that starts late on a stuck
-accepted call gets its min green, then the force-off clips it back to the coordinated phases.
+mid-sequence and the side street would never be served. An accepted call is only *started*
+while the phase's **permissive period** is open, though (next section): a phase that could no
+longer run its minimum green before its yield point waits for its next window instead.
 
 #### Windows are laid out per barrier, not per ring
 
@@ -1075,9 +1076,32 @@ than typed and `findBarrierMisalignment` logs an advisory comparing the **typed*
 
 **A split is the time a movement owns end to end: green *and* its clearance.** A phase therefore
 terminates at its **yield point**, set back from its window end by its own yellow + red-clear, so
-the *next* phase's green begins exactly at that phase's window start. (`pastYieldPoint`; the same
-point also gates *acceptance* via `acceptanceOpen`, because a call arriving after it cannot be
-served this cycle and would otherwise hand the phase a standing call into the next one.)
+the *next* phase's green begins exactly at that phase's window start (`pastYieldPoint`).
+
+The **permissive period** closes earlier still: at the yield point less what the phase needs once
+it starts — its minimum green, plus any delayed green and red+amber, or its walk and pedestrian
+clearance when it would start with a walk (`RingBarrierState.startableIn`). That is NEMA/ASC-3
+practice, and it is what guarantees that a phase which starts is never cut short at force-off: it
+is simply not started that late. The one rule is applied everywhere a call can turn into a green
+(issue #340):
+
+- **Acceptance** (`acceptanceOpen`): a call arriving after the period has closed is not accepted
+  this cycle, so it does not hand the phase a standing call into the next one.
+- **Starting**: an accepted call whose period has closed by the time a ring could reach it is not
+  called; the acceptance stands and the phase is served at its next window start.
+- **Phase next** (`commitConflictingCalls`) commits only calls that will still be startable when
+  the terminating phase has cleared.
+- **The coordinated yield** yields only to a call startable once its own clearance is over, at
+  its yield point and at a waiting phase's window opening (`conflictingWindowOpening`) alike.
+  Yielding to a call that has missed its period served nobody, and the coordinated green went
+  green, yellow, red and green again.
+
+Before this a call accepted late in its window was started after the coordinated phase had
+cleared for it, past its own yield point, and force-off ended it the moment its minimum green was
+up: the green arrow ran a bare minimum and the left's clearance overran its split into the
+coordinated phase's time. A split too short to hold the phase at all (an over-subscribed split,
+which `findSplitShortfall` reports) keeps the old rule, open up to the yield point, so a ring that
+arrives a tick late cannot starve it.
 
 Both are measured as a position *within the window* rather than against `windowEnd` directly — the
 last window on the last barrier ends exactly at the cycle wrap, where a plain `localCycle >= windowEnd`

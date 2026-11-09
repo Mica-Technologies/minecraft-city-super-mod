@@ -589,6 +589,20 @@ owes the full interval) plus yellow and red. It ends a coordinated green, with o
 A non-coordinated phase is served at most **once per window**, so a recall phase that gaps out early
 does not re-register a standing call for the rest of its window.
 
+**Permissive periods.** A non-coordinated phase may start only while it can still run its minimum
+green (with its delayed green and red+amber, or its walk and pedestrian clearance when it starts
+with a walk) before its yield point: the ASC/3 permissive period, which ends at the force-off
+point less the phase's minimum time. Acceptance, the start of an accepted call, the phase-next
+commitment and the coordinated phase's yield (at its yield point or at a waiting window's opening)
+all apply it (`RingBarrierState.startableIn`). A call that has missed the period waits for the
+phase's next window rather than starting late and being forced off at bare minimum green
+(issue #340), and the coordinated phase no longer clears for a call that cannot be served yet,
+which had it go green, yellow, red and green again for nobody. Over-subscribed splits
+(`findSplitShortfall`) keep the period open up to the yield point, as before. The choice to hold
+the call rather than let minimum green override force-off follows NEMA practice: overriding
+force-off would push the overrun into the coordinated phase's time every cycle, which add-only
+offset correction then has to absorb.
+
 "Has the yield point been reached" is evaluated from the **start of the green**, not from the
 current cycle position — that is what separates a green that legitimately crossed its yield point
 between two sparse ticks from one that only just started beyond it and should dwell.
