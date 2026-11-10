@@ -133,6 +133,18 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     this(registryName, profile, null);
   }
 
+  /**
+   * Constructs a New York City signal mast arm block: a tapered pipe under two guy rods, regular
+   * or diagonal across a corner (GitHub #99). The same multi-block machinery again, from
+   * gen_truss_signal_arms.py's second family of profiles.
+   *
+   * @param registryName the block's registry name
+   * @param profile      the arm this block places
+   */
+  public BlockTrafficPoleMastArmCurve(String registryName, NycSignalArmProfile profile) {
+    this(registryName, profile, null);
+  }
+
   private BlockTrafficPoleMastArmCurve(String registryName, ICurvedArmProfile profile,
       @Nullable MastArmCurveProfile mastArmProfile) {
     super(stash(registryName, profile), SoundType.STONE, "pickaxe", 1, 2F, 10F, 0F, 0);

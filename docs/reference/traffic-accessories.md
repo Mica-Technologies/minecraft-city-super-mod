@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "483 blocks in this tab"
+!!! info "498 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -156,6 +156,21 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | NOV Decorative Metal Pole Top (Tan) | `csm:dmpttan` |  | 10 | pickaxe | 1 |
 | NOV Decorative Metal Pole Top (Unpainted) | `csm:dmptunpainted` |  | 10 | pickaxe | 1 |
 | NOV Decorative Metal Pole Top (White) | `csm:dmptwhite` |  | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 4 Blocks (Black) | `csm:nycsignalarmregular4black` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 4 Blocks (Brown) | `csm:nycsignalarmregular4brown` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 4 Blocks (Galvanized) | `csm:nycsignalarmregular4galvanized` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 6 Blocks (Black) | `csm:nycsignalarmregular6black` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 6 Blocks (Brown) | `csm:nycsignalarmregular6brown` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 6 Blocks (Galvanized) | `csm:nycsignalarmregular6galvanized` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 8 Blocks (Black) | `csm:nycsignalarmregular8black` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 8 Blocks (Brown) | `csm:nycsignalarmregular8brown` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, 8 Blocks (Galvanized) | `csm:nycsignalarmregular8galvanized` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, Diagonal, 4 Blocks (Black) | `csm:nycsignalarmdiagonal4black` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, Diagonal, 4 Blocks (Brown) | `csm:nycsignalarmdiagonal4brown` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, Diagonal, 4 Blocks (Galvanized) | `csm:nycsignalarmdiagonal4galvanized` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, Diagonal, 6 Blocks (Black) | `csm:nycsignalarmdiagonal6black` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, Diagonal, 6 Blocks (Brown) | `csm:nycsignalarmdiagonal6brown` | 2 | 10 | pickaxe | 1 |
+| NYC Signal Mast Arm, Diagonal, 6 Blocks (Galvanized) | `csm:nycsignalarmdiagonal6galvanized` | 2 | 10 | pickaxe | 1 |
 | Octagon Concrete Thick Traffic Pole | `csm:trafficpoleverticalconcreteoctagon` | 2 | 10 | pickaxe | 1 |
 | Octagon Concrete Thin Traffic Pole | `csm:trafficpolehorizontalconcreteoctagon` | 2 | 10 | pickaxe | 1 |
 | Overhead Message Sign | `csm:overhead_message_sign` | 2 | 10 | pickaxe | 1 |

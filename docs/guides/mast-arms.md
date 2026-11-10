@@ -86,6 +86,27 @@ A **diagonal** arm always turns to the right of the face you place it on: on a p
 reaches north-east, on its east face south-east. Pick the face one turn to the left of the corner
 you want it to cross.
 
+## New York City arms
+
+The signal arm of New York City is one tapered pipe that leaves the pole low, bends and climbs out
+over the street, with two thin guy rods holding its tip up from a crossbar higher on the pole. The signal head
+hangs from the very end. CSM has it as single blocks that place the whole arm, in brown,
+galvanized and black:
+
+| Arm | Lengths | Pole must reach |
+|---|---|---|
+| Regular | 4, 6, 8 blocks | 1 block lower (4), 2 blocks lower (6, 8) |
+| Diagonal | 4, 6 blocks | 2 blocks lower |
+
+Place one against the side of a pole at the height of the guy rods, which is the height of the
+tip. The pipe's clamp lands lower on the pole, so the pole has to be there. A diagonal arm turns
+to the right of the face you place it on, as a diagonal truss arm does.
+
+Hang the signal head the way the city does: a **Wire Mount** under the last block of the arm and
+the head under the mount. Signs and heads can also mount under or beside the pipe anywhere along
+it, and a hanging **Dynamic Street Sign** under it reaches up to the pipe. Nothing mounts to the
+guy rods.
+
 ## Mounting hardware
 
 Every cell can grow a bracket toward any of its four sides — up, down, and both sides — wherever

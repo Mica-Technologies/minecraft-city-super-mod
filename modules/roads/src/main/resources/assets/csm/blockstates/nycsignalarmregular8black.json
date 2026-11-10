@@ -1,0 +1,1629 @@
+{
+ "forge_marker": 1,
+ "defaults": {
+  "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c0.obj",
+  "custom": {
+   "flip-v": true
+  },
+  "textures": {
+   "#body": "csm:blocks/trafficsignals/shared_textures/metal_black",
+   "particle": "csm:blocks/trafficsignals/shared_textures/metal_black"
+  }
+ },
+ "variants": {
+  "shape": {
+   "0": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c0.obj"
+   },
+   "1": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c0_thin.obj"
+   },
+   "2": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c0_pedestal.obj"
+   },
+   "3": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj"
+   },
+   "4": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "5": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "6": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "7": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "8": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "9": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "10": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "11": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj"
+   },
+   "12": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "13": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "14": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "15": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "16": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "17": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "18": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_thin.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "19": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj"
+   },
+   "20": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "21": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "22": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "23": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "24": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "25": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "26": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c1_pedestal.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_36.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_37.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_38.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "27": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj"
+   },
+   "28": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_39.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "29": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_40.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "30": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_39.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_40.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "31": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_41.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "32": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_39.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_41.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "33": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_40.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_41.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "34": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c2.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_39.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_40.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_41.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "35": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c3.obj"
+   },
+   "36": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c3.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_42.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "37": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c3.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_43.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "38": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c3.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_42.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_43.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "39": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c4.obj"
+   },
+   "40": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj"
+   },
+   "41": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_44.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "42": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_45.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "43": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_44.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_45.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "44": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_46.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "45": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_44.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_46.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "46": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_45.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_46.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "47": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c5.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_44.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_45.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_46.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "48": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c6.obj"
+   },
+   "49": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj"
+   },
+   "50": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_47.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "51": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_48.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "52": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_47.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_48.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "53": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_49.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "54": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_47.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_49.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "55": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_48.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_49.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "56": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c7.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_47.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_48.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_49.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "57": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c8.obj"
+   },
+   "58": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj"
+   },
+   "59": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_50.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "60": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_51.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "61": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_50.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_51.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "62": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_52.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "63": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_50.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_52.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "64": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_51.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_52.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "65": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c9.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_50.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_51.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_52.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "66": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c10.obj"
+   },
+   "67": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj"
+   },
+   "68": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_53.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "69": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_54.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "70": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_53.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_54.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "71": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_55.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "72": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_53.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_55.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "73": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_54.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_55.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "74": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c11.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_53.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_54.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_55.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "75": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c12.obj"
+   },
+   "76": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj"
+   },
+   "77": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_56.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "78": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_57.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "79": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_56.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_57.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "80": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_58.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "81": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_56.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_58.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "82": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_57.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_58.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "83": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c13.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_56.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_57.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_58.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "84": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c14.obj"
+   },
+   "85": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c14.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_59.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "86": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c14.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_60.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "87": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c14.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_59.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_60.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "88": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj"
+   },
+   "89": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_61.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "90": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_62.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "91": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_61.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_62.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "92": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_63.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "93": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_61.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_63.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "94": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_62.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_63.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   },
+   "95": {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_c15.obj",
+    "submodel": {
+     "mount_down": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_61.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_east": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_62.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     },
+     "mount_west": {
+      "model": "csm:trafficaccessories/shared_models/nycsignalarm_stub_63.obj",
+      "custom": {
+       "flip-v": true
+      },
+      "textures": {
+       "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+      }
+     }
+    }
+   }
+  },
+  "facing": {
+   "north": {
+    "y": 0
+   },
+   "east": {
+    "y": 90
+   },
+   "south": {
+    "y": 180
+   },
+   "west": {
+    "y": 270
+   }
+  },
+  "inventory": [
+   {
+    "model": "csm:trafficaccessories/shared_models/nycsignalarm_regular8_inv.obj",
+    "transform": "forge:default-block"
+   }
+  ]
+ }
+}

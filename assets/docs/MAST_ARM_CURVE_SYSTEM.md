@@ -398,6 +398,46 @@ sign, whose hangers stop at the pipe over them: DYNAMIC_STREET_SIGN_SYSTEM.md, "
 diagonal (the arm always turns to the right of the face it was placed on, so the other diagonal is
 reached from the next face round).
 
+### The New York City arm
+
+The guyed arm of every signalized corner in New York City, from the same generator as a second
+family (`FAMILIES`): 15 blocks, `nycsignalarm<id><finish>` in brown, galvanized and black, regular
+4/6/8 blocks and diagonal 4/6 steps, enum `NycSignalArmProfile`. One tapered pipe (2.8 px at the
+pole, 1.9 at the tip) leaves a clamp collar low on the pole at three times the slope it settles
+to, and two half-pixel guy rods run from the ends of a crossbar higher on the pole (11 px either
+side of its axis; the crossbar is a block and a half long, as the city's are) in to the tip fitting.
+
+It is a level truss arm with other members. The rods are where the top chord is, so the block is
+placed at the rods' height (which is the height the head hangs from) and the pole has to reach one
+block lower for the 4, two for the others, where the pipe's collar lands (`GUYED_FOOT`). The pipe
+is where the bottom chord is. What it added to the generator:
+
+- **A bend.** The pipe's first 36 px are four straight members; where two meet they share one
+  ring on the bisector of their axes (`Member.ring_a` / `ring_b`) and neither is capped. The
+  stations (`GUYED_STATIONS`) are kept clear of every cell boundary of both the regular and the
+  diagonal arm, so a boundary ring never lands on a mitre.
+- **Taper.** `Member.r_b`; everything that asked a member its radius now asks `radius(u)`.
+- **Members beside the diagonal.** A rod on a diagonal arm runs a pixel or two off the diagonal,
+  so cutting it at the world's x and z planes would hand slivers to cells that are not the arm's.
+  For `guyeddiagonal` a member is cut where it passes from one diagonal step to the next
+  (`diagonal_q`), and `cell_of` assigns by step.
+- **Two members, one collar.** The crossbar is two pole members, one out of each side of the
+  pole (saddle-cut per `CsmPoleFit`, which makes cell 0 a joint cell); the first carries the
+  band, the second has `collar_r=False`. The crossbar is the same length on every pole, so the
+  rods themselves do not depend on the fit and only cell 0 does. It overhangs the blocks either
+  side of the arm; `cell_of` keeps a regular arm's geometry in the arm's own column (`side = 0`)
+  and its members are not cut at x planes, so no cell appears beside the arm for it.
+
+Only the pipe is a chord: it takes hardware below and beside it (never above, where the rods are)
+and is the only rail a street name sign's hangers find. A cell holding nothing but rods grows
+nothing. The tip stops 3.5 px past the middle of the last cell, not at its far face, so the down
+stub of that cell, and a wire mount hung there, is at the very end of the arm.
+
+The brown finish is `metal_brown`, which the generator tints from `metal_silver` (`BROWN_RGB`);
+`--check` compares its pixels, not the encoder's bytes.
+
+**Not done:** the newer straight arm with no guy rods; the M-2 pole itself.
+
 ## Geometry details worth not rediscovering
 
 **Boundary crossings get one sample, not a straddling pair.** The sweep injects a sample wherever
