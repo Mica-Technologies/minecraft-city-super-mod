@@ -40,10 +40,16 @@
         "model": "csm:trafficaccessories/shared_models/luminairearm_truss8ft_c0_pedestal.obj"
       },
       "9": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss8ft_c1_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss8ft_c0_wall.obj"
       },
       "10": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss8ft_c1_thin.obj"
+      },
+      "11": {
         "model": "csm:trafficaccessories/shared_models/luminairearm_truss8ft_c1_pedestal.obj"
+      },
+      "12": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss8ft_c1_wall.obj"
       }
     },
     "facing": {

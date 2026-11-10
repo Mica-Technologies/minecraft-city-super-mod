@@ -46,6 +46,12 @@ cells holding a pole joint differ between fits; the generator finds them by comp
 and the profile packs the fit into those cells' shape slots. There is no mount hardware on these
 arms, so a shape is just a slot -- no mount mask.
 
+Against a full block that is not a CSM pole -- a wooden utility pole built of logs, a wall -- there
+is no cylinder to cut against, and a tube that simply ran into the block read as an arm with
+nothing holding it (GitHub #349). There the joint is a fourth one, "wall": every member that
+starts at the pole is cut flat at a back plate bolted to the block's face, one plate tall enough
+to take all of them, as the truss brackets lagged to wooden poles in New England are built.
+
 OUTPUT
 ------
   models/block/trafficaccessories/shared_models/luminairearm_<id>_c<n>.obj        one per cell
@@ -119,8 +125,16 @@ TIP_Y = 1.375
 
 # The pole in the root cell's frame: centred on the block behind (z 16..32), axis at x 8, z 24.
 POLE_X, POLE_Z = 8.0, 24.0
-# CsmPoleFit's order and radii; the ordinal is what the shape slot is computed from.
-FITS = [("large", 6.0), ("thin", 4.0), ("pedestal", 3.0)]
+# CsmPoleFit's order and radii; the ordinal is what the shape slot is computed from. The last is
+# not a CsmPoleFit: its "radius" of None is the flat cut at a back plate on a full block's face.
+FITS = [("large", 6.0), ("thin", 4.0), ("pedestal", 3.0), ("wall", None)]
+
+# The back plate (px): how far it stands off the block's face, how far it reaches past the
+# members' cut rings above, below and to either side, and the heads of the bolts that hold it.
+PLATE_T = 0.7
+PLATE_MARGIN_Y, PLATE_MARGIN_X = 2.2, 1.3
+BOLT_HEAD, BOLT_PROUD, BOLT_INSET = 1.0, 0.45, 1.1
+PLATE_Z = 16.0 - PLATE_T
 
 # Tube radii (px). The tip is 2.8 across, inside the 3 x 3.25 ARM_TIP every fixture neck holds.
 R_ROOT, R_TIP, R_BOOT = 2.1, 1.4, 2.7
@@ -318,6 +332,8 @@ def pole_cut(member, pole_r):
     for i in range(SIDES):
         def depth(u):
             p = member.ring(u)[i][0]
+            if pole_r is None:          # the back plate's front, on a full block's face
+                return p[2] - PLATE_Z
             return pole_r * pole_r - ((p[0] - POLE_X) ** 2 + (p[2] - POLE_Z) ** 2)
         u_out = member.u0 + 0.9
         assert depth(u_out) < 0, "rail starts inside the pole"
@@ -452,10 +468,64 @@ def cap(mesh, rng, outward):
         mesh.tri([(cen, uv(0.5, 0.5), outward), (a, uv(0.2, 0.3), outward), (b, uv(0.8, 0.3), outward)])
 
 
+def box(mesh, lo, hi, back=False):
+    """An axis-aligned box. The face toward the pole (+z) is left off unless ``back``: it lies on
+    the block behind, or on the plate."""
+    (x0, y0, z0), (x1, y1, z1) = lo, hi
+    faces = [
+        ((0, 0, -1), [(x1, y0, z0), (x0, y0, z0), (x0, y1, z0), (x1, y1, z0)]),
+        ((-1, 0, 0), [(x0, y0, z0), (x0, y0, z1), (x0, y1, z1), (x0, y1, z0)]),
+        ((1, 0, 0), [(x1, y0, z1), (x1, y0, z0), (x1, y1, z0), (x1, y1, z1)]),
+        ((0, 1, 0), [(x0, y1, z0), (x0, y1, z1), (x1, y1, z1), (x1, y1, z0)]),
+        ((0, -1, 0), [(x0, y0, z1), (x0, y0, z0), (x1, y0, z0), (x1, y0, z1)]),
+    ]
+    if back:
+        faces.append(((0, 0, 1), [(x0, y0, z1), (x1, y0, z1), (x1, y1, z1), (x0, y1, z1)]))
+    for n, q in faces:
+        # the swatch is flat colour, so the UVs only have to stay inside it
+        t = [uv(0.1, 0.1), uv(0.9, 0.1), uv(0.9, 0.9), uv(0.1, 0.9)]
+        n = tuple(float(k) for k in n)
+        mesh.tri([(q[0], t[0], n), (q[1], t[1], n), (q[2], t[2], n)])
+        mesh.tri([(q[0], t[0], n), (q[2], t[2], n), (q[3], t[3], n)])
+
+
+def back_plate(cells, cuts):
+    """The plate the members bolt to on a full block's face: one plate spanning every member's cut
+    ring, with four bolts, drawn by the cells of the pole column it passes through.
+
+    It is cut at a block boundary only between two cells that each hold a member's joint, so
+    every piece belongs to a cell that already reads the block behind it; a margin that reaches
+    into another block stays with the piece next to it (an OBJ may leave its block). Were it
+    handed to whichever cell it lies in, that cell would become a joint cell too, with a block of
+    its own behind it to test, and a plate could lose its top to the air above a pole."""
+    ys = [p[0][1] for ring in cuts for p in ring]
+    xs = [abs(p[0][0] - 8.0) for ring in cuts for p in ring]
+    y_lo, y_hi = min(ys) - PLATE_MARGIN_Y, max(ys) + PLATE_MARGIN_Y
+    hw = max(xs) + PLATE_MARGIN_X
+    rows = sorted({int(math.floor(sum(p[0][1] for p in ring) / len(ring) / 16.0 + 1e-9))
+                   for ring in cuts})
+    assert all((0, k, 0) in cells for k in rows)
+
+    def row_of(y):
+        r = int(math.floor(y / 16.0 + 1e-9))
+        return min(rows, key=lambda k: abs(k - r))
+
+    bounds = [y_lo] + [16.0 * k for k in rows if y_lo < 16.0 * k < y_hi and k - 1 in rows] + [y_hi]
+    for a, b in zip(bounds, bounds[1:]):
+        box(cells[(0, row_of((a + b) / 2.0), 0)], (8.0 - hw, a, PLATE_Z), (8.0 + hw, b, 16.0))
+    for by in (y_lo + BOLT_INSET, y_hi - BOLT_INSET):
+        for bx in (8.0 - hw + BOLT_INSET, 8.0 + hw - BOLT_INSET):
+            h = BOLT_HEAD / 2.0
+            box(cells[(0, row_of(by), 0)], (bx - h, by - h, PLATE_Z - BOLT_PROUD),
+                (bx + h, by + h, PLATE_Z))
+
+
 def sweep(members, pole_r):
     """Every member's bands, assigned to cells: {cell: Mesh} in the root frame, and the cell order
-    (along the arm first, then up)."""
+    (along the arm first, then up). ``pole_r`` None is the joint against a full block: the members
+    cut flat at a back plate."""
     cells = {}
+    cuts = []
 
     def mesh_for(c):
         if c not in cells:
@@ -467,6 +537,7 @@ def sweep(members, pole_r):
         rings = []
         if member.pole:
             cut, cut_us = pole_cut(member, pole_r)
+            cuts.append(cut)
             first = max(cut_us)
             us = [u for u in us if u > first + 1e-4]
             rings.append((cut, min(cut_us), first))
@@ -488,6 +559,8 @@ def sweep(members, pole_r):
     # The root -- the block placed against the pole, where the upper member leaves it -- is cell
     # 0 at (0, 0): placement lays every other cell out from it by offset.
     assert (0, 0, 0) in cells, "the root cell holds no geometry"
+    if pole_r is None and cuts:
+        back_plate(cells, cuts)
     order = [(0, 0, 0)] + sorted(c for c in cells if c != (0, 0, 0))
     return cells, order
 
@@ -696,6 +769,9 @@ def model_name(pid, idx, fit=None):
     return "luminairearm_%s_c%d%s.obj" % (pid, idx, "_" + fit if fit else "")
 
 
+JOINTS = len(FITS) - 1      # shape slots a pole-joint cell takes past the cells' own
+
+
 def blockstate(prof, texture):
     pid = prof["id"]
     n = len(prof["offsets"])
@@ -704,7 +780,8 @@ def blockstate(prof, texture):
         shape[str(i)] = {"model": "%s/%s" % (MODEL_PREFIX, model_name(pid, i))}
     for k, (idx, _fits) in enumerate(prof["variants"]):
         for f, (fit, _r) in enumerate(FITS[1:]):
-            shape[str(n + 2 * k + f)] = {"model": "%s/%s" % (MODEL_PREFIX, model_name(pid, idx, fit))}
+            shape[str(n + JOINTS * k + f)] = {"model": "%s/%s" % (MODEL_PREFIX,
+                                                                  model_name(pid, idx, fit))}
     return {
         "forge_marker": 1,
         "defaults": {
@@ -744,7 +821,7 @@ def java_enum(profiles):
             "      new int[]{%s}, new int[]{%s})%s"
             % (label, run, len(prof["offsets"]), pid.upper(), label, cells, boxes, fit_cells, sides,
                "," if i < len(profiles) - 1 else ";"))
-    return JAVA_TEMPLATE % {"body": "\n".join(body)}
+    return JAVA_TEMPLATE % {"body": "\n".join(body), "joints": JOINTS}
 
 
 JAVA_TEMPLATE = '''package com.micatechnologies.minecraft.csm.trafficaccessories;
@@ -763,11 +840,17 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
  * {@code {alongArm, up, side}} for an arm that leaves its plane ({@code side} counts to the right
  * of the arm's facing); a double arm's second arm sits at negative {@code alongArm}, past the pole. The arms carry no mount hardware,
  * so a {@code shape} value is a slot alone: the cell index, or, for a cell holding a pole joint on
- * a narrower pole, a slot past the last cell.
+ * a narrower pole or against a full block, a slot past the last cell.
  */
 public enum LuminaireArmProfile implements ICurvedArmProfile {
 
 %(body)s
+
+  /**
+   * The slots a pole-joint cell takes past the cells' own: the thin pole, the pedestal pole, and
+   * the back plate on a full block.
+   */
+  private static final int JOINTS = %(joints)d;
 
   private final String label;
   private final int[][] cells;
@@ -801,7 +884,7 @@ public enum LuminaireArmProfile implements ICurvedArmProfile {
 
   @Override
   public int getShapeCount() {
-    return cells.length + 2 * fitCells.length;
+    return cells.length + JOINTS * fitCells.length;
   }
 
   @Override
@@ -816,10 +899,19 @@ public enum LuminaireArmProfile implements ICurvedArmProfile {
 
   @Override
   public int shapeIndex(int cell, int mountMask, CsmPoleFit fit) {
-    if (fit != CsmPoleFit.LARGE) {
+    return shapeIndex(cell, mountMask, fit, false);
+  }
+
+  /**
+   * A pole-joint cell against a full block that is not a pole draws the back plate its members
+   * bolt to, whatever the fit: the last of its {@link #JOINTS} slots.
+   */
+  @Override
+  public int shapeIndex(int cell, int mountMask, CsmPoleFit fit, boolean againstFullBlock) {
+    if (againstFullBlock || fit != CsmPoleFit.LARGE) {
       for (int k = 0; k < fitCells.length; k++) {
         if (fitCells[k] == cell) {
-          return cells.length + 2 * k + fit.ordinal() - 1;
+          return cells.length + JOINTS * k + (againstFullBlock ? JOINTS : fit.ordinal()) - 1;
         }
       }
     }
@@ -854,7 +946,8 @@ def outputs():
             for (fit, r), m in zip(FITS[1:], fits):
                 files[("asset", MODEL_REL + "/" + model_name(pid, idx, fit))] = m.text(
                     "luminairearm_%s_c%d_%s" % (pid, idx, fit),
-                    "%s, cell %d on the %s pole (radius %.0f)" % (label, idx, fit, r))
+                    "%s, cell %d %s" % (label, idx, "on a full block's face, with its back plate"
+                                        if r is None else "on the %s pole (radius %.0f)" % (fit, r)))
         files[("asset", MODEL_REL + "/luminairearm_%s_inv.obj" % pid)] = inventory_mesh(
             prof["whole"]).text("luminairearm_%s_inv" % pid, "%s, inventory icon" % label)
         for fid, tex, _flabel in finishes_of(pid):

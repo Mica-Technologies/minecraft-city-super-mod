@@ -133,6 +133,22 @@ public interface ICurvedArmProfile {
   int shapeIndex(int cell, int mountMask, CsmPoleFit fit);
 
   /**
+   * As {@link #shapeIndex(int, int, CsmPoleFit)}, for a profile that draws a pole joint
+   * differently against a full block that is not a pole: a luminaire arm on a wooden utility pole
+   * built of logs bolts to a back plate. The default ignores the difference.
+   *
+   * @param cell             the cell index
+   * @param mountMask        the sides with something to mount to
+   * @param fit              the pole fit; {@link CsmPoleFit#LARGE} for a cell with no pole joint
+   * @param againstFullBlock whether the joint's "pole" is a full block that is not a pole
+   *
+   * @return the packed shape value
+   */
+  default int shapeIndex(int cell, int mountMask, CsmPoleFit fit, boolean againstFullBlock) {
+    return shapeIndex(cell, mountMask, fit);
+  }
+
+  /**
    * @return a short name for messages, such as "6x2 mast arm curve"
    */
   String describe();
