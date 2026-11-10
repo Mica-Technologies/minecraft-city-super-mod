@@ -342,6 +342,13 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
           replacement = withPropertyIfPresent(replacement, AbstractBlockRotatableHZEight.FACING,
               state.getValue(AbstractBlockRotatableHZEight.FACING));
         }
+        java.util.Map<String, String> named =
+            ((ICsmRetiringBlock) block).getReplacementProperties();
+        if (named != null) {
+          for (java.util.Map.Entry<String, String> entry : named.entrySet()) {
+            replacement = withNamedProperty(replacement, entry.getKey(), entry.getValue());
+          }
+        }
         worldIn.setBlockState(pos, replacement);
 
         // Configure the replacement block's tile entity with old data
@@ -350,6 +357,22 @@ public abstract class AbstractBlock extends Block implements IHasModel, ICsmBloc
         }
       }
     }
+  }
+
+  /**
+   * {@code state} with the property called {@code name} set to the value called
+   * {@code valueName}, or unchanged if it has no such property or the property no such value.
+   */
+  private static IBlockState withNamedProperty(IBlockState state, String name,
+      String valueName) {
+    IProperty<?> property = state.getBlock().getBlockState().getProperty(name);
+    return property == null ? state : withParsedValue(state, property, valueName);
+  }
+
+  private static <T extends Comparable<T>> IBlockState withParsedValue(IBlockState state,
+      IProperty<T> property, String valueName) {
+    com.google.common.base.Optional<T> value = property.parseValue(valueName);
+    return value.isPresent() ? state.withProperty(property, value.get()) : state;
   }
 
   /** {@code state} with {@code property} set to {@code value}, or unchanged if it has none. */

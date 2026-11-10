@@ -28,7 +28,8 @@ import net.minecraft.world.World;
  *
  * <p>Its first mode steps the finial on a {@link BlockTrafficPolePedestal}: none, then each
  * {@link BlockTrafficPoleFinial.Style} in turn, then none again, placing, restyling and removing
- * the finial block above the pole's top. The modes live in {@link ItemStreetLightConfigToolMode}
+ * the finial block above the pole's top. On a {@link BlockTrafficPoleConcrete} the same mode
+ * switches the pole's own top between its flat cap and its finial. The modes live in {@link ItemStreetLightConfigToolMode}
  * so the decorative light poles can join it later without a second tool.
  *
  * <p>Everything that changes the world or talks to the player happens on the server. The client
@@ -99,12 +100,15 @@ public class ItemStreetLightConfigTool extends AbstractItem {
       EnumFacing side, ItemStack stack) {
     IBlockState clicked = world.getBlockState(pos);
     BlockPos target;
+    if (clicked.getBlock() instanceof BlockTrafficPoleConcrete) {
+      return cycleConcreteTop(player, world, pos, side, stack);
+    }
     if (clicked.getBlock() instanceof BlockTrafficPoleFinial) {
       target = pos;
     } else if (clicked.getBlock() instanceof BlockTrafficPolePedestal) {
       target = topOfStack(world, pos).up();
     } else {
-      say(player, "Not a pedestal traffic pole. A finial only fits a pedestal pole's top.");
+      say(player, "Not a pedestal or concrete traffic pole.");
       return EnumActionResult.FAIL;
     }
 
@@ -150,6 +154,44 @@ public class ItemStreetLightConfigTool extends AbstractItem {
         finial.getDefaultState().withProperty(BlockTrafficPoleFinial.STYLE, first), 3);
     say(player, "Pole finial: " + first.getFriendlyName());
     return EnumActionResult.SUCCESS;
+  }
+
+  /**
+   * Steps the top of the clicked concrete pole between its flat cap and its finial.
+   *
+   * <p>A concrete pole's finial is not a block of its own but the pole's own casting, so this
+   * changes the pole's top block. As with the pedestal pole, a click anywhere on an upright
+   * stack is carried to its top; a pole lying on its side is changed where it was clicked, at
+   * the end it faces.
+   */
+  private static EnumActionResult cycleConcreteTop(EntityPlayer player, World world,
+      BlockPos pos, EnumFacing side, ItemStack stack) {
+    BlockPos target = pos;
+    while (isUprightConcrete(world.getBlockState(target))
+        && target.getY() < world.getHeight() - 1
+        && isUprightConcrete(world.getBlockState(target.up()))) {
+      target = target.up();
+    }
+    if (!player.canPlayerEdit(target, side, stack) || !world.isBlockModifiable(player, target)) {
+      say(player, "You cannot change that pole here.");
+      return EnumActionResult.FAIL;
+    }
+    IBlockState state = world.getBlockState(target);
+    BlockTrafficPoleConcrete.TopStyle[] styles = BlockTrafficPoleConcrete.TopStyle.values();
+    BlockTrafficPoleConcrete.TopStyle next =
+        styles[(state.getValue(BlockTrafficPoleConcrete.TOP).ordinal() + 1) % styles.length];
+    // Through the metadata, which is what decides how the choice is stored: an upright pole
+    // with a choice always faces up.
+    Block block = state.getBlock();
+    world.setBlockState(target, block.getStateFromMeta(block.getMetaFromState(
+        state.withProperty(BlockTrafficPoleConcrete.TOP, next))), 3);
+    say(player, "Concrete pole top: " + next.getFriendlyName());
+    return EnumActionResult.SUCCESS;
+  }
+
+  private static boolean isUprightConcrete(IBlockState state) {
+    return state.getBlock() instanceof BlockTrafficPoleConcrete
+        && state.getValue(BlockTrafficPoleConcrete.FACING).getAxis() == EnumFacing.Axis.Y;
   }
 
   /**

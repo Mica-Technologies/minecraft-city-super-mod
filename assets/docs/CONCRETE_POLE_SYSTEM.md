@@ -34,6 +34,12 @@ shaft show:
 So there are no separate base, middle or top blocks to place. Put a post light on a pole and
 its cap turns into a tenon; break the light and the cap comes back.
 
+**The owner can overrule the top.** The Street Light Configuration Tool's finial mode, clicked
+anywhere on a concrete pole, switches its top between the flat cap and the **finial**: the
+tenon's casting shown in the open as well (the round pole's collar and spigot, the octagon's
+stepped taper). That is what the legacy top pieces always showed, with or without a light on
+them, and a legacy top keeps it when it retires (GitHub #345).
+
 The flanks behave like every other pole in the family. Anything mountable beside the shaft grows
 a mount stub toward it (the family's `large_mount` / `small_mount` models, in concrete).
 `getPoleRadius()` reports 6 or 4, so the pole-fitted arms (light mounts, NOV tapered masts) and
@@ -112,7 +118,22 @@ plinth radius are constructor arguments, passed past `super()` with the pedestal
 `ThreadLocal` trick. It adds `END_NORTH` / `END_SOUTH` (`endn` / `ends`) with four values,
 `none`, `cap`, `tenon` and `base`. All of them are actual state; metadata holds only the facing,
 exactly as it did for the legacy pieces. 6 facings × 16 mount combinations × 16 end combinations
-is 1,536 states.
+is 1,536 model locations.
+
+### The owner's choices: stored, never drawn
+
+`TOP` (`auto`, `finial`) is the one stored property besides the facing. It is an input to
+`getActualState` and nothing else: a finial is the `tenon` end value, so no model is picked by
+`TOP` itself. The block therefore implements `ICsmModelIgnoredProperties` (Core), which gives it
+a state mapper that leaves `TOP` out of the model locations, and the blockstate file does not
+name it. The states double; the variants Forge bakes do not.
+
+The metadata keeps the facing in the six values the pole always used, so every pole already in a
+world reads back unchanged, and puts the choices in the spare ten: 6-10 an upright pole with a
+choice other than the defaults, 11-14 a pole on its side (north, south, west, east) with a
+finial. An upright pole with a choice is always stored facing `UP`; the choice is about the
+world's up, not a model end, and a pole facing `DOWN` draws the same shaft. `topEnd` says which
+end the choice is about: up for an upright pole, the facing for one on its side.
 
 `endStyle` is the pedestal pole's rule with the tenon inserted, in this order:
 
@@ -194,10 +215,17 @@ implement `ICsmRetiringBlock`:
 | `ocpb`, `ocpm`, `ocpt` (NOV Octagon Concrete Pole …) | `trafficpoleverticalconcreteoctagon` |
 
 `AbstractBlock.randomTick` carries the facing across, and the new pole works out its ends from
-its neighbours, so a legacy base-middle-top stack becomes a pole with its plinth and its cap (or
-tenon, under a light) without anything else being done. It happens on random ticks, so a stack
-converts a block at a time over a minute or two of loaded play. Until it has, a new pole stacked
-directly on a legacy piece shows a plinth there.
+its neighbours, so a legacy base-middle-top stack becomes a pole with its plinth and its top
+without anything else being done. What a neighbour cannot tell it, the legacy piece does:
+`ICsmRetiringBlock.getReplacementProperties` names property values for the replacement to start
+with (by name, since the two blocks are in different modules), and the top pieces answer
+`top=finial`. It happens on random ticks, so a stack converts a block at a time over a minute or
+two of loaded play. Until it has, the pole treats a legacy piece that retires into a concrete
+pole as one already, so a half-converted stack has no plinth or cap in the middle of it.
+
+A top piece that converted **before** the finial could be stored (releases up to 2026.11.09)
+became a pole with a flat cap and nothing records what it was. Those are put back by hand with
+the configuration tool.
 
 The legacy blocks stay in Lighting; their replacements are in Roads. On an install with Lighting
 but not Roads, `CsmRegistry.getBlock` finds no replacement and the legacy pieces simply stay as
