@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.codeutils;
 
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -28,6 +29,24 @@ public interface ICsmRetiringBlock {
    */
   @Nullable
   String getReplacementBlockId();
+
+  /**
+   * Property values the replacement starts with, by property name and value name, applied after
+   * the facing has been carried across.
+   *
+   * <p>By name because the retiring block and its replacement may ship in different modules,
+   * neither of which can name the other's classes: a legacy concrete pole top in Lighting tells
+   * the concrete pole in Roads to keep its finial with {@code "top" -> "finial"}. A name the
+   * replacement does not have, or a value it does not know, is skipped.
+   *
+   * @return the property values to set on the replacement, or {@code null} for none
+   *
+   * @since 2026.11
+   */
+  @Nullable
+  default Map<String, String> getReplacementProperties() {
+    return null;
+  }
 
   /**
    * Configures the replacement block's tile entity after block replacement. Called by

@@ -126,4 +126,17 @@ public class BlockRCPT extends AbstractBlockRotatableNSEWUD implements ICsmRetir
   public String getReplacementBlockId() {
     return "trafficpoleverticalconcrete";
   }
+
+  /**
+   * A top piece was its finial: the pole it retires into keeps one, instead of the flat cap a
+   * pole ending in the open would otherwise draw.
+   *
+   * @return the replacement's starting property values
+   *
+   * @since 2026.11
+   */
+  @Override
+  public java.util.Map<String, String> getReplacementProperties() {
+    return java.util.Collections.singletonMap("top", "finial");
+  }
 }
