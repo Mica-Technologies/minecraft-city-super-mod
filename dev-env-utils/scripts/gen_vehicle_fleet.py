@@ -1947,6 +1947,108 @@ def simulate(spec, seconds=240):
     return top, t60
 
 
+# ------------------------------------------------------------------------------------------
+# Braking and steering
+# ------------------------------------------------------------------------------------------
+# Both were IV's defaults, and both were weak for the same reason the top speeds were: the
+# physics runs on the unscaled motion.
+#
+# BRAKING. With the brake on, IV takes `20 * brakingFactor * (sum of the grounded wheels'
+# motiveFriction) / mass` off the motion every tick (AEntityVehicleD_Moving.performGroundOperations;
+# the pedal is on or off, its travel is not read). In world terms that is
+# `BRAKE_UNIT * brakingFactor * friction / mass` m/s^2. The mass is the vehicle's, its parts' and
+# its fuel's, and a full tank is FUEL_CAPACITY / 50 = 1,200 kg. At brakingFactor 1 a police SUV
+# stopped at 0.23 g and a fire engine at 0.14 g: 15 and 25 seconds from 75 mph. So brakingFactor
+# is worked out per vehicle, to stop it at `brake_g` with a full tank. Braking then gets a
+# little stronger as the tank empties, as it does on a real vehicle. Raising the wheels'
+# motiveFriction instead would have changed the traction that limits acceleration too.
+#
+# STEERING. At full lock the heading turns `(45 / wheelbase) * v / 2` degrees a tick, times
+# `0.3 ^ (v * (1 - steeringForceFactor) - 0.35)` once the unscaled motion v passes 0.35 (5 mph).
+# That fade is what makes a car steerable at all at speed, but at the default factor of 0 it is
+# tuned for a speed factor of 1: at 0.35 the motion inside the physics is 2.9 times the speed on
+# the road, and the fade bites that much sooner. A car held 1 g of lateral grip at 40 mph, 0.46 g
+# at 60 and 0.23 g at 75, a turning circle half a kilometre across, and a truck half of that
+# again on its longer wheelbase. steeringForceFactor is worked out per vehicle to give `corner_g`
+# at STEER_MPH. Below that speed the vehicle turns tighter than the figure, above it less; one
+# number cannot flatten the curve. STEER_MPH is the knob for the whole fleet: at 60 the police
+# SUV corners at 1.4 g at 40 mph and 0.5 g at 75, at 70 it is 1.7 g and 0.7 g.
+#
+# Both formulas were checked in the dev client (2026-11-10, a police SUV on flat ground, the
+# vehicle entity's position read every ten ticks): 0.91 g of braking against 0.90 predicted, and
+# 34 degrees a second of yaw at 51 mph against 34.9.
+#
+# What the pack cannot change is how fast the wheel itself turns under the keys: 2 degrees a
+# tick to a 45 degree lock, a second and a bit, from the player's own `steeringControlRate` in
+# mtsconfigclient.json.
+GRAVITY = 9.81
+BRAKE_UNIT = 20 * SPEED_FACTOR * 20 * 20   # IV's per-tick braking term, as world m/s^2
+WHEEL_MOTIVE_FRICTION = 0.7
+FUEL_MASS = FUEL_CAPACITY / 50.0           # EntityFluidTank.getMass, with a full tank
+STEER_MPH = 65.0                           # the speed corner_g is met at
+MPH_TO_MS = 0.44704
+BRAKE_G_BAND = (0.6, 1.1)                  # --check: every motorized vehicle stops in this range
+
+
+def handling_class(spec):
+    """(brake g, corner g) for a vehicle by its weight, unless its spec sets `brake_g` or
+    `corner_g`: a car, a van or pickup, a medium truck, a heavy one."""
+    mass = spec['mass']
+    if mass <= 1700:
+        return 1.0, 0.95
+    if mass <= 3000:
+        return 0.9, 0.85
+    if mass <= 5000:
+        return 0.8, 0.7
+    return 0.7, 0.6
+
+
+def braking_factor(spec):
+    """The brakingFactor that stops the vehicle at its brake g with a full tank."""
+    g = spec.get('brake_g', handling_class(spec)[0])
+    friction = WHEEL_MOTIVE_FRICTION * 2 * len(spec['wheels'])
+    return round(g * GRAVITY * (spec['mass'] + FUEL_MASS) / (BRAKE_UNIT * friction), 3)
+
+
+def brake_g(spec):
+    """The deceleration the written brakingFactor gives with a full tank, in g."""
+    friction = WHEEL_MOTIVE_FRICTION * 2 * len(spec['wheels'])
+    return BRAKE_UNIT * braking_factor(spec) * friction / (spec['mass'] + FUEL_MASS) / GRAVITY
+
+
+def wheelbase(spec):
+    zs = [z for _, z, _ in spec['wheels']]
+    return max(zs) - min(zs)
+
+
+def lateral_g(spec, mph, factor):
+    """The lateral acceleration at full lock at a road speed, in g, for a steeringForceFactor."""
+    v = mph / TICK_MPH
+    rate = 45.0 / wheelbase(spec) * v / 2.0          # degrees a tick
+    if v > 0.35:
+        rate *= 0.3 ** (v * (1.0 - factor) - 0.35)
+    return math.radians(rate) * 20 * mph * MPH_TO_MS / GRAVITY
+
+
+def steering_force_factor(spec):
+    """The steeringForceFactor that gives the vehicle its corner g at STEER_MPH, never below
+    IV's default of 0."""
+    target = spec.get('corner_g', handling_class(spec)[1])
+    v = STEER_MPH / TICK_MPH
+    rate = math.degrees(target * GRAVITY / (STEER_MPH * MPH_TO_MS)) / 20.0   # degrees a tick
+    fade = rate / (45.0 / wheelbase(spec) * v / 2.0)
+    if fade >= 1.0:
+        return 1.0
+    return round(min(1.0, max(0.0, 1.0 - (math.log(fade) / math.log(0.3) + 0.35) / v)), 3)
+
+
+def stop_from(spec, mph):
+    """(seconds, metres) to stop from a road speed on the brakes alone."""
+    a = brake_g(spec) * GRAVITY
+    v = mph * MPH_TO_MS
+    return v / a, v * v / (2.0 * a)
+
+
 def speed_report():
     """Each motorized vehicle's gearing and simulated performance, and whether it is in band."""
     lines, bad = [], []
@@ -1955,12 +2057,19 @@ def speed_report():
             continue
         top, t60 = simulate(spec)
         road = 'ceiling_mph' in spec
-        lines.append('%-22s axle %5.2f  top %5.1f mph  0-60 %s%s' % (
-            name, axle_ratio(spec), top, '%5.1f s' % t60 if t60 else '   -   ',
-            '' if road else '  (off-road, not banded)'))
+        seconds, metres = stop_from(spec, 60.0)
+        factor = steering_force_factor(spec)
+        lines.append('%-22s axle %5.2f  top %5.1f mph  0-60 %s  60-0 %4.1f s %3.0f m (%.2f g)'
+                     '  corner %.2f g at 40, %.2f at %.0f%s' % (
+                         name, axle_ratio(spec), top, '%5.1f s' % t60 if t60 else '   -   ',
+                         seconds, metres, brake_g(spec), lateral_g(spec, 40.0, factor),
+                         lateral_g(spec, STEER_MPH, factor), STEER_MPH,
+                         '' if road else '  (off-road, not banded)'))
         band = spec.get('band', SPEED_BAND)
         if road and not band[0] <= top <= band[1]:
             bad.append(name)
+        if not BRAKE_G_BAND[0] <= brake_g(spec) <= BRAKE_G_BAND[1]:
+            bad.append(name + ' (brakes)')
     return lines, bad
 
 
@@ -2272,7 +2381,9 @@ def vehicle_json(name, v):
                                        'minecraft:redstone_block:0:1']]},
         'motorized': {'emptyMass': spec['mass'], 'fuelCapacity': FUEL_CAPACITY,
                       'defaultFuelQty': FUEL_CAPACITY, 'axleRatio': axle_ratio(spec),
-                      'brakingFactor': 1.0, 'dragCoefficient': spec.get('drag', (0.5, 0))[0],
+                      'brakingFactor': braking_factor(spec),
+                      'steeringForceFactor': steering_force_factor(spec),
+                      'dragCoefficient': spec.get('drag', (0.5, 0))[0],
                       'crossSectionalArea': spec.get('drag', (0.5, 0))[1],
                       'hasHeadlights': True, 'hasRunningLights': True,
                       'hasTurnSignals': True, 'litVariable': 'headlight',
@@ -2674,8 +2785,8 @@ def main():
         return
     if bad:
         print('\n'.join(lines))
-        print('top speed outside its band (%.0f-%.0f mph unless the spec sets one): %s'
-              % (SPEED_BAND + (', '.join(bad),)))
+        print('top speed outside its band (%.0f-%.0f mph unless the spec sets one), or brakes '
+              'outside %.1f-%.1f g: %s' % (SPEED_BAND + BRAKE_G_BAND + (', '.join(bad),)))
         sys.exit(1)
     files = catalogue()
     drift = []
