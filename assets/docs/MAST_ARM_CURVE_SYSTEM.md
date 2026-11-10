@@ -279,24 +279,32 @@ comparison is not defeated by a shifted sample grid.
 
 ## Luminaire arms
 
-The same machinery carries street lights (GitHub #99): `gen_luminaire_arms.py` writes the Caltrans
-davit arms (6, 8, 10, 12 and 15 ft) and Hapco-style truss arms (8, 10, 12 and 15 ft), each single
-or double, in galvanized and silver: 36 blocks, `luminairearm<size><finish>`. They are
-`BlockTrafficPoleMastArmCurve`s built from a `LuminaireArmProfile` rather than a
-`MastArmCurveProfile`; the block works through `ICurvedArmProfile`, which both enums satisfy (the
-mast arm one through a small adapter, so its generator and output are untouched). Placement,
-all-or-nothing, demolition and the measured hitboxes are the curves' own.
+The same machinery carries street lights (GitHub #99): `gen_luminaire_arms.py` writes the truss
+arms (Hapco's RTA bracket; 8, 10, 12 and 15 ft) and the Caltrans arms (6, 8, 10, 12 and 15 ft),
+each single or double, each with a curved or a straight upsweep, in the pole family's six colours
+(galvanized, silver, black, white, tan, concrete): 216 blocks, `luminairearm<size><finish>`, a
+straight one `luminairearm<size>straight...`. They are `BlockTrafficPoleMastArmCurve`s built from a
+`LuminaireArmProfile` rather than a `MastArmCurveProfile`; the block works through
+`ICurvedArmProfile`, which both enums satisfy (the mast arm one through a small adapter, so its
+generator and output are untouched). Placement, all-or-nothing, demolition and the measured
+hitboxes are the curves' own.
 
 **Scale and shape.** The street lights are drawn about 1.2-1.4 times true size, so the arms are
-too, at 1.4: a 6 ft arm runs 2 blocks from the pole's face, a 15 ft arm 6. The rise is Caltrans'
-tip height above the pole top for that length (Standard Plans ES-6A: 1'6", 2'0", 2'9" (drawn 3'0",
-so the 10 ft root stays on the pole's side), 3'9", 4'3"), at the same 1.4; the centreline is the
-curves' parabola, level at the tip, so every arm leaves its pole at about 30 degrees. The tube is
-4.2 across at the root (a 5.4 boot) and 2.8 at the tip, and the tip ends at `y 1.375` on the last
-cell's far face, the centre of `ARM_TIP` in `gen_streetlight_fixtures.py`: place any street light
-against the tip and its neck takes the arm. The truss arms have a curved upper member (3'3" rise), a
-straight lower member leaving the pole 2'0" lower and meeting the upper two thirds out, and one
-vertical strut a third out. The lower root sits in the block under the arm's root, beside the pole.
+too, at 1.4: a 6 ft arm runs 2 blocks from the pole's face, a 15 ft arm 6. The tip ends at
+`y 1.375` on the last cell's far face, the centre of `ARM_TIP` in `gen_streetlight_fixtures.py`:
+place any street light against the tip and its neck takes the arm. A truss arm has an upper member
+(3'3" rise, 3.6 across at the root and 2.8 at the tip, a 5.4 boot), a straight lower member leaving
+the pole 2'0" lower and meeting the upper two thirds out, and one vertical strut a third out; the
+lower root sits in the block under the arm's root, beside the pole. **A Caltrans arm is the truss
+arm of its length without the lower member and the strut**, at the same rise (the requester's
+review, 2026-11; they were Caltrans' ES-6A davits, lower and fatter, before). The 6 ft one, which
+no truss matches, keeps Caltrans' own 1'6" rise and tube. Arms placed before that change keep their
+old cell indices and have to be broken and placed again.
+
+**Curved or straight (`upsweep`).** Curved is the curves' parabola, level at the tip. Straight
+climbs at one slope to an elbow 0.7 of a block short of the tip and runs level from there, the
+corner eased over a 0.7 block parabolic bend so the tube turns without a crease. Either way the
+tip arrives level, which is what a fixture's neck needs.
 
 **Los Angeles and Anaheim arms.** `laupsweep8ft/10ft/12ft` are the 1950s-60s Los Angeles upsweep
 davits (the black museum pole in BSL frame 02): the Caltrans tube with a steeper rise (4'6", 5'0",
@@ -309,12 +317,20 @@ smoothly into the arm, with a curl hung in the angle; it comes in Anaheim green 
 specifies. The brace and the tie rod are pole members, so they get saddle cuts per fit like the
 truss's lower member.
 
-**The Van Nuys Special.** `vannuystriple` is Los Angeles' three-headed davit (BSL CD-955, Van
-Nuys Boulevard, early 1970s): three slim arms parting at one point on the pole and sweeping up and
-out in one plane, nested, with runs of 3, 4 and 5 blocks. Each tip lands on the fixtures' tip
-height in its own row (rows 3, 2 and 1 above the root), so three street lights fit, each against
-its own tip, a block apart and a block lower each time going out. It is what the requester
-remembered as the Hollywood "pitchfork".
+**The Van Nuys Special.** `vannuystriple` is Los Angeles' three-headed light (BSL CD-955, Van
+Nuys Boulevard, early 1970s): a pitchfork laid flat over the road. The pole parts at its top, at
+one point, into three slim tubes, each one smooth arc from straight up to level; the middle one
+reaches straight out, the outer two splay to either side, and all three end at the same height
+and reach. It was first built as three arms nested in one vertical plane, which is what the
+Bureau's well-known photo, taken along the street, looks like; a view from across the street
+shows the level row, and the requester corrected it. So it stands **on** the pole: the block is
+placed on the pole's top face and is the fork (a short flared socket, no pole joint, so no fit
+variants), and it reaches the way the placer faces. The tips are two blocks apart at the far face
+of the fourth block out, two rows up, so three street lights fit side by side. It is the one arm
+that leaves its plane: `Member.side` gives a centreline a sideways offset (here `sin^2` of the
+arc's angle, so the tube leans neither where it leaves the fork nor where it meets the fixture),
+cells are `{along, up, side}`, and the profile's offsets have three elements, which the block
+already understood for the diagonal truss arms.
 
 **Double arms.** The second arm is the first turned half round about the pole, so its cells are at
 negative `alongArm` (two blocks behind the root and on), each cell's model the first arm's turned
@@ -329,8 +345,8 @@ second root), and the block reads `CsmPoleFit.behind` that way. There is no moun
 luminaire arm, so a `shape` value is a slot alone: the cell index, or a slot past the last cell
 for a pole-joint cell on a narrower pole.
 
-**Not done:** mount stubs along a luminaire arm; finishes beyond galvanized and silver (black on
-the LA arms, green on the Anaheim arm) for the Caltrans and truss arms.
+**Not done:** mount stubs along a luminaire arm; the pole colours for the Los Angeles arms and
+the Van Nuys Special (galvanized and silver, black too on the LA arms; green on the Anaheim arm).
 
 ## Truss signal mast arms
 

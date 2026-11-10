@@ -103,11 +103,13 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   cell plus all 30 blockstates AND the Java enum holding the cell layout, so the placement code
   cannot disagree with the geometry it was split on. It has no `--check`: running it rewrites
   the tree, so `git status` afterwards is the check
-- `gen_luminaire_arms.py` -- the luminaire arms (GitHub #99): Caltrans davit arms 6/8/10/12/15 ft
-  and Hapco-style truss arms 8/10/12/15 ft, single and double, in galvanized and silver; the
+- `gen_luminaire_arms.py` -- the luminaire arms (GitHub #99): Hapco-style truss arms 8/10/12/15 ft
+  and Caltrans arms 6/8/10/12/15 ft (the truss arm's upsweep without its lower member), single and
+  double, curved or straight (`upsweep`), in the six pole colours (`POLE_FINISHES`): 216 blocks; the
   Los Angeles upsweep arms 8/10/12 ft (with a tie rod; galvanized, silver, black) and the
   Anaheim Resort Area 8 ft scroll arm (green only: `FINISHES_FOR` sets a profile's finishes); the
-  Van Nuys Special triple davit (three nested arms, a fixture tip each). Built
+  Van Nuys Special, a flat three-tine fork placed ON the pole's top (the one arm that leaves its
+  plane: `Member.side`, three-element cells). Built
   like the mast arm curves (one block per cell, cell list and hitboxes in the generated
   `LuminaireArmProfile.java`) and placed by the same block class; the tip lands where every
   street light's neck expects an arm. Writes the per-cell OBJs, the pole-joint cells once per

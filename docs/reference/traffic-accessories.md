@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "498 blocks in this tab"
+!!! info "678 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -47,26 +47,126 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Cable Barrier (Double Sided) | `csm:cable_barrier_double` | 1.2 | 6 | pickaxe | 0 |
 | Cable Barrier Anchor | `csm:cable_barrier_anchor` | 1.2 | 6 | pickaxe | 0 |
 | California Heights Lamp Post | `csm:decopolecalheights` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 10 ft (Black) | `csm:luminairearmcaltrans10ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 10 ft (Concrete) | `csm:luminairearmcaltrans10ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 10 ft (Tan) | `csm:luminairearmcaltrans10ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 10 ft (White) | `csm:luminairearmcaltrans10ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 12 ft (Black) | `csm:luminairearmcaltrans12ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 12 ft (Concrete) | `csm:luminairearmcaltrans12ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 12 ft (Silver) | `csm:luminairearmcaltrans12ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 12 ft (Tan) | `csm:luminairearmcaltrans12ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 12 ft (White) | `csm:luminairearmcaltrans12ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 15 ft (Black) | `csm:luminairearmcaltrans15ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 15 ft (Concrete) | `csm:luminairearmcaltrans15ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmcaltrans15ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 15 ft (Silver) | `csm:luminairearmcaltrans15ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 15 ft (Tan) | `csm:luminairearmcaltrans15ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 15 ft (White) | `csm:luminairearmcaltrans15ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 6 ft (Black) | `csm:luminairearmcaltrans6ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 6 ft (Concrete) | `csm:luminairearmcaltrans6ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 6 ft (Galvanized) | `csm:luminairearmcaltrans6ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 6 ft (Silver) | `csm:luminairearmcaltrans6ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 6 ft (Tan) | `csm:luminairearmcaltrans6ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 6 ft (White) | `csm:luminairearmcaltrans6ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 8 ft (Black) | `csm:luminairearmcaltrans8ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 8 ft (Concrete) | `csm:luminairearmcaltrans8ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmcaltrans8ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Double Luminaire Arm 8 ft (Silver) | `csm:luminairearmcaltrans8ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 8 ft (Tan) | `csm:luminairearmcaltrans8ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Double Luminaire Arm 8 ft (White) | `csm:luminairearmcaltrans8ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 10 ft (Black) | `csm:luminairearmcaltrans10ftblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 10 ft (Concrete) | `csm:luminairearmcaltrans10ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 10 ft (Tan) | `csm:luminairearmcaltrans10fttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 10 ft (White) | `csm:luminairearmcaltrans10ftwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 12 ft (Black) | `csm:luminairearmcaltrans12ftblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 12 ft (Concrete) | `csm:luminairearmcaltrans12ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 12 ft (Silver) | `csm:luminairearmcaltrans12ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 12 ft (Tan) | `csm:luminairearmcaltrans12fttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 12 ft (White) | `csm:luminairearmcaltrans12ftwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 15 ft (Black) | `csm:luminairearmcaltrans15ftblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 15 ft (Concrete) | `csm:luminairearmcaltrans15ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmcaltrans15ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 15 ft (Silver) | `csm:luminairearmcaltrans15ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 15 ft (Tan) | `csm:luminairearmcaltrans15fttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 15 ft (White) | `csm:luminairearmcaltrans15ftwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 6 ft (Black) | `csm:luminairearmcaltrans6ftblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 6 ft (Concrete) | `csm:luminairearmcaltrans6ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 6 ft (Galvanized) | `csm:luminairearmcaltrans6ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 6 ft (Silver) | `csm:luminairearmcaltrans6ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 6 ft (Tan) | `csm:luminairearmcaltrans6fttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 6 ft (White) | `csm:luminairearmcaltrans6ftwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 8 ft (Black) | `csm:luminairearmcaltrans8ftblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 8 ft (Concrete) | `csm:luminairearmcaltrans8ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmcaltrans8ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Caltrans Luminaire Arm 8 ft (Silver) | `csm:luminairearmcaltrans8ftsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 8 ft (Tan) | `csm:luminairearmcaltrans8fttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Luminaire Arm 8 ft (White) | `csm:luminairearmcaltrans8ftwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 10 ft (Black) | `csm:luminairearmcaltrans10ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 10 ft (Concrete) | `csm:luminairearmcaltrans10ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 10 ft (Tan) | `csm:luminairearmcaltrans10ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 10 ft (White) | `csm:luminairearmcaltrans10ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 12 ft (Black) | `csm:luminairearmcaltrans12ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 12 ft (Concrete) | `csm:luminairearmcaltrans12ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 12 ft (Silver) | `csm:luminairearmcaltrans12ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 12 ft (Tan) | `csm:luminairearmcaltrans12ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 12 ft (White) | `csm:luminairearmcaltrans12ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 15 ft (Black) | `csm:luminairearmcaltrans15ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 15 ft (Concrete) | `csm:luminairearmcaltrans15ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmcaltrans15ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 15 ft (Silver) | `csm:luminairearmcaltrans15ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 15 ft (Tan) | `csm:luminairearmcaltrans15ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 15 ft (White) | `csm:luminairearmcaltrans15ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 6 ft (Black) | `csm:luminairearmcaltrans6ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 6 ft (Concrete) | `csm:luminairearmcaltrans6ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 6 ft (Galvanized) | `csm:luminairearmcaltrans6ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 6 ft (Silver) | `csm:luminairearmcaltrans6ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 6 ft (Tan) | `csm:luminairearmcaltrans6ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 6 ft (White) | `csm:luminairearmcaltrans6ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 8 ft (Black) | `csm:luminairearmcaltrans8ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 8 ft (Concrete) | `csm:luminairearmcaltrans8ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmcaltrans8ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 8 ft (Silver) | `csm:luminairearmcaltrans8ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 8 ft (Tan) | `csm:luminairearmcaltrans8ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Double Luminaire Arm 8 ft (White) | `csm:luminairearmcaltrans8ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 10 ft (Black) | `csm:luminairearmcaltrans10ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 10 ft (Concrete) | `csm:luminairearmcaltrans10ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmcaltrans10ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 10 ft (Silver) | `csm:luminairearmcaltrans10ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 10 ft (Tan) | `csm:luminairearmcaltrans10ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 10 ft (White) | `csm:luminairearmcaltrans10ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 12 ft (Black) | `csm:luminairearmcaltrans12ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 12 ft (Concrete) | `csm:luminairearmcaltrans12ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmcaltrans12ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 12 ft (Silver) | `csm:luminairearmcaltrans12ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 12 ft (Tan) | `csm:luminairearmcaltrans12ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 12 ft (White) | `csm:luminairearmcaltrans12ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 15 ft (Black) | `csm:luminairearmcaltrans15ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 15 ft (Concrete) | `csm:luminairearmcaltrans15ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmcaltrans15ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 15 ft (Silver) | `csm:luminairearmcaltrans15ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 15 ft (Tan) | `csm:luminairearmcaltrans15ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 15 ft (White) | `csm:luminairearmcaltrans15ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 6 ft (Black) | `csm:luminairearmcaltrans6ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 6 ft (Concrete) | `csm:luminairearmcaltrans6ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 6 ft (Galvanized) | `csm:luminairearmcaltrans6ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 6 ft (Silver) | `csm:luminairearmcaltrans6ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 6 ft (Tan) | `csm:luminairearmcaltrans6ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 6 ft (White) | `csm:luminairearmcaltrans6ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 8 ft (Black) | `csm:luminairearmcaltrans8ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 8 ft (Concrete) | `csm:luminairearmcaltrans8ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmcaltrans8ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 8 ft (Silver) | `csm:luminairearmcaltrans8ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 8 ft (Tan) | `csm:luminairearmcaltrans8ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Caltrans Straight Luminaire Arm 8 ft (White) | `csm:luminairearmcaltrans8ftstraightwhite` | 2 | 10 | pickaxe | 1 |
 | Channelizer | `csm:channelizer_tube` | 0.6 | 3 | pickaxe | 0 |
 | Channelizer (Lime) | `csm:channelizer_tube_lime` | 0.6 | 3 | pickaxe | 0 |
 | Channelizer-Cade (Keep Left) | `csm:channelizer_cade_left` | 0.6 | 3 | pickaxe | 0 |
@@ -96,14 +196,30 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Doghouse Signal Border (Yellow/Black) | `csm:tldoghouseborderyellowblack` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Border (Yellow/Yellow) | `csm:tldoghouseborderyellowyellow` | 2 | 10 | pickaxe | 1 |
 | Doghouse Signal Cover | `csm:tldcover` |  | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 10 ft (Black) | `csm:luminairearmtruss10ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 10 ft (Concrete) | `csm:luminairearmtruss10ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmtruss10ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 10 ft (Silver) | `csm:luminairearmtruss10ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 10 ft (Tan) | `csm:luminairearmtruss10ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 10 ft (White) | `csm:luminairearmtruss10ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 12 ft (Black) | `csm:luminairearmtruss12ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 12 ft (Concrete) | `csm:luminairearmtruss12ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmtruss12ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 12 ft (Silver) | `csm:luminairearmtruss12ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 12 ft (Tan) | `csm:luminairearmtruss12ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 12 ft (White) | `csm:luminairearmtruss12ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 15 ft (Black) | `csm:luminairearmtruss15ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 15 ft (Concrete) | `csm:luminairearmtruss15ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmtruss15ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 15 ft (Tan) | `csm:luminairearmtruss15ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 15 ft (White) | `csm:luminairearmtruss15ftdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 8 ft (Black) | `csm:luminairearmtruss8ftdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 8 ft (Concrete) | `csm:luminairearmtruss8ftdoubleconcrete` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftdoublegalvanized` | 2 | 10 | pickaxe | 1 |
 | Double Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 8 ft (Tan) | `csm:luminairearmtruss8ftdoubletan` | 2 | 10 | pickaxe | 1 |
+| Double Truss Luminaire Arm 8 ft (White) | `csm:luminairearmtruss8ftdoublewhite` | 2 | 10 | pickaxe | 1 |
 | Double Vertical Traffic Pole (Octagon Concrete) | `csm:trafficpolevertdblconcreteoctagon` |  | 10 | pickaxe | 1 |
 | Dynamic Highway Guide Sign | `csm:dynamic_guide_sign` | 2 | 10 | pickaxe | 1 |
 | Dynamic Signal Cover | `csm:tlvcover` | 2.0 | 10.0 | pickaxe | 1 |
@@ -256,6 +372,54 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Speed Camera (Side Arm, Black) | `csm:enforcement_speed_camera_side_black` | 2 | 10 | pickaxe | 1 |
 | Speed Camera (Side Arm, White) | `csm:enforcement_speed_camera_side_white` | 2 | 10 | pickaxe | 1 |
 | Steel Road Plate | `csm:road_plate` | 0.6 | 3 | pickaxe | 0 |
+| Straight Double Truss Luminaire Arm 10 ft (Black) | `csm:luminairearmtruss10ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 10 ft (Concrete) | `csm:luminairearmtruss10ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmtruss10ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 10 ft (Silver) | `csm:luminairearmtruss10ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 10 ft (Tan) | `csm:luminairearmtruss10ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 10 ft (White) | `csm:luminairearmtruss10ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 12 ft (Black) | `csm:luminairearmtruss12ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 12 ft (Concrete) | `csm:luminairearmtruss12ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmtruss12ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 12 ft (Silver) | `csm:luminairearmtruss12ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 12 ft (Tan) | `csm:luminairearmtruss12ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 12 ft (White) | `csm:luminairearmtruss12ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 15 ft (Black) | `csm:luminairearmtruss15ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 15 ft (Concrete) | `csm:luminairearmtruss15ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmtruss15ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 15 ft (Tan) | `csm:luminairearmtruss15ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 15 ft (White) | `csm:luminairearmtruss15ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 8 ft (Black) | `csm:luminairearmtruss8ftstraightdoubleblack` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 8 ft (Concrete) | `csm:luminairearmtruss8ftstraightdoubleconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftstraightdoublegalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftstraightdoublesilver` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 8 ft (Tan) | `csm:luminairearmtruss8ftstraightdoubletan` | 2 | 10 | pickaxe | 1 |
+| Straight Double Truss Luminaire Arm 8 ft (White) | `csm:luminairearmtruss8ftstraightdoublewhite` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 10 ft (Black) | `csm:luminairearmtruss10ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 10 ft (Concrete) | `csm:luminairearmtruss10ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmtruss10ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 10 ft (Silver) | `csm:luminairearmtruss10ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 10 ft (Tan) | `csm:luminairearmtruss10ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 10 ft (White) | `csm:luminairearmtruss10ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 12 ft (Black) | `csm:luminairearmtruss12ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 12 ft (Concrete) | `csm:luminairearmtruss12ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmtruss12ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 12 ft (Silver) | `csm:luminairearmtruss12ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 12 ft (Tan) | `csm:luminairearmtruss12ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 12 ft (White) | `csm:luminairearmtruss12ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 15 ft (Black) | `csm:luminairearmtruss15ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 15 ft (Concrete) | `csm:luminairearmtruss15ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmtruss15ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 15 ft (Tan) | `csm:luminairearmtruss15ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 15 ft (White) | `csm:luminairearmtruss15ftstraightwhite` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 8 ft (Black) | `csm:luminairearmtruss8ftstraightblack` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 8 ft (Concrete) | `csm:luminairearmtruss8ftstraightconcrete` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftstraightgalvanized` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftstraightsilver` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 8 ft (Tan) | `csm:luminairearmtruss8ftstraighttan` | 2 | 10 | pickaxe | 1 |
+| Straight Truss Luminaire Arm 8 ft (White) | `csm:luminairearmtruss8ftstraightwhite` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign | `csm:trafficstreetnamesign` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign (Double) | `csm:trafficstreetnamesigndouble` | 2 | 10 | pickaxe | 1 |
 | Street Name Sign Mount | `csm:trafficstreetnamesignmount` | 2 | 10 | pickaxe | 1 |
@@ -326,14 +490,30 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Traffic Signal Mast Fatigue Mitigator (Style 4) | `csm:tlfatiguemitigator4` | 2 | 10 | pickaxe | 1 |
 | Traffic Signal Pole Mount (Style 2) | `csm:signalpolemount2` |  | 10 | pickaxe | 1 |
 | Traffic Signal Preemption Beacon (Red) | `csm:tlpreemptbeacon` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 10 ft (Black) | `csm:luminairearmtruss10ftblack` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 10 ft (Concrete) | `csm:luminairearmtruss10ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 10 ft (Galvanized) | `csm:luminairearmtruss10ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 10 ft (Silver) | `csm:luminairearmtruss10ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 10 ft (Tan) | `csm:luminairearmtruss10fttan` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 10 ft (White) | `csm:luminairearmtruss10ftwhite` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 12 ft (Black) | `csm:luminairearmtruss12ftblack` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 12 ft (Concrete) | `csm:luminairearmtruss12ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 12 ft (Galvanized) | `csm:luminairearmtruss12ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 12 ft (Silver) | `csm:luminairearmtruss12ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 12 ft (Tan) | `csm:luminairearmtruss12fttan` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 12 ft (White) | `csm:luminairearmtruss12ftwhite` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 15 ft (Black) | `csm:luminairearmtruss15ftblack` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 15 ft (Concrete) | `csm:luminairearmtruss15ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 15 ft (Galvanized) | `csm:luminairearmtruss15ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 15 ft (Silver) | `csm:luminairearmtruss15ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 15 ft (Tan) | `csm:luminairearmtruss15fttan` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 15 ft (White) | `csm:luminairearmtruss15ftwhite` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 8 ft (Black) | `csm:luminairearmtruss8ftblack` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 8 ft (Concrete) | `csm:luminairearmtruss8ftconcrete` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 8 ft (Galvanized) | `csm:luminairearmtruss8ftgalvanized` | 2 | 10 | pickaxe | 1 |
 | Truss Luminaire Arm 8 ft (Silver) | `csm:luminairearmtruss8ftsilver` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 8 ft (Tan) | `csm:luminairearmtruss8fttan` | 2 | 10 | pickaxe | 1 |
+| Truss Luminaire Arm 8 ft (White) | `csm:luminairearmtruss8ftwhite` | 2 | 10 | pickaxe | 1 |
 | Truss Signal Mast Arm, Diagonal, 5 Blocks (Black) | `csm:trusssignalarmdiagonal5black` | 2 | 10 | pickaxe | 1 |
 | Truss Signal Mast Arm, Diagonal, 5 Blocks (Galvanized) | `csm:trusssignalarmdiagonal5galvanized` | 2 | 10 | pickaxe | 1 |
 | Truss Signal Mast Arm, Diagonal, 5 Blocks (Silver) | `csm:trusssignalarmdiagonal5silver` | 2 | 10 | pickaxe | 1 |

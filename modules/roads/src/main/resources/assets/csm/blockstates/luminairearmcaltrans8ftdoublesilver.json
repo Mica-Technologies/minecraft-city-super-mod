@@ -37,16 +37,22 @@
         "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c7.obj"
       },
       "8": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c0_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c8.obj"
       },
       "9": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c0_pedestal.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c9.obj"
       },
       "10": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c4_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c0_thin.obj"
       },
       "11": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c4_pedestal.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c0_pedestal.obj"
+      },
+      "12": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c5_thin.obj"
+      },
+      "13": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ftdouble_c5_pedestal.obj"
       }
     },
     "facing": {

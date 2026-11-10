@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 """
-Generates the multi-block luminaire arms (GitHub #99): the Caltrans davit arms that carry a street
-light out from its pole, single and double, and the Hapco-style truss arms used across New
-England, single and double.
+Generates the multi-block luminaire arms (GitHub #99): the truss arms used across New England
+(Hapco's RTA bracket) and the Caltrans arms, which are the truss arm's upsweep without the member
+under it, each single and double, each with a curved or a straight upsweep, in every pole colour;
+and the Los Angeles specials.
+
+CURVED AND STRAIGHT
+-------------------
+An upsweep is bent pipe or straight pipe. Curved, it is the parabola that levels off at the tip.
+Straight, it climbs at one slope to an elbow 0.7 of a block short of the tip and runs level from
+there, so a street light's neck meets it square either way (`upsweep`).
 
 WHY A SEPARATE GENERATOR
 ------------------------
@@ -25,9 +32,10 @@ pole top for each length (Standard Plans ES-6A: 1'6", 2'0", 2'9", 3'9", 4'3"); t
 as the arm's rise from where it leaves the pole, at the same 1.4. Every arm then leaves its pole at
 about 30 degrees, the parabola levelling to the horizontal at the tip (the mast arm curves' rule).
 
-The truss arms follow Hapco's RTA truss bracket: a curved, tapered upper member, a straight lower
+The truss arms follow Hapco's RTA truss bracket: a tapered upper member, a straight lower
 member leaving the pole lower down and meeting the upper about two thirds of the way out, and one
-vertical strut. 8 / 10 / 12 / 15 ft.
+vertical strut. 8 / 10 / 12 / 15 ft. The Caltrans arms of those lengths are that upper member
+alone, at the same rise; the 6 ft one, which no truss matches, keeps Caltrans' own 1'6".
 
 THE POLE JOINT
 --------------
@@ -72,6 +80,15 @@ FINISHES = [
     ("silver", "csm:blocks/trafficsignals/shared_textures/metal_silver", "Silver"),
 ]
 
+# The pole family's six colours, for the arms that come in all of them (the Caltrans and truss
+# arms): the first two are FINISHES, whose ids the first release registered.
+POLE_FINISHES = FINISHES + [
+    ("black", "csm:blocks/trafficsignals/shared_textures/metal_black", "Black"),
+    ("white", "csm:blocks/trafficsignals/shared_textures/metal_mattewhite", "White"),
+    ("tan", "csm:blocks/trafficaccessories/shared_textures/metal_mattetan", "Tan"),
+    ("concrete", "csm:blocks/trafficsignals/shared_textures/concrete_light_pole", "Concrete"),
+]
+
 # Finishes a profile is offered in, where it is not FINISHES: the Anaheim arm only ever comes in
 # the city's P7-Green (the decorative poles' swatch, in Core).
 ANAHEIM_GREEN = ("green", "csm:blocks/decorativepoles/paint_anaheim_green", "Anaheim Green")
@@ -85,6 +102,8 @@ FINISHES_FOR = {
 
 
 def finishes_of(pid):
+    if pid.startswith(("caltrans", "truss")):
+        return POLE_FINISHES
     return FINISHES_FOR.get(pid, FINISHES)
 
 
@@ -114,25 +133,24 @@ def ft_px(feet):
     return feet * FT * SCALE * PX_PER_M
 
 
-# (id, kind, run in blocks, rise in px, length in ft, label)
-CALTRANS = [
-    ("caltrans6ft", 2, ft_px(1.5), 6),
-    ("caltrans8ft", 3, ft_px(2.0), 8),
-    # Caltrans' 2'9" puts this tip one row up from a root too low in its block; 3'0" keeps the
-    # root on the pole's side at y 13 (a 3 in rounding of the drawing's height, recorded here).
-    ("caltrans10ft", 4, ft_px(3.0), 10),
-    ("caltrans12ft", 5, ft_px(3.75), 12),
-    ("caltrans15ft", 6, ft_px(4.25), 15),
-]
 # Hapco RTA truss: the upper member's rise 3'3"; the two members leave the pole 2'0" apart.
+TRUSS_RISE = ft_px(3.25)
+TRUSS_DEPTH = ft_px(2.0)
+# (id, run in blocks, rise in px, length in ft, tube radii at the root and the tip). A Caltrans arm
+# is the truss arm of its length without the lower member; the 6 ft one is Caltrans' own davit.
+CALTRANS = [
+    ("caltrans6ft", 2, ft_px(1.5), 6, (R_ROOT, R_TIP)),
+    ("caltrans8ft", 3, TRUSS_RISE, 8, TRUSS_UPPER),
+    ("caltrans10ft", 4, TRUSS_RISE, 10, TRUSS_UPPER),
+    ("caltrans12ft", 5, TRUSS_RISE, 12, TRUSS_UPPER),
+    ("caltrans15ft", 6, TRUSS_RISE, 15, TRUSS_UPPER),
+]
 TRUSS = [
     ("truss8ft", 3, 8),
     ("truss10ft", 4, 10),
     ("truss12ft", 5, 12),
     ("truss15ft", 6, 15),
 ]
-TRUSS_RISE = ft_px(3.25)
-TRUSS_DEPTH = ft_px(2.0)
 
 
 def start_y(rise):
@@ -148,11 +166,13 @@ def start_y(rise):
 # --------------------------------------------------------------------------- members
 class Member:
     """A tube along a centreline in the x = 8 plane. `point(u)` -> (y, z); `radius(u)`. `pole`:
-    the start is cut against the pole's cylinder. Both ends are capped."""
+    the start is cut against the pole's cylinder. Both ends are capped. `side(u)`, where given,
+    takes the centreline out of that plane, to x = 8 + side(u) (the Van Nuys Special's outer
+    arms)."""
 
-    def __init__(self, point, radius, u0, u1, pole=False, per_block=SAMPLES_PER_BLOCK):
+    def __init__(self, point, radius, u0, u1, pole=False, per_block=SAMPLES_PER_BLOCK, side=None):
         self.point, self.radius, self.u0, self.u1, self.pole = point, radius, u0, u1, pole
-        self.per_block = per_block
+        self.per_block, self.side = per_block, side
 
     def arc(self, u):
         """Length along the centreline from u0, in blocks: the tube's v coordinate. Measured on a
@@ -175,10 +195,15 @@ class Member:
 
     def centre(self, u):
         y, z = self.point(u)
-        return (8.0, y, z)
+        return (8.0 + (self.side(u) if self.side else 0.0), y, z)
 
     def tangent(self, u):
         h = 1e-5
+        if self.side:
+            a, b = self.centre(u - h), self.centre(u + h)
+            d = (b[0] - a[0], b[1] - a[1], b[2] - a[2])
+            n = math.sqrt(sum(k * k for k in d))
+            return (d[0] / n, d[1] / n, d[2] / n)
         a, b = self.point(u - h), self.point(u + h)
         dy, dz = b[0] - a[0], b[1] - a[1]
         n = math.hypot(dy, dz)
@@ -187,9 +212,21 @@ class Member:
     def ring(self, u):
         c = self.centre(u)
         t = self.tangent(u)
-        ny, nz = -t[2], t[1]
         r = self.radius(u)
         out = []
+        if self.side:
+            # no longer square to x: a frame from x with the tangent's share taken out of it
+            k = t[0]
+            e1 = (1.0 - k * t[0], -k * t[1], -k * t[2])
+            n = math.sqrt(sum(q * q for q in e1))
+            e1 = tuple(q / n for q in e1)
+            e2 = (t[1] * e1[2] - t[2] * e1[1], t[2] * e1[0] - t[0] * e1[2], t[0] * e1[1] - t[1] * e1[0])
+            for i in range(SIDES):
+                a = 2.0 * math.pi * i / SIDES
+                d = tuple(math.cos(a) * e1[q] + math.sin(a) * e2[q] for q in range(3))
+                out.append(((c[0] + r * d[0], c[1] + r * d[1], c[2] + r * d[2]), d))
+            return out
+        ny, nz = -t[2], t[1]
         for i in range(SIDES):
             a = 2.0 * math.pi * i / SIDES
             d = (math.cos(a), math.sin(a) * ny, math.sin(a) * nz)
@@ -215,15 +252,38 @@ def boot_radius(member_point, r_root, r_tip, run, boot=True):
     return radius
 
 
-def davit_members(run, rise):
+STRAIGHT_ELBOW, STRAIGHT_FILLET = 0.7, 0.35     # blocks short of the tip; half the bend's length
+
+
+def upsweep(y0, rise, run, tip):
+    """The arm's centreline. `curved`: the parabola. `straight`: one slope to an elbow, level from
+    there to the tip, the corner eased over a short parabolic bend so the tube turns without a
+    crease."""
+    if tip == "curved":
+        return parabola(y0, rise, run)
+    te, w = run - STRAIGHT_ELBOW, STRAIGHT_FILLET
+    slope = rise / te
+
+    def point(t):
+        if t <= te - w:
+            y = y0 + slope * t
+        elif t >= te + w:
+            y = y0 + rise
+        else:
+            y = y0 + slope * t - slope * (t - (te - w)) ** 2 / (4.0 * w)
+        return (y, 16.0 - 16.0 * t)
+    return point
+
+
+def davit_members(run, rise, tip="curved", radii=(R_ROOT, R_TIP)):
     y0 = start_y(rise)
-    pt = parabola(y0, rise, run)
-    return [Member(pt, boot_radius(pt, R_ROOT, R_TIP, run), -0.6, run - INSET / 16.0, pole=True)]
+    pt = upsweep(y0, rise, run, tip)
+    return [Member(pt, boot_radius(pt, radii[0], radii[1], run), -0.6, run - INSET / 16.0, pole=True)]
 
 
-def truss_members(run):
+def truss_members(run, tip="curved"):
     y0 = start_y(TRUSS_RISE)
-    up = parabola(y0, TRUSS_RISE, run)
+    up = upsweep(y0, TRUSS_RISE, run, tip)
     yl = y0 - TRUSS_DEPTH
     tm = 2.0 * run / 3.0
     ym = up(tm)[0]
@@ -245,8 +305,10 @@ def truss_members(run):
 
 # --------------------------------------------------------------------------- sweep
 def cell_of(p):
-    """Cell (along, up) of a point in the root frame: along counts blocks from the pole."""
-    return (int(math.floor((16.0 - p[2]) / 16.0 + 1e-9)), int(math.floor(p[1] / 16.0 + 1e-9)))
+    """Cell (along, up, side) of a point in the root frame: along counts blocks from the pole, side
+    to the right of the arm's facing (0 for every arm that stays in its plane)."""
+    return (int(math.floor((16.0 - p[2]) / 16.0 + 1e-9)), int(math.floor(p[1] / 16.0 + 1e-9)),
+            int(math.floor(p[0] / 16.0 + 1e-9)))
 
 
 def pole_cut(member, pole_r):
@@ -415,7 +477,7 @@ def sweep(members, pole_r):
             rb, ub, _ = rings[k + 1]
             mid = member.centre((ua1 + ub) / 2.0)
             c = cell_of(mid)
-            c = (max(c[0], 0), c[1])
+            c = (max(c[0], 0), c[1], c[2])
             tube_band(mesh_for(c), ra, rb, member.arc(ua1), member.arc(ub))
             if k == 0:
                 start_c = c
@@ -425,16 +487,16 @@ def sweep(members, pole_r):
         cap(mesh_for(prev_c), rings[-1][0], member.tangent(rings[-1][1]))
     # The root -- the block placed against the pole, where the upper member leaves it -- is cell
     # 0 at (0, 0): placement lays every other cell out from it by offset.
-    assert (0, 0) in cells, "the root cell holds no geometry"
-    order = [(0, 0)] + sorted((c for c in cells if c != (0, 0)), key=lambda c: (c[0], c[1]))
+    assert (0, 0, 0) in cells, "the root cell holds no geometry"
+    order = [(0, 0, 0)] + sorted(c for c in cells if c != (0, 0, 0))
     return cells, order
 
 
 def local(mesh, c):
     """A cell's mesh moved into its own block: cell (along, up) covers z 16-16(along+1)..16-16along
     and y 16up..16up+16."""
-    ci, cj = c
-    return mesh.transformed(lambda p: (p[0], p[1] - 16.0 * cj, p[2] + 16.0 * ci), lambda n: n)
+    ci, cj, ck = c
+    return mesh.transformed(lambda p: (p[0] - 16.0 * ck, p[1] - 16.0 * cj, p[2] + 16.0 * ci), lambda n: n)
 
 
 def mirrored(mesh):
@@ -463,9 +525,12 @@ def build(pid, members, double):
         if any(not f.same_as(meshes[idx]) for f in fits):
             variants.append((idx, fits))
     sides = {idx: 1 for idx, _ in variants}
-    offsets = [list(c) for c in order]
+    # {along, up} for an arm that stays in its plane, {along, up, side} for one that does not
+    flat = all(c[2] == 0 for c in order)
+    offsets = [list(c[:2]) if flat else list(c) for c in order]
     boxes = [box_of([meshes[i]] + dict(variants).get(i, [])) for i in range(len(order))]
     if double:
+        assert flat, "%s: a double arm has to stay in its plane" % pid
         n = len(order)
         offsets += [[-2 - c[0], c[1]] for c in order]
         meshes = meshes + [mirrored(m) for m in meshes]
@@ -476,9 +541,10 @@ def build(pid, members, double):
                    round(1.0 - b[2], 5)] for b in boxes]
     whole = Mesh()
     for idx, m in enumerate(meshes):
-        ci, cj = offsets[idx]
-        part = m.transformed(lambda p, ci=ci, cj=cj: (p[0], p[1] + 16.0 * cj, p[2] - 16.0 * ci),
-                             lambda q: q)
+        ci, cj = offsets[idx][:2]
+        ck = offsets[idx][2] if len(offsets[idx]) > 2 else 0
+        part = m.transformed(lambda p, ci=ci, cj=cj, ck=ck: (p[0] + 16.0 * ck, p[1] + 16.0 * cj,
+                                                             p[2] - 16.0 * ci), lambda q: q)
         base = len(whole.v)
         tbase, nbase = len(whole.vt), len(whole.vn)
         whole.v += part.v
@@ -555,46 +621,70 @@ def la_upsweep_members(run, rise):
 
 
 # Los Angeles' Van Nuys Special (BSL CD-955, early 1970s, Van Nuys Boulevard from Burbank Boulevard
-# to Sherman Way; CD-853 on Westwood Boulevard is its twin): one pole parting at a single point
-# into three slender davits that sweep up and out over the road in one plane, nested: the inner
-# arm the steepest, ending highest and nearest, the outer reaching farthest and ending lowest, a
-# cobra head on each. Each tip lands on TIP_Y of its own row, one row and one block apart, so three
-# street lights fit, each against its own tip.
-VANNUYS_Y0 = 6.0
-VANNUYS_ARMS = [(3, 3), (4, 2), (5, 1)]      # (run in blocks, the row its tip lands in)
+# to Sherman Way; CD-853 on Westwood Boulevard is its twin): a pitchfork laid flat over the road.
+# The pole parts at its top, at one point, into three slender tubes, each one smooth arc from
+# straight up to level; the middle one reaches straight out, the outer two splay to either side of
+# it, and all three end at the same height and the same reach with a cobra head on each. (The
+# Bureau's well-known photo, taken along the street, makes the fan look like three arms stacked;
+# a view from across the street shows the level row.)
+#
+# So it stands ON the pole, not against its side: the block is placed on the pole's top and is the
+# fork. Each tip lands on TIP_Y at the far face of its own column, two blocks apart, so three
+# street lights fit side by side, each against its own tip, all facing the way the fork does.
+VANNUYS_RUN, VANNUYS_ROW = 4, 2             # the tips' reach in blocks, and the row they land in
+VANNUYS_SPREAD = 32.0                       # px between the middle tip and each outer one
 VANNUYS_R = (1.7, 1.3)
+VANNUYS_SPAN = 5.0                          # the arc's parameter length, about its length in blocks
 
 
 def van_nuys_members():
-    out = []
-    for run, row in VANNUYS_ARMS:
-        rise = 16.0 * row + TIP_Y - VANNUYS_Y0
-        pt = parabola(VANNUYS_Y0, rise, run)
-        # Three arms in one block's width: fewer rings each than a lone davit gets.
-        out.append(Member(pt, boot_radius(pt, VANNUYS_R[0], VANNUYS_R[1], run), -0.6,
-                          run - INSET / 16.0, pole=True, per_block=8))
+    reach = 16.0 * VANNUYS_RUN - 8.0 - INSET
+    rise = 16.0 * VANNUYS_ROW + TIP_Y
+
+    def angle(u):
+        return min(1.0, max(0.0, u / VANNUYS_SPAN)) * math.pi / 2.0
+
+    def point(u):
+        return (rise * math.sin(angle(u)), 8.0 - reach * (1.0 - math.cos(angle(u))))
+
+    def radius(u):
+        return VANNUYS_R[0] + (VANNUYS_R[1] - VANNUYS_R[0]) * min(1.0, max(0.0, u / VANNUYS_SPAN))
+
+    # the crotch: a short flared socket on the pole's top, the three tubes rising out of it
+    out = [Member(lambda u: (16.0 * u, 8.0), lambda u: 3.3 - 1.3 * min(1.0, max(0.0, u / 0.3)),
+                  INSET / 16.0, 0.3)]
+    for spread in (-VANNUYS_SPREAD, 0.0, VANNUYS_SPREAD):
+        # sin^2: no sideways lean where the tube leaves the fork, none where it meets the fixture
+        side = (lambda u, s=spread: s * math.sin(angle(u)) ** 2) if spread else None
+        out.append(Member(point, radius, 0.02, VANNUYS_SPAN, per_block=7, side=side))
     return out
 
 
 def catalogue():
     out = []
-    for pid, run, rise, ft in CALTRANS:
-        for double in (False, True):
-            label = "Caltrans %sLuminaire Arm %d ft" % ("Double " if double else "", ft)
-            out.append((pid + ("double" if double else ""), lambda run=run, rise=rise: davit_members(run, rise),
-                        double, label, ft, run, rise))
+    for pid, run, rise, ft, radii in CALTRANS:
+        for tip in ("curved", "straight"):
+            for double in (False, True):
+                label = "Caltrans %s%sLuminaire Arm %d ft" % (
+                    "Straight " if tip == "straight" else "", "Double " if double else "", ft)
+                out.append((pid + ("straight" if tip == "straight" else "") + ("double" if double else ""),
+                            lambda run=run, rise=rise, tip=tip, radii=radii: davit_members(run, rise, tip, radii),
+                            double, label, ft, run, rise))
     for pid, run, ft in TRUSS:
-        for double in (False, True):
-            label = "%sTruss Luminaire Arm %d ft" % ("Double " if double else "", ft)
-            out.append((pid + ("double" if double else ""), lambda run=run: truss_members(run), double,
-                        label, ft, run, TRUSS_RISE))
+        for tip in ("curved", "straight"):
+            for double in (False, True):
+                label = "%s%sTruss Luminaire Arm %d ft" % (
+                    "Straight " if tip == "straight" else "", "Double " if double else "", ft)
+                out.append((pid + ("straight" if tip == "straight" else "") + ("double" if double else ""),
+                            lambda run=run, tip=tip: truss_members(run, tip), double, label, ft, run,
+                            TRUSS_RISE))
     for pid, run, rise, ft in LA_UPSWEEP:
         out.append((pid, lambda run=run, rise=rise: la_upsweep_members(run, rise), False,
                     "Los Angeles Upsweep Luminaire Arm %d ft" % ft, ft, run, rise))
     out.append(("anaheim8ft", anaheim_members, False, "Anaheim Resort Area Luminaire Arm 8 ft", 8,
                 ANAHEIM_RUN, ANAHEIM_RISE))
     out.append(("vannuystriple", van_nuys_members, False, "Van Nuys Special Triple Luminaire Arm", 15,
-                VANNUYS_ARMS[-1][0], 16.0 * VANNUYS_ARMS[0][1] + TIP_Y - VANNUYS_Y0))
+                VANNUYS_RUN, 16.0 * VANNUYS_ROW + TIP_Y))
     return out
 
 
@@ -642,7 +732,7 @@ def java_enum(profiles):
     body = []
     for i, (meta, prof) in enumerate(profiles):
         pid, _b, double, label, ft, run, rise = meta
-        cells = ", ".join("{%d, %d}" % tuple(c) for c in prof["offsets"])
+        cells = ", ".join("{%s}" % ", ".join(str(v) for v in c) for c in prof["offsets"])
         boxes = ",\n          ".join("{%s}" % ", ".join("%.5fD" % v for v in b) for b in prof["boxes"])
         fit_cells = ", ".join(str(idx) for idx, _ in prof["variants"])
         sides = ", ".join(str(prof["sides"][idx]) for idx, _ in prof["variants"])
@@ -669,8 +759,9 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
  * hand.</b> The cell lists are the lists the generator split the OBJ geometry on, and the boxes
  * are measured off it, as for {@link MastArmCurveProfile}.
  *
- * <p>Each cell is {@code {alongArm, up}} in blocks from the placed root, unrotated; a double arm's
- * second arm sits at negative {@code alongArm}, past the pole. The arms carry no mount hardware,
+ * <p>Each cell is {@code {alongArm, up}} in blocks from the placed root, unrotated, or
+ * {@code {alongArm, up, side}} for an arm that leaves its plane ({@code side} counts to the right
+ * of the arm's facing); a double arm's second arm sits at negative {@code alongArm}, past the pole. The arms carry no mount hardware,
  * so a {@code shape} value is a slot alone: the cell index, or, for a cell holding a pole joint on
  * a narrower pole, a slot past the last cell.
  */

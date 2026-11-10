@@ -22,8 +22,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   OV-25 / L-250, SolarMax SMX-LL5, GE Evolve EALS (four mounts) and Holophane Mongoose. Lofts each
   housing from a profile table, hangs a flat glass, LED array or drop refractor under it, writes
   one OBJ per fixture, the shared `streetlight.mtl`, the blockstates (facing x STATE, the lens
-  swapped per STATE), the 16 px swatches and the lens sprites (cut from the requester's art, or
-  drawn by `led_array_png` for fixtures that had none). Asserts
+  swapped per STATE), the 16 px swatches and the lens sprites (drawn by `led_array_png` for
+  fixtures that had none). The LED heads converted from his JSON wear his undersides texel for
+  texel: `UNDERSIDE` lists each art face as the JSON had it, cut from his sheets in
+  `artwork/streetlight/sheets/` and mapped by the game's down-face rule (LIGHTING_SYSTEM.md); do
+  not resize or turn that art. `--fragments <registry>...` prints tab and lang lines. Asserts
   that every neck swallows the CSM arm tip and that nothing leaves the old JSON envelope. The
   glass is the `unshaded_lens` material, which `CsmObjModelLoader` bakes without directional
   shading; `--check`. Run `audit_obj_models.py` on its OBJs after a change

@@ -1,0 +1,115 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c0.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver",
+      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+    }
+  },
+  "variants": {
+    "shape": {
+      "0": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c0.obj"
+      },
+      "1": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c1.obj"
+      },
+      "2": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c2.obj"
+      },
+      "3": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c3.obj"
+      },
+      "4": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c4.obj"
+      },
+      "5": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c5.obj"
+      },
+      "6": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c6.obj"
+      },
+      "7": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c7.obj"
+      },
+      "8": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c8.obj"
+      },
+      "9": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c9.obj"
+      },
+      "10": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c10.obj"
+      },
+      "11": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c11.obj"
+      },
+      "12": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c12.obj"
+      },
+      "13": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c13.obj"
+      },
+      "14": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c14.obj"
+      },
+      "15": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c15.obj"
+      },
+      "16": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c16.obj"
+      },
+      "17": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c17.obj"
+      },
+      "18": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c0_thin.obj"
+      },
+      "19": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c0_pedestal.obj"
+      },
+      "20": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c1_thin.obj"
+      },
+      "21": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c1_pedestal.obj"
+      },
+      "22": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c9_thin.obj"
+      },
+      "23": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c9_pedestal.obj"
+      },
+      "24": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c10_thin.obj"
+      },
+      "25": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_c10_pedestal.obj"
+      }
+    },
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftstraightdouble_inv.obj",
+        "transform": "forge:default-block"
+      }
+    ]
+  }
+}
