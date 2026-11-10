@@ -7,7 +7,7 @@
     },
     "textures": {
       "#body": "csm:blocks/lighting/shared_textures/streetlight_body_solarmax",
-      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_solarmax_smx_off",
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_solarmax_smx_off",
       "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
     }
   },
@@ -27,22 +27,22 @@
     "state": {
       "0": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_solarmax_smx_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_solarmax_smx_off"
         }
       },
       "1": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_solarmax_smx_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_solarmax_smx_on"
         }
       },
       "2": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_solarmax_smx_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_solarmax_smx_off"
         }
       },
       "3": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_solarmax_smx_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_solarmax_smx_on"
         }
       }
     },

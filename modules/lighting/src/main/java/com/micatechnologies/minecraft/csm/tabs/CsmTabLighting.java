@@ -95,8 +95,7 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("ae115cu", new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("aeatb0", new AxisAlignedBB(0.250000, 0.000000, 0.000000, 0.750000, 0.375000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("aeatb2", new AxisAlignedBB(0.187500, 0.000000, 0.000000, 0.812500, 0.250000, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("aeacm", new AxisAlignedBB(0.328125, -0.031250, 0.250000, 0.671875, 0.343750, 1.000000), 0));
-    initTabBlock(new BlockBrightLightFactory("aeacmnp", new AxisAlignedBB(0.328125, -0.031250, 0.250000, 0.671875, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("aeacmdp", new AxisAlignedBB(0.328125, -0.109375, 0.250000, 0.671875, 0.234375, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altomvul", new AxisAlignedBB(0.187500, 0.612500, 0.187500, 0.812500, 1.000000, 0.812500), 0));
     initTabBlock(new BlockBrightLightFactory("altomvwl", new AxisAlignedBB(0.343750, 0.250000, 0.812500, 0.750000, 0.750000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("altomvwlslim", new AxisAlignedBB(0.406250, 0.250000, 0.812500, 0.656250, 0.750000, 1.000000), 0));
@@ -111,6 +110,7 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("creestylusfull", new AxisAlignedBB(0.312500, 0.687500, -1.000000, 0.687500, 1.000000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("creestylushalf", new AxisAlignedBB(0.312500, 0.687500, 0.000000, 0.687500, 1.000000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("creexsp", new AxisAlignedBB(0.250000, 0.000000, 0.125000, 0.750000, 0.312500, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("creexspsingle", new AxisAlignedBB(0.359375, -0.031250, 0.125000, 0.640625, 0.296875, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("creeledwaysmall", new AxisAlignedBB(0.250000, 0.000000, 0.312500, 0.750000, 0.437500, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("dslf", new AxisAlignedBB(0.312500, 0.812500, -1.000000, 0.687500, 1.000000, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("dslfr", new AxisAlignedBB(-0.062500, 0.437500, -1.000000, 1.062500, 1.000000, 1.000000), 0));
@@ -157,6 +157,8 @@ public class CsmTabLighting extends CsmTab {
     initTabBlock(new BlockBrightLightFactory("gepb", new AxisAlignedBB(0.125000, 0.000000, -1.000000, 0.875000, 0.750000, 1.125000), 0));
     initTabBlock(new BlockBrightLightFactory("gem240r1", new AxisAlignedBB(0.312500, -0.125000, 0.062500, 0.687500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem240r1np", new AxisAlignedBB(0.312500, -0.125000, 0.062500, 0.687500, 0.250000, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem240r1cu", new AxisAlignedBB(0.312500, -0.031250, 0.062500, 0.687500, 0.359375, 1.000000), 0));
+    initTabBlock(new BlockBrightLightFactory("gem240r1cunp", new AxisAlignedBB(0.312500, -0.031250, 0.062500, 0.687500, 0.281250, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem240r2", new AxisAlignedBB(0.312500, -0.125000, 0.312500, 0.687500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem240r2cu", new AxisAlignedBB(0.312500, 0.000000, 0.312500, 0.687500, 0.390625, 1.000000), 0));
     initTabBlock(new BlockBrightLightFactory("gem250a", new AxisAlignedBB(0.296875, -0.140625, 0.171875, 0.703125, 0.328125, 1.000000), 0));

@@ -7,7 +7,7 @@
     },
     "textures": {
       "#body": "csm:blocks/lighting/shared_textures/streetlight_body_led_grey",
-      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_cree_xsp_off",
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_cree_xsp_off",
       "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
     }
   },
@@ -27,22 +27,22 @@
     "state": {
       "0": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_cree_xsp_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_cree_xsp_off"
         }
       },
       "1": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_cree_xsp_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_cree_xsp_on"
         }
       },
       "2": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_cree_xsp_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_cree_xsp_off"
         }
       },
       "3": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_cree_xsp_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_cree_xsp_on"
         }
       }
     },

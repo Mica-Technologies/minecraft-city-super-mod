@@ -7,8 +7,9 @@
     },
     "textures": {
       "#body": "csm:blocks/lighting/shared_textures/streetlight_body_led_grey",
-      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ci_navion_alt_off",
-      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ci_navion_alt_off",
+      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell",
+      "#door": "csm:blocks/lighting/shared_textures/streetlight_under_cree_ledway_door"
     }
   },
   "variants": {
@@ -27,22 +28,22 @@
     "state": {
       "0": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ci_navion_alt_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ci_navion_alt_off"
         }
       },
       "1": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ci_navion_alt_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ci_navion_alt_on"
         }
       },
       "2": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ci_navion_alt_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ci_navion_alt_off"
         }
       },
       "3": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ci_navion_alt_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ci_navion_alt_on"
         }
       }
     },

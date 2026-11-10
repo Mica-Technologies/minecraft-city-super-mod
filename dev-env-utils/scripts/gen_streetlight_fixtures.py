@@ -19,12 +19,22 @@ WHAT IT WRITES (per catalogue entry)
   textures/blocks/lighting/shared_textures/streetlight_*.png      16 px swatches, shared by all,
                                                                   and 32 px lens sprites
 
-Every fixture wears the same three materials, so a new fixture adds geometry and at most a small
+Every fixture wears the same materials, so a new fixture adds geometry and at most a small
 lens sprite (cut from the requester's art, or an LED array drawn by `led_array_png`):
   body       the housing paint, overridden per fixture by the blockstate (`#body`)
   unshaded_lens  the glass, `streetlight_lens_hps_on` in STATE 1 and 3, `_off` in 0 and 2;
                  drawn without directional shading (CsmObjModelLoader.UNSHADED_PREFIX)
   photocell  the twist-lock photocontrol on top
+  door       the requester's door art under the rear of an LED head (UNDERSIDE), where there is some
+
+THE REQUESTER'S UNDERSIDES ARE KEPT TEXEL FOR TEXEL
+--------------------------------------------------
+The LED fixtures converted from his JSON models wear the undersides he drew: the LED array, and
+the door behind it. Each is a face of the old model, described here as the JSON described it (its
+rectangle, its `uv` on his 128 px sheet, its `rotation`), cut from the sheet at its own resolution
+and mapped by the game's own rule for a down face (UNDERSIDE, `under_face`). Nothing is resampled
+or turned, so every texel is where and how large he drew it. His sheets are in
+artwork/streetlight/sheets/.
 
 CONVENTIONS (the same as every other cobra head in the tab, so a fixture is a drop-in)
 --------------------------------------------------------------------------------------
@@ -61,6 +71,7 @@ SWATCHES = {
     # name: (top RGB, bottom RGB) -- a vertical gradient, the decorative family's convention
     "streetlight_body_ge_grey": ((176, 178, 174), (136, 138, 134)),
     "streetlight_photocell": ((70, 72, 76), (38, 40, 44)),
+    "streetlight_photocell_black": ((30, 30, 32), (14, 14, 16)),
     # The Form 109's darker cast grey: merc_fixtures paints the housing 98 98 98.
     "streetlight_body_merc_grey": ((112, 112, 110), (84, 84, 82)),
     # American Electric's Autobahn: the light grey of ae_autobahn_atb0/2, 177 on the hood, 153 under.
@@ -263,6 +274,137 @@ def box(mesh, lo, hi, mat, bottom_mat=None):
             mesh.poly_out(mat, ps, uv, c)
 
 
+# --------------------------------------------------------------------------- his undersides
+DOOR_MAT = "door"
+# sheet -> [(role, (x0, x1, z0, z1), (u0, v0, u1, v1), rotation)]: the down faces of his JSON model
+# that carry art, as the model had them. `uv` is in texels of the 128 px sheet (a JSON uv times 8),
+# reversed where his was. A "lens" face is the LED array (unshaded, lit and unlit sprites), a
+# "door" the driver door behind it (shaded, one sprite).
+UNDERSIDE = {
+    "ltec": [("lens", (4, 12, 0, 11), (0, 0, 56, 30), 270), ("door", (4, 12, 11, 16), (0, 30, 31, 68), 270)],
+    "ltecdtd": [("lens", (4, 12, 5, 11), (0, 0, 26, 30), 270),
+                ("door", (4, 12, 11, 16), (0, 30, 31, 68), 270)],
+    "ltgc1_v1": [("lens", (4, 12, 2, 10), (0, 0, 64, 64), 270),
+                 ("door", (4, 12, 10, 16), (64, 0, 95, 38), 270)],
+    "ltgc1_v2": [("lens", (4, 12, 2, 10), (0, 0, 64, 64), 270),
+                 ("door", (4, 12, 10, 16), (64, 0, 95, 38), 270)],
+    "ltgcj": [("lens", (6, 10, 9, 13), (0, 0, 38, 47), 90), ("door", (6, 10, 13, 16), (38, 0, 69, 38), 270)],
+    "ltgcj_smartnode": [("lens", (6, 10, 9, 13), (0, 0, 38, 47), 90),
+                        ("door", (6, 10, 13, 16), (38, 0, 69, 38), 270)],
+    "ltgcl": [("lens", (4, 12, 5, 11), (64, 0, 0, 64), 270), ("door", (4, 12, 11, 16), (64, 0, 95, 38), 270)],
+    "ltgcm": [("lens", (5, 11, 5, 11), (0, 0, 64, 64), 270), ("door", (5, 11, 11, 16), (64, 0, 95, 38), 270)],
+    "ltgcm_smartnode": [("lens", (5, 11, 5, 11), (0, 0, 64, 64), 270),
+                        ("door", (5, 11, 11, 16), (64, 0, 95, 38), 270)],
+    "ltgcmv2": [("lens", (5, 11, 5, 11), (0, 0, 64, 63), 270),
+                ("door", (5, 11, 11, 16), (64, 0, 95, 38), 270)],
+    "ae_atb0": [("lens", (4, 12, 1, 11), (0, 0, 56, 30), 270), ("door", (4, 12, 11, 16), (0, 30, 31, 68), 270)],
+    "ae_atb2": [("lens", (3, 13, 1, 11), (0, 0, 56, 52.8), 90),
+                ("door", (3, 13, 11, 16), (0, 52.8, 37.6, 84), 0)],
+    "cree_ledway": [("lens", (4, 12, 0, 10), (0, 0, 44.8, 30.8), 90),
+                    ("door", (6, 10, 11, 16), (0, 31.2, 37.6, 60.8), 0)],
+    "cree_ledway_small": [("lens", (4, 12, 5, 10), (0, 0, 24, 30.8), 90),
+                          ("door", (6, 10, 11, 16), (0, 31.2, 37.6, 60.8), 0)],
+    # the XSP's one face is its whole underside: the two modules, and the door behind them
+    "cree_xsp": [("lens", (4, 12, 3, 16), (0, 0, 30, 30.8), 0)],
+    "cree_stylus_full": [("lens", (6, 10, -15, 15), (0, 0, 64, 64), 180)],
+    "cree_stylus_half": [("lens", (6, 10, 1, 15), (0, 0, 64, 64), 180)],
+    "ci_navion": [("lens", (5, 11, 0, 10), (0, 0, 41, 31), 90), ("door", (5, 11, 10, 16), (0, 31, 37, 62), 0)],
+    "ci_navion_alt": [("lens", (5, 11, -4, 10), (0, 0, 60, 31), 90),
+                      ("door", (5, 11, 10, 16), (0, 31, 37, 62), 0)],
+    "solarmax_smx": [("lens", (4, 12, 3, 8), (44, 0, 0, 64), 270)],
+    # The single-module XSP: one of his two modules and its share of the underside, 16 of the 30
+    # texels across, on a head as much narrower (16 texels at his 30 to 8 px).
+    "cree_xsp_single": [("lens", (8 - 32 / 15.0, 8 + 32 / 15.0, 3, 16), (0, 0, 16, 30.8), 0)],
+}
+# A sheet made from another of his: (the sheet, the columns of it kept, in order).
+SHEET_DERIVED = {"cree_xsp_single": ("cree_xsp", list(range(0, 15)) + [29])}
+
+
+def under_cut(uv):
+    """The whole texels a face's uv covers, and the square sprite that holds them: (left, top,
+    width, height, sprite side). A sprite has to be square (a taller one is read as an animation
+    strip) and a power of two; the cut sits in its top left corner."""
+    u0, v0, u1, v1 = uv
+    left, top = int(math.floor(min(u0, u1) + 1e-6)), int(math.floor(min(v0, v1) + 1e-6))
+    right, bottom = int(math.ceil(max(u0, u1) - 1e-6)), int(math.ceil(max(v0, v1) - 1e-6))
+    side = 16
+    while side < max(right - left, bottom - top):
+        side *= 2
+    return left, top, right - left, bottom - top, side
+
+
+def under_face(mesh, profile, face, y0, y1, split=None):
+    """One of his down faces, as a slab hung under the housing: its underside wears the art, mapped
+    as the game maps a JSON down face (vertex order west-south, west-north, east-north, east-south
+    taking uv corners (u0, v0), (u0, v1), (u1, v1), (u1, v0), turned by `rotation`), its edges are
+    housing paint and its top, at y1, is inside the housing. Where the lofted housing is narrower
+    than his box was (a rounded nose), the slab is trimmed to the housing's outline; the mapping
+    does not move. `split` = (z, y0 behind it) steps the slab down, for a face that runs on under
+    the neck, which hangs lower than the head."""
+    role, (x0, x1, z0, z1), uv, rot = face
+    left, top, _w, _h, side = under_cut(uv)
+    u0, v0, u1, v1 = uv
+    corners = [(u0, v0), (u0, v1), (u1, v1), (u1, v0)]
+    k = rot // 90 % 4
+    at_ws, at_wn, at_en = (corners[(i + k) % 4] for i in range(3))
+
+    def uv_at(x, z):
+        fx, fz = (x - x0) / float(x1 - x0), (z - z0) / float(z1 - z0)
+        u = at_wn[0] + fx * (at_en[0] - at_wn[0]) + fz * (at_ws[0] - at_wn[0])
+        v = at_wn[1] + fx * (at_en[1] - at_wn[1]) + fz * (at_ws[1] - at_wn[1])
+        return ((u - left) / side, 1.0 - (v - top) / side)
+
+    za, zb = float(z0), float(z1)
+    if profile:
+        za, zb = max(za, profile[0][0]), min(zb, profile[-1][0])
+    zs = {za, zb}
+    if profile:
+        zs |= {s[0] for s in profile if za < s[0] < zb}
+    if split and za < split[0] < zb:
+        zs.add(split[0])
+    zs = sorted(zs)
+
+    def edge(z):
+        if not profile:
+            return float(x0), float(x1)
+        hw = profile[-1][1]
+        for a, b in zip(profile, profile[1:]):
+            if a[0] <= z <= b[0]:
+                hw = a[1] + (b[1] - a[1]) * (z - a[0]) / (b[0] - a[0])
+                break
+        return max(float(x0), 8.0 - hw), min(float(x1), 8.0 + hw)
+
+    mat = LENS_MAT if role == "lens" else DOOR_MAT
+    side_uv = [swatch_uv(0, 0), swatch_uv(1, 0), swatch_uv(1, 1), swatch_uv(0, 1)]
+
+    def wall(ps, inside):
+        mesh.poly_out("body", ps, side_uv, inside)
+
+    for i, (a, b) in enumerate(zip(zs, zs[1:])):
+        yb = split[1] if split and a >= split[0] - 1e-9 else y0
+        (xa0, xa1), (xb0, xb1) = edge(a), edge(b)
+        c = (8.0, (yb + y1) / 2.0, (a + b) / 2.0)
+        ps = [(xa0, yb, a), (xa1, yb, a), (xb1, yb, b), (xb0, yb, b)]
+        mesh.poly_out(mat, ps, [uv_at(q[0], q[2]) for q in ps], c)
+        wall([(xa0, yb, a), (xb0, yb, b), (xb0, y1, b), (xa0, y1, a)], c)
+        wall([(xa1, yb, a), (xb1, yb, b), (xb1, y1, b), (xa1, y1, a)], c)
+        if i == 0 or (split and abs(a - split[0]) < 1e-9):
+            wall([(xa0, yb, a), (xa1, yb, a), (xa1, y1, a), (xa0, y1, a)], c)
+        if i == len(zs) - 2:
+            wall([(xb0, yb, b), (xb1, yb, b), (xb1, y1, b), (xb0, y1, b)], c)
+
+
+def underside(mesh, sheet, profile, lens_y=(0.0, 0.3), door_y=(-0.42, 0.3), door_profile=None,
+              split=None):
+    """Every art face of a sheet's fixture: the array under `profile`, the door under
+    `door_profile` (the same loft where the fixture is one)."""
+    for face in UNDERSIDE[sheet]:
+        if face[0] == "lens":
+            under_face(mesh, profile, face, lens_y[0], lens_y[1], split)
+        else:
+            under_face(mesh, door_profile or profile, face, door_y[0], door_y[1])
+
+
 def cylinder_y(mesh, cx, cz, r, y0, y1, mat, sides=12, cap_top=True):
     ring0 = [(cx + r * math.cos(2 * math.pi * j / sides), y0, cz + r * math.sin(2 * math.pi * j / sides))
              for j in range(sides)]
@@ -361,6 +503,7 @@ def build_m400a(optics, photocell=True):
     # Door latch at the nose.
     box(m, (7.4, -0.25, 1.9), (8.6, 0.12, 2.7), "body")
     if not photocell:
+        receptacle(m, M400A_PROFILE, 12.6)
         return m
     # Twist-lock photocell on the hood near the slipfitter.
     pz = 12.6
@@ -403,6 +546,7 @@ def build_m400r3(optics, photocell=True):
         half_ellipsoid_down(m, (8.0, 0.05, 6.2), 2.6, 2.5, 3.2, LENS_MAT)
     box(m, (7.4, -0.25, 1.9), (8.6, 0.12, 2.7), "body")
     if not photocell:
+        receptacle(m, M400R3_PROFILE, 13.1)
         return m
     pz = 13.1
     base = top_at(M400R3_PROFILE, pz) - 0.35
@@ -461,6 +605,7 @@ def build_m250(body, optics, photocell=True):
         half_ellipsoid_down(m, (8.0, 0.05, 9.6), 2.2, 2.0, 2.5, LENS_MAT)
     box(m, (7.4, -0.2, nose + 1.0), (8.6, 0.1, nose + 1.8), "body")
     if not photocell:
+        receptacle(m, profile, 13.1)
         return m
     pz = 13.1
     base = top_at(profile, pz) - 0.35
@@ -555,6 +700,15 @@ def photocell(m, profile, pz, top_cap):
     cylinder_y(m, 8.0, pz, 0.95, base + 0.55, min(base + 2.0, top_cap), "photocell", sides=12)
 
 
+def receptacle(m, profile, pz):
+    """A twist-lock receptacle with no photocell in it: the collar, and the dark socket in its top.
+    Every HID cobra head made since the 1960s has one whether or not a cell is fitted; only the
+    earliest (the Form 109, the OV-20, the finned OV-50) were made without."""
+    base = top_at(profile, pz) - 0.35
+    cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+    cylinder_y(m, 8.0, pz, 0.78, base + 0.5, base + 0.68, "photocell", sides=12)
+
+
 def tube_y(mesh, cx, cz, r_out, r_in, y_top, y_bot, mat, lon=12):
     """An open-topped thin-walled skirt about the vertical axis: outer wall facing out, inner wall
     facing in, and no top or bottom (its top meets a disc; from below, the gap between the walls
@@ -633,6 +787,8 @@ def build_ov50(variant="standard", photocell_on=True):
             box(m, (6.3, top_at(OV50_PROFILE, z) - 0.7, z - 0.18), (9.7, 5.3, z + 0.18), "body")
     elif photocell_on:
         photocell(m, OV50_PROFILE, 13.1, 6.0)
+    else:
+        receptacle(m, OV50_PROFILE, 13.1)
     return m
 
 
@@ -713,11 +869,10 @@ def build_atb(size):
     profile = ATB0_PROFILE if size == 0 else ATB2_PROFILE
     check_neck_holds_arm("Autobahn ATB%d" % size, profile, ATB_EXPONENT)
     loft_housing(m, profile, ATB_EXPONENT)
+    underside(m, "ae_atb0" if size == 0 else "ae_atb2", profile, lens_y=(0.05, 0.35))
     if size == 0:
-        box(m, (4.6, 0.15, 1.6), (11.4, 0.32, 10.8), "body", bottom_mat=LENS_MAT)
         photocell(m, profile, 13.0, 6.0)
     else:
-        box(m, (3.7, 0.05, 1.6), (12.3, 0.22, 11.0), "body", bottom_mat=LENS_MAT)
         photocell(m, profile, 11.4, 4.05)
     return m
 
@@ -799,27 +954,27 @@ def gc_medium_profile(hw):
     ]
 
 
-# model -> (profile, lens box (x0, x1, z0, z1), fins (x offsets, z0, z1, top) or None, receptacle z,
-#           top of the photocell)
+# model -> (profile, fins (x offsets, z0, z1, top) or None, receptacle z, top of the photocell)
 LEOTEK = {
-    "ec": (ECOBRA_PROFILE, (4.7, 11.3, 1.4, 10.4), None, 13.2, 5.0),
-    "ecdtd": (ECOBRA_DTD_PROFILE, (4.7, 11.3, 6.2, 10.4), None, 13.2, 5.0),
-    "gc1": (GC1_PROFILE, (4.7, 11.3, 2.4, 9.8), ((-3.0, -1.5, 0.0, 1.5, 3.0), 2.6, 6.6, 2.25), 11.5, 7.0),
-    "gcj": (GCJ_PROFILE, (6.45, 9.55, 9.1, 12.9), ((-1.1, 0.0, 1.1), 9.3, 11.8, 1.85), 14.5, 5.0),
-    "gcl": (gc_medium_profile(4.0), (4.7, 11.3, 5.2, 10.8), None, 12.4, 5.0),
-    "gcm": (gc_medium_profile(3.0), (5.6, 10.4, 5.2, 10.8), None, 12.4, 5.0),
+    "ec": (ECOBRA_PROFILE, None, 13.2, 5.0),
+    "ecdtd": (ECOBRA_DTD_PROFILE, None, 13.2, 5.0),
+    "gc1": (GC1_PROFILE, ((-3.0, -1.5, 0.0, 1.5, 3.0), 2.6, 6.6, 2.25), 11.5, 7.0),
+    "gcj": (GCJ_PROFILE, ((-1.1, 0.0, 1.1), 9.3, 11.8, 1.85), 14.5, 5.0),
+    "gcl": (gc_medium_profile(4.0), None, 12.4, 5.0),
+    "gcm": (gc_medium_profile(3.0), None, 12.4, 5.0),
 }
 
 
-def build_leotek(model, top="photocell"):
-    """top: photocell (the twist-lock cell), cap (a blank cap in the receptacle), node (a smart
-    node: a squat puck and its dome, on the photocell material, which its blockstate paints blue)."""
-    profile, (lx0, lx1, lz0, lz1), fins, pz, cell_top = LEOTEK[model]
+def build_leotek(model, sheet, top="photocell"):
+    """sheet: whose underside it wears (UNDERSIDE). top: photocell (the twist-lock cell), cap (a
+    blank cap in the receptacle), node (a smart node: a squat puck and its dome, on the photocell
+    material, which its blockstate paints blue)."""
+    profile, fins, pz, cell_top = LEOTEK[model]
     m = Mesh()
     check_neck_holds_arm("Leotek " + model.upper(), profile, LEOTEK_EXPONENT)
     loft_housing(m, profile, LEOTEK_EXPONENT)
-    # The LED array: a slab just under the flat bottom, its top buried in the housing.
-    box(m, (lx0, 0.0, lz0), (lx1, 0.3, lz1), "body", bottom_mat=LENS_MAT)
+    # His LED array and, behind it, his door: slabs just under the housing, their tops buried in it.
+    underside(m, sheet, profile)
     if fins:
         offsets, fz0, fz1, ftop = fins
         for dx in offsets:
@@ -934,8 +1089,10 @@ def build_ledway(small=False):
     m = Mesh()
     check_neck_holds_arm("Cree LEDway", LEDWAY_REAR, LEDWAY_EXPONENT)
     loft_housing(m, LEDWAY_REAR, LEDWAY_EXPONENT)
-    loft_housing(m, ledway_panel(nose), 4.0)
-    box(m, (4.6, 1.85, nose + 0.7), (11.4, 2.15, 9.7), "body", bottom_mat=LENS_MAT)
+    panel = ledway_panel(nose)
+    loft_housing(m, panel, 4.0)
+    underside(m, "cree_ledway_small" if small else "cree_ledway", panel, lens_y=(1.85, 2.15),
+              door_profile=LEDWAY_REAR)
     photocell(m, LEDWAY_REAR, 13.8, 7.0 if small else 8.0)
     return m
 
@@ -957,12 +1114,20 @@ XSP_PROFILE = [
 XSP_EXPONENT = 3.4
 
 
-def build_xsp():
+def build_xsp(single=False):
+    """single: the one-module XSP, the same head a little over half as wide."""
+    profile = XSP_PROFILE
+    if single:
+        # as narrow as his one module, and no narrower at the rear than the arm's end allows
+        profile = [(z, max(hw * 32 / 60.0, 2.15 if z > 11.5 else 0.0), yb, yt)
+                   for z, hw, yb, yt in XSP_PROFILE]
     m = Mesh()
-    check_neck_holds_arm("Cree XSP", XSP_PROFILE, XSP_EXPONENT)
-    loft_housing(m, XSP_PROFILE, XSP_EXPONENT)
-    box(m, (4.7, 0.0, 4.0), (11.3, 0.3, 9.6), "body", bottom_mat=LENS_MAT)
-    photocell(m, XSP_PROFILE, 12.0, 5.0)
+    check_neck_holds_arm("Cree XSP", profile, XSP_EXPONENT)
+    loft_housing(m, profile, XSP_EXPONENT)
+    # his one face runs the whole underside; under the neck, which hangs lower, it steps down
+    underside(m, "cree_xsp_single" if single else "cree_xsp", profile, lens_y=(-0.05, 0.25),
+              split=(11.0, -0.42))
+    photocell(m, profile, 12.0, 5.0)
     return m
 
 
@@ -988,7 +1153,7 @@ def build_stylus(full):
     # Lofted with its flat side down, then turned over: the flat side becomes the top.
     loft_housing(m, [(z0, 3.0, 0.1, 4.0), (REAR_Z, 3.0, 0.1, 4.0)], 3.2)
     m = mirror_y(m, 8.0)
-    box(m, (6.0, 11.1, z0 + 0.6), (10.0, 12.3, REAR_Z - 0.6), "body", bottom_mat=LENS_MAT)
+    underside(m, "cree_stylus_full" if full else "cree_stylus_half", None, lens_y=(11.1, 12.3))
     return m
 
 
@@ -1013,7 +1178,13 @@ def build_navion(squares):
     check_neck_holds_arm("Navion", NAVION_REAR, NAVION_EXPONENT)
     loft_housing(m, NAVION_REAR, NAVION_EXPONENT)
     # The panel: its underside is the LightSquares, its top buried under the rails.
-    box(m, (5.2, 0.0, nose + 0.05), (10.8, 0.9, 10.2), "body", bottom_mat=LENS_MAT)
+    box(m, (5.2, 0.05, nose + 0.05), (10.8, 0.9, 10.2), "body")
+    sheet = "ci_navion" if squares == 2 else "ci_navion_alt"
+    for face in UNDERSIDE[sheet]:
+        if face[0] == "lens":
+            under_face(m, None, face, -0.05, 0.3)
+        else:
+            under_face(m, NAVION_REAR, face, -0.42, 0.3)
     for x0, x1 in ((5.1, 6.0), (7.0, 9.0), (10.0, 10.9)):
         box(m, (x0, 0.8, nose + 0.9), (x1, 3.0, 10.7), "body")      # the rail, into the housing
         box(m, (x0 - 0.05, 0.7, nose), (x1 + 0.05, 3.05, nose + 1.0), "body")  # the post at the nose
@@ -1048,7 +1219,7 @@ def build_smx():
     check_neck_holds_arm("Solarmax SMX", SMX_NECK, SMX_EXPONENT)
     loft_housing(m, SMX_HEAD, 4.0)
     loft_housing(m, SMX_NECK, SMX_EXPONENT)
-    box(m, (4.0, -1.15, 3.0), (12.0, -0.8, 8.0), "body", bottom_mat=LENS_MAT)
+    underside(m, "solarmax_smx", None, lens_y=(-1.15, -0.8))
     photocell(m, SMX_NECK, 12.0, 5.0)
     return m
 
@@ -1325,13 +1496,17 @@ def pedestal_photocell(m, profile, pz, deck, cell_h=1.7):
 # slipfitter; the hood a low wedge rising to a hump over the driver, the 7-pin receptacle on a boss
 # at the front of the hump, a tool-free door under the rear. Leotek's sheets (KC0 / KC1 / KC2):
 # 15.9 x 7.6, 18.0 x 9.0 and 24.4 x 10.8 in, all 4.1 in tall; the array 16, 36 and 72 LEDs.
-# model -> (length px, head half-width, receptacle at (fraction from the nose), the array:
-#           (half-width as a fraction of the head's, from, to as fractions), LED grid (across, along))
+# Its light engine is the GreenCobra's: the KC0 and KC1 carry the one module of the GCJ, the KC2
+# the two of the J-series GCM, so they wear his GCJ and GCM (version 2) arrays at the size he drew
+# them, and his door behind.
+# model -> (length px, head half-width, receptacle at (fraction from the nose), the sheet whose
+#           array it wears, how far behind the nose the array starts as a fraction of the length)
 KARBON = {
-    "kc0": (9.5, 2.3, 0.50, (0.64, 0.10, 0.42), (4, 4)),
-    "kc1": (11.0, 2.6, 0.52, (0.68, 0.09, 0.45), (6, 6)),
-    "kc2": (14.0, 3.1, 0.58, (0.72, 0.08, 0.48), (6, 12)),
+    "kc0": (9.5, 2.3, 0.50, "ltgcj", 0.09),
+    "kc1": (11.0, 2.6, 0.52, "ltgcj", 0.12),
+    "kc2": (14.0, 3.1, 0.58, "ltgcmv2", 0.09),
 }
+KARBON_DOOR = (6, 10, 13, 16)       # the GCJ's door rectangle, which every KarbonCobra's waist holds
 KARBON_EXPONENT = 3.0
 KARBON_NECK = 2.1  # the rear half-width: the waist, held as narrow as the arm's end allows
 
@@ -1352,15 +1527,19 @@ def karbon_profile(length, hw):
 
 def build_karbon(model, shield=False):
     """shield: Leotek's snap-on house side shield, a plate hung along the array's pole side."""
-    length, hw, rf, (aw, af0, af1), _ = KARBON[model]
+    length, hw, rf, sheet, af0 = KARBON[model]
     profile = karbon_profile(length, hw)
     z0 = 16.0 - length
     m = Mesh()
     check_neck_holds_arm("KarbonCobra " + model.upper(), profile, KARBON_EXPONENT)
     loft_housing(m, profile, KARBON_EXPONENT)
-    ax = hw * aw
-    az0, az1 = z0 + af0 * length, z0 + af1 * length
-    box(m, (8.0 - ax, 0.0, az0), (8.0 + ax, 0.25, az1), "body", bottom_mat=LENS_MAT)
+    lens = [f for f in UNDERSIDE[sheet] if f[0] == "lens"][0]
+    door = [f for f in UNDERSIDE["ltgcj"] if f[0] == "door"][0]
+    ax, al = (lens[1][1] - lens[1][0]) / 2.0, float(lens[1][3] - lens[1][2])
+    az0 = z0 + af0 * length
+    az1 = az0 + al
+    under_face(m, profile, ("lens", (8.0 - ax, 8.0 + ax, az0, az1), lens[2], lens[3]), 0.0, 0.25)
+    under_face(m, profile, ("door", KARBON_DOOR, door[2], door[3]), -0.42, 0.3)
     # the door release under the rear, just behind the array
     box(m, (7.3, 0.0, az1 + 0.5), (8.7, 0.2, az1 + 0.9), "body")
     if shield:
@@ -1389,13 +1568,33 @@ def acm_profile():
     ])
 
 
-def build_acm(top="photocell"):
+def build_acm():
+    """The Los Angeles Department of Water and Power's AutoConnect, as it hangs in the Owens
+    Valley: no receptacle on the hood; the photocell is on the door, under the rear, and black."""
     profile = acm_profile()
     m = Mesh()
     check_neck_holds_arm("AutoConnect ACM", profile, ACM_EXPONENT)
     loft_housing(m, profile, ACM_EXPONENT)
     box(m, (8.0 - 1.85, 0.0, 4.9), (8.0 + 1.85, 0.25, 9.5), "body", bottom_mat=LENS_MAT)
-    receptacle_top(m, profile, 13.75, top, 6.0)
+    # the door, a plate under the rear, and the cell hanging from it
+    box(m, (8.0 - 1.9, -0.42, 10.6), (8.0 + 1.9, 0.25, 15.6), "body")
+    pz = 13.2
+    box(m, (7.0, -0.62, pz - 1.0), (9.0, -0.4, pz + 1.0), "body")
+    for j in range(12):                     # the cell, upside down: a cylinder with its cap below
+        a0, a1 = 2 * math.pi * j / 12, 2 * math.pi * (j + 1) / 12
+        r = 0.95
+        ps = [(8.0 + r * math.cos(a0), -0.6, pz + r * math.sin(a0)),
+              (8.0 + r * math.cos(a1), -0.6, pz + r * math.sin(a1)),
+              (8.0 + r * math.cos(a1), -1.55, pz + r * math.sin(a1)),
+              (8.0 + r * math.cos(a0), -1.55, pz + r * math.sin(a0))]
+        m.poly_out("photocell", ps, [swatch_uv(j / 12.0, 0), swatch_uv((j + 1) / 12.0, 0),
+                                     swatch_uv((j + 1) / 12.0, 1), swatch_uv(j / 12.0, 1)],
+                   (8.0, -1.1, pz))
+    cap = [(8.0 + 0.95 * math.cos(2 * math.pi * j / 12), -1.55, pz + 0.95 * math.sin(2 * math.pi * j / 12))
+           for j in range(12)]
+    m.poly_out("photocell", cap, [swatch_uv(0.5 + 0.5 * math.cos(2 * math.pi * j / 12),
+                                            0.5 + 0.5 * math.sin(2 * math.pi * j / 12))
+                                  for j in range(12)], (8.0, -1.0, pz))
     return m
 
 
@@ -1430,6 +1629,8 @@ def build_m250a(optics, with_photocell=True):
     box(m, (7.4, -0.2, 3.8), (8.6, 0.2, 4.5), "body")
     if with_photocell:
         photocell(m, M250A_PROFILE, 12.6, 6.0)
+    else:
+        receptacle(m, M250A_PROFILE, 12.6)
     return m
 
 
@@ -1644,6 +1845,10 @@ CATALOGUE = [
     ("gem240r1", "GE M240R1 (Standard)", lambda: build_m250("r1", "refractor"), "streetlight_body_ge_grey"),
     ("gem240r1np", "GE M240R1 (Standard, No Photocell)", lambda: build_m250("r1", "refractor", photocell=False),
      "streetlight_body_ge_grey"),
+    ("gem240r1cu", "GE M240R1 (Cutoff Optics)", lambda: build_m250("r1", "cutoff"),
+     "streetlight_body_ge_grey"),
+    ("gem240r1cunp", "GE M240R1 (Cutoff Optics, No Photocell)",
+     lambda: build_m250("r1", "cutoff", photocell=False), "streetlight_body_ge_grey"),
     ("gem240r2", "GE M240R2 (Standard)", lambda: build_m250("r2", "refractor"), "streetlight_body_ge_grey"),
     ("gem240r2cu", "GE M240R2 (Cutoff Optics)", lambda: build_m250("r2", "cutoff"),
      "streetlight_body_ge_grey"),
@@ -1666,24 +1871,24 @@ CATALOGUE = [
      "streetlight_body_ge_grey"),
     ("aeatb0", "American Electric Autobahn ATB0", lambda: build_atb(0), "streetlight_body_ael_grey"),
     ("aeatb2", "American Electric Autobahn ATB2", lambda: build_atb(2), "streetlight_body_ael_grey"),
-    ("ltec", "Leotek E-Cobra", lambda: build_leotek("ec"), "streetlight_body_leotek_grey"),
-    ("ltecdtd", "Leotek E-Cobra (Dusk to Dawn)", lambda: build_leotek("ecdtd"), "streetlight_body_leotek_grey"),
-    ("ltgc1v1", "Leotek GreenCobra GC1 (Version 1)", lambda: build_leotek("gc1"),
+    ("ltec", "Leotek E-Cobra", lambda: build_leotek("ec", "ltec"), "streetlight_body_leotek_grey"),
+    ("ltecdtd", "Leotek E-Cobra (Dusk to Dawn)", lambda: build_leotek("ecdtd", "ltecdtd"), "streetlight_body_leotek_grey"),
+    ("ltgc1v1", "Leotek GreenCobra GC1 (Version 1)", lambda: build_leotek("gc1", "ltgc1_v1"),
      "streetlight_body_leotek_grey"),
-    ("ltgc1v1np", "Leotek GreenCobra GC1 (Version 1, No Photocell)", lambda: build_leotek("gc1", "cap"),
+    ("ltgc1v1np", "Leotek GreenCobra GC1 (Version 1, No Photocell)", lambda: build_leotek("gc1", "ltgc1_v1", "cap"),
      "streetlight_body_leotek_grey"),
-    ("ltgc1v2", "Leotek GreenCobra GC1 (Version 2)", lambda: build_leotek("gc1"),
+    ("ltgc1v2", "Leotek GreenCobra GC1 (Version 2)", lambda: build_leotek("gc1", "ltgc1_v2"),
      "streetlight_body_leotek_grey"),
-    ("ltgcj", "Leotek GreenCobra GCJ", lambda: build_leotek("gcj"), "streetlight_body_leotek_grey"),
-    ("ltgcjsn", "Leotek GreenCobra GCJ (Smart Node)", lambda: build_leotek("gcj", "node"),
+    ("ltgcj", "Leotek GreenCobra GCJ", lambda: build_leotek("gcj", "ltgcj"), "streetlight_body_leotek_grey"),
+    ("ltgcjsn", "Leotek GreenCobra GCJ (Smart Node)", lambda: build_leotek("gcj", "ltgcj_smartnode", "node"),
      "streetlight_body_leotek_grey"),
-    ("ltgcl", "Leotek GreenCobra GCL", lambda: build_leotek("gcl"), "streetlight_body_leotek_grey"),
-    ("ltgcm", "Leotek GreenCobra GCM", lambda: build_leotek("gcm"), "streetlight_body_leotek_grey"),
-    ("ltgcmsn", "Leotek GreenCobra GCM (Smart Node)", lambda: build_leotek("gcm", "node"),
+    ("ltgcl", "Leotek GreenCobra GCL", lambda: build_leotek("gcl", "ltgcl"), "streetlight_body_leotek_grey"),
+    ("ltgcm", "Leotek GreenCobra GCM", lambda: build_leotek("gcm", "ltgcm"), "streetlight_body_leotek_grey"),
+    ("ltgcmsn", "Leotek GreenCobra GCM (Smart Node)", lambda: build_leotek("gcm", "ltgcm_smartnode", "node"),
      "streetlight_body_leotek_grey"),
-    ("ltgcmv2", "Leotek GreenCobra GCM (Version 2)", lambda: build_leotek("gcm"),
+    ("ltgcmv2", "Leotek GreenCobra GCM (Version 2)", lambda: build_leotek("gcm", "ltgcmv2"),
      "streetlight_body_leotek_grey"),
-    ("ltgcmv2np", "Leotek GreenCobra GCM (Version 2, No Photocell)", lambda: build_leotek("gcm", "cap"),
+    ("ltgcmv2np", "Leotek GreenCobra GCM (Version 2, No Photocell)", lambda: build_leotek("gcm", "ltgcmv2", "cap"),
      "streetlight_body_leotek_grey"),
     ("geel", "GE Evolve ESR2 (Large)", lambda: build_evolve("large"), "streetlight_body_ge_evolve_grey"),
     ("geelpo", "GE Evolve ESR2 (Large, Photocell Outlet)", lambda: build_evolve("large", "outlet"),
@@ -1698,6 +1903,7 @@ CATALOGUE = [
     ("creeledway", "Cree LEDway", lambda: build_ledway(), "streetlight_body_led_grey"),
     ("creeledwaysmall", "Cree LEDway (Small)", lambda: build_ledway(small=True), "streetlight_body_led_grey"),
     ("creexsp", "Cree XSP", build_xsp, "streetlight_body_led_grey"),
+    ("creexspsingle", "Cree XSP (Single Module)", lambda: build_xsp(single=True), "streetlight_body_led_grey"),
     ("creestylusfull", "Cree Stylus (Full)", lambda: build_stylus(True), "streetlight_body_stylus_grey"),
     ("creestylushalf", "Cree Stylus (Half)", lambda: build_stylus(False), "streetlight_body_stylus_grey"),
     ("cinavion", "Cooper Industries Navion", lambda: build_navion(2), "streetlight_body_led_grey"),
@@ -1721,8 +1927,7 @@ CATALOGUE = [
     ("ltkc2", "Leotek KarbonCobra KC2", lambda: build_karbon("kc2"), "streetlight_body_leotek_karbon"),
     ("ltkc2hss", "Leotek KarbonCobra KC2 (House Side Shield)", lambda: build_karbon("kc2", shield=True),
      "streetlight_body_leotek_karbon"),
-    ("aeacm", "American Electric AutoConnect ACM", lambda: build_acm(), "streetlight_body_ael_grey"),
-    ("aeacmnp", "American Electric AutoConnect ACM (No Photocell)", lambda: build_acm("cap"),
+    ("aeacmdp", "American Electric AutoConnect ACM (LADWP, Door Photocell)", build_acm,
      "streetlight_body_ael_grey"),
     ("gem250a", "GE M-250A (Standard)", lambda: build_m250a("refractor"), "streetlight_body_ge_grey"),
     ("gem250acu", "GE M-250A (Cutoff Optics)", lambda: build_m250a("cutoff"), "streetlight_body_ge_grey"),
@@ -1753,7 +1958,7 @@ ENVELOPE_FOR = {
     "geform109td": ((3.0, 13.0), (-7.5, 6.25), (4.0, REAR_Z + 1e-9)),
     # The OV-50's round glare shield is 12 px across (x 2..14).
     "whov50shaded": ((2.0, 14.0), (-3.0, 6.0), (1.0, REAR_Z + 1e-9)),
-    "whov50shadednp": ((2.0, 14.0), (-3.0, 4.0), (1.0, REAR_Z + 1e-9)),
+    "whov50shadednp": ((2.0, 14.0), (-3.0, 5.0), (1.0, REAR_Z + 1e-9)),
     # The Autobahns' boxes run x 4..12 / 3..13 and z 0..16 from y 0; the neck dips the fraction of a
     # pixel below y 0 that it needs to swallow the arm's end (ARM_TIP), as every cobra head's does.
     "aeatb0": ((4.0, 12.0), (-0.5, 6.0), (0.0, REAR_Z + 1e-9)),
@@ -1771,6 +1976,7 @@ ENVELOPE_FOR = {
     "creeledway": ((4.0, 12.0), (-0.5, 8.0), (0.0, REAR_Z + 1e-9)),
     "creeledwaysmall": ((4.0, 12.0), (-0.5, 7.0), (5.0, REAR_Z + 1e-9)),
     "creexsp": ((4.0, 12.0), (-0.5, 5.0), (2.0, REAR_Z + 1e-9)),
+    "creexspsingle": ((4.0, 12.0), (-0.5, 5.0), (2.0, REAR_Z + 1e-9)),
     # The Stylus hangs from the ceiling at the top of the block; the Full runs on to z -16.
     "creestylusfull": ((5.0, 11.0), (11.0, 16.0), (-16.0, 16.0)),
     "creestylushalf": ((5.0, 11.0), (11.0, 16.0), (0.0, 16.0)),
@@ -1807,27 +2013,11 @@ ENVELOPE_FOR = {
 # Lens art cut from the requester's JSON fixture atlases (D5, hybrid): source crops in
 # dev-env-utils/scripts/artwork/streetlight/, written as streetlight_lens_<art>_on/_off.
 ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork", "streetlight")
-# ael_atb0/2 are the Autobahns' LED arrays (the dies white lit, dimmed dark on a pale optic unlit).
-# leotek_* are the E-Cobra and GreenCobra LED arrays, cut from the ltec / ltgc* sheets. The GCJ and
-# GCJ SN sheets carry pixel-identical arrays, as do the GCM and GCM SN, so each pair shares a cut.
-LENS_ART = ["ge_m400", "ge_m240", "ael_atb0", "ael_atb2",
-            "leotek_ec", "leotek_ecdtd", "leotek_gc1v1", "leotek_gc1v2", "leotek_gcj", "leotek_gcl",
-            "leotek_gcm", "leotek_gcmv2",
-            "ge_evolve_large", "ge_evolve_small", "cree_ledway", "cree_ledway_small", "cree_xsp",
-            "cree_stylus", "ci_navion", "ci_navion_alt", "solarmax_smx"]
-# The cuts are stored as they lie on the atlas. Where the JSON face mapped them onto the fixture
-# differently from art_lens_png's convention (the source's u from the slipfitter to the nose, its v
-# from east to west), they are turned first, so the array lands as the JSON drew it: a down face
-# with "rotation": 270 runs u nose -> slipfitter and v west -> east (half a turn), the GCL's also
-# mirrors u (a flip top to bottom), the GCJ's "rotation": 90 already matches.
-ART_TURN = {
-    "leotek_ec": Image.ROTATE_180, "leotek_ecdtd": Image.ROTATE_180,
-    "leotek_gc1v1": Image.ROTATE_180, "leotek_gc1v2": Image.ROTATE_180,
-    "leotek_gcl": Image.FLIP_TOP_BOTTOM,
-    "leotek_gcm": Image.ROTATE_180, "leotek_gcmv2": Image.ROTATE_180,
-    # the XSP's two modules lie side by side across the head, where the sheet has them along u
-    "cree_xsp": Image.ROTATE_90,
-}
+SHEET_DIR = os.path.join(ARTWORK_DIR, "sheets")
+# The flat glass of the GE cutoff heads and the Evolve's array; the other LED fixtures wear his
+# whole underside faces instead (UNDERSIDE).
+LENS_ART = ["ge_m400", "ge_m240", "ge_evolve_large", "ge_evolve_small"]
+ART_TURN = {}
 
 
 def art_lens(art, state):
@@ -1839,9 +2029,6 @@ def art_lens(art, state):
 # requester's array style), "amber" the same with the SMX-LL5's yellow phosphor showing unlit,
 # "lens" a grid of round optics, one per LED (the area lights).
 GENERATED_LENS = {
-    "leotek_kc0": (4, 4, "die"),
-    "leotek_kc1": (6, 6, "die"),
-    "leotek_kc2": (6, 12, "die"),
     "ael_acm": (5, 9, "amber"),
     "solarmax_smx_ll5": (4, 9, "amber"),
     "ge_eals": (6, 6, "lens"),
@@ -1858,6 +2045,8 @@ LENS_FOR = {
     "gem400r3cunp": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
     "gem240r1": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem240r1np": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem240r1cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
+    "gem240r1cunp": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
     "gem240r2": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem240r2cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
     "geform109": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
@@ -1870,34 +2059,12 @@ LENS_FOR = {
     "whov50shadednp": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "ae115": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "ae115cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
-    "aeatb0": (art_lens("ael_atb0", "on"), art_lens("ael_atb0", "off")),
-    "aeatb2": (art_lens("ael_atb2", "on"), art_lens("ael_atb2", "off")),
-    "ltec": (art_lens("leotek_ec", "on"), art_lens("leotek_ec", "off")),
-    "ltecdtd": (art_lens("leotek_ecdtd", "on"), art_lens("leotek_ecdtd", "off")),
-    "ltgc1v1": (art_lens("leotek_gc1v1", "on"), art_lens("leotek_gc1v1", "off")),
-    "ltgc1v1np": (art_lens("leotek_gc1v1", "on"), art_lens("leotek_gc1v1", "off")),
-    "ltgc1v2": (art_lens("leotek_gc1v2", "on"), art_lens("leotek_gc1v2", "off")),
-    "ltgcj": (art_lens("leotek_gcj", "on"), art_lens("leotek_gcj", "off")),
-    "ltgcjsn": (art_lens("leotek_gcj", "on"), art_lens("leotek_gcj", "off")),
-    "ltgcl": (art_lens("leotek_gcl", "on"), art_lens("leotek_gcl", "off")),
-    "ltgcm": (art_lens("leotek_gcm", "on"), art_lens("leotek_gcm", "off")),
-    "ltgcmsn": (art_lens("leotek_gcm", "on"), art_lens("leotek_gcm", "off")),
-    "ltgcmv2": (art_lens("leotek_gcmv2", "on"), art_lens("leotek_gcmv2", "off")),
-    "ltgcmv2np": (art_lens("leotek_gcmv2", "on"), art_lens("leotek_gcmv2", "off")),
     "geel": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
     "geelpo": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
     "geelsn": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
     "gees": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
     "geespo": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
     "geesn": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
-    "creeledway": (art_lens("cree_ledway", "on"), art_lens("cree_ledway", "off")),
-    "creeledwaysmall": (art_lens("cree_ledway_small", "on"), art_lens("cree_ledway_small", "off")),
-    "creexsp": (art_lens("cree_xsp", "on"), art_lens("cree_xsp", "off")),
-    "creestylusfull": (art_lens("cree_stylus", "on"), art_lens("cree_stylus", "off")),
-    "creestylushalf": (art_lens("cree_stylus", "on"), art_lens("cree_stylus", "off")),
-    "cinavion": (art_lens("ci_navion", "on"), art_lens("ci_navion", "off")),
-    "cinavionalt": (art_lens("ci_navion_alt", "on"), art_lens("ci_navion_alt", "off")),
-    "smsmx": (art_lens("solarmax_smx", "on"), art_lens("solarmax_smx", "off")),
     "altorll": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altorell": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altosqll": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
@@ -1905,14 +2072,7 @@ LENS_FOR = {
     "altomvwl": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altomvwlslim": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "gepb": (LENS_POWERBRACKET_ON, LENS_POWERBRACKET_OFF),
-    "ltkc0": (art_lens("leotek_kc0", "on"), art_lens("leotek_kc0", "off")),
-    "ltkc0hss": (art_lens("leotek_kc0", "on"), art_lens("leotek_kc0", "off")),
-    "ltkc1": (art_lens("leotek_kc1", "on"), art_lens("leotek_kc1", "off")),
-    "ltkc1hss": (art_lens("leotek_kc1", "on"), art_lens("leotek_kc1", "off")),
-    "ltkc2": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
-    "ltkc2hss": (art_lens("leotek_kc2", "on"), art_lens("leotek_kc2", "off")),
-    "aeacm": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
-    "aeacmnp": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
+    "aeacmdp": (art_lens("ael_acm", "on"), art_lens("ael_acm", "off")),
     "gem250a": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     # the M-250 family's cutoff glass: the framed panel the M240R2 cutoff wears
     "gem250acu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
@@ -1931,12 +2091,27 @@ LENS_FOR = {
     "hpmongoose": (art_lens("holophane_mongoose", "on"), art_lens("holophane_mongoose", "off")),
 }
 
+# registry -> the sheet whose underside it wears (UNDERSIDE): its lens sprites, and its door's.
+UNDER_FOR = {
+    "ltec": "ltec", "ltecdtd": "ltecdtd", "ltgc1v1": "ltgc1_v1", "ltgc1v1np": "ltgc1_v1",
+    "ltgc1v2": "ltgc1_v2", "ltgcj": "ltgcj", "ltgcjsn": "ltgcj_smartnode", "ltgcl": "ltgcl",
+    "ltgcm": "ltgcm", "ltgcmsn": "ltgcm_smartnode", "ltgcmv2": "ltgcmv2", "ltgcmv2np": "ltgcmv2",
+    "aeatb0": "ae_atb0", "aeatb2": "ae_atb2", "creeledway": "cree_ledway",
+    "creeledwaysmall": "cree_ledway_small", "creexsp": "cree_xsp",
+    "creestylusfull": "cree_stylus_full", "creestylushalf": "cree_stylus_half",
+    "cinavion": "ci_navion", "cinavionalt": "ci_navion_alt", "smsmx": "solarmax_smx",
+    "ltkc0": "ltgcj", "ltkc0hss": "ltgcj", "ltkc1": "ltgcj", "ltkc1hss": "ltgcj",
+    "ltkc2": "ltgcmv2", "ltkc2hss": "ltgcmv2", "creexspsingle": "cree_xsp_single",
+}
+
 # The photocell material's texture, where a fixture carries something else in the receptacle.
 PHOTOCELL_FOR = {
     "ltgcjsn": "streetlight_smartnode",
     "ltgcmsn": "streetlight_smartnode",
     # the SMX-LL5 in his photo carries a blue photocell, the smart node's blue
     "smsmxll5": "streetlight_smartnode",
+    # LADWP's door photocell is black
+    "aeacmdp": "streetlight_photocell_black",
 }
 
 
@@ -2100,8 +2275,65 @@ def led_array_png(across, along, style, state):
     return img
 
 
+def pixels(img):
+    """An image's pixels as a list of tuples, by whichever name this Pillow has for it."""
+    return list(img.get_flattened_data() if hasattr(img, "get_flattened_data") else img.getdata())
+
+
+def under_sprites():
+    """His underside faces as sprites: ({name: image}, {(sheet, role): names}). A lens face gives a
+    lit and an unlit sprite, a door one. Each is the face's texels cut from his sheet as they lie,
+    in the top left corner of a square sprite whose spare room repeats the cut's last row and
+    column (so a mip level never pulls in an empty margin). The lens is drawn unshaded: unlit, it
+    is halved, to look as it did shaded; lit, the texels his lit sheet changed are left as painted
+    and the rest (the housing round the array) halved. Two sheets with the same texels share a
+    sprite."""
+    images, names, seen = {}, {}, {}
+
+    def half(px):
+        return (px[0] // 2, px[1] // 2, px[2] // 2, px[3])
+
+    def sprite(pixels, w, h, side):
+        img = Image.new("RGBA", (side, side))
+        img.putdata([pixels[min(y, h - 1) * w + min(x, w - 1)] for y in range(side) for x in range(side)])
+        return img
+
+    def named(img, name):
+        key = (img.size, img.tobytes())
+        if key not in seen:
+            seen[key] = name
+            images[name] = img
+        return seen[key]
+
+    def load(sheet, state):
+        if sheet in SHEET_DERIVED:
+            src, columns = SHEET_DERIVED[sheet]
+            whole = load(src, state)
+            img = Image.new("RGBA", whole.size)
+            for k, col in enumerate(columns):
+                img.paste(whole.crop((col, 0, col + 1, whole.size[1])), (k, 0))
+            return img
+        return Image.open(os.path.join(SHEET_DIR, "%s_%s.png" % (sheet, state))).convert("RGBA")
+
+    for sheet, faces in UNDERSIDE.items():
+        on, off = load(sheet, "on"), load(sheet, "off")
+        for role, _rect, uv, _rot in faces:
+            left, top, w, h, side = under_cut(uv)
+            box_ = (left, top, left + w, top + h)
+            a, b = pixels(on.crop(box_)), pixels(off.crop(box_))
+            if role == "lens":
+                lit = [pa if pa != pb else half(pa) for pa, pb in zip(a, b)]
+                names[(sheet, role)] = (
+                    named(sprite(lit, w, h, side), "streetlight_under_%s_on" % sheet),
+                    named(sprite([half(q) for q in b], w, h, side), "streetlight_under_%s_off" % sheet))
+            else:
+                names[(sheet, role)] = named(sprite(b, w, h, side), "streetlight_under_%s_door" % sheet)
+    return images, names
+
+
 def all_textures():
     out = {name: swatch_png(*grad) for name, grad in SWATCHES.items()}
+    out.update(under_sprites()[0])
     for art, (across, along, style) in GENERATED_LENS.items():
         for state in ("on", "off"):
             out[art_lens(art, state)] = led_array_png(across, along, style, state)
@@ -2155,8 +2387,10 @@ TRANSFORM_FOR = {
 }
 
 
-def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF, photocell_tex="streetlight_photocell"):
+def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF, photocell_tex="streetlight_photocell",
+               door_tex=None):
     model = "csm:lighting/shared_models/streetlight_%s.obj" % registry
+    extra = {"#" + DOOR_MAT: TEX + door_tex} if door_tex else {}
     lit = {"textures": {"#" + LENS_MAT: TEX + lens_on}}
     # States 0 and 2 name the unlit lens rather than inheriting it: gen_lighting_lit_atlases.py
     # claims any blockstate whose 0 and 2 are empty (the troffers' rule, LIGHTING_SYSTEM.md).
@@ -2166,8 +2400,8 @@ def blockstate(registry, body_tex, lens_on=LENS_ON, lens_off=LENS_OFF, photocell
         "defaults": {
             "model": model,
             "custom": {"flip-v": True},
-            "textures": {"#body": TEX + body_tex, "#" + LENS_MAT: TEX + lens_off,
-                         "#photocell": TEX + photocell_tex},
+            "textures": dict({"#body": TEX + body_tex, "#" + LENS_MAT: TEX + lens_off,
+                              "#photocell": TEX + photocell_tex}, **extra),
         },
         "variants": {
             "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
@@ -2181,7 +2415,7 @@ def mtl_text():
     lines = ["# Generated by dev-env-utils/scripts/gen_streetlight_fixtures.py -- do not edit",
              "# One set of materials for every OBJ street light; each blockstate retextures them."]
     for mat, tex in (("body", "streetlight_body_ge_grey"), (LENS_MAT, LENS_OFF),
-                     ("photocell", "streetlight_photocell")):
+                     ("photocell", "streetlight_photocell"), (DOOR_MAT, "streetlight_body_ge_grey")):
         lines += ["newmtl %s" % mat, "map_Kd %s%s" % (TEX, tex), ""]
     return "\n".join(lines)
 
@@ -2190,6 +2424,7 @@ def mtl_text():
 def outputs():
     """Every file the script owns: relative asset path -> bytes."""
     files = {MODEL_DIR + "/" + MTL_NAME: mtl_text().encode()}
+    _under_images, under_names = under_sprites()
     for registry, display, builder, body in CATALOGUE:
         mesh = builder()
         (xa, xb), (ya, yb), (za, zb) = ENVELOPE_FOR.get(registry, ENVELOPE)
@@ -2197,9 +2432,15 @@ def outputs():
             assert xa - 1e-9 <= x <= xb + 1e-9 and ya - 1e-9 <= y <= yb + 1e-9 and za - 1e-9 <= z <= zb, \
                 "%s leaves the fixture envelope at %s" % (registry, (x, y, z))
         files[MODEL_DIR + "/streetlight_%s.obj" % registry] = mesh.text(display).encode()
+        lens = LENS_FOR.get(registry, (LENS_ON, LENS_OFF))
+        door = None
+        if registry in UNDER_FOR:
+            lens = under_names[(UNDER_FOR[registry], "lens")]
+            door = under_names.get((UNDER_FOR[registry], "door"))
         files["blockstates/%s.json" % registry] = (
-            json.dumps(blockstate(registry, body, *LENS_FOR.get(registry, (LENS_ON, LENS_OFF)),
-                                  photocell_tex=PHOTOCELL_FOR.get(registry, "streetlight_photocell")),
+            json.dumps(blockstate(registry, body, *lens,
+                                  photocell_tex=PHOTOCELL_FOR.get(registry, "streetlight_photocell"),
+                                  door_tex=door),
                        indent=2) + "\n").encode()
     for name, img in all_textures().items():
         buf = io.BytesIO()
@@ -2219,7 +2460,25 @@ def same(path, data):
         return f.read().replace(b"\r\n", b"\n") == data
 
 
+def fragments(registries):
+    """The tab and lang lines of the named fixtures: the bounding box is the model's, rounded out
+    to a quarter pixel, and runs to the block's rear face."""
+    for registry, display, builder, _body in CATALOGUE:
+        if registry not in registries:
+            continue
+        vs = builder().v
+        lo = [math.floor(min(v[k] for v in vs) * 4.0) / 64.0 for k in range(3)]
+        hi = [math.ceil(max(v[k] for v in vs) * 4.0) / 64.0 for k in range(3)]
+        hi[2] = 1.0
+        print('    initTabBlock(new BlockBrightLightFactory("%s", new AxisAlignedBB(%s), 0));'
+              % (registry, ", ".join("%.6f" % c for c in lo + hi)))
+        print("tile.%s.name=%s" % (registry, display))
+
+
 def main(argv):
+    if "--fragments" in argv:
+        fragments(argv[argv.index("--fragments") + 1:])
+        return 0
     check = "--check" in argv
     drift = []
     for rel, data in outputs().items():

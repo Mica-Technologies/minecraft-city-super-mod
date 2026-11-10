@@ -8,3 +8,6 @@ map_Kd csm:blocks/lighting/shared_textures/streetlight_lens_hps_off
 
 newmtl photocell
 map_Kd csm:blocks/lighting/shared_textures/streetlight_photocell
+
+newmtl door
+map_Kd csm:blocks/lighting/shared_textures/streetlight_body_ge_grey

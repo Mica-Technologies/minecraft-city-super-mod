@@ -7,8 +7,9 @@
     },
     "textures": {
       "#body": "csm:blocks/lighting/shared_textures/streetlight_body_leotek_grey",
-      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_leotek_gcm_off",
-      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ltgcm_off",
+      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell",
+      "#door": "csm:blocks/lighting/shared_textures/streetlight_under_ltec_door"
     }
   },
   "variants": {
@@ -27,22 +28,22 @@
     "state": {
       "0": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_leotek_gcm_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ltgcm_off"
         }
       },
       "1": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_leotek_gcm_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ltgcm_on"
         }
       },
       "2": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_leotek_gcm_off"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ltgcm_off"
         }
       },
       "3": {
         "textures": {
-          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_leotek_gcm_on"
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_under_ltgcm_on"
         }
       }
     },
