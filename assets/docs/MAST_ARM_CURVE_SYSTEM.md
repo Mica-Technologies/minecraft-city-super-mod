@@ -264,7 +264,8 @@ the root is right behind it, so this is never the only thing keeping the bracket
 asks `CsmPoleFit.behind()` (Core) what stands behind it, which reads
 `AbstractBlockTrafficPole.getPoleRadius()` and picks `LARGE` (saddle boot), `THIN` or
 `PEDESTAL` (bracket) by the midpoints between the radii the joints were generated for. Anything
-that is not a pole gets the large fit, whose saddle cut simply disappears inside a full block.
+that is not a pole gets the large fit, whose saddle cut simply disappears inside a full block
+(a luminaire arm draws a back plate there instead; see "Luminaire arms").
 The pole draws nothing at the joint either way: curves are `ICsmTrafficPoleIgnored`, as before.
 The root packs the fit into its `shape` slot rather than carrying `CsmPoleFit.PROPERTY` the way
 the light mounts do (see "Pole fit" in `BLOCK_AND_ITEM_BASE_CLASSES.md`), because its model
@@ -344,6 +345,20 @@ names those cells and which side their pole is on (`1` behind, `-1` ahead for a 
 second root), and the block reads `CsmPoleFit.behind` that way. There is no mount hardware on a
 luminaire arm, so a `shape` value is a slot alone: the cell index, or a slot past the last cell
 for a pole-joint cell on a narrower pole.
+
+**On a wooden pole or a wall: the back plate** (GitHub #349). Against a full block that is not a
+CSM pole there is no cylinder to cut against, and the large fit's tube just ran into the block:
+an arm with nothing holding it. A pole-joint cell there draws a fourth joint, `wall`: every
+member that starts at the pole is cut flat at a plate standing 0.7 off the block's face, one
+plate tall enough to span all of them (on a truss arm, from under the lower member to over the
+upper one, as the truss brackets lagged to wooden utility poles in New England are built), with
+four bolt heads. It is not a `CsmPoleFit`, which other blocks' blockstates enumerate; the block
+passes it separately (`ICurvedArmProfile.shapeIndex(cell, mask, fit, againstFullBlock)`), and a
+joint cell takes three slots past the cells' own instead of two. "A full block" is any log
+(`BlockLog`, so other mods' wood too) or any opaque cube. The plate is cut at a block boundary
+only between two cells that each hold a member's joint: handed to whichever cell it lay in, a
+plate's margin made a new joint cell with its own block to test, and the plate lost its top to
+the air above a pole.
 
 **Not done:** mount stubs along a luminaire arm; the pole colours for the Los Angeles arms and
 the Van Nuys Special (galvanized and silver, black too on the LA arms; green on the Anaheim arm).

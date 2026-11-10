@@ -35,6 +35,9 @@
       },
       "7": {
         "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ft_c0_pedestal.obj"
+      },
+      "8": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ft_c0_wall.obj"
       }
     },
     "facing": {

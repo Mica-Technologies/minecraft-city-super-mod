@@ -73,22 +73,34 @@
         "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c0_pedestal.obj"
       },
       "20": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c1_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c0_wall.obj"
       },
       "21": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c1_pedestal.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c1_thin.obj"
       },
       "22": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c9_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c1_pedestal.obj"
       },
       "23": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c9_pedestal.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c1_wall.obj"
       },
       "24": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c10_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c9_thin.obj"
       },
       "25": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c9_pedestal.obj"
+      },
+      "26": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c9_wall.obj"
+      },
+      "27": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c10_thin.obj"
+      },
+      "28": {
         "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c10_pedestal.obj"
+      },
+      "29": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss12ftdouble_c10_wall.obj"
       }
     },
     "facing": {

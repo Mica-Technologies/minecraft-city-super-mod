@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLog;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
@@ -533,14 +534,21 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
     // arm's second root, ahead of it, past the pole; a diagonal truss arm's, diagonally behind.
     int[] poleAt = profile.getPoleOffset(cell);
     CsmPoleFit fit = CsmPoleFit.LARGE;
+    boolean againstFullBlock = false;
     if (poleAt != null) {
-      Block pole = worldIn.getBlockState(pos.offset(facing, poleAt[0]).offset(right, poleAt[1]))
-          .getBlock();
+      IBlockState behind =
+          worldIn.getBlockState(pos.offset(facing, poleAt[0]).offset(right, poleAt[1]));
+      Block pole = behind.getBlock();
       if (pole instanceof AbstractBlockTrafficPole) {
         fit = CsmPoleFit.forPoleRadius(((AbstractBlockTrafficPole) pole).getPoleRadius());
+      } else {
+        // A wooden utility pole built of logs (any mod's), or a wall: no cylinder to meet, so
+        // a profile that has one draws its bolted back plate instead.
+        againstFullBlock = pole instanceof BlockLog || behind.isOpaqueCube();
       }
     }
-    return state.withProperty(shapeProperty, profile.shapeIndex(cell, mask, fit));
+    return state.withProperty(shapeProperty,
+        profile.shapeIndex(cell, mask, fit, againstFullBlock));
   }
 
   /**

@@ -55,10 +55,16 @@
         "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ftstraightdouble_c0_pedestal.obj"
       },
       "14": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ftstraightdouble_c6_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ftstraightdouble_c0_wall.obj"
       },
       "15": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ftstraightdouble_c6_thin.obj"
+      },
+      "16": {
         "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ftstraightdouble_c6_pedestal.obj"
+      },
+      "17": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans10ftstraightdouble_c6_wall.obj"
       }
     },
     "facing": {
