@@ -148,10 +148,10 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   of all four (`<name>_span`, #321): the device without its stub, hung on a collar and pipe from
   the top of the cell under a span wire mount; and the pole-side versions (`<name>_pole`, #338):
   the device on a bracket and clamp band reaching back into a vertical pole's cell; `--check`
-- `gen_pole_bases.py` -- the bolted bases of the painted thin and thick traffic poles (square,
-  squircle, slim, pedestal) as OBJ, borrowing the pedestal pole's mesh and lathe, and those ten
-  poles' blockstates, whose one `foot` property carries the base and the reach-down extension;
-  `--check` fails on drift
+- `gen_pole_bases.py` -- the bolted bases of the painted thin, thick and impact resistant
+  traffic poles (square, squircle, slim, pedestal) as OBJ, borrowing the pedestal pole's mesh
+  and lathe; the impact resistant pole's tube; and those fifteen poles' blockstates, whose one
+  `foot` property carries the base and the reach-down extension; `--check` fails on drift
 - `gen_pedestal_pole.py` -- the pedestal (pedestrian) traffic pole: lathes the tube, domed cap,
   tapered base with its access door and the clamp bracket as OBJ, and emits the five
   blockstates plus lang/tab fragments; `--check` fails if the tree has drifted from the script

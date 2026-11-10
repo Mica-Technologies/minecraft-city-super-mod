@@ -167,6 +167,13 @@ retroreflective. Green is bike-lane green, for plates on bicycle signals.
 - **Span wire** — see [Span Wire](span-wire.md).
 - **Pedestal bases**, for crosswalk signals and low-mounted heads.
 
+### Impact resistant poles
+
+For a corner with a history of being hit, the **Impact Resistant Traffic Pole** is a heavier
+version of the thick pole: a tube the full width of its block, in the same five finishes. It
+stacks, carries signals, arms and signs, and stands on the same choice of bases as the thin and
+thick poles.
+
 ### Pole finials
 
 A pedestal pole's top can wear a decorative **Pole Finial** — Small Ball, Large Ball, Acorn,
@@ -187,8 +194,8 @@ on the octagon).
 
 ### Pole bases
 
-An upright **thin or thick traffic pole** standing on the ground draws a bolted base at its
-foot. Sneak-right-click the Street Light Configuration Tool to its **Cycle Pole Base** mode,
+An upright **thin, thick or impact resistant traffic pole** standing on the ground draws a
+bolted base at its foot. Sneak-right-click the Street Light Configuration Tool to its **Cycle Pole Base** mode,
 then right-click anywhere on the pole to step through the styles:
 
 | Style | Looks like |
