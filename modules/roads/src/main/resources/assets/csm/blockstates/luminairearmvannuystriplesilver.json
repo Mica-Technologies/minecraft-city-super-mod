@@ -52,10 +52,19 @@
         "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c12.obj"
       },
       "13": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c0_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c13.obj"
       },
       "14": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c0_pedestal.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c14.obj"
+      },
+      "15": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c15.obj"
+      },
+      "16": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c16.obj"
+      },
+      "17": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_vannuystriple_c17.obj"
       }
     },
     "facing": {

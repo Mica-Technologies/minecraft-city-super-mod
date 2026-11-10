@@ -25,9 +25,12 @@
         "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ft_c3.obj"
       },
       "4": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ft_c0_thin.obj"
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ft_c4.obj"
       },
       "5": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ft_c0_thin.obj"
+      },
+      "6": {
         "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans8ft_c0_pedestal.obj"
       }
     },

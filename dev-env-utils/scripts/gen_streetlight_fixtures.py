@@ -358,8 +358,11 @@ def under_face(mesh, profile, face, y0, y1, split=None):
         return ((u - left) / side, 1.0 - (v - top) / side)
 
     za, zb = float(z0), float(z1)
+    if role == "door":
+        za += 0.02          # clear of the array slab's end, which stands in the same plane
     if profile:
-        za, zb = max(za, profile[0][0]), min(zb, profile[-1][0])
+        # and short of the rear cap, so the slab's end is not in its plane
+        za, zb = max(za, profile[0][0]), min(zb, profile[-1][0] - 0.05)
     zs = {za, zb}
     if profile:
         zs |= {s[0] for s in profile if za < s[0] < zb}
@@ -548,7 +551,7 @@ M400O_SHELL = [
     (10.5, 3.15, 1.00, 3.75),
     (13.0, 2.8, 0.70, 3.65),
     (14.6, 2.55, 0.30, 3.58),
-    (REAR_Z, 2.5, 0.20, 3.55),
+    (15.7, 2.5, 0.20, 3.55),
 ]
 M400O_DOOR = [
     (1.9, 1.6, 0.50, 1.50),
@@ -1149,7 +1152,7 @@ EVOLVE = {
         (11.5, 3.0, 0.15, 1.40),
         (13.0, 2.9, 0.15, 1.50),
         (14.6, 2.7, 0.10, 1.50),
-        (REAR_Z, 2.6, 0.10, 1.50),
+        (15.6, 2.6, 0.10, 1.50),
     ], 11.0, 12.9),
     "small": ("ge_evolve_small", [
         (9.05, 1.8, 0.35, 0.75),
@@ -1159,7 +1162,7 @@ EVOLVE = {
         (12.2, 2.85, 0.15, 1.40),
         (13.4, 2.65, 0.15, 1.50),
         (14.6, 2.45, 0.10, 1.50),
-        (REAR_Z, 2.35, 0.10, 1.50),
+        (15.6, 2.35, 0.10, 1.50),
     ], 11.6, 13.3),
 }
 
@@ -1194,7 +1197,7 @@ def build_evolve(size, top="photocell"):
         for k in range(7):                  # the ERL2's blades: arched, taller down the middle
             z = nose + 0.95 + 0.47 * k
             box(m, (8.0 - 2.65, 0.9, z - 0.08), (8.0 + 2.65, top_at(deck, z) + 0.55, z + 0.08), "body")
-            box(m, (8.0 - 1.5, 0.9, z - 0.075), (8.0 + 1.5, top_at(deck, z) + 1.05, z + 0.075), "body")
+            box(m, (8.0 - 1.5, 1.0, z - 0.13), (8.0 + 1.5, top_at(deck, z) + 1.05, z + 0.13), "body")
     base = top_at(spine, pz) - 0.35
     if top == "outlet":
         # As the JSON drew it: a raised photocell outlet, the photocell on it.

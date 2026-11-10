@@ -2,7 +2,7 @@
 
 Street lights, floodlights, pendants and sconces, all switchable.
 
-!!! info "230 blocks in this tab"
+!!! info "241 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -26,8 +26,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | American Electric 115 (Standard) | `csm:ae115` | 2 | 10 | pickaxe | 1 |
 | American Electric Autobahn ATB0 | `csm:aeatb0` | 2 | 10 | pickaxe | 1 |
 | American Electric Autobahn ATB2 | `csm:aeatb2` | 2 | 10 | pickaxe | 1 |
-| American Electric AutoConnect ACM | `csm:aeacm` | 2 | 10 | pickaxe | 1 |
-| American Electric AutoConnect ACM (No Photocell) | `csm:aeacmnp` | 2 | 10 | pickaxe | 1 |
+| American Electric AutoConnect ACM (LADWP, Door Photocell) | `csm:aeacmdp` | 2 | 10 | pickaxe | 1 |
 | Bishop's Crook with Teardrop | `csm:reprobishopscrook` | 2 | 10 | pickaxe | 1 |
 | Broadway Rose Twin Globes | `csm:labroadwayrosehead` | 2 | 10 | pickaxe | 1 |
 | Caged Edison Pendant (Black) | `csm:pendcagedblack` | 2 | 10 | pickaxe | 1 |
@@ -54,6 +53,7 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | Cree Stylus (Full) | `csm:creestylusfull` | 2 | 10 | pickaxe | 1 |
 | Cree Stylus (Half) | `csm:creestylushalf` | 2 | 10 | pickaxe | 1 |
 | Cree XSP | `csm:creexsp` | 2 | 10 | pickaxe | 1 |
+| Cree XSP (Single Module) | `csm:creexspsingle` | 2 | 10 | pickaxe | 1 |
 | Five-Globe Llewellyn Electrolier | `csm:lallewellyn5` | 2 | 10 | pickaxe | 1 |
 | Full Ballast Mount | `csm:fbm` | 1 | 10 | pickaxe | 1 |
 | Full Ballast Mount 2 | `csm:fbm2` | 1 | 10 | pickaxe | 1 |
@@ -64,12 +64,12 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | GE Evolve EFM LED Floodlight (Knuckle) | `csm:geefmkn` | 2 | 10 | pickaxe | 1 |
 | GE Evolve EFM LED Floodlight (Slipfitter) | `csm:geefmsf` | 2 | 10 | pickaxe | 1 |
 | GE Evolve EFM LED Floodlight (Yoke) | `csm:geefmyk` | 2 | 10 | pickaxe | 1 |
-| GE Evolve ESR2 Large (Photocell Outlet) | `csm:geelpo` | 2 | 10 | pickaxe | 1 |
-| GE Evolve ESR2 Large (Smart Node) | `csm:geelsn` | 2 | 10 | pickaxe | 1 |
-| GE Evolve ESR2 Large (Standard) | `csm:geel` | 2 | 10 | pickaxe | 1 |
-| GE Evolve ESR2 Small (Photocell Outlet) | `csm:geespo` | 2 | 10 | pickaxe | 1 |
-| GE Evolve ESR2 Small (Smart Node) | `csm:geesn` | 2 | 10 | pickaxe | 1 |
-| GE Evolve ESR2 Small (Standard) | `csm:gees` | 2 | 10 | pickaxe | 1 |
+| GE Evolve ERL1 Small (Photocell Outlet) | `csm:geespo` | 2 | 10 | pickaxe | 1 |
+| GE Evolve ERL1 Small (Smart Node) | `csm:geesn` | 2 | 10 | pickaxe | 1 |
+| GE Evolve ERL1 Small (Standard) | `csm:gees` | 2 | 10 | pickaxe | 1 |
+| GE Evolve ERL2 Large (Photocell Outlet) | `csm:geelpo` | 2 | 10 | pickaxe | 1 |
+| GE Evolve ERL2 Large (Smart Node) | `csm:geelsn` | 2 | 10 | pickaxe | 1 |
+| GE Evolve ERL2 Large (Standard) | `csm:geel` | 2 | 10 | pickaxe | 1 |
 | GE Form 109 (Regular) | `csm:geform109` | 2 | 10 | pickaxe | 1 |
 | GE Form 109 (Teardrop) | `csm:geform109td` | 2 | 10 | pickaxe | 1 |
 | GE M-250A (Cutoff Optics) | `csm:gem250acu` | 2 | 10 | pickaxe | 1 |
@@ -79,10 +79,21 @@ Street lights, floodlights, pendants and sconces, all switchable.
 | GE M-400A (Cutoff Optics, Anaheim Green) | `csm:gem400acugreen` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Cutoff Optics, No Photocell) | `csm:gem400acunp` | 2 | 10 | pickaxe | 1 |
 | GE M-400A (Standard) | `csm:gem400a` | 2 | 10 | pickaxe | 1 |
+| GE M240R1 (Cutoff Optics) | `csm:gem240r1cu` | 2 | 10 | pickaxe | 1 |
+| GE M240R1 (Cutoff Optics, No Photocell) | `csm:gem240r1cunp` | 2 | 10 | pickaxe | 1 |
 | GE M240R1 (Standard) | `csm:gem240r1` | 2 | 10 | pickaxe | 1 |
 | GE M240R1 (Standard, No Photocell) | `csm:gem240r1np` | 2 | 10 | pickaxe | 1 |
 | GE M240R2 (Cutoff Optics) | `csm:gem240r2cu` | 2 | 10 | pickaxe | 1 |
 | GE M240R2 (Standard) | `csm:gem240r2` | 2 | 10 | pickaxe | 1 |
+| GE M400 (Cutoff Optics) | `csm:gem400cu` | 2 | 10 | pickaxe | 1 |
+| GE M400 (Glare Shield) | `csm:gem400gs` | 2 | 10 | pickaxe | 1 |
+| GE M400 (Standard) | `csm:gem400` | 2 | 10 | pickaxe | 1 |
+| GE M400R1 (Cutoff Optics) | `csm:gem400r1cu` | 2 | 10 | pickaxe | 1 |
+| GE M400R1 (Glare Shield) | `csm:gem400r1gs` | 2 | 10 | pickaxe | 1 |
+| GE M400R1 (Standard) | `csm:gem400r1` | 2 | 10 | pickaxe | 1 |
+| GE M400R2 (Cutoff Optics) | `csm:gem400r2cu` | 2 | 10 | pickaxe | 1 |
+| GE M400R2 (Glare Shield) | `csm:gem400r2gs` | 2 | 10 | pickaxe | 1 |
+| GE M400R2 (Standard) | `csm:gem400r2` | 2 | 10 | pickaxe | 1 |
 | GE M400R3 (Cutoff Optics) | `csm:gem400r3cu` | 2 | 10 | pickaxe | 1 |
 | GE M400R3 (Cutoff Optics, No Photocell) | `csm:gem400r3cunp` | 2 | 10 | pickaxe | 1 |
 | GE M400R3 (Standard) | `csm:gem400r3` | 2 | 10 | pickaxe | 1 |
