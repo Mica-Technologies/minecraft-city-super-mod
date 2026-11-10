@@ -15,7 +15,12 @@ public enum ItemStreetLightConfigToolMode {
    * Steps the finial on top of a pedestal traffic pole: none, each style in turn, then none
    * again.
    */
-  CYCLE_POLE_FINIAL("Cycle Pole Finial");
+  CYCLE_POLE_FINIAL("Cycle Pole Finial"),
+  /**
+   * Steps the base at the foot of an upright pole through the styles that pole offers, ending
+   * with none.
+   */
+  CYCLE_POLE_BASE("Cycle Pole Base");
 
   private final String friendlyName;
 

@@ -126,4 +126,17 @@ public class BlockRCPM extends AbstractBlockRotatableNSEWUD implements ICsmRetir
   public String getReplacementBlockId() {
     return "trafficpoleverticalconcrete";
   }
+
+  /**
+   * A middle piece never had a base: where one stood on the ground with no base piece under
+   * it, the pole it retires into stays bare instead of growing a plinth.
+   *
+   * @return the replacement's starting property values
+   *
+   * @since 2026.11
+   */
+  @Override
+  public java.util.Map<String, String> getReplacementProperties() {
+    return java.util.Collections.singletonMap("base", "none");
+  }
 }

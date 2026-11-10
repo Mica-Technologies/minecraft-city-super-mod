@@ -39,7 +39,8 @@ import org.jetbrains.annotations.NotNull;
  *   <li>a cap, wherever the shaft ends in the open, or the finial if its owner chose one
  *       ({@link #TOP});</li>
  *   <li>a collar and tenon, under a post-top fixture ({@link ICsmPostTopFixture});</li>
- *   <li>a stepped plinth, at the bottom of a vertical pole standing on the ground.</li>
+ *   <li>a stepped plinth, at the bottom of a vertical pole standing on the ground: its own,
+ *       the other profile's, or none at all, as its owner chose ({@link #BASE}).</li>
  * </ul>
  *
  * <p>Those four pieces replace the hand-placed base, middle and top blocks the concrete poles
@@ -68,7 +69,12 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
     /** The collar and tenon: a post-top fixture sits on this end. */
     TENON,
     /** The stepped plinth: the bottom of a vertical pole standing on the ground. */
-    BASE;
+    BASE,
+    /**
+     * The other profile's plinth, at this pole's width: an octagon plinth under a round pole, a
+     * round one under an octagon. Only ever shown by the owner's choice ({@link #BASE}).
+     */
+    BASEALT;
 
     @Override
     public String getName() {
@@ -126,11 +132,45 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
    */
   public static final PropertyEnum<TopStyle> TOP = PropertyEnum.create("top", TopStyle.class);
 
+  /** How many values of the combined choice number each top takes: one per base. */
+  private static final int CHOICES_PER_TOP = BaseStyle.values().length;
+
   /**
-   * How many values of the combined choice number each top takes. Three, not one, so the
-   * metadata an upright pole with a finial is stored under leaves room below it.
+   * What the owner picked for the foot of an upright pole. Stored, and only an input to
+   * {@link #getActualState}, as {@link TopStyle} is.
    */
-  private static final int CHOICES_PER_TOP = 3;
+  public enum BaseStyle implements IStringSerializable {
+    /** The pole's own plinth, wherever it stands on the ground. */
+    AUTO("Matching plinth"),
+    /** The other profile's plinth: octagon under a round pole, round under an octagon. */
+    OTHER("Other profile's plinth"),
+    /** No plinth: the shaft runs straight into the ground, as a direct-buried pole does. */
+    NONE("No base");
+
+    private final String friendlyName;
+
+    BaseStyle(String friendlyName) {
+      this.friendlyName = friendlyName;
+    }
+
+    @Override
+    public String getName() {
+      return name().toLowerCase();
+    }
+
+    /**
+     * The name the Street Light Configuration Tool reports.
+     *
+     * @return the display name
+     */
+    public String getFriendlyName() {
+      return friendlyName;
+    }
+  }
+
+  /** The owner's choice of base. It applies to the foot of an upright pole only. */
+  public static final PropertyEnum<BaseStyle> BASE = PropertyEnum.create("base",
+      BaseStyle.class);
 
   /** First metadata value of an upright pole with a choice other than the defaults. */
   private static final int META_UPRIGHT_CHOICES = 6;
@@ -208,23 +248,26 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
     if (state.getPropertyKeys().contains(END_NORTH)
-        && (state.getValue(END_NORTH) == EndStyle.BASE
-        || state.getValue(END_SOUTH) == EndStyle.BASE)) {
+        && (isPlinth(state.getValue(END_NORTH)) || isPlinth(state.getValue(END_SOUTH)))) {
       return baseBoundingBox;
     }
     return shaftBoundingBox;
+  }
+
+  private static boolean isPlinth(EndStyle end) {
+    return end == EndStyle.BASE || end == EndStyle.BASEALT;
   }
 
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
     return new CsmBlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
-        END_NORTH, END_SOUTH, TOP);
+        END_NORTH, END_SOUTH, TOP, BASE);
   }
 
   @Override
   public IProperty<?>[] getModelIgnoredProperties() {
-    return new IProperty<?>[]{TOP};
+    return new IProperty<?>[]{TOP, BASE};
   }
 
   /**
@@ -233,8 +276,8 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
    *
    * <ul>
    *   <li>0-5: the facing, every choice at its default;</li>
-   *   <li>6-10: upright, with one of the five combinations of choices other than the
-   *       defaults;</li>
+   *   <li>6-10: upright, with one of the five combinations of top and base other than the
+   *       defaults (two tops by three bases, less the default pair);</li>
    *   <li>11-14: lying on its side (north, south, west, east), with a finial.</li>
    * </ul>
    *
@@ -273,12 +316,14 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
 
   /** The owner's choices as one number, 0 for every default. */
   private static int choiceIndex(IBlockState state) {
-    return state.getValue(TOP).ordinal() * CHOICES_PER_TOP;
+    return state.getValue(TOP).ordinal() * CHOICES_PER_TOP + state.getValue(BASE).ordinal();
   }
 
   private static IBlockState withChoiceIndex(IBlockState state, int choice) {
     TopStyle[] tops = TopStyle.values();
-    return state.withProperty(TOP, tops[Math.min(choice / CHOICES_PER_TOP, tops.length - 1)]);
+    return state
+        .withProperty(TOP, tops[Math.min(choice / CHOICES_PER_TOP, tops.length - 1)])
+        .withProperty(BASE, BaseStyle.values()[choice % CHOICES_PER_TOP]);
   }
 
   /**
@@ -303,11 +348,12 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
     IBlockState actual = super.getActualState(state, worldIn, pos);
     EnumFacing facing = actual.getValue(FACING);
     TopStyle top = actual.getValue(TOP);
+    BaseStyle base = actual.getValue(BASE);
     return actual
         .withProperty(END_NORTH, endStyle(worldIn, pos, facing,
-            BlockTrafficPolePedestal.endDirection(facing, true), top))
+            BlockTrafficPolePedestal.endDirection(facing, true), top, base))
         .withProperty(END_SOUTH, endStyle(worldIn, pos, facing,
-            BlockTrafficPolePedestal.endDirection(facing, false), top));
+            BlockTrafficPolePedestal.endDirection(facing, false), top, base));
   }
 
   /**
@@ -319,11 +365,12 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
    * @param facing  the pole's facing
    * @param end     the world direction of the end being decided
    * @param top     the owner's choice of top
+   * @param base    the owner's choice of base
    *
    * @return what that end shows
    */
   private static EndStyle endStyle(IBlockAccess worldIn, BlockPos pos, EnumFacing facing,
-      EnumFacing end, TopStyle top) {
+      EnumFacing end, TopStyle top, BaseStyle base) {
     BlockPos beyond = pos.offset(end);
     Block beyondBlock = worldIn.getBlockState(beyond).getBlock();
 
@@ -350,7 +397,14 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
     if (end == EnumFacing.DOWN && facing.getAxis() == EnumFacing.Axis.Y
         && !(beyondBlock instanceof AbstractBlockTrafficPole)
         && !(beyondBlock instanceof ICsmTrafficPoleIgnored)) {
-      return EndStyle.BASE;
+      switch (base) {
+        case OTHER:
+          return EndStyle.BASEALT;
+        case NONE:
+          return EndStyle.NONE;
+        default:
+          return EndStyle.BASE;
+      }
     }
     return EndStyle.NONE;
   }
