@@ -12,14 +12,6 @@
     "inventory": [
       {}
     ],
-    "extenddown": {
-      "false": {
-        "submodel": {
-          "extension": null
-        }
-      },
-      "true": {}
-    },
     "facing": {
       "north": {},
       "east": {
@@ -32,7 +24,15 @@
         "y": 270
       },
       "up": {
-        "x": 270,
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "foot": {
+      "none": {},
+      "extend": {
         "submodel": {
           "extension": {
             "model": "csm:trafficaccessories/shared_models/small",
@@ -51,22 +51,54 @@
           }
         }
       },
-      "down": {
-        "x": 90,
+      "square": {
         "submodel": {
-          "extension": {
-            "model": "csm:trafficaccessories/shared_models/small",
-            "textures": {
-              "all": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
-              "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
-              "0": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_square.obj",
+            "custom": {
+              "flip-v": true
             },
-            "transform": {
-              "translation": [
-                0.0,
-                0.0,
-                -1.0
-              ]
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      },
+      "squircle": {
+        "submodel": {
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_squircle.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      },
+      "slim": {
+        "submodel": {
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_slim.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+            }
+          }
+        }
+      },
+      "pedestal": {
+        "submodel": {
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_pedestal.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
             }
           }
         }

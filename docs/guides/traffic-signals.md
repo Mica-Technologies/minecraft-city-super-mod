@@ -181,6 +181,30 @@ configuration tools.
 A finial only fits an **upright pedestal pole** — its collar is cut to that tube, and it pops off
 as an item if the pole below it goes.
 
+A **concrete pole** has its finial built in. The same tool mode switches the top of a concrete
+pole between its flat cap and its finial (a collar and spigot on the round pole, a stepped taper
+on the octagon).
+
+### Pole bases
+
+An upright **thin or thick traffic pole** standing on the ground draws a bolted base at its
+foot. Sneak-right-click the Street Light Configuration Tool to its **Cycle Pole Base** mode,
+then right-click anywhere on the pole to step through the styles:
+
+| Style | Looks like |
+|---|---|
+| Standard square bolted base | A square plate with a domed nut cover at each corner. The default |
+| Standard squircle bolted base | The same plate with rounded corners |
+| Slim square bolted base | A thin plate on exposed anchor bolts, for a slimmer pole |
+| Pedestal base | A tall tapered square base |
+| No base | The bare pole |
+
+A pole standing on a hand-placed Traffic Pole Base block, on another pole or on a guardrail
+draws no base of its own.
+
+On a **concrete pole** the same mode steps its plinth: the pole's own, the other profile's (an
+octagon plinth under a round pole, or the reverse), or none.
+
 ## Related
 
 - [Advanced Mode (ASC-3)](advanced-mode-asc3.md) — ring-barrier phase plans, overlaps, preemption

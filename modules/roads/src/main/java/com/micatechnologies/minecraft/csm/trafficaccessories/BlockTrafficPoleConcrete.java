@@ -442,7 +442,7 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
    *
    * @return {@code true} if the block is clutter the end should ignore
    */
-  private static boolean isNaturalClutter(Block block) {
+  static boolean isNaturalClutter(Block block) {
     if (block instanceof ICsmTrafficPoleBystander) {
       return true;
     }

@@ -12,14 +12,6 @@
     "inventory": [
       {}
     ],
-    "extenddown": {
-      "false": {
-        "submodel": {
-          "extension": null
-        }
-      },
-      "true": {}
-    },
     "facing": {
       "north": {},
       "east": {
@@ -32,7 +24,15 @@
         "y": 270
       },
       "up": {
-        "x": 270,
+        "x": 270
+      },
+      "down": {
+        "x": 90
+      }
+    },
+    "foot": {
+      "none": {},
+      "extend": {
         "submodel": {
           "extension": {
             "model": "csm:trafficaccessories/shared_models/small",
@@ -51,22 +51,54 @@
           }
         }
       },
-      "down": {
-        "x": 90,
+      "square": {
         "submodel": {
-          "extension": {
-            "model": "csm:trafficaccessories/shared_models/small",
-            "textures": {
-              "all": "csm:blocks/trafficsignals/shared_textures/metal_black",
-              "particle": "csm:blocks/trafficsignals/shared_textures/metal_black",
-              "0": "csm:blocks/trafficsignals/shared_textures/metal_black"
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_square.obj",
+            "custom": {
+              "flip-v": true
             },
-            "transform": {
-              "translation": [
-                0.0,
-                0.0,
-                -1.0
-              ]
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+            }
+          }
+        }
+      },
+      "squircle": {
+        "submodel": {
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_squircle.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+            }
+          }
+        }
+      },
+      "slim": {
+        "submodel": {
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_slim.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
+            }
+          }
+        }
+      },
+      "pedestal": {
+        "submodel": {
+          "foot": {
+            "model": "csm:trafficaccessories/shared_models/polebase_thin_pedestal.obj",
+            "custom": {
+              "flip-v": true
+            },
+            "textures": {
+              "#body": "csm:blocks/trafficsignals/shared_textures/metal_black"
             }
           }
         }

@@ -135,6 +135,10 @@ of the file names by module). Read the doc itself before changing its subsystem.
   `ICsmPostTopFixture`) or seamless joint per end, why each end model carries half the shaft,
   the concrete and octagon accessories and why their bodies are redrawn, what was left out
   (retiring families, the pole base), and the legacy `rcp*`/`ocp*` pieces retiring into it
+- `assets/docs/TRAFFIC_POLE_BASES.md` -- The bolted bases the painted thin and thick poles draw
+  at their foot (square, squircle, slim, pedestal, none): the one `foot` property that carries
+  the base and the reach-down extension, why upright poles are always drawn facing up, the
+  metadata that leaves existing poles untouched, and the OBJ bases
 - `assets/docs/PEDESTAL_POLE_SYSTEM.md` -- The pedestrian pedestal pole: one stackable block that decides base, cap or seamless joint per end from its neighbours, why the end properties are named in model space, and the six-style finial block a pole wears on top, cycled with the Street Light Configuration Tool
 - `assets/docs/RAILROAD_CROSSING_SYSTEM.md` -- The grade crossing: crossbuck and signs, the
   redstone-driven flasher mast (wig-wag in the texture, bell from the tile entity) and the gate

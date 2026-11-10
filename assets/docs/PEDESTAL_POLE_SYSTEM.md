@@ -201,9 +201,10 @@ The **Street Light Configuration Tool** (`street_light_config_tool`) steps a pol
 none → each style in turn → none. It follows the other configuration tools: right-click applies
 the current mode, sneak + right-click (on a block or in the air) steps to the next mode, the
 mode is an ordinal in the stack's NBT under `csm_tool_mode`, and everything that changes the
-world or talks to the player happens on the server. Its only mode today is *Cycle Pole Finial*;
-the enum is where the decorative light poles will add theirs, appended so saved tools keep their
-mode.
+world or talks to the player happens on the server. *Cycle Pole Finial* was its first mode; on
+a concrete pole the same mode switches the pole's own top (`CONCRETE_POLE_SYSTEM.md`). *Cycle
+Pole Base* steps the foot of a painted or concrete pole (`TRAFFIC_POLE_BASES.md`). Modes are
+appended to the enum, never inserted, so saved tools keep their mode.
 
 A click anywhere on an upright pole is carried to the **top block of the stack** and then to the
 block above it, and a click on the finial itself works on that block, so a tall post can be
