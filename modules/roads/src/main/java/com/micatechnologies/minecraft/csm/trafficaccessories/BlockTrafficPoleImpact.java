@@ -1,6 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.ICsmModelIgnoredProperties;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmModelStateRules;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -21,8 +21,8 @@ import net.minecraft.world.IBlockAccess;
  * block toward anything mounted beside them. This tube's skin <em>is</em> the face of its
  * block, so there is nothing to bridge, and the four mount properties never change what it
  * draws. They are still in the state, because the family's actual state sets them, but they are
- * left out of the model locations ({@link ICsmModelIgnoredProperties}): 36 variants a pole
- * instead of 576.
+ * left out of the model locations ({@link ICsmModelStateRules}): 10 variants a pole
+ * instead of 160.
  *
  * <p><b>Accessories cut for a pole meet it at the thick pole's fit.</b> {@link #getPoleRadius}
  * reports 8, which {@code CsmPoleFit} rounds to its widest fit, the 12-across pole's. Geometry
@@ -33,8 +33,7 @@ import net.minecraft.world.IBlockAccess;
  *
  * @since 2026.11
  */
-public class BlockTrafficPoleImpact extends AbstractBlockTrafficPoleFooted
-    implements ICsmModelIgnoredProperties {
+public class BlockTrafficPoleImpact extends AbstractBlockTrafficPoleFooted {
 
   /** The tube fills its block from side to side. */
   private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(0.0, 0.0, 0.0, 1.0, 1.0, 1.0);

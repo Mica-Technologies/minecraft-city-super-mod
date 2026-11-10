@@ -45,6 +45,9 @@
       "base": {
         "model": "csm:trafficaccessories/shared_models/concretepole_octagon_thin_base_n"
       },
+      "finial": {
+        "model": "csm:trafficaccessories/shared_models/concretepole_octagon_thin_finial_n"
+      },
       "basealt": {
         "model": "csm:trafficaccessories/shared_models/concretepole_round_thin_base_n"
       }
@@ -90,6 +93,18 @@
         "submodel": {
           "ends": {
             "model": "csm:trafficaccessories/shared_models/concretepole_octagon_thin_base_s",
+            "textures": {
+              "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
+              "0": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
+            }
+          }
+        }
+      },
+      "finial": {
+        "submodel": {
+          "ends": {
+            "model": "csm:trafficaccessories/shared_models/concretepole_octagon_thin_finial_s",
             "textures": {
               "all": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",
               "particle": "csm:blocks/trafficsignals/shared_textures/concrete_light_pole",

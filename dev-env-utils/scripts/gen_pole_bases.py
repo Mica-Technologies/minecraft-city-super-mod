@@ -34,8 +34,9 @@ The ten painted pole blockstates were hand kept. They are written here now, beca
 one property, ``foot``, that carries the base *and* the reach-down extension through a guardrail
 that ``extenddown`` used to: the two are never drawn together, so one property of six values
 replaces what would have been two of five and two. Every value multiplies the variants a Forge
-blockstate bakes (6 facings x 16 mounts x 6 feet = 576 a pole, up from 192; 36 for an impact
-resistant pole).
+blockstate names (6 facings x 16 mounts x 6 feet = 576 a pole); the poles then tell Core which
+of those they are ever drawn in (``ICsmModelStateRules``), and 160 are baked, 10 for an impact
+resistant pole.
 
 Each pole keeps the model, mount stub and texture it had; ``POLES`` restates them.
 

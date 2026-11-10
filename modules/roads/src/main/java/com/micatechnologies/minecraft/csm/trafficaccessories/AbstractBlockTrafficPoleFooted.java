@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmModelStateRules;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
@@ -30,7 +31,8 @@ import org.jetbrains.annotations.NotNull;
  * it instead ({@link ICsmPostPassesThrough}). That last value replaces
  * {@link AbstractBlockTrafficPole#EXTEND_DOWN} for these poles: a base and an extension are never
  * drawn together, so one property of six values carries both where two would have multiplied to
- * ten, and every value multiplies the variants a Forge blockstate bakes.
+ * ten, and every value multiplies the variants a Forge blockstate bakes. What is left is cut
+ * to the states a pole is really drawn in by {@link #isModelStateReachable}.
  *
  * <p><b>Upright poles are always drawn facing up.</b> A pole placed looking up at it faces
  * {@code DOWN}, and its foot is then at the other end of the model. The tube is the same either
@@ -45,7 +47,8 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 2026.11
  */
-public abstract class AbstractBlockTrafficPoleFooted extends AbstractBlockTrafficPole {
+public abstract class AbstractBlockTrafficPoleFooted extends AbstractBlockTrafficPole
+    implements ICsmModelStateRules {
 
   /**
    * What the foot of the pole shows. The first five are the owner's choices, in the order the
@@ -143,6 +146,18 @@ public abstract class AbstractBlockTrafficPoleFooted extends AbstractBlockTraffi
           .withProperty(FOOT, Foot.values()[choice]);
     }
     return super.getStateFromMeta(meta);
+  }
+
+  /**
+   * A pole is only ever drawn facing up or on its side, and only an upright one has a foot, so
+   * those are the states that get a model ({@link ICsmModelStateRules}): 10 pairs of facing and
+   * foot out of 36.
+   */
+  @Override
+  public boolean isModelStateReachable(IBlockState state) {
+    EnumFacing facing = state.getValue(FACING);
+    return facing == EnumFacing.UP
+        || (facing != EnumFacing.DOWN && state.getValue(FOOT) == Foot.NONE);
   }
 
   /**

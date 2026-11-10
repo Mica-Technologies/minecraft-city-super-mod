@@ -35,10 +35,10 @@ So there are no separate base, middle or top blocks to place. Put a post light o
 its cap turns into a tenon; break the light and the cap comes back.
 
 **The owner can overrule the top.** The Street Light Configuration Tool's finial mode, clicked
-anywhere on a concrete pole, switches its top between the flat cap and the **finial**: the
-tenon's casting shown in the open as well (the round pole's collar and spigot, the octagon's
-stepped taper). That is what the legacy top pieces always showed, with or without a light on
-them, and a legacy top keeps it when it retires (GitHub #345).
+anywhere on a concrete pole, switches its top between the flat cap and the **finial**: the metal
+casting the legacy top pieces wore, a ball on a collar on the round pole and a stepped pyramid
+on the octagon, in the legacy pieces' silver. A legacy top keeps it when it retires (GitHub
+#345). It shows where the shaft ends in the open; under a post light the tenon still does.
 
 **And the base.** The tool's base mode, clicked anywhere on an upright concrete pole, steps the
 foot of the stack through its own plinth, the **other profile's plinth** (an octagon plinth
@@ -123,21 +123,29 @@ regenerates into a temp directory and fails on drift, the texture included.
 `BlockTrafficPoleConcrete extends AbstractBlockTrafficPole`. Registry name, shaft radius and
 plinth radius are constructor arguments, passed past `super()` with the pedestal pole's
 `ThreadLocal` trick. It adds `END_NORTH` / `END_SOUTH` (`endn` / `ends`) with four values,
-`none`, `cap`, `tenon` and `base`. All of them are actual state; metadata holds only the facing,
-exactly as it did for the legacy pieces. 6 facings × 16 mount combinations × 16 end combinations
-is 1,536 model locations.
+`none`, `cap`, `tenon` and `base`, and two more that only the owner's choices below produce,
+`basealt` and `finial`. All of them are actual state.
 
 ### The owner's choices: stored, never drawn
 
 `TOP` (`auto`, `finial`) and `BASE` (`auto`, `other`, `none`) are the stored properties besides
-the facing. They are inputs to `getActualState` and nothing else. A finial is the `tenon` end
-value; the other profile's plinth is a fifth end value, `basealt`, whose blockstate entry names
-the other pole's own base model (a plinth draws no shaft, so no new model file); no base is
-`none`. So neither property picks a model itself. The block implements
-`ICsmModelIgnoredProperties` (Core), which gives it a state mapper that leaves both out of the
-model locations, and the blockstate file does not name them. The states multiply by six; the
-variants Forge bakes go from 1,536 to 2,400 a pole (6 facings x 16 mounts x 25 end pairs), for
-the fifth end value alone.
+the facing. They are inputs to `getActualState` and nothing else: what they change is the end
+values. The other profile's plinth is a fifth end value, `basealt`, whose blockstate entry
+names the other pole's own base model (a plinth draws no shaft, so no new model file); a finial
+is a sixth, `finial`, with a model of its own; no base is `none`.
+
+So neither stored property picks a model itself, and six end values squared is 36 pairs, most
+of which a pole is never drawn in: a plinth is only ever at the end pointing down, a finial
+only at the end `topEnd` names. The block says both through `ICsmModelStateRules` (Core):
+`getModelIgnoredProperties` lists `TOP` and `BASE`, which are left out of the model locations
+and not named in the blockstate file, and `isModelStateReachable` refuses the end pairs the
+actual state cannot produce, which then share the default state's location instead of each
+baking a variant. A pole is 1,408 variants (88 reachable pairs of facing and ends x 16 mount
+combinations), fewer than the 1,536 it was before it had any of this. Without the rule it
+would be 3,456; with the stored properties in the locations as well, 20,736.
+
+**Change `endStyle` and `isModelStateReachable` together.** A pair the rule wrongly refuses is
+drawn as the default state, a bare north-facing shaft, and nothing in the log says so.
 
 The metadata keeps the facing in the six values the pole always used, so every pole already in a
 world reads back unchanged, and puts the choices in the spare ten: 6-10 an upright pole with a
@@ -175,6 +183,15 @@ In the blockstate, `endn` sets the model and `ends` adds a submodel. One propert
 model and another add submodels over it; two properties both setting `model` would fight.
 
 ### The geometry
+
+The finial is the legacy casting on this pole's own shaft. The round one is the tenon's collar
+with a ball on it: one-unit rings stacked to a sphere (`ball`), where the legacy model crossed
+two discs, which read as a ball only from the side. The octagon one is the tenon's stepped
+pyramid. Their tiers use texture `#1`, which every model declares as the silver; the
+blockstates override `#0` and leave it alone. A tier that crosses the top of the block is cut
+there (`build_part`): a UV span reaching past the sprite on both sides cannot be wrapped into
+it, and the round tenon's spigot drew its lower half from the neighbouring sprite until this
+was done.
 
 A round shaft is the family's 16-gon: eight narrow rectangles, `d × d·tan(π/16)`, turned to
 −45…45. An octagon is four, `d × d·tan(π/8)`, at 0 and 45. Every piece is a stack of these
@@ -234,8 +251,8 @@ with (by name, since the two blocks are in different modules): the top pieces an
 two of loaded play. Until it has, the pole treats a legacy piece that retires into a concrete
 pole as one already, so a half-converted stack has no plinth or cap in the middle of it.
 
-A top piece that converted **before** the finial could be stored (releases up to 2026.11.09)
-became a pole with a flat cap and nothing records what it was. Those are put back by hand with
+A top piece that converted **before** the finial existed (releases up to 2026.11.09) became a
+pole with a flat cap and nothing records what it was. Those are put back by hand with
 the configuration tool.
 
 The legacy blocks stay in Lighting; their replacements are in Roads. On an install with Lighting
