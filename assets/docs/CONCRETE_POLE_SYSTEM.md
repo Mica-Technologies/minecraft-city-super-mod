@@ -40,6 +40,13 @@ tenon's casting shown in the open as well (the round pole's collar and spigot, t
 stepped taper). That is what the legacy top pieces always showed, with or without a light on
 them, and a legacy top keeps it when it retires (GitHub #345).
 
+**And the base.** The tool's base mode, clicked anywhere on an upright concrete pole, steps the
+foot of the stack through its own plinth, the **other profile's plinth** (an octagon plinth
+under a round pole, a round one under an octagon) and **no base**, for a direct-buried pole
+(GitHub #346). A legacy base piece keeps its own profile when it retires, since it becomes a
+pole of that profile, and a legacy middle piece standing on the ground with no base piece under
+it stays bare.
+
 The flanks behave like every other pole in the family. Anything mountable beside the shaft grows
 a mount stub toward it (the family's `large_mount` / `small_mount` models, in concrete).
 `getPoleRadius()` reports 6 or 4, so the pole-fitted arms (light mounts, NOV tapered masts) and
@@ -122,11 +129,15 @@ is 1,536 model locations.
 
 ### The owner's choices: stored, never drawn
 
-`TOP` (`auto`, `finial`) is the one stored property besides the facing. It is an input to
-`getActualState` and nothing else: a finial is the `tenon` end value, so no model is picked by
-`TOP` itself. The block therefore implements `ICsmModelIgnoredProperties` (Core), which gives it
-a state mapper that leaves `TOP` out of the model locations, and the blockstate file does not
-name it. The states double; the variants Forge bakes do not.
+`TOP` (`auto`, `finial`) and `BASE` (`auto`, `other`, `none`) are the stored properties besides
+the facing. They are inputs to `getActualState` and nothing else. A finial is the `tenon` end
+value; the other profile's plinth is a fifth end value, `basealt`, whose blockstate entry names
+the other pole's own base model (a plinth draws no shaft, so no new model file); no base is
+`none`. So neither property picks a model itself. The block implements
+`ICsmModelIgnoredProperties` (Core), which gives it a state mapper that leaves both out of the
+model locations, and the blockstate file does not name them. The states multiply by six; the
+variants Forge bakes go from 1,536 to 2,400 a pole (6 facings x 16 mounts x 25 end pairs), for
+the fifth end value alone.
 
 The metadata keeps the facing in the six values the pole always used, so every pole already in a
 world reads back unchanged, and puts the choices in the spare ten: 6-10 an upright pole with a
@@ -218,8 +229,8 @@ implement `ICsmRetiringBlock`:
 its neighbours, so a legacy base-middle-top stack becomes a pole with its plinth and its top
 without anything else being done. What a neighbour cannot tell it, the legacy piece does:
 `ICsmRetiringBlock.getReplacementProperties` names property values for the replacement to start
-with (by name, since the two blocks are in different modules), and the top pieces answer
-`top=finial`. It happens on random ticks, so a stack converts a block at a time over a minute or
+with (by name, since the two blocks are in different modules): the top pieces answer
+`top=finial` and the middle pieces `base=none`. It happens on random ticks, so a stack converts a block at a time over a minute or
 two of loaded play. Until it has, the pole treats a legacy piece that retires into a concrete
 pole as one already, so a half-converted stack has no plinth or cap in the middle of it.
 

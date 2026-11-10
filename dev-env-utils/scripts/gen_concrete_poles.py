@@ -131,6 +131,13 @@ POLE_BLOCKS = [
 
 END_STYLES = ["none", "cap", "tenon", "base"]
 
+# "basealt", the fifth end value, is the other profile's plinth at the same width, which the
+# owner picks with the configuration tool (GitHub #346). It is that pole's own base model, so
+# it adds a blockstate entry and no model file. A plinth draws no shaft, so nothing of the other
+# profile's shaft comes with it.
+ALT_PROFILE = {"round_large": "octagon_large", "octagon_large": "round_large",
+               "round_thin": "octagon_thin", "octagon_thin": "round_thin"}
+
 # ------------------------------------------------------------------------------------------
 # The accessories
 # ------------------------------------------------------------------------------------------
@@ -402,6 +409,9 @@ def pole_blockstate(pole, mount_model):
     def m(suffix):
         return MODEL_PREFIX + model_name(pole, suffix)
 
+    def alt(suffix):
+        return MODEL_PREFIX + model_name(ALT_PROFILE[pole], suffix)
+
     return {
         "forge_marker": 1,
         "defaults": {"model": m("inv"), "textures": dict(TEXTURES)},
@@ -415,10 +425,13 @@ def pole_blockstate(pole, mount_model):
             # One property may set the model and another add submodels over it (the
             # arrangement controllablerrfb.json uses): the north end is the model, the south
             # end a submodel. Neither end draws the other half of the shaft.
-            "endn": {end: {"model": m(end + "_n")} for end in END_STYLES},
-            "ends": {end: {"submodel": {"ends": {"model": m(end + "_s"),
-                                                  "textures": dict(TEXTURES)}}}
-                     for end in END_STYLES},
+            "endn": dict({end: {"model": m(end + "_n")} for end in END_STYLES},
+                         basealt={"model": alt("base_n")}),
+            "ends": dict({end: {"submodel": {"ends": {"model": m(end + "_s"),
+                                                       "textures": dict(TEXTURES)}}}
+                          for end in END_STYLES},
+                         basealt={"submodel": {"ends": {"model": alt("base_s"),
+                                                         "textures": dict(TEXTURES)}}}),
             "mounteast": mount_variant("mounte", mount_model, [{"x": 0}, {"y": 90}, {"z": 0}]),
             "mountwest": mount_variant("mountw", mount_model, [{"x": 0}, {"y": 270}, {"z": 0}]),
             "mountup": mount_variant("mountu", mount_model, [{"x": 270}, {"y": 0}, {"z": 0}]),

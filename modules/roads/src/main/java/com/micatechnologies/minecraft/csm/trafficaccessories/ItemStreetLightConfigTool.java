@@ -66,6 +66,8 @@ public class ItemStreetLightConfigTool extends AbstractItem {
     switch (getMode(heldStack)) {
       case CYCLE_POLE_FINIAL:
         return cycleFinial(player, worldIn, pos, facing, heldStack);
+      case CYCLE_POLE_BASE:
+        return cycleBase(player, worldIn, pos, facing, heldStack);
       default:
         return EnumActionResult.PASS;
     }
@@ -189,6 +191,40 @@ public class ItemStreetLightConfigTool extends AbstractItem {
     return EnumActionResult.SUCCESS;
   }
 
+  /**
+   * Steps the base at the foot of the clicked pole. A click anywhere on an upright stack is
+   * carried down to its bottom block, which is the one that draws the base.
+   */
+  private static EnumActionResult cycleBase(EntityPlayer player, World world, BlockPos pos,
+      EnumFacing side, ItemStack stack) {
+    IBlockState clicked = world.getBlockState(pos);
+    if (!(clicked.getBlock() instanceof BlockTrafficPoleConcrete)) {
+      say(player, "That pole has no base to choose.");
+      return EnumActionResult.FAIL;
+    }
+    if (!isUprightConcrete(clicked)) {
+      say(player, "Only an upright pole has a base.");
+      return EnumActionResult.FAIL;
+    }
+    BlockPos target = pos;
+    while (target.getY() > 0 && isUprightConcrete(world.getBlockState(target.down()))) {
+      target = target.down();
+    }
+    if (!player.canPlayerEdit(target, side, stack) || !world.isBlockModifiable(player, target)) {
+      say(player, "You cannot change that pole here.");
+      return EnumActionResult.FAIL;
+    }
+    IBlockState state = world.getBlockState(target);
+    BlockTrafficPoleConcrete.BaseStyle[] styles = BlockTrafficPoleConcrete.BaseStyle.values();
+    BlockTrafficPoleConcrete.BaseStyle next =
+        styles[(state.getValue(BlockTrafficPoleConcrete.BASE).ordinal() + 1) % styles.length];
+    Block block = state.getBlock();
+    world.setBlockState(target, block.getStateFromMeta(block.getMetaFromState(
+        state.withProperty(BlockTrafficPoleConcrete.BASE, next))), 3);
+    say(player, "Concrete pole base: " + next.getFriendlyName());
+    return EnumActionResult.SUCCESS;
+  }
+
   private static boolean isUprightConcrete(IBlockState state) {
     return state.getBlock() instanceof BlockTrafficPoleConcrete
         && state.getValue(BlockTrafficPoleConcrete.FACING).getAxis() == EnumFacing.Axis.Y;
@@ -261,7 +297,7 @@ public class ItemStreetLightConfigTool extends AbstractItem {
       ITooltipFlag flag) {
     super.addInformation(itemstack, world, list, flag);
     list.add("Customize street light and pedestrian pole hardware:");
-    list.add("step a pedestal pole's finial through the six styles.");
+    list.add("a pedestal pole's finial, a concrete pole's top and a pole's base.");
     list.add("Right-click to apply. Sneak + right-click to switch modes.");
     list.add("Current mode: " + getMode(itemstack).getFriendlyName());
   }
