@@ -6,6 +6,7 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmPostPassesThrough;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import javax.annotation.Nonnull;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -100,6 +101,21 @@ public abstract class AbstractBlockTrafficPoleFooted extends AbstractBlockTraffi
 
   /** First metadata value of an upright pole with a base other than the default. */
   private static final int META_UPRIGHT_CHOICES = 6;
+
+  /** Constructs a footed pole whose registry name is fixed by its class. */
+  protected AbstractBlockTrafficPoleFooted() {
+    super();
+  }
+
+  /**
+   * Constructs a footed pole with an explicit material, for a subclass whose registry name is a
+   * constructor argument; see {@link AbstractBlockTrafficPole#AbstractBlockTrafficPole(Material)}.
+   *
+   * @param material the block material
+   */
+  protected AbstractBlockTrafficPoleFooted(Material material) {
+    super(material);
+  }
 
   @Override
   @Nonnull

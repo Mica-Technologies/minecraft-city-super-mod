@@ -3,13 +3,15 @@
 The bolted bases the painted steel traffic poles stand on (GitHub #348): what they are, how a
 pole decides whether to draw one, how the choice is stored, and how the models and blockstates
 are made. The concrete poles' plinths and the pedestal pole's base are their own systems
-(`CONCRETE_POLE_SYSTEM.md`, `PEDESTAL_POLE_SYSTEM.md`); this covers the thin and thick painted
-poles.
+(`CONCRETE_POLE_SYSTEM.md`, `PEDESTAL_POLE_SYSTEM.md`); this covers the thin, thick and impact
+resistant painted poles, and the impact resistant pole itself (GitHub #347), which arrived with
+them.
 
 ## What it is in game
 
-An upright thin pole (`trafficpolehorizontal*`, 8 across) or thick pole (`trafficpolevertical*`,
-12 across) standing on the ground draws a base at its foot. Nothing is placed: the bottom block
+An upright thin pole (`trafficpolehorizontal*`, 8 across), thick pole (`trafficpolevertical*`,
+12 across) or impact resistant pole (`trafficpoleimpact*`, 16 across) standing on the ground
+draws a base at its foot. Nothing is placed: the bottom block
 of the stack draws it, and every pole already in a world gets the default.
 
 | Style | `foot` value | What it is |
@@ -46,10 +48,12 @@ block and grows nothing of its own.
 |---|---|
 | `modules/roads/.../trafficaccessories/AbstractBlockTrafficPoleFooted.java` | the `foot` property, the metadata, the actual state |
 | `modules/roads/.../trafficaccessories/BlockTrafficPoleLarge*.java`, `BlockTrafficPoleSmall*.java` | the ten painted poles, now subclasses of it |
+| `modules/roads/.../trafficaccessories/BlockTrafficPoleImpact.java` | the impact resistant pole: one class, constructed per finish from the tab |
 | `modules/roads/.../trafficaccessories/ItemStreetLightConfigTool.java` | `cycleFoot` |
 | `dev-env-utils/scripts/gen_pole_bases.py` | every asset below |
 | `shared_models/polebase_<width>_<style>.obj`, `polebase.mtl` | the bases |
-| `blockstates/trafficpolevertical*.json`, `trafficpolehorizontal*.json`, `trafficpolehorzunpainted.json` | the ten poles' blockstates |
+| `shared_models/impact.json` | the impact resistant pole's tube |
+| `blockstates/trafficpolevertical*.json`, `trafficpolehorizontal*.json`, `trafficpolehorzunpainted.json`, `trafficpoleimpact*.json` | the fifteen poles' blockstates |
 
 `python gen_pole_bases.py --check` fails on drift. The ten blockstates were hand kept before;
 they are the generator's now, and it restates each pole's model, mount stub and texture in
@@ -90,7 +94,7 @@ centre) and written through the pedestal pole generator's `to_model_south`, whic
 of a pole facing up. They borrow that generator's mesh, lathe and square frustum rather than
 copying them. A plate is an outline extruded (`slab`), a nut cover and an anchor bolt are small
 lathes, and the pedestal is a square frustum with a round collar. Fittings scale with the pole
-(`WIDTHS`): 0.8 on the thin pole, 1.0 on the thick.
+(`WIDTHS`): 0.8 on the thin pole, 1.0 on the thick, 1.2 on the impact resistant.
 
 They are OBJ rather than JSON elements for the domes and the taper, and because an OBJ may
 leave its block: the thick pole's plates overhang its block by about a pixel a side and its
@@ -100,6 +104,33 @@ has an underside; it lies on the ground.
 The audit (`audit_obj_models.py`) warns that each base is see-through from below and that the
 collar is open at the top. Both are expected: the ground is under one and the pole's own tube
 fills the other.
+
+## The impact resistant pole
+
+`BlockTrafficPoleImpact` (GitHub #347) is the thick pole's heavier sibling, for the corner that
+keeps getting hit: a 16-gon the full width of its block, in the five finishes, stacked like any
+pole, standing on the same bases a size up. Five blocks, `trafficpoleimpact<finish>`, in Traffic
+Accessories after the pedestal poles.
+
+It is an `AbstractBlockTrafficPole`, so everything that treats a block as a pole does: signal
+heads, arms and signs mount to it, a post light takes its colour, and a pole above or below it
+joins it.
+
+- **No mount stubs.** The other poles grow a stub from their skin to the face of their block
+  toward anything mounted beside them. This tube's skin is the face of its block, so there is
+  nothing to bridge. The four mount properties are still in the state (the family's actual
+  state sets them) but the block lists them in `ICsmModelIgnoredProperties`, so they are left
+  out of the model locations and the blockstate does not name them: 36 variants a pole (6
+  facings x 6 feet) instead of 576.
+- **Pole fit.** `getPoleRadius()` reports 8, which `CsmPoleFit` rounds to its widest fit, the
+  12-across pole's. Geometry cut for that pole (a light mount's plate, a mast arm curve's saddle,
+  a luminaire arm's root) ends two sixteenths inside this one, which hides the joint as a saddle
+  cut would. No fourth fit was generated.
+- **Its ends are drawn.** The thick pole's tube is open at the ends; at 16 across an open top
+  would show as a hole, so `impact.json` closes both.
+- **There are no impact resistant accessories.** A connector, a quad mount or a signal mount
+  stacked on one is the 12-across piece, a step in from the pole under it, which is how a
+  heavier lower section meets a standard upper one.
 
 ## Traps
 

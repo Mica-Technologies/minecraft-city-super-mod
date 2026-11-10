@@ -38,6 +38,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLar
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleLargeWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleMastArmCurve;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleFinial;
+import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleImpact;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleConcrete;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleDecorative;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleConcrete;
@@ -454,6 +455,14 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalwhite", TRAFFIC_POLE_COLOR.WHITE));
     initTabBlock(new BlockTrafficPolePedestal("trafficpolepedestalunpainted", TRAFFIC_POLE_COLOR.UNPAINTED));
     initTabBlock(BlockTrafficPoleFinial.class, fmlPreInitializationEvent); // Pole Finial
+
+    // --- Impact resistant poles (GitHub #347): a tube the full width of its block, standing on
+    // the painted poles' bolted bases -- see BlockTrafficPoleImpact and gen_pole_bases.py ---
+    initTabBlock(new BlockTrafficPoleImpact("trafficpoleimpactsilver", TRAFFIC_POLE_COLOR.SILVER));
+    initTabBlock(new BlockTrafficPoleImpact("trafficpoleimpactblack", TRAFFIC_POLE_COLOR.BLACK));
+    initTabBlock(new BlockTrafficPoleImpact("trafficpoleimpacttan", TRAFFIC_POLE_COLOR.TAN));
+    initTabBlock(new BlockTrafficPoleImpact("trafficpoleimpactwhite", TRAFFIC_POLE_COLOR.WHITE));
+    initTabBlock(new BlockTrafficPoleImpact("trafficpoleimpactunpainted", TRAFFIC_POLE_COLOR.UNPAINTED));
 
     // --- Concrete poles (round and octagon, thick and thin; each block draws its own base, cap
     // and tenon from its neighbours -- see BlockTrafficPoleConcrete and gen_concrete_poles.py) ---

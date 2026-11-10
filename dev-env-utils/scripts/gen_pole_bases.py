@@ -21,13 +21,21 @@ poles are always drawn facing up (``AbstractBlockTrafficPoleFooted``), so there 
 style and width, not two. They are OBJ so a nut cover can be a dome and a base can taper; an OBJ
 may also leave its block, which the wider bases do by a pixel or two.
 
+THE IMPACT RESISTANT POLE (GitHub #347)
+---------------------------------------
+The thick pole's heavier sibling: a 16-gon the full width of its block (``impact.json``), in the
+same five finishes, standing on the same bases a size up. Its skin is the face of its block, so
+it has no mount stubs to draw and its blockstate names no mount property
+(``BlockTrafficPoleImpact`` leaves them out of the model locations).
+
 THE BLOCKSTATES
 ---------------
 The ten painted pole blockstates were hand kept. They are written here now, because the foot is
 one property, ``foot``, that carries the base *and* the reach-down extension through a guardrail
 that ``extenddown`` used to: the two are never drawn together, so one property of six values
 replaces what would have been two of five and two. Every value multiplies the variants a Forge
-blockstate bakes (6 facings x 16 mounts x 6 feet = 576 a pole, up from 192).
+blockstate bakes (6 facings x 16 mounts x 6 feet = 576 a pole, up from 192; 36 for an impact
+resistant pole).
 
 Each pole keeps the model, mount stub and texture it had; ``POLES`` restates them.
 
@@ -35,6 +43,7 @@ OUTPUT
 ------
   models/block/trafficaccessories/shared_models/polebase_<width>_<style>.obj
   models/block/trafficaccessories/shared_models/polebase.mtl
+  models/block/trafficaccessories/shared_models/impact.json
   blockstates/<pole>.json
 
 Run:  python dev-env-utils/scripts/gen_pole_bases.py [--check]
@@ -46,6 +55,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
+import gen_concrete_poles as concrete  # noqa: E402  (the 16-gon prism with proportional UVs)
 import gen_pedestal_pole as ped  # noqa: E402  (the mesh, the lathe and the standing frame)
 
 OWNER = layout.owner_of_folder("trafficaccessories")
@@ -65,7 +75,9 @@ INSET = 0.01          # keeps the underside off the block boundary plane
 WIDTHS = {
     "thin": (4.0, 0.8),
     "large": (6.0, 1.0),
+    "impact": (8.0, 1.2),
 }
+IMPACT_MODEL = "impact"
 
 STYLES = ["square", "squircle", "slim", "pedestal"]
 FEET = ["none", "extend"] + STYLES
@@ -88,6 +100,12 @@ POLES = [
     ("trafficpolehorizontalwhite", "thin", "small", MODEL_PREFIX + "small_mount",
      "metal_mattewhite"),
     ("trafficpolehorzunpainted", "thin", "small", MODEL_PREFIX + "small_mount", "metal_white"),
+    # The impact resistant poles: no mount stub (None), the tube reaches its block's faces.
+    ("trafficpoleimpactsilver", "impact", IMPACT_MODEL, None, "metal_silver"),
+    ("trafficpoleimpactblack", "impact", IMPACT_MODEL, None, "metal_black"),
+    ("trafficpoleimpacttan", "impact", IMPACT_MODEL, None, "metal_mattetan"),
+    ("trafficpoleimpactwhite", "impact", IMPACT_MODEL, None, "metal_mattewhite"),
+    ("trafficpoleimpactunpainted", "impact", IMPACT_MODEL, None, "metal_white"),
 ]
 
 
@@ -227,8 +245,6 @@ def blockstate(width, model, mount, texture):
     model_ref = MODEL_PREFIX + model
 
     def mount_variant(key, rotation):
-        if mount is None:
-            return {"false": {}, "true": {}}
         return {"false": {}, "true": {"submodel": {key: {
             "uvlock": True,
             "model": mount,
@@ -252,22 +268,39 @@ def blockstate(width, model, mount, texture):
             "custom": {"flip-v": True},
             "textures": {"#" + MATERIAL: tex},
         }}}
+    variants = {
+        # Stands the pole up in the inventory where its model is new; the hand-kept poles
+        # always lay on their side there and are left as they were.
+        "inventory": [{"x": 270}] if mount is None else [{}],
+        "facing": {
+            "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
+            "up": {"x": 270}, "down": {"x": 90},
+        },
+        "foot": foot,
+    }
+    if mount is not None:
+        variants["mounteast"] = mount_variant("mounte", [{"x": 0}, {"y": 90}, {"z": 0}])
+        variants["mountwest"] = mount_variant("mountw", [{"x": 0}, {"y": 270}, {"z": 0}])
+        variants["mountup"] = mount_variant("mountu", [{"x": 270}, {"y": 0}, {"z": 0}])
+        variants["mountdown"] = mount_variant("mountd", [{"x": 90}, {"y": 0}, {"z": 0}])
+    variants["normal"] = [{}]
     return {
         "forge_marker": 1,
         "defaults": {"model": model_ref, "textures": dict(textures)},
-        "variants": {
-            "inventory": [{}],
-            "facing": {
-                "north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
-                "up": {"x": 270}, "down": {"x": 90},
-            },
-            "foot": foot,
-            "mounteast": mount_variant("mounte", [{"x": 0}, {"y": 90}, {"z": 0}]),
-            "mountwest": mount_variant("mountw", [{"x": 0}, {"y": 270}, {"z": 0}]),
-            "mountup": mount_variant("mountu", [{"x": 270}, {"y": 0}, {"z": 0}]),
-            "mountdown": mount_variant("mountd", [{"x": 90}, {"y": 0}, {"z": 0}]),
-            "normal": [{}],
-        },
+        "variants": variants,
+    }
+
+
+def impact_model():
+    """The impact resistant pole: a 16-gon 16 across, along model Z like every pole. Its ends are
+    drawn, since a tube this wide shows its top; each rectangle's end is set back a hair more
+    than the last so the overlapping ends never tie (the concrete poles' rule)."""
+    tex = TEX + "metal_silver"
+    return {
+        "credit": "Generated by dev-env-utils/scripts/gen_pole_bases.py -- do not edit",
+        "textures": {"0": tex, "particle": tex},
+        "elements": concrete.prism_z("round", 2.0 * WIDTHS["impact"][0], 0.0, 16.0, ends=True,
+                                     name="shaft"),
     }
 
 
@@ -284,6 +317,8 @@ def outputs():
                 build(style, r, k), name,
                 "the %s base of the %s pole (radius %.0f), in the frame of a pole facing up"
                 % (style, width, r))
+    files[layout.asset_for_write(OWNER, MODEL_REL + "/" + IMPACT_MODEL + ".json")] = json.dumps(
+        impact_model(), indent=2) + "\n"
     for registry, width, model, mount, texture in POLES:
         files[layout.asset_for_write(OWNER, "blockstates/%s.json" % registry)] = json.dumps(
             blockstate(width, model, mount, texture), indent=2) + "\n"

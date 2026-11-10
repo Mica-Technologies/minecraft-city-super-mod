@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "678 blocks in this tab"
+!!! info "683 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -19,6 +19,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Black Double Horizontal Traffic Pole | `csm:trafficpolehorzdblblack` |  | 10 | pickaxe | 1 |
 | Black Double Vertical Traffic Pole | `csm:trafficpolevertdblblack` |  | 10 | pickaxe | 1 |
 | Black Horizontal Traffic Pole Sign Mount | `csm:trafficpolehorizsignmountblack` |  | 10 | pickaxe | 1 |
+| Black Impact Resistant Traffic Pole | `csm:trafficpoleimpactblack` | 2 | 10 | pickaxe | 1 |
 | Black Mast Arm Curve 10x2 (Wide Arterial) | `csm:trafficpolemastarmcurve10x2black` | 2 | 10 | pickaxe | 1 |
 | Black Mast Arm Curve 4x1 (Local Street) | `csm:trafficpolemastarmcurve4x1black` | 2 | 10 | pickaxe | 1 |
 | Black Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1black` | 2 | 10 | pickaxe | 1 |
@@ -340,6 +341,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Silver Double Horizontal Traffic Pole | `csm:trafficpolehorzdblsilver` |  | 10 | pickaxe | 1 |
 | Silver Double Vertical Traffic Pole | `csm:trafficpolevertdblsilver` |  | 10 | pickaxe | 1 |
 | Silver Horizontal Traffic Pole Sign Mount | `csm:trafficpolehorizsignmountsilver` |  | 10 | pickaxe | 1 |
+| Silver Impact Resistant Traffic Pole | `csm:trafficpoleimpactsilver` | 2 | 10 | pickaxe | 1 |
 | Silver Mast Arm Curve 10x2 (Wide Arterial) | `csm:trafficpolemastarmcurve10x2silver` | 2 | 10 | pickaxe | 1 |
 | Silver Mast Arm Curve 4x1 (Local Street) | `csm:trafficpolemastarmcurve4x1silver` | 2 | 10 | pickaxe | 1 |
 | Silver Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1silver` | 2 | 10 | pickaxe | 1 |
@@ -428,6 +430,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Tan Double Horizontal Traffic Pole | `csm:trafficpolehorzdbltan` |  | 10 | pickaxe | 1 |
 | Tan Double Vertical Traffic Pole | `csm:trafficpolevertdbltan` |  | 10 | pickaxe | 1 |
 | Tan Horizontal Traffic Pole Sign Mount | `csm:trafficpolehorizsignmounttan` |  | 10 | pickaxe | 1 |
+| Tan Impact Resistant Traffic Pole | `csm:trafficpoleimpacttan` | 2 | 10 | pickaxe | 1 |
 | Tan Mast Arm Curve 10x2 (Wide Arterial) | `csm:trafficpolemastarmcurve10x2tan` | 2 | 10 | pickaxe | 1 |
 | Tan Mast Arm Curve 4x1 (Local Street) | `csm:trafficpolemastarmcurve4x1tan` | 2 | 10 | pickaxe | 1 |
 | Tan Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1tan` | 2 | 10 | pickaxe | 1 |
@@ -548,6 +551,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | Unpainted Double Horizontal Traffic Pole | `csm:trafficpolehorzdblunpainted` |  | 10 | pickaxe | 1 |
 | Unpainted Double Vertical Traffic Pole | `csm:trafficpolevertdblunpainted` |  | 10 | pickaxe | 1 |
 | Unpainted Horizontal Traffic Pole Sign Mount | `csm:trafficpolehorzsignmountunpainted` |  | 10 | pickaxe | 1 |
+| Unpainted Impact Resistant Traffic Pole | `csm:trafficpoleimpactunpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Mast Arm Curve 10x2 (Wide Arterial) | `csm:trafficpolemastarmcurve10x2unpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Mast Arm Curve 4x1 (Local Street) | `csm:trafficpolemastarmcurve4x1unpainted` | 2 | 10 | pickaxe | 1 |
 | Unpainted Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1unpainted` | 2 | 10 | pickaxe | 1 |
@@ -671,6 +675,7 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | White Double Horizontal Traffic Pole | `csm:trafficpolehorzdblwhite` |  | 10 | pickaxe | 1 |
 | White Double Vertical Traffic Pole | `csm:trafficpolevertdblwhite` |  | 10 | pickaxe | 1 |
 | White Horizontal Traffic Pole Sign Mount | `csm:trafficpolehorizsignmountwhite` |  | 10 | pickaxe | 1 |
+| White Impact Resistant Traffic Pole | `csm:trafficpoleimpactwhite` | 2 | 10 | pickaxe | 1 |
 | White Mast Arm Curve 10x2 (Wide Arterial) | `csm:trafficpolemastarmcurve10x2white` | 2 | 10 | pickaxe | 1 |
 | White Mast Arm Curve 4x1 (Local Street) | `csm:trafficpolemastarmcurve4x1white` | 2 | 10 | pickaxe | 1 |
 | White Mast Arm Curve 5x1 (Collector) | `csm:trafficpolemastarmcurve5x1white` | 2 | 10 | pickaxe | 1 |
