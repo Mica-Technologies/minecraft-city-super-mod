@@ -476,8 +476,61 @@ in game:
 A server with another `carSpeedFactor`, or a `packSpeedFactors` entry for `csmvehicles`, scales
 every one of these speeds in proportion.
 
-Driving can't be scripted yet. IV reads the keyboard through LWJGL itself, and MCMCP's held keys
-don't reach it (MCMCP issue #83). So top speeds in game are checked by hand.
+Driving can be scripted: MCMCP's `client_key` with `rawKeys` (`W`, `S`, `A`, `D`) holds keys
+where IV reads them. Sit in the driver's seat with a `use` click on it (the engine starts by
+itself, `autostartEng`), hold the keys, and read the **vehicle entity's** position
+(`nearby_entities`, type `mts:mts_entity`) at fixed tick intervals. A raw hold lasts 200 ticks
+at most a call. Do not read the position with `/tp @p ~ ~ ~`: a teleport takes the player out of
+the seat.
+
+### Braking and steering
+
+Both were IV's defaults until 2026-11, and both were weak for the reason the top speeds were:
+the physics runs on the unscaled motion.
+
+**Braking.** With the brake on, IV takes
+`20 * brakingFactor * (sum of the grounded wheels' motiveFriction) / mass` off the motion every
+tick (`AEntityVehicleD_Moving.performGroundOperations`). The pedal is on or off; its travel is
+not read. In world terms that is `2800 * brakingFactor * friction / mass` m/s^2 at the default
+speed factor. The mass is the vehicle's plus its parts' plus its fuel's, and a full tank
+(`FUEL_CAPACITY / 50`) is 1,200 kg. At `brakingFactor` 1 a police SUV stopped at 0.23 g and a
+fire engine at 0.14 g: 15 and 25 seconds from 75 mph.
+
+`brakingFactor` is now worked out per vehicle (`braking_factor`) to stop it at its `brake_g`
+with a full tank. Braking gets a little stronger as the tank empties, as it does on a real
+vehicle. The wheels' `motiveFriction` was left alone, since it is also the traction that limits
+acceleration.
+
+**Steering.** At full lock the heading turns `(45 / wheelbase) * v / 2` degrees a tick, times
+`0.3 ^ (v * (1 - steeringForceFactor) - 0.35)` once the unscaled motion `v` passes 0.35 (about
+5 mph). That fade is what keeps a car steerable at speed, but at the default factor of 0 it
+suits a speed factor of 1. At 0.35 the motion inside the physics is 2.9 times the speed on the
+road and the fade bites that much sooner: a car held 1 g of lateral grip at 30 mph, 0.4 g at 60
+and 0.2 g at 75, a turning circle half a kilometre across, and a truck about 60% of that on its
+longer wheelbase.
+
+`steeringForceFactor` is now worked out per vehicle (`steering_force_factor`) to give its
+`corner_g` at `STEER_MPH` (65). One number cannot flatten the curve, so a vehicle turns tighter
+than its figure below that speed and less tightly above it. `STEER_MPH` is the knob for the
+whole fleet.
+
+| Class (by `mass`) | `brake_g` | 60-0 mph | `corner_g` at 65 mph |
+|---|---|---|---|
+| Cars, to 1,700 kg | 1.0 | 2.7 s, 37 m | 0.95 |
+| SUV, pickups, vans, to 3,000 kg | 0.9 | 3.0 s, 41 m | 0.85 |
+| Ambulance, to 5,000 kg | 0.8 | 3.4 s, 46 m | 0.7 |
+| Trucks and the bus | 0.7 | 3.9 s, 52 m | 0.6 |
+
+A spec can set its own `brake_g` or `corner_g`. `--speeds` prints each vehicle's stop from
+60 mph and its cornering at 40 mph and at `STEER_MPH`; `--check` fails if a vehicle's brakes
+leave 0.6-1.1 g.
+
+Both formulas were measured in the dev client (2026-11-10, a police SUV on flat ground): 0.91 g
+of braking against 0.90 predicted, and 34 degrees a second of yaw at 51 mph against 34.9.
+
+**What the pack cannot change** is how fast the steering wheel itself turns under the keys:
+2 degrees a tick to a 45 degree lock, a second and a bit, and 4 degrees a tick back. That is
+each player's own `steeringControlRate` and `steeringReturnRate` in `mtsconfigclient.json`.
 
 ### Performance: one object for what does not move
 
