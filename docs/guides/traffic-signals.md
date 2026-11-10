@@ -189,8 +189,8 @@ A finial only fits an **upright pedestal pole** — its collar is cut to that tu
 as an item if the pole below it goes.
 
 A **concrete pole** has its finial built in. The same tool mode switches the top of a concrete
-pole between its flat cap and its finial (a collar and spigot on the round pole, a stepped taper
-on the octagon).
+pole between its flat cap and its metal finial: a ball on the round pole, a stepped pyramid on
+the octagon.
 
 ### Pole bases
 

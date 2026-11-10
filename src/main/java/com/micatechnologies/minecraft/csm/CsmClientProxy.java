@@ -108,15 +108,14 @@ public class CsmClientProxy implements ICsmProxy {
         ((IHasModel) item).registerModels();
       }
     });
-    // A property that is only an input to getActualState stays out of the model locations, so
-    // it multiplies no variants; see ICsmModelIgnoredProperties. Before the multipart mapper,
-    // which leaves a block that has a mapper alone.
+    // A block that names the states it needs no model for (a property that is only an input to
+    // getActualState, a combination it is never drawn in) bakes no variant for them; see
+    // ICsmModelStateRules. Before the multipart mapper, which leaves a block that has a mapper
+    // alone.
     CsmRegistry.getBlocks().forEach(block -> {
-      if (block instanceof com.micatechnologies.minecraft.csm.codeutils.ICsmModelIgnoredProperties) {
+      if (block instanceof com.micatechnologies.minecraft.csm.codeutils.ICsmModelStateRules) {
         ModelLoader.setCustomStateMapper(block,
-            new net.minecraft.client.renderer.block.statemap.StateMap.Builder().ignore(
-                ((com.micatechnologies.minecraft.csm.codeutils.ICsmModelIgnoredProperties) block)
-                    .getModelIgnoredProperties()).build());
+            new com.micatechnologies.minecraft.csm.codeutils.CsmModelStateRulesMapper(block));
       }
     });
     // Every state of a multipart block on one model location; see CsmMultipartStateMapper.

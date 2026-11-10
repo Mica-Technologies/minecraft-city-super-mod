@@ -526,6 +526,12 @@ so a design can be priced before it is built:
 - **A state** costs about 40 bytes (CSM's container) plus its entries in Forge's state-id map and
   the block model shapes, roughly 100 bytes in all: 290 thousand states are some 30 MiB. A
   state is not where the memory is any more; the model locations and variants below are.
+- **A state a block is never drawn in needs no variant.** A block whose blockstate is
+  Forge-format can implement `ICsmModelStateRules` (Core): properties that are only inputs to
+  `getActualState` are left out of its model locations, and states its actual state cannot
+  produce share the default state's location. The concrete poles went from 3,456 variants to
+  1,408 that way and the painted poles from 576 to 160 (`CONCRETE_POLE_SYSTEM.md`,
+  `TRAFFIC_POLE_BASES.md`). Not for a multipart blockstate, which is one location already.
 - **A Forge-format (`forge_marker`) variant** costs a model location, an unbaked
   `WeightedRandomModel` at load (about 40 microseconds of "ModelLoader: blocks" each: 120
   thousand variants are most of its 4.9 s) and a baked model; its parts are baked once however

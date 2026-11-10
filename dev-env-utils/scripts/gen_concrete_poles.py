@@ -12,6 +12,8 @@ pole (see ``assets/docs/PEDESTAL_POLE_SYSTEM.md``):
   * ``cap``   -- the shaft ends in the open: a cap band and a chamfered top
   * ``tenon`` -- a post-top light sits on it: a collar and the tenon the fixture slips over
   * ``base``  -- a vertical pole standing on the ground: a stepped plinth
+  * ``finial`` -- the owner's choice for an open top: the metal finial the legacy top pieces
+    wore, a ball on a collar (round) or a stepped pyramid (octagon)
 
 This script writes:
 
@@ -88,34 +90,63 @@ STAGGER = 0.002
 # Large round: base and tenon follow the legacy rcpb2 / rcpt pieces; large octagon: ocpb / ocpt.
 # The plinth's upper step is D+3, not the legacy D+2, so a one-block pole wearing both a plinth
 # and a tenon collar (D+2) never has two coplanar walls.
+def ball(radius, z_from):
+    """A ball as one-unit tiers, its lowest point at ``z_from`` and the rest above it (toward
+    model north). The legacy round top drew it as two crossed discs; stacked rings read as a
+    ball from every side and need no rotation the pole's own rectangles do not already use."""
+    centre = z_from - radius
+    tiers = []
+    z = z_from
+    while z > centre - radius + 1e-6:
+        mid = z - 0.5 - centre
+        tiers.append((round(2.0 * math.sqrt(max(radius * radius - mid * mid, 0.0)), 2), z - 1.0, z))
+        z -= 1.0
+    return tiers
+
+
+# The legacy tops (rcpt, ocpt) were metal castings on the concrete: the round one a ball on a
+# banded sleeve, the octagon one a stepped pyramid. "finial" is that casting on this pole's own
+# shaft, in the legacy pieces' silver (METAL tiers; see build_part).
+OCTAGON_PYRAMID = {
+    12.0: [(14.0, 3.5, 4.5), (10.0, 0.5, 3.5), (8.0, -0.5, 0.5), (4.0, -1.5, -0.5),
+           (2.0, -2.5, -1.5)],
+    8.0: [(10.0, 3.5, 4.5), (7.0, 0.5, 3.5), (5.5, -0.5, 0.5), (3.0, -1.5, -0.5),
+          (1.5, -2.5, -1.5)],
+}
+
 POLES = {
     "round_large": {
         "shape": "round", "d": 12.0,
         "cap": [("shaft", 1.0, 8.0), (13.0, 0.5, 1.5), (10.0, 0.0, 0.5)],
         "tenon": [("shaft", 5.0, 8.0), (14.0, 4.0, 5.0), (5.0, -4.0, 4.0)],
         "base": [(15.0, 4.0, 8.0), (16.0, 8.0, 16.0)],
+        "finial": [("shaft", 5.0, 8.0), (14.0, 4.0, 5.0)] + ball(4.0, 4.0),
     },
     "octagon_large": {
         "shape": "octagon", "d": 12.0,
         "cap": [("shaft", 1.0, 8.0), (13.0, 0.5, 1.5), (10.0, 0.0, 0.5)],
-        "tenon": [("shaft", 4.5, 8.0), (14.0, 3.5, 4.5), (10.0, 0.5, 3.5), (8.0, -0.5, 0.5),
-                  (4.0, -1.5, -0.5), (2.0, -2.5, -1.5)],
+        "tenon": [("shaft", 4.5, 8.0)] + OCTAGON_PYRAMID[12.0],
         "base": [(15.0, 4.0, 8.0), (16.0, 8.0, 16.0)],
+        "finial": [("shaft", 4.5, 8.0)] + OCTAGON_PYRAMID[12.0],
     },
     "round_thin": {
         "shape": "round", "d": 8.0,
         "cap": [("shaft", 1.0, 8.0), (9.0, 0.5, 1.5), (6.5, 0.0, 0.5)],
         "tenon": [("shaft", 5.0, 8.0), (10.0, 4.0, 5.0), (4.0, -4.0, 4.0)],
         "base": [(11.0, 4.0, 8.0), (12.0, 8.0, 16.0)],
+        "finial": [("shaft", 5.0, 8.0), (10.0, 4.0, 5.0)] + ball(3.0, 4.0),
     },
     "octagon_thin": {
         "shape": "octagon", "d": 8.0,
         "cap": [("shaft", 1.0, 8.0), (9.0, 0.5, 1.5), (6.5, 0.0, 0.5)],
-        "tenon": [("shaft", 4.5, 8.0), (10.0, 3.5, 4.5), (7.0, 0.5, 3.5), (5.5, -0.5, 0.5),
-                  (3.0, -1.5, -0.5), (1.5, -2.5, -1.5)],
+        "tenon": [("shaft", 4.5, 8.0)] + OCTAGON_PYRAMID[8.0],
         "base": [(11.0, 4.0, 8.0), (12.0, 8.0, 16.0)],
+        "finial": [("shaft", 4.5, 8.0)] + OCTAGON_PYRAMID[8.0],
     },
 }
+
+# The ends whose tiers are metal, not concrete.
+METAL_ENDS = {"finial"}
 
 # (registry name, pole key, mount model, display name)
 POLE_BLOCKS = [
@@ -129,7 +160,7 @@ POLE_BLOCKS = [
      "csm:trafficaccessories/shared_models/small_mount", "Octagon Concrete Thin Traffic Pole"),
 ]
 
-END_STYLES = ["none", "cap", "tenon", "base"]
+END_STYLES = ["none", "cap", "tenon", "base", "finial"]
 
 # "basealt", the fifth end value, is the other profile's plinth at the same width, which the
 # owner picks with the configuration tool (GitHub #346). It is that pole's own base model, so
@@ -288,7 +319,7 @@ def polygon_rects(shape, d):
     return [(w, d / 2, 0), (w, d / 2, 45), (d / 2, w, 0), (d / 2, w, 45)]
 
 
-def prism_z(shape, d, z0, z1, ends=True, name=None, end_south=None):
+def prism_z(shape, d, z0, z1, ends=True, name=None, end_south=None, texture="#0"):
     """A prism along model Z from z0 to z1. With ``ends`` the end faces are drawn, each
     rectangle's set back by STAGGER more than the last so the overlapping ends never tie.
     ``end_south``, when given, decides the z1 end separately and ``ends`` only the z0 end."""
@@ -301,7 +332,7 @@ def prism_z(shape, d, z0, z1, ends=True, name=None, end_south=None):
         faces = (["east", "west", "up", "down"] + (["north"] if ends else [])
                  + (["south"] if end_south else []))
         out.append(element((8 - hx, 8 - hy, z0 + e0), (8 + hx, 8 + hy, z1 - e1), a, "z",
-                           faces=faces, name=name or shape))
+                           texture=texture, faces=faces, name=name or shape))
     return out
 
 
@@ -350,19 +381,29 @@ def build_part(pole, end):
     shape, d = spec["shape"], spec["d"]
     if end == "none":
         return prism_z(shape, d, 0.0, 8.0, ends=False, name="shaft")
+    texture = "#1" if end in METAL_ENDS else "#0"
     els = []
     for dia, z0, z1 in spec[end]:
         if dia == "shaft":
             els += prism_z(shape, d, z0, z1, ends=False, name="shaft")
+        elif z0 < 0.0 < z1:
+            # A tier that crosses the top of the block is cut there: a UV span reaching past
+            # the sprite on both sides cannot be wrapped into it, and sampled the neighbouring
+            # sprite instead (the round tenon's spigot drew its lower half black).
+            els += prism_z(shape, dia, z0, 0.0, ends=True, end_south=False, name=end,
+                           texture=texture)
+            els += prism_z(shape, dia, 0.0, z1, ends=False, end_south=True, name=end,
+                           texture=texture)
         else:
-            els += prism_z(shape, dia, z0, z1, name=end)
+            els += prism_z(shape, dia, z0, z1, name=end, texture=texture)
     return els
 
 
 def model_json(elements, texture):
     return {
         "credit": "Generated by dev-env-utils/scripts/gen_concrete_poles.py -- do not edit",
-        "textures": {"0": texture, "particle": texture},
+        # "1" is the metal of a finial. The blockstates override "0" and leave it alone.
+        "textures": {"0": texture, "1": SILVER, "particle": texture},
         "elements": elements,
     }
 

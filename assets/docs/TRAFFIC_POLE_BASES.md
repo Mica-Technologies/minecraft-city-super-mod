@@ -65,8 +65,12 @@ they are the generator's now, and it restates each pole's model, mount stub and 
 is never stored: it is the reach-down extension that `AbstractBlockTrafficPole.EXTEND_DOWN`
 carries on the poles that do not have a foot. A base and an extension are never drawn together,
 so one property of six values carries both; two properties would have multiplied to ten, and
-every value multiplies the variants a Forge blockstate bakes. A painted pole is 576 variants
-(6 facings x 16 mount combinations x 6 feet), up from 192.
+every value multiplies the variants a Forge blockstate bakes.
+
+Six facings by six feet is 36 pairs, and a pole is drawn in ten of them: facing up with any
+foot, or on one of its four sides with none. `isModelStateReachable` (`ICsmModelStateRules`,
+Core) says so, the other 26 share the default state's model location, and a painted pole bakes
+160 variants (10 pairs x 16 mount combinations) where it baked 192 before it had a foot.
 
 The blockstate hangs a submodel on each value: `extension` (the pole's own model, translated one
 block down) for `extend`, `foot` (the base OBJ) for a style, nothing for `none`.
@@ -119,9 +123,9 @@ joins it.
 - **No mount stubs.** The other poles grow a stub from their skin to the face of their block
   toward anything mounted beside them. This tube's skin is the face of its block, so there is
   nothing to bridge. The four mount properties are still in the state (the family's actual
-  state sets them) but the block lists them in `ICsmModelIgnoredProperties`, so they are left
-  out of the model locations and the blockstate does not name them: 36 variants a pole (6
-  facings x 6 feet) instead of 576.
+  state sets them) but the block lists them in `getModelIgnoredProperties`, so they are left
+  out of the model locations and the blockstate does not name them: 10 variants a pole instead
+  of 160.
 - **Pole fit.** `getPoleRadius()` reports 8, which `CsmPoleFit` rounds to its widest fit, the
   12-across pole's. Geometry cut for that pole (a light mount's plate, a mast arm curve's saddle,
   a luminaire arm's root) ends two sixteenths inside this one, which hides the joint as a saddle
@@ -138,5 +142,8 @@ joins it.
   placed pole standing on something.
 - **A pole on its side keeps a stored choice of `square`** (the default state) and draws
   nothing; do not read `FOOT` from a stored state as "has a base".
+- **`getActualState` and `isModelStateReachable` go together.** Draw a pole in a state the
+  rule refuses (a foot on a pole lying down, say) and it renders as the default state with no
+  error.
 - **Other poles still use `EXTEND_DOWN`.** Only the classes that extend
   `AbstractBlockTrafficPoleFooted` build their state without it.

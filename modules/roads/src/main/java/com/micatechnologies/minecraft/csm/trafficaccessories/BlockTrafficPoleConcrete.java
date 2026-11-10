@@ -3,7 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
-import com.micatechnologies.minecraft.csm.codeutils.ICsmModelIgnoredProperties;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmModelStateRules;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostTopFixture;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
@@ -36,8 +36,8 @@ import org.jetbrains.annotations.NotNull;
  * <ul>
  *   <li>nothing, where another concrete pole continues the shaft, or where it runs into some
  *       other solid block;</li>
- *   <li>a cap, wherever the shaft ends in the open, or the finial if its owner chose one
- *       ({@link #TOP});</li>
+ *   <li>a cap, wherever the shaft ends in the open, or the metal finial if its owner chose
+ *       one ({@link #TOP});</li>
  *   <li>a collar and tenon, under a post-top fixture ({@link ICsmPostTopFixture});</li>
  *   <li>a stepped plinth, at the bottom of a vertical pole standing on the ground: its own,
  *       the other profile's, or none at all, as its owner chose ({@link #BASE}).</li>
@@ -56,7 +56,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2026.9
  */
 public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
-    implements ICsmModelIgnoredProperties {
+    implements ICsmModelStateRules {
 
   /**
    * What one end of the shaft shows. Values are lower-cased for the blockstate.
@@ -74,7 +74,13 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
      * The other profile's plinth, at this pole's width: an octagon plinth under a round pole, a
      * round one under an octagon. Only ever shown by the owner's choice ({@link #BASE}).
      */
-    BASEALT;
+    BASEALT,
+    /**
+     * The metal finial of the legacy top pieces: a ball on a collar on the round pole, a stepped
+     * pyramid on the octagon. Only ever shown by the owner's choice ({@link #TOP}), where the
+     * shaft ends in the open.
+     */
+    FINIAL;
 
     @Override
     public String getName() {
@@ -93,15 +99,15 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   /**
    * What the owner picked for the top of the pole. Stored, and only an input to
    * {@link #getActualState}: it never reaches a model location
-   * ({@link ICsmModelIgnoredProperties}).
+   * ({@link ICsmModelStateRules}).
    */
   public enum TopStyle implements IStringSerializable {
     /** The cap in the open, the tenon under a post-top fixture. */
     AUTO("Flat cap"),
     /**
-     * The finial in the open as well: the collar and spigot of the round pole, the stepped
-     * taper of the octagon. What the legacy top pieces ({@code rcpt}, {@code ocpt}) always
-     * showed, and what they keep when they retire into this block.
+     * The metal finial in the open: the ball of the round pole, the stepped pyramid of the
+     * octagon. What the legacy top pieces ({@code rcpt}, {@code ocpt}) showed, and what they
+     * keep when they retire into this block. Under a post-top fixture the tenon still shows.
      */
     FINIAL("Finial");
 
@@ -271,6 +277,27 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   }
 
   /**
+   * The end pairs the actual state can produce: a plinth only at the end that points down, a
+   * finial only at the end {@link #topEnd} names. The rest of the 36 pairs are never drawn, and
+   * so never baked ({@link ICsmModelStateRules}): 88 pairs of facing and ends out of 216.
+   */
+  @Override
+  public boolean isModelStateReachable(IBlockState state) {
+    EnumFacing facing = state.getValue(FACING);
+    return isEndReachable(state.getValue(END_NORTH), facing,
+        BlockTrafficPolePedestal.endDirection(facing, true))
+        && isEndReachable(state.getValue(END_SOUTH), facing,
+        BlockTrafficPolePedestal.endDirection(facing, false));
+  }
+
+  private static boolean isEndReachable(EndStyle style, EnumFacing facing, EnumFacing end) {
+    if (isPlinth(style)) {
+      return end == EnumFacing.DOWN;
+    }
+    return style != EndStyle.FINIAL || end == topEnd(facing);
+  }
+
+  /**
    * The facing in the six values the pole always stored, so every pole already in a world reads
    * back as it was, and the owner's choices in the ten values that were spare:
    *
@@ -387,9 +414,7 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
     // Nothing worth abutting: air, plants, snow layers, water. The shaft ends in the open.
     if (worldIn.isAirBlock(beyond) || beyondBlock.isReplaceable(worldIn, beyond)
         || isNaturalClutter(beyondBlock)) {
-      // The finial is the tenon's model: a legacy top piece was one casting whether or not a
-      // light sat on it.
-      return top == TopStyle.FINIAL && end == topEnd(facing) ? EndStyle.TENON : EndStyle.CAP;
+      return top == TopStyle.FINIAL && end == topEnd(facing) ? EndStyle.FINIAL : EndStyle.CAP;
     }
 
     // Standing vertically on something that is not itself pole hardware: the plinth. Another
