@@ -1,12 +1,11 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories;
 
-import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockTrafficPoleLargeTan extends AbstractBlockTrafficPole {
+public class BlockTrafficPoleLargeTan extends AbstractBlockTrafficPoleFooted {
 
   /**
    * Retrieves the registry name of the block.

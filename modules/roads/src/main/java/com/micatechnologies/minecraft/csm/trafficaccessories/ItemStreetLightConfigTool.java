@@ -198,6 +198,9 @@ public class ItemStreetLightConfigTool extends AbstractItem {
   private static EnumActionResult cycleBase(EntityPlayer player, World world, BlockPos pos,
       EnumFacing side, ItemStack stack) {
     IBlockState clicked = world.getBlockState(pos);
+    if (clicked.getBlock() instanceof AbstractBlockTrafficPoleFooted) {
+      return cycleFoot(player, world, pos, side, stack);
+    }
     if (!(clicked.getBlock() instanceof BlockTrafficPoleConcrete)) {
       say(player, "That pole has no base to choose.");
       return EnumActionResult.FAIL;
@@ -223,6 +226,39 @@ public class ItemStreetLightConfigTool extends AbstractItem {
         state.withProperty(BlockTrafficPoleConcrete.BASE, next))), 3);
     say(player, "Concrete pole base: " + next.getFriendlyName());
     return EnumActionResult.SUCCESS;
+  }
+
+  /**
+   * Steps the bolted base of a painted steel pole. The choice is stored on the bottom block of
+   * the upright stack, which draws it wherever that block stands on the ground.
+   */
+  private static EnumActionResult cycleFoot(EntityPlayer player, World world, BlockPos pos,
+      EnumFacing side, ItemStack stack) {
+    if (!isUprightFooted(world.getBlockState(pos))) {
+      say(player, "Only an upright pole has a base.");
+      return EnumActionResult.FAIL;
+    }
+    BlockPos target = pos;
+    while (target.getY() > 0 && isUprightFooted(world.getBlockState(target.down()))) {
+      target = target.down();
+    }
+    if (!player.canPlayerEdit(target, side, stack) || !world.isBlockModifiable(player, target)) {
+      say(player, "You cannot change that pole here.");
+      return EnumActionResult.FAIL;
+    }
+    IBlockState state = world.getBlockState(target);
+    AbstractBlockTrafficPoleFooted.Foot next =
+        state.getValue(AbstractBlockTrafficPoleFooted.FOOT).nextChoice();
+    Block block = state.getBlock();
+    world.setBlockState(target, block.getStateFromMeta(block.getMetaFromState(
+        state.withProperty(AbstractBlockTrafficPoleFooted.FOOT, next))), 3);
+    say(player, "Pole base: " + next.getFriendlyName());
+    return EnumActionResult.SUCCESS;
+  }
+
+  private static boolean isUprightFooted(IBlockState state) {
+    return state.getBlock() instanceof AbstractBlockTrafficPoleFooted
+        && state.getValue(AbstractBlockTrafficPoleFooted.FACING).getAxis() == EnumFacing.Axis.Y;
   }
 
   private static boolean isUprightConcrete(IBlockState state) {
