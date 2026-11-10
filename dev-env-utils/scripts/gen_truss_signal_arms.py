@@ -16,6 +16,19 @@ one block places the entire arm, pole to tip. Three shapes, from the requester's
             intersection, on the same lattice as the angled thin traffic pole
             (`trafficpolehorizontalangle*`): one cell per diagonal step.
 
+THE NEW YORK CITY ARM
+---------------------
+The same script writes a second family, the guyed signal arm of New York City (`nycsignalarm*`,
+NycSignalArmProfile): one tapered pipe that leaves a clamp low on the pole steeply, eases to a
+shallow climb and carries the signal head hanging from its tip, held up by two thin guy rods that
+run from the ends of a crossbar higher on the pole, wider than the pole, in to the tip fitting. Regular and diagonal, in brown, galvanized
+and black. It is the truss arm's machinery with different members: the rods are where a level
+truss's top chord is (so the block is placed at their height, the height the head hangs from), the
+pipe is where the bottom chord is, and the pipe's bend is a few straight members joined by shared
+mitre rings. Only the pipe takes mount hardware and street name sign hangers; the rods are too
+thin to hold anything. The tip stops just past the middle of the last cell, so a wire mount under
+that cell hangs a head from the very end.
+
 HOW IT IS BUILT
 ---------------
 The mast arm curves' way (MAST_ARM_CURVE_SYSTEM.md): one real block per cell the arm passes
@@ -57,6 +70,10 @@ OUTPUT
   models/block/trafficaccessories/shared_models/trusssignalarm.mtl
   blockstates/trusssignalarm<id><finish>.json
   src/main/java/.../trafficaccessories/TrussSignalArmProfile.java                    (generated enum)
+and the same set as nycsignalarm_*, blockstates/nycsignalarm<id><finish>.json and
+NycSignalArmProfile.java for the New York City arms (they share the truss arms' .mtl), plus
+  textures/blocks/trafficsignals/shared_textures/metal_brown.png      the brown finish, tinted from
+                                                                      metal_silver
 
 Run:  python dev-env-utils/scripts/gen_truss_signal_arms.py [--check] [--fragments]
 """
@@ -73,7 +90,7 @@ import csm_layout as layout  # noqa: E402
 OWNER = layout.owner_of_folder("trafficaccessories")
 MODEL_REL = "models/block/trafficaccessories/shared_models"
 MODEL_PREFIX = "csm:trafficaccessories/shared_models"
-JAVA_REL = "trafficaccessories/TrussSignalArmProfile.java"
+TEXTURE_REL = "textures/blocks/trafficsignals/shared_textures"
 MTL_NAME = "trusssignalarm.mtl"
 MATERIAL = "body"
 
@@ -140,6 +157,62 @@ CATALOGUE = [
 ]
 # A sloped arm's rise over its run, in blocks: about 7 to 9 degrees, as the New Jersey arms climb.
 SLOPED_RISE = {8: 1.0, 12: 2.0}
+
+# ---- the New York City guyed arm
+BROWN = "metal_brown"
+BROWN_FROM = "metal_silver"
+BROWN_RGB = (84, 54, 40)    # the city's street furniture brown
+NYC_FINISHES = [
+    ("brown", "csm:blocks/trafficsignals/shared_textures/" + BROWN, "Brown"),
+    ("galvanized", "csm:blocks/trafficsignals/shared_textures/metal_white", "Galvanized"),
+    ("black", "csm:blocks/trafficsignals/shared_textures/metal_black", "Black"),
+]
+NYC_CATALOGUE = [
+    ("regular4", "guyed", 4, "NYC Signal Mast Arm, 4 Blocks"),
+    ("regular6", "guyed", 6, "NYC Signal Mast Arm, 6 Blocks"),
+    ("regular8", "guyed", 8, "NYC Signal Mast Arm, 8 Blocks"),
+    ("diagonal4", "guyeddiagonal", 4, "NYC Signal Mast Arm, Diagonal, 4 Blocks"),
+    ("diagonal6", "guyeddiagonal", 6, "NYC Signal Mast Arm, Diagonal, 6 Blocks"),
+]
+# Where the pipe's centreline meets the pole's axis (px; the placed row is 0..16, so -12 is one
+# block down and -24 two). Chosen so the clamp collar stays inside one row of the pole and the
+# pipe climbs 13 to 16 degrees overall.
+GUYED_FOOT = {("guyed", 4): -12.0, ("guyed", 6): -24.0, ("guyed", 8): -27.0,
+              ("guyeddiagonal", 4): -23.0, ("guyeddiagonal", 6): -27.0}
+GUYED_TIP_Y = 5.0           # the pipe's centre at the tip
+GUYED_TIP_PAST = 3.5        # how far past the middle of the last cell the tip is
+GUYED_R_BUTT, GUYED_R_TIP = 2.8, 1.9
+# The bend: the slope falls evenly from three times the shaft's slope to the shaft's slope over
+# this much reach, as straight members between these stations (px from the pole's axis). The
+# stations stay clear of every cell boundary of both the regular and the diagonal arm.
+GUYED_BEND = 36.0
+GUYED_STATIONS = [0.0, 11.0, 19.5, 28.0, 36.0]
+GUYED_FITTING_R, GUYED_FITTING_LEN = 2.8, 2.8
+GUYED_ROD_R = 0.5
+GUYED_ROD_Y = 9.5           # the rods' height at the pole
+# Half the gap between the rods, at the pole and at the tip. At the pole they stand well outside
+# the pole, on the ends of a crossbar a block and a half long, as the city's do; the same crossbar
+# on every pole, so the rods are one model whatever the pole. The crossbar and the rods' first
+# pixels overhang the blocks either side of the arm, and stay in the arm's own cells all the same.
+GUYED_ROD_SPREAD = (11.2, 1.2)
+GUYED_BAR_R = 0.9
+GUYED_BAR_HALF = 12.0       # the crossbar's reach each side of the pole's axis
+GUYED_ROD_BAND = 0.9        # stands in for a chord radius: the crossbar's pole band is this + margin tall
+
+# One family per generated enum: (file and registry prefix, enum, finishes, catalogue, javadoc).
+FAMILIES = [
+    {"prefix": "trusssignalarm", "java": "TrussSignalArmProfile", "finishes": FINISHES,
+     "catalogue": CATALOGUE,
+     "doc": " * The truss signal mast arms (level top, sloped, and diagonal across a corner), and "
+            "the exact\n * block cells each one occupies."},
+    {"prefix": "nycsignalarm", "java": "NycSignalArmProfile", "finishes": NYC_FINISHES,
+     "catalogue": NYC_CATALOGUE,
+     "doc": " * The New York City guyed signal mast arms (a tapered pipe under two guy rods, "
+            "regular and\n * diagonal across a corner), and the exact block cells each one "
+            "occupies."},
+]
+DIAGONAL_KINDS = ("diagonal", "guyeddiagonal")
+GUYED_KINDS = ("guyed", "guyeddiagonal")
 
 
 # --------------------------------------------------------------------------- vectors
@@ -307,26 +380,54 @@ def cylinder(mesh, a, b, r, sides, caps=(True, True)):
 
 
 # --------------------------------------------------------------------------- members
-class Member:
-    """A straight pipe from `a` to `b` (px, placement frame). `pole`: `a` is on the pole's axis and
-    the pipe is cut where it leaves the pole's skin. `chord`: mount hardware may clamp to it."""
+def diagonal_q(p):
+    """How many diagonal steps from the pole's axis a point is, measured along the diagonal."""
+    return ((p[0] - POLE_X) - (p[2] - POLE_Z)) / 32.0
 
-    def __init__(self, a, b, r, sides, pole=False, chord=False):
+
+class Member:
+    """A straight pipe from `a` to `b` (px, placement frame). `pole`: `a` is inside the pole and
+    the pipe is cut where it leaves the pole's skin. `chord`: mount hardware may clamp to it.
+    `r_b`: the radius at `b`, for a tapered pipe. `collar_r`: the chord radius its pole collar is
+    sized for, False for none. `ring_a`, `ring_b`: a ring shared with the member it joins at that
+    end (a mitre), in place of a square end and its cap."""
+
+    def __init__(self, a, b, r, sides, pole=False, chord=False, r_b=None, collar_r=None,
+                 ring_a=None, ring_b=None):
         self.a, self.b, self.r, self.sides, self.pole, self.chord = a, b, r, sides, pole, chord
+        self.r_b = r if r_b is None else r_b
+        self.collar_r = r if collar_r is None else collar_r
+        self.ring_a, self.ring_b = ring_a, ring_b
         self.axis = vnorm(vsub(b, a))
         self.length = vlen(vsub(b, a))
 
     def centre(self, u):
         return lerp(self.a, self.b, u)
 
-    def ring(self, u):
-        return ring_at(self.centre(u), self.axis, self.r, self.sides)
+    def radius(self, u):
+        return self.r + (self.r_b - self.r) * u
 
-    def crossings(self):
+    def ring(self, u):
+        return ring_at(self.centre(u), self.axis, self.radius(u), self.sides)
+
+    def crossings(self, kind=None):
         """Every u in (0, 1) where the centreline crosses a cell boundary, merged where it crosses
         two at once (a diagonal arm crosses x and z together at every step)."""
         us = []
-        for k in range(3):
+        if kind == "guyeddiagonal":
+            # A guy rod runs beside the diagonal, so it is cut where it passes from one diagonal
+            # step to the next, not where it happens to cross the world's grid.
+            qa, qb = diagonal_q(self.a), diagonal_q(self.b)
+            if abs(qb - qa) > 1e-9:
+                lo, hi = sorted((qa, qb))
+                m = max(1, math.ceil(lo - 0.5 - 1e-9))
+                while m + 0.5 < hi - 1e-9:
+                    u = (m + 0.5 - qa) / (qb - qa)
+                    if 1e-6 < u < 1.0 - 1e-6:
+                        us.append(u)
+                    m += 1
+        # A regular guyed arm's crossbar and rods overhang sideways without leaving its cells.
+        for k in ((1,) if kind == "guyeddiagonal" else (1, 2) if kind == "guyed" else range(3)):
             lo, hi = sorted((self.a[k], self.b[k]))
             if hi - lo < 1e-9:
                 continue
@@ -430,7 +531,64 @@ def diagonal_members(steps, depth):
     return members
 
 
+def guyed_members(kind, size):
+    """A New York City arm: the bent, tapered pipe, its tip fitting and the two guy rods. `d` is
+    the reach in px from the pole's axis, along the arm; the middle of cell k is at step * k."""
+    diagonal = kind == "guyeddiagonal"
+    step = 16.0 * math.sqrt(2.0) if diagonal else 16.0
+
+    def at(d, y, off=0.0):
+        if diagonal:
+            h, o = d / math.sqrt(2.0), off / math.sqrt(2.0)
+            return (POLE_X + h + o, y, POLE_Z - h + o)
+        return (POLE_X + off, y, POLE_Z - d)
+
+    d_tip = step * size + GUYED_TIP_PAST
+    foot = GUYED_FOOT[(kind, size)]
+    shaft = (GUYED_TIP_Y - foot) / (d_tip + GUYED_BEND)
+    steep = 3.0 * shaft
+
+    def height(d):
+        if d < GUYED_BEND:
+            return foot + steep * d - (steep - shaft) * d * d / (2.0 * GUYED_BEND)
+        return foot + (steep + shaft) / 2.0 * GUYED_BEND + shaft * (d - GUYED_BEND)
+
+    def pipe_r(d):
+        return GUYED_R_BUTT + (GUYED_R_TIP - GUYED_R_BUTT) * d / d_tip
+
+    # The pipe ends inside the fitting, so its end cap is buried.
+    stations = GUYED_STATIONS + [d_tip - 0.6]
+    points = [at(d, height(d)) for d in stations]
+    axes = [vnorm(vsub(points[k + 1], points[k])) for k in range(len(points) - 1)]
+    mitres = [None]
+    for k in range(1, len(points) - 1):
+        mitres.append(ring_at(points[k], vnorm(vadd(axes[k - 1], axes[k])), pipe_r(stations[k]),
+                              CHORD_SIDES))
+    mitres.append(None)
+    members = []
+    for k in range(len(points) - 1):
+        members.append(Member(points[k], points[k + 1], pipe_r(stations[k]), CHORD_SIDES,
+                              pole=(k == 0), chord=True, r_b=pipe_r(stations[k + 1]),
+                              ring_a=mitres[k], ring_b=mitres[k + 1]))
+    tip = at(d_tip, height(d_tip))
+    members.append(Member(vsub(tip, vmul(axes[-1], GUYED_FITTING_LEN)), tip, GUYED_FITTING_R,
+                          CHORD_SIDES))
+    for n, sign in enumerate((-1.0, 1.0)):
+        # Half the crossbar, out of the pole's side (cut on its skin; the first half brings the
+        # band), and the rod from just inside its end.
+        members.append(Member(
+            at(0.0, GUYED_ROD_Y), at(0.0, GUYED_ROD_Y, sign * GUYED_BAR_HALF),
+            GUYED_BAR_R, STRUT_SIDES, pole=True, collar_r=GUYED_ROD_BAND if n == 0 else False))
+        members.append(Member(
+            at(0.0, GUYED_ROD_Y, sign * GUYED_ROD_SPREAD[0]),
+            at(d_tip - GUYED_FITTING_LEN / 2.0, height(d_tip) + 1.5, sign * GUYED_ROD_SPREAD[1]),
+            GUYED_ROD_R, STRUT_SIDES))
+    return members
+
+
 def members_of(kind, size):
+    if kind in GUYED_KINDS:
+        return guyed_members(kind, size)
     if kind == "level":
         return straight_members(size, Y_LEVEL, 0.0, DEPTH_LEVEL)
     if kind == "sloped":
@@ -445,6 +603,12 @@ def cell_of(p, kind):
     along = int(math.floor((16.0 - p[2]) / 16.0 + 1e-9))
     up = int(math.floor(p[1] / 16.0 + 1e-9))
     side = int(math.floor(p[0] / 16.0 + 1e-9))
+    if kind == "guyeddiagonal":
+        # By the diagonal step, so a rod running beside the diagonal stays in the arm's cells.
+        k = max(1, int(math.floor(diagonal_q(p) + 0.5 + 1e-9)))
+        return (k - 1, up, k)
+    if kind == "guyed":
+        side = 0
     if kind == "diagonal":
         if side < 1:
             along, side = 0, 1
@@ -464,7 +628,7 @@ def sweep(members, pole_r, kind):
         return cells[c]
 
     for member in members:
-        us = member.crossings()
+        us = member.crossings(kind)
         rings = []
         if member.pole:
             cut, cut_us = pole_cut(member, pole_r)
@@ -472,8 +636,9 @@ def sweep(members, pole_r, kind):
             us = [u for u in us if (u - first) * member.length > 1e-3]
             rings.append((cut, sum(cut_us) / len(cut_us), first))
         else:
-            rings.append((member.ring(0.0), 0.0, 0.0))
-        rings += [(member.ring(u), u, u) for u in us + [1.0]]
+            rings.append((member.ring_a or member.ring(0.0), 0.0, 0.0))
+        rings += [(member.ring(u), u, u) for u in us]
+        rings.append((member.ring_b or member.ring(1.0), 1.0, 1.0))
         first_c = last_c = None
         for k in range(len(rings) - 1):
             ra, ua, ua_far = rings[k]
@@ -485,10 +650,13 @@ def sweep(members, pole_r, kind):
             if first_c is None:
                 first_c = c
             last_c = c
-        cap(mesh_for(first_c), rings[0][0], vmul(member.axis, -1.0))
-        cap(mesh_for(last_c), rings[-1][0], member.axis)
+        if member.pole or member.ring_a is None:
+            cap(mesh_for(first_c), rings[0][0], vmul(member.axis, -1.0))
+        if member.ring_b is None:
+            cap(mesh_for(last_c), rings[-1][0], member.axis)
         if member.pole:
-            collar(mesh_for(first_c), member.a[1], pole_r, member.r)
+            if member.collar_r is not False:
+                collar(mesh_for(first_c), member.a[1], pole_r, member.collar_r)
             joints.add(first_c)
     return cells, spans, joints
 
@@ -530,16 +698,16 @@ def stub(spans, c, direction):
         p = lerp(a, b, k)
         d = vlen(vsub(face_centre, p))
         if best is None or d < best[0] - 1e-9:
-            best = (d, p, member)
-    dist, anchor, member = best
+            best = (d, p, member, member.radius(u0 + (u1 - u0) * k))
+    dist, anchor, member, pipe_r = best
     mesh = Mesh()
     half = vmul(member.axis, BAND_LEN / 2.0)
-    cylinder(mesh, vsub(anchor, half), vadd(anchor, half), member.r + BAND_MARGIN, 12)
+    cylinder(mesh, vsub(anchor, half), vadd(anchor, half), pipe_r + BAND_MARGIN, 12)
     plate_inner = vadd(face_centre, vmul(normal, -PLATE_LEN))
     cylinder(mesh, plate_inner, vadd(face_centre, vmul(normal, -INSET)), PLATE_R, 8)
-    if dist > member.r + BAND_MARGIN + PLATE_LEN + 0.3:
+    if dist > pipe_r + BAND_MARGIN + PLATE_LEN + 0.3:
         to_face = vnorm(vsub(plate_inner, anchor))
-        cylinder(mesh, vadd(anchor, vmul(to_face, member.r - 0.5)), plate_inner, BRACKET_R, 8,
+        cylinder(mesh, vadd(anchor, vmul(to_face, pipe_r - 0.5)), plate_inner, BRACKET_R, 8,
                  caps=(False, False))
     return mesh
 
@@ -548,7 +716,8 @@ def build(pid, kind, size):
     members = members_of(kind, size)
     per_fit = [sweep(members, r, kind) for _, r in FITS]
     cells_l, spans, joints = per_fit[0]
-    root = (0, 0, 1) if kind == "diagonal" else (0, 0, 0)
+    diagonal = kind in DIAGONAL_KINDS
+    root = (0, 0, 1) if diagonal else (0, 0, 0)
     assert root in cells_l, "%s: the first cell holds no geometry" % pid
     order = [root] + sorted(c for c in cells_l if c != root)
     for cells_f, _s, joints_f in per_fit[1:]:
@@ -556,7 +725,7 @@ def build(pid, kind, size):
     # Every cell must touch another by a face, or the arm is not one connected run of blocks.
     for c in order:
         if len(order) > 1:
-            assert any(tuple(c[k] + d[k] for k in range(3)) in cells_l or kind == "diagonal"
+            assert any(tuple(c[k] + d[k] for k in range(3)) in cells_l or diagonal
                        for d in ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0))), (pid, c)
     meshes = [local(cells_l[c], c) for c in order]
     fits = {}             # cell index -> [mesh per narrower fit]
@@ -566,7 +735,8 @@ def build(pid, kind, size):
     boxes = [box_of([meshes[i]] + fits.get(i, [])) for i in range(len(order))]
     # Which sides each cell can grow hardware on: a cell a chord passes through, toward any side
     # that is not another cell of this arm. A cell holding only the bottom chord hangs things
-    # below it; one holding the top chord takes them on every free side.
+    # below it; one holding the top chord takes them on every free side. A New York City arm has
+    # one pipe, which takes them below and beside it: over it are the guy rods.
     top = members[0]
     dirs = []
     for c in order:
@@ -575,9 +745,12 @@ def build(pid, kind, size):
         for bit, (name, off, _f, _n) in enumerate(DIRECTIONS):
             if c not in spans:
                 continue
-            if name in ("ahead", "back") and kind != "diagonal":
+            if name in ("ahead", "back") and not diagonal:
                 continue
-            if not has_top and name != "down":
+            if kind in GUYED_KINDS:
+                if name == "up":
+                    continue
+            elif not has_top and name != "down":
                 continue
             if tuple(c[k] + off[k] for k in range(3)) in cells_l:
                 continue
@@ -601,7 +774,8 @@ def build(pid, kind, size):
     rails = []
     for c in order:
         origin = origin_of(c)
-        rails.append([vsub(member.centre(u0), origin) + vsub(member.centre(u1), origin) + (member.r,)
+        rails.append([vsub(member.centre(u0), origin) + vsub(member.centre(u1), origin)
+                      + (member.radius((u0 + u1) / 2.0),)
                       for member, u0, u1 in spans.get(c, [])])
     return {"id": pid, "kind": kind, "size": size, "order": order, "meshes": meshes, "fits": fits,
             "boxes": boxes, "dirs": dirs, "stubs": stubs, "pole_at": pole_at, "whole": whole,
@@ -619,29 +793,29 @@ def shape_layout(prof):
 
 
 # --------------------------------------------------------------------------- output
-def registry(pid, finish):
-    return "trusssignalarm%s%s" % (pid, finish)
+def registry(fam, pid, finish):
+    return "%s%s%s" % (fam["prefix"], pid, finish)
 
 
-def cell_model(pid, idx, fit=None):
-    return "trusssignalarm_%s_c%d%s.obj" % (pid, idx, "_" + fit if fit else "")
+def cell_model(fam, pid, idx, fit=None):
+    return "%s_%s_c%d%s.obj" % (fam["prefix"], pid, idx, "_" + fit if fit else "")
 
 
 class StubPool:
     """Stub models shared across cells and arms: most of a level arm's are the same mesh."""
 
-    def __init__(self):
-        self.names, self.meshes = {}, []
+    def __init__(self, prefix):
+        self.prefix, self.names, self.meshes = prefix, {}, []
 
     def name(self, mesh):
         key = mesh.key()
         if key not in self.names:
-            self.names[key] = "trusssignalarm_stub_%d.obj" % len(self.meshes)
+            self.names[key] = "%s_stub_%d.obj" % (self.prefix, len(self.meshes))
             self.meshes.append(mesh)
         return self.names[key]
 
 
-def blockstate(prof, texture, pool):
+def blockstate(fam, prof, texture, pool):
     pid = prof["id"]
     layout_, _count = shape_layout(prof)
     shape = {}
@@ -650,7 +824,7 @@ def blockstate(prof, texture, pool):
         fit_names = [None] + [f for f, _r in FITS[1:]] if idx in prof["fits"] else [None]
         for f, fit in enumerate(fit_names):
             for mask in range(1 << bits):
-                variant = {"model": "%s/%s" % (MODEL_PREFIX, cell_model(pid, idx, fit))}
+                variant = {"model": "%s/%s" % (MODEL_PREFIX, cell_model(fam, pid, idx, fit))}
                 sub = {}
                 for k, bit in enumerate(own):
                     if mask & (1 << k):
@@ -665,29 +839,29 @@ def blockstate(prof, texture, pool):
     return {
         "forge_marker": 1,
         "defaults": {
-            "model": "%s/%s" % (MODEL_PREFIX, cell_model(pid, 0)),
+            "model": "%s/%s" % (MODEL_PREFIX, cell_model(fam, pid, 0)),
             "custom": {"flip-v": True},
             "textures": {"#" + MATERIAL: texture, "particle": texture},
         },
         "variants": {
             "shape": shape,
             "facing": {"north": {"y": 0}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270}},
-            "inventory": [{"model": "%s/trusssignalarm_%s_inv.obj" % (MODEL_PREFIX, pid),
+            "inventory": [{"model": "%s/%s_%s_inv.obj" % (MODEL_PREFIX, fam["prefix"], pid),
                            "transform": "forge:default-block"}],
         },
     }
 
 
-def inventory_text(prof, label):
+def inventory_text(fam, prof, label):
     whole = prof["whole"]
     lo, hi = whole.bounds()
     span = max(hi[k] - lo[k] for k in range(3))
     shift = tuple(lo[k] - (span - (hi[k] - lo[k])) / 2.0 for k in range(3))
-    return whole.text("trusssignalarm_%s_inv" % prof["id"], "%s, inventory icon" % label,
+    return whole.text("%s_%s_inv" % (fam["prefix"], prof["id"]), "%s, inventory icon" % label,
                       scale=16.0 / span, shift=shift)
 
 
-def java_enum(profiles):
+def java_enum(fam, profiles):
     body = []
     for i, ((pid, kind, size, label), prof) in enumerate(profiles):
         layout_, count = shape_layout(prof)
@@ -712,7 +886,7 @@ def java_enum(profiles):
             "      new float[][][]{%s})%s"
             % (label, n, count, pid.upper(), label, count, cells, boxes, dirs, bases, poles, rails,
                "," if i < len(profiles) - 1 else ";"))
-    return JAVA_TEMPLATE % {"body": "\n".join(body)}
+    return JAVA_TEMPLATE % {"body": "\n".join(body), "cls": fam["java"], "doc": fam["doc"]}
 
 
 JAVA_TEMPLATE = '''package com.micatechnologies.minecraft.csm.trafficaccessories;
@@ -720,8 +894,7 @@ JAVA_TEMPLATE = '''package com.micatechnologies.minecraft.csm.trafficaccessories
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 
 /**
- * The truss signal mast arms (level top, sloped, and diagonal across a corner), and the exact
- * block cells each one occupies.
+%(doc)s
  *
  * <p><b>Generated by {@code dev-env-utils/scripts/gen_truss_signal_arms.py}. Do not edit by
  * hand.</b> The cell lists are the lists the generator split the OBJ geometry on, and the boxes
@@ -736,7 +909,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
  * {@link ICurvedArmProfile}'s direction order, and {@code fit} is non-zero only for a cell that
  * holds a chord's pole end, on a narrower pole.
  */
-public enum TrussSignalArmProfile implements ICurvedArmProfile {
+public enum %(cls)s implements ICurvedArmProfile {
 
 %(body)s
 
@@ -749,7 +922,7 @@ public enum TrussSignalArmProfile implements ICurvedArmProfile {
   private final int[][] poleOffsets;
   private final float[][][] rails;
 
-  TrussSignalArmProfile(String label, int shapeCount, int[][] cells, double[][] boxes,
+  %(cls)s(String label, int shapeCount, int[][] cells, double[][] boxes,
       int[] mountDirections, int[] shapeBases, int[][] poleOffsets, float[][][] rails) {
     this.label = label;
     this.shapeCount = shapeCount;
@@ -832,33 +1005,54 @@ def mtl_text():
             "newmtl %s\nmap_Kd %s\n" % (MATERIAL, FINISHES[0][1]))
 
 
+def brown_texture():
+    """The brown finish: metal_silver's grain, tinted. Returns PNG bytes."""
+    from PIL import Image
+    src = Image.open(layout.resolve_asset(TEXTURE_REL + "/" + BROWN_FROM + ".png")).convert("L")
+    grey = list(src.tobytes())
+    mean = sum(grey) / float(len(grey))
+    out = Image.new("RGBA", src.size)
+    out.putdata([tuple(min(255, int(round(c * g / mean))) for c in BROWN_RGB) + (255,)
+                 for g in grey])
+    data = io.BytesIO()
+    out.save(data, "PNG")
+    return data.getvalue()
+
+
 def outputs():
-    """Every file the script owns: (kind, tree-relative path) -> text."""
-    files = {("asset", MODEL_REL + "/" + MTL_NAME): mtl_text()}
-    profiles = []
-    pool = StubPool()
-    for meta in CATALOGUE:
-        pid, kind, size, label = meta
-        prof = build(pid, kind, size)
-        for idx, m in enumerate(prof["meshes"]):
-            files[("asset", MODEL_REL + "/" + cell_model(pid, idx))] = m.text(
-                "trusssignalarm_%s_c%d" % (pid, idx),
-                "%s, cell %d at %s" % (label, idx, list(prof["order"][idx])))
-        for idx, fits in prof["fits"].items():
-            for (fit, r), m in zip(FITS[1:], fits):
-                files[("asset", MODEL_REL + "/" + cell_model(pid, idx, fit))] = m.text(
-                    "trusssignalarm_%s_c%d_%s" % (pid, idx, fit),
-                    "%s, cell %d on the %s pole (radius %.0f)" % (label, idx, fit, r))
-        files[("asset", MODEL_REL + "/trusssignalarm_%s_inv.obj" % pid)] = inventory_text(prof, label)
-        for fid, tex, _flabel in FINISHES:
-            files[("asset", "blockstates/%s.json" % registry(pid, fid))] = json.dumps(
-                blockstate(prof, tex, pool), indent=1) + "\n"
-        profiles.append((meta, prof))
-    for k, m in enumerate(pool.meshes):
-        files[("asset", MODEL_REL + "/trusssignalarm_stub_%d.obj" % k)] = m.text(
-            "trusssignalarm_stub_%d" % k, "mount hardware")
-    files[("java", JAVA_REL)] = java_enum(profiles)
-    return files, profiles
+    """Every file the script owns: (kind, tree-relative path) -> text (bytes for the texture),
+    and per family its profiles."""
+    files = {("asset", MODEL_REL + "/" + MTL_NAME): mtl_text(),
+             ("asset", TEXTURE_REL + "/" + BROWN + ".png"): brown_texture()}
+    families = []
+    for fam in FAMILIES:
+        prefix = fam["prefix"]
+        profiles = []
+        pool = StubPool(prefix)
+        for meta in fam["catalogue"]:
+            pid, kind, size, label = meta
+            prof = build(pid, kind, size)
+            for idx, m in enumerate(prof["meshes"]):
+                files[("asset", MODEL_REL + "/" + cell_model(fam, pid, idx))] = m.text(
+                    "%s_%s_c%d" % (prefix, pid, idx),
+                    "%s, cell %d at %s" % (label, idx, list(prof["order"][idx])))
+            for idx, fits in prof["fits"].items():
+                for (fit, r), m in zip(FITS[1:], fits):
+                    files[("asset", MODEL_REL + "/" + cell_model(fam, pid, idx, fit))] = m.text(
+                        "%s_%s_c%d_%s" % (prefix, pid, idx, fit),
+                        "%s, cell %d on the %s pole (radius %.0f)" % (label, idx, fit, r))
+            files[("asset", MODEL_REL + "/%s_%s_inv.obj" % (prefix, pid))] = inventory_text(
+                fam, prof, label)
+            for fid, tex, _flabel in fam["finishes"]:
+                files[("asset", "blockstates/%s.json" % registry(fam, pid, fid))] = json.dumps(
+                    blockstate(fam, prof, tex, pool), indent=1) + "\n"
+            profiles.append((meta, prof))
+        for k, m in enumerate(pool.meshes):
+            files[("asset", MODEL_REL + "/%s_stub_%d.obj" % (prefix, k))] = m.text(
+                "%s_stub_%d" % (prefix, k), "mount hardware")
+        files[("java", "trafficaccessories/%s.java" % fam["java"])] = java_enum(fam, profiles)
+        families.append((fam, profiles))
+    return files, families
 
 
 def path_of(kind, rel):
@@ -867,39 +1061,55 @@ def path_of(kind, rel):
     return layout.source_for_write(OWNER, rel)
 
 
-def fragments(profiles):
-    for (pid, _k, _s, _label), _prof in profiles:
-        for fid, _t, _flabel in FINISHES:
-            print('    initTabBlock(new BlockTrafficPoleMastArmCurve("%s", TrussSignalArmProfile.%s));'
-                  % (registry(pid, fid), pid.upper()))
-    for (pid, _k, _s, label), _prof in profiles:
-        for fid, _t, flabel in FINISHES:
-            print("tile.%s.name=%s (%s)" % (registry(pid, fid), label, flabel))
+def fragments(families):
+    for fam, profiles in families:
+        for (pid, _k, _s, _label), _prof in profiles:
+            for fid, _t, _flabel in fam["finishes"]:
+                print('    initTabBlock(new BlockTrafficPoleMastArmCurve("%s", %s.%s));'
+                      % (registry(fam, pid, fid), fam["java"], pid.upper()))
+    for fam, profiles in families:
+        for (pid, _k, _s, label), _prof in profiles:
+            for fid, _t, flabel in fam["finishes"]:
+                print("tile.%s.name=%s (%s)" % (registry(fam, pid, fid), label, flabel))
+
+
+def same_pixels(path, data):
+    """Whether a PNG on disk holds the picture `data` encodes: an encoder's bytes are its own."""
+    from PIL import Image
+    a, b = Image.open(path).convert("RGBA"), Image.open(io.BytesIO(data)).convert("RGBA")
+    return a.size == b.size and a.tobytes() == b.tobytes()
 
 
 def main(argv):
-    files, profiles = outputs()
+    files, families = outputs()
     if "--fragments" in argv:
-        fragments(profiles)
+        fragments(families)
         return 0
     check = "--check" in argv
     model_dir = os.path.dirname(path_of("asset", MODEL_REL + "/" + MTL_NAME))
     bs_dir = os.path.dirname(path_of("asset", "blockstates/x.json"))
     owned = {os.path.normcase(os.path.abspath(path_of(k, r))) for k, r in files}
-    stale = [os.path.join(model_dir, f) for f in os.listdir(model_dir) if f.startswith("trusssignalarm")]
-    stale += [os.path.join(bs_dir, f) for f in os.listdir(bs_dir) if f.startswith("trusssignalarm")]
+    prefixes = tuple(fam["prefix"] for fam in FAMILIES)
+    stale = [os.path.join(model_dir, f) for f in os.listdir(model_dir) if f.startswith(prefixes)]
+    stale += [os.path.join(bs_dir, f) for f in os.listdir(bs_dir) if f.startswith(prefixes)]
     stale = [p for p in stale if os.path.normcase(os.path.abspath(p)) not in owned]
     drift = []
     for (kind, rel), text in files.items():
         path = path_of(kind, rel)
-        data = text.encode("utf-8")
+        binary = isinstance(text, bytes)
+        data = text if binary else text.encode("utf-8")
         if check:
             if not os.path.exists(path):
                 drift.append(rel)
+            elif binary:
+                if not same_pixels(path, data):
+                    drift.append(rel)
             else:
                 with open(path, "rb") as fh:
                     if fh.read().replace(b"\r\n", b"\n") != data:
                         drift.append(rel)
+            continue
+        if binary and os.path.exists(path) and same_pixels(path, data):
             continue
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "wb") as fh:
@@ -913,11 +1123,12 @@ def main(argv):
         return 0
     for p in stale:
         os.remove(p)
-    for (pid, _k, _s, _label), prof in profiles:
-        _layout, count = shape_layout(prof)
-        tris = sum(len(m.f) for m in prof["meshes"])
-        print("  %-11s %2d cells  %4d tris  %4d shapes  pole joints at %s"
-              % (pid, len(prof["order"]), tris, count, sorted(prof["pole_at"])))
+    for fam, profiles in families:
+        for (pid, _k, _s, _label), prof in profiles:
+            _layout, count = shape_layout(prof)
+            tris = sum(len(m.f) for m in prof["meshes"])
+            print("  %-14s %-11s %2d cells  %4d tris  %4d shapes  pole joints at %s"
+                  % (fam["prefix"], pid, len(prof["order"]), tris, count, sorted(prof["pole_at"])))
     print("wrote %d files" % len(files))
     return 0
 

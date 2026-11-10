@@ -49,6 +49,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanW
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.ItemSpanWireTool;
 import com.micatechnologies.minecraft.csm.trafficaccessories.LuminaireArmProfile;
+import com.micatechnologies.minecraft.csm.trafficaccessories.NycSignalArmProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.TrussSignalArmProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.MastArmCurveProfile;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallBlack;
@@ -573,6 +574,23 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal8galvanized", TrussSignalArmProfile.DIAGONAL8));
     initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal8silver", TrussSignalArmProfile.DIAGONAL8));
     initTabBlock(new BlockTrafficPoleMastArmCurve("trusssignalarmdiagonal8black", TrussSignalArmProfile.DIAGONAL8));
+
+    // --- New York City guyed signal mast arms (regular, diagonal): gen_truss_signal_arms.py ---
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular4brown", NycSignalArmProfile.REGULAR4));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular4galvanized", NycSignalArmProfile.REGULAR4));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular4black", NycSignalArmProfile.REGULAR4));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular6brown", NycSignalArmProfile.REGULAR6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular6galvanized", NycSignalArmProfile.REGULAR6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular6black", NycSignalArmProfile.REGULAR6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular8brown", NycSignalArmProfile.REGULAR8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular8galvanized", NycSignalArmProfile.REGULAR8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmregular8black", NycSignalArmProfile.REGULAR8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal4brown", NycSignalArmProfile.DIAGONAL4));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal4galvanized", NycSignalArmProfile.DIAGONAL4));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal4black", NycSignalArmProfile.DIAGONAL4));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal6brown", NycSignalArmProfile.DIAGONAL6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal6galvanized", NycSignalArmProfile.DIAGONAL6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal6black", NycSignalArmProfile.DIAGONAL6));
 
     // --- Luminaire arms (gen_luminaire_arms.py; multi-block, a street light at the tip) ---
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftgalvanized", LuminaireArmProfile.CALTRANS6FT));

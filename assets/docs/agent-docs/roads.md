@@ -119,7 +119,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   side (identical ones shared as `trusssignalarm_stub_<n>.obj`). Writes the OBJs, the blockstates
   and `TrussSignalArmProfile.java`, whose `shape` packing is per cell; a diagonal arm's cell 0 has
   a sideways offset, which is how the block knows to move itself on placement. `--check`,
-  `--fragments`. MAST_ARM_CURVE_SYSTEM.md, "Truss signal mast arms"
+  `--fragments`. MAST_ARM_CURVE_SYSTEM.md, "Truss signal mast arms". The same script writes a
+  second family, the New York City guyed arms (`nycsignalarm<id><finish>`, 15 blocks: regular
+  4/6/8, diagonal 4/6, in brown, galvanized and black; `NycSignalArmProfile.java`): a bent,
+  tapered pipe under two guy rods, and the `metal_brown` texture it tints from `metal_silver`.
+  Add a family in `FAMILIES`, not a new script
 - `gen_decorative_poles.py` -- the decorative and historic street light poles
   (`decopole<id>`, `BlockTrafficPoleDecorative`: the LA electroliers, Hollywood, Anaheim #749,
   the reproduction post) AND their post-top fixtures in Lighting (`la*`, `repro*`). Lathes,
