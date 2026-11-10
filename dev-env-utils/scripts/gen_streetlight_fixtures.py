@@ -312,6 +312,9 @@ UNDERSIDE = {
     "ci_navion_alt": [("lens", (5, 11, -4, 10), (0, 0, 60, 31), 90),
                       ("door", (5, 11, 10, 16), (0, 31, 37, 62), 0)],
     "solarmax_smx": [("lens", (4, 12, 3, 8), (44, 0, 0, 64), 270)],
+    # the Evolves' one face: the louvred door behind, the modules at the nose
+    "ge_evolve_large": [("lens", (5, 11, 7, 16), (0, 0, 40.8, 30), 90)],
+    "ge_evolve_small": [("lens", (5, 11, 9, 16), (0, 0, 31, 30), 90)],
     # The single-module XSP: one of his two modules and its share of the underside, 16 of the 30
     # texels across, on a head as much narrower (16 texels at his 30 to 8 px).
     "cree_xsp_single": [("lens", (8 - 32 / 15.0, 8 + 32 / 15.0, 3, 16), (0, 0, 16, 30.8), 0)],
@@ -490,18 +493,33 @@ def top_at(profile, z):
     raise ValueError(z)
 
 
-def build_m400a(optics, photocell=True):
+def glare_shield(m, cz, y, r):
+    """The glare shield of a shielded refractor: a skirt round the bowl, hung from the door."""
+    tube_y(m, 8.0, cz, r + 0.25, r, y, y - 1.5, "body")
+
+
+def build_m400a(optics, photocell=True, powr_door=True):
+    """optics: refractor, shield (the refractor inside a glare shield) or cutoff (flat glass).
+    powr_door False is the M-400 of 1970-85 that shared this shell with one plain door (CSM's
+    "M400R1")."""
     m = Mesh()
     check_neck_holds_arm("M-400A", M400A_PROFILE, M400A_EXPONENT)
     loft_housing(m, M400A_PROFILE, M400A_EXPONENT)
     if optics == "cutoff":
         # Flat glass in the door frame: a shallow slab whose underside is the lens.
         box(m, (5.3, -0.35, 3.4), (10.7, 0.02, 10.6), "body", bottom_mat=LENS_MAT)
+    elif optics == "shield":
+        half_ellipsoid_down(m, (8.0, 0.05, 6.6), 2.7, 2.4, 3.0, LENS_MAT)
+        glare_shield(m, 6.6, 0.05, 3.2)
     else:
         # Drop refractor: prismatic glass bowl under the optical chamber.
         half_ellipsoid_down(m, (8.0, 0.05, 7.0), 2.8, 2.4, 3.6, LENS_MAT)
     # Door latch at the nose.
     box(m, (7.4, -0.25, 1.9), (8.6, 0.12, 2.7), "body")
+    if powr_door:
+        # The Powr/Door: the ballast rides on a second door behind the optical one, which hangs a
+        # step lower than it.
+        box(m, (5.45, -0.56, 11.0), (10.55, 0.05, 15.3), "body")
     if not photocell:
         receptacle(m, M400A_PROFILE, 12.6)
         return m
@@ -510,6 +528,104 @@ def build_m400a(optics, photocell=True):
     base = top_at(M400A_PROFILE, pz) - 0.35
     cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
     cylinder_y(m, 8.0, pz, 0.95, base + 0.55, base + 2.0, "photocell", sides=12)
+    return m
+
+
+# The original GE M-400 (1959 to about 1970): the upper shell is a brim. It overhangs the door all
+# round, a shadow line under it down the whole side, and stands out past the door at the nose as
+# a brow. Its top is nearly straight, rising from the slipfitter to a peak over the optics before
+# it curves down to the nose. The door under it is one piece, narrower than the brim, carrying a
+# deep oval bowl; the photocell, where there is one, is about mid-length. Two lofts: the brim, and
+# the door, whose rear is the neck that takes the arm.
+M400O_SHELL = [
+    # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+    (0.95, 1.5, 1.55, 2.00),
+    (1.3, 2.5, 1.30, 2.60),
+    (2.1, 3.2, 1.15, 3.20),
+    (3.4, 3.5, 1.10, 3.65),
+    (5.5, 3.5, 1.10, 3.90),
+    (8.0, 3.4, 1.10, 3.85),
+    (10.5, 3.15, 1.00, 3.75),
+    (13.0, 2.8, 0.70, 3.65),
+    (14.6, 2.55, 0.30, 3.58),
+    (REAR_Z, 2.5, 0.20, 3.55),
+]
+M400O_DOOR = [
+    (1.9, 1.6, 0.50, 1.50),
+    (2.4, 2.4, 0.15, 1.50),
+    (3.4, 2.85, 0.0, 1.50),
+    (6.0, 2.95, 0.0, 1.50),
+    (9.0, 2.8, 0.0, 1.50),
+    (11.5, 2.6, -0.05, 2.00),
+    (13.2, 2.5, -0.25, 3.00),
+    (14.6, 2.45, -0.40, 3.50),
+    (REAR_Z, 2.45, -0.45, 3.50),
+]
+
+
+def build_m400_original(optics, photocell=True):
+    m = Mesh()
+    check_neck_holds_arm("M-400", M400O_DOOR, M400A_EXPONENT)
+    loft_housing(m, M400O_DOOR, M400A_EXPONENT)
+    loft_housing(m, M400O_SHELL, 2.4)
+    if optics == "cutoff":
+        box(m, (5.5, -0.3, 3.3), (10.5, 0.02, 10.0), "body", bottom_mat=LENS_MAT)
+    elif optics == "shield":
+        half_ellipsoid_down(m, (8.0, 0.05, 6.3), 2.6, 2.6, 3.0, LENS_MAT)
+        glare_shield(m, 6.3, 0.05, 3.15)
+    else:
+        half_ellipsoid_down(m, (8.0, 0.05, 6.3), 2.6, 2.6, 3.6, LENS_MAT)
+    box(m, (7.5, -0.2, 2.2), (8.5, 0.3, 2.8), "body")        # the push-button latch
+    if photocell:
+        photocell_on(m, M400O_SHELL, 8.6, 6.5)
+    else:
+        receptacle(m, M400O_SHELL, 8.6)
+    return m
+
+
+# GE M-400R2 (1986-97): the simplified M-400A. A smooth low-arched shell, longer and narrower
+# (35.5 x 13.75 in), over a one-piece door that is flat underneath, its sides straight and
+# tapering to the rear; a wire bail latch at the nose; the receptacle about 40% from the rear.
+M400R2_PROFILE = [
+    (1.0, 1.2, 0.75, 1.40),
+    (1.4, 2.0, 0.50, 1.90),
+    (2.2, 2.6, 0.35, 2.45),
+    (3.6, 2.9, 0.30, 2.90),
+    (5.5, 2.95, 0.30, 3.20),
+    (7.5, 2.9, 0.30, 3.30),
+    (9.5, 2.75, 0.30, 3.30),
+    (11.5, 2.6, 0.20, 3.35),
+    (13.2, 2.5, -0.10, 3.45),
+    (14.6, 2.45, -0.38, 3.50),
+    (REAR_Z, 2.45, -0.45, 3.50),
+]
+M400R2_DOOR = [
+    (2.3, 1.7, -0.10, 0.60),
+    (2.8, 2.4, -0.30, 0.60),
+    (3.6, 2.6, -0.35, 0.60),
+    (9.5, 2.25, -0.35, 0.60),
+    (12.5, 1.9, -0.35, 0.60),
+    (13.6, 1.8, -0.30, 0.60),
+]
+
+
+def build_m400r2(optics, photocell=True):
+    m = Mesh()
+    check_neck_holds_arm("M-400R2", M400R2_PROFILE, M400A_EXPONENT)
+    loft_housing(m, M400R2_PROFILE, M400A_EXPONENT)
+    loft_housing(m, M400R2_DOOR, 5.0)
+    if optics == "cutoff":
+        box(m, (5.9, -0.5, 3.9), (10.1, -0.3, 9.6), "body", bottom_mat=LENS_MAT)
+    elif optics == "shield":
+        half_ellipsoid_down(m, (8.0, -0.3, 6.6), 2.3, 2.2, 2.8, LENS_MAT)
+        glare_shield(m, 6.6, -0.3, 2.85)
+    else:
+        half_ellipsoid_down(m, (8.0, -0.3, 6.8), 2.35, 2.3, 3.2, LENS_MAT)
+    box(m, (7.55, -0.45, 1.75), (8.45, 0.7, 2.35), "body")   # the bail latch
+    if photocell:
+        photocell_on(m, M400R2_PROFILE, 10.3, 6.5)
+    else:
+        receptacle(m, M400R2_PROFILE, 10.3)
     return m
 
 
@@ -707,6 +823,9 @@ def receptacle(m, profile, pz):
     base = top_at(profile, pz) - 0.35
     cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
     cylinder_y(m, 8.0, pz, 0.78, base + 0.5, base + 0.68, "photocell", sides=12)
+
+
+photocell_on = photocell      # for builders whose own `photocell` argument hides the function
 
 
 def tube_y(mesh, cx, cz, r_out, r_in, y_top, y_bot, mat, lon=12):
@@ -1006,57 +1125,87 @@ def receptacle_top(m, profile, pz, top, cell_top):
         cylinder_y(m, 8.0, pz, 0.7, base + 0.6, base + 0.85, "photocell", sides=12)
 
 
-# GE Evolve ERS2 (CSM's "geel"/"gees", Large and Small): a slim LED roadway head, a 1 px plate
-# carrying the LED module under a finned top, the driver housing rising behind it to the
-# slipfitter. The JSON: a plate x 5..11, y 0..1 from z 7 (Large) or 9 (Small) to 16, a narrower
-# nose 1 px ahead of it, a 1 px hump x 6..10 over z 11..16 and the receptacle at z 13..15. Its
-# boxes are only 4 px tall (5 with a smart node, 6 with the outlet), so the rear rises just enough
-# to swallow the arm's 3 px end and the receptacle stands on the plate ahead of that rise, as the
-# ATB2's does. The vents his sheet paints on top of the plate are cooling fins along it.
+# GE Evolve LED Roadway, the ERL1 and ERL2 (CSM's "gees" and "geel"): from GE's dimensioned sheet
+# (OLP3128), not a slab with a hump as a Leotek is. Two levels: a wide, thin deck, flat underneath,
+# and along the rear of it a raised narrow spine, the tunnel the arm enters, which ends forward in
+# a rounded hump that carries the receptacle and drops in a step to the deck. The ERL1 is a
+# teardrop in plan, widest near the nose (22.1 x 13.5 in), with four low ribs across the deck over
+# its one LED module; the ERL2 is longer and nearly parallel-sided (26.5 x 12.8 in), with a row of
+# tall fin blades across the front half over its two modules, which sit one behind the other.
+# The underside is his: one face, the louvred door behind and the modules at the nose (UNDERSIDE),
+# which fixes the footprint: 6 px wide, 9 long (ERL2) or 7 (ERL1). The spine is as tall and wide
+# as every cobra neck has to be to hold the arm's end, so it stands prouder than GE's 4.2 in.
 #   po: a raised photocell outlet with the photocell on it; sn: a taller, dark smart node cell.
-def evolve_profile(nose):
-    return [
-        # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
-        (nose + 0.1, 1.6, 0.30, 0.85),
-        (nose + 0.5, 2.5, 0.18, 1.00),
-        (nose + 1.2, 3.0, 0.15, 1.10),
-        (10.6, 3.0, 0.15, 1.25),
-        (12.4, 2.95, 0.10, 1.75),
-        (13.6, 2.75, -0.15, 3.00),
-        (14.6, 2.6, -0.30, 3.55),
-        (REAR_Z, 2.55, -0.35, 3.60),
-    ]
-
-
 EVOLVE_EXPONENT = 3.0
-# size -> (nose z, lens box (x0, x1, z0, z1), fin z0, z1)
+EVOLVE_SPINE_EXPONENT = 3.2
+# size -> (sheet, deck profile, where the hump starts, receptacle z)
 EVOLVE = {
-    "large": (6.0, (5.5, 10.5, 7.4, 12.3), 7.8, 10.6),
-    "small": (8.0, (5.5, 10.5, 9.4, 12.2), 9.5, 10.7),
+    "large": ("ge_evolve_large", [
+        # (z, half-width, bottom y, top y)   nose (low z) -> slipfitter (z 16)
+        (7.05, 1.6, 0.35, 0.75),
+        (7.4, 2.5, 0.20, 0.95),
+        (8.0, 2.9, 0.15, 1.10),
+        (9.5, 3.0, 0.15, 1.25),
+        (11.5, 3.0, 0.15, 1.40),
+        (13.0, 2.9, 0.15, 1.50),
+        (14.6, 2.7, 0.10, 1.50),
+        (REAR_Z, 2.6, 0.10, 1.50),
+    ], 11.0, 12.9),
+    "small": ("ge_evolve_small", [
+        (9.05, 1.8, 0.35, 0.75),
+        (9.4, 2.6, 0.20, 0.95),
+        (10.0, 3.0, 0.15, 1.10),
+        (11.0, 3.0, 0.15, 1.25),
+        (12.2, 2.85, 0.15, 1.40),
+        (13.4, 2.65, 0.15, 1.50),
+        (14.6, 2.45, 0.10, 1.50),
+        (REAR_Z, 2.35, 0.10, 1.50),
+    ], 11.6, 13.3),
 }
 
 
+def evolve_spine(front):
+    return [
+        (front, 1.2, 0.30, 1.60),
+        (front + 0.35, 1.9, 0.30, 2.75),
+        (front + 0.9, 2.2, 0.20, 3.35),
+        (front + 1.7, 2.3, 0.20, 3.55),
+        (13.8, 2.3, -0.10, 3.60),
+        (14.8, 2.3, -0.30, 3.60),
+        (REAR_Z, 2.3, -0.35, 3.55),
+    ]
+
+
 def build_evolve(size, top="photocell"):
-    nose, (lx0, lx1, lz0, lz1), fz0, fz1 = EVOLVE[size]
-    profile = evolve_profile(nose)
+    sheet, deck, front, pz = EVOLVE[size]
+    spine = evolve_spine(front)
     m = Mesh()
-    check_neck_holds_arm("GE Evolve " + size, profile, EVOLVE_EXPONENT)
-    loft_housing(m, profile, EVOLVE_EXPONENT)
-    box(m, (lx0, 0.0, lz0), (lx1, 0.3, lz1), "body", bottom_mat=LENS_MAT)
-    for dx in (-2.0, -1.0, 0.0, 1.0, 2.0):
-        box(m, (8.0 + dx - 0.15, 0.9, fz0), (8.0 + dx + 0.15, 1.55, fz1), "body")
-    pz = 12.0
-    base = top_at(profile, pz) - 0.35
-    if top == "outlet":
-        # As the JSON drew it: a 2 px raised photocell outlet (y 2..4), the photocell on it (4..6).
-        cylinder_y(m, 8.0, pz, 1.05, base, 4.0, "body", sides=12)
-        cylinder_y(m, 8.0, pz, 0.95, 4.0, 6.0, "photocell", sides=12)
-    elif top == "node":
-        # As the JSON drew it: the smart node is a taller cell (to y 5) in the photocell's dark.
-        cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
-        cylinder_y(m, 8.0, pz, 0.95, base + 0.55, 5.0, "photocell", sides=12)
+    check_neck_holds_arm("GE Evolve " + size, spine, EVOLVE_SPINE_EXPONENT)
+    loft_housing(m, deck, EVOLVE_EXPONENT)
+    loft_housing(m, spine, EVOLVE_SPINE_EXPONENT)
+    # his underside, stepped down under the spine's rear, which hangs lower to hold the arm
+    underside(m, sheet, deck, lens_y=(0.0, 0.3), split=(13.6, -0.42))
+    nose = deck[0][0]
+    if size == "small":
+        for k in range(4):                  # the ERL1's low ribs, over the module
+            z = nose + 1.5 + 0.34 * k
+            box(m, (8.0 - 2.5, 0.9, z - 0.07), (8.0 + 2.5, top_at(deck, z) + 0.28, z + 0.07), "body")
     else:
-        receptacle_top(m, profile, pz, top, 4.0)
+        for k in range(7):                  # the ERL2's blades: arched, taller down the middle
+            z = nose + 0.95 + 0.47 * k
+            box(m, (8.0 - 2.65, 0.9, z - 0.08), (8.0 + 2.65, top_at(deck, z) + 0.55, z + 0.08), "body")
+            box(m, (8.0 - 1.5, 0.9, z - 0.075), (8.0 + 1.5, top_at(deck, z) + 1.05, z + 0.075), "body")
+    base = top_at(spine, pz) - 0.35
+    if top == "outlet":
+        # As the JSON drew it: a raised photocell outlet, the photocell on it.
+        cylinder_y(m, 8.0, pz, 1.05, base, base + 1.3, "body", sides=12)
+        cylinder_y(m, 8.0, pz, 0.95, base + 1.3, base + 3.1, "photocell", sides=12)
+    elif top == "node":
+        # As the JSON drew it: the smart node is a taller cell in the photocell's dark.
+        cylinder_y(m, 8.0, pz, 1.05, base, base + 0.55, "body", sides=12)
+        cylinder_y(m, 8.0, pz, 0.95, base + 0.55, base + 2.4, "photocell", sides=12)
+    else:
+        receptacle_top(m, spine, pz, top, base + 2.0)
     return m
 
 
@@ -1835,6 +1984,23 @@ CATALOGUE = [
      lambda: build_m400a("cutoff", photocell=False), "streetlight_body_ge_grey"),
     ("gem400acugreen", "GE M-400A (Cutoff Optics, Anaheim Green)", lambda: build_m400a("cutoff"),
      "streetlight_body_anaheim_green"),
+    # The M-400's generations (#99): the original, the 1970-85 single-door M-400 on the M-400A's
+    # shell (CSM's "M400R1"), and the R2; each with a refractor, a shielded refractor, flat glass.
+    ("gem400", "GE M400 (Standard)", lambda: build_m400_original("refractor"),
+     "streetlight_body_westinghouse_silver"),
+    ("gem400gs", "GE M400 (Glare Shield)", lambda: build_m400_original("shield"),
+     "streetlight_body_westinghouse_silver"),
+    ("gem400cu", "GE M400 (Cutoff Optics)", lambda: build_m400_original("cutoff"),
+     "streetlight_body_westinghouse_silver"),
+    ("gem400r1", "GE M400R1 (Standard)", lambda: build_m400a("refractor", powr_door=False),
+     "streetlight_body_ge_grey"),
+    ("gem400r1gs", "GE M400R1 (Glare Shield)", lambda: build_m400a("shield", powr_door=False),
+     "streetlight_body_ge_grey"),
+    ("gem400r1cu", "GE M400R1 (Cutoff Optics)", lambda: build_m400a("cutoff", powr_door=False),
+     "streetlight_body_ge_grey"),
+    ("gem400r2", "GE M400R2 (Standard)", lambda: build_m400r2("refractor"), "streetlight_body_ge_grey"),
+    ("gem400r2gs", "GE M400R2 (Glare Shield)", lambda: build_m400r2("shield"), "streetlight_body_ge_grey"),
+    ("gem400r2cu", "GE M400R2 (Cutoff Optics)", lambda: build_m400r2("cutoff"), "streetlight_body_ge_grey"),
     # Converted in place from the JSON models (D2): same registry names, classes and bounding boxes.
     ("gem400r3", "GE M400R3 (Standard)", lambda: build_m400r3("refractor"),
      "streetlight_body_ge_grey"),
@@ -1890,15 +2056,15 @@ CATALOGUE = [
      "streetlight_body_leotek_grey"),
     ("ltgcmv2np", "Leotek GreenCobra GCM (Version 2, No Photocell)", lambda: build_leotek("gcm", "ltgcmv2", "cap"),
      "streetlight_body_leotek_grey"),
-    ("geel", "GE Evolve ESR2 (Large)", lambda: build_evolve("large"), "streetlight_body_ge_evolve_grey"),
-    ("geelpo", "GE Evolve ESR2 (Large, Photocell Outlet)", lambda: build_evolve("large", "outlet"),
+    ("geel", "GE Evolve ERL2 (Large)", lambda: build_evolve("large"), "streetlight_body_ge_evolve_grey"),
+    ("geelpo", "GE Evolve ERL2 (Large, Photocell Outlet)", lambda: build_evolve("large", "outlet"),
      "streetlight_body_ge_evolve_grey"),
-    ("geelsn", "GE Evolve ESR2 (Large, Smart Node)", lambda: build_evolve("large", "node"),
+    ("geelsn", "GE Evolve ERL2 (Large, Smart Node)", lambda: build_evolve("large", "node"),
      "streetlight_body_ge_evolve_grey"),
-    ("gees", "GE Evolve ESR2 (Small)", lambda: build_evolve("small"), "streetlight_body_ge_evolve_grey"),
-    ("geespo", "GE Evolve ESR2 (Small, Photocell Outlet)", lambda: build_evolve("small", "outlet"),
+    ("gees", "GE Evolve ERL1 (Small)", lambda: build_evolve("small"), "streetlight_body_ge_evolve_grey"),
+    ("geespo", "GE Evolve ERL1 (Small, Photocell Outlet)", lambda: build_evolve("small", "outlet"),
      "streetlight_body_ge_evolve_grey"),
-    ("geesn", "GE Evolve ESR2 (Small, Smart Node)", lambda: build_evolve("small", "node"),
+    ("geesn", "GE Evolve ERL1 (Small, Smart Node)", lambda: build_evolve("small", "node"),
      "streetlight_body_ge_evolve_grey"),
     ("creeledway", "Cree LEDway", lambda: build_ledway(), "streetlight_body_led_grey"),
     ("creeledwaysmall", "Cree LEDway (Small)", lambda: build_ledway(small=True), "streetlight_body_led_grey"),
@@ -2014,9 +2180,9 @@ ENVELOPE_FOR = {
 # dev-env-utils/scripts/artwork/streetlight/, written as streetlight_lens_<art>_on/_off.
 ARTWORK_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "artwork", "streetlight")
 SHEET_DIR = os.path.join(ARTWORK_DIR, "sheets")
-# The flat glass of the GE cutoff heads and the Evolve's array; the other LED fixtures wear his
-# whole underside faces instead (UNDERSIDE).
-LENS_ART = ["ge_m400", "ge_m240", "ge_evolve_large", "ge_evolve_small"]
+# The flat glass of the GE cutoff heads; the LED fixtures wear his whole underside faces instead
+# (UNDERSIDE).
+LENS_ART = ["ge_m400", "ge_m240"]
 ART_TURN = {}
 
 
@@ -2039,6 +2205,16 @@ GENERATED_LENS = {
 # Each fixture's (lit, unlit) lens. Drop refractors wear the generated prismatic glass; flat
 # glass the requester's lens art where the JSON fixture had some, else the generated HPS glass.
 LENS_FOR = {
+    # the original M-400 was a mercury fixture: his olive, as the OV-20 / OV-50 wear it
+    "gem400": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "gem400gs": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
+    "gem400cu": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
+    "gem400r1": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem400r1gs": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem400r1cu": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
+    "gem400r2": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem400r2gs": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
+    "gem400r2cu": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
     "gem400a": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem400r3": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "gem400r3cu": (art_lens("ge_m400", "on"), art_lens("ge_m400", "off")),
@@ -2059,12 +2235,6 @@ LENS_FOR = {
     "whov50shadednp": (LENS_REFRACTOR_MERC_ON, LENS_REFRACTOR_OFF),
     "ae115": (LENS_REFRACTOR_ON, LENS_REFRACTOR_OFF),
     "ae115cu": (art_lens("ge_m240", "on"), art_lens("ge_m240", "off")),
-    "geel": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
-    "geelpo": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
-    "geelsn": (art_lens("ge_evolve_large", "on"), art_lens("ge_evolve_large", "off")),
-    "gees": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
-    "geespo": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
-    "geesn": (art_lens("ge_evolve_small", "on"), art_lens("ge_evolve_small", "off")),
     "altorll": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altorell": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
     "altosqll": (LENS_MERC_GLASS_ON, LENS_MERC_GLASS_OFF),
@@ -2102,6 +2272,8 @@ UNDER_FOR = {
     "cinavion": "ci_navion", "cinavionalt": "ci_navion_alt", "smsmx": "solarmax_smx",
     "ltkc0": "ltgcj", "ltkc0hss": "ltgcj", "ltkc1": "ltgcj", "ltkc1hss": "ltgcj",
     "ltkc2": "ltgcmv2", "ltkc2hss": "ltgcmv2", "creexspsingle": "cree_xsp_single",
+    "geel": "ge_evolve_large", "geelpo": "ge_evolve_large", "geelsn": "ge_evolve_large",
+    "gees": "ge_evolve_small", "geespo": "ge_evolve_small", "geesn": "ge_evolve_small",
 }
 
 # The photocell material's texture, where a fixture carries something else in the receptacle.
