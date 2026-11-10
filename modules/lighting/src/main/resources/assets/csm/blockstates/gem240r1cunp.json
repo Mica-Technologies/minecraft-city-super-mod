@@ -1,0 +1,175 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:lighting/shared_models/streetlight_gem240r1cunp.obj",
+    "custom": {
+      "flip-v": true
+    },
+    "textures": {
+      "#body": "csm:blocks/lighting/shared_textures/streetlight_body_ge_grey",
+      "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_m240_off",
+      "#photocell": "csm:blocks/lighting/shared_textures/streetlight_photocell"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "state": {
+      "0": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_m240_off"
+        }
+      },
+      "1": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_m240_on"
+        }
+      },
+      "2": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_m240_off"
+        }
+      },
+      "3": {
+        "textures": {
+          "#unshaded_lens": "csm:blocks/lighting/shared_textures/streetlight_lens_ge_m240_on"
+        }
+      }
+    },
+    "inventory": [
+      {
+        "transform": {
+          "gui": {
+            "rotation": [
+              0,
+              90,
+              -5
+            ],
+            "translation": [
+              0.03125,
+              0.28125,
+              0.0
+            ],
+            "scale": [
+              0.625,
+              0.625,
+              0.625
+            ]
+          },
+          "ground": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.40625,
+              0.0
+            ],
+            "scale": [
+              1.0,
+              1.0,
+              1.0
+            ]
+          },
+          "fixed": {
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "scale": [
+              0.5,
+              0.5,
+              0.5
+            ]
+          },
+          "thirdperson_righthand": {
+            "rotation": [
+              0,
+              90,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.28125,
+              0.0
+            ],
+            "scale": [
+              0.55,
+              0.55,
+              0.55
+            ]
+          },
+          "thirdperson_lefthand": {
+            "rotation": [
+              0,
+              -90,
+              0
+            ],
+            "translation": [
+              0.0,
+              0.28125,
+              0.0
+            ],
+            "scale": [
+              0.55,
+              0.55,
+              0.55
+            ]
+          },
+          "firstperson_righthand": {
+            "rotation": [
+              0,
+              45,
+              0
+            ],
+            "translation": [
+              0.1875,
+              0.3125,
+              0.0
+            ],
+            "scale": [
+              0.4,
+              0.4,
+              0.4
+            ]
+          },
+          "firstperson_lefthand": {
+            "rotation": [
+              0,
+              225,
+              0
+            ],
+            "translation": [
+              0.1875,
+              0.3125,
+              0.0
+            ],
+            "scale": [
+              0.4,
+              0.4,
+              0.4
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

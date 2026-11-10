@@ -431,7 +431,7 @@ def build_building():
 # ------------------------------------------------------------------------------------------
 # Luminaire arms and the new street lights
 # ------------------------------------------------------------------------------------------
-FIXTURES = ['ltkc0', 'ltkc0hss', 'ltkc1', 'ltkc1hss', 'ltkc2', 'ltkc2hss', 'aeacm', 'aeacmnp',
+FIXTURES = ['ltkc0', 'ltkc0hss', 'ltkc1', 'ltkc1hss', 'ltkc2', 'ltkc2hss', 'aeacmdp',
             'gem250a', 'gem250acu', 'gem250acunp', 'whov25', 'whov25early', 'whov25hps', 'whl250',
             'whl250hps', 'smsmxll5', 'geeals', 'geealsarm', 'hpmongoose', 'gem400a',
             'gem400acunp']
@@ -523,7 +523,7 @@ POST_TOPS = [
 LA_ARMS = ['luminairearmlaupsweep%dft%s' % (n, f) for n in (8, 10, 12)
            for f in ('black', 'galvanized', 'silver')]
 LA_HEADS = ['whov25early', 'whl250', 'gem250a', 'whov25', 'gem400a', 'whl250hps', 'gem250acu',
-            'ltkc1', 'aeacm']
+            'ltkc1', 'aeacmdp']
 
 
 def build_historic():
