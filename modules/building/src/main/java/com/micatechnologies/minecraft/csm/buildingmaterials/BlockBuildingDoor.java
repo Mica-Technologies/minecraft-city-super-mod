@@ -44,6 +44,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 /**
  * A door: interior wood, hollow metal, fire, exit, storefront or residential. One class,
@@ -78,7 +79,7 @@ import net.minecraft.world.World;
  *
  * <p>The models come from {@code dev-env-utils/scripts/gen_doors.py}.</p>
  *
- * @version 1.0
+ * @version 1.2
  * @since 2026.9
  */
 public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityProvider {
@@ -136,6 +137,12 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   private static final int CLOSER_TICKS = 60;
   /** The block event that tells every client a door has started to swing (param 1 opening). */
   private static final int EVENT_SWING = 2;
+  /**
+   * The block event that tells every client a door's move is over (#352): drop a finished move and
+   * redraw the door from its state now. SHARED with {@link BlockCustomDoor} and
+   * {@link BlockCathedralDoor}, whose own move events are 1 and 2.
+   */
+  static final int EVENT_SETTLE = 3;
 
   /** SHARED with gen_doors: the leaf's thickness, and so its plane, in blocks. */
   private static final double LEAF = 1.75 / 16;
@@ -744,6 +751,19 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   @SuppressWarnings("deprecation")
   public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id,
       int param) {
+    if (id == EVENT_SETTLE) {
+      if (worldIn.isRemote) {
+        TileEntity te = BlockUtils.getTileEntitySafe(worldIn, pos);
+        if (te instanceof TileEntityDoorSwing && ((TileEntityDoorSwing) te).progress(0F) < 1.0) {
+          return true; // a newer swing is still running, and redraws the door when it ends
+        }
+        if (te instanceof TileEntityDoorSwing) {
+          worldIn.removeTileEntity(pos);
+        }
+        TileEntityDoorSwing.redraw(worldIn, pos);
+      }
+      return true;
+    }
     if (id != EVENT_SWING) {
       return false;
     }
@@ -754,6 +774,35 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       TileEntityDoorSwing.redraw(worldIn, pos);
     }
     return true;
+  }
+
+  /**
+   * A door's move is over, server side (#352): both halves are sent again to every player watching
+   * the chunk, and the clients are told to redraw the door from its state now. A client whose
+   * update was lost or overtaken, or whose redraw at the end of the swing was, put the door where
+   * it was not -- shut on the screen and open on the server, so a click "shut" a shut door. Each
+   * move now ends with the two in step. Costs two queued block changes and one block event a move.
+   *
+   * @param world    the server's world
+   * @param lowerPos the door's lower half
+   * @param eventPos the cell whose block takes the settle event: the upper half here
+   *
+   * @since 1.2
+   */
+  protected void settle(World world, BlockPos lowerPos, BlockPos eventPos) {
+    resend(world, lowerPos);
+    resend(world, lowerPos.up());
+    world.addBlockEvent(eventPos, this, EVENT_SETTLE, 0);
+  }
+
+  /**
+   * Queues a block to be sent again, as it is now, to the players watching its chunk. The state is
+   * unchanged on the server, so nothing else in the world hears of it.
+   */
+  static void resend(World world, BlockPos pos) {
+    if (world instanceof WorldServer) {
+      ((WorldServer) world).getPlayerChunkMap().markBlockForUpdate(pos);
+    }
   }
 
   /**
@@ -777,6 +826,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       // Nothing to do: the pending tick was only there to say the door is moving. A world saved
       // mid-swing by a version where this tick ended the swing brings the tick back with it.
       TileEntityDoorSwing.putRightLegacySwing(worldIn, pos);
+      settle(worldIn, pos.down(), pos);
       return;
     }
     if (!closeDue(worldIn, pos)) {
