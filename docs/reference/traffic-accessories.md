@@ -2,7 +2,7 @@
 
 Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 
-!!! info "684 blocks in this tab"
+!!! info "683 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -693,7 +693,6 @@ Poles, mounts, mast arms, span wire hardware, backplates and cameras.
 | White Vertical Traffic Pole with Quad Mount | `csm:trafficpoleverticalquadmountwhite` |  | 10 | pickaxe | 1 |
 | White Vertical Traffic Pole with Signal Mount | `csm:trafficpoleverticalsignalmountwhite` |  | 10 | pickaxe | 1 |
 | Wire Mount (Horizontal Signal) | `csm:tlitehorzwiremount` |  | 10 | pickaxe | 1 |
-| Wire Mount (Signal Cluster) | `csm:spanwireclustermount` |  | 10 | pickaxe | 1 |
 | Wire Mount (Vertical Signal) | `csm:tlitevertwiremount` |  | 10 | pickaxe | 1 |
 
 </div>

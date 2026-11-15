@@ -240,6 +240,13 @@ public class CsmTabRoadsHidden extends CsmTab {
     initTabBlock(BlockTrafficPoleHorizontalSingleMountBlack.class, fmlPreInitializationEvent);
     initTabBlock(BlockTrafficPoleHorizontalSingleMountTan.class, fmlPreInitializationEvent);
     initTabBlock(BlockTrafficPoleHorizontalSingleMountWhite.class, fmlPreInitializationEvent);
+    // Retired span wire cluster mount: becomes a signal cluster hanger on a random tick, keeping
+    // its span, tether, mount and coil styles, in Battleship Gray for the old steel
+    // (BlockSpanWireClusterMount#configureReplacement).
+    initTabBlock(new com.micatechnologies.minecraft.csm.trafficaccessories.spanwire
+        .BlockSpanWireClusterMount("spanwireclustermount",
+        CsmTabTrafficAccessories.BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true,
+        "signal_cluster_hanger"));
     // The invisible cells of a utility box more than one block in size.
     initTabBlock(com.micatechnologies.minecraft.csm.streetscape.BlockUtilityBoxPart.class,
         fmlPreInitializationEvent);

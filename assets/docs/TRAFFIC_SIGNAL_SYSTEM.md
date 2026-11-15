@@ -777,6 +777,73 @@ stub toward a configurable signal head. This
 prevents visual competition between the pole's stub and the head's own bracket (or the
 stand-alone `BlockTrafficLightMountKit` Pelco Astro-brac mount if one is used instead).
 
+## Signal cluster hanger
+
+`signal_cluster_hanger` (`trafficaccessories/spanwire/BlockSignalClusterHanger`, tile entity
+`TileEntitySignalClusterHanger`, renderer `TileEntitySignalClusterHangerRenderer`) draws the
+bracketing that holds a cluster of heads: a back-to-back or side-by-side pair, a 3-way, a 4-way,
+heads 90 degrees apart, or a head with a single-section add-on beside it, hung lower. The heads
+stay ordinary signal blocks where they were placed. The hanger draws only the hardware, and
+nothing slides: controllers, links and the heads' own configuration are untouched. Its block model
+is the item icon only; in the world the renderer draws everything.
+
+**Footprint and placement.** Place the hanger in the block above the middle of the cluster, under
+the arm or the wire. It claims every head in the 3x3 columns directly below it, one row down
+(`SignalClusterFrame.footprint` / `carries`); a head lower in the same column is not carried. An
+add-on under a head rides on that head's own stacking. An add-on beside a head is simply another
+payload in a neighbouring column whose top is lower. Heads are re-read on a neighbour change and on
+a one-second poll (inherited from the span cluster mount), because a head two columns away
+notifies nothing. A claimed head takes no span rise.
+
+**Frame and lower tie.** The hub sits at the centroid of the points where the drops land, so a pair
+across two columns centres its tee on their shared edge and a T's hub sits nearer the stem. Arms
+run out from the hub at bracket height (`BRACKET_DROP` below the attach point), and a drop runs
+from each arm end to that head's reported top. A lower top gives a longer drop, which is the L arm
+for an add-on beside a head. Drops are capped at 1.5 blocks. With two or more heads, a thinner
+lower tie runs at the deepest head's underside from a centre post to each head. It uses the
+height a box span's tether ties at. There is no shape classifier: one generic frame covers every
+layout.
+
+**Mounting.** On a span, the hanger is the cable's hangable like any wire mount. The span hanger's
+mast, offset arm and saddle come down onto the hub in the hanger's colour; the conductor coils
+stay black. Unlinked, `SignalClusterUpperMount.find` reads the block above about once a second
+and folds it into the display-list key:
+- **ARM**: a horizontal `AbstractBlockTrafficPole` (diagonal included) or a curve cell's lowest
+  rail over the middle. It gets a band clamped round the pipe along its run, plus a seat.
+- **FLANGE**: a curve cell that grows its down stub, an upright pole end, or anything mountable.
+  It gets a flange just under the boundary. Mast arm curves grow that stub to an unlinked hanger
+  (`BlockTrafficPoleMastArmCurve.hangsHardwareBelow`).
+- **NONE**: the hub hangs on its own.
+
+A pipe drops from the band or flange and jogs over to the hub where the cluster's middle is not
+under it.
+
+**Colour.** Any `TrafficSignalBodyColor`, stored on the tile entity as `scC` (ordinal, append
+only), default Flat Black. There are three ways to cycle it:
+- sneak and right-click with an empty hand;
+- click with the signal head config tool in Cycle Body Color mode (handled in the hanger's
+  `onBlockActivated`, because the mount screen otherwise swallows the click);
+- use the mount screen's "Hanger Colour" row (`SpanWireMountConfigAction.CYCLE_HANGER_COLOR`).
+
+The colour is not a block property, which would multiply the states for nothing. A retired
+`spanwireclustermount` arrives as Battleship Gray, the nearest body colour to its old steel (see
+`SPAN_WIRE_SYSTEM.md`).
+
+**Head post suppression.** A carried head must not draw its own overhead post up to the block
+boundary, or the post would stand beside the drop. `SpanWireHangOffset.read` reports whether the
+head's mount is a hanger that carries it. `TileEntityTrafficSignalHead` caches the answer
+(`isOnClusterHanger`) with its span wire offset, refreshed every 20 ticks and never looked up per
+frame. `TileEntityTrafficSignalHeadRenderer` skips `renderOverheadHanger` when it is set.
+
+**Display-list cache.** Linked, the frame is baked into the span renderer's own list. Unlinked, the
+hanger has its own `CsmDisplayListCache` ("signal_cluster_hanger"). Both are keyed on
+`getHardwareStateKey()` and the combined light. The key folds in the colour, the upper mount's
+state key, and each head's column, offset, top and underside heights, so any change is a new list
+and nothing has to invalidate by hand. The white texture is bound outside the list every frame,
+per "Display lists: one texture, no cached state" below. The list is released on colour change,
+`invalidate` and chunk unload. Cost has not yet been measured with `/csm renderpass` and
+`/csm displaylists`.
+
 ## Traffic Accessories
 
 Decorative and structural blocks in `trafficaccessories/` package:

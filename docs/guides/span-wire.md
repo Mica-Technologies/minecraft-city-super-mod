@@ -22,10 +22,10 @@ joining them, so a mount level with the anchors ends up *above* the cable everyw
 **3. Hang your mounts** under where the cable will run:
 
 - **Wire Mount** — one signal head.
-- **Signal Cluster Mount** — two to four heads on one bracket.
+- **Signal Cluster Hanger** — a cluster of heads on one frame.
 
-**4. Put the signal heads in place**, in the block directly below each mount. For a cluster, in the
-blocks under the columns the bracket covers.
+**4. Put the signal heads in place**, in the block directly below each mount. For a cluster, in any
+of the nine blocks under and around the hanger.
 
 A road sign can hang from a mount too, either on its own or under a head. It sets itself back in
 its block so the drop lands on its post and it lines up with the signal housings, and that happens
@@ -110,8 +110,7 @@ one signal.
 </figure>
 
 Spans do not have to run along an axis. A cable strung across an intersection at 45° works, and the
-hardware follows it: the clamp sits square to a skewed messenger, cluster brackets run along the
-cable rather than along a block axis, and heads on it can face **any direction independently** —
+hardware follows it: the clamp sits square to a skewed messenger, and heads on it can face **any direction independently** —
 which is the whole point of a diagonal crossing an intersection with approaches on several sides.
 
 ## Clusters
@@ -121,24 +120,29 @@ which is the whole point of a diagonal crossing an intersection with approaches 
   <figcaption>A four-wide cluster: two heads facing the camera, two facing away, all on one bracket under one mast and tied at the bottom.</figcaption>
 </figure>
 
-A Signal Cluster Mount carries two to four heads from one point, on a horizontal bracket under a
-single mast.
+A Signal Cluster Hanger carries a cluster of heads from one point: a back-to-back or side-by-side
+pair, a 3-way, a 4-way, or a head with an add-on beside it. Place it in the block above the middle
+of the cluster. It picks up every head in the nine blocks under and around it, by itself.
 
 - Heads on a cluster **need not face the same way.** A cluster covering a side road and a main
   approach is a real arrangement and is what a cluster is for.
-- The bracket runs **along the cable**, and the mast comes down at the middle of it.
-- Heads on a bracket hang **level with each other** rather than each tracing the cable, because a
-  bracket is rigid.
-- A thin tie bar joins the bottoms of the housings, which is what stops them swinging
-  independently. On a box span, one drop runs from the middle of that bar down to the tether — the
-  heads are already tied to each other, so the assembly hangs from the wire at one point rather
-  than at every housing.
-- Heads of **different depths** are handled: the bar runs under the deepest one so it clears every
-  housing, and any shorter head gets a short leg down to meet it.
+- The heads **stay where you placed them.** The frame reaches out to each one, and the mast comes
+  down at the frame's middle.
+- Heads on a cluster hang **level with each other** rather than each tracing the cable, because a
+  frame is rigid.
+- A thin tie joins the bottoms of the housings, which is what stops them swinging independently.
+  Heads of **different depths** are handled: the tie runs under the deepest one, and a lower head
+  gets a longer drop.
+- The hanger also works **under a mast arm**, or under anything solid, with no span at all.
+- Its colour is any signal body colour: sneak and right-click with an empty hand, use the Signal
+  Head Configuration Tool in its body colour mode, or use the *Hanger Colour* row in the options
+  screen.
 
-Cluster width is set from the mount's options screen. Coverage is centred on the mount, and the
-bracket trims itself to the columns that actually hold something — an empty cluster does not reach
-into thin air.
+!!! note "The old Signal Cluster Mount"
+
+    The earlier Wire Mount (Signal Cluster) block is retired. Any already placed turns into a
+    Signal Cluster Hanger by itself shortly after its area loads, keeping its span, tether and
+    mount settings, in Battleship Gray to match the old steel.
 
 ## The box span
 
@@ -178,7 +182,7 @@ Right-click a mount with anything other than the Span Wire Tool:
 | **Signal Side** | Shifts the whole span sideways so it lines up over the signal housings, which do not sit on their blocks' centre lines. Auto follows the signals |
 | **Lower Tether** | None, or box span |
 | **Cable Sag** | How far the messenger droops: taut (2.5%), standard (5%), relaxed (8%) or loose (12%) of the span length. Applies to the whole span. A tauter cable can end up passing below a mount that sat under it before; the screen's status line says so |
-| **Cluster Width** | Two to four. Only shown on a cluster mount |
+| **Hanger Colour** | The cluster hanger's hardware colour. Only shown on a Signal Cluster Hanger |
 
 ## Things worth knowing
 
