@@ -23,10 +23,11 @@ final class ThermalAnchor {
 
   /**
    * The tile entity that registered this anchor last, or null for one registered by position
-   * alone. Only that instance may unregister it (#353): a chunk unloaded and loaded again within
-   * one tick has a new tile entity register before the old one's deferred {@code onChunkUnload}
-   * runs, and that old instance, going by position alone, used to take the new one's anchor away
-   * with it -- leaving a thermostat or unit that no system ever stepped again.
+   * alone. Only that instance may unregister it (#353). Unregistering went by position alone, so
+   * an old instance leaving after a new one had registered at the same place (a chunk unloaded
+   * and loaded again within one tick, whose old tile entities unload a tick late) would take the
+   * new one's anchor with it, and nothing registered a thermostat or unit again. Not reproduced
+   * in a test world; the server's thermostats and units were seen without anchors after loads.
    */
   Object owner;
 
