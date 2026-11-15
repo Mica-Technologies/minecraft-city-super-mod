@@ -97,7 +97,8 @@ That is why Building Materials is `csm_building` and not `csm_buildingmaterials`
 - Tile-entity registration (name and class dedup) and `OBJLoader.addDomain("csm")`.
 - Entity registration: `EntityCsmSeat` (`csm:seat`), the invisible seat any module's block can sit
   a player on with `EntityCsmSeat.sit` (first user: the portable toilet), and its renderer, which
-  draws nothing.
+  draws nothing; and every entity a module asks for through `CsmEntities` (the Parks zipline's
+  `csm:zipline_trolley`).
 - `CsmTab` — tab discovery, load order, hidden-tab support, and the conditional
   `initTabBlockIfLoaded`/`initTabItemIfLoaded` helpers.
 - `config/csm.cfg`, `CitySuperModVariables` world data, `CommandCsm`, `CsmVersionChecker`,
@@ -190,6 +191,7 @@ enough, so use it uniformly rather than reasoning case by case.
 | `codeutils.gui.CsmGuiRegistry.register(ICsmGuiProvider)` | a provider holding its branch of the old `instanceof` chain | when a GUI opens (`init` onwards) | GUI ids are unchanged and call sites still say `player.openGui(Csm.instance, id, …)`. Providers are asked in registration order and return `null` for ids they do not own |
 | `CsmNetwork.create(MOD_ID)` + `NETWORK.registerMessage(…)` | its own channel and its packets | in play | One channel per mod container; Core keeps `csm`. Discriminators come from the order of the `registerMessage` calls **on that channel only**, so they never depend on which other modules are installed. Append to the list, never insert |
 | `codeutils.CsmSoundRegistry.register(ICsmSound...)` | its sound enum's values | the `Register<SoundEvent>` event | Core registers the union, so every event stays `csm:<name>`. Registration order (and therefore sound ids) now follows mod load order, which nothing player-visible depends on |
+| `codeutils.CsmEntities.register(class, name, id, range, frequency, velocity)` | an entity class, its registry path and its network id | the `Register<EntityEntry>` event | Core registers it as `csm:<name>` beside its own seat. Each entry names its own id (the seat is 0, the zipline trolley 1), so the ids do not depend on which modules are installed; a clashing id or name throws at start-up. The module binds the entity's renderer itself, from its client proxy's `preInit` |
 | `materials.CsmFabricatorCosts.registerRule(tabId, rule)` | one `ICsmFabricatorCostRule` per creative tab | `postInit` (the coverage line) and when the Fabricator GUI opens | Registering a second rule for the same tab throws — one of them would otherwise never be asked. A rule returning `null` means "no opinion", and the block falls through to the generic cost |
 | `codeutils.CsmLifecycleHooks.onClientDisconnect(Runnable)` / `.onPlayerLoggedOut(Consumer<UUID>)` | its static-cache clean-up | when Core's lifecycle handlers fire | Register client-side clean-up as a **lambda, not a method reference**: a `@SideOnly(CLIENT)` target is stripped on a dedicated server, and a method reference resolves at creation time and would fail there |
 | `codeutils.CsmTts.setEngine(ICsmTtsEngine)` | the speech engine | whenever something speaks | Registered from the TTS module's **client** proxy, and loaded on first use (MaryTTS is ~45 MB), off the client thread: the first `say`, the Redstone TTS screen or an announcing departure board in range starts it, and a message given while it loads is spoken once it has. With no engine, or one that failed to load, Core falls back to the system narrator |
