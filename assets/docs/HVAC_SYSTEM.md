@@ -225,6 +225,18 @@ so the unit's own cell is in the room.
   unlinked) by writing its data in place -- `/setblock` with a data tag, `/blockdata` -- registers
   (or unregisters) from `readNBT`, since `onLoad` has already run: it used to join only when its
   chunk next loaded (issue #243).
+- **Anchors are owned, and audited after a load (#353).**
+  - Each anchor remembers the tile entity that registered it last, and only that instance's
+    unload or invalidation removes it. Before, an old instance unloading a tick late after a chunk
+    reloaded within one tick took the new instance's anchor with it.
+  - Thermostats and units also re-register from `readNBT` when written in place, as vents do.
+  - On the live server some thermostats still came back from every reload without an anchor.
+    So `HvacThermal` queues each chunk that loads, and `HvacThermalWorld.runChunkAudits` walks
+    its HVAC tile entities (`IHvacAnchorDevice`) one tick later and again 40 ticks later,
+    re-registering any that are live but not their anchor's owner.
+  - Each repair is logged ("HVAC re-registered N device(s) a chunk load left without an
+    anchor"), so the log names the devices that lose their load registration. Those lines are
+    the lead to the cause, which was not reproduced in a test world.
 - **A thermostat's links survive a build by command** (2026-11). Each step resolves a primary's
   units, zones, vents and exhaust fans (`HvacSystemControl.resolveLinks`): a link to an unloaded
   place is a member the system waits for; a link to a loaded place holding **nothing** is kept and

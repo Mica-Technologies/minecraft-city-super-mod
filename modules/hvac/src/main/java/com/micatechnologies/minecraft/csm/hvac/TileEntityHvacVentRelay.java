@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class TileEntityHvacVentRelay extends AbstractTileEntity {
+public class TileEntityHvacVentRelay extends AbstractTileEntity implements IHvacAnchorDevice {
 
   private static final String NBT_HAS_LINK = "hasLink";
   private static final String NBT_LINK_X = "linkX";
@@ -37,6 +37,11 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity {
   @Override
   public void onLoad() {
     super.onLoad();
+    register();
+  }
+
+  @Override
+  public void ensureAnchor() {
     register();
   }
 
