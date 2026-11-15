@@ -23,6 +23,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   ends), bins, bear-proof food lockers, playground, pergola, fountains with animated water,
   irrigation; borrows
   gen_park_plantings.py's helpers; `--check`, `--fragments`
+- `gen_zipline.py` -- the zipline (#351): the launch and landing anchors' models and blockstates
+  (reusing the amenity textures), the Zipline Linker's sprite and item model, and every zipline
+  lang line in the four languages; `--check`, `--fragments`
 - `gen_park_legacy_amenities.py` -- the five Parks amenities that kept their old ids: both swing
   sets (OBJ, 2.78 m to the beam), the teeter totter, the slatted trash can and the low-poly bird
   bath; writes no lang or tab lines; `--check`

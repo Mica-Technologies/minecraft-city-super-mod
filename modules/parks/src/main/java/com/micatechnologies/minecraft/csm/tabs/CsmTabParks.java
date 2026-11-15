@@ -17,6 +17,8 @@ import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkColumn;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkFacing;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkJoining;
 import com.micatechnologies.minecraft.csm.parks.landscape.BlockParkProp;
+import com.micatechnologies.minecraft.csm.parks.zipline.BlockZiplineAnchor;
+import com.micatechnologies.minecraft.csm.parks.zipline.ItemZiplineLinker;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -91,5 +93,10 @@ public class CsmTabParks extends CsmTab {
     initTabBlock(new BlockParkProp("gazebo_deck", BlockParkProp.Kind.COVER, 2, 0));
     initTabBlock(new BlockParkProp("gazebo_roof_3x3", BlockParkProp.Kind.ROOF, 16, -16));
     initTabBlock(new BlockParkProp("gazebo_roof_5x5", BlockParkProp.Kind.ROOF, 16, -32));
+
+    // The rideable zipline (#351), written by gen_zipline.py (--fragments).
+    initTabBlock(new BlockZiplineAnchor("zipline_anchor_launch"));
+    initTabBlock(new BlockZiplineAnchor("zipline_anchor_landing"));
+    initTabItem(ItemZiplineLinker.class, fmlPreInitializationEvent);
   }
 }

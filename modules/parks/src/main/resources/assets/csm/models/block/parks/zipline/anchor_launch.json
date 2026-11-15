@@ -1,0 +1,383 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "galvanized": "csm:blocks/parks/amenities/locker_galvanized",
+    "iron": "csm:blocks/parks/amenities/iron",
+    "accent": "csm:blocks/parks/amenities/green_steel",
+    "particle": "csm:blocks/parks/amenities/iron"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        3
+      ],
+      "to": [
+        13,
+        1,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#galvanized",
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#galvanized",
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#galvanized",
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#galvanized",
+          "uv": [
+            3,
+            15,
+            13,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#galvanized",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        },
+        "down": {
+          "texture": "#galvanized",
+          "uv": [
+            3,
+            3,
+            13,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        1,
+        6.5
+      ],
+      "to": [
+        9.5,
+        11,
+        9.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#iron",
+          "uv": [
+            6.5,
+            5,
+            9.5,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#iron",
+          "uv": [
+            6.5,
+            5,
+            9.5,
+            15
+          ]
+        },
+        "east": {
+          "texture": "#iron",
+          "uv": [
+            6.5,
+            5,
+            9.5,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#iron",
+          "uv": [
+            6.5,
+            5,
+            9.5,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5.5,
+        11,
+        5.5
+      ],
+      "to": [
+        10.5,
+        12.5,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#accent",
+          "uv": [
+            5.5,
+            3.5,
+            10.5,
+            5
+          ]
+        },
+        "south": {
+          "texture": "#accent",
+          "uv": [
+            5.5,
+            3.5,
+            10.5,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#accent",
+          "uv": [
+            5.5,
+            3.5,
+            10.5,
+            5
+          ]
+        },
+        "west": {
+          "texture": "#accent",
+          "uv": [
+            5.5,
+            3.5,
+            10.5,
+            5
+          ]
+        },
+        "up": {
+          "texture": "#accent",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        },
+        "down": {
+          "texture": "#accent",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.25,
+        12.5,
+        3.5
+      ],
+      "to": [
+        8.75,
+        16,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#iron",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#iron",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            3.5
+          ]
+        },
+        "east": {
+          "texture": "#iron",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            3.5
+          ]
+        },
+        "west": {
+          "texture": "#iron",
+          "uv": [
+            3.5,
+            0,
+            12.5,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#iron",
+          "uv": [
+            7.25,
+            3.5,
+            8.75,
+            12.5
+          ]
+        },
+        "down": {
+          "texture": "#iron",
+          "uv": [
+            7.25,
+            3.5,
+            8.75,
+            12.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.5,
+        12.5,
+        7.25
+      ],
+      "to": [
+        7.25,
+        15.75,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#iron",
+          "uv": [
+            8.75,
+            0.25,
+            12.5,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#iron",
+          "uv": [
+            3.5,
+            0.25,
+            7.25,
+            3.5
+          ]
+        },
+        "west": {
+          "texture": "#iron",
+          "uv": [
+            7.25,
+            0.25,
+            8.75,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#iron",
+          "uv": [
+            3.5,
+            7.25,
+            7.25,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#iron",
+          "uv": [
+            3.5,
+            7.25,
+            7.25,
+            8.75
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8.75,
+        12.5,
+        7.25
+      ],
+      "to": [
+        12.5,
+        15.75,
+        8.75
+      ],
+      "faces": {
+        "north": {
+          "texture": "#iron",
+          "uv": [
+            3.5,
+            0.25,
+            7.25,
+            3.5
+          ]
+        },
+        "south": {
+          "texture": "#iron",
+          "uv": [
+            8.75,
+            0.25,
+            12.5,
+            3.5
+          ]
+        },
+        "east": {
+          "texture": "#iron",
+          "uv": [
+            7.25,
+            0.25,
+            8.75,
+            3.5
+          ]
+        },
+        "up": {
+          "texture": "#iron",
+          "uv": [
+            8.75,
+            7.25,
+            12.5,
+            8.75
+          ]
+        },
+        "down": {
+          "texture": "#iron",
+          "uv": [
+            8.75,
+            7.25,
+            12.5,
+            8.75
+          ]
+        }
+      }
+    }
+  ]
+}

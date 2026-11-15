@@ -222,6 +222,19 @@ public class CsmConfig {
   private static final int FIELD_DEFAULT_HVAC_MAX_ROOM_CELLS = 40_000;
   private static int hvacMaxRoomCells = FIELD_DEFAULT_HVAC_MAX_ROOM_CELLS;
 
+  private static final String CATEGORY_ZIPLINE = "zipline";
+  private static final String CATEGORY_ZIPLINE_DESCRIPTION =
+      "The Parks module's rideable zipline (csm_parks), on the server: how long a line may be and "
+          + "how fast a rider goes. A rider runs downhill under gravity up to maxSpeed, a level "
+          + "or rising line's trolley pulls at minSpeed, and every line brakes to a walk before "
+          + "its landing anchor.";
+  private static final int FIELD_DEFAULT_ZIPLINE_MAX_LENGTH = 128;
+  private static final double FIELD_DEFAULT_ZIPLINE_MAX_SPEED = 14.0;
+  private static final double FIELD_DEFAULT_ZIPLINE_MIN_SPEED = 3.0;
+  private static int ziplineMaxLength = FIELD_DEFAULT_ZIPLINE_MAX_LENGTH;
+  private static double ziplineMaxSpeed = FIELD_DEFAULT_ZIPLINE_MAX_SPEED;
+  private static double ziplineMinSpeed = FIELD_DEFAULT_ZIPLINE_MIN_SPEED;
+
   private static final String CATEGORY_PERFORMANCE = "performance";
   private static final String CATEGORY_PERFORMANCE_DESCRIPTION =
       "Client memory. Minecraft builds chunk meshes with a pool of builders in direct (off-heap) "
@@ -555,6 +568,18 @@ public class CsmConfig {
             + "hall. A room is flooded again when a block in it changes, at about 10 ms per 40,000 "
             + "cells, so a larger limit makes every change in a large room cost more. HVAC Zone "
             + "Boundary blocks split a big open floor into rooms under the limit without a wall.");
+    config.setCategoryComment(CATEGORY_ZIPLINE, CATEGORY_ZIPLINE_DESCRIPTION);
+    ziplineMaxLength = config.getInt("maxLength", CATEGORY_ZIPLINE,
+        FIELD_DEFAULT_ZIPLINE_MAX_LENGTH, 4, 512,
+        "The longest line, in blocks from anchor to anchor, the linker or /csmzipline link will "
+            + "string. Lines already strung keep working if this is lowered.");
+    ziplineMaxSpeed = config.get(CATEGORY_ZIPLINE, "maxSpeed", FIELD_DEFAULT_ZIPLINE_MAX_SPEED,
+        "The fastest a rider goes, in blocks a second. 14 is about 31 mph.", 2.0, 40.0)
+        .getDouble(FIELD_DEFAULT_ZIPLINE_MAX_SPEED);
+    ziplineMinSpeed = config.get(CATEGORY_ZIPLINE, "minSpeed", FIELD_DEFAULT_ZIPLINE_MIN_SPEED,
+        "The trolley's own pull, in blocks a second: the slowest a rider goes outside the brake "
+            + "zone, and the speed of a level or rising line.", 0.5, 10.0)
+        .getDouble(FIELD_DEFAULT_ZIPLINE_MIN_SPEED);
     config.setCategoryComment(CATEGORY_PERFORMANCE, CATEGORY_PERFORMANCE_DESCRIPTION);
     performanceMode = config.getString(FIELD_KEY_PERFORMANCE_MODE, CATEGORY_PERFORMANCE,
         FIELD_DEFAULT_PERFORMANCE_MODE, FIELD_DESCRIPTION_PERFORMANCE_MODE,
@@ -690,6 +715,33 @@ public class CsmConfig {
       }
     }
     return FIELD_DEFAULT_CHAINSAW_BRUSH_PILES;
+  }
+
+  /**
+   * The longest zipline the Parks module will string, in blocks from anchor to anchor.
+   *
+   * @since 2026.11
+   */
+  public static int getZiplineMaxLength() {
+    return ziplineMaxLength;
+  }
+
+  /**
+   * A zipline rider's top speed, in blocks a second.
+   *
+   * @since 2026.11
+   */
+  public static double getZiplineMaxSpeed() {
+    return ziplineMaxSpeed;
+  }
+
+  /**
+   * A zipline trolley's own pull, in blocks a second, never above {@link #getZiplineMaxSpeed}.
+   *
+   * @since 2026.11
+   */
+  public static double getZiplineMinSpeed() {
+    return Math.min(ziplineMinSpeed, ziplineMaxSpeed);
   }
 
   /**

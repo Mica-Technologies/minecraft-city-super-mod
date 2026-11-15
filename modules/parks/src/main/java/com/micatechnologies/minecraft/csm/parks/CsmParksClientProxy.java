@@ -4,8 +4,14 @@ import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.parks.planters.PlanterModels;
 import com.micatechnologies.minecraft.csm.parks.tools.ItemFuelledTool;
 import com.micatechnologies.minecraft.csm.parks.trees.TreeModels;
+import com.micatechnologies.minecraft.csm.parks.zipline.EntityZiplineTrolley;
+import com.micatechnologies.minecraft.csm.parks.zipline.RenderZiplineTrolley;
+import com.micatechnologies.minecraft.csm.parks.zipline.TileEntityZiplineAnchor;
+import com.micatechnologies.minecraft.csm.parks.zipline.TileEntityZiplineCableRenderer;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
@@ -20,6 +26,8 @@ public class CsmParksClientProxy extends CsmParksCommonProxy {
 
   @Override
   public void preInit(FMLPreInitializationEvent event) {
+    RenderingRegistry.registerEntityRenderingHandler(EntityZiplineTrolley.class,
+        RenderZiplineTrolley::new);
     TreeModels.register();
     PlanterModels.register();
     // The items exist by now: Core's preInit builds every tab before a module's preInit runs.
@@ -36,5 +44,7 @@ public class CsmParksClientProxy extends CsmParksCommonProxy {
   public void init(FMLInitializationEvent event) {
     super.init(event);
     PlanterModels.registerColours();
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityZiplineAnchor.class,
+        new TileEntityZiplineCableRenderer());
   }
 }
