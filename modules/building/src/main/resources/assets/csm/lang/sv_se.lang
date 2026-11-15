@@ -30,6 +30,7 @@ gui.csm.door.redstone.normal=Normal
 gui.csm.door.redstone.redstone_lock=Rödsten Låser
 gui.csm.door.redstone.redstone_only=Endast Rödsten
 gui.csm.door.redstone_only=Dörren öppnas bara med rödsten
+gui.csm.door.automatic=Automatisk dörr: den öppnas och stängs av sig själv
 gui.csm.door.sound.gate=Grind
 gui.csm.door.sound.heavy=Tung
 gui.csm.door.sound.iron=Järn

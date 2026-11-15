@@ -929,9 +929,31 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
             SoundCategory.BLOCKS, 0.4F, 1.6F);
         return true;
       }
+      if (door.getValue(OPEN) && clickOnlyOpens(worldIn, lowerPos)) {
+        // An automatic door its sensor has opened: a click does not shut it in your face.
+        playerIn.sendStatusMessage(new TextComponentTranslation("gui.csm.door.automatic"), true);
+        return true;
+      }
       setOpen(worldIn, lowerPos, !door.getValue(OPEN), true);
     }
     return true;
+  }
+
+  /**
+   * Whether a hand click on this door, when open, does nothing (#352). An automatic door is
+   * opened by its sensor as someone walks up; a player who clicks it as well, thinking it a
+   * manual door, used to shut it again in their own face -- which read as a door out of step with
+   * the server. Its sensor alone shuts it; a click still opens one that is shut.
+   *
+   * @param world    the server's world
+   * @param lowerPos the door's lower half
+   *
+   * @return whether a click only ever opens it
+   *
+   * @since 1.2
+   */
+  protected boolean clickOnlyOpens(World world, BlockPos lowerPos) {
+    return false;
   }
 
   /**

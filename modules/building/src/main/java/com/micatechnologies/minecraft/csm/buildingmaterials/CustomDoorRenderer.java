@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.pipeline.LightUtil;
 import net.minecraftforge.common.MinecraftForge;
@@ -130,6 +131,13 @@ public final class CustomDoorRenderer {
     public void onModelBake(ModelBakeEvent event) {
       model = new CustomDoorBakedModel();
       event.getModelRegistry().putObject(MODEL, model);
+    }
+
+    /** The automatic door decal: no JSON model names it, so it is stitched here (#352). */
+    @SubscribeEvent
+    public void onTextureStitch(TextureStitchEvent.Pre event) {
+      event.getMap().registerSprite(
+          new net.minecraft.util.ResourceLocation(CustomDoorBakedModel.STICKER_SPRITE));
     }
 
     @SubscribeEvent

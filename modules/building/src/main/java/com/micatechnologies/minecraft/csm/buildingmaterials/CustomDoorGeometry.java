@@ -30,7 +30,12 @@ public final class CustomDoorGeometry {
    * @since 1.0
    */
   public enum Part {
-    FRAME, UPPER, LOWER
+    FRAME, UPPER, LOWER,
+    /**
+     * The "AUTOMATIC CAUTION DOOR" decal on the upper panel, both faces, a hair proud of it. Drawn
+     * only on a door with a proximity sensor (#352), so a player can tell it opens by itself.
+     */
+    STICKER
   }
 
   /**
@@ -122,6 +127,8 @@ public final class CustomDoorGeometry {
     } else {
       out.add(new Box(2, 14, Z0, 14, 16, Z1, Part.FRAME));
       out.add(new Box(2, 0, 14.75F, 14, 14, 15.5F, Part.UPPER));
+      // At eye height on the glass, a hundredth proud of each face so it never z-fights it.
+      out.add(new Box(4.5F, 5F, 14.74F, 11.5F, 12F, 15.51F, Part.STICKER));
     }
     if (hinge == Hinge.RIGHT) {
       List<Box> m = new ArrayList<>();

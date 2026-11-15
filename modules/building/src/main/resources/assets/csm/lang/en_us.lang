@@ -30,6 +30,7 @@ gui.csm.door.redstone.normal=Normal
 gui.csm.door.redstone.redstone_lock=Redstone Locks
 gui.csm.door.redstone.redstone_only=Redstone Only
 gui.csm.door.redstone_only=This door opens by redstone only
+gui.csm.door.automatic=Automatic door: it opens and closes by itself
 gui.csm.door.sound.gate=Gate
 gui.csm.door.sound.heavy=Heavy
 gui.csm.door.sound.iron=Iron

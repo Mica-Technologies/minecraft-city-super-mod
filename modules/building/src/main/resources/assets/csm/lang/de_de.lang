@@ -30,6 +30,7 @@ gui.csm.door.redstone.normal=Normal
 gui.csm.door.redstone.redstone_lock=Redstone Verriegelt
 gui.csm.door.redstone.redstone_only=Nur Redstone
 gui.csm.door.redstone_only=Diese Tür öffnet nur mit Redstone
+gui.csm.door.automatic=Automatiktür: öffnet und schließt von selbst
 gui.csm.door.sound.gate=Tor
 gui.csm.door.sound.heavy=Schwer
 gui.csm.door.sound.iron=Eisen

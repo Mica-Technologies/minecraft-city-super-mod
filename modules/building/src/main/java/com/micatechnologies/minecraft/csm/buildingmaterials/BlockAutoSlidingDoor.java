@@ -199,6 +199,12 @@ public class BlockAutoSlidingDoor extends BlockBuildingDoor implements ICsmGlass
     }
   }
 
+  /** Its sensor shuts it, so a click on one open does nothing (#352). */
+  @Override
+  protected boolean clickOnlyOpens(World world, BlockPos lowerPos) {
+    return !fixed();
+  }
+
   @Override
   public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
       EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,

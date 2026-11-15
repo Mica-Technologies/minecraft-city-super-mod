@@ -467,6 +467,12 @@ public class BlockCustomDoor extends BlockBuildingDoor {
     }
   }
 
+  /** A door with a proximity sensor is shut by the sensor, so a click on one open does nothing. */
+  @Override
+  protected boolean clickOnlyOpens(World world, BlockPos lowerPos) {
+    return settings(world, lowerPos).proximity();
+  }
+
   @Override
   public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state,
       EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY,
