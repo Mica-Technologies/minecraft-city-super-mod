@@ -806,6 +806,7 @@ tile.signyintersection.name=Señal de Intersección en Y
 tile.signyleft.name=Señal de Intersección en Y a la Izquierda
 tile.signyright.name=Señal de Intersección en Y a la Derecha
 tile.spanwireclustermount.name=Soporte de Cable (Grupo de Semáforos)
+tile.signal_cluster_hanger.name=Colgador de Grupo de Semáforos
 tile.spanwireanchor.name=Anclaje de Cable de Suspensión
 tile.spanwiredisconnectbox.name=Caja de Desconexión de Cable de Suspensión
 tile.spanwireguyanchor.name=Anclaje de Tirante de Cable de Suspensión

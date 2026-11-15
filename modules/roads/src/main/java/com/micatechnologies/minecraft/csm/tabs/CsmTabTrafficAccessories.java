@@ -43,6 +43,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleCon
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleDecorative;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHorizontalAngleConcrete;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPolePedestal;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSignalClusterHanger;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireClusterMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireDisconnectBox;
@@ -404,6 +405,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockSpanWireHangerMount("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockSpanWireHangerMount("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockSpanWireClusterMount("spanwireclustermount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    initTabBlock(new BlockSignalClusterHanger("signal_cluster_hanger", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockSpanWireDisconnectBox("spanwiredisconnectbox", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 1F, false));
     initTabBlock(new BlockSpanWireAnchor());
     initTabBlock(new BlockSpanWireGuyAnchor());

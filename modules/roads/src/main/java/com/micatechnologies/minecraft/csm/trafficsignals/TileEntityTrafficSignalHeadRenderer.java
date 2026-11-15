@@ -2011,7 +2011,8 @@ public class TileEntityTrafficSignalHeadRenderer extends
     if (mountType == SignalHeadMountType.OVERHEAD) {
       // A head with another head stacked directly on top of it hangs from that one, not from
       // the arm — the pair shares a hanger, the same way the other types share a bracket.
-      if (!suppressHighEnd) {
+      // A head on a signal cluster hanger is met by the hanger's own drop instead.
+      if (!suppressHighEnd && !te.isOnClusterHanger()) {
         renderOverheadHanger(topY, color, zPushBack, skyLight, blockLight,
             mountAnchorZFor(styles, sectionSizes, topSection, bodyRearAnchorZ), highInset,
             mountScaleFor(sectionSizes, topSection));

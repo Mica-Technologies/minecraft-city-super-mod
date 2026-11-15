@@ -806,6 +806,7 @@ tile.signyintersection.name=Y-Korsning-Vägmärke
 tile.signyleft.name=Vänster Y-Korsning-Vägmärke
 tile.signyright.name=Höger Y-Korsning-Vägmärke
 tile.spanwireclustermount.name=Trådfäste (Signalgrupp)
+tile.signal_cluster_hanger.name=Signalgruppsupphängning
 tile.spanwireanchor.name=Spänntrådsankare
 tile.spanwiredisconnectbox.name=Spänntrådsfrånskiljningslåda
 tile.spanwireguyanchor.name=Spänntrådsstagfäste

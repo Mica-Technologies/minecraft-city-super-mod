@@ -1,0 +1,27 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficaccessories/shared_models/span_wire_hidden",
+    "textures": {
+      "particle": "csm:blocks/trafficaccessories/shared_textures/signalbody"
+    }
+  },
+  "variants": {
+    "facing": {
+      "down": {},
+      "east": {},
+      "north": {},
+      "south": {},
+      "up": {},
+      "west": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:trafficaccessories/shared_models/tliteverticalwiremount",
+        "textures": {
+          "all": "csm:blocks/trafficaccessories/shared_textures/signalbody"
+        }
+      }
+    ]
+  }
+}

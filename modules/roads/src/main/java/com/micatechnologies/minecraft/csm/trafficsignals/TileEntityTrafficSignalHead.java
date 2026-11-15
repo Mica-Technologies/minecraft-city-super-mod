@@ -99,6 +99,9 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   private transient Vec3d cachedSpanWireOffset = Vec3d.ZERO;
   private transient long cachedSpanWireOffsetTick = Long.MIN_VALUE;
 
+  /** Whether a signal cluster hanger carries this head; derived with the span wire offset. */
+  private transient boolean cachedOnClusterHanger = false;
+
   /** How long a derived span wire offset is reused before being re-derived. */
   private static final long SPAN_WIRE_OFFSET_REFRESH_TICKS = 20L;
 
@@ -142,10 +145,27 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
         && now - cachedSpanWireOffsetTick < SPAN_WIRE_OFFSET_REFRESH_TICKS) {
       return cachedSpanWireOffset;
     }
-    cachedSpanWireOffset =
-        world == null ? Vec3d.ZERO : SpanWireHangOffset.computeFor(world, getPos());
+    if (world == null) {
+      cachedSpanWireOffset = Vec3d.ZERO;
+      cachedOnClusterHanger = false;
+    } else {
+      final SpanWireHangOffset.Reading reading = SpanWireHangOffset.read(world, getPos());
+      cachedSpanWireOffset = reading.offset;
+      cachedOnClusterHanger = reading.onClusterHanger;
+    }
     cachedSpanWireOffsetTick = now;
     return cachedSpanWireOffset;
+  }
+
+  /**
+   * Whether a signal cluster hanger's frame drops onto this head, in which case the head draws no
+   * overhead post of its own. Cached with the span wire offset, on the same cadence.
+   *
+   * @return true when this head hangs from a cluster hanger's frame.
+   */
+  public boolean isOnClusterHanger() {
+    getSpanWireOffset();
+    return cachedOnClusterHanger;
   }
 
   /**
