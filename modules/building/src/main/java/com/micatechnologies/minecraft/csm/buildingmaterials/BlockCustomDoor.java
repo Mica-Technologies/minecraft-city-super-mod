@@ -306,7 +306,14 @@ public class BlockCustomDoor extends BlockBuildingDoor {
             s.sound().pitch() * (world.rand.nextFloat() * 0.1F + 0.95F));
       }
     }
-    // A sensor door's own looks close it; see updateTick.
+    // A sensor door's own looks close it; see updateTick. A hand opening counts as a sighting, or
+    // a door clicked open from outside the sensor's zone would shut again at the next look.
+    if (open && byHand && s.proximity()) {
+      TileEntity te = world.getTileEntity(lowerPos);
+      if (te instanceof TileEntityCustomDoor) {
+        ((TileEntityCustomDoor) te).setLastSeen(world.getTotalWorldTime());
+      }
+    }
     if (open && s.autoCloseTicks() > 0 && byHand && !s.proximity()) {
       armClose(world, lowerPos, s.autoCloseTicks());
     } else if (!open) {
