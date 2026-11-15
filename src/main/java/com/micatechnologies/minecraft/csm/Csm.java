@@ -17,6 +17,7 @@
  */
 package com.micatechnologies.minecraft.csm;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmEntities;
 import com.micatechnologies.minecraft.csm.codeutils.CsmRetiredNames;
 import com.micatechnologies.minecraft.csm.codeutils.CsmSoundRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.EntityCsmSeat;
@@ -497,9 +498,10 @@ public class Csm {
   }
 
   /**
-   * Registers the mod's entities: today only {@link EntityCsmSeat}, the invisible seat a block
-   * that can be sat in (the portable toilet) puts its rider on. It is Core's, like every other
-   * registration, so a module that uses it never touches a Forge registry.
+   * Registers the mod's entities: Core's {@link EntityCsmSeat}, the invisible seat a block that
+   * can be sat in (the portable toilet) puts its rider on, and every entity a module asked for
+   * through {@link CsmEntities}. It is Core's, like every other registration, so a module never
+   * touches a Forge registry.
    *
    * @param event the entity registry event
    *
@@ -509,10 +511,19 @@ public class Csm {
   public void registerEntities(RegistryEvent.Register<EntityEntry> event) {
     event.getRegistry().register(EntityEntryBuilder.create()
         .entity(EntityCsmSeat.class)
-        .id(new ResourceLocation(CsmConstants.MOD_NAMESPACE, "seat"), 0)
+        .id(new ResourceLocation(CsmConstants.MOD_NAMESPACE, "seat"), CsmEntities.SEAT_ID)
         .name(CsmConstants.MOD_NAMESPACE + ".seat")
         .tracker(64, 20, false)
         .build());
+    // The modules' entities (the Parks zipline's trolley), asked for in their preInit.
+    for (CsmEntities.Entry e : CsmEntities.entries()) {
+      event.getRegistry().register(EntityEntryBuilder.create()
+          .entity(e.type)
+          .id(new ResourceLocation(CsmConstants.MOD_NAMESPACE, e.name), e.id)
+          .name(CsmConstants.MOD_NAMESPACE + "." + e.name)
+          .tracker(e.trackingRange, e.updateFrequency, e.sendsVelocityUpdates)
+          .build());
+    }
   }
 
   /**
