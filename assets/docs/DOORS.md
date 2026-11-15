@@ -283,7 +283,9 @@ stands in the plane behind it, z 6.5..8.25) or into the wall, like a pocket door
   it (within 0.9 of its middle along the wall) and at its height, as a real door's header sensor
   does. Redstone opens it while powered; a click opens it by hand; a linked keypad, button or
   station as on any door; and an old **activation mat** (`BlockAutoDoorMat`, see below) still
-  does. A sidelite never moves (a click does nothing).
+  does. A sidelite never moves (a click does nothing). A click on an open slider does nothing
+  either: its sensor shuts it, and a click used to shut it in the face of whoever was walking
+  through (#352).
 - **Closing.** Whatever opened it, it shuts **3 s** (`HOLD_TICKS`, 60) after the last thing that
   did: the sensor, every look while someone is in its zone, and each step on a mat, push the time
   back (`armClose`, the closer's deadline). The door's one
@@ -676,6 +678,15 @@ built to be **free at rest**, where that one draws every custom door every frame
   the opening, two blocks high; a pair watches both its openings, or one leaf would shut the pair
   on someone in the other. It shuts once nobody has been there for the auto-close time, or a
   second if that is off, unless redstone is holding it open; a redstone lock stops it opening.
+- **Automatic doors say so (#352).** A sensor door wears an "AUTOMATIC / CAUTION / DOOR" decal at
+  eye height on both faces of its upper panel (`CustomDoorGeometry.Part.STICKER`, baked only when
+  the sensor is on). The texture is `auto_door_sticker`, from `gen_doors.auto_door_sticker`,
+  stitched by `CustomDoorRenderer.Events` since no JSON model names it.
+  - A click on an open sensor door does nothing but an action-bar line saying it is automatic
+    (`clickOnlyOpens`); a click still opens a shut one. Automatic sliding doors behave the same
+    way.
+  - Before this, players took an automatic door for a manual one, clicked it as the sensor opened
+    it, and shut it in their own faces. That read as the door being out of step with the server.
 - **Keypad locks** work as on the fixed doors (a custom door is a `BlockBuildingDoor`): link a
   keypad by sneak-clicking it and then the door, and the door is locked in `DoorLocks` from the
   outside. With a sensor, a locked door opens only for someone on the inside -- free to leave,

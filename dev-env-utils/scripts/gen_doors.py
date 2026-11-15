@@ -47,7 +47,7 @@ import os
 import random
 import sys
 
-from PIL import Image
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 import gen_cmu
 import gen_logistics
@@ -296,6 +296,10 @@ CUSTOM_LANG = {
                                    "Esta puerta solo se abre con redstone",
                                    "Diese Tür öffnet nur mit Redstone",
                                    "Dörren öppnas bara med rödsten"),
+    "gui.csm.door.automatic": ("Automatic door: it opens and closes by itself",
+                               "Puerta automática: se abre y se cierra sola",
+                               "Automatiktür: öffnet und schließt von selbst",
+                               "Automatisk dörr: den öppnas och stängs av sig själv"),
     "gui.csm.door.locked_redstone": ("Locked by redstone", "Bloqueada por redstone",
                                      "Durch Redstone verriegelt", "Låst av rödsten"),
     "tile.door_workshop.name": ("Door Workshop", "Taller de Puertas", "Türwerkstatt",
@@ -644,6 +648,51 @@ def workshop_front():
     return img
 
 
+STICKER_YELLOW = (250, 204, 21, 255)
+STICKER_BLACK = (26, 26, 26, 255)
+# Any heavy grotesque will do for a decal this size; the PNG is committed, the font never is.
+STICKER_FONTS = ("C:/Windows/Fonts/arialbd.ttf", "/Library/Fonts/Arial Bold.ttf",
+                 "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")
+
+
+def _sticker_font(size):
+    for path in STICKER_FONTS:
+        if os.path.exists(path):
+            return ImageFont.truetype(path, size)
+    raise SystemExit("gen_doors: no bold font for the automatic door sticker; add one to "
+                     "STICKER_FONTS")
+
+
+def _centred_text(draw, cx, cy, text, font, fill):
+    left, top, right, bottom = draw.textbbox((0, 0), text, font=font)
+    draw.text((cx - (left + right) / 2, cy - (top + bottom) / 2), text, font=font, fill=fill)
+
+
+def auto_door_sticker():
+    """The "AUTOMATIC / CAUTION / DOOR" decal an automatic door wears on its glass (#352): a
+    yellow disc with a black rim and a black band across its middle. Drawn at 4x and reduced, so
+    the lettering and the rim stay smooth at 128 px; the corners stay clear for cutout."""
+    s = 512
+    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.ellipse((4, 4, s - 5, s - 5), fill=STICKER_BLACK)
+    d.ellipse((22, 22, s - 23, s - 23), fill=STICKER_YELLOW)
+    d.ellipse((34, 34, s - 35, s - 35), outline=STICKER_BLACK, width=6)
+    band_top, band_bottom = int(s * 0.40), int(s * 0.60)
+    # The band runs across the disc, clipped to it.
+    band = Image.new("L", (s, s), 0)
+    ImageDraw.Draw(band).rectangle((0, band_top, s, band_bottom), fill=255)
+    disc = Image.new("L", (s, s), 0)
+    ImageDraw.Draw(disc).ellipse((22, 22, s - 23, s - 23), fill=255)
+    from PIL import ImageChops
+    img.paste(STICKER_BLACK, (0, 0), ImageChops.multiply(band, disc))
+    _centred_text(d, s / 2, s * 0.30, "AUTOMATIC", _sticker_font(54), STICKER_BLACK)
+    _centred_text(d, s / 2, (band_top + band_bottom) / 2, "CAUTION", _sticker_font(84),
+                  STICKER_YELLOW)
+    _centred_text(d, s / 2, s * 0.72, "DOOR", _sticker_font(84), STICKER_BLACK)
+    return img.resize((128, 128), Image.LANCZOS)
+
+
 def workshop_textures():
     return {"door_workshop_top": workshop_top(), "door_workshop_side": workshop_side(),
             "door_workshop_front": workshop_front()}
@@ -688,6 +737,7 @@ def textures():
     out["door_hm_frame"] = hardware(SIDELITE_FRAME, random.Random(20261942))
     out["door_trefoil"] = trefoil()
     out.update(workshop_textures())
+    out["auto_door_sticker"] = auto_door_sticker()
     out.update(auto_textures())
     out.update(auto_tall_textures())
     out.update(_cathedral().textures())

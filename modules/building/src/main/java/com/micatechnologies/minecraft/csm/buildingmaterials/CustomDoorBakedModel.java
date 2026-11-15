@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.BlockFaceUV;
 import net.minecraft.client.renderer.block.model.BlockPartFace;
@@ -137,6 +138,13 @@ public class CustomDoorBakedModel implements IBakedModel {
         (int) ((k.facing.getHorizontalAngle() + 180) % 360));
     List<BakedQuad> out = new ArrayList<>();
     for (Box b : boxes) {
+      if (b.part == CustomDoorGeometry.Part.STICKER) {
+        if (k.settings.proximity()
+            && (k.layer == null || k.layer == BlockRenderLayer.CUTOUT_MIPPED)) {
+          bakeSticker(b, rotation, out);
+        }
+        continue;
+      }
       IBlockState material = b.part == CustomDoorGeometry.Part.FRAME ? k.settings.frame()
           : b.part == CustomDoorGeometry.Part.UPPER ? k.settings.upper() : k.settings.lower();
       if (k.layer != null && layerOf(material) != k.layer) {
@@ -151,6 +159,29 @@ public class CustomDoorBakedModel implements IBakedModel {
       }
     }
     return out;
+  }
+
+  /** The automatic door decal's texture, stitched by {@link CustomDoorRenderer.Events}. */
+  static final String STICKER_SPRITE = "csm:blocks/doors/auto_door_sticker";
+
+  /**
+   * The decal: its two broad faces, the whole sprite on each. A face's own UV convention reads the
+   * texture the right way round from either side, as a block's faces do. Which faces are broad
+   * depends on how the door is turned (a swung leaf lies along X), so they are picked from the box.
+   */
+  private static void bakeSticker(Box b, ModelRotation rotation, List<BakedQuad> out) {
+    TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks()
+        .getAtlasSprite(STICKER_SPRITE);
+    boolean thinInX = b.x1 - b.x0 < b.z1 - b.z0;
+    EnumFacing[] faces = thinInX ? new EnumFacing[]{EnumFacing.EAST, EnumFacing.WEST}
+        : new EnumFacing[]{EnumFacing.NORTH, EnumFacing.SOUTH};
+    Vector3f from = new Vector3f(b.x0, b.y0, b.z0);
+    Vector3f to = new Vector3f(b.x1, b.y1, b.z1);
+    for (EnumFacing face : faces) {
+      BlockPartFace part = new BlockPartFace(null, -1, "",
+          new BlockFaceUV(new float[]{0, 0, 16, 16}, 0));
+      out.add(BAKERY.makeBakedQuad(from, to, part, sprite, face, rotation, null, false, true));
+    }
   }
 
   /** The UV Minecraft would take from a face's position, fitted into the sprite. */
