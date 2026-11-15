@@ -193,20 +193,38 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
       return;
     }
     for (BlockPos column : coveredColumns) {
-      final BlockPos payloadPos = new BlockPos(column.getX(), pos.getY() - 1, column.getZ());
-      if (!world.isBlockLoaded(payloadPos)) {
-        continue;
+      final ClusterPayload payload = readPayloadAt(column);
+      if (payload != null) {
+        payloads.add(payload);
       }
-      final IBlockState state = world.getBlockState(payloadPos);
-      if (!(state.getBlock() instanceof ISpanWireHangable)) {
-        continue;
-      }
-      final ISpanWireHangable payload = (ISpanWireHangable) state.getBlock();
-      payloads.add(new ClusterPayload(column,
-          payload.getSpanHardwareOffset(world, payloadPos, state),
-          payload.getSpanHangerTopY(world, payloadPos, state),
-          payload.getSpanTetherTieY(world, payloadPos, state)));
     }
+  }
+
+  /**
+   * What hangs under one covered column, or null for nothing.
+   *
+   * <p>The payload row is the one directly under this block. Overridable so a bracket that carries
+   * only some kinds of payload, or meets them somewhere else on their housing, can say so without
+   * repeating the scan around it.
+   *
+   * @param column the covered column, at this block's own height.
+   *
+   * @return the payload, or null when the column is empty or not loaded.
+   */
+  protected ClusterPayload readPayloadAt(BlockPos column) {
+    final BlockPos payloadPos = new BlockPos(column.getX(), pos.getY() - 1, column.getZ());
+    if (!world.isBlockLoaded(payloadPos)) {
+      return null;
+    }
+    final IBlockState state = world.getBlockState(payloadPos);
+    if (!(state.getBlock() instanceof ISpanWireHangable)) {
+      return null;
+    }
+    final ISpanWireHangable payload = (ISpanWireHangable) state.getBlock();
+    return new ClusterPayload(column,
+        payload.getSpanHardwareOffset(world, payloadPos, state),
+        payload.getSpanHangerTopY(world, payloadPos, state),
+        payload.getSpanTetherTieY(world, payloadPos, state));
   }
 
   @Override
@@ -318,11 +336,13 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
     return new Vec3d(attach.x + along.x * distance, attach.y, attach.z + along.z * distance);
   }
 
-  private static double hardwareX(ClusterPayload payload) {
+  /** World X of the point on a payload's housing its drop lands on. */
+  static double hardwareX(ClusterPayload payload) {
     return payload.getColumn().getX() + 0.5 + payload.getHardwareOffset().x;
   }
 
-  private static double hardwareZ(ClusterPayload payload) {
+  /** World Z of the point on a payload's housing its drop lands on. */
+  static double hardwareZ(ClusterPayload payload) {
     return payload.getColumn().getZ() + 0.5 + payload.getHardwareOffset().z;
   }
 
@@ -464,8 +484,22 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
    * four-wide reaches two one way and one the other. Stepping along the cable's own direction
    * rather than a fixed axis is what makes this work on a diagonal span.
    */
-  private void recomputeCoverage() {
+  protected void recomputeCoverage() {
     coveredColumns.clear();
+    computeCoveredColumns(coveredColumns);
+    republishColumns();
+    refreshClusterPayloads();
+  }
+
+  /**
+   * Fills in the columns the bracket reaches, this block's own included, with no duplicates.
+   *
+   * <p>A line along the cable, {@link #getClusterWidth()} wide. Overridable for a bracket whose
+   * reach is not a line along the span.
+   *
+   * @param out the list to add to, empty on entry.
+   */
+  protected void computeCoveredColumns(List<BlockPos> out) {
     final Vec3d direction = getBracketDirection();
     final int firstOffset = -(clusterWidth - 1) / 2;
 
@@ -474,12 +508,10 @@ public class TileEntitySpanWireClusterMount extends TileEntitySpanWireHanger {
       final int dx = (int) Math.round(direction.x * step);
       final int dz = (int) Math.round(direction.z * step);
       final BlockPos column = pos.add(dx, 0, dz);
-      if (!coveredColumns.contains(column)) {
-        coveredColumns.add(column);
+      if (!out.contains(column)) {
+        out.add(column);
       }
     }
-    republishColumns();
-    refreshClusterPayloads();
   }
 
   /**

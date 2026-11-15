@@ -806,6 +806,7 @@ tile.signyintersection.name=Y-Kreuzung Schild
 tile.signyleft.name=Y-Kreuzung Links Schild
 tile.signyright.name=Y-Kreuzung Rechts Schild
 tile.spanwireclustermount.name=Drahthalterung (Signalgruppe)
+tile.signal_cluster_hanger.name=Signalgruppen-Aufhängung
 tile.spanwireanchor.name=Spanndraht-Anker
 tile.spanwiredisconnectbox.name=Spanndraht-Trennkasten
 tile.spanwireguyanchor.name=Spanndraht-Abspannanker

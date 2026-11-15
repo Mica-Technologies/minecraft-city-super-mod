@@ -114,7 +114,42 @@ public final class SpanWireHangOffset {
    * break it.
    */
   public static Vec3d computeFor(IBlockAccess world, BlockPos pos) {
+    return offsetFrom(findMount(world, pos), pos);
+  }
+
+  /**
+   * The offset {@link #computeFor} gives, plus whether a signal cluster hanger's frame drops onto
+   * this position, from one mount lookup.
+   *
+   * <p>A head carried by a cluster hanger draws no overhead post of its own: the hanger's drop
+   * reaches its top instead. Answered here, alongside the offset, so the head can cache both on
+   * the cadence it already has rather than paying for a second search.
+   *
+   * @return the reading, never null.
+   */
+  public static Reading read(IBlockAccess world, BlockPos pos) {
     final TileEntitySpanWireHanger mount = findMount(world, pos);
+    final boolean clustered = mount instanceof TileEntitySignalClusterHanger
+        && ((TileEntitySignalClusterHanger) mount).carries(pos);
+    return new Reading(offsetFrom(mount, pos), clustered);
+  }
+
+  /** What {@link #read} found for one position. */
+  public static final class Reading {
+
+    /** The span offset in model units, as {@link #computeFor} returns it. */
+    public final Vec3d offset;
+
+    /** Whether a signal cluster hanger's frame drops onto this position. */
+    public final boolean onClusterHanger;
+
+    Reading(Vec3d offset, boolean onClusterHanger) {
+      this.offset = offset;
+      this.onClusterHanger = onClusterHanger;
+    }
+  }
+
+  private static Vec3d offsetFrom(@Nullable TileEntitySpanWireHanger mount, BlockPos pos) {
     if (mount == null) {
       return Vec3d.ZERO;
     }

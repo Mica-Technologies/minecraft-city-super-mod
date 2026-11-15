@@ -806,6 +806,7 @@ tile.signyintersection.name=Y-Intersection Sign
 tile.signyleft.name=Left Y-Intersection Sign
 tile.signyright.name=Right Y-Intersection Sign
 tile.spanwireclustermount.name=Wire Mount (Signal Cluster)
+tile.signal_cluster_hanger.name=Signal Cluster Hanger
 tile.spanwireanchor.name=Span Wire Anchor
 tile.spanwiredisconnectbox.name=Span Wire Disconnect Box
 tile.spanwireguyanchor.name=Span Wire Guy Anchor

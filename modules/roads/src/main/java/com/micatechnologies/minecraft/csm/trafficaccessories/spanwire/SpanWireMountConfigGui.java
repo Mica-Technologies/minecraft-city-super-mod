@@ -44,7 +44,9 @@ public class SpanWireMountConfigGui extends GuiScreen {
     this.tileEntity = tileEntity;
     this.blockPos = tileEntity.getPos();
     // Cluster width is the last row and only a cluster has one.
+    // A signal cluster hanger reaches a fixed footprint, so it has no width either.
     this.rowCount = tileEntity instanceof TileEntitySpanWireClusterMount
+        && !(tileEntity instanceof TileEntitySignalClusterHanger)
         ? LABELS.length
         : LABELS.length - 1;
   }
@@ -130,6 +132,9 @@ public class SpanWireMountConfigGui extends GuiScreen {
   }
 
   private String title() {
+    if (tileEntity instanceof TileEntitySignalClusterHanger) {
+      return "Signal Cluster Hanger";
+    }
     return tileEntity instanceof TileEntitySpanWireClusterMount
         ? "Wire Mount (Cluster)"
         : "Wire Mount";
