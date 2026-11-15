@@ -1,8 +1,11 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalHeadConfigTool;
+import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalHeadConfigToolMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -52,14 +55,23 @@ public class BlockSignalClusterHanger extends BlockSpanWireClusterMount {
   }
 
   /**
-   * Sneak with an empty hand cycles the hardware colour; anything else opens the mount screen as
-   * on any wire mount. Consumed on both sides, so the client does not go on to use the held item.
+   * Sneak with an empty hand, or a click with the signal head config tool in its body colour mode,
+   * cycles the hardware colour; anything else opens the mount screen as on any wire mount (which
+   * has a colour row for the hanger too). Consumed on both sides, so the client does not go on to
+   * use the held item.
    */
   @Override
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-    if (player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
-      if (hand != EnumHand.MAIN_HAND) {
+    final ItemStack held = player.getHeldItem(hand);
+    final boolean emptyHandSneak = player.isSneaking() && held.isEmpty();
+    // The signal head config tool in its body colour mode paints the hanger as it paints a head.
+    // Sneaking with the tool never reaches here: vanilla skips the block for a sneaking player
+    // holding an item, and the tool switches its mode instead.
+    final boolean toolPaints = held.getItem() instanceof ItemSignalHeadConfigTool
+        && ItemSignalHeadConfigTool.getMode(held) == ItemSignalHeadConfigToolMode.CYCLE_BODY_COLOR;
+    if (emptyHandSneak || toolPaints) {
+      if (emptyHandSneak && hand != EnumHand.MAIN_HAND) {
         return true;
       }
       if (!world.isRemote) {

@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import java.io.IOException;
+import java.util.Arrays;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumFacing;
@@ -30,25 +31,43 @@ public class SpanWireMountConfigGui extends GuiScreen {
   private static final int ROW_SPACING = 24;
   private static final int CLOSE_BUTTON_ID = 100;
 
+  /** One per {@link SpanWireMountConfigAction}, in its order. */
   private static final String[] LABELS =
       {"Mount Style", "Conductor Coil", "Signal Side", "Lower Tether", "Cable Sag",
-          "Cluster Width"};
+          "Cluster Width", "Hanger Colour"};
+
+  /** The rows every mount has. */
+  private static final SpanWireMountConfigAction[] COMMON_ROWS = {
+      SpanWireMountConfigAction.CYCLE_MOUNT_STYLE, SpanWireMountConfigAction.CYCLE_COIL_STYLE,
+      SpanWireMountConfigAction.CYCLE_SIGNAL_SIDE, SpanWireMountConfigAction.TOGGLE_BOX_SPAN,
+      SpanWireMountConfigAction.CYCLE_SAG};
 
   private final TileEntitySpanWireHanger tileEntity;
   private final BlockPos blockPos;
 
-  /** A single mount has no width to set, so its screen is one row shorter. */
+  /** The settings this mount shows, one row each; a button's id is its index here. */
+  private final SpanWireMountConfigAction[] rows;
   private final int rowCount;
 
   public SpanWireMountConfigGui(TileEntitySpanWireHanger tileEntity) {
     this.tileEntity = tileEntity;
     this.blockPos = tileEntity.getPos();
-    // Cluster width is the last row and only a cluster has one.
-    // A signal cluster hanger reaches a fixed footprint, so it has no width either.
-    this.rowCount = tileEntity instanceof TileEntitySpanWireClusterMount
-        && !(tileEntity instanceof TileEntitySignalClusterHanger)
-        ? LABELS.length
-        : LABELS.length - 1;
+    // Only a span cluster mount has a width. A signal cluster hanger reaches a fixed footprint, so
+    // it has none, but it has a colour instead.
+    final SpanWireMountConfigAction extra;
+    if (tileEntity instanceof TileEntitySignalClusterHanger) {
+      extra = SpanWireMountConfigAction.CYCLE_HANGER_COLOR;
+    } else if (tileEntity instanceof TileEntitySpanWireClusterMount) {
+      extra = SpanWireMountConfigAction.CYCLE_CLUSTER_WIDTH;
+    } else {
+      extra = null;
+    }
+    this.rows = Arrays.copyOf(COMMON_ROWS,
+        COMMON_ROWS.length + (extra == null ? 0 : 1));
+    if (extra != null) {
+      rows[COMMON_ROWS.length] = extra;
+    }
+    this.rowCount = rows.length;
   }
 
   @Override
@@ -71,7 +90,8 @@ public class SpanWireMountConfigGui extends GuiScreen {
     drawDefaultBackground();
 
     for (int i = 0; i < rowCount && i < buttonList.size(); i++) {
-      buttonList.get(i).displayString = LABELS[i] + ": " + currentValue(i);
+      buttonList.get(i).displayString =
+          LABELS[rows[i].ordinal()] + ": " + currentValue(rows[i]);
     }
 
     final int top = height / 2 - (rowCount * ROW_SPACING) / 2;
@@ -82,8 +102,8 @@ public class SpanWireMountConfigGui extends GuiScreen {
     super.drawScreen(mouseX, mouseY, partialTicks);
   }
 
-  private String currentValue(int index) {
-    switch (SpanWireMountConfigAction.values()[index]) {
+  private String currentValue(SpanWireMountConfigAction action) {
+    switch (action) {
       case CYCLE_MOUNT_STYLE:
         return tileEntity.getMountStyle().getFriendlyName();
       case CYCLE_COIL_STYLE:
@@ -101,6 +121,10 @@ public class SpanWireMountConfigGui extends GuiScreen {
       case CYCLE_CLUSTER_WIDTH:
         return tileEntity instanceof TileEntitySpanWireClusterMount
             ? ((TileEntitySpanWireClusterMount) tileEntity).getClusterWidth() + " signals"
+            : "N/A";
+      case CYCLE_HANGER_COLOR:
+        return tileEntity instanceof TileEntitySignalClusterHanger
+            ? ((TileEntitySignalClusterHanger) tileEntity).getColor().getFriendlyName()
             : "N/A";
       default:
         return "N/A";
@@ -162,7 +186,8 @@ public class SpanWireMountConfigGui extends GuiScreen {
     if (button.id == CLOSE_BUTTON_ID) {
       mc.displayGuiScreen(null);
     } else if (button.id >= 0 && button.id < rowCount) {
-      CsmRoads.NETWORK.sendToServer(new SpanWireMountConfigPacket(blockPos, button.id));
+      CsmRoads.NETWORK.sendToServer(
+          new SpanWireMountConfigPacket(blockPos, rows[button.id].ordinal()));
     }
   }
 

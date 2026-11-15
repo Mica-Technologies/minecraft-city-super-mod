@@ -137,21 +137,22 @@ public class TileEntitySpanWireHangerRenderer
     }
     along = along.normalize();
 
+    final float[] rgb = mastColour(te);
     final Vec3d mastTop = new Vec3d(mountPoint.x, cablePoint.y, mountPoint.z);
     SpanWireCableGeometry.emitStraightTube(buffer, mountPoint, mastTop, origin, MAST_RADIUS,
-        MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
+        rgb[0], rgb[1], rgb[2], skyLight, blockLight);
 
     final double armX = cablePoint.x - mastTop.x;
     final double armZ = cablePoint.z - mastTop.z;
     if (armX * armX + armZ * armZ > 1.0e-8) {
       SpanWireCableGeometry.emitStraightTube(buffer, mastTop, cablePoint, origin, MAST_RADIUS,
-          MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
+          rgb[0], rgb[1], rgb[2], skyLight, blockLight);
     }
 
     SpanWireCableGeometry.emitStraightTube(buffer,
         cablePoint.subtract(along.scale(SADDLE_HALF_LENGTH)),
         cablePoint.add(along.scale(SADDLE_HALF_LENGTH)),
-        origin, SADDLE_RADIUS, MAST_RED, MAST_GREEN, MAST_BLUE, skyLight, blockLight);
+        origin, SADDLE_RADIUS, rgb[0], rgb[1], rgb[2], skyLight, blockLight);
 
     // Only where something is actually being fed. The coil is surplus conductor left from
     // dropping power into the payload, so a sign -- bolted to the wire and wired to nothing --
@@ -164,6 +165,21 @@ public class TileEntitySpanWireHangerRenderer
       emitTetherTie(buffer, te, gripT, origin, skyLight, blockLight);
     }
   }
+
+  /**
+   * The colour of the mast, its offset arm and the saddle: galvanized steel unless the mount says
+   * otherwise. A signal cluster hanger paints them its body colour. The coils and the cable keep
+   * their own colours whatever this returns.
+   *
+   * @param te the mount being drawn
+   *
+   * @return {@code {red, green, blue}}; not modified by the caller
+   */
+  protected float[] mastColour(TileEntitySpanWireHanger te) {
+    return STEEL;
+  }
+
+  private static final float[] STEEL = {MAST_RED, MAST_GREEN, MAST_BLUE};
 
   /**
    * Whether this pass draws the tether tie for the mount it is given.
