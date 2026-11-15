@@ -690,7 +690,12 @@ def auto_door_sticker():
     _centred_text(d, s / 2, (band_top + band_bottom) / 2, "CAUTION", _sticker_font(84),
                   STICKER_YELLOW)
     _centred_text(d, s / 2, s * 0.72, "DOOR", _sticker_font(84), STICKER_BLACK)
-    return img.resize((128, 128), Image.LANCZOS)
+    img = img.resize((128, 128), Image.LANCZOS)
+    # Every pixel opaque or clear: both doors draw it by alpha test in the cutout pass, which
+    # shows a pixel more than a tenth opaque as opaque anyway, and the sliding doors are glass
+    # fronted, so CsmGlassLayerTest holds their non-glass textures to it.
+    img.putalpha(img.getchannel("A").point(lambda a: 255 if a > 25 else 0))
+    return img
 
 
 def workshop_textures():
@@ -1290,6 +1295,13 @@ FL_HEADER_Y = 14.0         # the frameless doors' slim header, and its depth
 FL_HEADER_Z = (3.0, 9.0)
 FL_GAP = 0.25              # a frameless panel stops this short of its cell's sides: a glass edge
 PATCH = (3.0, 1.75)        # a patch fitting's width and height
+# The "AUTOMATIC / CAUTION / DOOR" decal on a slider's upper glass (#352), as the sensor doors
+# wear it: 7 px across, centred, about 1.45 blocks up, clear of the frame's top rail.
+STICKER_X = (4.5, 11.5)
+STICKER_Y = (3.75, 10.75)
+# How far it stands off each glass face: model_depth's GAP, which it would part the two faces to
+# anyway (it counts the glass as opaque); closer, and the depth buffer cannot hold them apart.
+STICKER_PROUD = model_depth.GAP
 
 
 def auto_finish(name):
@@ -1471,6 +1483,19 @@ def _frameless_panel(z, upper, slider, ends=(True, True)):
             box(0, 0, z0 - 0.25, 16, 1.25, z1 + 0.25, "#frame", faces=_but_faces("down"))]
 
 
+def _slider_sticker(z, frameless):
+    """The automatic door decal on a slider's upper glass (in the plane z): one thin element just
+    proud of both glass faces, drawing only those two broad faces, each the whole sticker
+    with its UVs written out, so each reads the right way round from its own side, and the open
+    model moves it with the panel. Added after any mirroring (which re-derives UVs). Not glass by
+    name, so CsmGlassLayerModel draws it in the cutout pass, in front of the glass."""
+    inset = 0.5 if frameless else 0.6
+    z0 = round(z[0] + inset - STICKER_PROUD, 4)
+    z1 = round(z[1] - inset + STICKER_PROUD, 4)
+    return box(STICKER_X[0], STICKER_Y[0], z0, STICKER_X[1], STICKER_Y[1], z1, "#sticker",
+               uv=(0, 0, 16, 16), faces=("north", "south"))
+
+
 def _header(sensor, slim=False, deep=False):
     """The operator header across the top of the upper half, fixed to the frame (TINT_FIXED),
     with a slider's motion sensor on each face; slim over the frameless doors, deep over the
@@ -1484,6 +1509,21 @@ def _header(sensor, slim=False, deep=False):
         els += [box(6, s0, z0 - 0.75, 10, s1, z0, "#pivot", faces=_but_faces("south")),
                 box(6, s0, z1, 10, s1, z1 + 0.75, "#pivot", faces=_but_faces("north"))]
     return _tint(els, TINT_FIXED)
+
+
+def _with_sticker(panel, right_panel, tex, frameless):
+    """A slider panel and its mirror with the decal added, and the textures naming it."""
+    sticker = _slider_sticker(SLIDER_Z, frameless)
+    return (panel + [sticker], right_panel + [json.loads(json.dumps(sticker))],
+            dict(tex, sticker=TEX_REF % "auto_door_sticker"))
+
+
+def _slider_models(out, base, panel, right_panel, fixed, tex):
+    """A one-cell slider's four models for one block: each hinge, shut and slid open."""
+    out[base + "_left"] = _model(panel + fixed, tex)
+    out[base + "_right"] = _model(right_panel + fixed, tex)
+    out[base + "_left_open"] = _model(_shift_x(panel, -SLIDE_PX) + fixed, tex)
+    out[base + "_right_open"] = _model(_shift_x(right_panel, SLIDE_PX) + fixed, tex)
 
 
 def auto_models():
@@ -1505,12 +1545,12 @@ def auto_models():
                 out["%s_%s" % (name, half)] = _model(left, tex)
                 continue
             right_panel = sc._mirror_x(panel)
-            out["%s_%s_left" % (name, half)] = _model(left, tex)
-            out["%s_%s_right" % (name, half)] = _model(right_panel + fixed, tex)
-            out["%s_%s_left_open" % (name, half)] = _model(_shift_x(panel, -SLIDE_PX) + fixed,
-                                                         tex)
-            out["%s_%s_right_open" % (name, half)] = _model(
-                _shift_x(right_panel, SLIDE_PX) + fixed, tex)
+            if upper:
+                # A tall slider's top block draws this upper half above its middle, well over
+                # eye height, so it gets the panel without the decal (the middle wears it).
+                _slider_models(out, "%s_upper_bare" % name, panel, right_panel, fixed, tex)
+                panel, right_panel, tex = _with_sticker(panel, right_panel, tex, frameless)
+            _slider_models(out, "%s_%s" % (name, half), panel, right_panel, fixed, tex)
         out[name + "_inventory"] = {"parent": "item/generated",
                                     "textures": {"layer0": TEX_REF % (name + "_icon")}}
     out.update(auto_multi_models())
@@ -1773,10 +1813,9 @@ def auto_tall_models():
         base = "auto_door_slider_" + finish
         panel = middle(SLIDER_Z)
         right = sc._mirror_x(panel)
-        out[base + "_middle_left"] = _model(panel, tex)
-        out[base + "_middle_right"] = _model(right, _tall_tex(finish))
-        out[base + "_middle_left_open"] = _model(_shift_x(panel, -SLIDE_PX), _tall_tex(finish))
-        out[base + "_middle_right_open"] = _model(_shift_x(right, SLIDE_PX), _tall_tex(finish))
+        # The tall slider wears its decal here, at the same height as a 2-tall one's upper half.
+        panel, right, sticker_tex = _with_sticker(panel, right, tex, frameless)
+        _slider_models(out, base + "_middle", panel, right, [], sticker_tex)
         out["auto_door_sidelite_%s_middle" % finish] = _model(middle(SIDELITE_Z),
                                                              _tall_tex(finish))
         for kind in ("wide", "tele"):
@@ -1845,7 +1884,7 @@ def auto_tall_states():
                 for open_ in (False, True):
                     when = {"kind": "slider", "hinge": hinge, "open": str(open_).lower(),
                             "swing": "false"}
-                    parts.append(_part(side, rot, when, "auto_door_slider_%s_upper_%s%s" % (
+                    parts.append(_part(side, rot, when, "auto_door_slider_%s_upper_bare_%s%s" % (
                         finish, hinge, "_open" if open_ else "")))
                     for kind in ("wide", "tele"):
                         for cell in range(AUTO_MULTI_CELLS[kind]):

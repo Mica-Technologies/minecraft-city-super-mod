@@ -3,6 +3,7 @@
     "frame": "csm:blocks/doors/auto_door_frame_stainless",
     "glass": "csm:blocks/doors/auto_door_glass",
     "pivot": "csm:blocks/doors/door_black",
+    "sticker": "csm:blocks/doors/auto_door_sticker",
     "particle": "csm:blocks/doors/auto_door_frame_stainless"
   },
   "elements": [
@@ -261,6 +262,38 @@
             10.0,
             2,
             12.25
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        -11.0,
+        3.75,
+        4.4
+      ],
+      "to": [
+        -4.0,
+        10.75,
+        5.35
+      ],
+      "faces": {
+        "north": {
+          "texture": "#sticker",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#sticker",
+          "uv": [
+            0,
+            0,
+            16,
+            16
           ]
         }
       }

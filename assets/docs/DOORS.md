@@ -681,7 +681,18 @@ built to be **free at rest**, where that one draws every custom door every frame
 - **Automatic doors say so (#352).** A sensor door wears an "AUTOMATIC / CAUTION / DOOR" decal at
   eye height on both faces of its upper panel (`CustomDoorGeometry.Part.STICKER`, baked only when
   the sensor is on). The texture is `auto_door_sticker`, from `gen_doors.auto_door_sticker`,
-  stitched by `CustomDoorRenderer.Events` since no JSON model names it.
+  stitched by `CustomDoorRenderer.Events` (the custom doors bake it themselves; the sliders'
+  JSON models below name it too).
+  - Every automatic sliding door (`auto_door_slider_<finish>`, frameless included) wears it too,
+    on both faces of its moving panel's upper glass: one element in the generated upper models
+    (`gen_doors._slider_sticker`), its two broad faces standing `model_depth.GAP` (0.2 px) off the
+    glass with full UVs written out, so it moves with the panel in the `_open` models. The
+    sidelites carry none, and nor do the wide and telescoping sliders yet. The slider is glass
+    fronted, and the sticker's texture is not named as glass, so `CsmGlassLayerModel` draws it by
+    alpha test in the cutout pass, in front of the glass; the texture is therefore all opaque or
+    clear pixels (`CsmGlassLayerTest`).
+  - A tall slider wears it on its middle block, at the same height. Its top block draws the
+    `auto_door_slider_<finish>_upper_bare_*` models, the upper half without the decal.
   - A click on an open sensor door does nothing but an action-bar line saying it is automatic
     (`clickOnlyOpens`); a click still opens a shut one. Automatic sliding doors behave the same
     way.
