@@ -173,12 +173,16 @@ NYC_CATALOGUE = [
     ("regular8", "guyed", 8, "NYC Signal Mast Arm, 8 Blocks"),
     ("diagonal4", "guyeddiagonal", 4, "NYC Signal Mast Arm, Diagonal, 4 Blocks"),
     ("diagonal6", "guyeddiagonal", 6, "NYC Signal Mast Arm, Diagonal, 6 Blocks"),
+    ("diagonal8", "guyeddiagonal", 8, "NYC Signal Mast Arm, Diagonal, 8 Blocks"),
+    ("diagonal12", "guyeddiagonal", 12, "NYC Signal Mast Arm, Diagonal, 12 Blocks"),
 ]
 # Where the pipe's centreline meets the pole's axis (px; the placed row is 0..16, so -12 is one
 # block down and -24 two). Chosen so the clamp collar stays inside one row of the pole and the
 # pipe climbs 13 to 16 degrees overall.
 GUYED_FOOT = {("guyed", 4): -12.0, ("guyed", 6): -24.0, ("guyed", 8): -27.0,
-              ("guyeddiagonal", 4): -23.0, ("guyeddiagonal", 6): -27.0}
+              ("guyeddiagonal", 4): -23.0, ("guyeddiagonal", 6): -27.0,
+              # The longer diagonals start lower, so they still climb about 13 degrees.
+              ("guyeddiagonal", 8): -40.0, ("guyeddiagonal", 12): -59.0}
 GUYED_TIP_Y = 5.0           # the pipe's centre at the tip
 GUYED_TIP_PAST = 3.5        # how far past the middle of the last cell the tip is
 GUYED_R_BUTT, GUYED_R_TIP = 2.8, 1.9
