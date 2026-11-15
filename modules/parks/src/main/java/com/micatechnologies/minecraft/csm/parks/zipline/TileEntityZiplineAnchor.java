@@ -21,9 +21,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityZiplineAnchor extends AbstractTileEntity {
 
   private static final String NBT_LINK = "zL";
+  private static final String NBT_LIGHTS = "zLt";
 
   @Nullable
   private BlockPos link;
+  /** A launch anchor's line lights, drawn along the cable. */
+  private boolean lights;
   /** The line, for a launch anchor with a link; worked out again when the link changes. */
   @Nullable
   private transient ZiplineLine line;
@@ -56,6 +59,22 @@ public class TileEntityZiplineAnchor extends AbstractTileEntity {
     }
   }
 
+  public boolean hasLights() {
+    return lights;
+  }
+
+  /**
+   * Turns the line's lights on or off, and sends it to the clients.
+   *
+   * @since 1.0
+   */
+  public void setLights(boolean on) {
+    lights = on;
+    if (world != null && !world.isRemote) {
+      markDirtyQueueSync(world, pos);
+    }
+  }
+
   /**
    * This launch anchor's line, or null if it is not a launch anchor or has no landing.
    *
@@ -79,6 +98,7 @@ public class TileEntityZiplineAnchor extends AbstractTileEntity {
     } else {
       link = null;
     }
+    lights = compound.getBoolean(NBT_LIGHTS);
     line = null;
   }
 
@@ -86,6 +106,9 @@ public class TileEntityZiplineAnchor extends AbstractTileEntity {
   public NBTTagCompound writeNBT(NBTTagCompound compound) {
     if (link != null) {
       compound.setLong(NBT_LINK, link.toLong());
+    }
+    if (lights) {
+      compound.setBoolean(NBT_LIGHTS, true);
     }
     return compound;
   }

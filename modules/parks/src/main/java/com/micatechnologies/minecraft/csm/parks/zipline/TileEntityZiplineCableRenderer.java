@@ -32,6 +32,9 @@ public class TileEntityZiplineCableRenderer
   private static final float RED = 0.42F;
   private static final float GREEN = 0.44F;
   private static final float BLUE = 0.47F;
+  /** Line lights: one every this many blocks along the cable, this half-size. */
+  private static final double LIGHT_SPACING = 6.0;
+  private static final double LIGHT_HALF = 0.07;
 
   @Override
   public void render(TileEntityZiplineAnchor te, double x, double y, double z,
@@ -61,6 +64,20 @@ public class TileEntityZiplineCableRenderer
       prev = p;
     }
     tess.draw();
+    if (te.hasLights()) {
+      // Warm beads along the cable, lit whatever the light around them.
+      OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+      Vec3d xAxis = new Vec3d(1, 0, 0);
+      Vec3d yAxis = new Vec3d(0, 1, 0);
+      Vec3d zAxis = new Vec3d(0, 0, 1);
+      Vec3d half = new Vec3d(LIGHT_HALF, LIGHT_HALF, LIGHT_HALF);
+      for (double s = LIGHT_SPACING / 2; s < line.length(); s += LIGHT_SPACING) {
+        ZiplineDraw.box(buf, line.point(s).add(0, -LIGHT_HALF, 0), xAxis, yAxis, zAxis, half,
+            1.0F, 0.86F, 0.55F);
+      }
+      tess.draw();
+    }
     GlStateManager.enableCull();
     GlStateManager.enableTexture2D();
     GlStateManager.popMatrix();

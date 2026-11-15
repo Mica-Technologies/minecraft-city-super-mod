@@ -638,4 +638,6 @@ csm.zipline.not_anchor=%s ist kein Seilrutschen-Anker.
 csm.zipline.role.launch=Startanker
 csm.zipline.role.landing=Landeanker
 csm.zipline.linker.tooltip=Startanker, dann Landeanker anklicken. Mit Schleichen-Klick die Strecke eines Ankers abbauen.
-csm.zipline.anchor.tooltip=Mit leerer Hand einen Startanker rechtsklicken, um mitzufahren.
+csm.zipline.anchor.tooltip=Mit leerer Hand rechtsklicken, um mitzufahren; mit Schleichen-Klick die Beleuchtung schalten.
+csm.zipline.lights_on=Streckenbeleuchtung an.
+csm.zipline.lights_off=Streckenbeleuchtung aus.

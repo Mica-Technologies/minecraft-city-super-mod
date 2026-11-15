@@ -20,6 +20,7 @@ import net.minecraft.world.World;
  * <pre>
  * /csmzipline link &lt;launch x y z&gt; &lt;landing x y z&gt;
  * /csmzipline unlink &lt;x y z&gt;
+ * /csmzipline lights &lt;launch x y z&gt; &lt;on|off&gt;
  * /csmzipline info &lt;x y z&gt;
  * </pre>
  *
@@ -40,7 +41,7 @@ public class CommandZipline extends CommandBase {
   @Override
   public String getUsage(ICommandSender sender) {
     return "/csmzipline link <x1> <y1> <z1> <x2> <y2> <z2> | /csmzipline unlink <x> <y> <z>"
-        + " | /csmzipline info <x> <y> <z>";
+        + " | /csmzipline lights <x> <y> <z> <on|off> | /csmzipline info <x> <y> <z>";
   }
 
   @Override
@@ -79,6 +80,23 @@ public class CommandZipline extends CommandBase {
               role(world, pos));
         }
         notifyCommandListener(sender, this, "csm.zipline.unlinked");
+        break;
+      }
+      case "lights": {
+        if (args.length != 5 || !("on".equals(args[4]) || "off".equals(args[4]))) {
+          throw new WrongUsageException(getUsage(sender));
+        }
+        BlockPos pos = parseBlockPos(sender, args, 1, false);
+        TileEntity te = Ziplines.anchorAt(world, pos);
+        IBlockState s = world.getBlockState(pos);
+        if (!(te instanceof TileEntityZiplineAnchor) || !(s.getBlock() instanceof BlockZiplineAnchor)
+            || !((BlockZiplineAnchor) s.getBlock()).isLaunch()) {
+          throw new CommandException("csm.zipline.not_launch", Ziplines.fmt(pos));
+        }
+        boolean on = "on".equals(args[4]);
+        ((TileEntityZiplineAnchor) te).setLights(on);
+        notifyCommandListener(sender, this, on ? "csm.zipline.lights_on"
+            : "csm.zipline.lights_off");
         break;
       }
       case "info": {
@@ -126,7 +144,10 @@ public class CommandZipline extends CommandBase {
   public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
       String[] args, @Nullable BlockPos targetPos) {
     if (args.length == 1) {
-      return getListOfStringsMatchingLastWord(args, "link", "unlink", "info");
+      return getListOfStringsMatchingLastWord(args, "link", "unlink", "lights", "info");
+    }
+    if (args.length == 5 && "lights".equals(args[0])) {
+      return getListOfStringsMatchingLastWord(args, "on", "off");
     }
     if (args.length >= 2 && args.length <= 7) {
       return getTabCompletionCoordinate(args, args.length <= 4 ? 1 : 4, targetPos);

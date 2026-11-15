@@ -638,4 +638,6 @@ csm.zipline.not_anchor=%s är inget linbaneankare.
 csm.zipline.role.launch=startankare
 csm.zipline.role.landing=landningsankare
 csm.zipline.linker.tooltip=Klicka på ett startankare och sedan ett landningsankare. Smyg-klicka på ett ankare för att ta ner linan.
-csm.zipline.anchor.tooltip=Högerklicka på ett startankare med tom hand för att åka.
+csm.zipline.anchor.tooltip=Högerklicka med tom hand för att åka; smyg-klicka för att tända eller släcka linans lampor.
+csm.zipline.lights_on=Linans lampor tända.
+csm.zipline.lights_off=Linans lampor släckta.

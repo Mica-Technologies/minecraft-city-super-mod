@@ -1014,6 +1014,15 @@ tracks are out of scope: the RCMC mod already does rides on track.
 - **Drawing.** The launch anchor's TESR (`TileEntityZiplineCableRenderer`, a global renderer out
   to 256 blocks) draws the cable as an untextured steel tube, a chord a block. `RenderZiplineTrolley`
   draws the housing, the hangers and the yellow grip bar. Both are a few hundred quads at most.
+- **Line lights.** Sneak-click a launch anchor with an empty hand, or
+  `/csmzipline lights <launch xyz> on|off`, to draw warm beads every 6 blocks along its cable,
+  lit whatever the light around them. The flag is kept on the launch anchor (`zLt`).
+- **No controlling passenger.** The trolley reports none, so the rider's client never sends
+  vehicle moves for it: a dedicated server without allow-flight would otherwise take the
+  client's positions and kick the rider for floating a vehicle.
+- **Survival.** The anchors are fabricated at the Parks tab's cost. The linker is crafted from
+  Core's `recipes/zipline_linker.json` (two iron ingots, two leads, a fastener kit), gated on
+  `csm_parks` being loaded.
 - **Assets.** `gen_zipline.py` writes the anchor models and blockstates, the linker's sprite and
   item model, and every zipline lang line in the four languages.
 

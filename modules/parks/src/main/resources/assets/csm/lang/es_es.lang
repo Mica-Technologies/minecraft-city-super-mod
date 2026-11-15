@@ -638,4 +638,6 @@ csm.zipline.not_anchor=%s no es un anclaje de tirolesa.
 csm.zipline.role.launch=anclaje de salida
 csm.zipline.role.landing=anclaje de llegada
 csm.zipline.linker.tooltip=Haz clic en un anclaje de salida y luego en uno de llegada. Agáchate y haz clic para desmontar la línea.
-csm.zipline.anchor.tooltip=Haz clic derecho con la mano vacía en un anclaje de salida para montar.
+csm.zipline.anchor.tooltip=Haz clic derecho con la mano vacía para montar; agáchate y haz clic para encender o apagar sus luces.
+csm.zipline.lights_on=Luces de la línea encendidas.
+csm.zipline.lights_off=Luces de la línea apagadas.

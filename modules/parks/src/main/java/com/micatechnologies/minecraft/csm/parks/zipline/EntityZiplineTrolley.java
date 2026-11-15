@@ -134,7 +134,7 @@ public class EntityZiplineTrolley extends Entity implements IEntityAdditionalSpa
       clientStep();
       return;
     }
-    Entity rider = getControllingPassenger();
+    Entity rider = rider();
     if (rider == null) {
       if (ticksExisted > 1) {
         setDead();
@@ -231,9 +231,14 @@ public class EntityZiplineTrolley extends Entity implements IEntityAdditionalSpa
     return false;
   }
 
-  @Override
+  /**
+   * The rider, or null. Not {@code getControllingPassenger}: nobody steers a trolley, and a
+   * controlling player's client would send the vehicle's moves, which a dedicated server takes
+   * (and kicks for "floating a vehicle too long" without allow-flight). With no controller the
+   * server alone moves it.
+   */
   @Nullable
-  public Entity getControllingPassenger() {
+  private Entity rider() {
     return getPassengers().isEmpty() ? null : getPassengers().get(0);
   }
 
