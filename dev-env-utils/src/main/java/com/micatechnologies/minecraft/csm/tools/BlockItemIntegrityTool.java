@@ -172,13 +172,16 @@ public class BlockItemIntegrityTool {
   private static final List<String> knownTabIds = new ArrayList<>();
   private static final List<String> knownItemIds = new ArrayList<>();
   private static final List<String> blockSetBlockIds = new ArrayList<>();
-  private static final List<File> usedBlockstateFiles = new ArrayList<>();
-  private static final List<File> usedBlockModelFiles = new ArrayList<>();
-  private static final List<File> usedItemModelFiles = new ArrayList<>();
-  private static final List<File> usedCustomModelFiles = new ArrayList<>();
-  private static final List<File> usedBlockTexturesFiles = new ArrayList<>();
-  private static final List<File> usedItemTexturesFiles = new ArrayList<>();
-  private static final List<File> usedSoundFiles = new ArrayList<>();
+  // Sets, not lists: every model and texture is added each time anything reaches it, and the
+  // lists grew to millions of duplicates that every contains() scanned, so a run over ~5,000
+  // blocks took over an hour on one core. Concurrent, as the block and item threads both add.
+  private static final Set<File> usedBlockstateFiles = ConcurrentHashMap.newKeySet();
+  private static final Set<File> usedBlockModelFiles = ConcurrentHashMap.newKeySet();
+  private static final Set<File> usedItemModelFiles = ConcurrentHashMap.newKeySet();
+  private static final Set<File> usedCustomModelFiles = ConcurrentHashMap.newKeySet();
+  private static final Set<File> usedBlockTexturesFiles = ConcurrentHashMap.newKeySet();
+  private static final Set<File> usedItemTexturesFiles = ConcurrentHashMap.newKeySet();
+  private static final Set<File> usedSoundFiles = ConcurrentHashMap.newKeySet();
 
   /** Source files already scanned for meta text, so a many-times-registered class is read once. */
   private static final Set<String> scannedSourceFiles = ConcurrentHashMap.newKeySet();
@@ -378,7 +381,7 @@ public class BlockItemIntegrityTool {
       // lists were checked only against their own folder, so an item model a blockstate names
       // ("csm:item/radar_speed_sign") landed in the block-model list and was reported unused.
       Set<String> usedPaths = new HashSet<>();
-      for (List<File> used : List.of(usedBlockstateFiles, usedBlockModelFiles, usedCustomModelFiles,
+      for (Set<File> used : List.of(usedBlockstateFiles, usedBlockModelFiles, usedCustomModelFiles,
           usedItemModelFiles, usedBlockTexturesFiles, usedItemTexturesFiles, usedSoundFiles)) {
         for (File file : used) {
           usedPaths.add(AssetUsage.canonical(file));
@@ -884,7 +887,7 @@ public class BlockItemIntegrityTool {
 
         AssetFolder parentModelFolder = null;
         String modelFileName = null;
-        List<File> usedModelFiles = null;
+        Set<File> usedModelFiles = null;
         if (strippedParentValue.startsWith("block/shared_models/")) {
           parentModelFolder = customModelsFolder;
           modelFileName = strippedParentValue.substring("block/shared_models/".length());
