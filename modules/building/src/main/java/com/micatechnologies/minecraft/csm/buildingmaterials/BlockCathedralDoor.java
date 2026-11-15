@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.function.Function;
@@ -77,7 +78,7 @@ import net.minecraft.world.World;
  * <p>The models come from {@code dev-env-utils/scripts/gen_cathedral_doors.py}, by way of
  * {@code gen_doors.py}.</p>
  *
- * @version 1.0
+ * @version 1.1
  * @since 2026.10
  */
 public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityProvider {
@@ -523,9 +524,29 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
     if (changed) {
       // Every client near enough makes the swing's tile entity on the master itself.
       world.addBlockEvent(master, block, EVENT_SWING, open ? 1 : 0);
+      // The master's tick ends the swing: see updateTick.
+      world.scheduleUpdate(master, block, SWING_TICKS);
       world.playSound(null, master, block.sound(open), SoundCategory.BLOCKS, 1.0F,
           world.rand.nextFloat() * 0.1F + 0.6F);
     }
+  }
+
+  /**
+   * The master's tick: a leaf's swing is over (#352). Every cell of the leaf is sent again to the
+   * players watching, and the clients are told to redraw it from its state now, so a lost or
+   * overtaken update cannot leave a leaf drawn shut that the server has open, or the other way.
+   *
+   * @since 1.1
+   */
+  @Override
+  public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+    if (worldIn.isRemote || !(state.getBlock() instanceof BlockCathedralDoor)) {
+      return;
+    }
+    for (BlockPos cell : leafCells(worldIn::getBlockState, pos, state)) {
+      BlockBuildingDoor.resend(worldIn, cell);
+    }
+    worldIn.addBlockEvent(pos, this, BlockBuildingDoor.EVENT_SETTLE, 0);
   }
 
   /**
@@ -538,6 +559,19 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
   @SuppressWarnings("deprecation")
   public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id,
       int param) {
+    if (id == BlockBuildingDoor.EVENT_SETTLE) {
+      if (worldIn.isRemote) {
+        TileEntity te = BlockUtils.getTileEntitySafe(worldIn, pos);
+        if (te instanceof TileEntityDoorSwing && ((TileEntityDoorSwing) te).progress(0F) < 1.0) {
+          return true; // a newer swing is still running, and redraws the leaf when it ends
+        }
+        if (te instanceof TileEntityDoorSwing) {
+          worldIn.removeTileEntity(pos);
+        }
+        redrawLeaf(worldIn, pos);
+      }
+      return true;
+    }
     if (id != EVENT_SWING) {
       return false;
     }

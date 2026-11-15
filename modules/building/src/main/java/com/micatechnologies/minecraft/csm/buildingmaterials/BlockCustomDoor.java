@@ -298,6 +298,8 @@ public class BlockCustomDoor extends BlockBuildingDoor {
     if (lower.getValue(OPEN) != open) {
       world.addBlockEvent(lowerPos, this, EVENT_MOVE, open ? 1 : 0);
       world.setBlockState(lowerPos, lower.withProperty(OPEN, open), 3);
+      // The upper half's tick ends the move: see settle.
+      world.scheduleUpdate(lowerPos.up(), this, Math.max(1, s.openTicks()));
       SoundEvent sound = s.sound().event(open);
       if (sound != null) {
         world.playSound(null, lowerPos, sound, SoundCategory.BLOCKS, 1.0F,
@@ -316,6 +318,20 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   @SuppressWarnings("deprecation")
   public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id,
       int param) {
+    if (id == EVENT_SETTLE) {
+      if (worldIn.isRemote) {
+        CustomDoorMotion.Move move = CustomDoorMotion.all().get(pos);
+        if (move != null && !move.done(worldIn.getTotalWorldTime())) {
+          return true; // a newer move is still running, and redraws the door when it ends
+        }
+        CustomDoorMotion.all().remove(pos);
+        IBlockState lower = worldIn.getBlockState(pos);
+        IBlockState upper = worldIn.getBlockState(pos.up());
+        worldIn.notifyBlockUpdate(pos, lower, lower, 8);
+        worldIn.notifyBlockUpdate(pos.up(), upper, upper, 8);
+      }
+      return true;
+    }
     if (id != EVENT_MOVE) {
       return false;
     }
@@ -343,6 +359,7 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   @Override
   public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
     if (state.getValue(HALF) != Half.LOWER) {
+      settle(worldIn, pos.down(), pos.down()); // the move is over (#352)
       return;
     }
     IBlockState door = whole(worldIn, pos);
