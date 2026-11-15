@@ -525,7 +525,7 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
       // Every client near enough makes the swing's tile entity on the master itself.
       world.addBlockEvent(master, block, EVENT_SWING, open ? 1 : 0);
       // The master's tick ends the swing: see updateTick.
-      world.scheduleUpdate(master, block, SWING_TICKS);
+      BlockBuildingDoor.scheduleSettle(world, master, block, SWING_TICKS);
       world.playSound(null, master, block.sound(open), SoundCategory.BLOCKS, 1.0F,
           world.rand.nextFloat() * 0.1F + 0.6F);
     }
@@ -540,7 +540,8 @@ public class BlockCathedralDoor extends AbstractBlock implements ICsmTileEntityP
    */
   @Override
   public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
-    if (worldIn.isRemote || !(state.getBlock() instanceof BlockCathedralDoor)) {
+    if (worldIn.isRemote || !(state.getBlock() instanceof BlockCathedralDoor)
+        || !BlockBuildingDoor.settleDue(worldIn, pos, this)) {
       return;
     }
     for (BlockPos cell : leafCells(worldIn::getBlockState, pos, state)) {

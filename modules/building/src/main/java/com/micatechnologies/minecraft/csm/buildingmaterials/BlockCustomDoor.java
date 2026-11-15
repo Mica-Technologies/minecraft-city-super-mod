@@ -299,7 +299,7 @@ public class BlockCustomDoor extends BlockBuildingDoor {
       world.addBlockEvent(lowerPos, this, EVENT_MOVE, open ? 1 : 0);
       world.setBlockState(lowerPos, lower.withProperty(OPEN, open), 3);
       // The upper half's tick ends the move: see settle.
-      world.scheduleUpdate(lowerPos.up(), this, Math.max(1, s.openTicks()));
+      scheduleSettle(world, lowerPos.up(), this, Math.max(1, s.openTicks()));
       SoundEvent sound = s.sound().event(open);
       if (sound != null) {
         world.playSound(null, lowerPos, sound, SoundCategory.BLOCKS, 1.0F,
@@ -359,7 +359,9 @@ public class BlockCustomDoor extends BlockBuildingDoor {
   @Override
   public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
     if (state.getValue(HALF) != Half.LOWER) {
-      settle(worldIn, pos.down(), pos.down()); // the move is over (#352)
+      if (settleDue(worldIn, pos, this)) {
+        settle(worldIn, pos.down(), pos.down()); // the move is over (#352)
+      }
       return;
     }
     IBlockState door = whole(worldIn, pos);
