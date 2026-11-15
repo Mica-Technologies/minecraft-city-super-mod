@@ -2,10 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyStyle;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBulbStyle;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalSectionInfo;
-import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalVisorType;
 import java.io.IOException;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -41,40 +38,8 @@ public class SignalHeadConfigGui extends GuiScreen {
   private static final int COPY_BUTTON_ID = 1004;
   private static final int PASTE_BUTTON_ID = 1005;
 
-  /**
-   * Client-side appearance clipboard for the Copy/Paste buttons. Static so a configuration copied
-   * from one signal head survives closing the GUI and persists until another copy (or game exit),
-   * letting players stamp the same look onto many heads. {@code null} until the first copy.
-   */
-  private static AppearanceClipboard clipboard = null;
-
-  /** Immutable snapshot of the copy/paste-able appearance properties of a signal head. */
-  private static final class AppearanceClipboard {
-    final TrafficSignalBodyColor bodyColor;
-    final TrafficSignalBodyColor doorColor;
-    final TrafficSignalBodyColor visorColor;
-    final TrafficSignalVisorType visorType;
-    final TrafficSignalBodyStyle bodyStyle;
-    final TrafficSignalBulbStyle bulbStyle;
-    final boolean agingEnabled;
-    final TrafficSignalBodyColor mountColor;
-    final boolean horizontalFlip;
-
-    AppearanceClipboard(TrafficSignalBodyColor bodyColor, TrafficSignalBodyColor doorColor,
-        TrafficSignalBodyColor visorColor, TrafficSignalVisorType visorType,
-        TrafficSignalBodyStyle bodyStyle, TrafficSignalBulbStyle bulbStyle, boolean agingEnabled,
-        TrafficSignalBodyColor mountColor, boolean horizontalFlip) {
-      this.bodyColor = bodyColor;
-      this.doorColor = doorColor;
-      this.visorColor = visorColor;
-      this.visorType = visorType;
-      this.bodyStyle = bodyStyle;
-      this.bulbStyle = bulbStyle;
-      this.agingEnabled = agingEnabled;
-      this.mountColor = mountColor;
-      this.horizontalFlip = horizontalFlip;
-    }
-  }
+  // The Copy/Paste buttons share SignalAppearanceClipboard with the signal cluster hanger's mount
+  // screen, so a hanger's colour can be pasted onto a head's mount and the other way round.
 
   // Per-section action button IDs are offset so they can't collide with whole-head ordinals.
   private static final int PER_SECTION_ID_OFFSET = 200;
@@ -205,7 +170,7 @@ public class SignalHeadConfigGui extends GuiScreen {
         "Copy Appearance"));
     GuiButton pasteButton = new GuiButton(PASTE_BUTTON_ID, rightX, copyPasteY, BUTTON_WIDTH,
         BUTTON_HEIGHT, "Paste Appearance");
-    pasteButton.enabled = clipboard != null;
+    pasteButton.enabled = !SignalAppearanceClipboard.isEmpty();
     buttonList.add(pasteButton);
 
     buttonList.add(new GuiButton(CLOSE_BUTTON_ID, width / 2 - BUTTON_WIDTH / 2,
@@ -410,20 +375,26 @@ public class SignalHeadConfigGui extends GuiScreen {
     if (button.id == COPY_BUTTON_ID) {
       TrafficSignalSectionInfo[] infos = tileEntity.getSectionInfos();
       if (infos != null && infos.length > 0) {
-        clipboard = new AppearanceClipboard(infos[0].getBodyColor(), infos[0].getDoorColor(),
+        SignalAppearanceClipboard.copyHead(new SignalAppearanceClipboard.HeadAppearance(
+            infos[0].getBodyColor(), infos[0].getDoorColor(),
             infos[0].getVisorColor(), infos[0].getVisorType(), infos[0].getBodyStyle(),
             infos[0].getBulbStyle(), tileEntity.isAgingEnabled(), tileEntity.getMountColor(),
-            tileEntity.isHorizontalFlip());
+            tileEntity.isHorizontalFlip()));
         initGui(); // rebuild so the Paste button becomes enabled
       }
       return;
     }
     if (button.id == PASTE_BUTTON_ID) {
+      SignalAppearanceClipboard.HeadAppearance clipboard = SignalAppearanceClipboard.head();
+      TrafficSignalBodyColor hangerColor = SignalAppearanceClipboard.hangerColor();
       if (clipboard != null) {
         CsmRoads.NETWORK.sendToServer(new SignalHeadAppearancePacket(blockPos,
             clipboard.bodyColor.toNBT(), clipboard.doorColor.toNBT(), clipboard.visorColor.toNBT(),
             clipboard.visorType.toNBT(), clipboard.bodyStyle.toNBT(), clipboard.bulbStyle.toNBT(),
             clipboard.mountColor.toNBT(), clipboard.agingEnabled, clipboard.horizontalFlip));
+      } else if (hangerColor != null) {
+        // A copied hanger colour paints only this head's mount, which it holds the head by.
+        CsmRoads.NETWORK.sendToServer(new MountColorPastePacket(blockPos, hangerColor.toNBT()));
       }
       return;
     }

@@ -1,3 +1,6 @@
+csm.signalappearance.copied_hanger=Hanger colour copied: %s
+csm.signalappearance.pasted_hanger=Hanger colour pasted: %s
+csm.signalappearance.pasted_mount=Mount colour pasted: %s
 csm.signalcontroller=McCain Model MC2000
 csm.signalcontroller.timing.allred=  All-red: %ss
 csm.signalcontroller.timing.green=  Green: %s–%ss

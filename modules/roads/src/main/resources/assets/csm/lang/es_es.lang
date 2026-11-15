@@ -1,3 +1,6 @@
+csm.signalappearance.copied_hanger=Color del colgador copiado: %s
+csm.signalappearance.pasted_hanger=Color del colgador pegado: %s
+csm.signalappearance.pasted_mount=Color del soporte pegado: %s
 csm.signalcontroller=McCain Modelo MC2000
 csm.signalcontroller.timing.allred=  Todo rojo: %ss
 csm.signalcontroller.timing.green=  Verde: %s–%ss
