@@ -84,7 +84,9 @@ of the file names by module). Read the doc itself before changing its subsystem.
 - `assets/docs/STATION_ALERTING_SYSTEM.md` -- A fire station's alerting: the controller, its
   linked speakers, alert lights, relays and bay clearance lights, the dispatch sequence, and why
   the relay's redstone is how it opens bay doors, strikes the gong and preempts traffic signals
-- `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals
+- `assets/docs/TRAFFIC_SIGNAL_SYSTEM.md` -- Controller system, signal phases, pedestrian signals;
+  the signal cluster hanger (3x3 footprint, frame and lower tie, arm/curve/span mounting, colour,
+  head post suppression, its display list)
 - `assets/docs/LANE_CONTROL_SYSTEM.md` -- Reversible lanes: the lane control signal, its own
   controller cabinet, groups on a time-of-day schedule, and why the clearance runs one way only
 - `assets/docs/LIGHTING_SYSTEM.md` -- 4-state on/off control, light-up air projection (the block and
@@ -120,7 +122,8 @@ of the file names by module). Read the doc itself before changing its subsystem.
 - `assets/docs/DYNAMIC_GUIDE_SIGN_SYSTEM.md` -- Highway guide signs: panel/row/element data model, TESR, FHWA legend font, sign atlas
 - `assets/docs/DYNAMIC_STREET_SIGN_SYSTEM.md` -- Street name blades: fixed-slot data model, hanging vs flat mount, double-sided rendering, civic logo atlas rows
 - `assets/docs/SPAN_WIRE_SYSTEM.md` -- Wire-span signal mounting: the catenary solver, why mounts
-  go below the cable, the three different ways a payload hangs, box span tether clearance
+  go below the cable, the three different ways a payload hangs, box span tether clearance; the old
+  cluster mount's retirement into the signal cluster hanger
 - `assets/docs/BRIDGE_CABLE_SYSTEM.md` -- Bridge cables (#323): stay, main, hanger and rope
   cables an anchor (socket, clevis, saddle, deck anchor) owns and draws to another anchor or any
   block; the NBT a bridge generator writes (one cable per `/blockdata`, added or replaced by

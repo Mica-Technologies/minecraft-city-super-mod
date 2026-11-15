@@ -27,7 +27,38 @@ public class TileEntitySignalClusterHanger extends TileEntitySpanWireClusterMoun
 
   private static final String COLOR_KEY = "scC";
 
+  /** The retired span wire cluster mount's hand-picked width, which the hanger has no use for. */
+  static final String RETIRED_WIDTH_KEY = "swCW";
+
+  /**
+   * The colour a retired span wire cluster mount becomes. Its hardware was a fixed steel grey
+   * (0.30, 0.31, 0.33); Battleship Gray is the body colour that still reads as galvanised steel.
+   */
+  public static final TrafficSignalBodyColor RETIRED_CLUSTER_MOUNT_COLOR =
+      TrafficSignalBodyColor.BATTLESHIP_GRAY;
+
   private TrafficSignalBodyColor color = TrafficSignalBodyColor.FLAT_BLACK;
+
+  /**
+   * A retired span wire cluster mount's tile entity data, made into a hanger's.
+   *
+   * <p>Everything the two share is kept as it is: the span (cable, sag, signal side, the box
+   * span's tether and its anchors), the mount style and the coil style. The width is dropped,
+   * since the hanger finds its heads itself, and the colour is set to
+   * {@link #RETIRED_CLUSTER_MOUNT_COLOR}, the old steel. A colour already present is kept.
+   *
+   * @param old the old mount's NBT; not changed
+   *
+   * @return a new compound for the hanger to read
+   */
+  public static NBTTagCompound fromRetiredClusterMountNBT(NBTTagCompound old) {
+    final NBTTagCompound converted = old.copy();
+    converted.removeTag(RETIRED_WIDTH_KEY);
+    if (!converted.hasKey(COLOR_KEY)) {
+      converted.setInteger(COLOR_KEY, RETIRED_CLUSTER_MOUNT_COLOR.toNBT());
+    }
+    return converted;
+  }
 
   /** How often, in ticks, the block above is read again: an arm placed later is picked up. */
   private static final long UPPER_MOUNT_REFRESH_TICKS = 20L;

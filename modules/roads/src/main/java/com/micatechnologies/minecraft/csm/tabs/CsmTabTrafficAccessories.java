@@ -45,7 +45,6 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleHor
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPolePedestal;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSignalClusterHanger;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireAnchor;
-import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireClusterMount;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireDisconnectBox;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireGuyAnchor;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
@@ -189,7 +188,8 @@ public class CsmTabTrafficAccessories extends CsmTab {
       new AxisAlignedBB(1.437500, -0.250000, 0.500000, 1.562500, 0.000000, 0.875000);
   private static final AxisAlignedBB BB_PLUMBIZER_SIGNAL_MOUNT =
       new AxisAlignedBB(0.375000, 0.250000, 0.000000, 0.625000, 0.500000, 1.000000);
-  private static final AxisAlignedBB BB_TLITE_VERT_WIRE_MOUNT =
+  /** Package-visible: the retired span wire cluster mount in {@link CsmTabRoadsHidden} keeps it. */
+  static final AxisAlignedBB BB_TLITE_VERT_WIRE_MOUNT =
       new AxisAlignedBB(0.437500, 0.500000, 0.437500, 0.562500, 1.000000, 0.937500);
   private static final AxisAlignedBB BB_TRAFFIC_POLE_BASE =
       new AxisAlignedBB(0.000000, 0.000000, 0.000000, 1.000000, 1.000000, 1.000000);
@@ -404,7 +404,7 @@ public class CsmTabTrafficAccessories extends CsmTab {
     // Unlinked they are the same decorative mounts they have always been.
     initTabBlock(new BlockSpanWireHangerMount("tlitehorzwiremount", BB_TLITE_HORZ_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockSpanWireHangerMount("tlitevertwiremount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
-    initTabBlock(new BlockSpanWireClusterMount("spanwireclustermount", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
+    // The old span wire cluster mount is retired into this hanger (CsmTabRoadsHidden).
     initTabBlock(new BlockSignalClusterHanger("signal_cluster_hanger", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.SOLID, 1F, true));
     initTabBlock(new BlockSpanWireDisconnectBox("spanwiredisconnectbox", BB_TLITE_VERT_WIRE_MOUNT, BlockRenderLayer.CUTOUT_MIPPED, 1F, false));
     initTabBlock(new BlockSpanWireAnchor());

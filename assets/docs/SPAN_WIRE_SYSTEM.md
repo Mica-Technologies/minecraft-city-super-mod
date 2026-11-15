@@ -26,8 +26,9 @@ Everything lives in `trafficaccessories/spanwire/`.
 
 * **Anchors** (`spanwireanchor`) terminate the span on a pole. Two of them define it.
 * **Mounts** are the existing `tlitehorzwiremount` / `tlitevertwiremount` blocks, plus
-  `spanwireclustermount` for two-to-four heads on one bracket and `spanwiredisconnectbox` for the
-  break-out box. All four share one tile entity type's behaviour.
+  `signal_cluster_hanger` for a cluster of heads and `spanwiredisconnectbox` for the break-out box.
+  All of them share one tile entity type's behaviour. The old `spanwireclustermount` is retired
+  into the hanger (see "Clusters: the signal cluster hanger" below).
 * **Guy anchors** (`spanwireguyanchor`) sit on the ground behind a pole. A back-guy is
   **optional and explicit** — see below.
 * The **span wire tool** (`spanwiretool`) links two anchors. Mounts between them are found
@@ -47,9 +48,10 @@ Everything lives in `trafficaccessories/spanwire/`.
 | Remove a back-guy | Sneak + click the ground anchor |
 
 A mount's screen carries mount style (flush or extending mast), conductor coil (off, one side,
-both), signal side, lower tether, cable sag, and cluster width on a cluster mount. The last row is drawn only
-for a cluster, so **cluster width must stay last in `SpanWireMountConfigAction`** -- the screen
-draws one row per enum value in order and simply leaves the final one off.
+both), signal side, lower tether and cable sag, plus one extra row by mount type: hanger colour on
+a signal cluster hanger, cluster width on the retired cluster mount. The rows are a per-tile-entity
+list in `SpanWireMountConfigGui`, so new `SpanWireMountConfigAction` values are appended and never
+reordered (the packet sends the ordinal).
 
 Signal side, lower tether and cable sag apply to the **whole span**, not the mount they are set
 from. The wires are single runs; a per-mount answer would let them zigzag, exist along only part
@@ -235,6 +237,28 @@ blockstate maps `linked=true` to `shared_models/span_wire_hidden`, a model with 
 The **disconnect box deliberately has no such variant**: its model *is* the object hanging on the
 wire, so it must keep drawing when linked. That distinction lives in the blockstate JSON, not in
 code — a new mount block opts in or out by what its own blockstate says.
+
+## Clusters: the signal cluster hanger
+
+The cluster block is now the **signal cluster hanger** (`signal_cluster_hanger`), which hangs from a
+span, a mast arm or anything solid, claims the heads in the 3x3 columns below it and draws its
+frame in any signal body colour. How it works is in `TRAFFIC_SIGNAL_SYSTEM.md`, "Signal cluster
+hanger".
+
+The original `spanwireclustermount` (a straight bar along the cable, two to four heads, width set
+by hand, steel only) is **retired** into it. It sits in `CsmTabRoadsHidden` with the
+hanger as its `ICsmRetiringBlock` replacement, so a placed one becomes a hanger on a random tick.
+`BlockSpanWireClusterMount.configureReplacement` runs its NBT through
+`TileEntitySignalClusterHanger.fromRetiredClusterMountNBT` (span, tether, mount and coil style
+kept; width dropped; colour Battleship Gray for the old steel) and then re-applies the span to
+every attachment, because the swap's `breakBlock` has just dropped the mount out of it. Heads
+under a retired mount stop sliding onto its bar and the frame reaches them where they are; a
+fourth head two columns along a width-4 bar is outside the 3x3 footprint and is left unclaimed.
+
+The hanger is built on the cluster mount's tile entity (`TileEntitySignalClusterHanger extends
+TileEntitySpanWireClusterMount`), so the sections below still describe machinery it uses: the mast
+foot (the hanger moves it to its frame hub), the clamp, the lower tie and the zero rise. The bar
+along the cable, its width and the slide are the retired block's alone.
 
 ## A cluster hangs from the middle of its bracket
 

@@ -85,6 +85,17 @@ public class BlockSpanWireHangerMount extends BlockTrafficAccessoryNSEWUD
     super(registryName, boundingBox, renderLayer, hardness, fullCube);
   }
 
+  /**
+   * A mount that retires into another block on a random tick ({@code ICsmRetiringBlock}).
+   *
+   * @param replacementBlockId the block it becomes, or null for a live block
+   */
+  protected BlockSpanWireHangerMount(String registryName, AxisAlignedBB boundingBox,
+      BlockRenderLayer renderLayer, float hardness, boolean fullCube,
+      @javax.annotation.Nullable String replacementBlockId) {
+    super(registryName, boundingBox, renderLayer, hardness, fullCube, replacementBlockId);
+  }
+
   @Override
   public Class<? extends TileEntity> getTileEntityClass() {
     return TileEntitySpanWireHanger.class;
