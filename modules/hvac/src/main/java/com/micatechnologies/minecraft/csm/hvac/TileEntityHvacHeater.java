@@ -95,9 +95,13 @@ public class TileEntityHvacHeater extends AbstractTileEntity implements IHvacUni
   @Override
   public void onLoad() {
     super.onLoad();
+    register();
+  }
+
+  private void register() {
     HvacThermalWorld w = HvacThermal.get(world);
     if (w != null) {
-      w.registerAnchor(pos, ThermalAnchor.UNIT, Float.NaN);
+      w.registerAnchor(pos, ThermalAnchor.UNIT, Float.NaN, this);
     }
   }
 
@@ -116,7 +120,7 @@ public class TileEntityHvacHeater extends AbstractTileEntity implements IHvacUni
   private void unregister() {
     HvacThermalWorld w = HvacThermal.peek(world);
     if (w != null) {
-      w.unregisterAnchor(pos);
+      w.unregisterAnchor(pos, this);
     }
   }
 
@@ -128,6 +132,10 @@ public class TileEntityHvacHeater extends AbstractTileEntity implements IHvacUni
   public void readNBT(NBTTagCompound compound) {
     this.storedEnergy = compound.getInteger(NBT_ENERGY_KEY);
     this.output = compound.getFloat(NBT_OUTPUT_KEY);
+    // A write to a unit in place takes up its anchor again if it had lost it (#353).
+    if (HvacThermal.isLive(this)) {
+      register();
+    }
   }
 
   @Override

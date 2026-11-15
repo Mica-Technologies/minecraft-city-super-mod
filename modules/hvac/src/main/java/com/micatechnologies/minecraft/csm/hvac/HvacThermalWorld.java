@@ -297,11 +297,24 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * @param savedTemp the temperature the device saved, or NaN
    */
   void registerAnchor(BlockPos pos, int kind, float savedTemp) {
+    registerAnchor(pos, kind, savedTemp, null);
+  }
+
+  /**
+   * Registers a device as an anchor owned by its tile entity, or refreshes its saved temperature
+   * and takes it over if it already is one: the newest instance at a position is its owner, and
+   * only the owner's {@link #unregisterAnchor(BlockPos, Object)} removes it.
+   *
+   * @param savedTemp the temperature the device saved, or NaN
+   * @param owner     the tile entity registering, or null to register by position alone
+   */
+  void registerAnchor(BlockPos pos, int kind, float savedTemp, @Nullable Object owner) {
     ThermalAnchor a = anchors.get(pos);
     if (a != null && a.kind == kind) {
       if (a.space == null && !Float.isNaN(savedTemp)) {
         a.savedTemp = savedTemp;
       }
+      a.owner = owner;
       return;
     }
     if (a != null) {
@@ -309,12 +322,34 @@ public final class HvacThermalWorld implements IWorldEventListener {
     }
     a = new ThermalAnchor(pos, kind);
     a.savedTemp = savedTemp;
+    a.owner = owner;
     anchors.put(a.pos, a);
     anchorsByChunk.computeIfAbsent(chunkKey(pos.getX() >> 4, pos.getZ() >> 4),
         k -> new ArrayList<>()).add(a);
   }
 
-  /** Removes a device anchor. The space goes with it if it was the last one. */
+  /**
+   * Removes a device anchor for the tile entity leaving the world, unless a newer instance at the
+   * same position has registered it since (#353): an old instance's deferred unload or
+   * invalidation then leaves the live one's anchor alone.
+   *
+   * @param owner the tile entity leaving
+   */
+  void unregisterAnchor(BlockPos pos, Object owner) {
+    ThermalAnchor a = anchors.get(pos);
+    if (a != null && a.owner != null && a.owner != owner) {
+      return;
+    }
+    unregisterAnchor(pos);
+  }
+
+  /** Whether {@code owner} registered the anchor at a position, or it has none of its own. */
+  boolean ownsAnchor(BlockPos pos, Object owner) {
+    ThermalAnchor a = anchors.get(pos);
+    return a != null && (a.owner == null || a.owner == owner);
+  }
+
+  /** Removes a device anchor, whoever registered it. The space goes with it if it was the last. */
   void unregisterAnchor(BlockPos pos) {
     ThermalAnchor a = anchors.remove(pos);
     if (a == null) {

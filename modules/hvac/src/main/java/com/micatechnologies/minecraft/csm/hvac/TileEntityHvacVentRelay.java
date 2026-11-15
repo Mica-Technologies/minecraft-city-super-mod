@@ -46,7 +46,7 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity {
     }
     HvacThermalWorld w = HvacThermal.get(world);
     if (w != null) {
-      w.registerAnchor(pos, ThermalAnchor.VENT, savedTemp);
+      w.registerAnchor(pos, ThermalAnchor.VENT, savedTemp, this);
     }
   }
 
@@ -64,12 +64,12 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity {
 
   private void unregister() {
     HvacThermalWorld w = HvacThermal.peek(world);
-    if (w != null) {
+    if (w != null && w.ownsAnchor(pos, this)) {
       ThermalAnchor a = w.anchor(pos);
       if (a != null && !Float.isNaN(a.temperature())) {
         savedTemp = a.temperature();
       }
-      w.unregisterAnchor(pos);
+      w.unregisterAnchor(pos, this);
     }
   }
 
@@ -124,7 +124,7 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity {
     // A chunk load reads before the world is set, and onLoad registers after it. A world already
     // set means a write to a vent that is in place (/setblock with a data tag, /blockdata): onLoad
     // has run and will not run again, so the link is taken up, or dropped, here.
-    if (world != null) {
+    if (HvacThermal.isLive(this)) {
       if (linkedThermostatPos != null) {
         register();
       } else {

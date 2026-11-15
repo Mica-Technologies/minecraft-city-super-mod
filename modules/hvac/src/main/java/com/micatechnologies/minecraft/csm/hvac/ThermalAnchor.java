@@ -22,6 +22,15 @@ final class ThermalAnchor {
   final int kind;
 
   /**
+   * The tile entity that registered this anchor last, or null for one registered by position
+   * alone. Only that instance may unregister it (#353): a chunk unloaded and loaded again within
+   * one tick has a new tile entity register before the old one's deferred {@code onChunkUnload}
+   * runs, and that old instance, going by position alone, used to take the new one's anchor away
+   * with it -- leaving a thermostat or unit that no system ever stepped again.
+   */
+  Object owner;
+
+  /**
    * The temperature this anchor last saw, from its tile entity's saved data or from its space
    * just before the space was rebuilt. A space that is found again after a chunk unload, a server
    * restart or a rescan starts from these, so a room that was warm comes back warm.
