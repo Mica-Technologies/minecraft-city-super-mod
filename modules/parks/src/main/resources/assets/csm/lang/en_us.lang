@@ -638,4 +638,6 @@ csm.zipline.not_anchor=%s is not a zipline anchor.
 csm.zipline.role.launch=launch anchor
 csm.zipline.role.landing=landing anchor
 csm.zipline.linker.tooltip=Click a launch anchor, then a landing anchor. Sneak-click an anchor to take its line down.
-csm.zipline.anchor.tooltip=Right-click a launch anchor with an empty hand to ride its line.
+csm.zipline.anchor.tooltip=Right-click with an empty hand to ride its line; sneak-click to turn its lights on or off.
+csm.zipline.lights_on=Line lights on.
+csm.zipline.lights_off=Line lights off.

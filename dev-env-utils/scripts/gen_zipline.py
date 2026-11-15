@@ -151,10 +151,20 @@ MESSAGES = {
         "Klicka på ett startankare och sedan ett landningsankare. Smyg-klicka på ett ankare för"
         " att ta ner linan."],
     "csm.zipline.anchor.tooltip": [
-        "Right-click a launch anchor with an empty hand to ride its line.",
-        "Mit leerer Hand einen Startanker rechtsklicken, um mitzufahren.",
-        "Haz clic derecho con la mano vacía en un anclaje de salida para montar.",
-        "Högerklicka på ett startankare med tom hand för att åka."],
+        "Right-click with an empty hand to ride its line; sneak-click to turn its lights on or"
+        " off.",
+        "Mit leerer Hand rechtsklicken, um mitzufahren; mit Schleichen-Klick die Beleuchtung"
+        " schalten.",
+        "Haz clic derecho con la mano vacía para montar; agáchate y haz clic para encender o"
+        " apagar sus luces.",
+        "Högerklicka med tom hand för att åka; smyg-klicka för att tända eller släcka linans"
+        " lampor."],
+    "csm.zipline.lights_on": [
+        "Line lights on.", "Streckenbeleuchtung an.", "Luces de la línea encendidas.",
+        "Linans lampor tända."],
+    "csm.zipline.lights_off": [
+        "Line lights off.", "Streckenbeleuchtung aus.", "Luces de la línea apagadas.",
+        "Linans lampor släckta."],
 }
 
 

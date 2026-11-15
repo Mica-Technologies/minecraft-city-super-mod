@@ -19,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -81,9 +82,24 @@ public class BlockZiplineAnchor extends AbstractBlock implements ICsmTileEntityP
   public boolean onBlockActivated(World world, BlockPos pos, IBlockState state,
       EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY,
       float hitZ) {
-    if (hand != EnumHand.MAIN_HAND || !player.getHeldItem(hand).isEmpty()
-        || player.isSneaking()) {
+    if (hand != EnumHand.MAIN_HAND || !player.getHeldItem(hand).isEmpty()) {
       return false;
+    }
+    if (player.isSneaking()) {
+      // Sneak-click a launch anchor: its line's lights on or off.
+      if (!isLaunch()) {
+        return false;
+      }
+      if (!world.isRemote) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntityZiplineAnchor) {
+          TileEntityZiplineAnchor anchor = (TileEntityZiplineAnchor) te;
+          anchor.setLights(!anchor.hasLights());
+          player.sendStatusMessage(new TextComponentTranslation(anchor.hasLights()
+              ? "csm.zipline.lights_on" : "csm.zipline.lights_off"), true);
+        }
+      }
+      return true;
     }
     if (!world.isRemote) {
       if (isLaunch()) {

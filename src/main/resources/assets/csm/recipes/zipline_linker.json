@@ -1,0 +1,30 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_parks"
+    }
+  ],
+  "pattern": [
+    " I ",
+    "LFL",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore": "ingotIron"
+    },
+    "L": {
+      "item": "minecraft:lead"
+    },
+    "F": {
+      "item": "csm:part_fastener_kit"
+    }
+  },
+  "result": {
+    "item": "csm:zipline_linker",
+    "count": 1
+  }
+}
