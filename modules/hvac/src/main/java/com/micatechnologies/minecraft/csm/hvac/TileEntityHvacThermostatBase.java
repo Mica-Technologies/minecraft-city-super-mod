@@ -28,7 +28,7 @@ import net.minecraftforge.common.util.Constants;
  * @since 2026.9
  */
 public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
-    implements IHvacThermostatDisplay {
+    implements IHvacThermostatDisplay, IHvacAnchorDevice {
 
   // Short NBT keys; LEGACY_* are read so worlds saved before the short keys still load.
   static final String NBT_TARGET_TEMP_LOW = "tLo";
@@ -98,6 +98,11 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
   @Override
   public void onLoad() {
     super.onLoad();
+    register();
+  }
+
+  @Override
+  public void ensureAnchor() {
     register();
   }
 

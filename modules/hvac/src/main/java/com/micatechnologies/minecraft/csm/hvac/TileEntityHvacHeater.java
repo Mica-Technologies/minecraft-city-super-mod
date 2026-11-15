@@ -22,7 +22,8 @@ import net.minecraftforge.energy.IEnergyStorage;
  * @author Mica Technologies
  * @since 2026.4
  */
-public class TileEntityHvacHeater extends AbstractTileEntity implements IHvacUnit, IEnergyStorage {
+public class TileEntityHvacHeater extends AbstractTileEntity
+    implements IHvacUnit, IEnergyStorage, IHvacAnchorDevice {
 
   private static final String NBT_ENERGY_KEY = "energy";
   private static final String NBT_OUTPUT_KEY = "out";
@@ -95,6 +96,11 @@ public class TileEntityHvacHeater extends AbstractTileEntity implements IHvacUni
   @Override
   public void onLoad() {
     super.onLoad();
+    register();
+  }
+
+  @Override
+  public void ensureAnchor() {
     register();
   }
 

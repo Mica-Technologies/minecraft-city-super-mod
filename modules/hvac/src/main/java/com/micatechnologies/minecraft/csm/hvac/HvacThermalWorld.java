@@ -1072,8 +1072,74 @@ public final class HvacThermalWorld implements IWorldEventListener {
    * own (see {@link #PHASE_STEP}), and rooms still to be built (a building's chunks have just
    * loaded) take a slice of {@link #ATTACH_BUDGET_NANOS} every tick until they are all built.
    */
+  // region Chunk-load anchor audit (#353)
+
+  /**
+   * Chunks that have loaded and are due an audit: {chunk key, due tick}. Each loaded chunk is
+   * audited twice, a tick after it loads and again {@link #AUDIT_LATE_TICKS} later, so a
+   * registration that goes missing just after the load is caught too.
+   */
+  private final java.util.ArrayDeque<long[]> chunkAudits = new java.util.ArrayDeque<>();
+  /** The late passes, kept apart so each queue stays in due order and is read from its head. */
+  private final java.util.ArrayDeque<long[]> lateChunkAudits = new java.util.ArrayDeque<>();
+
+  private static final long AUDIT_LATE_TICKS = 40L;
+
+  /** A chunk has loaded: audit its HVAC devices shortly, once the load has settled. */
+  void queueChunkAudit(int cx, int cz) {
+    long now = world.getTotalWorldTime();
+    long key = chunkKey(cx, cz);
+    chunkAudits.add(new long[]{key, now + 1L});
+    lateChunkAudits.add(new long[]{key, now + AUDIT_LATE_TICKS});
+  }
+
+  /**
+   * Makes sure every HVAC device in the chunks due an audit is its anchor's owner (#353). A
+   * thermostat whose chunk loaded was on the live server sometimes left without an anchor after a
+   * reload, so its system never stepped until something rewrote it, and only for particular
+   * thermostats, every time. Whatever loses that registration, this puts it back from the chunk's
+   * own tile entities, and says where, so the cause can be found.
+   */
+  private void runChunkAudits(long now) {
+    int repaired = 0;
+    BlockPos first = null;
+    for (java.util.ArrayDeque<long[]> queue : java.util.Arrays.asList(chunkAudits,
+        lateChunkAudits)) {
+      while (!queue.isEmpty() && queue.peek()[1] <= now) {
+        long key = queue.poll()[0];
+        int cx = (int) key; // chunkKey packs x low and z high
+        int cz = (int) (key >> 32);
+        net.minecraft.world.chunk.Chunk chunk = world.getChunkProvider().getLoadedChunk(cx, cz);
+        if (chunk == null) {
+          continue;
+        }
+        for (TileEntity te : new ArrayList<>(chunk.getTileEntityMap().values())) {
+          if (!(te instanceof IHvacAnchorDevice) || te.isInvalid()) {
+            continue;
+          }
+          ThermalAnchor before = anchors.get(te.getPos());
+          ((IHvacAnchorDevice) te).ensureAnchor();
+          ThermalAnchor after = anchors.get(te.getPos());
+          if (after != null && (before == null || before.owner != te)) {
+            repaired++;
+            if (first == null) {
+              first = te.getPos();
+            }
+          }
+        }
+      }
+    }
+    if (repaired > 0) {
+      CsmHvac.getLogger().info("HVAC re-registered {} device(s) a chunk load left without an "
+          + "anchor, first at {} {} {} (#353)", repaired, first.getX(), first.getY(), first.getZ());
+    }
+  }
+
+  // endregion
+
   void tick() {
     long now = world.getTotalWorldTime();
+    runChunkAudits(now);
     if (perf.sinceTick == Long.MIN_VALUE) {
       perf.reset(now);
     }

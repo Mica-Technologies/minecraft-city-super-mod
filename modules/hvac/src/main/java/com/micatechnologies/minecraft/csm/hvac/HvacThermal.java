@@ -114,6 +114,19 @@ public final class HvacThermal {
     }
   }
 
+  /** A chunk has loaded on the server: its HVAC devices are audited shortly (#353). */
+  @SubscribeEvent
+  public void onChunkLoad(ChunkEvent.Load event) {
+    World world = event.getWorld();
+    if (world == null || world.isRemote) {
+      return;
+    }
+    HvacThermalWorld w = peek(world);
+    if (w != null) {
+      w.queueChunkAudit(event.getChunk().x, event.getChunk().z);
+    }
+  }
+
   @SubscribeEvent
   public void onChunkUnload(ChunkEvent.Unload event) {
     World world = event.getWorld();
