@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javax.annotation.Nullable;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -63,6 +64,20 @@ public final class HvacThermal {
     synchronized (WORLDS) {
       return WORLDS.get(world);
     }
+  }
+
+  /**
+   * Whether a tile entity is the live one at its position in a loaded server world: not a copy a
+   * tool made and read data into, and not an instance already replaced or unloaded. Only the live
+   * instance takes up an anchor outside {@code onLoad} (#353).
+   */
+  static boolean isLive(TileEntity te) {
+    World world = te.getWorld();
+    if (world == null || world.isRemote || te.isInvalid()) {
+      return false;
+    }
+    BlockPos pos = te.getPos();
+    return world.isBlockLoaded(pos, false) && world.getTileEntity(pos) == te;
   }
 
   /**

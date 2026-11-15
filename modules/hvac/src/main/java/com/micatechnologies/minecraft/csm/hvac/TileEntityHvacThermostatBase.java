@@ -98,9 +98,14 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
   @Override
   public void onLoad() {
     super.onLoad();
+    register();
+  }
+
+  private void register() {
     HvacThermalWorld w = HvacThermal.get(world);
     if (w != null) {
-      w.registerAnchor(pos, anchorKind(), temperatureKnown ? currentTemperature : Float.NaN);
+      w.registerAnchor(pos, anchorKind(), temperatureKnown ? currentTemperature : Float.NaN,
+          this);
     }
   }
 
@@ -118,7 +123,7 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
 
   private void detachFromSimulation() {
     HvacThermalWorld w = HvacThermal.peek(world);
-    if (w != null) {
+    if (w != null && w.ownsAnchor(pos, this)) {
       ThermalAnchor a = w.anchor(pos);
       if (a != null) {
         float t = a.temperature();
@@ -127,7 +132,7 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
           temperatureKnown = true;
         }
       }
-      w.unregisterAnchor(pos);
+      w.unregisterAnchor(pos, this);
     }
   }
 
@@ -273,6 +278,12 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
     compound.removeTag(LEGACY_NBT_LINKED_VENTS);
     compound.removeTag(OLD_NBT_RAMP_TICKS);
     compound.removeTag(LEGACY_OLD_NBT_RAMP_TICKS);
+    // A write to a thermostat in place (/blockdata, a build tool's NBT merge) takes up the anchor
+    // again if it had lost it, as a vent's does (#353). A chunk load reads before the world is
+    // set, and onLoad registers after it.
+    if (HvacThermal.isLive(this)) {
+      register();
+    }
   }
 
   @Override
