@@ -165,6 +165,14 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       Collections.synchronizedMap(new WeakHashMap<>());
 
   /** Which doors were last seen powered, per world, to act only when the signal changes. */
+  /**
+   * When each door's latest move ends, by the cell whose tick ends it (#352). A door clicked again
+   * mid-swing asks for a second tick at a cell that already has one pending, which the server
+   * drops; the pending tick finds the move still going and waits on for it ({@link #settleDue}).
+   */
+  private static final Map<World, Map<BlockPos, Long>> SETTLE_AT =
+      Collections.synchronizedMap(new WeakHashMap<>());
+
   private static final Map<World, Set<BlockPos>> POWERED =
       Collections.synchronizedMap(new WeakHashMap<>());
 
@@ -674,7 +682,7 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       // Every client near enough to see it makes the swing's tile entity itself (eventReceived);
       // the server keeps only a pending tick on the upper half, so it knows the door is moving.
       world.addBlockEvent(lowerPos.up(), this, EVENT_SWING, open ? 1 : 0);
-      world.scheduleUpdate(lowerPos.up(), this, motionTicks());
+      scheduleSettle(world, lowerPos.up(), this, motionTicks());
       world.playSound(null, lowerPos, sound(open), SoundCategory.BLOCKS, 1.0F,
           world.rand.nextFloat() * 0.1F + 0.9F);
     }
@@ -796,6 +804,39 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
   }
 
   /**
+   * Schedules the tick that ends a move at {@code tickPos}, {@code ticks} from now, and records
+   * that time as the latest move's end there.
+   *
+   * @since 1.2
+   */
+  static void scheduleSettle(World world, BlockPos tickPos, Block block, int ticks) {
+    SETTLE_AT.computeIfAbsent(world, w -> new HashMap<>())
+        .put(tickPos.toImmutable(), world.getTotalWorldTime() + ticks);
+    world.scheduleUpdate(tickPos, block, ticks);
+  }
+
+  /**
+   * Whether the latest move ended by the tick at {@code tickPos} is over. If it is still going (the
+   * door was clicked again while it moved), the tick is scheduled again for the rest of it, so the
+   * last move settles too. With no time recorded (the server restarted) it is over.
+   *
+   * @since 1.2
+   */
+  static boolean settleDue(World world, BlockPos tickPos, Block block) {
+    Map<BlockPos, Long> due = SETTLE_AT.get(world);
+    Long at = due == null ? null : due.get(tickPos);
+    long now = world.getTotalWorldTime();
+    if (at != null && now < at) {
+      world.scheduleUpdate(tickPos, block, (int) (at - now));
+      return false;
+    }
+    if (due != null) {
+      due.remove(tickPos);
+    }
+    return true;
+  }
+
+  /**
    * Queues a block to be sent again, as it is now, to the players watching its chunk. The state is
    * unchanged on the server, so nothing else in the world hears of it.
    */
@@ -826,7 +867,9 @@ public class BlockBuildingDoor extends AbstractBlock implements ICsmTileEntityPr
       // Nothing to do: the pending tick was only there to say the door is moving. A world saved
       // mid-swing by a version where this tick ended the swing brings the tick back with it.
       TileEntityDoorSwing.putRightLegacySwing(worldIn, pos);
-      settle(worldIn, pos.down(), pos);
+      if (settleDue(worldIn, pos, this)) {
+        settle(worldIn, pos.down(), pos);
+      }
       return;
     }
     if (!closeDue(worldIn, pos)) {
