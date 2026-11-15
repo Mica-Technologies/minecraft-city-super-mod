@@ -1,12 +1,16 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
 import com.micatechnologies.minecraft.csm.roads.CsmRoads;
+import com.micatechnologies.minecraft.csm.trafficsignals.MountColorPastePacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.SignalAppearanceClipboard;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.io.IOException;
 import java.util.Arrays;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -30,6 +34,8 @@ public class SpanWireMountConfigGui extends GuiScreen {
   private static final int BUTTON_HEIGHT = 20;
   private static final int ROW_SPACING = 24;
   private static final int CLOSE_BUTTON_ID = 100;
+  private static final int COPY_COLOR_ID = 101;
+  private static final int PASTE_COLOR_ID = 102;
 
   /** One per {@link SpanWireMountConfigAction}, in its order. */
   private static final String[] LABELS =
@@ -81,8 +87,23 @@ public class SpanWireMountConfigGui extends GuiScreen {
       buttonList.add(new GuiButton(i, left, top + i * ROW_SPACING, BUTTON_WIDTH, BUTTON_HEIGHT,
           ""));
     }
-    buttonList.add(new GuiButton(CLOSE_BUTTON_ID, left,
-        top + rowCount * ROW_SPACING + 28, BUTTON_WIDTH, BUTTON_HEIGHT, "Close"));
+    final int bottomY = top + rowCount * ROW_SPACING + 28;
+    if (!(tileEntity instanceof TileEntitySignalClusterHanger)) {
+      buttonList.add(new GuiButton(CLOSE_BUTTON_ID, left, bottomY, BUTTON_WIDTH, BUTTON_HEIGHT,
+          "Close"));
+      return;
+    }
+    // The hanger's colour goes through the signal head screen's clipboard: copy it to paste onto
+    // another hanger or a head's mount, or paste a copied hanger's or head's mount colour here.
+    // On the Close button's row, which a seventh row would push off a small window.
+    final int third = (BUTTON_WIDTH - 8) / 3;
+    buttonList.add(new GuiButton(COPY_COLOR_ID, left, bottomY, third, BUTTON_HEIGHT, "Copy"));
+    final GuiButton paste = new GuiButton(PASTE_COLOR_ID, left + third + 4, bottomY, third,
+        BUTTON_HEIGHT, "Paste");
+    paste.enabled = SignalAppearanceClipboard.colorForHanger() != null;
+    buttonList.add(paste);
+    buttonList.add(new GuiButton(CLOSE_BUTTON_ID, left + BUTTON_WIDTH - third, bottomY, third,
+        BUTTON_HEIGHT, "Close"));
   }
 
   @Override
@@ -185,6 +206,17 @@ public class SpanWireMountConfigGui extends GuiScreen {
   protected void actionPerformed(GuiButton button) throws IOException {
     if (button.id == CLOSE_BUTTON_ID) {
       mc.displayGuiScreen(null);
+    } else if (button.id == COPY_COLOR_ID) {
+      final TrafficSignalBodyColor color = ((TileEntitySignalClusterHanger) tileEntity).getColor();
+      SignalAppearanceClipboard.copyHangerColor(color);
+      mc.player.sendStatusMessage(new TextComponentTranslation(
+          "csm.signalappearance.copied_hanger", color.getFriendlyName()), true);
+      initGui(); // so the Paste button becomes enabled
+    } else if (button.id == PASTE_COLOR_ID) {
+      final TrafficSignalBodyColor color = SignalAppearanceClipboard.colorForHanger();
+      if (color != null) {
+        CsmRoads.NETWORK.sendToServer(new MountColorPastePacket(blockPos, color.toNBT()));
+      }
     } else if (button.id >= 0 && button.id < rowCount) {
       CsmRoads.NETWORK.sendToServer(
           new SpanWireMountConfigPacket(blockPos, rows[button.id].ordinal()));

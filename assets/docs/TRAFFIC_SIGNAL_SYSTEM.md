@@ -825,6 +825,14 @@ only), default Flat Black. There are three ways to cycle it:
   `onBlockActivated`, because the mount screen otherwise swallows the click);
 - use the mount screen's "Hanger Colour" row (`SpanWireMountConfigAction.CYCLE_HANGER_COLOR`).
 
+The hanger's mount screen also has **Copy** and **Paste** buttons beside Close, sharing
+`SignalAppearanceClipboard` with the signal head screen's Copy/Paste Appearance; whichever was
+copied last is held. Pasting a copied hanger, or a copied head's mount colour, onto a hanger sets
+`scC`. Pasting a copied hanger colour onto a head sets only that head's mount colour; a copied head
+still pastes its whole appearance onto a head as before. A paste is one `MountColorPastePacket`
+(the target and the colour). The copy and the paste each say so on the action bar
+(`csm.signalappearance.*` in the Roads lang files).
+
 The colour is not a block property, which would multiply the states for nothing. A retired
 `spanwireclustermount` arrives as Battleship Gray, the nearest body colour to its old steel (see
 `SPAN_WIRE_SYSTEM.md`).

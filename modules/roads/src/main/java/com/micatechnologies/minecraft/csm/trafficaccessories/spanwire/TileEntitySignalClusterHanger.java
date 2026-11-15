@@ -232,14 +232,24 @@ public class TileEntitySignalClusterHanger extends TileEntitySpanWireClusterMoun
    * @return the new colour.
    */
   public TrafficSignalBodyColor cycleColor() {
-    color = color.getNextColor();
+    setColor(color.getNextColor());
+    return color;
+  }
+
+  /**
+   * Sets the hardware colour, as a copied colour is pasted onto the hanger, and pushes the change
+   * to clients.
+   *
+   * @param newColor the colour; not null
+   */
+  public void setColor(TrafficSignalBodyColor newColor) {
+    color = newColor;
     if (world != null) {
       if (world.isRemote) {
         TileEntitySignalClusterHangerRenderer.cleanupUnlinkedList(pos);
       }
       markDirtySync(world, pos, true);
     }
-    return color;
   }
 
   /**

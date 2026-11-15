@@ -1,3 +1,6 @@
+csm.signalappearance.copied_hanger=Upphängningens färg kopierad: %s
+csm.signalappearance.pasted_hanger=Upphängningens färg inklistrad: %s
+csm.signalappearance.pasted_mount=Fästets färg inklistrad: %s
 csm.signalcontroller=McCain Modell MC2000
 csm.signalcontroller.timing.allred=  Helröd: %ss
 csm.signalcontroller.timing.green=  Grön: %s–%ss

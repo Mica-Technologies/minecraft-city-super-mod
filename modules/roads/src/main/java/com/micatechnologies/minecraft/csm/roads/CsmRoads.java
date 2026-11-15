@@ -62,6 +62,8 @@ import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigP
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerConfigPacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerSetValuePacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalControllerSetValuePacketHandler;
+import com.micatechnologies.minecraft.csm.trafficsignals.MountColorPastePacket;
+import com.micatechnologies.minecraft.csm.trafficsignals.MountColorPastePacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadAppearancePacket;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadAppearancePacketHandler;
 import com.micatechnologies.minecraft.csm.trafficsignals.SignalHeadConfigPacket;
@@ -272,6 +274,10 @@ public class CsmRoads {
     NETWORK.registerMessage(
         AdvancedSignalControllerPlanImportPacketHandler.class,
         AdvancedSignalControllerPlanImportPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        MountColorPastePacketHandler.class,
+        MountColorPastePacket.class,
         Side.SERVER);
 
     // /csm signal export|import: whole ADVANCED plans as JSON files in the world folder.

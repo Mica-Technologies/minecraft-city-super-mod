@@ -1418,6 +1418,16 @@ public class TileEntityTrafficSignalHead extends AbstractTileEntity {
   }
 
   /**
+   * Sets the mount paint colour, as a signal cluster hanger's copied colour is pasted onto it.
+   *
+   * @param color the colour; not null
+   */
+  public void setMountColor(TrafficSignalBodyColor color) {
+    mountColor = color;
+    markDirtySync(world, pos, true);
+  }
+
+  /**
    * The ground area this head is programmed to be seen from, or {@code null} if it has not been
    * programmed. Read by the renderer for the programmable visibility visor and the horizontal
    * louvers; see {@link SignalVisibilityArea}.
