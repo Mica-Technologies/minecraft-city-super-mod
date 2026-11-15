@@ -23,7 +23,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left"
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left"
       }
     },
     {
@@ -100,7 +100,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left_open"
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left_open"
       }
     },
     {
@@ -177,7 +177,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right"
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right"
       }
     },
     {
@@ -254,7 +254,7 @@
         "facing": "north"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right_open"
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right_open"
       }
     },
     {
@@ -341,7 +341,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left",
         "y": 90
       }
     },
@@ -424,7 +424,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left_open",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left_open",
         "y": 90
       }
     },
@@ -507,7 +507,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right",
         "y": 90
       }
     },
@@ -590,7 +590,7 @@
         "facing": "east"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right_open",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right_open",
         "y": 90
       }
     },
@@ -683,7 +683,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left",
         "y": 180
       }
     },
@@ -766,7 +766,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left_open",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left_open",
         "y": 180
       }
     },
@@ -849,7 +849,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right",
         "y": 180
       }
     },
@@ -932,7 +932,7 @@
         "facing": "south"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right_open",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right_open",
         "y": 180
       }
     },
@@ -1025,7 +1025,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left",
         "y": 270
       }
     },
@@ -1108,7 +1108,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_left_open",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_left_open",
         "y": 270
       }
     },
@@ -1191,7 +1191,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right",
         "y": 270
       }
     },
@@ -1274,7 +1274,7 @@
         "facing": "west"
       },
       "apply": {
-        "model": "csm:doors/auto_door_slider_black_upper_right_open",
+        "model": "csm:doors/auto_door_slider_black_upper_bare_right_open",
         "y": 270
       }
     },
