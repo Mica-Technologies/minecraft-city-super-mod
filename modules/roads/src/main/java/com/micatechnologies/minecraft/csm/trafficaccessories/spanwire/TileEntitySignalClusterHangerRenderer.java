@@ -19,10 +19,11 @@ import org.lwjgl.opengl.GL11;
  * head's top, a lower tie under the deepest head, and what holds the hub up.
  *
  * <p>What holds it up depends on whether the hanger is on a span. Linked, the span hanger's own
- * mast, saddle and coils come down onto the hub, exactly as on the span cluster mount. Unlinked --
- * under a mast arm, whose underside is on the block boundary above -- a clamp sits at the top of
- * the block and a pipe comes down from it, jogging over to the hub where the cluster's middle is not
- * under the hanger's own block.
+ * mast, saddle and coils come down onto the hub, exactly as on the span cluster mount, painted in
+ * the hanger's colour (the coils stay black). Unlinked, it reads the block above
+ * ({@link SignalClusterUpperMount}): a band round an arm's pipe, a flange on a flat underside, or
+ * nothing. A pipe comes down from the band or flange, jogging over to the hub where the cluster's
+ * middle is not under it.
  *
  * <p>The frame is one shape for every layout. A pair is a tee, a row is a bar with drops, a plus is
  * a spider, and an add-on beside a head, whose top is lower, gets a longer drop -- an L arm. None of
@@ -55,10 +56,28 @@ public class TileEntitySignalClusterHangerRenderer
   /** The lower tie, thinner than the frame that carries the weight. */
   private static final double TIE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 1.1;
 
-  /** The pipe down from an arm's clamp to the frame, and the clamp itself. */
+  /** The pipe down from the mount above to the frame. */
   private static final double PIPE_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 2.0;
-  private static final double CLAMP_RADIUS = SpanWireCableGeometry.CABLE_RADIUS * 3.0;
-  private static final double CLAMP_HALF_LENGTH = 0.14;
+
+  /**
+   * The band clamped round an arm's pipe: how far it stands off the pipe, and its length along it.
+   * The tubes are six-sided prisms whose flats are at cos 30 of their radius, so the band's radius
+   * is the pipe's plus the stand-off, divided by that, or the pipe would show through the flats.
+   */
+  private static final double BAND_STANDOFF = 0.6 / 16.0;
+  private static final double PRISM_FLAT = Math.cos(Math.PI / 6.0);
+  private static final double BAND_HALF_LENGTH = 0.12;
+
+  /** The seat under the band that the pipe stands in. */
+  private static final double SEAT_RADIUS = PIPE_RADIUS * 1.5;
+  private static final double SEAT_DEPTH = 0.05;
+
+  /** The flange bolted to a flat underside: as wide as a mast arm curve's stub plate. */
+  private static final double FLANGE_RADIUS = 3.2 / 16.0;
+  private static final double FLANGE_THICKNESS = 0.04;
+
+  /** Keeps the flange's top just off the face above, so the two never share a plane. */
+  private static final double FACE_CLEARANCE = 0.002;
 
   /** How far below the frame a drop reaches when the head reports no top. */
   private static final double DROP_LENGTH = 0.18;
@@ -78,6 +97,16 @@ public class TileEntitySignalClusterHangerRenderer
         @Override
         protected boolean drawsTetherTie() {
           return false;
+        }
+
+        /** The mast, its arm and the saddle are the cluster's own hardware, in its colour. */
+        @Override
+        protected float[] mastColour(TileEntitySpanWireHanger te) {
+          if (te instanceof TileEntitySignalClusterHanger) {
+            final TrafficSignalBodyColor color = ((TileEntitySignalClusterHanger) te).getColor();
+            return new float[]{color.getRed(), color.getGreen(), color.getBlue()};
+          }
+          return super.mastColour(te);
         }
       };
 
@@ -146,24 +175,23 @@ public class TileEntitySignalClusterHangerRenderer
     final float green = color.getGreen();
     final float blue = color.getBlue();
     final Vec3d hub = te.getFrameHub();
-    final Vec3d attach = te.getAttachPoint();
+    final SignalClusterUpperMount mount = te.getUpperMount();
 
-    // The clamp under the arm, on the block boundary above, and the pipe down from it to the
-    // frame's height. Square to the block: an arm runs along an axis, and nothing here knows which.
-    final double topY = te.getPos().getY() + 1.0 - CLAMP_RADIUS;
-    SpanWireCableGeometry.emitStraightTube(buffer,
-        new Vec3d(attach.x - CLAMP_HALF_LENGTH, topY, attach.z),
-        new Vec3d(attach.x + CLAMP_HALF_LENGTH, topY, attach.z),
-        origin, CLAMP_RADIUS, red, green, blue, skyLight, blockLight);
-    final Vec3d pipeFoot = new Vec3d(attach.x, hub.y, attach.z);
-    SpanWireCableGeometry.emitStraightTube(buffer, new Vec3d(attach.x, topY, attach.z), pipeFoot,
-        origin, PIPE_RADIUS, red, green, blue, skyLight, blockLight);
-    // A jog over to the hub when the cluster's middle is not under this block -- a pair across two
-    // columns centres on their shared edge.
-    if (horizontalDistance(pipeFoot, hub) > EPSILON) {
-      SpanWireCableGeometry.emitStraightTube(buffer, pipeFoot, hub, origin, ARM_RADIUS,
+    // What holds the hub up, by what is above: a band round an arm's pipe, a flange on a flat
+    // underside (a curve's own stub plate, a pole end, any solid block), or nothing at all.
+    final Vec3d pipeTop = emitUpperMount(buffer, mount, origin, red, green, blue, skyLight,
+        blockLight);
+    if (pipeTop != null) {
+      final Vec3d pipeFoot = new Vec3d(pipeTop.x, hub.y, pipeTop.z);
+      SpanWireCableGeometry.emitStraightTube(buffer, pipeTop, pipeFoot, origin, PIPE_RADIUS,
           red, green, blue, skyLight, blockLight);
-      emitHub(buffer, pipeFoot, origin, red, green, blue, skyLight, blockLight);
+      // A jog over to the hub when the cluster's middle is not under the pipe -- a pair across two
+      // columns centres on their shared edge.
+      if (horizontalDistance(pipeFoot, hub) > EPSILON) {
+        SpanWireCableGeometry.emitStraightTube(buffer, pipeFoot, hub, origin, ARM_RADIUS,
+            red, green, blue, skyLight, blockLight);
+        emitHub(buffer, pipeFoot, origin, red, green, blue, skyLight, blockLight);
+      }
     }
 
     emitFrame(buffer, te, hub, origin, red, green, blue, skyLight, blockLight);
@@ -179,6 +207,49 @@ public class TileEntitySignalClusterHangerRenderer
     final TrafficSignalBodyColor color = te.getColor();
     emitFrame(buffer, te, te.getFrameHub(), origin, color.getRed(), color.getGreen(),
         color.getBlue(), skyLight, blockLight);
+  }
+
+  /**
+   * The hardware meeting whatever is above an unlinked hanger.
+   *
+   * <ul>
+   *   <li>An arm: a band round its pipe, along the pipe's own run (sloping with a curve), and a
+   *       seat under it. The pipe's underside is where the band grips, not the block boundary: a
+   *       straight arm's tube is in the middle of the block above.</li>
+   *   <li>A flat underside: a flange just under the boundary. Under a mast arm curve cell the
+   *       curve grows its own band, bracket and plate down to the boundary, and this meets it.</li>
+   * </ul>
+   *
+   * @return the top of the pipe down to the frame, or null when nothing is above
+   */
+  private static Vec3d emitUpperMount(BufferBuilder buffer, SignalClusterUpperMount mount,
+      Vec3d origin, float red, float green, float blue, int skyLight, int blockLight) {
+    switch (mount.getKind()) {
+      case ARM: {
+        final Vec3d centre = mount.getCentre();
+        final Vec3d along = mount.getAxis().scale(BAND_HALF_LENGTH);
+        final double bandRadius = (mount.getRadius() + BAND_STANDOFF) / PRISM_FLAT;
+        SpanWireCableGeometry.emitCappedTube(buffer, centre.subtract(along), centre.add(along),
+            origin, bandRadius, red, green, blue, skyLight, blockLight);
+        // The seat starts inside the band's lower flats and stands below them.
+        final double seatTop = centre.y - bandRadius * PRISM_FLAT * 0.9;
+        final double seatBottom = centre.y - bandRadius - SEAT_DEPTH;
+        SpanWireCableGeometry.emitCappedTube(buffer, new Vec3d(centre.x, seatTop, centre.z),
+            new Vec3d(centre.x, seatBottom, centre.z), origin, SEAT_RADIUS, red, green, blue,
+            skyLight, blockLight);
+        return new Vec3d(centre.x, seatBottom + SEAT_DEPTH * 0.5, centre.z);
+      }
+      case FLANGE: {
+        final Vec3d face = mount.getCentre();
+        final double top = face.y - FACE_CLEARANCE;
+        SpanWireCableGeometry.emitCappedTube(buffer, new Vec3d(face.x, top, face.z),
+            new Vec3d(face.x, top - FLANGE_THICKNESS, face.z), origin, FLANGE_RADIUS, red, green,
+            blue, skyLight, blockLight);
+        return new Vec3d(face.x, top - FLANGE_THICKNESS * 0.5, face.z);
+      }
+      default:
+        return null;
+    }
   }
 
   /**

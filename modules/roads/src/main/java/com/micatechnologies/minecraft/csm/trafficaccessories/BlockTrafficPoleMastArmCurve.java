@@ -8,6 +8,8 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.AbstractTileEntitySpanWireAttachment;
+import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSignalClusterHanger;
 import com.micatechnologies.minecraft.csm.trafficaccessories.spanwire.BlockSpanWireHangerMount;
 import java.util.HashMap;
 import java.util.Map;
@@ -559,14 +561,37 @@ public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
    * <p>Poles ignore every accessory of this family, wire mounts included, so the ordinary test
    * says no. A mount that is linked into a span is left alone: its bracket is hidden and the
    * span's own hardware carries it.
+   *
+   * <p>A signal cluster hanger counts too, on the same terms. It has no {@code linked} property
+   * (its world model is empty either way), so its span is read from the tile entity instead,
+   * through the thread-safe lookup: this runs on the chunk-building threads.
    */
   private static boolean isHangingWireMount(IBlockAccess world, BlockPos pos) {
     IBlockState below = world.getBlockState(pos);
+    if (below.getBlock() instanceof BlockSignalClusterHanger) {
+      TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
+      return te instanceof AbstractTileEntitySpanWireAttachment
+          && ((AbstractTileEntitySpanWireAttachment) te).getSpan() == null;
+    }
     if (!(below.getBlock() instanceof BlockSpanWireHangerMount)
         || !below.getPropertyKeys().contains(BlockSpanWireHangerMount.LINKED)) {
       return false;
     }
     return !below.getActualState(world, pos).getValue(BlockSpanWireHangerMount.LINKED);
+  }
+
+  /**
+   * Whether the cell at {@code pos} can grow mount hardware down to the block under it. A signal
+   * cluster hanger under a cell that can draws only a flange to meet the stub's plate; under one
+   * that cannot (a truss cell holding only the top chord) it clamps the pipe itself.
+   *
+   * @param world the world
+   * @param pos   the cell's position
+   *
+   * @return true if the cell's down side is one of its mount directions
+   */
+  public boolean hangsHardwareBelow(IBlockAccess world, BlockPos pos) {
+    return (profile.getMountDirections(cellIndexAt(world, pos)) & 1) != 0;
   }
 
   /**

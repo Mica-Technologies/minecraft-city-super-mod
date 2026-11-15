@@ -137,6 +137,41 @@ public final class SpanWireCableGeometry {
   }
 
   /**
+   * {@link #emitStraightTube} with both ends closed: for short, fat fittings -- a flange, a clamp
+   * band -- whose open ends would otherwise show as hollow rings from below.
+   */
+  public static void emitCappedTube(BufferBuilder buffer, Vec3d from, Vec3d to, Vec3d origin,
+      double radius, float red, float green, float blue, int skyLight, int blockLight) {
+    final Vec3d direction = to.subtract(from);
+    if (lengthSquared(direction) < 1.0e-12) {
+      return;
+    }
+    final double[] startRing = new double[SIDES * 3];
+    final double[] endRing = new double[SIDES * 3];
+    buildRingAt(from, direction, origin, radius, startRing);
+    buildRingAt(to, direction, origin, radius, endRing);
+    stitch(buffer, startRing, endRing, red, green, blue, skyLight, blockLight);
+    emitCap(buffer, startRing, from, origin, red, green, blue, skyLight, blockLight);
+    emitCap(buffer, endRing, to, origin, red, green, blue, skyLight, blockLight);
+  }
+
+  /** Closes a ring with a fan of quads, each a triangle with its last corner doubled. */
+  private static void emitCap(BufferBuilder buffer, double[] ring, Vec3d centre, Vec3d origin,
+      float red, float green, float blue, int skyLight, int blockLight) {
+    final double cx = centre.x - origin.x;
+    final double cy = centre.y - origin.y;
+    final double cz = centre.z - origin.z;
+    for (int k = 0; k < SIDES; k++) {
+      final int k0 = k * 3;
+      final int k1 = ((k + 1) % SIDES) * 3;
+      vertex(buffer, cx, cy, cz, red, green, blue, skyLight, blockLight);
+      vertex(buffer, ring[k0], ring[k0 + 1], ring[k0 + 2], red, green, blue, skyLight, blockLight);
+      vertex(buffer, ring[k1], ring[k1 + 1], ring[k1 + 2], red, green, blue, skyLight, blockLight);
+      vertex(buffer, ring[k1], ring[k1 + 1], ring[k1 + 2], red, green, blue, skyLight, blockLight);
+    }
+  }
+
+  /**
    * Samples the cable's centreline over part of a span, optionally displaced.
    *
    * <p>Used for anything that runs <em>alongside</em> the messenger rather than being it -- the

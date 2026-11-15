@@ -29,8 +29,15 @@ public class TileEntitySignalClusterHanger extends TileEntitySpanWireClusterMoun
 
   private TrafficSignalBodyColor color = TrafficSignalBodyColor.FLAT_BLACK;
 
+  /** How often, in ticks, the block above is read again: an arm placed later is picked up. */
+  private static final long UPPER_MOUNT_REFRESH_TICKS = 20L;
+
   /** The render bounds, made once: the footprint plus the depth a hung assembly can reach. */
   private transient AxisAlignedBB frameBounds;
+
+  /** What the hanger hangs from when unlinked; read from the block above, at most once a second. */
+  private transient SignalClusterUpperMount upperMount = SignalClusterUpperMount.NONE;
+  private transient long upperMountReadTick = Long.MIN_VALUE;
 
   @Override
   public void readNBT(NBTTagCompound compound) {
@@ -139,9 +146,41 @@ public class TileEntitySignalClusterHanger extends TileEntitySpanWireClusterMoun
     return getFrameHub();
   }
 
+  /**
+   * What the hanger hangs from when it is not on a span: an arm to clamp, something to bolt a
+   * flange to, or nothing. Re-read about once a second, and at once after a neighbour changes.
+   *
+   * @return the mount above; never null
+   */
+  public SignalClusterUpperMount getUpperMount() {
+    if (world == null) {
+      return SignalClusterUpperMount.NONE;
+    }
+    final long now = world.getTotalWorldTime();
+    if (upperMountReadTick == Long.MIN_VALUE
+        || now - upperMountReadTick >= UPPER_MOUNT_REFRESH_TICKS
+        || now < upperMountReadTick) {
+      upperMountReadTick = now;
+      upperMount = world.isBlockLoaded(pos.up())
+          ? SignalClusterUpperMount.find(world, pos)
+          : SignalClusterUpperMount.NONE;
+    }
+    return upperMount;
+  }
+
+  /** Reads the block above again on the next draw, as well as the heads below. */
+  @Override
+  public void refreshPayload() {
+    super.refreshPayload();
+    upperMountReadTick = Long.MIN_VALUE;
+  }
+
   @Override
   public long getHardwareStateKey() {
     long key = super.getHardwareStateKey() * 31L + color.ordinal();
+    // Only drawn unlinked, but cheap to fold in either way: an arm placed above, or turned,
+    // changes the clamp.
+    key = key * 31L + getUpperMount().stateKey();
     // The drops reach each head's top, which the span cluster's key leaves out because its drops
     // are a fixed stub. A head swapped for a shorter one moves a drop here.
     for (ClusterPayload payload : getPayloads()) {
@@ -182,7 +221,8 @@ public class TileEntitySignalClusterHanger extends TileEntitySpanWireClusterMoun
       frameBounds = new AxisAlignedBB(
           pos.getX() - SignalClusterFrame.REACH, pos.getY() - SpanWireHangOffset.MAX_SEARCH_UP,
           pos.getZ() - SignalClusterFrame.REACH,
-          pos.getX() + 1 + SignalClusterFrame.REACH, pos.getY() + 1,
+          // Up into the block above, where the clamp grips an arm's pipe.
+          pos.getX() + 1 + SignalClusterFrame.REACH, pos.getY() + 2,
           pos.getZ() + 1 + SignalClusterFrame.REACH);
     }
     return super.getRenderBoundingBox().union(frameBounds);

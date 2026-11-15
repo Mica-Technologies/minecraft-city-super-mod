@@ -10,11 +10,13 @@ public enum SpanWireMountConfigAction {
   TOGGLE_BOX_SPAN,
   /** Span-wide: how far the messenger droops, from the presets in {@link SpanWireSag}. */
   CYCLE_SAG,
+  /** Cluster mounts only; ignored on a single mount, which has no width to cycle. */
+  CYCLE_CLUSTER_WIDTH,
   /**
-   * Cluster mounts only; ignored on a single mount, which has no width to cycle.
+   * Signal cluster hangers only: the hardware's body colour.
    *
-   * <p>Must stay last. The configuration screen draws one row per value in order and simply
-   * leaves the final row off for a mount that is not a cluster.
+   * <p>Sent by ordinal, so values are only ever appended. The configuration screen picks which
+   * rows a mount shows; it no longer relies on the order.
    */
-  CYCLE_CLUSTER_WIDTH
+  CYCLE_HANGER_COLOR
 }

@@ -417,6 +417,16 @@ carried by the span's own hardware, which this must not touch). It applies to th
 too. A head placed directly under a cell, with no mount between, stands half a block into the
 cell and through the pipe: the mount is what gives it room.
 
+**A signal cluster hanger under a cell** is the same exception. It has no `linked` property, so
+`isHangingWireMount` reads its span from the tile entity (through `BlockUtils.getTileEntitySafe`,
+since it runs on the chunk builders) and says yes while it is unlinked. The hanger asks
+`BlockTrafficPoleMastArmCurve.hangsHardwareBelow` whether the cell grows a down stub at all; if it
+does, the hanger draws only a flange on the boundary to meet the stub's plate. Under a cell that
+cannot (a truss cell holding only its top chord), the hanger clamps a band round the lowest pipe
+`getWorldRails` puts over its middle instead. Under a straight or diagonal arm (a traffic pole on
+its side) it bands the pole, sized from `getPoleRadius()`. The code is
+`spanwire/SignalClusterUpperMount`.
+
 **Each cell says where its pipes are.** `ICurvedArmProfile.getCellRails(cell)` returns the
 centreline segments passing through a cell (`{x0, y0, z0, x1, y1, z1, radius}`, cell frame), and
 `BlockTrafficPoleMastArmCurve.getWorldRails` turns them to the arm's facing. The truss profile

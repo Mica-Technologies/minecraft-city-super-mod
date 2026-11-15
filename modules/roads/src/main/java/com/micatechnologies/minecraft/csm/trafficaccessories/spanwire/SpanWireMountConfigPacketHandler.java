@@ -54,6 +54,11 @@ public class SpanWireMountConfigPacketHandler
             ((TileEntitySpanWireClusterMount) hanger).cycleClusterWidth();
           }
           break;
+        case CYCLE_HANGER_COLOR:
+          if (hanger instanceof TileEntitySignalClusterHanger) {
+            ((TileEntitySignalClusterHanger) hanger).cycleColor();
+          }
+          break;
         default:
           break;
       }
