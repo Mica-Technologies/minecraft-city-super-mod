@@ -602,6 +602,12 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal6brown", NycSignalArmProfile.DIAGONAL6));
     initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal6galvanized", NycSignalArmProfile.DIAGONAL6));
     initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal6black", NycSignalArmProfile.DIAGONAL6));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal8brown", NycSignalArmProfile.DIAGONAL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal8galvanized", NycSignalArmProfile.DIAGONAL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal8black", NycSignalArmProfile.DIAGONAL8));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal12brown", NycSignalArmProfile.DIAGONAL12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal12galvanized", NycSignalArmProfile.DIAGONAL12));
+    initTabBlock(new BlockTrafficPoleMastArmCurve("nycsignalarmdiagonal12black", NycSignalArmProfile.DIAGONAL12));
 
     // --- Luminaire arms (gen_luminaire_arms.py; multi-block, a street light at the tip) ---
     initTabBlock(new BlockTrafficPoleMastArmCurve("luminairearmcaltrans6ftgalvanized", LuminaireArmProfile.CALTRANS6FT));
