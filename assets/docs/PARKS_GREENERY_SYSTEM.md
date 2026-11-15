@@ -968,6 +968,55 @@ saved worlds store) but draw the Trees & Plants tab's `planter_concrete` and
   Dust only powers the blocks it points into, and a line that connects to sprinklers on both sides
   becomes a cross that points nowhere, so a row of heads along one line would stay dry.
 
+### The zipline (#351)
+
+A rideable line between two anchors, for parks, adventure courses and venue atriums. Loops and
+tracks are out of scope: the RCMC mod already does rides on track.
+
+- **Blocks.** `zipline_anchor_launch` (green collar) and `zipline_anchor_landing` (red collar),
+  one class, `BlockZiplineAnchor`, told apart by registry name. Each is a bracket with a crossed
+  cable eye and no facing, so it reads the same whichever way a line leaves. Set it on a post, a
+  wall top or a platform edge. Its `TileEntityZiplineAnchor` keeps the other end (`zL`, a packed
+  position). Breaking either end takes the line down (`Ziplines.unlink`).
+- **Stringing.** The Zipline Linker: click a launch anchor, then a landing anchor. The selection is
+  kept on the stack's NBT, not the item, so two players linking at once do not cross. Sneak-click
+  an anchor to take its line down. `/csmzipline link <launch xyz> <landing xyz>`,
+  `unlink <xyz>` and `info <xyz>` (op level 2) do the same from a script. `Ziplines.check` refuses
+  a line:
+  - longer than `zipline.maxLength` (128 by default);
+  - shorter than `ZiplineLine.MIN_LENGTH`;
+  - with anything solid in the rider's path (a 0.6-wide body hanging 2.45 below the cable,
+    checked every quarter block from the clip-on point to the stop point);
+  - or with no floor within 4 blocks under the stop point, to land on.
+- **The line.** `ZiplineLine` is built from the two anchors' positions alone, so the server and
+  every client work it out without sending it. The cable leaves each anchor at 14/16 of a block
+  and sags 2% of the plan-view span at midspan, as a parabola. Distances are arc lengths from a
+  96-chord table. A rider clips on 1 block out from the launch sheave, is set down 1.5 blocks
+  short of the landing sheave, and brakes over the last 8 blocks before that (a quarter of the
+  ride at most).
+- **Riding.** Right-click a launch anchor with an empty hand. `EntityZiplineTrolley`
+  (`csm:zipline_trolley`, registered through Core's `CsmEntities`) carries the rider, hanging,
+  not sitting. Each server tick `ZiplineRide.next` moves it on:
+  - gravity along the cable (14 blocks/s²) against air drag, capped at `zipline.maxSpeed`
+    (14 blocks/s);
+  - never slower than the trolley's own pull, `zipline.minSpeed` (3), so a level or rising line
+    still runs;
+  - braked at 7 blocks/s² to arrive at 1.5 blocks/s;
+  - held at least 6 blocks behind the rider ahead. A new rider waits until the one ahead is that
+    far out.
+
+  The server syncs the distance and speed every tick. A client runs the trolley on along the
+  same line at the synced speed and eases towards the server's distance. It ignores the
+  tracker's position packets, so a rider does not rubber-band. At the stop point the rider is set
+  on the landing floor, facing on, with their fall distance cleared. Sneaking off is refused,
+  with a word on the action bar, until the brake zone (`ZiplineEvents`). The trolley is never
+  saved: a ride does not survive a restart.
+- **Drawing.** The launch anchor's TESR (`TileEntityZiplineCableRenderer`, a global renderer out
+  to 256 blocks) draws the cable as an untextured steel tube, a chord a block. `RenderZiplineTrolley`
+  draws the housing, the hangers and the yellow grip bar. Both are a few hundred quads at most.
+- **Assets.** `gen_zipline.py` writes the anchor models and blockstates, the linker's sprite and
+  item model, and every zipline lang line in the four languages.
+
 ---
 
 ## The Fabricator
@@ -1001,6 +1050,7 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 | `gen_trees.py` | Bark and leaf-cluster textures; the palm crown sheets and icons; moss; the log and leaves placeholder models and blockstates; the lang for woods, leaves and presets; the tool's icon, model and messages. `--fragments` prints the tab lines |
 | `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces, and the troughs: textures, element models, blockstates, item models and lang. The planters' tab lines carry their soil height and plant scale. `--fragments` |
 | `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
+| `gen_zipline.py` | The zipline anchors' models and blockstates, the Zipline Linker's sprite and item model, and the zipline's lang (names and chat lines). `--check`, `--fragments` |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
 | `gen_parks_tools.py` | The tree tools' item sprites and models (the chainsaw's and the stump grinder's running sprites by their `csm:running` override) and the brush pile's textures, model and blockstate. `--check` (text compared with line endings ignored). The tools' lang and tab lines are hand-written |
 | `gen_parks_tool_sounds.py` | The chainsaw's four sounds and the stump grinder's three, synthesised (numpy to ffmpeg to OGG), and their `sounds.json` entries. No `--check`: Vorbis is not byte-stable |

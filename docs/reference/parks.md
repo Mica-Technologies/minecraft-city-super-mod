@@ -2,7 +2,7 @@
 
 Park amenities: benches, tables, bins, playground pieces, fountains and irrigation.
 
-!!! info "34 blocks in this tab"
+!!! info "36 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -45,5 +45,7 @@ Park amenities: benches, tables, bins, playground pieces, fountains and irrigati
 | Trash and Recycling Station | `csm:trash_recycling_station` | 1.0 | 2.0 | axe | 0 |
 | Water Bubbler (Short) | `csm:wbs` | 2 | 10 | pickaxe | 1 |
 | Water Bubbler (Tall) | `csm:wbt` | 2 | 10 | pickaxe | 1 |
+| Zipline Anchor (Landing) | `csm:zipline_anchor_landing` | 3.0 | 10.0 | pickaxe | 1 |
+| Zipline Anchor (Launch) | `csm:zipline_anchor_launch` | 3.0 | 10.0 | pickaxe | 1 |
 
 </div>

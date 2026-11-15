@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks;
 
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.codeutils.CsmEntities;
 import com.micatechnologies.minecraft.csm.codeutils.CsmStumpGrinders;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
@@ -10,6 +11,9 @@ import com.micatechnologies.minecraft.csm.parks.tools.ParksStumpGrinder;
 import com.micatechnologies.minecraft.csm.parks.tools.TreeToolEvents;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLeaves;
 import com.micatechnologies.minecraft.csm.parks.trees.BlockTreeLog;
+import com.micatechnologies.minecraft.csm.parks.zipline.CommandZipline;
+import com.micatechnologies.minecraft.csm.parks.zipline.EntityZiplineTrolley;
+import com.micatechnologies.minecraft.csm.parks.zipline.ZiplineEvents;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -79,6 +83,12 @@ public class CsmParks {
     // Machines that grind stumps (CSM: Vehicles' stump grinder) grind by the hand tool's rules
     CsmStumpGrinders.register(new ParksStumpGrinder());
 
+    // The zipline (#351): its trolley is registered by Core as csm:zipline_trolley, and riders
+    // are kept on until the landing.
+    CsmEntities.register(EntityZiplineTrolley.class, EntityZiplineTrolley.NAME,
+        EntityZiplineTrolley.NETWORK_ID, 128, 1, false);
+    MinecraftForge.EVENT_BUS.register(new ZiplineEvents());
+
     proxy.preInit(event);
   }
 
@@ -92,6 +102,7 @@ public class CsmParks {
   public void serverStarting(FMLServerStartingEvent event) {
     event.registerServerCommand(new CommandTree());
     event.registerServerCommand(new CommandParks());
+    event.registerServerCommand(new CommandZipline());
   }
 
   /**
