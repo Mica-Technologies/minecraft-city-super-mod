@@ -21,9 +21,12 @@ relative to the site origin, which is the player's position unless --x/--z say o
                       poles and flat on a wall, with a sign naming each
 
 Every cabinet stands a block above the walk (its bottom about 1 m up, its top at head height).
-A cabinet needs redstone power to run, as the ground controller does: each pole cabinet has a
-lever on its side, switched on, like a service disconnect; the wall one is powered by a lever on
-the inside face of the wall it is bolted to.
+A cabinet needs redstone power to run, as the ground controller does. A pole cabinet also takes
+it from the foot of its pole: a redstone block under the walk, below each running pole's base,
+feeds it as a utility service comes up the pole. The wall one is powered by a lever on the inside
+face of the wall it is bolted to. To see the feed matter, break the redstone block under the
+north-east mast pole of the corner (or swap it for a lever, and switch it): the junction goes dark
+within a second.
 
 Everything goes through the orchestrator by instance id; the script never opens a game port, and
 it refuses any world not named "Pole Controller Demo".
@@ -141,19 +144,23 @@ def controller_nbt(circuits):
             'tcMxG:300L,tcMnGs:200L,tcMxGs:300L,tcCrc:%s}' % crc)
 
 
-# A lever on a cabinet's side, by the way the cabinet faces: the side to its right as you face
-# its door, as (dx, dz, lever metadata pointing that way); +8 is switched on.
-LEVER_SIDE = {N: (1, 0, 1), E: (0, 1, 3), S: (-1, 0, 2), W: (0, -1, 4)}
+# The step from a cabinet to the pole behind it, by the way the cabinet faces.
+BEHIND = {N: (0, 1), S: (0, -1), E: (-1, 0), W: (1, 0)}
+# Where earlier builds of this world put a cabinet's power (a torch under it, a lever on its
+# right side), cleared when a part is rebuilt in place.
+OLD_LEVER = {N: (1, 0), E: (0, 1), S: (-1, 0), W: (0, -1)}
 
 
 def pole_cabinet(x, z, facing, colour, nbt=None, power=True):
-    """A cabinet in the cell in front of a pole, a block above the walk, facing away from it;
-    a lever on its side, switched on, powers it (a service disconnect)."""
+    """A cabinet in the cell in front of a pole, a block above the walk, facing away from it.
+    With power, a redstone block under the walk below the pole's foot runs it: the feed comes up
+    the pole, as a real cabinet's does."""
     put(x, CAB, z, 'signalcontroller_pole_' + colour, facing, nbt)
-    put(x, Y, z, 'minecraft:air')              # the redstone torch an older build put here
+    put(x, Y, z, 'minecraft:air')
+    put(x + OLD_LEVER[facing][0], CAB, z + OLD_LEVER[facing][1], 'minecraft:air')
     if power:
-        dx, dz, meta = LEVER_SIDE[facing]
-        put(x + dx, CAB, z + dz, 'minecraft:lever', meta | 8)
+        bx, bz = BEHIND[facing]
+        put(x + bx, G - 1, z + bz, 'minecraft:redstone_block')
 
 
 # ------------------------------------------------------------------------------------------

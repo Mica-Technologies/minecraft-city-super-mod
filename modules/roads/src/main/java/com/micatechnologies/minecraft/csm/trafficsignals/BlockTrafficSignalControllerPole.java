@@ -7,12 +7,15 @@ import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.trafficaccessories.IPreemptPoleMounted;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,6 +47,11 @@ import net.minecraft.world.World;
  * sized for that pole's width ({@link CsmPoleFit}), anything else (a wall, a full block, air)
  * gives the wall rails. The cabinet body, and so the box, is the same in every case.
  * <p>
+ * Power: redstone into its own cell, as every controller; and, on a pole, redstone at the foot
+ * of that pole ({@link #isControllerPowered}), the way a real cabinet's feed comes up the pole
+ * from a service under the sidewalk. A redstone block or a lever under the walk below the pole's
+ * base runs every cabinet on that pole.
+ * <p>
  * Metadata: the horizontal facing's index in bits 0-1 (south 0, west 1, north 2, east 3, as
  * every NSEW block), {@link #POWERED} in bit 2.
  *
@@ -63,6 +71,9 @@ public class BlockTrafficSignalControllerPole extends BlockTrafficSignalControll
    * The cabinet, its rain cap and the rails or arms up to the back of its cell, facing north
    * (from {@code gen_pole_controller.py}).
    */
+  /** How far down a pole the power lookup walks to find its foot. */
+  static final int MAX_POLE_WALK = 32;
+
   private static final AxisAlignedBB NORTH_BOUNDING_BOX =
       new AxisAlignedBB(2.6 / 16.0, 0.5 / 16.0, 7.4 / 16.0, 13.4 / 16.0, 1.0, 1.0);
 
@@ -174,7 +185,60 @@ public class BlockTrafficSignalControllerPole extends BlockTrafficSignalControll
     return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
   }
 
+  // --- power ---------------------------------------------------------------------------------
+
+  /**
+   * Powered by redstone into the cabinet's own cell, or, when it is mounted on a traffic pole, by
+   * redstone into the block under that pole's foot. Asked by the tile entity about once a second
+   * and on a neighbour change, never per frame.
+   */
+  @Override
+  public boolean isControllerPowered(World world, BlockPos pos, IBlockState state) {
+    if (world.isBlockPowered(pos)) {
+      return true;
+    }
+    EnumFacing facing = state.getBlock() == this ? state.getValue(FACING) : EnumFacing.NORTH;
+    BlockPos foot = poleFoot(pos.offset(facing.getOpposite()),
+        p -> world.getBlockState(p).getBlock() instanceof AbstractBlockTrafficPole,
+        MAX_POLE_WALK);
+    return foot != null && world.isBlockPowered(foot.down());
+  }
+
+  /**
+   * The foot of the pole column that {@code start} is part of: the lowest pole block reached by
+   * walking down from it, at most {@code maxWalk} blocks, never below y 1.
+   *
+   * @param start   the block behind the cabinet
+   * @param isPole  whether a position holds a pole block
+   * @param maxWalk how many blocks down to look at most
+   *
+   * @return the foot, or {@code null} when {@code start} is not a pole
+   */
+  @Nullable
+  static BlockPos poleFoot(BlockPos start, Predicate<BlockPos> isPole, int maxWalk) {
+    if (!isPole.test(start)) {
+      return null;
+    }
+    BlockPos foot = start;
+    for (int i = 0; i < maxWalk && foot.getY() > 1 && isPole.test(foot.down()); i++) {
+      foot = foot.down();
+    }
+    return foot;
+  }
+
   // --- shape ---------------------------------------------------------------------------------
+
+  /**
+   * No face is solid: it is a slim cabinet standing off its pole or wall, so fences and panes do
+   * not join it and nothing hangs off its sides (and no snow settles on its cap).
+   */
+  @Override
+  @Nonnull
+  @SuppressWarnings("deprecation")
+  public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos,
+      EnumFacing face) {
+    return BlockFaceShape.UNDEFINED;
+  }
 
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {

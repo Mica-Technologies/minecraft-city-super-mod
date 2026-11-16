@@ -52,10 +52,14 @@ like the controller cabinet.
   included, and the clamp fits the pole's width.
 - **On a wall:** click it onto a building face and it sits flat against the wall on two rails.
 
-Like the ground cabinet it only runs while it has **redstone power**. On a wall, a lever on the
-inside face of the wall block behind it powers it through the wall. On a pole, put a lever on the
-cabinet's side, like a service disconnect switch, and switch it on. Sneak while you place the
-lever: a plain click on the cabinet opens its settings instead.
+Like the ground cabinet it only runs while it has **redstone power**:
+
+- **On a pole,** power the foot of the pole. A redstone block or a switched-on lever under the
+  sidewalk, against the block the pole's base stands on, feeds the cabinet up the pole, the way a
+  real cabinet's power comes up from underground. Every cabinet on that pole runs from it, and
+  switching it off stops them within a second. Redstone right next to the cabinet works too.
+- **On a wall,** a lever on the inside face of the wall block behind it powers it through the
+  wall.
 
 ## Operating modes
 

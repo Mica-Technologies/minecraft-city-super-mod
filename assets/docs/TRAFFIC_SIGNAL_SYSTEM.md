@@ -96,13 +96,24 @@ is a model, a box and placement:
   `facing` x `mount` rules, each naming a child model under `pole_controller/states/<block>/`
   that is the mount model with the colour's texture. The conduit drops out of the cabinet floor and turns back
   into the pole or wall, so the model never reaches the ground and works at any height.
-- **Power.** It needs redstone power to run, exactly as the ground controller does
-  (`TileEntityTrafficSignalController.pauseTicking`, `isBlockPowered` on its own cell). Flat on a
-  wall, a lever on the wall block's inside face strongly powers that block and so the cabinet. On
-  a pole nothing conducts, so the power has to be a source next to the cabinet itself: a lever on
-  the cabinet's side (its side faces are vanilla's default SOLID, so a lever attaches), switched
-  on, reads as a service disconnect. Place it with a sneak-click, since a plain click on the
-  cabinet opens its GUI.
+- **Power.** It needs redstone power to run, as the ground controller does, and on a pole it
+  also takes it from the **foot of the pole**, the way a real cabinet's feed comes up the pole
+  from a service under the sidewalk. The controller asks its block
+  (`BlockTrafficSignalController.isControllerPowered`; the tile entity's `isControllerPowered`
+  caches the answer, re-reads it on a neighbour change and at least every 20 ticks, and keeps
+  the block's `powered` property with it, as does `neighborChanged`). The ground controller's
+  answer is `isBlockPowered` on its own cell, as before. The cabinet's is that, or, when the
+  block behind it is an `AbstractBlockTrafficPole`, `isBlockPowered` on the block under that
+  pole's foot: `poleFoot` walks down the column of pole blocks from the one behind the cabinet,
+  at most 32 blocks (`MAX_POLE_WALK`, unit-tested in `PoleControllerPowerTest`). So a redstone
+  block or a switched lever under the walk, below the pole's base, runs every cabinet on that
+  pole, and switching it off stops them within a second (the foot is no neighbour of the cabinet,
+  so the once-a-second re-read is what sees it; no column is walked per frame). Direct power into
+  the cabinet's cell still works. A wall cabinet keeps plain redstone: a lever on the wall
+  block's inside face strongly powers that block and so the cabinet. The power-loss flash
+  fallback (`isInFallbackFlashMode`) asks the same question. The cabinet's faces are all
+  `UNDEFINED` (`getBlockFaceShape`), so fences and panes do not join it and nothing attaches to
+  its sides.
 
 By command, with the pole or wall at `x y z+1` and the cabinet facing north, a block above the
 walk at `y-1`:

@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -2745,7 +2746,7 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
 
     // Set true if power loss fallback to flash mode is enabled and the traffic signal controller
     // is currently in a power loss state
-    if (powerLossFallbackToFlashMode && getWorld().getRedstonePowerFromNeighbors(getPos()) <= 0) {
+    if (powerLossFallbackToFlashMode && !isControllerPowered()) {
       inFallbackFlashMode = true;
     }
 
@@ -2854,6 +2855,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * seconds. The cache is invalidated on neighbour change, so a redstone edit is still seen on
    * the very next tick.
    * </p>
+   * <p>
+   * What counts as power is the block's to say ({@link BlockTrafficSignalController#isControllerPowered}):
+   * redstone into the cabinet's own cell, and for the pole cabinet also redstone at the foot of
+   * its pole, which no neighbour change here reports; the backstop re-read picks that up within
+   * a second. The block's {@code powered} property is kept with the answer.
+   * </p>
    *
    * @return true if the controller is powered
    *
@@ -2863,7 +2870,18 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   private boolean isControllerPowered() {
     long now = getWorld().getTotalWorldTime();
     if (!poweredCacheValid || now - poweredCacheTick >= POWERED_CACHE_BACKSTOP_INTERVAL_TICKS) {
-      cachedPowered = getWorld().isBlockPowered(getPos());
+      IBlockState state = getWorld().getBlockState(getPos());
+      if (state.getBlock() instanceof BlockTrafficSignalController) {
+        BlockTrafficSignalController block = (BlockTrafficSignalController) state.getBlock();
+        cachedPowered = block.isControllerPowered(getWorld(), getPos(), state);
+        if (!getWorld().isRemote
+            && state.getValue(BlockTrafficSignalController.POWERED) != cachedPowered) {
+          getWorld().setBlockState(getPos(),
+              state.withProperty(BlockTrafficSignalController.POWERED, cachedPowered), 2);
+        }
+      } else {
+        cachedPowered = getWorld().isBlockPowered(getPos());
+      }
       poweredCacheValid = true;
       poweredCacheTick = now;
     }

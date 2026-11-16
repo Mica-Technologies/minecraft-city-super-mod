@@ -163,7 +163,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   galvanized cabinet on a mast pole, the same junction on black pedestal poles run by the black
   cabinet, a one-way street run by the green cabinet flat on a shop front (a lever inside powers
   it through the wall), and every colour on large, thin and pedestal poles and on a wall. Pole
-  cabinets are powered by a lever on their side, switched on. `--only <parts>` rebuilds a
+  cabinets are powered from the foot of their pole, by a redstone block under the walk below the
+  pole's base. `--only <parts>` rebuilds a
   part in place; drives the game through the orchestrator by instance id
 - `gen_pole_bases.py` -- the bolted bases of the painted thin, thick and impact resistant
   traffic poles (square, squircle, slim, pedestal) as OBJ, borrowing the pedestal pole's mesh

@@ -78,11 +78,29 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
     return state.getValue(POWERED) ? 1 : 0;
   }
 
+  /**
+   * Whether the controller at {@code pos} has power: redstone into its own cell. The tile entity
+   * asks this (cached, re-read on a neighbour change and at least once a second), and the
+   * block's {@link #POWERED} property follows it. A housing with another way in for power (the
+   * pole cabinet, from the foot of its pole) adds it here.
+   *
+   * @param world the world
+   * @param pos   the controller's position
+   * @param state its block state
+   *
+   * @return true if it is powered
+   *
+   * @since 2026.11
+   */
+  public boolean isControllerPowered(World world, BlockPos pos, IBlockState state) {
+    return world.isBlockPowered(pos);
+  }
+
   @Override
   public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn,
       BlockPos p_189540_5_) {
-    int powered = world.getRedstonePowerFromNeighbors(pos);
-    world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 3);
+    world.setBlockState(pos, state.withProperty(POWERED, isControllerPowered(world, pos, state)),
+        3);
 
     // Tell the tile entity its cached power state is stale. The controller reads power from
     // pauseTicking(), which the tickable base class evaluates on every world tick regardless of
@@ -230,8 +248,8 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
       IBlockState state,
       EntityLivingBase placer,
       ItemStack stack) {
-    int powered = world.getRedstonePowerFromNeighbors(pos);
-    world.setBlockState(pos, state.withProperty(POWERED, powered > 0), 2);
+    world.setBlockState(pos, state.withProperty(POWERED, isControllerPowered(world, pos, state)),
+        2);
   }
 
   @Override
