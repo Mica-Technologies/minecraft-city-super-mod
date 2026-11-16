@@ -55,6 +55,7 @@ logged in [Fix status](#fix-status), each with its own before and after.
 | - | Light-up air renders `INVISIBLE`: its model was a `cube_all` on a fully clear texture, five cutout faces in the chunk mesh for every air a light places. Toggle `lightupAirModel` (read at chunk build: reload the chunks after setting it) | `3657fd75f` | Venues demo, 1,264 airs loaded, both fields in view: render work 0.67-0.69 ms | 0.65-0.66 ms. No cross-path pixel outside the 48 that moved within a path |
 | - | HVAC heater and exhaust fan `receiveEnergy` mark dirty only when energy was taken | `d7efdf75e` | a chunk mark and comparator reads every tick under a mod that offers power to a full store | none (argued from code, not measured) |
 | OBJ quads: `PackedObjModel` swaps each Forge `UnpackedBakedQuad` for a plain `BakedQuad` on the same packed `int[]` and writes the list back into the `OBJBakedModel`, freeing the ~900-byte unpacked float arrays every OBJ quad kept; a street of the #99 OBJ street lights plus 11 other CSM OBJ models, A/C/D two runs each | `3c8b4354a` | live heap 1,923.3 MB (1,892.6 on main), memstats CSM quads 173.8 MB, 238k unpacked quads | 1,901.9 MB (-21.4), 151.0 MB, 212k (below main). Frame time not measured (machine under memory pressure); C and D drawn alike by eye, pixel diff inconclusive (camera not repeatable between runs) |
+| - | Canopy and bus shelter light switch spread over ticks (`LightSwitchRipple`, Transit): the light clicked switches at once, the rest four a server tick in the order the walk met them; a second switch replaces a waiting light's target, a chunk unloading or the server stopping switches what is left first. Toggle `lightSwitchAtOnce` | 2026-11-16 | Bus Station Demo, 20-light canopy, same session, worst tick in the 5 s after a click (`server_tick_stats`): on 55 and 41 ms, off 135, 76 and 71 ms | on 21, 38 and 15 ms; off 6.5 and 9.6 ms (85 ms on the first click after the toggle, cold). The canopy lights as a ripple over about 5 ticks; client frames did not show a spike either way in this session (window unfocused) |
 
 Every "before" and "after" in one row is from the same session and scene, A/B/A through a render
 toggle (`sharedBakesPerFrame`, `signalLayoutPerFrame`, the sign `*PerFrame` toggles), with
@@ -176,8 +177,9 @@ light of the canopy (and its light-up air in the floor) in one tick, each a reli
 of the demo's 15-light canopies made one 86 ms server tick switching on and one 229 ms tick
 switching off, and a 97 ms client frame. Spreading the switch over a few ticks with a budget (as
 `CsmLightFootprints` does) would remove it, but the canopy would then light as a ripple over a
-few ticks instead of at once, which is a visible change, so it was not done. The shelter light
-switch has the same shape at a smaller size.
+few ticks instead of at once, which is a visible change, so it was not done in the sweep. The
+shelter light switch has the same shape at a smaller size. Done afterwards, with the ripple
+approved: four lights a tick (Fix status).
 
 **Chunk geometry and rebuilds.** No new tile entity syncs on a cadence; the arrival boards,
 glazing windows, pole flags and blades key their section rebuilds (`getBakedModelKey`). The

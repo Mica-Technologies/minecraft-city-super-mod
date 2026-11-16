@@ -20,6 +20,8 @@ public interface ICanopyLight {
    * @param at    the light's position
    * @param state the light's state there
    * @param lit   whether it is to be lit
+   *
+   * @return {@code true} if it changed
    */
-  void setCanopyLight(World world, BlockPos at, IBlockState state, boolean lit);
+  boolean setCanopyLight(World world, BlockPos at, IBlockState state, boolean lit);
 }

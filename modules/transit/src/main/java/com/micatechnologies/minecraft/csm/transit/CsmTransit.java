@@ -10,11 +10,13 @@ import com.micatechnologies.minecraft.csm.transit.fare.FareGateOpModeHandler;
 import com.micatechnologies.minecraft.csm.transit.fare.FareGateOpModePacket;
 import com.micatechnologies.minecraft.csm.transit.fare.FareVendingPurchaseHandler;
 import com.micatechnologies.minecraft.csm.transit.fare.FareVendingPurchasePacket;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
@@ -99,6 +101,9 @@ public class CsmTransit {
         BusStopInfoPacket.class,
         Side.SERVER);
 
+    // Canopy and shelter light switches, spread over a few ticks
+    MinecraftForge.EVENT_BUS.register(new LightSwitchRipple.Events());
+
     proxy.preInit(event);
   }
 
@@ -110,5 +115,11 @@ public class CsmTransit {
   @Mod.EventHandler
   public void serverStarting(FMLServerStartingEvent event) {
     event.registerServerCommand(new CommandTransit());
+  }
+
+  /** Switches any canopy or shelter lights still queued, before the server's last save. */
+  @Mod.EventHandler
+  public void serverStopping(FMLServerStoppingEvent event) {
+    LightSwitchRipple.flushAll();
   }
 }

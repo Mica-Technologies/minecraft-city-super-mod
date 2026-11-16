@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleBystander;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
+import com.micatechnologies.minecraft.csm.transit.LightSwitchRipple;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -685,7 +686,10 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
 
   /**
    * Sets the light of every top of the shelter that {@code top} is part of: the same block,
-   * facing the same way, joined side to side or front to back, up to {@link #REACH}.
+   * facing the same way, joined side to side or front to back, up to {@link #REACH}. {@code top}
+   * switches at once; the rest are queued in the order the walk meets them and switch a few a
+   * tick ({@link LightSwitchRipple}), so a long shelter does not stall the server for a tick of
+   * relighting.
    */
   private void switchShelter(World world, BlockPos top, boolean lit) {
     IBlockState start = world.getBlockState(top);
@@ -699,9 +703,10 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     seen.add(top);
     while (!open.isEmpty() && seen.size() <= REACH) {
       BlockPos at = open.poll();
-      IBlockState here = world.getBlockState(at);
-      if (here.getValue(LIT) != lit) {
-        world.setBlockState(at, here.withProperty(LIT, lit), 3);
+      if (at.equals(top)) {
+        LightSwitchRipple.now(world, at, lit, this::setRoofLight);
+      } else {
+        LightSwitchRipple.queue(world, at, lit, this::setRoofLight);
       }
       for (EnumFacing side : EnumFacing.HORIZONTALS) {
         BlockPos next = at.offset(side);
@@ -712,6 +717,16 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
         }
       }
     }
+  }
+
+  /** Sets the roof light of the top at {@code at}, if it is one of this block's and not already. */
+  private boolean setRoofLight(World world, BlockPos at, boolean lit) {
+    IBlockState here = world.getBlockState(at);
+    if (here.getBlock() != this || !isTop(here) || here.getValue(LIT) == lit) {
+      return false;
+    }
+    world.setBlockState(at, here.withProperty(LIT, lit), 3);
+    return true;
   }
 
   // --- shape -------------------------------------------------------------------------------

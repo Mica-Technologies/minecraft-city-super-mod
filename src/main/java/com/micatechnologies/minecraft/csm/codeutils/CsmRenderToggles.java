@@ -177,6 +177,13 @@ public final class CsmRenderToggles {
    */
   public static boolean lightupAirModel = false;
 
+  /**
+   * Switch every light of a station canopy or bus shelter in the tick it is switched, as before,
+   * instead of a few a tick (Transit's {@code LightSwitchRipple}). Read on the server, so it only
+   * reaches a single-player world's. Measurement only.
+   */
+  public static boolean lightSwitchAtOnce = false;
+
   /** Skip what the venues' centre-hung scoreboards' screens show. Measurement only. */
   public static boolean skipVenueScoreboard = false;
 
@@ -255,6 +262,7 @@ public final class CsmRenderToggles {
     values.put("ziplineCablePerFrame", ziplineCablePerFrame);
     values.put("venueScoreboardPerFrame", venueScoreboardPerFrame);
     values.put("lightupAirModel", lightupAirModel);
+    values.put("lightSwitchAtOnce", lightSwitchAtOnce);
     values.put("venueScoreboard", skipVenueScoreboard);
     values.put("venueRibbonText", skipVenueRibbonText);
     values.put("venueBanners", skipVenueBanners);
@@ -335,6 +343,8 @@ public final class CsmRenderToggles {
       venueScoreboardPerFrame = skipped;
     } else if ("lightupAirModel".equalsIgnoreCase(name)) {
       lightupAirModel = skipped;
+    } else if ("lightSwitchAtOnce".equalsIgnoreCase(name)) {
+      lightSwitchAtOnce = skipped;
     } else if ("venueScoreboard".equalsIgnoreCase(name)) {
       skipVenueScoreboard = skipped;
     } else if ("venueRibbonText".equalsIgnoreCase(name)) {
@@ -392,6 +402,7 @@ public final class CsmRenderToggles {
     ziplineCablePerFrame = false;
     venueScoreboardPerFrame = false;
     lightupAirModel = false;
+    lightSwitchAtOnce = false;
     skipVenueScoreboard = false;
     skipVenueRibbonText = false;
     skipVenueBanners = false;

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.canopy;
 
+import com.micatechnologies.minecraft.csm.transit.LightSwitchRipple;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
@@ -26,14 +27,17 @@ public final class CanopyLights {
   /**
    * Sets every light under the canopy over {@code light} (downlights and strips alike), or that
    * light alone when no deck is above it: walks the decks joined to the one above it, side to
-   * side, up to {@link #WALK_LIMIT} tiles, and sets the light under each.
+   * side, up to {@link #WALK_LIMIT} tiles, and sets the light under each. {@code light} itself
+   * switches at once; the rest are queued in the order the walk meets them and switch a few a
+   * tick ({@link LightSwitchRipple}), so the canopy lights as a ripple out from it rather than
+   * stalling the server for a tick of relighting.
    *
    * @param world the world
    * @param light the light switched
    * @param lit   whether the lights are to be lit
    */
   public static void switchCanopy(World world, BlockPos light, boolean lit) {
-    set(world, light, lit);
+    LightSwitchRipple.now(world, light, lit, CanopyLights::set);
     BlockPos start = light.up();
     if (!(world.getBlockState(start).getBlock() instanceof BlockCanopyDeck)) {
       return;
@@ -44,7 +48,11 @@ public final class CanopyLights {
     seen.add(start);
     while (!open.isEmpty() && seen.size() <= WALK_LIMIT) {
       BlockPos at = open.poll();
-      set(world, at.down(), lit);
+      BlockPos under = at.down();
+      if (!under.equals(light)
+          && world.getBlockState(under).getBlock() instanceof ICanopyLight) {
+        LightSwitchRipple.queue(world, under, lit, CanopyLights::set);
+      }
       for (EnumFacing side : EnumFacing.HORIZONTALS) {
         BlockPos next = at.offset(side);
         if (!seen.contains(next) && world.isBlockLoaded(next)
@@ -56,11 +64,10 @@ public final class CanopyLights {
     }
   }
 
-  private static void set(World world, BlockPos at, boolean lit) {
+  private static boolean set(World world, BlockPos at, boolean lit) {
     IBlockState s = world.getBlockState(at);
-    if (s.getBlock() instanceof ICanopyLight) {
-      ((ICanopyLight) s.getBlock()).setCanopyLight(world, at, s, lit);
-    }
+    return s.getBlock() instanceof ICanopyLight
+        && ((ICanopyLight) s.getBlock()).setCanopyLight(world, at, s, lit);
   }
 
   /**

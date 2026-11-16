@@ -487,8 +487,10 @@ switched as the Residential lamps are: a click with an empty hand, or a change o
 any section -- on when power comes, off when it goes. The bottom remembers the power its column
 last saw (`powered`), the top holds `lit`, each in bit 8. Either switches every top of the
 shelter the block belongs to, up to 256 columns, so one daylight sensor or switch lights a long
-shelter. A lit top gives light 10. A click holding anything is left to the item, so
-an ad panel (or any block) can be placed against a shelter.
+shelter. A lit top gives light 10. The column clicked (or the one that saw the power change)
+switches at once and the rest follow a few a tick, as the canopy lights do (below). A click
+holding anything is left to the item, so an ad panel (or any block) can be placed against a
+shelter.
 
 ### The ad panel slot
 
@@ -622,6 +624,23 @@ neighbour changes down to a light (downlight or strip) under it. So an **inverte
 sensor set on the roof**, over any light, is the canopy's photocell and switches the whole
 canopy at dusk and dawn. Lights are placed lit; a canopy given a photocell by day stays lit
 until it is switched off once, after which it follows the photocell.
+
+**A switch ripples out over a few ticks.** Every light switched is a block light update, and
+a downlight's light-up air in the floor a second one: switching the 15 lights of a demo canopy
+in one tick made a server tick of 86 ms switching on and 229 ms switching off, nearly all of it
+vanilla's relighting. So the walk still finds every light at once, and the light clicked (or the
+one that saw the power change) switches at once, but the rest are queued in the order the walk
+met them and switched four a server tick (`LightSwitchRipple`, in the module's root package): a
+15-light canopy lights as a ripple outward from the light clicked over about four ticks (0.2 s),
+and a 4,096-tile canopy's lights over seconds. The shelter's roof lights go the same way. The
+queue holds where each light is to end up: a second switch of a light still waiting replaces its
+target where it stands (so switching back mid-ripple turns the rest back, and the whole canopy
+asking at once under a photocell queues each light once), and a light already as asked costs
+only the check. Nothing ticks when nothing is waiting. A chunk that unloads with lights still
+waiting has them switched before it is saved, and a server stopping switches everything left
+before its last save, so a canopy is never saved half switched; only a crash mid-ripple can
+leave one so, and its next switch sets every light again. `/csm renderpass skip
+lightSwitchAtOnce` switches every light in the one tick again, for measuring (single player).
 
 ### The Canopy Tool
 

@@ -172,11 +172,13 @@ public class BlockCanopyDownlight extends AbstractBlock
 
   /** Sets this light on or off, with its light-up air. */
   @Override
-  public void setCanopyLight(World world, BlockPos at, IBlockState state, boolean lit) {
+  public boolean setCanopyLight(World world, BlockPos at, IBlockState state, boolean lit) {
     if (state.getBlock() == this && state.getValue(LIT) != lit) {
       world.setBlockState(at, state.withProperty(LIT, lit), 3);
       CsmLightupAir.projectColumn(lit, world, at, 0, 0);
+      return true;
     }
+    return false;
   }
 
   // --- light-up air ---------------------------------------------------------------------------
