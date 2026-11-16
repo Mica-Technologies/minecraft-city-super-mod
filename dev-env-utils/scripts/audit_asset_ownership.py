@@ -84,6 +84,7 @@ for bsp in sorted(bs_files, key=lambda p: os.path.basename(p)):
     j=load(bsp)
     if j is None: continue
     refs=[]; walk(j,"model",refs); texs=[]; walk(j,"__tex__",texs)
+    split=[layout.split_obj_options(r) for r in refs]; refs=[h for h,_t in split]; texs+=[t for _h,ts in split for t in ts]
     models=set(); tset=set(texs); seen=set()
     for r in refs:
         p=model_path(r)

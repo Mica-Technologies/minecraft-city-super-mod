@@ -40,7 +40,15 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
 - `forge_multipart.py` -- turns a generator's Forge blockstate whose properties only swap
   textures into multipart (one model location; a child model per texture set under
   `states/<block>/`); `verify_multipart_conversion.py <rev> --changed` checks the result draws
-  every state as the Forge form did (PERFORMANCE_AND_SECURITY.md "Memory")
+  every state as the Forge form did (PERFORMANCE_AND_SECURITY.md "Memory"). Its second entry
+  point, `convert_obj`, turns a Forge blockstate of OBJ models whose properties pick parts (cells,
+  stubs, ends) into multipart, the OBJ options in each location (`obj_location`), checking state by
+  state; `forge_obj_parts` and `obj_multipart` let a generator edit the parts table in between
+  (the double luminaire arms)
+- `verify_obj_multipart.py <rev> --changed` -- checks every OBJ blockstate `convert_obj` wrote
+  draws each state and the item as its Forge form at that revision did, triangle by triangle
+  (positions, texture coordinates after flip-v, textures) and its particle, files read at the
+  revision for the old form; about 40 minutes for the light pole families
 - `audit_model_weight.py` -- how heavy every JSON block model is: quads per model and module, the
   heaviest models, and how many of their faces are hidden by the model's own closed opaque boxes
   (what `model_depth.py`'s pruning would remove). Offline, a few seconds a module

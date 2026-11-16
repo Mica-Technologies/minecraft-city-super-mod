@@ -1249,6 +1249,12 @@ public class BlockItemIntegrityTool {
       return resolved;
     }
     String strippedModelValue = modelValue.substring(prefixCheck.length());
+    // A multipart blockstate's OBJ model carries its options after the file name
+    // ("a/b.obj?flip-v&body=csm:blocks/x", Core's CsmObjModelLoader): the file is before the '?'.
+    int options = strippedModelValue.indexOf(".obj?");
+    if (options >= 0) {
+      strippedModelValue = strippedModelValue.substring(0, options + ".obj".length());
+    }
     String modelFileName = strippedModelValue + ".json";
     AssetFolder modelFolder = blockModelsFolder;
 

@@ -238,6 +238,8 @@ def _blockstate_refs(bs):
         if isinstance(node, dict):
             for k, v in node.items():
                 if k == 'model' and isinstance(v, str):
+                    v, option_textures = layout.split_obj_options(v)
+                    textures.update(option_textures)
                     if forge:
                         models.add(v if ':' in v else 'minecraft:' + v)
                     else:

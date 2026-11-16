@@ -472,6 +472,23 @@ def walk_assets(relative_path="", suffixes=None):
                 yield module, path, os.path.relpath(path, assets).replace(os.sep, "/")
 
 
+def split_obj_options(ref):
+    """``(model ref, [texture refs])`` for a blockstate model ref. A multipart blockstate's OBJ
+    model carries its options in the location (``csm:a/b.obj?flip-v&body=csm:blocks/x``, read
+    by Core's ``CsmObjModelLoader``, written by ``forge_multipart.obj_location``): the file is
+    the part before ``?`` and every option but ``flip-v``, ``ambient``, ``gui3d`` and
+    ``transform`` names a texture. Any other ref comes back as it is, with no textures."""
+    head, sep, opts = ref.partition("?")
+    if not sep or not head.endswith(".obj"):
+        return ref, []
+    textures = []
+    for opt in opts.split("&"):
+        key, eq, value = opt.partition("=")
+        if eq and key not in ("flip-v", "ambient", "gui3d", "transform"):
+            textures.append(value)
+    return head, textures
+
+
 def main():
     """Print a summary of the layout, as a smoke test."""
     print("Repository root : {0}".format(REPO_ROOT))

@@ -337,6 +337,13 @@ def reach_from_blockstate(rel, where, resolver, unresolved):
     walk_json(data, "model", refs)
     raw_textures = []
     walk_json(data, "__tex__", raw_textures)
+    # an OBJ model's options in its location (multipart): the file, and the textures it names
+    plain = []
+    for ref in refs:
+        head, option_textures = layout.split_obj_options(ref)
+        plain.append(head)
+        raw_textures.extend(option_textures)
+    refs = plain
     models, textures, seen = set(), set(), set()
     for ref in raw_textures:
         resolved = resolver.texture(ref)
