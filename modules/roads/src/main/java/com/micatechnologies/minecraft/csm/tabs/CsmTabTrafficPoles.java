@@ -69,7 +69,7 @@ public class CsmTabTrafficPoles extends CsmTab {
    */
   @Override
   public Block getTabIcon() {
-    return CsmRegistry.getBlock("trafficpolevertical");
+    return CsmRegistry.getBlock("trafficpolepedestalblack");
   }
 
   /**

@@ -290,6 +290,12 @@ sills meet round an outside corner. The keystone rises 2 px above the window.
 
 Each click says what it set on the action bar.
 
+**Placing by hand copies the neighbour.** A window placed against another of the same block
+facing the same way (looked for below, above, then either side) takes its depth, pattern, open
+state, arch, sill and head (`BlockGlazingWindow.placementNeighbour`). So growing a 1/1 stack
+downward keeps it 1/1 with its sill on the new foot, and a window added beside a flush run joins
+it. Scripted placement never runs this: there, meta and NBT say everything.
+
 **Stored, and scripted placement.** Metadata `facing | depth << 2` (facing S0 W1 N2 E3; depth 0
 centred, 1 flush, 2 inset): 12 states a block. Tile entity, every key optional (missing = default,
 so a meta-only `server_set_blocks` gives a plain closed window with no trim):

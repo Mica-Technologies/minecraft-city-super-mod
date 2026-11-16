@@ -211,7 +211,55 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
     if (canted) {
       f = EnumFacing.byHorizontalIndex(WindowLayout.cantedFacing(placer.rotationYaw));
     }
-    return getDefaultState().withProperty(FACING, f);
+    IBlockState state = getDefaultState().withProperty(FACING, f);
+    BlockPos like = placementNeighbour(worldIn, pos, state);
+    return like == null ? state
+        : state.withProperty(DEPTH, worldIn.getBlockState(like).getValue(DEPTH));
+  }
+
+  /**
+   * A window placed by hand against another of the same finish, facing the same way, takes that
+   * window's settings: its depth here, and its pattern, open state, arch, sill and head in
+   * {@link #onBlockPlacedBy}. Otherwise a window added under a 1/1 stack would become the stack's
+   * foot and turn the whole stack plain, and one added beside a flush run would not join it until
+   * it was sneak-clicked. Below and above are looked at first (the same stack), then either side.
+   * Scripted placement ({@code setBlockState}) never runs this, so meta and NBT still say
+   * everything.
+   */
+  @Nullable
+  private BlockPos placementNeighbour(IBlockAccess world, BlockPos pos, IBlockState here) {
+    EnumFacing f = here.getValue(FACING);
+    for (EnumFacing d : new EnumFacing[]{EnumFacing.DOWN, EnumFacing.UP, f.rotateY(),
+        f.rotateYCCW()}) {
+      BlockPos p = pos.offset(d);
+      IBlockState other = world.getBlockState(p);
+      if (other.getBlock() == this && other.getValue(FACING) == f) {
+        return p;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state,
+      EntityLivingBase placer, ItemStack stack) {
+    super.onBlockPlacedBy(world, pos, state, placer, stack);
+    if (world.isRemote) {
+      return;
+    }
+    BlockPos like = placementNeighbour(world, pos, state);
+    TileEntity from = like == null ? null : world.getTileEntity(like);
+    TileEntity to = world.getTileEntity(pos);
+    if (from instanceof TileEntityGlazingWindow && to instanceof TileEntityGlazingWindow) {
+      TileEntityGlazingWindow a = (TileEntityGlazingWindow) from;
+      TileEntityGlazingWindow b = (TileEntityGlazingWindow) to;
+      b.setPattern(a.getPattern());
+      b.setOpen(a.isOpen());
+      b.setArch(a.isArch());
+      b.setSill(a.getSill());
+      b.setHead(a.getHead());
+      b.markDirtySync(world, pos, state, true);
+    }
   }
 
   // --- joins --------------------------------------------------------------------------------
