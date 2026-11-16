@@ -5,6 +5,12 @@ Fares, stops, shelters, platforms, airport, boards, stations and the Transit dem
 Moved out of the repository `CLAUDE.md`, which links here; read this file when working on what it
 covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run directly.
 
+- `gen_transit_fare_vending_outdoor.py` -- the outdoor fare vending machine (Transit): a
+  two-block street ticket machine, a model per half (`lower`, `upper`) under a multipart
+  blockstate on `facing` and `upper`, textures drawn at 4 texels a unit in UV windows; the item
+  is both halves stacked. A north face reads from +x on the viewer's left, so the keypad
+  (x 8.8 .. 12.3) carries the left label. It deletes `models/block/transit/fare_vending_outdoor/`
+  before writing; `--check`, `--fragments`
 - `gen_transit_fare_vending.py` -- the fare vending machine's model, textures and blockstate
   (Transit): a free-standing machine two blocks tall in the invented CITYLINE livery, drawn from one
   block (so placed machines keep their metadata) with ambient occlusion off, since its upper half

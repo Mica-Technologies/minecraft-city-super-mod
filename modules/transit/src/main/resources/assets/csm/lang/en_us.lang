@@ -253,3 +253,4 @@ csm.transit.shelter.mode=Places: %s
 csm.transit.shelter.mode_full=a full shelter, 4 long and 2 deep
 csm.transit.shelter.mode_compact=a compact shelter, 3 long and 1 deep
 csm.transit.shelter.mode_hint=Sneak-use in the air to switch
+tile.fare_vending_machine_outdoor.name=Outdoor Fare Vending Machine

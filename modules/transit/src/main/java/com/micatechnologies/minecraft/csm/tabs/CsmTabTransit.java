@@ -33,6 +33,7 @@ import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGate;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda3;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachine;
+import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachineOutdoor;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemTransitCard;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformBench;
@@ -145,6 +146,8 @@ public class CsmTabTransit extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockFareVendingMachine.class, fmlPreInitializationEvent);
+    // gen_transit_fare_vending_outdoor.py --fragments
+    initTabBlock(BlockFareVendingMachineOutdoor.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGate.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGateAda2.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGateAda3.class, fmlPreInitializationEvent);

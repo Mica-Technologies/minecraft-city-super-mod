@@ -100,6 +100,23 @@ belongs to the Furniture & Novelties module, so the handler looks it up by name 
 block's chime when that module is not installed. Transit requires Roads, and nothing else but
 Core.
 
+The **Outdoor Fare Vending Machine** (`csm:fare_vending_machine_outdoor`,
+`BlockFareVendingMachineOutdoor`) is the street version, at the shelters' scale: a weatherproof
+stainless cabinet with graphite trim on a short plinth, a hood (a roof plate and two cheeks) over
+the screen, the same keypad, tap pad, slots and tray in relief, and a cap with a small
+CITYLINE-teal band, drawn by `gen_transit_fare_vending_outdoor.py`. It is a subclass of the
+indoor machine, so it opens the same GUI (id 16) and the purchase handler's "within six blocks
+of a real vending machine" check accepts it unchanged: same packets, same purchases, same prices.
+Unlike the indoor machine it is **two blocks**, placed as one piece as a door is: the lower
+(`upper` false) is the plinth and lower cabinet, the upper the screen, hood and cap, each its own
+model, so the screen half can be clicked. It needs the block above free; breaking either half
+takes both, and only the lower drops the machine (the lower, finding its upper gone, drops
+itself; breaking the upper in creative clears the lower first, quietly), so one machine comes
+back however it is broken, explosions included. Clicking either half opens the GUI for the
+lower. Meta is the facing (horizontal only) plus 8 for the upper; it cannot be pushed. Its
+Fabricator cost is the indoor machine's (a control board, sheet metal, a wiring harness) with a
+second sheet of metal.
+
 The **Fare Ticket** is a plain single-use item. The **Transit Card** stacks to one, because every
 card carries its own balance (`trips` in its NBT) and its tooltip shows it.
 

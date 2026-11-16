@@ -253,3 +253,4 @@ csm.transit.shelter.mode=Setzt: %s
 csm.transit.shelter.mode_full=ein ganzes Wartehäuschen, 4 lang und 2 tief
 csm.transit.shelter.mode_compact=ein kompaktes Wartehäuschen, 3 lang und 1 tief
 csm.transit.shelter.mode_hint=Schleichend in die Luft zum Wechseln
+tile.fare_vending_machine_outdoor.name=Fahrscheinautomat (Außen)

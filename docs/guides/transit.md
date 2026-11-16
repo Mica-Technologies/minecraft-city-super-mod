@@ -19,6 +19,10 @@ each with its own colours: **CITYLINE** (teal and yellow), **RIVERWAY** (navy an
 - a new **Transit Card** with 1, 2, 5, 10 or 25 trips, one emerald a trip;
 - a reload of 1, 5 or 25 trips onto the card **in your main hand**.
 
+The **Outdoor Fare Vending Machine** is the street version for a bus stop: two blocks tall, with
+a hood over its screen. It sells exactly the same fares through the same screen. Place it like a
+door (it needs the block above free); break either half and the whole machine comes back.
+
 A card shows its trips left in its tooltip. Cards don't stack, since each one carries its own
 balance. If your inventory is full, what you bought drops at your feet.
 
