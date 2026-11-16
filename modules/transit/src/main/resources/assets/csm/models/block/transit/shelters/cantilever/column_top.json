@@ -1,0 +1,127 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/shelters/frame_cityline",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        14
+      ],
+      "to": [
+        9,
+        12.0,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            7,
+            4.0,
+            9,
+            16.0
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            7,
+            4.0,
+            9,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            4.0,
+            2,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            14,
+            4.0,
+            16,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        5,
+        2
+      ],
+      "to": [
+        8.5,
+        6,
+        14
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            7.5,
+            10,
+            8.5,
+            11
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            2,
+            10,
+            14,
+            11
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            2,
+            10,
+            14,
+            11
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            7.5,
+            2,
+            8.5,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            7.5,
+            2,
+            8.5,
+            14
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          5.5,
+          14
+        ],
+        "axis": "x",
+        "angle": 22.5
+      }
+    }
+  ]
+}

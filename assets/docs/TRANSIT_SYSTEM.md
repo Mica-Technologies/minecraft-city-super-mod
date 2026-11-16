@@ -347,11 +347,29 @@ agencies' liveries, all one class, `BlockBusShelter`, and all drawn by `gen_tran
 | `cantilever` | a canopy on one column a block, curving down at the back, open front and ends, a perforated steel screen and a bench | cutout |
 | `flat` | a thin flat roof with a slim name fascia on slim corner posts, and a lean rail | cutout |
 
-### One piece, two blocks
+### Real scale: columns of sections
 
-A shelter is placed as a door is: into its block and the one above (`upper`), both broken
-together, only the lower half dropping the item. It faces the player who places it; its open
-front is that side.
+Shelters are built at real scale (the 2-block originals stood the roof at 1.84 m, a player's
+height, and one block deep). A shelter is made of **columns**, each three blocks tall or more,
+from the ground up: `bottom` (kick rails, bench, the foot of the ad panel frame), `second` (the
+frit band at about 1.4 m, the head of the panel frame), any number of `middle` sections (posts
+and plain glass, one block more headroom each) and `top`, which carries the roof: its underside
+is at 2.75 m at three tall. `BusShelterSection` names them; only `top` is stored (meta bit 4, as
+`upper` was), the rest is **actual state** read off the column, so the meta layout is the old
+one: facing, the top bit, and bit 8 as `lit` in the top or `powered` in the bottom.
+
+- **Placing** puts down a whole shelter: four columns long and two rows deep (`FOOT_LENGTH`,
+  `FOOT_DEPTH`), the front row in the block clicked, running from one block on the placer's left
+  to two on their right. It faces the placer; its open front is that side. Sneaking places one
+  column. In survival the footprint takes an item a column, and places one column (saying why)
+  when the stack is short.
+- **Height**: clicking a shelter with its own item raises every column of that shelter by a
+  section (the top moves up and a `middle` takes its place); sneaking lowers it, down to three,
+  up to `MAX_HEIGHT` (12). Every column, so the roof stays level.
+- **Breaking** any section takes its column; the section broken drops the one item.
+
+Old 2-block shelters in a world load as a column of `bottom` and `top` only; clicking one with its
+item grows it to the new height.
 
 ### Joining
 
@@ -363,29 +381,35 @@ Shelters of the same block facing the same way join both ways, from actual state
   number in a row read as one shelter.
 - **Front to back** (`ahead`, `behind`: the same block continues in front or behind). The back
   wall and bench are drawn only in the back row, the fascia and front posts only along the front,
-  and the end walls run through, so two rows make a shelter two blocks deep (or three, or more).
+  and the glass end walls only in the back row, so a two-row shelter is open at its front corners
+  as real ones are.
 
-Every part is written once in "shelter coordinates" (y from 0 to 32 over both halves) and cut at
-the block line, so a post or a glass pane is one piece in the generator and two models in the
-game. The collision boxes (`BusShelterStyle.collision`) are the walls, bench, rail, posts and roof
-of each half, from the same numbers. The selection box is the whole block, so the end of a shelter
-is easy to click when setting an ad panel against it.
+Every part is written once in "column coordinates" (y from 0 to 48 over a three-section column)
+and cut at the section lines, so a post or a glass pane is one piece in the generator and three
+models in the game. A `middle` model is the parts marked `run` (posts, the walls' glass) at the
+full height of the block, in plain glass. The collision boxes (`BusShelterStyle.collision`) are
+the walls, bench, rail, posts and roof cut to each section from the same numbers. The selection
+box is the whole block, so the end of a shelter is easy to click when setting an ad panel
+against it. Joins compare only the stored top bit, so columns of one shelter must be the same
+height, which resizing keeps.
 
 ### The roof light
 
 A lens under the roof, lit when the shelter is placed (or matching the shelter it joins). It is
 switched as the Residential lamps are: a click with an empty hand, or a change of redstone power at
-either half -- on when power comes, off when it goes. The lower half remembers the power it last
-saw (`powered`), the upper holds `lit`, each in the bit above `upper`. Either switches every upper
-half of the shelter the block belongs to, up to 64 blocks, so one daylight sensor or switch lights
-a long shelter. A lit upper half gives light 8. A click holding anything is left to the item, so
+any section -- on when power comes, off when it goes. The bottom remembers the power its column
+last saw (`powered`), the top holds `lit`, each in bit 8. Either switches every top of the
+shelter the block belongs to, up to 256 columns, so one daylight sensor or switch lights a long
+shelter. A lit top gives light 10. A click holding anything is left to the item, so
 an ad panel (or any block) can be placed against a shelter.
 
 ### The ad panel slot
 
 The glass shelter keeps the sitter's left end of its back row for an advertising panel: no glass,
-but an empty steel frame -- two posts and a rail top and bottom -- set in 1.25 px from the block
-edge, with the back wall, bench and roof stopping at it too. The panel itself is Signage's **Bus
+but an empty steel frame -- two posts and a rail at the panel's foot and head, two blocks up --
+set in 1.25 px from the block edge, with the back wall and bench stopping at it too. Above the
+panel's head the frame is glazed, through every `middle` and the `top`; the roof, high above the
+panel, runs on past it. The panel itself is Signage's **Bus
 Shelter Ad Panel** (`ad_shelter_panel`, `ADVERTISING_SYSTEM.md`), which the player sets against
 that frame from outside the shelter: a 1 x 2 backlit lightbox in the next block, its back lip
 reaching the pixel into this one that the shelter leaves clear, one ad facing along the pavement
@@ -411,8 +435,12 @@ graphite frame.
 - **Only shelters of the same block join.** A glass CITYLINE shelter beside a glass RIVERWAY one
   is two shelters with two sets of end walls, which is right for two agencies' shelters but
   surprises a builder mixing liveries in one run.
-- **A shelter is placed as a door is.** Set by command or by a script, both halves must be set,
-  the upper with its bit (4), and the lit bit (8) on the upper half only.
+- **A shelter is a column.** Set by command or by a script, set at least three blocks: the
+  bottom and every section under the top at meta = facing, the top with its bit (4), and the lit
+  bit (8) on the top only. A `/setblock` of one block gives a column of one, which draws only its
+  bottom section's parts.
+- **Removing a section of your own needs `RESHAPING`.** `breakBlock` takes the whole column unless
+  that flag is set, which is how resizing moves the top without the shelter breaking itself.
 
 ### Prices
 

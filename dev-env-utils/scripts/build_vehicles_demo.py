@@ -290,7 +290,8 @@ def bus_stop():
     put(x, Y + 2, z, 'bus_stop_flag_cityline', E, '{r:[B;1b,7b,0b]}')
     for sx in range(x + 2, x + 5):
         put(sx, Y, -AVE_HALF - WALK, 'bus_shelter_glass_cityline', S)
-        put(sx, Y + 1, -AVE_HALF - WALK, 'bus_shelter_glass_cityline', S | 4 | 8)
+        put(sx, Y + 1, -AVE_HALF - WALK, 'bus_shelter_glass_cityline', S)
+        put(sx, Y + 2, -AVE_HALF - WALK, 'bus_shelter_glass_cityline', S | 4 | 8)
     flush()
 
 

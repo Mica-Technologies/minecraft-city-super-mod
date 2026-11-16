@@ -1,0 +1,41 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glass": "csm:blocks/transit/shelters/glass",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        15.05,
+        0,
+        2
+      ],
+      "to": [
+        15.45,
+        16,
+        14.5
+      ],
+      "faces": {
+        "east": {
+          "texture": "#glass",
+          "uv": [
+            1.5,
+            0,
+            14.0,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#glass",
+          "uv": [
+            2,
+            0,
+            14.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

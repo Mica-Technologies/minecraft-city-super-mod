@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/transit/shelters/glass/front_hi",
-  "textures": {
-    "fascia": "csm:blocks/transit/shelters/fascia_riverway",
-    "frame": "csm:blocks/transit/shelters/frame_riverway",
-    "particle": "csm:blocks/transit/shelters/frame_riverway"
-  }
-}

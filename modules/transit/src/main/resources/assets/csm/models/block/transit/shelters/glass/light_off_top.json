@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "lens_off": "csm:blocks/transit/shelters/lens_off",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        4,
+        11.5,
+        5
+      ],
+      "to": [
+        12,
+        12.0,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lens_off",
+          "uv": [
+            4,
+            4.0,
+            12,
+            4.5
+          ]
+        },
+        "south": {
+          "texture": "#lens_off",
+          "uv": [
+            4,
+            4.0,
+            12,
+            4.5
+          ]
+        },
+        "east": {
+          "texture": "#lens_off",
+          "uv": [
+            5,
+            4.0,
+            11,
+            4.5
+          ]
+        },
+        "west": {
+          "texture": "#lens_off",
+          "uv": [
+            5,
+            4.0,
+            11,
+            4.5
+          ]
+        },
+        "down": {
+          "texture": "#lens_off",
+          "uv": [
+            4,
+            5,
+            12,
+            11
+          ]
+        }
+      }
+    }
+  ]
+}

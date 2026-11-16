@@ -1,8 +1,0 @@
-{
-  "parent": "csm:block/transit/shelters/flat/front_hi",
-  "textures": {
-    "frame": "csm:blocks/transit/shelters/frame_emberline",
-    "slim": "csm:blocks/transit/shelters/fascia_slim_emberline",
-    "particle": "csm:blocks/transit/shelters/frame_emberline"
-  }
-}

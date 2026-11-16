@@ -20,11 +20,14 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   leaves `shift` out of the model locations); the flag models are shared by the agencies, the
   blockstate filling the plate slots with the plate or a clear texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
 - `gen_transit_shelters.py` -- the bus shelters (Transit): glass and steel, cantilever canopy and
-  flat roof, two blocks tall, joining along their length and front to back from actual state
-  (`left`, `right`, `ahead`, `behind`). Every part is written once in shelter coordinates (y 0 to
-  32) and cut at the block line into a model per half; liveries are child models naming the
-  agency's `frame` and `fascia` textures. The glass shelter's back row stops 1.25 px short of its
-  left end, the empty frame Signage's shelter ad panel is set against; the collision boxes in
+  flat roof, at real scale: columns of `bottom`, `second`, any number of `middle` and a `top`
+  (`section`, actual state), joining along their length and front to back from actual state
+  (`left`, `right`, `ahead`, `behind`). Every part is written once in column coordinates (y 0 to
+  48) and cut at the section lines into a model per section; `run` parts (posts, glass) make the
+  `middle` model. It deletes `models/block/transit/shelters/` before writing, so a layout change
+  leaves nothing stale. Liveries are child models naming the agency's `frame` and `fascia`
+  textures. The glass shelter's back row stops 1.25 px short of its left end for two blocks, the
+  empty frame Signage's shelter ad panel is set against; the collision boxes in
   `BusShelterStyle.java` share its numbers; `--check`, `--fragments`
 - `gen_transit_platforms.py` -- the station and platform fit-out (Transit), made to complement
   RCMC's stations rather than repeat them (no platform, edge, speaker, board or track piece):
