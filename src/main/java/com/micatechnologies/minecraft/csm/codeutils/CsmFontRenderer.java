@@ -128,7 +128,8 @@ public final class CsmFontRenderer {
       tg.dispose();
 
       // The mip levels of a dot-matrix font are made from its lit cells without the gaps
-      int[] mipSource = dotPitch > 0 ? applyDotMatrix(atlas, dotPitch, cellW, cellH) : null;
+      int[] mipSource = dotPitch > 0 ? applyDotMatrix(atlas, dotPitch, cellW, cellH, ',')
+          : null;
       int[] levelZero = atlas.getRGB(0, 0, atlasW, atlasH, null, 0, atlasW);
       whiten(levelZero);
       atlas.setRGB(0, 0, atlasW, atlasH, levelZero, 0, atlasW);
@@ -240,8 +241,16 @@ public final class CsmFontRenderer {
   /**
    * Redraws the atlas as a grid of lit dots, and returns the same grid with each lit dot filling
    * its whole cell, gaps closed, which the mip levels are made from.
+   *
+   * <p>A dot is lit where the glyph covers the middle of its square. A comma's tail is thinner
+   * than a dot's pitch and falls between the samples, so at a pitch of 3 the comma came out a
+   * square, the same as a full stop. The cell of {@code tailChar} gets a descending tail of two
+   * dots, down and to the left, under the lowest dots it lit ({@link #addCommaTail}); every other
+   * cell is sampled exactly as before.</p>
+   *
+   * @param tailChar the character whose cell gets a tail, or -1 for none
    */
-  private static int[] applyDotMatrix(BufferedImage img, int pitch, int cW, int cH) {
+  static int[] applyDotMatrix(BufferedImage img, int pitch, int cW, int cH, int tailChar) {
     int w = img.getWidth();
     int h = img.getHeight();
     int[] src = img.getRGB(0, 0, w, h, null, 0, w);
@@ -251,40 +260,49 @@ public final class CsmFontRenderer {
     int dotSize = Math.max(pitch - 1, 1);
     int cellCols = w / cW;
     int cellRows = h / cH;
+    int dotsX = cW / pitch;
+    int dotsY = cH / pitch;
 
     for (int cr = 0; cr < cellRows; cr++) {
       for (int cc = 0; cc < cellCols; cc++) {
         int cx = cc * cW;
         int cy = cr * cH;
-        int dotsX = cW / pitch;
-        int dotsY = cH / pitch;
-
+        boolean[][] on = new boolean[dotsY][dotsX];
         for (int dy = 0; dy < dotsY; dy++) {
           for (int dx = 0; dx < dotsX; dx++) {
             int regionX = cx + dx * pitch;
             int regionY = cy + dy * pitch;
-
             int centerIdx = (regionY + pitch / 2) * w + (regionX + pitch / 2);
-            boolean on = centerIdx >= 0 && centerIdx < src.length
+            on[dy][dx] = centerIdx >= 0 && centerIdx < src.length
                 && ((src[centerIdx] >> 24) & 0xFF) > 64;
+          }
+        }
+        if (cr * cellCols + cc == tailChar) {
+          addCommaTail(on);
+        }
 
-            if (on) {
-              for (int fy = 0; fy < pitch; fy++) {
-                for (int fx = 0; fx < pitch; fx++) {
-                  int px = regionX + fx;
-                  int py = regionY + fy;
-                  if (px < w && py < h) {
-                    solid[py * w + px] = 0xFFFFFFFF;
-                  }
+        for (int dy = 0; dy < dotsY; dy++) {
+          for (int dx = 0; dx < dotsX; dx++) {
+            if (!on[dy][dx]) {
+              continue;
+            }
+            int regionX = cx + dx * pitch;
+            int regionY = cy + dy * pitch;
+            for (int fy = 0; fy < pitch; fy++) {
+              for (int fx = 0; fx < pitch; fx++) {
+                int px = regionX + fx;
+                int py = regionY + fy;
+                if (px < w && py < h) {
+                  solid[py * w + px] = 0xFFFFFFFF;
                 }
               }
-              for (int fy = 0; fy < dotSize; fy++) {
-                for (int fx = 0; fx < dotSize; fx++) {
-                  int px = regionX + fx;
-                  int py = regionY + fy;
-                  if (px < w && py < h) {
-                    dst[py * w + px] = 0xFFFFFFFF;
-                  }
+            }
+            for (int fy = 0; fy < dotSize; fy++) {
+              for (int fx = 0; fx < dotSize; fx++) {
+                int px = regionX + fx;
+                int py = regionY + fy;
+                if (px < w && py < h) {
+                  dst[py * w + px] = 0xFFFFFFFF;
                 }
               }
             }
@@ -295,6 +313,37 @@ public final class CsmFontRenderer {
 
     img.setRGB(0, 0, w, h, dst, 0, w);
     return solid;
+  }
+
+  /**
+   * Gives a comma's sampled dots a tail: one dot under the right of its lowest row, then one
+   * down and to the left of that, as a dot-matrix sign draws it. Dots past the cell are left out.
+   *
+   * @param on the cell's dots, [row][column], changed in place
+   */
+  static void addCommaTail(boolean[][] on) {
+    int lowest = -1;
+    int left = Integer.MAX_VALUE;
+    int right = -1;
+    for (int y = on.length - 1; y >= 0 && lowest < 0; y--) {
+      for (int x = 0; x < on[y].length; x++) {
+        if (on[y][x]) {
+          lowest = y;
+          left = Math.min(left, x);
+          right = Math.max(right, x);
+        }
+      }
+    }
+    if (lowest < 0) {
+      return;
+    }
+    if (lowest + 1 < on.length) {
+      on[lowest + 1][right] = true;
+    }
+    int tailX = right > left ? left : Math.max(0, right - 1);
+    if (lowest + 2 < on.length) {
+      on[lowest + 2][tailX] = true;
+    }
   }
 
   public int getStringWidth(String text) {
