@@ -1,0 +1,106 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "glass": "csm:blocks/transit/shelters/glass",
+    "glass_frit": "csm:blocks/transit/shelters/glass_frit",
+    "particle": "csm:blocks/transit/shelters/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        15
+      ],
+      "to": [
+        16,
+        5,
+        15.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            11,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            11,
+            16,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        5,
+        15
+      ],
+      "to": [
+        16,
+        9,
+        15.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass_frit",
+          "uv": [
+            0,
+            7,
+            16,
+            11
+          ]
+        },
+        "south": {
+          "texture": "#glass_frit",
+          "uv": [
+            0,
+            7,
+            16,
+            11
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        9,
+        15
+      ],
+      "to": [
+        16,
+        16,
+        15.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#glass",
+          "uv": [
+            0,
+            0,
+            16,
+            7
+          ]
+        }
+      }
+    }
+  ]
+}

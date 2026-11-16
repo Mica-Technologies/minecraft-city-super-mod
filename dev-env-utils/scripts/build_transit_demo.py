@@ -210,13 +210,15 @@ put(5, Y, 2, 'bus_stop_curb_plaque', S)
 for x0, agency in ((7, 'cityline'), (19, 'riverway'), (31, 'verdant'), (43, 'emberline')):
     for x in range(x0, x0 + 3):
         put(x, Y, 1, 'bus_shelter_glass_' + agency, S)
-        put(x, Y + 1, 1, 'bus_shelter_glass_' + agency, S | 4 | 8)
+        put(x, Y + 1, 1, 'bus_shelter_glass_' + agency, S)
+        put(x, Y + 2, 1, 'bus_shelter_glass_' + agency, S | 4 | 8)
 # South sidewalk: flat-roof and cantilever shelters in each livery, facing the road, two long.
 for i, agency in enumerate(('cityline', 'riverway', 'verdant', 'emberline')):
     for style, x0 in (('flat', 2 + i * 7), ('cantilever', 32 + i * 6)):
         for x in (x0, x0 + 1):
             put(x, Y, 16, 'bus_shelter_%s_%s' % (style, agency), N)
-            put(x, Y + 1, 16, 'bus_shelter_%s_%s' % (style, agency), N | 4 | 8)
+            put(x, Y + 1, 16, 'bus_shelter_%s_%s' % (style, agency), N)
+            put(x, Y + 2, 16, 'bus_shelter_%s_%s' % (style, agency), N | 4 | 8)
 
 # The bus concourse: a platform canopy on steel columns, two bays, bay displays, a board bank.
 for x in (58, 67, 76):
@@ -727,7 +729,8 @@ for i, reg in enumerate(missing):
     put(x, Y, PZR, 'minecraft:stonebrick')
     if reg.startswith('bus_shelter_'):
         put(x, Y + 1, PZR, reg, S)
-        put(x, Y + 2, PZR, reg, S | 4 | 8)
+        put(x, Y + 2, PZR, reg, S)
+        put(x, Y + 3, PZR, reg, S | 4 | 8)
     elif reg.startswith('fare_gate'):
         put(x, Y + 2, PZR, reg, S)
         put(x, Y + 1, PZR, 'minecraft:air')

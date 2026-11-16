@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -19,59 +18,73 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 /**
- * A bus shelter, two blocks tall, drawn by {@code gen_transit_shelters.py}: glass and steel, a
- * cantilever canopy or a flat roof ({@link BusShelterStyle}), in one agency's livery each. It is
- * placed as one piece into its block and the one above, as a door is, and broken as one piece
- * from either half; only the lower half drops the item.
+ * A bus shelter at real scale, drawn by {@code gen_transit_shelters.py}: glass and steel, a
+ * cantilever canopy or a flat roof ({@link BusShelterStyle}), in one agency's livery each.
+ *
+ * <p>A shelter is built of columns. Each column is three blocks tall or more: a
+ * {@link BusShelterSection#BOTTOM}, a {@link BusShelterSection#SECOND}, any number of
+ * {@link BusShelterSection#MIDDLE} sections and the {@link BusShelterSection#TOP}, which carries
+ * the roof, about 2.75 m up at three tall. Only the top is stored ({@link #SECTION} reads
+ * {@code TOP} or {@code BOTTOM} from meta); the rest is actual state, worked out from the column.
+ * A column is broken as one piece from any of its sections.</p>
+ *
+ * <p>The item ({@link ItemShelter}) places a whole shelter, {@link #FOOT_LENGTH} columns long
+ * and {@link #FOOT_DEPTH} rows deep, the front row in the block clicked; sneaking, it places one
+ * column. In survival the footprint takes an item a column, and one column is placed when there
+ * are not enough. Clicking a shelter with the item makes every column of that shelter a section
+ * taller; sneaking, a section shorter, down to three.</p>
  *
  * <p>Shelters join. Set side by side, facing the same way, they read as one shelter of any
  * length: {@link #LEFT} and {@link #RIGHT} say whether the same block continues on the sitter's
  * left and right, and end walls, end posts and the roof's end overhang are drawn only where it
  * does not. Set one in front of another, they make a deeper shelter: {@link #AHEAD} and
  * {@link #BEHIND} say whether it continues in front and behind, so the back wall and bench are
- * drawn only in the back row and the fascia only along the front. All four are actual state.</p>
+ * drawn only in the back row and the fascia only along the front.</p>
  *
  * <p>The roof light is lit when the shelter is placed. A click with an empty hand switches it,
- * and so does a change of redstone power at either half -- on when power comes, off when it
+ * and so does a change of redstone power at any section -- on when power comes, off when it
  * goes, the Residential lamps' pattern -- so a daylight sensor or a switch works it. Either
- * switches the whole shelter the block is part of, up to {@link #REACH} blocks. Stored, in the
- * bits above the facing: {@link #UPPER}, then {@link #LIT} in the upper half and
- * {@link #POWERED} (whether redstone powered it when it last looked) in the lower.</p>
+ * switches the whole shelter the block is part of, up to {@link #REACH} columns. Stored, in the
+ * bits above the facing: whether this is the top (4), then {@link #LIT} in the top and
+ * {@link #POWERED} (whether redstone powered the column when it last looked) in the bottom.</p>
  *
- * <p>The glass shelter leaves the sitter's left end of its back row open, in an empty frame, for
- * a Signage ad panel set against it. Nothing here knows about that panel: the two meet only in
- * the world.</p>
+ * <p>The glass shelter leaves the sitter's left end of its back row open, in an empty frame two
+ * blocks tall, for a Signage ad panel set against it. Nothing here knows about that panel: the
+ * two meet only in the world.</p>
  *
  * @since 2026.9
  */
 public class BlockBusShelter extends AbstractBlockRotatableNSEW
     implements ICsmTrafficPoleBystander, ICsmGlassFronted {
 
-  /** Whether this is the upper half. */
-  public static final PropertyBool UPPER = PropertyBool.create("upper");
-  /** The roof light is on; stored in the upper half. */
+  /** Which section of its column this is; only TOP or BOTTOM is stored. */
+  public static final PropertyEnum<BusShelterSection> SECTION =
+      PropertyEnum.create("section", BusShelterSection.class);
+  /** The roof light is on; stored in the top. */
   public static final PropertyBool LIT = PropertyBool.create("lit");
-  /** Redstone powered the shelter when it last looked; stored in the lower half. */
+  /** Redstone powered the column when it last looked; stored in the bottom. */
   public static final PropertyBool POWERED = PropertyBool.create("powered");
   /** The shelter continues to the sitter's left. */
   public static final PropertyBool LEFT = PropertyBool.create("left");
@@ -82,13 +95,23 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
   /** The shelter continues behind this block: this is not its back row. */
   public static final PropertyBool BEHIND = PropertyBool.create("behind");
 
-  /** The most blocks of one shelter a switch reaches. */
-  public static final int REACH = 64;
+  /** The fewest sections a column has. */
+  public static final int MIN_HEIGHT = 3;
+  /** The most sections a column grows to. */
+  public static final int MAX_HEIGHT = 12;
+  /** The columns a placed shelter runs along its length. */
+  public static final int FOOT_LENGTH = 4;
+  /** The rows a placed shelter runs front to back. */
+  public static final int FOOT_DEPTH = 2;
+  /** The most columns of one shelter a switch, or a change of height, reaches. */
+  public static final int REACH = 256;
 
   /** The light a lit roof light gives. */
-  private static final int LIGHT = 8;
+  private static final int LIGHT = 10;
 
   private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
+  /** Set while a shelter moves its own sections, so a section removed does not take its column. */
+  private static final ThreadLocal<Boolean> RESHAPING = ThreadLocal.withInitial(() -> false);
 
   private final String registryName;
   private final BusShelterStyle style;
@@ -103,9 +126,9 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     super(stash(registryName), SoundType.METAL, "pickaxe", 1, 3.0F, 10.0F, 0.0F, 0);
     this.registryName = registryName;
     this.style = style;
-    setDefaultState(getDefaultState().withProperty(UPPER, false).withProperty(LIT, false)
-        .withProperty(POWERED, false).withProperty(LEFT, false).withProperty(RIGHT, false)
-        .withProperty(AHEAD, false).withProperty(BEHIND, false));
+    setDefaultState(getDefaultState().withProperty(SECTION, BusShelterSection.BOTTOM)
+        .withProperty(LIT, false).withProperty(POWERED, false).withProperty(LEFT, false)
+        .withProperty(RIGHT, false).withProperty(AHEAD, false).withProperty(BEHIND, false));
     PENDING.remove();
   }
 
@@ -129,25 +152,29 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, FACING, UPPER, LIT, POWERED, LEFT, RIGHT, AHEAD,
+    return new CsmBlockStateContainer(this, FACING, SECTION, LIT, POWERED, LEFT, RIGHT, AHEAD,
         BEHIND);
   }
 
   @Override
   @Nonnull
   public IBlockState getStateFromMeta(int meta) {
-    boolean upper = (meta & 4) != 0;
+    boolean top = (meta & 4) != 0;
     boolean bit = (meta & 8) != 0;
     return getDefaultState().withProperty(FACING, EnumFacing.byHorizontalIndex(meta & 3))
-        .withProperty(UPPER, upper).withProperty(LIT, upper && bit)
-        .withProperty(POWERED, !upper && bit);
+        .withProperty(SECTION, top ? BusShelterSection.TOP : BusShelterSection.BOTTOM)
+        .withProperty(LIT, top && bit).withProperty(POWERED, !top && bit);
   }
 
   @Override
   public int getMetaFromState(IBlockState state) {
-    boolean upper = state.getValue(UPPER);
-    boolean bit = upper ? state.getValue(LIT) : state.getValue(POWERED);
-    return state.getValue(FACING).getHorizontalIndex() | (upper ? 4 : 0) | (bit ? 8 : 0);
+    boolean top = isTop(state);
+    boolean bit = top ? state.getValue(LIT) : state.getValue(POWERED);
+    return state.getValue(FACING).getHorizontalIndex() | (top ? 4 : 0) | (bit ? 8 : 0);
+  }
+
+  private static boolean isTop(IBlockState state) {
+    return state.getValue(SECTION) == BusShelterSection.TOP;
   }
 
   @Override
@@ -156,27 +183,71 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
   public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world,
       BlockPos pos) {
     EnumFacing facing = state.getValue(FACING);
-    boolean upper = state.getValue(UPPER);
-    return state
-        .withProperty(LEFT, continues(world, pos.offset(facing.rotateYCCW()), facing, upper))
-        .withProperty(RIGHT, continues(world, pos.offset(facing.rotateY()), facing, upper))
-        .withProperty(AHEAD, continues(world, pos.offset(facing), facing, upper))
-        .withProperty(BEHIND, continues(world, pos.offset(facing.getOpposite()), facing, upper));
+    boolean top = isTop(state);
+    BusShelterSection section = BusShelterSection.TOP;
+    if (!top) {
+      if (!below(world, pos, facing)) {
+        section = BusShelterSection.BOTTOM;
+      } else {
+        section = below(world, pos.down(), facing) ? BusShelterSection.MIDDLE
+            : BusShelterSection.SECOND;
+      }
+    }
+    return state.withProperty(SECTION, section)
+        .withProperty(LEFT, continues(world, pos.offset(facing.rotateYCCW()), facing, top))
+        .withProperty(RIGHT, continues(world, pos.offset(facing.rotateY()), facing, top))
+        .withProperty(AHEAD, continues(world, pos.offset(facing), facing, top))
+        .withProperty(BEHIND, continues(world, pos.offset(facing.getOpposite()), facing, top));
   }
 
-  /** Whether the same shelter, facing the same way, the same half, is at {@code at}. */
-  private boolean continues(IBlockAccess world, BlockPos at, EnumFacing facing, boolean upper) {
+  /** Whether the block under {@code pos} is a lower section of the same column. */
+  private boolean below(IBlockAccess world, BlockPos pos, EnumFacing facing) {
+    IBlockState under = world.getBlockState(pos.down());
+    return under.getBlock() == this && under.getValue(FACING) == facing && !isTop(under);
+  }
+
+  /** Whether the same shelter, facing the same way, the same kind of section, is at {@code at}. */
+  private boolean continues(IBlockAccess world, BlockPos at, EnumFacing facing, boolean top) {
     IBlockState other = world.getBlockState(at);
-    return other.getBlock() == this && other.getValue(FACING) == facing
-        && other.getValue(UPPER) == upper;
+    return other.getBlock() == this && other.getValue(FACING) == facing && isTop(other) == top;
   }
 
-  // --- placing and breaking as one piece ---------------------------------------------------
+  private boolean part(IBlockAccess world, BlockPos at, EnumFacing facing) {
+    IBlockState s = world.getBlockState(at);
+    return s.getBlock() == this && s.getValue(FACING) == facing;
+  }
+
+  /** The bottom section of the column {@code pos} is in. */
+  private BlockPos bottomOf(IBlockAccess world, BlockPos pos, EnumFacing facing) {
+    BlockPos at = pos;
+    for (int i = 0; i < MAX_HEIGHT * 2 && below(world, at, facing); i++) {
+      at = at.down();
+    }
+    return at;
+  }
+
+  /** The top section of the column whose bottom is {@code bottom}, or the highest one there. */
+  private BlockPos topOf(IBlockAccess world, BlockPos bottom, EnumFacing facing) {
+    BlockPos at = bottom;
+    for (int i = 0; i < MAX_HEIGHT * 2; i++) {
+      if (isTop(world.getBlockState(at)) || !part(world, at.up(), facing)) {
+        return at;
+      }
+      at = at.up();
+    }
+    return at;
+  }
+
+  // --- placing, resizing and breaking ------------------------------------------------------
 
   @Override
   public boolean canPlaceBlockAt(World world, @Nonnull BlockPos pos) {
-    return pos.getY() < world.getHeight() - 1 && super.canPlaceBlockAt(world, pos)
-        && world.getBlockState(pos.up()).getBlock().isReplaceable(world, pos.up());
+    return pos.getY() < world.getHeight() - MIN_HEIGHT && super.canPlaceBlockAt(world, pos)
+        && free(world, pos.up()) && free(world, pos.up(2));
+  }
+
+  private static boolean free(World world, BlockPos at) {
+    return world.getBlockState(at).getBlock().isReplaceable(world, at);
   }
 
   @Override
@@ -186,59 +257,157 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
   }
 
+  /** Whether a column of the shelter's least height fits at {@code base}. */
+  private boolean columnFits(World world, BlockPos base, EntityPlayer player, ItemStack stack) {
+    if (base.getY() < 0 || base.getY() + MIN_HEIGHT > world.getHeight()) {
+      return false;
+    }
+    for (int i = 0; i < MIN_HEIGHT; i++) {
+      BlockPos at = base.up(i);
+      if (!free(world, at) || !player.canPlayerEdit(at, EnumFacing.UP, stack)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /** Sets a column of the least height at {@code base}, its light as given. */
+  private void placeColumn(World world, BlockPos base, EnumFacing facing, boolean lit) {
+    IBlockState lower = getDefaultState().withProperty(FACING, facing);
+    world.setBlockState(base, lower, 3);
+    for (int i = 1; i < MIN_HEIGHT - 1; i++) {
+      world.setBlockState(base.up(i), lower, 3);
+    }
+    world.setBlockState(base.up(MIN_HEIGHT - 1),
+        lower.withProperty(SECTION, BusShelterSection.TOP).withProperty(LIT, lit), 3);
+  }
+
+  /** The light a new column takes: the shelter's it joins, or on. */
+  private boolean joinedLight(World world, List<BlockPos> bases, EnumFacing facing) {
+    for (BlockPos base : bases) {
+      for (EnumFacing side : EnumFacing.HORIZONTALS) {
+        BlockPos next = base.offset(side);
+        if (part(world, next, facing) && !below(world, next, facing)) {
+          IBlockState top = world.getBlockState(topOf(world, next, facing));
+          if (isTop(top)) {
+            return top.getValue(LIT);
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  /** Every column of the shelter whose bottom is {@code bottom}: the bottoms, joined. */
+  private List<BlockPos> shelterBottoms(World world, BlockPos bottom, EnumFacing facing) {
+    List<BlockPos> out = new ArrayList<>();
+    Set<BlockPos> seen = new HashSet<>();
+    Deque<BlockPos> open = new ArrayDeque<>();
+    open.add(bottom);
+    seen.add(bottom);
+    while (!open.isEmpty() && out.size() < REACH) {
+      BlockPos at = open.poll();
+      out.add(at);
+      for (EnumFacing side : EnumFacing.HORIZONTALS) {
+        BlockPos next = at.offset(side);
+        if (!seen.contains(next) && world.isBlockLoaded(next) && part(world, next, facing)
+            && !isTop(world.getBlockState(next)) && !below(world, next, facing)) {
+          seen.add(next);
+          open.add(next);
+        }
+      }
+    }
+    return out;
+  }
+
   /**
-   * Places the upper half. Its light follows the shelter it joins, if it joins one, or is on.
+   * Makes every column of the shelter at {@code pos} one section taller or shorter.
+   *
+   * @return the message for the player
    */
-  @Override
-  public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state,
-      EntityLivingBase placer, ItemStack stack) {
-    super.onBlockPlacedBy(world, pos, state, placer, stack);
-    boolean lit = true;
+  private TextComponentTranslation resize(World world, BlockPos pos, IBlockState state,
+      boolean taller) {
     EnumFacing facing = state.getValue(FACING);
-    for (EnumFacing side : EnumFacing.HORIZONTALS) {
-      IBlockState other = world.getBlockState(pos.up().offset(side));
-      if (other.getBlock() == this && other.getValue(FACING) == facing
-          && other.getValue(UPPER)) {
-        lit = other.getValue(LIT);
-        break;
-      }
+    List<BlockPos> bottoms = shelterBottoms(world, bottomOf(world, pos, facing), facing);
+    List<BlockPos> tops = new ArrayList<>();
+    int height = 0;
+    for (BlockPos bottom : bottoms) {
+      BlockPos top = topOf(world, bottom, facing);
+      tops.add(top);
+      height = Math.max(height, top.getY() - bottom.getY() + 1);
     }
-    world.setBlockState(pos.up(), state.withProperty(UPPER, true).withProperty(LIT, lit)
-        .withProperty(POWERED, false), 3);
+    if (taller) {
+      if (height >= MAX_HEIGHT) {
+        return new TextComponentTranslation("csm.transit.shelter.tallest", MAX_HEIGHT);
+      }
+      for (BlockPos top : tops) {
+        if (top.getY() + 1 >= world.getHeight() || !free(world, top.up())) {
+          BlockPos at = top.up();
+          return new TextComponentTranslation("csm.transit.shelter.blocked", at.getX(),
+              at.getY(), at.getZ());
+        }
+      }
+    } else if (height <= MIN_HEIGHT) {
+      return new TextComponentTranslation("csm.transit.shelter.lowest", MIN_HEIGHT);
+    }
+    RESHAPING.set(true);
+    try {
+      for (BlockPos top : tops) {
+        IBlockState roof = world.getBlockState(top);
+        if (!isTop(roof)) {
+          continue;
+        }
+        IBlockState plain = roof.withProperty(SECTION, BusShelterSection.BOTTOM)
+            .withProperty(LIT, false).withProperty(POWERED, false);
+        if (taller) {
+          world.setBlockState(top.up(), roof, 3);
+          world.setBlockState(top, plain, 3);
+        } else {
+          world.setBlockState(top.down(), roof, 3);
+          world.setBlockToAir(top);
+        }
+      }
+    } finally {
+      RESHAPING.set(false);
+    }
+    return new TextComponentTranslation(
+        taller ? "csm.transit.shelter.taller" : "csm.transit.shelter.shorter",
+        taller ? height + 1 : height - 1);
   }
 
-  /** A creative player breaking the upper half takes the lower with it, dropping nothing. */
-  @Override
-  public void onBlockHarvested(World world, BlockPos pos, IBlockState state,
-      EntityPlayer player) {
-    if (state.getValue(UPPER) && player.capabilities.isCreativeMode) {
-      BlockPos below = pos.down();
-      if (world.getBlockState(below).getBlock() == this) {
-        world.setBlockToAir(below);
-      }
-    }
-    super.onBlockHarvested(world, pos, state, player);
-  }
-
-  /** The other half goes with this one; an upper half broken alone breaks the lower. */
+  /** Breaking any section takes its whole column; the section broken drops the item. */
   @Override
   public void breakBlock(@Nonnull World world, @Nonnull BlockPos pos,
       @Nonnull IBlockState state) {
-    if (state.getValue(UPPER)) {
-      BlockPos below = pos.down();
-      if (world.getBlockState(below).getBlock() == this) {
-        world.destroyBlock(below, true);
+    if (!RESHAPING.get()) {
+      EnumFacing facing = state.getValue(FACING);
+      List<BlockPos> column = new ArrayList<>();
+      if (!isTop(state)) {
+        BlockPos at = pos.up();
+        for (int i = 0; i < MAX_HEIGHT * 2 && part(world, at, facing); i++) {
+          column.add(at);
+          if (isTop(world.getBlockState(at))) {
+            break;
+          }
+          at = at.up();
+        }
       }
-    } else if (world.getBlockState(pos.up()).getBlock() == this) {
-      world.setBlockToAir(pos.up());
+      BlockPos at = pos.down();
+      for (int i = 0; i < MAX_HEIGHT * 2 && part(world, at, facing)
+          && !isTop(world.getBlockState(at)); i++) {
+        column.add(at);
+        at = at.down();
+      }
+      RESHAPING.set(true);
+      try {
+        for (BlockPos p : column) {
+          world.setBlockToAir(p);
+        }
+      } finally {
+        RESHAPING.set(false);
+      }
     }
     super.breakBlock(world, pos, state);
-  }
-
-  @Override
-  @Nonnull
-  public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-    return state.getValue(UPPER) ? Items.AIR : super.getItemDropped(state, rand, fortune);
   }
 
   @Override
@@ -248,12 +417,93 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     return EnumPushReaction.BLOCK;
   }
 
+  @Override
+  @Nonnull
+  protected ItemBlock createItemBlock() {
+    return new ItemShelter(this);
+  }
+
+  /**
+   * The shelter's item: places a whole shelter (one column, sneaking), and makes a shelter
+   * taller or shorter when used on one.
+   */
+  public static class ItemShelter extends ItemBlock {
+
+    public ItemShelter(BlockBusShelter block) {
+      super(block);
+    }
+
+    @Override
+    @Nonnull
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos,
+        EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+      IBlockState clicked = world.getBlockState(pos);
+      if (clicked.getBlock() == block) {
+        if (!world.isRemote) {
+          player.sendStatusMessage(((BlockBusShelter) block)
+              .resize(world, pos, clicked, !player.isSneaking()), true);
+        }
+        return EnumActionResult.SUCCESS;
+      }
+      return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
+    }
+
+    @Override
+    public boolean placeBlockAt(@Nonnull ItemStack stack, @Nonnull EntityPlayer player,
+        World world, @Nonnull BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ,
+        @Nonnull IBlockState newState) {
+      BlockBusShelter shelter = (BlockBusShelter) block;
+      EnumFacing facing = newState.getValue(FACING);
+      EnumFacing away = facing.getOpposite();      // from the front row to the back
+      EnumFacing along = away.rotateY();           // the placer's right
+      List<BlockPos> bases = new ArrayList<>();
+      boolean creative = player.capabilities.isCreativeMode;
+      int footprint = FOOT_LENGTH * FOOT_DEPTH;
+      if (!player.isSneaking() && (creative || stack.getCount() >= footprint)) {
+        for (int i = -1; i < FOOT_LENGTH - 1; i++) {
+          for (int row = 0; row < FOOT_DEPTH; row++) {
+            bases.add(pos.offset(along, i).offset(away, row));
+          }
+        }
+        for (BlockPos base : bases) {
+          if (!shelter.columnFits(world, base, player, stack)) {
+            if (!world.isRemote) {
+              player.sendStatusMessage(new TextComponentTranslation(
+                  "csm.transit.shelter.no_room", base.getX(), base.getY(), base.getZ()), true);
+            }
+            return false;
+          }
+        }
+      } else {
+        if (!shelter.columnFits(world, pos, player, stack)) {
+          return false;
+        }
+        bases.add(pos);
+        if (!player.isSneaking() && !world.isRemote) {
+          player.sendStatusMessage(new TextComponentTranslation(
+              "csm.transit.shelter.one_column", footprint), true);
+        }
+      }
+      if (world.isRemote) {
+        return true;
+      }
+      boolean lit = shelter.joinedLight(world, bases, facing);
+      for (BlockPos base : bases) {
+        shelter.placeColumn(world, base, facing, lit);
+      }
+      if (!creative && bases.size() > 1) {
+        stack.shrink(bases.size() - 1);  // onItemUse takes the last one
+      }
+      return true;
+    }
+  }
+
   // --- the roof light ------------------------------------------------------------------------
 
   @Override
   @SuppressWarnings("deprecation")
   public int getLightValue(@Nonnull IBlockState state) {
-    return state.getValue(UPPER) && state.getValue(LIT) ? LIGHT : 0;
+    return isTop(state) && state.getValue(LIT) ? LIGHT : 0;
   }
 
   @Override
@@ -271,9 +521,10 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
       return false;
     }
     if (!world.isRemote) {
-      BlockPos top = state.getValue(UPPER) ? pos : pos.up();
-      IBlockState upper = world.getBlockState(top);
-      boolean lit = upper.getBlock() == this && !upper.getValue(LIT);
+      EnumFacing facing = state.getValue(FACING);
+      BlockPos top = topOf(world, bottomOf(world, pos, facing), facing);
+      IBlockState roof = world.getBlockState(top);
+      boolean lit = roof.getBlock() == this && isTop(roof) && !roof.getValue(LIT);
       switchShelter(world, top, lit);
       world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS,
           0.3F, lit ? 0.6F : 0.5F);
@@ -282,36 +533,41 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
   }
 
   /**
-   * A change of redstone power at either half switches the shelter: on when power comes, off
-   * when it goes. The lower half remembers the power it last saw.
+   * A change of redstone power at any section switches the shelter: on when power comes, off
+   * when it goes. The bottom remembers the power it last saw.
    */
   @Override
   @SuppressWarnings("deprecation")
   public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block,
       BlockPos fromPos) {
     super.neighborChanged(state, world, pos, block, fromPos);
-    if (world.isRemote) {
+    if (world.isRemote || RESHAPING.get()) {
       return;
     }
-    BlockPos lowerPos = state.getValue(UPPER) ? pos.down() : pos;
-    IBlockState lower = world.getBlockState(lowerPos);
-    if (lower.getBlock() != this || lower.getValue(UPPER)) {
+    EnumFacing facing = state.getValue(FACING);
+    BlockPos bottomPos = bottomOf(world, pos, facing);
+    IBlockState bottom = world.getBlockState(bottomPos);
+    if (bottom.getBlock() != this || isTop(bottom)) {
       return;
     }
-    boolean powered = world.isBlockPowered(lowerPos) || world.isBlockPowered(lowerPos.up());
-    if (powered != lower.getValue(POWERED)) {
-      world.setBlockState(lowerPos, lower.withProperty(POWERED, powered), 2);
-      switchShelter(world, lowerPos.up(), powered);
+    BlockPos topPos = topOf(world, bottomPos, facing);
+    boolean powered = false;
+    for (BlockPos at = bottomPos; at.getY() <= topPos.getY() && !powered; at = at.up()) {
+      powered = world.isBlockPowered(at);
+    }
+    if (powered != bottom.getValue(POWERED)) {
+      world.setBlockState(bottomPos, bottom.withProperty(POWERED, powered), 2);
+      switchShelter(world, topPos, powered);
     }
   }
 
   /**
-   * Sets the light of every upper half of the shelter that {@code top} is part of: the same
-   * block, facing the same way, joined side to side or front to back, up to {@link #REACH}.
+   * Sets the light of every top of the shelter that {@code top} is part of: the same block,
+   * facing the same way, joined side to side or front to back, up to {@link #REACH}.
    */
   private void switchShelter(World world, BlockPos top, boolean lit) {
     IBlockState start = world.getBlockState(top);
-    if (start.getBlock() != this || !start.getValue(UPPER)) {
+    if (start.getBlock() != this || !isTop(start)) {
       return;
     }
     EnumFacing facing = start.getValue(FACING);
@@ -343,7 +599,7 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     return FULL_BLOCK_AABB;
   }
 
-  /** The walls, bench, posts and roof of this half, as {@link BusShelterStyle} lists them. */
+  /** The walls, bench, posts and roof of this section, as {@link BusShelterStyle} lists them. */
   @Override
   @SuppressWarnings("deprecation")
   public void addCollisionBoxToList(@Nonnull IBlockState state, @Nonnull World world,
@@ -352,10 +608,8 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
       boolean isActualState) {
     IBlockState actual = isActualState ? state : state.getActualState(world, pos);
     EnumFacing facing = actual.getValue(FACING);
-    List<AxisAlignedBB> boxes = new ArrayList<>(style.collision(actual.getValue(UPPER),
-        actual.getValue(LEFT), actual.getValue(RIGHT), actual.getValue(AHEAD),
-        actual.getValue(BEHIND)));
-    for (AxisAlignedBB box : boxes) {
+    for (AxisAlignedBB box : style.collision(actual.getValue(SECTION), actual.getValue(LEFT),
+        actual.getValue(RIGHT), actual.getValue(AHEAD), actual.getValue(BEHIND))) {
       addCollisionBoxToList(pos, entityBox, collidingBoxes,
           RotationUtils.rotateBoundingBoxByFacing(box, facing));
     }
