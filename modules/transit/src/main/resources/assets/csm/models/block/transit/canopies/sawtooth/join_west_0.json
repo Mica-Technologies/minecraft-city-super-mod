@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "gutter": "csm:blocks/transit/canopies/gutter",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        -1.5,
+        -0.2
+      ],
+      "to": [
+        1.5,
+        0.5,
+        16.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#gutter",
+          "uv": [
+            14.5,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            1.5,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        }
+      }
+    }
+  ]
+}

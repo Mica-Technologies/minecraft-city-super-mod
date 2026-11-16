@@ -1,0 +1,20 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off"
+      }
+    },
+    {
+      "when": {
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on"
+      }
+    }
+  ]
+}

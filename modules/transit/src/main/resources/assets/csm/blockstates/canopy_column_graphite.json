@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/canopies/column/graphite_shaft"
+      }
+    },
+    {
+      "when": {
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/graphite_base"
+      }
+    },
+    {
+      "when": {
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/graphite_cap"
+      }
+    }
+  ]
+}

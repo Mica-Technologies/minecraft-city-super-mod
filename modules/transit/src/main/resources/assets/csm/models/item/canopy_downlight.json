@@ -1,0 +1,22 @@
+{
+  "parent": "csm:block/transit/canopies/downlight_on",
+  "display": {
+    "gui": {
+      "rotation": [
+        -60,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    }
+  }
+}

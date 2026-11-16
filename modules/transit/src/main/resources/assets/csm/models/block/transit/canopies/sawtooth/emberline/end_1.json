@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/canopies/sawtooth/end_1",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_emberline",
+    "particle": "csm:blocks/transit/canopies/frame_emberline"
+  }
+}

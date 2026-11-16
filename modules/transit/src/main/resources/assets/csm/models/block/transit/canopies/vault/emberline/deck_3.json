@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/canopies/vault/deck_3",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_emberline",
+    "particle": "csm:blocks/transit/canopies/frame_emberline"
+  }
+}

@@ -91,6 +91,24 @@ public final class TransitFabricatorRules {
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
           FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
     }
+    // The bus station canopy kit
+    if (registryName.startsWith("canopy_deck_glass_")
+        || registryName.startsWith("canopy_deck_sawtooth_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.any(MC_GLASS_PANE, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("canopy_deck_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.startsWith("canopy_column_")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1));
+    }
+    if (registryName.equals("canopy_downlight")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
     if (registryName.equals("bus_stop_curb_plaque")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }

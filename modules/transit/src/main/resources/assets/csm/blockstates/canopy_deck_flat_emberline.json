@@ -1,0 +1,83 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/deck"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/edge"
+      },
+      "when": {
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/edge",
+        "y": 90
+      },
+      "when": {
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/edge",
+        "y": 180
+      },
+      "when": {
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/edge",
+        "y": 270
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/corner"
+      },
+      "when": {
+        "north": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/corner",
+        "y": 90
+      },
+      "when": {
+        "east": "false",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/corner",
+        "y": 180
+      },
+      "when": {
+        "south": "false",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/flat/emberline/corner",
+        "y": 270
+      },
+      "when": {
+        "west": "false",
+        "south": "false"
+      }
+    }
+  ]
+}

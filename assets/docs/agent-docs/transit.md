@@ -29,6 +29,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   textures. The glass shelter's back row stops 1.25 px short of its left end for two blocks, the
   empty frame Signage's shelter ad panel is set against; the collision boxes in
   `BusShelterStyle.java` share its numbers; `--check`, `--fragments`
+- `gen_transit_canopies.py` -- the bus station canopy kit (Transit): decks in five styles (flat,
+  glass skylight, sawtooth 3, butterfly 4, barrel vault 6) and four liveries, joining on world
+  sides, the shaped ones per `phase` and `axis` (drawn along +x, turned a quarter for z, joins
+  turned with them); round columns in three paints; the downlight; the Canopy Tool's icon. It
+  deletes `models/block/transit/canopies/` before writing; `--check`, `--fragments`
 - `gen_transit_platforms.py` -- the station and platform fit-out (Transit), made to complement
   RCMC's stations rather than repeat them (no platform, edge, speaker, board or track piece):
   tactile paving overlays (domes and bars, two drawings and a turn per block like

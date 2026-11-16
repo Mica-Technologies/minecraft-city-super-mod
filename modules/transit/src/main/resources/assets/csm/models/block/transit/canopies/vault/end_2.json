@@ -1,0 +1,155 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        23.2843,
+        -0.5
+      ],
+      "to": [
+        8,
+        27.2843,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            4.7157,
+            16,
+            8.7157
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            4.7157,
+            8,
+            8.7157
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            4.7157,
+            0.5,
+            8.7157
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            4.7157,
+            16.0,
+            8.7157
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            15.5,
+            8,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            8,
+            0.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          4.0,
+          24.2842712474619,
+          -0.25
+        ],
+        "axis": "z",
+        "angle": 22.5,
+        "rescale": true
+      }
+    },
+    {
+      "from": [
+        8,
+        24.9411,
+        -0.5
+      ],
+      "to": [
+        16,
+        28.9411,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.0589,
+            8,
+            7.0589
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            3.0589,
+            16,
+            7.0589
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.0589,
+            0.5,
+            7.0589
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            3.0589,
+            16.0,
+            7.0589
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            15.5,
+            16,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            0,
+            16,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

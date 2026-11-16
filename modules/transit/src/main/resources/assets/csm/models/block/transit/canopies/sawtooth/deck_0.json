@@ -1,0 +1,89 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "roof": "csm:blocks/transit/canopies/roof",
+    "soffit": "csm:blocks/transit/canopies/soffit",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        3.3137,
+        0
+      ],
+      "to": [
+        16,
+        5.8137,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          3.3137084989847603,
+          8
+        ],
+        "axis": "z",
+        "angle": 22.5,
+        "rescale": true
+      }
+    }
+  ]
+}

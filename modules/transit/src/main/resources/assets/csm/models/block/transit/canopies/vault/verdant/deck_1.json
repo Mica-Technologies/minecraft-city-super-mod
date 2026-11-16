@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/canopies/vault/deck_1",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_verdant",
+    "particle": "csm:blocks/transit/canopies/frame_verdant"
+  }
+}

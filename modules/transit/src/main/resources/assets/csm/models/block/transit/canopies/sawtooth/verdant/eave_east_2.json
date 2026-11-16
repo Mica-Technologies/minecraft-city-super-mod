@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/transit/canopies/sawtooth/eave_east_2",
+  "textures": {
+    "fascia": "csm:blocks/transit/canopies/fascia_verdant",
+    "frame": "csm:blocks/transit/canopies/frame_verdant",
+    "particle": "csm:blocks/transit/canopies/frame_verdant"
+  }
+}
