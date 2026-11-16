@@ -5,6 +5,12 @@ Fares, stops, shelters, platforms, airport, boards, stations and the Transit dem
 Moved out of the repository `CLAUDE.md`, which links here; read this file when working on what it
 covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run directly.
 
+- `gen_transit_fare_vending_outdoor.py` -- the outdoor fare vending machine (Transit): a
+  two-block street ticket machine, a model per half (`lower`, `upper`) under a multipart
+  blockstate on `facing` and `upper`, textures drawn at 4 texels a unit in UV windows; the item
+  is both halves stacked. A north face reads from +x on the viewer's left, so the keypad
+  (x 8.8 .. 12.3) carries the left label. It deletes `models/block/transit/fare_vending_outdoor/`
+  before writing; `--check`, `--fragments`
 - `gen_transit_fare_vending.py` -- the fare vending machine's model, textures and blockstate
   (Transit): a free-standing machine two blocks tall in the invented CITYLINE livery, drawn from one
   block (so placed machines keep their metadata) with ambient occlusion off, since its upper half
@@ -39,8 +45,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
 - `gen_transit_canopies.py` -- the bus station canopy kit (Transit): decks in five styles (flat,
   glass skylight, sawtooth 3, butterfly 4, barrel vault 6) and four liveries, joining on world
   sides, the shaped ones per `phase` and `axis` (drawn along +x, turned a quarter for z, joins
-  turned with them); round columns in three paints; the downlight; the Canopy Tool's icon. It
-  deletes `models/block/transit/canopies/` before writing; `--check`, `--fragments`
+  turned with them); round columns in three paints; the downlight; the light strip (a body per
+  axis, `seat` and lit state and an end cap per axis, `seat` and end; `SEATS` must match
+  `CanopyStyle.SEATS`, which `CanopyLightLayoutTest` pins, and the generator asserts every strip
+  element inside [-16, 32] with a legal angle); the Canopy Tool's icon and its lights-mode
+  messages. It deletes `models/block/transit/canopies/` before writing; `--check`, `--fragments`
 - `gen_transit_platforms.py` -- the station and platform fit-out (Transit), made to complement
   RCMC's stations rather than repeat them (no platform, edge, speaker, board or track piece):
   tactile paving overlays (domes and bars, two drawings and a turn per block like

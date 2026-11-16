@@ -19,6 +19,10 @@ each with its own colours: **CITYLINE** (teal and yellow), **RIVERWAY** (navy an
 - a new **Transit Card** with 1, 2, 5, 10 or 25 trips, one emerald a trip;
 - a reload of 1, 5 or 25 trips onto the card **in your main hand**.
 
+The **Outdoor Fare Vending Machine** is the street version for a bus stop: two blocks tall, with
+a hood over its screen. It sells exactly the same fares through the same screen. Place it like a
+door (it needs the block above free); break either half and the whole machine comes back.
+
 A card shows its trips left in its tooltip. Cards don't stack, since each one carries its own
 balance. If your inventory is full, what you bought drops at your feet.
 
@@ -79,6 +83,9 @@ Three styles in each agency's livery: **glass** (with a bench and a lit name fas
 (a curved canopy on one column a block) and **flat roof** (with a lean rail). A shelter is two
 blocks tall and places like a door. Its open front faces you.
 
+- **Compact.** For a narrow pavement, sneak and right-click in the air with the shelter in hand:
+  it now places a compact shelter, three columns long and one deep. Do it again to go back to the
+  full shelter. The tooltip says which it places.
 - **Joining.** Place shelters of the same block facing the same way side by side for a longer
   shelter, or one behind the other for a deeper one. End walls appear only at the ends. Shelters
   of different agencies don't join.

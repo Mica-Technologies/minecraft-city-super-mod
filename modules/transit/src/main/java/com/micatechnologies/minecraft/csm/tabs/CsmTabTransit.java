@@ -27,12 +27,14 @@ import com.micatechnologies.minecraft.csm.transit.board.BlockBusBoard;
 import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyColumn;
 import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyDeck;
 import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyDownlight;
+import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyLightStrip;
 import com.micatechnologies.minecraft.csm.transit.canopy.CanopyStyle;
 import com.micatechnologies.minecraft.csm.transit.canopy.ItemCanopyTool;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGate;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda3;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachine;
+import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachineOutdoor;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemFareTicket;
 import com.micatechnologies.minecraft.csm.transit.fare.ItemTransitCard;
 import com.micatechnologies.minecraft.csm.transit.platform.BlockPlatformBench;
@@ -147,6 +149,8 @@ public class CsmTabTransit extends CsmTab {
   @Override
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockFareVendingMachine.class, fmlPreInitializationEvent);
+    // gen_transit_fare_vending_outdoor.py --fragments
+    initTabBlock(BlockFareVendingMachineOutdoor.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGate.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGateAda2.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGateAda3.class, fmlPreInitializationEvent);
@@ -189,7 +193,7 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockBusShelter("bus_shelter_flat_emberline", BusShelterStyle.FLAT));
 
     // Bus station canopy kit (gen_transit_canopies.py --fragments): decks in four styles, columns,
-    // the downlight, and the tool that lays them out
+    // the downlight, the light strip, and the tool that lays them out
     initTabBlock(new BlockCanopyDeck("canopy_deck_flat_cityline", CanopyStyle.FLAT));
     initTabBlock(new BlockCanopyDeck("canopy_deck_flat_riverway", CanopyStyle.FLAT));
     initTabBlock(new BlockCanopyDeck("canopy_deck_flat_verdant", CanopyStyle.FLAT));
@@ -214,6 +218,7 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockCanopyColumn("canopy_column_white"));
     initTabBlock(new BlockCanopyColumn("canopy_column_graphite"));
     initTabBlock(new BlockCanopyDownlight("canopy_downlight"));
+    initTabBlock(new BlockCanopyLightStrip("canopy_light_strip"));
     initTabItem(ItemCanopyTool.class, fmlPreInitializationEvent);
 
     // Bus departure displays (gen_transit_boards.py --fragments): the station board and the bay

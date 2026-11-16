@@ -1,0 +1,884 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "axis": "x",
+        "seat": "0",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "0",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "0",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "0",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "1",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "1",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "1",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "1",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "2",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "2",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "2",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "2",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "3",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "3",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "3",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "3",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "4",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "4",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "4",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "4",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "5",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "5",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "5",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "5",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "6",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "6",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "6",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "6",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "7",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "7",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "7",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "7",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "8",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "8",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "8",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "8",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "9",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "9",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "9",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "9",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "10",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_x_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "10",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_x_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "10",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_x_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "x",
+        "seat": "10",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_x_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "0",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "0",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "0",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "0",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_0"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "1",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "1",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "1",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "1",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_1"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "2",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "2",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "2",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "2",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_2"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "3",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "3",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "3",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "3",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_3"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "4",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "4",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "4",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "4",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_4"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "5",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "5",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "5",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "5",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_5"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "6",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "6",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "6",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "6",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_6"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "7",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "7",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "7",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "7",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_7"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "8",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "8",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "8",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "8",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_8"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "9",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "9",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "9",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "9",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_9"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "10",
+        "lit": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/off_z_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "10",
+        "lit": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/on_z_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "10",
+        "neg": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_neg_z_10"
+      }
+    },
+    {
+      "when": {
+        "axis": "z",
+        "seat": "10",
+        "pos": "false"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/strip/cap_pos_z_10"
+      }
+    }
+  ]
+}

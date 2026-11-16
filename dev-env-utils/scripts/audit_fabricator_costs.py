@@ -472,6 +472,8 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL x%d" % (cells * (2 if large else 3)), "FASTENER_KIT x%d" % cells)
         # Mirrors TransitFabricatorRules: the bus stops and the station fit-out by what they
         # are made of, and the fare equipment at the price it kept from Technology.
+        if registry == "fare_vending_machine_outdoor":
+            return ("CONTROL_BOARD", "SHEET_METAL x2", "WIRING_HARNESS")
         if registry.startswith("bus_stop_flag_"):
             return ("SIGN_BLANK", "FASTENER_KIT")
         if registry.startswith("bus_stop_") and registry.endswith("_case"):
@@ -599,7 +601,7 @@ def cost_for(registry, info, ancestors):
             return ("SHEET_METAL x2", "FASTENER_KIT")
         if registry.startswith("canopy_column_"):
             return ("POLE_SECTION",)
-        if registry == "canopy_downlight":
+        if registry in ("canopy_downlight", "canopy_light_strip"):
             return ("LED_MODULE", "SHEET_METAL")
         if registry.startswith("bus_shelter_glass_"):
             return ("POLE_SECTION", "SHEET_METAL x2", "glass_pane x4", "LED_MODULE")

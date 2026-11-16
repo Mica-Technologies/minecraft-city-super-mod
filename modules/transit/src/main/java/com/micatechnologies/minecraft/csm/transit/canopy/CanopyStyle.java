@@ -191,6 +191,81 @@ public enum CanopyStyle {
     return style == null ? 0 : style.reachAt(above.getValue(BlockCanopyDeck.PHASE));
   }
 
+  /**
+   * Every (reach level, slope in degrees) a tile's centre can give, sorted by reach then slope,
+   * flat first: a light strip's {@code seat} indexes this, so it has a model only for the pairs
+   * that occur. {@code gen_transit_canopies.py} builds the same list the same way ({@code SEATS}).
+   */
+  public static final double[][] SEATS = seats();
+
+  private static double[][] seats() {
+    java.util.List<double[]> out = new java.util.ArrayList<>();
+    out.add(new double[]{0, 0});
+    for (CanopyStyle style : values()) {
+      for (int p = 0; p < style.module; p++) {
+        double[] seat = {style.reachAt(p), style.slopeAt(p)};
+        boolean known = false;
+        for (double[] s : out) {
+          known |= s[0] == seat[0] && s[1] == seat[1];
+        }
+        if (!known) {
+          out.add(seat);
+        }
+      }
+    }
+    out.sort((a, b) -> a[0] != b[0] ? Double.compare(a[0], b[0]) : Double.compare(a[1], b[1]));
+    return out.toArray(new double[0][]);
+  }
+
+  /**
+   * The {@link #SEATS} index for a light strip under {@code above}: its tile's reach and slope,
+   * or 0 (flat, not raised) under anything but a shaped canopy deck.
+   *
+   * @param above the state of the block above
+   *
+   * @return the index
+   */
+  public static int seatUnder(net.minecraft.block.state.IBlockState above) {
+    if (!(above.getBlock() instanceof BlockCanopyDeck)) {
+      return 0;
+    }
+    CanopyStyle style = ((BlockCanopyDeck) above.getBlock()).getStyle();
+    if (style == null) {
+      return 0;
+    }
+    int phase = above.getValue(BlockCanopyDeck.PHASE);
+    double reach = style.reachAt(phase);
+    double slope = style.slopeAt(phase);
+    for (int i = 0; i < SEATS.length; i++) {
+      if (SEATS[i][0] == reach && SEATS[i][1] == slope) {
+        return i;
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * The way a light strip under {@code above} runs: across a shaped tile's profile (along its
+   * ridges and valleys, where the soffit is level), whatever the strip stores; its own
+   * {@code stored} axis under a flat deck or anything else.
+   *
+   * @param above  the state of the block above
+   * @param stored the strip's stored axis
+   *
+   * @return the axis it is drawn along
+   */
+  public static net.minecraft.util.EnumFacing.Axis runAxisUnder(
+      net.minecraft.block.state.IBlockState above, net.minecraft.util.EnumFacing.Axis stored) {
+    if (above.getBlock() instanceof BlockCanopyDeck) {
+      CanopyStyle style = ((BlockCanopyDeck) above.getBlock()).getStyle();
+      if (style != null && style.isShaped()) {
+        return above.getValue(BlockCanopyDeck.AXIS) == net.minecraft.util.EnumFacing.Axis.X
+            ? net.minecraft.util.EnumFacing.Axis.Z : net.minecraft.util.EnumFacing.Axis.X;
+      }
+    }
+    return stored;
+  }
+
   private static boolean contains(int[] values, int v) {
     for (int x : values) {
       if (x == v) {

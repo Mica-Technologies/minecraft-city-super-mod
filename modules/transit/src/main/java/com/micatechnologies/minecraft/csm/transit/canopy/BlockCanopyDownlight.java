@@ -4,11 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.light.CsmLightupAir;
 import com.micatechnologies.minecraft.csm.codeutils.light.ICsmLightupAirSource;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -36,8 +32,8 @@ import net.minecraft.world.World;
  * flush with the soffit, raised into the deck's block and tilted to lie on a sloped tile's
  * soffit ({@link #REACH}, {@link #TILT}). It is lit when placed. A click with an empty hand,
  * or a change of redstone power (on when power comes, off when it goes), switches every
- * downlight under the same canopy: the decks joined to the one above this light, walked side to
- * side up to {@link #WALK_LIMIT} tiles. Power at the deck above counts too
+ * light under the same canopy, downlights and light strips alike ({@link CanopyLights}): the
+ * decks joined to the one above this light, walked side to side up to {@link #WALK_LIMIT} tiles. Power at the deck above counts too
  * ({@link BlockCanopyDeck} passes its neighbour changes down), so an inverted daylight sensor set
  * on the roof works the canopy's lights as a photocell does. Stored: {@link #LIT} (1) and
  * {@link #POWERED} (2), the power it last saw.
@@ -49,7 +45,8 @@ import net.minecraft.world.World;
  *
  * @since 2026.11
  */
-public class BlockCanopyDownlight extends AbstractBlock implements ICsmLightupAirSource {
+public class BlockCanopyDownlight extends AbstractBlock
+    implements ICsmLightupAirSource, ICanopyLight {
 
   public static final PropertyBool LIT = PropertyBool.create("lit");
   public static final PropertyBool POWERED = PropertyBool.create("powered");
@@ -60,7 +57,7 @@ public class BlockCanopyDownlight extends AbstractBlock implements ICsmLightupAi
   public static final PropertyInteger TILT = PropertyInteger.create("tilt", 0, 8);
 
   /** The most deck tiles a switch walks. */
-  public static final int WALK_LIMIT = 4096;
+  public static final int WALK_LIMIT = CanopyLights.WALK_LIMIT;
 
   private static final AxisAlignedBB PUCK =
       new AxisAlignedBB(4.5 / 16, 14.75 / 16, 4.5 / 16, 11.5 / 16, 1, 11.5 / 16);
@@ -149,7 +146,7 @@ public class BlockCanopyDownlight extends AbstractBlock implements ICsmLightupAi
     }
     if (!world.isRemote) {
       boolean lit = !state.getValue(LIT);
-      switchCanopy(world, pos, lit);
+      CanopyLights.switchCanopy(world, pos, lit);
       world.playSound(null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS,
           0.3F, lit ? 0.6F : 0.5F);
     }
@@ -166,43 +163,18 @@ public class BlockCanopyDownlight extends AbstractBlock implements ICsmLightupAi
     }
     // power at the light, or at the deck it hangs from: a photocell (an inverted daylight
     // sensor) set on the canopy's roof switches the lights under it
-    boolean powered = world.isBlockPowered(pos) || (world.getBlockState(pos.up()).getBlock()
-        instanceof BlockCanopyDeck && world.isBlockPowered(pos.up()));
+    boolean powered = CanopyLights.powered(world, pos);
     if (powered != state.getValue(POWERED)) {
       world.setBlockState(pos, state.withProperty(POWERED, powered), 2);
-      switchCanopy(world, pos, powered);
+      CanopyLights.switchCanopy(world, pos, powered);
     }
   }
 
-  /** Sets every downlight under the canopy over {@code light}, or this one alone without one. */
-  private void switchCanopy(World world, BlockPos light, boolean lit) {
-    set(world, light, lit);
-    BlockPos start = light.up();
-    if (!(world.getBlockState(start).getBlock() instanceof BlockCanopyDeck)) {
-      return;
-    }
-    Set<BlockPos> seen = new HashSet<>();
-    Deque<BlockPos> open = new ArrayDeque<>();
-    open.add(start);
-    seen.add(start);
-    while (!open.isEmpty() && seen.size() <= WALK_LIMIT) {
-      BlockPos at = open.poll();
-      set(world, at.down(), lit);
-      for (EnumFacing side : EnumFacing.HORIZONTALS) {
-        BlockPos next = at.offset(side);
-        if (!seen.contains(next) && world.isBlockLoaded(next)
-            && world.getBlockState(next).getBlock() instanceof BlockCanopyDeck) {
-          seen.add(next);
-          open.add(next);
-        }
-      }
-    }
-  }
-
-  private void set(World world, BlockPos at, boolean lit) {
-    IBlockState s = world.getBlockState(at);
-    if (s.getBlock() == this && s.getValue(LIT) != lit) {
-      world.setBlockState(at, s.withProperty(LIT, lit), 3);
+  /** Sets this light on or off, with its light-up air. */
+  @Override
+  public void setCanopyLight(World world, BlockPos at, IBlockState state, boolean lit) {
+    if (state.getBlock() == this && state.getValue(LIT) != lit) {
+      world.setBlockState(at, state.withProperty(LIT, lit), 3);
       CsmLightupAir.projectColumn(lit, world, at, 0, 0);
     }
   }

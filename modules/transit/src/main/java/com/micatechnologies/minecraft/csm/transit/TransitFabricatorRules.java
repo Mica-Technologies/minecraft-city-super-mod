@@ -14,7 +14,8 @@ import net.minecraft.block.Block;
  *
  * <p>The fare equipment is a powered cabinet with a reader, a board and its wiring. It costs what
  * it cost in the Technology tab it came from (a control board, sheet metal and a wiring harness),
- * so moving it changed no price. The bus stops are priced by what they are made of: a flag a sign
+ * so moving it changed no price; the outdoor vending machine adds a second sheet for its
+ * weatherproof cabinet. The bus stops are priced by what they are made of: a flag a sign
  * blank and its fixings, a poster case a sign blank in sheet metal, the arrival display an LED
  * panel with its board, the curb plaque a casting of sheet metal; the sign posts they stand on
  * are Roads', priced by Roads. The bus departure board and bay display are priced as the arrival
@@ -56,6 +57,12 @@ public final class TransitFabricatorRules {
       return CsmFabricatorCosts.cost(
           FabricatorIngredient.part(CsmParts.SHEET_METAL, cells * (shape.isLarge() ? 2 : 3)),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, cells));
+    }
+    if (registryName.equals("fare_vending_machine_outdoor")) {
+      // the indoor machine's board and wiring, in a second sheet's worth of weatherproof cabinet
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));
     }
     if (registryName.startsWith("bus_stop_flag_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
@@ -123,7 +130,7 @@ public final class TransitFabricatorRules {
     if (registryName.startsWith("canopy_column_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1));
     }
-    if (registryName.equals("canopy_downlight")) {
+    if (registryName.equals("canopy_downlight") || registryName.equals("canopy_light_strip")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
