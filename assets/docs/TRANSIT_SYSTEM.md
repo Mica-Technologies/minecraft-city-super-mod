@@ -318,7 +318,57 @@ who placed it, settling onto the surface below like the Streetscape fixtures. It
 stored turned 180 degrees, because the top face shows it that way to the placer. A plate and not
 paint: road markings belong to the external road mod.
 
-A bus stop bench or bin is Parks'; Transit adds none.
+A bench or bin at a stop is the station fit-out's **Platform Bench**, **Platform Perch** and
+**Platform Litter Bin** (below), or Parks'.
+
+### The full-size stop: pole, flag and name blade
+
+For a stop at street scale (#356), next to wide lanes and tall buildings, beside the small signed
+post above, which stays for tight pavements:
+
+| Block | Registry | Class |
+|---|---|---|
+| Bus Stop Pole (Full Size) | `csm:bus_stop_pole_flag` | `transit.stop.BlockBusStopPoleFlag` |
+| Bus Stop Name Blade | `csm:bus_stop_name_blade` | `transit.stop.BlockBusStopBlade` |
+
+- **The pole is built in one click** (`BlockBusStopPoleFlag.ItemPole`): `POLE_HEIGHT` (4) of
+  Roads' sign posts from the block clicked, the flag (`FLAG_HEIGHT`, 2 cells) beside the top two
+  on the reader's right, and two blade cells across the top, over the post and the flag, all
+  facing the placer. The posts are Roads' `signpost`, so road signs still stack on the pole. In
+  survival it takes the two flags from the stack, the posts from the inventory and the blade if
+  there are two (else the stop is built without one); short of posts or flags, or with a cell in
+  the way, it places one flag cell as any wayfinding panel is placed and says why. Sneaking always
+  places one cell. Afterwards each piece is an ordinary block, broken and dropped on its own.
+- **The flag and the blade are Core's wayfinding panel** (`WAYFINDING_PANELS.md`): baked, no
+  renderer, edited with an empty-handed click, any size up to 16 x 6. Their presets
+  (`BusStopSignPresets`) put each agency's livery on them: `BusAgency.getSignGround` /
+  `getSignLegend`, which a wayfinding preset now carries (`WayfindingPreset.with`, lines 3 and 4
+  and fixed colours). The editor's custom colours are a custom agency.
+- **The flag's text** is four lines: BUS (with the bus symbol as a line icon,
+  `WayfindingPreset.withLineIcon`), STOP, the agency's name (scale 0.55) and the routes (0.8). A
+  pictogram would not do: it is a square the panel's height, and on a flag a block wide it takes
+  the whole width and leaves the lines no room.
+- **The flag is a stop** (`TileEntityBusStopPoleFlag`, an `IBusStopSource`): its routes are the
+  ids on its last line (the fourth, or the third when the fourth is empty), its agency the one
+  whose sign ground its background is (else a custom agency, whose routes a board prints in the
+  brighter of the flag's two colours). Only the controller cell is a stop (`isStopBay`), so a
+  two-cell flag is one bay on the boards.
+
+### Route ids and stop sources
+
+- **Route ids** (`TransitRoute`) are one to three of A-Z and 0-9 ("B", "30", "M15"), carried as an
+  int key so `BusDepartures` is unchanged: a number 1 to 99 is its own key, the number the small
+  flag's plates have always stored (so every old stop and board keeps its routes and countdowns),
+  and any other id packs base 37 above 99. `TransitRoute.label` turns a key back into its id;
+  every board and display prints labels, never the key. `parseLine` reads the ids out of a line
+  ("Routes B, 30" is B and 30; words longer than three characters are passed over).
+  `TransitRouteTest` checks that 1-99 are their own keys and that no two ids share one.
+- **Stop sources** (`IBusStopSource`): the small flag's tile entity and the full-size flag's. A
+  departure board, a bay display and an arrival board read either, so a stop built either way is
+  a bay and counts down the same buses (seeded by the source's column). Bays hold up to
+  `TransitRoute.MAX_PER_LINE` (6) routes. A custom agency's departures are kept as `-1 - colour`
+  in `BusStation.Departures.agency` (`BusStation.colourOf`), and appear only on a board showing
+  every agency.
 
 ### Traps
 
@@ -333,6 +383,11 @@ A bus stop bench or bin is Parks'; Transit adds none.
   behind it is set back onto the pole, and a flag hung in the block behind another sign's post
   facing the other way goes back to back; a builder who sees a flag "jump" has usually put it
   next to one of these.
+- **A flag's routes are its last line.** Retyping the agency's name onto the fourth line makes the
+  stop's routes nothing (CITYLINE is longer than an id); BUS and STOP are never read, being lines
+  one and two.
+- **Only a flag's controller cell is a stop.** A sign's other cells carry the same text; counting
+  them made empty bays and shifted every bay number after them.
 - **Nothing on a stop settles.** Only the curb plaque settles onto the surface below; the posts
   stand where they are placed, and a slab below is what the extension post is for.
 
@@ -340,7 +395,8 @@ A bus stop bench or bin is Parks'; Transit adds none.
 
 `TransitFabricatorRules` prices a stop by what it is made of: a flag a sign blank and a fastener
 kit; a case a sign blank and sheet metal; the arrival display an LED module, a control board and
-sheet metal; the plaque sheet metal. The sign posts are Roads', priced by Roads.
+sheet metal; the plaque sheet metal; the full-size pole's flag a sign blank and a fastener kit; the
+name blade a sign blank and an LED module. The sign posts are Roads', priced by Roads.
 `audit_fabricator_costs.py` mirrors the branches.
 
 ### Why there is no bus stop pole
@@ -351,7 +407,7 @@ removed before any release, because a transit sign is a road sign: a stop built 
 posts stands next to a signal arm, hangs from a span wire, pairs back to back with a street name
 blade or a NO PARKING sign and matches every other post on the street, and a second pole family
 could do none of that without copying the sign system. The registry names of the flags, cases and
-display were kept.
+display were kept. The full-size pole of 2026.11 keeps to this: its pole is Roads' sign posts.
 
 ## Shelters
 

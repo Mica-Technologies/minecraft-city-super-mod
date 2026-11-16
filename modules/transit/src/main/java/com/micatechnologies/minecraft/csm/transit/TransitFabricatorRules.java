@@ -134,6 +134,15 @@ public final class TransitFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
+    // the full-size stop: the pole's flag (a cell of a sign) and the lit stop-name blade
+    if (registryName.equals("bus_stop_pole_flag")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+          FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
+    }
+    if (registryName.equals("bus_stop_name_blade")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SIGN_BLANK, 1),
+          FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+    }
     if (registryName.equals("bus_stop_curb_plaque")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
