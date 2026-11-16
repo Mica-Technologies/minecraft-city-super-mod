@@ -1,0 +1,468 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "gutter": "csm:blocks/transit/canopies/gutter",
+    "roof": "csm:blocks/transit/canopies/roof",
+    "soffit": "csm:blocks/transit/canopies/soffit",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        -16,
+        9.9411,
+        0
+      ],
+      "to": [
+        0,
+        12.4411,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.5589,
+            16,
+            6.0589
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.5589,
+            16,
+            6.0589
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.5589,
+            16,
+            6.0589
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.5589,
+            16,
+            6.0589
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          -8.0,
+          9.941125496954282,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5,
+        "rescale": true
+      }
+    },
+    {
+      "from": [
+        0,
+        3.3137,
+        0
+      ],
+      "to": [
+        16,
+        5.8137,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          3.3137084989847603,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5,
+        "rescale": true
+      }
+    },
+    {
+      "from": [
+        14.5,
+        -1.5,
+        0
+      ],
+      "to": [
+        16,
+        0.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            1.5,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#gutter",
+          "uv": [
+            14.5,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#gutter",
+          "uv": [
+            14.5,
+            0,
+            16.0,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        16,
+        3.3137,
+        0
+      ],
+      "to": [
+        32,
+        5.8137,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            10.1863,
+            16,
+            12.6863
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          24.0,
+          3.3137084989847603,
+          8
+        ],
+        "axis": "z",
+        "angle": 22.5,
+        "rescale": true
+      }
+    },
+    {
+      "from": [
+        16,
+        -1.5,
+        0
+      ],
+      "to": [
+        17.5,
+        0.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#gutter",
+          "uv": [
+            14.5,
+            0.0,
+            16.0,
+            2.0
+          ]
+        },
+        "south": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            1.5,
+            2.0
+          ]
+        },
+        "east": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "west": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0.0,
+            16,
+            2.0
+          ]
+        },
+        "down": {
+          "texture": "#gutter",
+          "uv": [
+            0,
+            0,
+            1.5,
+            16
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        30,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        0.36,
+        0.36,
+        0.36
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        3,
+        0
+      ],
+      "scale": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    }
+  }
+}

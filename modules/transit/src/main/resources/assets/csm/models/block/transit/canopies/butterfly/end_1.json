@@ -1,0 +1,87 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        2.3137,
+        -0.5
+      ],
+      "to": [
+        16,
+        6.3137,
+        0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            9.6863,
+            16,
+            13.6863
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            9.6863,
+            16,
+            13.6863
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            9.6863,
+            0.5,
+            13.6863
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            9.6863,
+            16.0,
+            13.6863
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            15.5,
+            16,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            0,
+            16,
+            0.5
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          8.0,
+          3.3137084989847603,
+          -0.25
+        ],
+        "axis": "z",
+        "angle": -22.5,
+        "rescale": true
+      }
+    }
+  ]
+}

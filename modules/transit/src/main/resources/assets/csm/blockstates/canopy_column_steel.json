@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/canopies/column/steel_shaft"
+      }
+    },
+    {
+      "when": {
+        "base": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/steel_base"
+      }
+    },
+    {
+      "when": {
+        "cap": "true"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/steel_cap"
+      }
+    }
+  ]
+}

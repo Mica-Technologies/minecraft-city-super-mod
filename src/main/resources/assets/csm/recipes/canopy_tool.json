@@ -1,0 +1,29 @@
+{
+  "type": "forge:ore_shaped",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "csm_transit"
+    }
+  ],
+  "pattern": [
+    "SSS",
+    " P ",
+    " F "
+  ],
+  "key": {
+    "S": {
+      "item": "csm:part_sheet_metal"
+    },
+    "P": {
+      "item": "csm:part_pole_section"
+    },
+    "F": {
+      "item": "csm:part_fastener_kit"
+    }
+  },
+  "result": {
+    "item": "csm:canopy_tool",
+    "count": 1
+  }
+}

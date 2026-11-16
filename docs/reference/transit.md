@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside.
 
-!!! info "146 blocks in this tab"
+!!! info "170 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -43,6 +43,26 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Bus Shelter (Glass, EMBERLINE) | `csm:bus_shelter_glass_emberline` | 3.0 | 10.0 | pickaxe | 1 |
 | Bus Shelter (Glass, RIVERWAY) | `csm:bus_shelter_glass_riverway` | 3.0 | 10.0 | pickaxe | 1 |
 | Bus Shelter (Glass, VERDANT) | `csm:bus_shelter_glass_verdant` | 3.0 | 10.0 | pickaxe | 1 |
+| Bus Station Canopy (Barrel Vault, CITYLINE) | `csm:canopy_deck_vault_cityline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Barrel Vault, EMBERLINE) | `csm:canopy_deck_vault_emberline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Barrel Vault, RIVERWAY) | `csm:canopy_deck_vault_riverway` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Barrel Vault, VERDANT) | `csm:canopy_deck_vault_verdant` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Butterfly, CITYLINE) | `csm:canopy_deck_butterfly_cityline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Butterfly, EMBERLINE) | `csm:canopy_deck_butterfly_emberline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Butterfly, RIVERWAY) | `csm:canopy_deck_butterfly_riverway` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Butterfly, VERDANT) | `csm:canopy_deck_butterfly_verdant` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Flat, CITYLINE) | `csm:canopy_deck_flat_cityline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Flat, EMBERLINE) | `csm:canopy_deck_flat_emberline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Flat, RIVERWAY) | `csm:canopy_deck_flat_riverway` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Flat, VERDANT) | `csm:canopy_deck_flat_verdant` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Glass Skylight, CITYLINE) | `csm:canopy_deck_glass_cityline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Glass Skylight, EMBERLINE) | `csm:canopy_deck_glass_emberline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Glass Skylight, RIVERWAY) | `csm:canopy_deck_glass_riverway` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Glass Skylight, VERDANT) | `csm:canopy_deck_glass_verdant` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Sawtooth, CITYLINE) | `csm:canopy_deck_sawtooth_cityline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Sawtooth, EMBERLINE) | `csm:canopy_deck_sawtooth_emberline` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Sawtooth, RIVERWAY) | `csm:canopy_deck_sawtooth_riverway` | 2.5 | 8.0 | pickaxe | 1 |
+| Bus Station Canopy (Sawtooth, VERDANT) | `csm:canopy_deck_sawtooth_verdant` | 2.5 | 8.0 | pickaxe | 1 |
 | Bus Stop Curb Plaque | `csm:bus_stop_curb_plaque` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Stop Flag (CITYLINE) | `csm:bus_stop_flag_cityline` | 2 | 10 | pickaxe | 1 |
 | Bus Stop Flag (EMBERLINE) | `csm:bus_stop_flag_emberline` | 2 | 10 | pickaxe | 1 |
@@ -50,6 +70,10 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Bus Stop Flag (VERDANT) | `csm:bus_stop_flag_verdant` | 2 | 10 | pickaxe | 1 |
 | Bus Stop Route Map Case | `csm:bus_stop_route_map_case` | 2 | 10 | pickaxe | 1 |
 | Bus Stop Timetable Case | `csm:bus_stop_timetable_case` | 2 | 10 | pickaxe | 1 |
+| Canopy Column (Graphite) | `csm:canopy_column_graphite` | 3.0 | 10.0 | pickaxe | 1 |
+| Canopy Column (Steel) | `csm:canopy_column_steel` | 3.0 | 10.0 | pickaxe | 1 |
+| Canopy Column (White) | `csm:canopy_column_white` | 3.0 | 10.0 | pickaxe | 1 |
+| Canopy Downlight | `csm:canopy_downlight` | 1.5 | 6.0 | pickaxe | 1 |
 | CCTV Camera (Wall Bracket) | `csm:platform_cctv_camera` | 2.0 | 6.0 | pickaxe | 1 |
 | CCTV Dome Camera | `csm:platform_cctv_dome` | 2.0 | 6.0 | pickaxe | 1 |
 | Check-In Desk | `csm:airport_checkin_desk` | 2.0 | 6.0 | pickaxe | 1 |

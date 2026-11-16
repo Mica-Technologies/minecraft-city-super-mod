@@ -8,7 +8,7 @@ may name. Its creative tab, **Transit** (`tabtransit`, `@CsmTab.Load(order = 27)
 Core's tab scan, and every block and item keeps the `csm:` namespace.
 
 The module holds the working fare system, which it took over from Technology; the bus stops and
-shelters; the bus station departure boards; the station and platform fit-out and the stations'
+shelters; the bus station canopy kit; the bus station departure boards; the station and platform fit-out and the stations'
 entrances and fare lines, made to complement the stations of RCMC, the author's train mod; and an
 airport's terminal and airside pieces. A demo world with all of it laid out to walk round is built
 by `dev-env-utils/scripts/build_transit_demo.py` (Demo world, below). What the module was left
@@ -447,6 +447,99 @@ graphite frame.
 `TransitFabricatorRules`: a glass shelter is a pole section, two sheet metal, four glass panes and
 an LED module; the cantilever a pole section, two sheet metal and an LED module; the flat roof a
 pole section, one sheet metal and an LED module. `audit_fabricator_costs.py` mirrors them.
+
+## Station canopies
+
+The big roofs of a bus station or transit centre: 4 to 12 blocks clear, a dozen deep, thirty
+long or more, where a shelter would be lost. A kit of joining pieces in `transit.canopy`, all
+drawn by `gen_transit_canopies.py`, laid out by a tool:
+
+| Block / item | Registry | Class |
+|---|---|---|
+| Bus Station Canopy (Flat, Glass Skylight, Sawtooth, Butterfly, Barrel Vault; four agencies each) | `csm:canopy_deck_<style>_<agency>` | `BlockCanopyDeck` |
+| Canopy Column (Steel, White, Graphite) | `csm:canopy_column_<finish>` | `BlockCanopyColumn` |
+| Canopy Downlight | `csm:canopy_downlight` | `BlockCanopyDownlight` |
+| Canopy Tool | `csm:canopy_tool` | `ItemCanopyTool` |
+
+### Decks
+
+A deck tile is one block of roof at the foot of its block, so its underside is the clearance line
+and a deck set on a column rests on it (the platform canopy's rule). Tiles of the same block join
+on all four **world** sides (`north` .. `west`, actual state); the fascia, with the agency's name
+repeated a block at a time, is drawn only round the outside. No facing: a flat deck stores
+nothing.
+
+| Style (`CanopyStyle`) | Module | What it is | Layer |
+|---|---|---|---|
+| `FLAT` | 1 | a flat steel deck, white soffit | cutout |
+| `GLASS` | 1 | a steel grid, glass between the beams | translucent |
+| `SAWTOOTH` | 3 | a slope rising over three tiles, then a glazed upstand back down | translucent |
+| `BUTTERFLY` | 4 | two slopes down to a valley gutter and two back up | cutout |
+| `VAULT` | 6 | a shallow barrel arch rising about 1.6 blocks, gutters at the springing | cutout |
+
+A **shaped** style changes across its module, so its tile stores `phase` (its place in the
+module, 0 .. module - 1) and `axis` (which way the profile runs): meta is the phase, plus 8 for
+axis z. A canopy deeper than one module is modules side by side (a 12-deep vault canopy is two
+arches with a gutter between). The tool sets both; a tile placed by hand faces its profile along
+the way the placer looks and carries on the phase of a tile of the same block next to it, and a
+sneaking click with an empty hand steps a tile's phase on.
+
+The models are drawn with the profile running along +x and turned a quarter for axis z, the
+joins they are drawn against turned with them (`TURN` in the generator). Slopes are elements
+turned 22.5 or 45 degrees about z with `rescale`, centred on the underside's mid-point, so one
+tile's slope meets the next tile's height exactly; the vault is twelve half-tile pieces (45, 45,
+22.5 x 3, 0, then the same down). Models reach up to y 28, inside the model limit; the
+collision is the 3 px deck slab at the foot, the selection box the whole block.
+
+### Columns and lights
+
+**Columns** are round (an octagon of inradius 3.5 px, about 0.45 m across), one block at a time,
+stacked to any height: a base plate where a column meets anything else below (`base`) and a
+capital under whatever it carries (`cap`), both actual state. Livery-neutral, in three paints.
+
+The **downlight** hangs in the block under a deck, flush with the soffit, light 15. A click with
+an empty hand, or a change of redstone power (on when power comes, off when it goes; `powered`
+remembers), switches every downlight under the same canopy: it walks the decks joined to the one
+above it, up to 4096 tiles, and sets each light under them. Under a vault, lights hang only where
+the soffit is low (the springing), never in mid-air under the crown.
+
+### The Canopy Tool
+
+Hold a deck in the off hand (or anywhere in the hotbar), and a column and the downlight in the
+hotbar if wanted. Click the ground at one corner, then the opposite one: the tool lays the deck
+over the rectangle at its clearance (4 to 12, default 6; a sneaking click in the air steps it),
+stands columns from the ground up and hangs the lights.
+
+- **Columns**: a flat style's stand a block in from each edge (two, on a side of 10 or more, so
+  the deck overhangs), at most 9 blocks apart both ways. A shaped style's profile runs across the
+  rectangle's shorter side, cut down to whole modules (the tool says so); its columns stand under
+  the phases `CanopyStyle.columnAt` names (the sawtooth's low edge, the butterfly's valley, the
+  vault's springing) and, for the sawtooth and the vault, under the far edge too, at most 9 apart
+  along the run.
+- **Lights** every third block both ways on a flat style; on a shaped one under its low phases,
+  every third block along the run.
+- **Nothing is placed unless every cell is free.** In survival every deck, column block and light
+  comes out of the inventory, and nothing is placed unless all of them are there. A canopy is at
+  most 64 a side.
+
+### Traps
+
+- **The slope's sign.** A block model's positive angle about z raises the +x end. From below, a
+  correct vault reads as a bowl and a correct butterfly as ridges: check a shaped style from a
+  side elevation at deck height, never from under it.
+- **Joins are per block.** Two liveries or two styles side by side are two canopies, each with
+  its own fascia.
+- **The phase belongs to the tile.** Breaking and replacing a tile by hand takes the phase from
+  its neighbour; a tile with no neighbour of its block starts at 0, which may be the wrong place
+  in the profile. Step it with a sneaking empty-hand click.
+
+### Prices
+
+`TransitFabricatorRules`: a glass or sawtooth deck two sheet metal, two glass panes and a fastener
+kit; any other deck two sheet metal and a fastener kit; a column block a pole section; the
+downlight an LED module and sheet metal. `audit_fabricator_costs.py` mirrors them. The tool is a
+crafting-table recipe in Core (`recipes/canopy_tool.json`, three sheet metal, a pole section and a
+fastener kit, on `csm_transit` loaded).
 
 ## Departure boards
 

@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/canopies/vault/end_4",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_verdant",
+    "particle": "csm:blocks/transit/canopies/frame_verdant"
+  }
+}

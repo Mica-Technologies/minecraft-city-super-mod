@@ -23,6 +23,11 @@ import com.micatechnologies.minecraft.csm.transit.airport.BlockSelfCheckinKiosk;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockStandSign;
 import com.micatechnologies.minecraft.csm.transit.airport.ItemBoardingPass;
 import com.micatechnologies.minecraft.csm.transit.board.BlockBusBoard;
+import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyColumn;
+import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyDeck;
+import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyDownlight;
+import com.micatechnologies.minecraft.csm.transit.canopy.CanopyStyle;
+import com.micatechnologies.minecraft.csm.transit.canopy.ItemCanopyTool;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGate;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda2;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGateAda3;
@@ -168,6 +173,34 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockBusShelter("bus_shelter_flat_riverway", BusShelterStyle.FLAT));
     initTabBlock(new BlockBusShelter("bus_shelter_flat_verdant", BusShelterStyle.FLAT));
     initTabBlock(new BlockBusShelter("bus_shelter_flat_emberline", BusShelterStyle.FLAT));
+
+    // Bus station canopy kit (gen_transit_canopies.py --fragments): decks in four styles, columns,
+    // the downlight, and the tool that lays them out
+    initTabBlock(new BlockCanopyDeck("canopy_deck_flat_cityline", CanopyStyle.FLAT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_flat_riverway", CanopyStyle.FLAT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_flat_verdant", CanopyStyle.FLAT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_flat_emberline", CanopyStyle.FLAT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_glass_cityline", CanopyStyle.GLASS));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_glass_riverway", CanopyStyle.GLASS));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_glass_verdant", CanopyStyle.GLASS));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_glass_emberline", CanopyStyle.GLASS));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_sawtooth_cityline", CanopyStyle.SAWTOOTH));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_sawtooth_riverway", CanopyStyle.SAWTOOTH));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_sawtooth_verdant", CanopyStyle.SAWTOOTH));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_sawtooth_emberline", CanopyStyle.SAWTOOTH));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_butterfly_cityline", CanopyStyle.BUTTERFLY));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_butterfly_riverway", CanopyStyle.BUTTERFLY));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_butterfly_verdant", CanopyStyle.BUTTERFLY));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_butterfly_emberline", CanopyStyle.BUTTERFLY));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_vault_cityline", CanopyStyle.VAULT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_vault_riverway", CanopyStyle.VAULT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_vault_verdant", CanopyStyle.VAULT));
+    initTabBlock(new BlockCanopyDeck("canopy_deck_vault_emberline", CanopyStyle.VAULT));
+    initTabBlock(new BlockCanopyColumn("canopy_column_steel"));
+    initTabBlock(new BlockCanopyColumn("canopy_column_white"));
+    initTabBlock(new BlockCanopyColumn("canopy_column_graphite"));
+    initTabBlock(new BlockCanopyDownlight("canopy_downlight"));
+    initTabItem(ItemCanopyTool.class, fmlPreInitializationEvent);
 
     // Bus departure displays (gen_transit_boards.py --fragments): the station board and the bay
     // display, reading the stops around them

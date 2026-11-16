@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/canopies/butterfly/end_0_s",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_riverway",
+    "particle": "csm:blocks/transit/canopies/frame_riverway"
+  }
+}

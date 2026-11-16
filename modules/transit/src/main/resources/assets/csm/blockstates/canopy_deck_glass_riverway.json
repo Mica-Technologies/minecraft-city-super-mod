@@ -1,0 +1,83 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/deck"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/edge"
+      },
+      "when": {
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/edge",
+        "y": 90
+      },
+      "when": {
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/edge",
+        "y": 180
+      },
+      "when": {
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/edge",
+        "y": 270
+      },
+      "when": {
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/corner"
+      },
+      "when": {
+        "north": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/corner",
+        "y": 90
+      },
+      "when": {
+        "east": "false",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/corner",
+        "y": 180
+      },
+      "when": {
+        "south": "false",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/glass/riverway/corner",
+        "y": 270
+      },
+      "when": {
+        "west": "false",
+        "south": "false"
+      }
+    }
+  ]
+}

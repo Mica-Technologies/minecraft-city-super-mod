@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fascia": "csm:blocks/transit/canopies/fascia_cityline",
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0.0,
+        -4.0,
+        -0.5
+      ],
+      "to": [
+        16.0,
+        4.0,
+        0.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            0.0,
+            0,
+            16.0,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            8.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            8.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            0.0,
+            16.0,
+            8.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            15.5,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            0.5
+          ]
+        }
+      }
+    }
+  ]
+}

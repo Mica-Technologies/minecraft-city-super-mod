@@ -1,0 +1,157 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "roof": "csm:blocks/transit/canopies/roof",
+    "soffit": "csm:blocks/transit/canopies/soffit",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        25.9411,
+        0.0
+      ],
+      "to": [
+        8,
+        28.4411,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            3.5589,
+            16,
+            6.0589
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            3.5589,
+            8,
+            6.0589
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            3.5589,
+            16.0,
+            6.0589
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            3.5589,
+            16.0,
+            6.0589
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            0,
+            0.0,
+            8,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            0,
+            0.0,
+            8,
+            16.0
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        24.2843,
+        0
+      ],
+      "to": [
+        16,
+        26.7843,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            5.2157,
+            8,
+            7.7157
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            8,
+            5.2157,
+            16,
+            7.7157
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            5.2157,
+            16,
+            7.7157
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            0,
+            5.2157,
+            16,
+            7.7157
+          ]
+        },
+        "up": {
+          "texture": "#roof",
+          "uv": [
+            8,
+            0,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#soffit",
+          "uv": [
+            8,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "origin": [
+          12.0,
+          24.2842712474619,
+          8
+        ],
+        "axis": "z",
+        "angle": -22.5,
+        "rescale": true
+      }
+    }
+  ]
+}

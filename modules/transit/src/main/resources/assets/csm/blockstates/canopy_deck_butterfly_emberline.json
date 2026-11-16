@@ -1,0 +1,328 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_0"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "0"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_0",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "0"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_0"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "0",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_0_s"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "0",
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_0",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "0",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_0_s",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "0",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/eave_west_0"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "0",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/eave_west_0",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "0",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_1"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "1"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_1",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "1"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_1"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "1",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_1_s"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "1",
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_1",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "1",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_1_s",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "1",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/valley"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "1"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/valley",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "1"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_2"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_2",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_2"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "2",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_2_s"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "2",
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_2",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "2",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_2_s",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "2",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/valley_b"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/valley_b",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "2"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_3"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "3"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/deck_3",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "3"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_3"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "3",
+        "north": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_3_s"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "3",
+        "south": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_3",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "3",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/end_3_s",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "3",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/eave_east_3"
+      },
+      "when": {
+        "axis": "x",
+        "phase": "3",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "csm:transit/canopies/butterfly/emberline/eave_east_3",
+        "y": 90
+      },
+      "when": {
+        "axis": "z",
+        "phase": "3",
+        "south": "false"
+      }
+    }
+  ]
+}

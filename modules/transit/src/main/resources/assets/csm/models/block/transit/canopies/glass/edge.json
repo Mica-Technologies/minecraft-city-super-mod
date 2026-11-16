@@ -1,0 +1,138 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "fascia": "csm:blocks/transit/canopies/fascia_cityline",
+    "frame": "csm:blocks/transit/canopies/frame_cityline",
+    "steel": "csm:blocks/transit/canopies/steel",
+    "particle": "csm:blocks/transit/canopies/frame_cityline"
+  },
+  "elements": [
+    {
+      "from": [
+        0.0,
+        -4.0,
+        -0.5
+      ],
+      "to": [
+        16.0,
+        4.0,
+        0.0
+      ],
+      "faces": {
+        "north": {
+          "texture": "#fascia",
+          "uv": [
+            0.0,
+            0,
+            16.0,
+            8
+          ]
+        },
+        "south": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            8.0
+          ]
+        },
+        "east": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            0.5,
+            8.0
+          ]
+        },
+        "west": {
+          "texture": "#frame",
+          "uv": [
+            15.5,
+            0.0,
+            16.0,
+            8.0
+          ]
+        },
+        "up": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            15.5,
+            16.0,
+            16.0
+          ]
+        },
+        "down": {
+          "texture": "#frame",
+          "uv": [
+            0.0,
+            0.0,
+            16.0,
+            0.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        3.0,
+        1.25
+      ],
+      "faces": {
+        "south": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            13.0,
+            16,
+            16.0
+          ]
+        },
+        "east": {
+          "texture": "#steel",
+          "uv": [
+            14.75,
+            13.0,
+            16.0,
+            16.0
+          ]
+        },
+        "west": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            13.0,
+            1.25,
+            16.0
+          ]
+        },
+        "up": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            0,
+            16,
+            1.25
+          ]
+        },
+        "down": {
+          "texture": "#steel",
+          "uv": [
+            0,
+            14.75,
+            16,
+            16.0
+          ]
+        }
+      }
+    }
+  ]
+}

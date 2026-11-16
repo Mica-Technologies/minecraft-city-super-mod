@@ -587,6 +587,14 @@ def cost_for(registry, info, ancestors):
             if registry.startswith("airport_sign_") or registry == "airport_gate_sign":
                 return ("SIGN_BLANK", "FASTENER_KIT")
             return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith(("canopy_deck_glass_", "canopy_deck_sawtooth_")):
+            return ("SHEET_METAL x2", "glass_pane x2", "FASTENER_KIT")
+        if registry.startswith("canopy_deck_"):
+            return ("SHEET_METAL x2", "FASTENER_KIT")
+        if registry.startswith("canopy_column_"):
+            return ("POLE_SECTION",)
+        if registry == "canopy_downlight":
+            return ("LED_MODULE", "SHEET_METAL")
         if registry.startswith("bus_shelter_glass_"):
             return ("POLE_SECTION", "SHEET_METAL x2", "glass_pane x4", "LED_MODULE")
         if registry.startswith("bus_shelter_cantilever_"):

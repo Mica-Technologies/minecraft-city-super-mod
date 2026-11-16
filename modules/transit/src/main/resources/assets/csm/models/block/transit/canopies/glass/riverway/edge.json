@@ -1,0 +1,8 @@
+{
+  "parent": "csm:block/transit/canopies/glass/edge",
+  "textures": {
+    "fascia": "csm:blocks/transit/canopies/fascia_riverway",
+    "frame": "csm:blocks/transit/canopies/frame_riverway",
+    "particle": "csm:blocks/transit/canopies/frame_riverway"
+  }
+}
