@@ -707,6 +707,142 @@ at 4.6 µs a small flight board (34 drawn live) and 5.2 µs a departure board (2
 `TransitFabricatorRules`: both as the arrival display, an LED module, a control board and sheet
 metal. `audit_fabricator_costs.py` mirrors the branch.
 
+## Arrival boards and the info totem
+
+Package `transit.arrival`, assets from `gen_transit_arrival_boards.py`. Three blocks share one
+class, `BlockBusArrivalBoard`: the **Bus Arrival Board (3x1)**, the **Bus Arrival Board (5x2)** and
+the **Bus Stop Info Totem** (1 wide, 3 tall). They replace the live server's hand-built
+LittleFrames boards: a 5 x 2 screen, two of them back to back under a canopy, with two pages
+turning every five seconds. Page 1 reads `CITYLINE: <stop>` and one line a route
+(`Bus Route B:` ... `4 mins`). Page 2 reads `CITYLINE: <stop>`, a blank line, and
+`Northbound - Routes B, 30`. The small arrival display on a stop's post (`bus_stop_arrival_display`)
+is unchanged and stays for tight sidewalks.
+
+### What it is
+
+Each piece is placed whole by its item. The block is the **master**, at the bottom-centre cell. It
+holds the tile entity (`TileEntityBusArrivalBoard`), and its renderer draws the whole board from
+there. The invisible `bus_arrival_board_part` cells fill the rest, in Transit's hidden tab
+(`CsmTabTransitHidden`, order -14). A part's metadata is the step towards its master. A part
+forwards clicks, its box, the outline and pick-block to the master, and breaking it breaks the
+board. This is the venue unit's pattern, which Transit may not name. Breaking any cell removes
+every cell, and only the master drops the item, so survival places and breaks one item.
+
+Metadata: the facing's horizontal index in bits 0-1 and the `BoardMount` ordinal in bits 2-3
+(hung 0, post 1, wall 2, floor 3). Everything else is in the tile entity.
+
+### Placing and mounts
+
+The face the item is used on picks the mount:
+
+| Face clicked | Mount | Where the master goes | Drawn |
+|---|---|---|---|
+| a block's underside | hung | the top row just under it, master `height - 1` lower | two steel rods from the housing up to the first block above, at most 16 |
+| the ground's top | post | the board's bottom `POST_RISE` (2) blocks up | one post (3x1) or two at the end columns (5x2), down to the first solid block; the post cells are parts, so the posts are solid |
+| a wall's side | wall | the clicked cell, facing out of the wall | flat against the wall, one-sided |
+| any (totem) | floor | the clicked cell | plinth, body, name panel, map, arrival panel |
+
+The board faces the placer except on a wall. Every cell, the master's included, must be air or
+replaceable and editable. Otherwise nothing is placed and the action bar names the cell in the way
+(`csm.transit.arrival_board.blocked`). A `/setblock` of the master fills whatever cells are free.
+
+### Data (`BusStopInfo`, saved on the master)
+
+| Key | Type | What |
+|---|---|---|
+| `ag` | byte | agency: `BoardAgency` ordinal, CITYLINE 0 .. EMBERLINE 3, METRO 4, CUSTOM 5; unknown reads as CITYLINE |
+| `an` | string | custom agency name, at most 16 |
+| `ac`, `al` | int | custom agency ground and lettering colours, 0xRRGGBB |
+| `sn` | string | stop name, at most 32 (the longest live name is 26) |
+| `dr` | string | direction line, at most 24; empty means there is no second page |
+| `rt` | string | the board's own routes as typed, at most 24, read with `TransitRoute.parseLine` (so `B 30` works); empty lists the nearest stop's |
+| `ds` | bool | show destinations (default off), from `BusDepartures.DESTINATIONS` |
+| `cl` | bool | closed: STATION CLOSED replaces the route lines |
+| `ts` | bool | two-sided; absent means "as the mount suggests" (two-sided unless on a wall). A wall board is always drawn one-sided |
+
+Text is printable ASCII only, since the screen font draws nothing else. Every value goes through
+the same setters whether it comes from a save, the packet or the GUI, so the caps hold everywhere.
+
+**Editing.** An empty-handed click on any cell opens `GuiBusStopInfo` (GUI id 80, through
+`TransitGuiProvider`). It has an agency button (shift-click steps back), name and hex colour fields
+for a custom agency, fields for the stop name, direction and routes, toggles for destinations,
+closed and two-sided, and Save. Save sends one `BusStopInfoPacket`, which is Transit channel
+discriminator 2, appended after the fare packets. The packet follows "Network safety": bounded
+reads of 128 bytes per string, an unknown agency rejected while decoding, `canPlayerReach` first,
+work on the server thread, and the caps applied again through the setters. Reach is the only
+permission, as for the other sign editors.
+
+### Agreeing with the stop and the boards
+
+The board looks up the nearest stop source (`IBusStopSource`: a stop flag, or a full-size pole's
+flag) through the departure boards' own `BusStation` lookup. It must be within 32 blocks across
+and 8 up or down, and it must list at least one route. A full-size flag's upper cell is a bay with
+no routes and is passed over. The source's column seeds `BusDepartures.minutesToNext`, so the pole,
+this board and a departure board count down the same buses. With no source in reach, the board's
+own column seeds the countdown. A board with no routes of its own lists that source's routes. One
+line per route shows the next bus: `n mins`, `1 min`, or `DUE` under a minute. With no routes at
+all it shows `N/A mins`.
+
+### Pages and sizes
+
+`ArrivalBoardText` builds the words and is pure and unit-tested. The route pages come first, then
+the direction page if there is a direction line. Pages turn every
+`TileEntityBusArrivalDisplayRenderer.PAGE_TICKS`, and every board turns in step. Routes per page:
+the 3x1 shows 2 under its header, the 5x2 up to 6, and the totem's panel 3 in compact form (no
+header, the route id alone, the direction page on two lines). More routes turn over more pages.
+
+The text is as large as the screen's line slots allow, with at least 3 slots so a two-route board
+reads big, as the live ones do. It is also as narrow as the widest line of any page needs, so it
+keeps one size through the pages. A line still too long at 55% of the slot's size is cut. The
+header is in the agency's screen colour: a built-in agency's text colour, METRO white, or the
+brighter of a custom agency's two colours. The route lines are the small display's amber. The
+totem's name panel is painted in the agency's sign ground, with the stop name in its lettering
+colour; a long name splits onto two lines.
+
+### Rendering and its cost
+
+- **Geometry** (housing, agency band, dark screen, rods, posts, the totem's body) is one
+  `CsmSharedDisplayLists` list per look. The key is size and kind, sidedness, mount, rod and post
+  length in sixteenths, and band colour. It is drawn on `white1px` with colour and shade per
+  vertex, so the list holds no atlas UVs to go stale on a re-stitch. The world light at the master
+  is set as the lightmap before the call. The totem's map (`network_map` on the block atlas) is one
+  or two quads drawn each frame.
+- **Text** is one flat `POSITION_TEX_COLOR` list per board per page, in a `CsmDisplayListCache`
+  under the page number. Each list is recompiled when its content key moves (the data's version,
+  the looked-up stop, and the minute on route pages). A stale list waits for `CsmCompileBudget`; a
+  missing one compiles at once. It is drawn fullbright, with `resetColor()` after. A two-sided
+  board replays the same list turned half round. The lists are released in `invalidate()` and
+  `onChunkUnload()`.
+- **Per frame there are no world queries.** The stop lookup, the rod and post lengths, the light,
+  the facing and mount, and the render box are cached on the tile entity. They are refreshed at
+  most once a second, and at once after an edit. `getBakedModelKey` is constant, so an edit's sync
+  never rebuilds a chunk section. The renderer is global (like the large flight board), so the
+  board's far end stays drawn when the master's section is culled, within
+  `CsmPerformance.capRenderDistanceSq(96²)`.
+- **Measured:** measured 2026-11-16 in Bus Station Demo: about 14 boards in view (ten two-sided 5x2 on posts, four others), with daylight and the camera fixed and 10 s per sample. `renderWork` was 1.30 ms mean with the ten removed, and 1.39 and 1.36 ms with them. That is about 6 to 9 µs per two-sided 5x2 board.
+
+### Traps
+
+- **The part's step chain must reach the master within 16 steps** (`MAX_STEPS`). A wider board
+  needs a bigger bound.
+- **Two-sided is tri-state on purpose.** A board that was never set follows its mount, so a
+  `/setblock` wall board comes up one-sided.
+- **`BusStation` keeps zero-route sources as bays.** The board skips them, but the departure
+  boards still number them.
+- **The 3x1 screen is about 10 px tall.** Three slots give about 2.4 px text, legible from a few
+  blocks. Do not add slots there.
+- **The rods' ceiling is looked for above the master's column only.** On a 3x1 or 5x2 the rods stand at the end columns. A board hung under a single block (not a deck) draws its rods past that block's sides. The item always hangs under the clicked block, so this shows only with `/setblock` or a one-block ceiling.
+- **The screen font's comma reads like a full stop** (`Routes B, 30`). This is a glyph of the font atlas and is the same on every board that uses `electronicSign`.
+- **Only `bus_arrival_board_part` is invisible.** The masters keep an empty `MODEL`, so the
+  block-breaking cracks still show.
+
+### Prices
+
+`TransitFabricatorRules`: 3x1 is 2 LED modules, a control board and 2 sheet metal. 5x2 is 4 LED
+modules, a control board and 3 sheet metal. The totem is an LED module, a control board, 2 sheet
+metal and concrete mix. `audit_fabricator_costs.py` mirrors these. The part is in a hidden tab, so
+the Fabricator never lists it.
+
 ## Station and platform fit-out
 
 Twenty-nine blocks in `transit.platform`, all drawn by `gen_transit_platforms.py`, with three
