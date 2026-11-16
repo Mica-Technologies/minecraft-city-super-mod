@@ -221,7 +221,8 @@ public class ItemCanopyTool extends AbstractItem {
    * block in from each long edge ({@link #LIGHTS_STRIP_EDGES}; the middle alone when the canopy
    * is under three deep). A shaped style hangs lights only where its soffit is low
    * ({@link CanopyStyle#lightAt}), so each row is moved to the nearest low row (the lower, on a
-   * tie): under a vault the middle of one arch is its crown, so its strip goes to the springing.
+   * tie). A vault's middle is its crown, so its centre mode lights every springing instead: a
+   * strip along each side of every arch, symmetric, as vaulted canopies are lit.
    *
    * @param style the deck's style
    * @param lo    the first row across
@@ -239,6 +240,14 @@ public class ItemCanopyTool extends AbstractItem {
       targets.add(lo + (hi - lo) / 2);
     }
     List<Integer> rows = new ArrayList<>();
+    if (style == CanopyStyle.VAULT && mode != LIGHTS_STRIP_EDGES) {
+      for (int c = lo; c <= hi; c++) {
+        if (style.lightAt((c - lo) % style.getModule())) {
+          rows.add(c);
+        }
+      }
+      return rows;
+    }
     for (int target : targets) {
       int best = Integer.MIN_VALUE;
       for (int c = lo; c <= hi; c++) {

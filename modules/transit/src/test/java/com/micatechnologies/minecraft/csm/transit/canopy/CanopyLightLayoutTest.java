@@ -54,15 +54,14 @@ class CanopyLightLayoutTest {
 
   @Test
   void shapedRowsMoveToTheLowSoffit() {
-    // one vault arch, six deep: the middle is the crown; the low rows are the springings, 0, 5
-    List<Integer> centre = ItemCanopyTool.stripRows(CanopyStyle.VAULT, 0, 5,
-        ItemCanopyTool.LIGHTS_STRIP_CENTRE);
-    assertEquals(1, centre.size());
-    assertTrue(Arrays.asList(0, 5).contains(centre.get(0)));
+    // one vault arch, six deep: the middle is the crown, so the centre mode lights both
+    // springings, 0 and 5, as the edge mode does
+    assertEquals(Arrays.asList(0, 5), ItemCanopyTool.stripRows(CanopyStyle.VAULT, 0, 5,
+        ItemCanopyTool.LIGHTS_STRIP_CENTRE));
     assertEquals(Arrays.asList(0, 5), ItemCanopyTool.stripRows(CanopyStyle.VAULT, 0, 5,
         ItemCanopyTool.LIGHTS_STRIP_EDGES));
-    // two arches: the middle is at the gutter between them (the first arch's far springing)
-    assertEquals(Arrays.asList(5), ItemCanopyTool.stripRows(CanopyStyle.VAULT, 0, 11,
+    // two arches: every springing of both, symmetric
+    assertEquals(Arrays.asList(0, 5, 6, 11), ItemCanopyTool.stripRows(CanopyStyle.VAULT, 0, 11,
         ItemCanopyTool.LIGHTS_STRIP_CENTRE));
     // a butterfly's valley, phases 1 and 2
     assertEquals(Arrays.asList(1, 2), ItemCanopyTool.stripRows(CanopyStyle.BUTTERFLY, 0, 3,

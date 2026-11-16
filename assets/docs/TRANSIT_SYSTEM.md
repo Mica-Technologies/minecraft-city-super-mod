@@ -593,9 +593,10 @@ lights.
   from each end, broken where a column stands (`ItemCanopyTool.stripRows`). The middle row, or
   the rows a block in from each long edge (the middle alone under three deep). On a shaped style
   each row moves to the nearest row whose soffit is low (`CanopyStyle.lightAt`, the lower row on
-  a tie): under a single vault arch the middle is the crown, so its strip goes to a springing;
-  across two arches the middle is the gutter between them; a butterfly's two edge rows are the
-  two sides of its valley; a sawtooth module has one low row, so both edge rows are that one.
+  a tie). A vault's middle is its crown, so the middle-strip mode on a vault hangs a strip along
+  every springing of every arch instead, symmetric (the edge mode keeps the outer two); a
+  butterfly's two edge rows are the two sides of its valley; a sawtooth module has one low row,
+  so both edge rows are that one.
 - **Nothing is placed unless every cell is free.** In survival every deck, column block and light
   comes out of the inventory, and nothing is placed unless all of them are there. A canopy is at
   most 64 a side.
