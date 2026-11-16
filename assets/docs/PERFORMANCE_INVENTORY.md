@@ -50,8 +50,9 @@ logged in [Fix status](#fix-status), each with its own before and after.
 | P3 | Emergency lights: glow compiled once per block class into a list shared by every light (`CsmSharedDisplayLists`), both bulbs in one draw | `7d5af67c4` | 16.6 µs a light live (46 draws before) | 1.4 µs a light; 256 placed, 155 in view: frame 3.3 to 0.9 ms. Pixels: lit area within 3 levels on every pair, one baked/live pair identical |
 | - | Parking meters: each head's window (and the EXPIRED flag) one vertex-coloured shared list per look and head size, the needle one list under its sweep, the fixed texts and a pay station's count shared lists keyed on the string and head size; windows first under one bind, then text under one; a digital reading formatted once a second per head, not per frame | 2026-09-26 | 256 copies, per call: digital double paid 8.9-9.5 µs, expired 6.6-6.7; mechanical double paid 8.1-8.4; pay station 5.0-5.6 | 5.8-6.4, 4.8-5.1; 6.0-6.4; 4.4. Frame at 256 mechanical doubles 2.15-2.20 to 1.82 ms. Pixels identical by the matched-second pairs (the LCD ticks) |
 | - | - | Zipline cable: the tube and the line lights each in a display list keyed on the landing anchor, released with the anchor; `resetColor()` after the vertex-coloured draws. Toggle `ziplineCablePerFrame` | `0575b0438` | 35.5-38.7 µs a lit 50-block line | 4.4-5.1 µs. No cross-path pixel outside the pixels that also moved within a path (animals) |
-| - | Centre-hung scoreboard: panels in the per-face-kind text cache (released with the text version, which holds the team colours), the clock in a list per face kind compiled when the reading changes. Toggle `venueScoreboardPerFrame` | `dcc20c37c` | 29.2-31.6 µs a board (one of three clocks running) | 26.6-27.5 µs; clocks stopped, within 1 µs either way. No cross-path pixel outside the boards' animated lamps |
+| - | Centre-hung scoreboard: panels in the per-face-kind text cache (released with the text version, which holds the team colours), the clock in a list per face kind compiled when the reading changes. Toggle `venueScoreboardPerFrame` | `dcc20c37c` | 31.1-31.6 µs a board (one of three clocks running) | 26.6-27.5 µs; clocks stopped, within 1 µs either way. No cross-path pixel outside the boards' animated lamps |
 | - | CSM's generated item models: the quad sharing pass swaps each `UnpackedBakedQuad` in a `BakedItemModel` (and its GUI model's copy) for a plain `BakedQuad` on the same packed `int[]` | `ffe3be7f5` | 8,414 unpacked CSM item quads; menu heap 2,181.9 MB | 0; 2,171.8 MB. The other 205 thousand unpacked quads in the dev client are Immersive Vehicles' and vanilla item models |
+| - | Light-up air renders `INVISIBLE`: its model was a `cube_all` on a fully clear texture, five cutout faces in the chunk mesh for every air a light places. Toggle `lightupAirModel` (read at chunk build: reload the chunks after setting it) | `3657fd75f` | Venues demo, 1,264 airs loaded, both fields in view: render work 0.67-0.69 ms | 0.65-0.66 ms. No cross-path pixel outside the 48 that moved within a path |
 | - | HVAC heater and exhaust fan `receiveEnergy` mark dirty only when energy was taken | `d7efdf75e` | a chunk mark and comparator reads every tick under a mod that offers power to a full store | none (argued from code, not measured) |
 | OBJ quads: `PackedObjModel` swaps each Forge `UnpackedBakedQuad` for a plain `BakedQuad` on the same packed `int[]` and writes the list back into the `OBJBakedModel`, freeing the ~900-byte unpacked float arrays every OBJ quad kept; a street of the #99 OBJ street lights plus 11 other CSM OBJ models, A/C/D two runs each | `3c8b4354a` | live heap 1,923.3 MB (1,892.6 on main), memstats CSM quads 173.8 MB, 238k unpacked quads | 1,901.9 MB (-21.4), 151.0 MB, 212k (below main). Frame time not measured (machine under memory pressure); C and D drawn alike by eye, pixel diff inconclusive (camera not repeatable between runs) |
 
@@ -180,8 +181,16 @@ switch has the same shape at a smaller size.
 
 **Chunk geometry and rebuilds.** No new tile entity syncs on a cadence; the arrival boards,
 glazing windows, pole flags and blades key their section rebuilds (`getBakedModelKey`). The
-light-up air bakes no quads (`/csm memstats`: 0), so making it `INVISIBLE` would save nothing.
-Not measured: 1.12's `MultipartBakedModel.getQuads` tests every selector on every call, and the
+light-up air baked a clear cube into the chunk mesh (`/csm memstats` shows 0 quads only because
+its model is `minecraft:cube_all`, which it does not count); it is now `INVISIBLE` (Fix status).
+A CPU sample of the canopy switch put 96% of it in vanilla relighting (`World.checkLightFor`,
+about two thirds for the lights, a third for the light-up air), none in the canopy's own walk, so
+only spreading the switch out would help. The new JSON models since the 2026-10-28 baseline
+(1,700 models, 33,217 quads) carry 1,060 faces hidden inside their own closed boxes
+(`audit_model_weight.py`), 828 of them in the eight concrete pole finial models
+`gen_concrete_poles.py` writes (#345), which does not run `model_depth.py`'s pruning; running it
+there would drop them with no visible change (not done: it needs the generator's `--check` and a
+look at the stacked-cap rule). Not measured: 1.12's `MultipartBakedModel.getQuads` tests every selector on every call, and the
 glass shelter has 216 selectors drawn in two layers, so a shelter section rebuild does thousands
 of predicate tests (a per-state quad cache in `CsmBakedModelWrappers` would remove them).
 
@@ -192,10 +201,22 @@ of predicate tests (a per-state quad cache in `CsmBakedModelWrappers` would remo
 | CSM blocks / states | 4,295 / 360,976 | 5,121 / 562,199 |
 | Model locations | 145,161 | 212,347 |
 | OBJ bakes (distinct parts) | 11,453 | 39,277 |
-| `MultiModel$Baked` (Forge-variant submodels, with their per-perspective copies) | about 540 thousand | 888 thousand |
+| `MultiModel$Baked` (Forge-variant submodels, with their per-perspective copies) | 416 thousand (10-31 histogram) | 888 thousand |
 | Block atlas (`atlas_budget.py`, CSM and the base dev sprites) | 8192 x 4096, 97.4% | 8192 x 8192, 101.5% (+1.38 Mpx; venues 1.5 Mpx) |
-| Launch to the menu, every module and the IV packs (dev log times) | 36-38 s (10-30, 10-31) | 54-61 s earlier today, 71-72 s with a game running beside it |
-| Live heap at the main menu | not taken | 2,182 MB (2,172 after `ffe3be7f5`) |
+| Launch to the menu, every module and the IV packs (dev log times) | 36-44 s, median 38 (12 launches, 10-30 and 10-31) | 54-73 s, median 63 (7 launches before this sweep); 70-72 s in this sweep (another game running on the machine throughout) |
+| Live heap at the main menu (MiB) | 1,867 (a 10-31 histogram in `run/mcmcp/dumps`; where and whether live-only is not recorded) | 2,182 (2,172 after `ffe3be7f5`) |
+| CSM's share by `/csm memstats` (states, quads, item models; estimate) | 290 MB | 371 MB |
+| OBJ quads if every OBJ part were built (they build lazily, as drawn) | 2.0 M, 325 MB | 9.7 M, 1,548 MB |
+
+The heap growth since 10-31 (+315 MiB), class by class: the parsed OBJ geometry the lazy OBJ
+bakes keep (`OBJModel$Vertex`, `Vector4f`, faces, texture coordinates, normals: +150 MB, for 747
+thousand faces in 3,301 files, against 1,256 files on 10-28; no face is held twice), the
+`MultiModel$Baked` copies (+30 MB with their override lists), state containers (+8 MB). With a
+major GC running about every 17 s after a few world loads (15 in 263 s, 20 s in all, one of 2.3 s,
+old generation 2.35 of 4 GB at `-Xmx6G`), and the menu heap now above 2 GB, the "give it 2 GB"
+advice in PERFORMANCE_AND_SECURITY.md's heap floor no longer holds for every module with the IV
+packs. It was not re-measured with `lowmem.gradle` in this sweep. (The 600 MiB figures in that
+section are from 2026-09, without the Vehicles module and the IV packs; not comparable.)
 
 The launch growth is in loading the blockstates (7-8 s to 12-17 s), the bake (5-6 to 8-11 s) and
 the passes after it (3 to 7-9 s). Three families of the light poles work (#99) hold most of it:
