@@ -75,26 +75,71 @@ every player at the stop sees the same one.
 
 **The curb plaque** is a bronze plate reading BUS STOP that lies on the ground at the curb.
 
-A bench or bin at the stop comes from [Parks & Greenery](parks-and-greenery.md).
+A bench or bin at the stop comes from the station fit-out below (**Platform Bench**, **Platform
+Perch**, **Platform Litter Bin**) or from [Parks & Greenery](parks-and-greenery.md).
+
+## Full-size stops
+
+For a stop at the scale of a real street, next to wide lanes and tall buildings:
+
+- **Bus Stop Pole (Full Size).** Right-click the ground and it builds the whole stop in one go:
+  four sign posts, a flag a block wide and two high beside the top (the bus symbol, BUS STOP, the
+  agency's name and the routes), and a **Bus Stop Name Blade** across the top. It faces you. In
+  survival it uses two poles from your hand, four sign posts and two blades from your inventory
+  (with no blades it builds the stop without one). Sneak to place a single flag piece instead.
+  Road signs still stack on its posts.
+- **Editing the flag and the blade.** Right-click either with an empty hand to open the sign
+  editor. The presets put each agency's colours on it; set your own colours for an agency of your
+  own. The flag's third line is its routes: type the route ids there, letters or numbers ("B 30",
+  "12 / 40"), and the departure boards and arrival boards nearby list those routes.
+- **Bus Stop Name Blade** on its own goes on a wall, on a pole or under a canopy; place more of
+  them side by side for a longer name.
 
 ## Shelters
 
 Three styles in each agency's livery: **glass** (with a bench and a lit name fascia), **cantilever**
-(a curved canopy on one column a block) and **flat roof** (with a lean rail). A shelter is two
-blocks tall and places like a door. Its open front faces you.
+(a curved canopy on one column a block) and **flat roof** (with a lean rail). Shelters are built at
+real size: three blocks tall, with the roof about 2.75 m up, and two rows deep. Placing one puts
+down a whole shelter four blocks long, its open front facing you; sneak to place a single column.
 
+- **Taller or lower.** Right-click a shelter with its own item to raise the whole shelter a block
+  (up to 12 tall); sneak and right-click to lower it (down to 3). A column you add beside a shelter
+  takes its height.
+- **Shelters from before this update** come up short, about two blocks tall. Right-click each one
+  once with its own item and it grows to full height.
 - **Compact.** For a narrow pavement, sneak and right-click in the air with the shelter in hand:
   it now places a compact shelter, three columns long and one deep. Do it again to go back to the
   full shelter. The tooltip says which it places.
 - **Joining.** Place shelters of the same block facing the same way side by side for a longer
   shelter, or one behind the other for a deeper one. End walls appear only at the ends. Shelters
   of different agencies don't join.
-- **The roof light.** Right-click with an empty hand, or give either half redstone, to switch the
-  light. It switches the whole joined shelter, so one daylight sensor lights a long shelter.
+- **The roof light.** Right-click with an empty hand, or give any part of it redstone, to switch
+  the light. It switches the whole joined shelter, so one daylight sensor lights a long shelter.
 - **The ad panel.** The glass shelter leaves an empty frame at one end of its back wall. With the
   **CSM: Signage & Advertising** module installed, set its **Bus Shelter Ad Panel** against that
   frame from outside the shelter, and it shows an ad to the street and one into the shelter. See
   [Advertising](advertising.md).
+
+## Bus station canopies
+
+The big roofs of a bus station or transit centre, 4 to 12 blocks high, as long and deep as you
+need: **Bus Station Canopy** tiles in five styles (flat, glass skylight, sawtooth, butterfly and
+barrel vault) in each agency's colours, **Canopy Columns** in steel, white or graphite, **Canopy
+Downlights** and the **Canopy Light Strip**.
+
+- **The Canopy Tool** builds one in two clicks. Hold a canopy tile in your off hand (and columns,
+  downlights or light strips in your hotbar), then right-click the ground at one corner and again
+  at the opposite corner. It lays the roof at its height, stands the columns and hangs the lights.
+  Sneak and right-click in the air to change the height (4 to 12); sneak and right-click while
+  looking up to choose the lights: downlights, a strip down the middle, or strips along both long
+  edges. In survival it uses the tiles, columns and lights from your inventory, and builds nothing
+  if you don't have them all.
+- **Shaped roofs** (sawtooth, butterfly, vault) repeat every 3, 4 or 6 blocks across the shorter
+  side; the tool trims the depth to whole repeats. A tile placed by hand follows the one beside
+  it; sneak and right-click a tile with an empty hand to step it to the next part of the shape.
+- **Lights** light the pavement below, however high the roof. Right-click one with an empty hand,
+  or give it redstone, to switch every light under that canopy. An **inverted daylight sensor**
+  set on the roof turns them on at dusk and off at dawn.
 
 ## Departure boards
 

@@ -101,7 +101,7 @@ container per jar.
 | `modules/tts` | `csm_tts` | CSM: Text to Speech | the Redstone TTS block and MaryTTS; requires Technology |
 | `modules/signage` | `csm_signage` | CSM: Signage & Advertising | ad kiosks, poster boards, billboards |
 | `modules/parks` | `csm_parks` | CSM: Parks & Greenery | street trees, tree tools, plantings, planters, park amenities |
-| `modules/transit` | `csm_transit` | CSM: Transit | fares, bus stops and shelters, boards, stations and platforms, airport; requires Roads |
+| `modules/transit` | `csm_transit` | CSM: Transit | fares, bus stops (incl. full-size poles and arrival boards), shelters, station canopies, boards, stations and platforms, airport; requires Roads |
 | `modules/healthcare` | `csm_healthcare` | CSM: Healthcare | the hospital fit-out (#293); Core only |
 | `modules/venues` | `csm_venues` | CSM: Sports & Venues | arenas, ballparks, fields, bowling, courts, track, pool, golf, skate park (#324); Core only |
 | `modules/vehicles` | `csm_vehicles` | CSM: Vehicles | an Immersive Vehicles content pack and preemption; requires Roads and Immersive Vehicles (`mts`) |
