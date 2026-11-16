@@ -1,0 +1,40 @@
+{
+  "variants": {
+    "depth=centred,facing=south": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=centred,facing=west": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=centred,facing=north": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=centred,facing=east": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=flush,facing=south": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=flush,facing=west": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=flush,facing=north": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=flush,facing=east": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=inset,facing=south": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=inset,facing=west": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=inset,facing=north": {
+      "model": "csm:glazing/window_base_oak"
+    },
+    "depth=inset,facing=east": {
+      "model": "csm:glazing/window_base_oak"
+    }
+  }
+}

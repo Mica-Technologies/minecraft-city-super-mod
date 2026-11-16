@@ -215,6 +215,122 @@ class per form, constructed by registry name (`glass_<kind>`, `glass_pane_<kind>
   over it and a run of panes serves as a glass railing or balustrade. Only the collision is that
   tall; the outline the player picks, and what the HVAC scanner reads, is the pane's own cell.
 
+## Glazing windows
+
+Framed windows that extend the Glazing set (#357), for rows of windows in a 1-thick wall and for
+brownstone bays that project a block: clear glass (the panes' own `glass_clear`) in a frame of one
+of seven finishes -- dark bronze, painted white, painted black, oak, walnut, dark oak,
+aluminium. Each finish is a straight window (`glass_window_<finish>`, "Window (Oak)") and a
+45-degree canted bay corner (`glass_window_<finish>_canted`, "Canted Bay Window (Oak)"):
+fourteen blocks, one class (`BlockGlazingWindow`), a data-only tile entity
+(`TileEntityGlazingWindow`), a pure layout (`WindowLayout`) and a baked model
+(`GlazingWindowBakedModel`). The existing `glass_*` and `glass_pane_*` blocks are unchanged; a
+pane now frames against a window beside it, as it does against another pane.
+
+**What a window joins to, computed from the neighbours every time.** It runs across its cell
+square to its facing. At each end of the run it meets:
+
+| Neighbour | End |
+|---|---|
+| The same window, same depth (same facing; or square to it, a bay's side; or opposite, if centred) | joined: no frame between plain windows, one shared mullion between sash windows |
+| A canted corner of the same finish and depth | joined; the corner draws the post |
+| Other glass, a pane, another window | framed |
+| A solid face | framed, and (sash patterns) the frame lines the opening back to the inner face |
+| Nothing | framed |
+
+It turns a 90-degree corner, with one post, toward a window of the same finish and depth that
+faces square to it (a deeper bay's side window), or, when one end of its run is free, toward a
+solid face behind it -- or, where the bay's back opens into the room and the cell behind is not
+solid, toward the facade carrying on beside that cell: the end window of a 1-deep bay turns back
+to the facade, so the bay's side is glazed full depth and shows no daylight. The side glass's outside is the free end's side on an
+outside corner and the run's side on an inside one. Windows of the same block, facing and depth
+stacked are one tall window (up to `MAX_STACK`, 8): one sill at the foot, one head at the top.
+
+**The canted corner** runs on the cell diagonal from `(16, d)` to `(d, 16)` in its model space,
+where `d` is the depth's glass plane: it meets a straight window's glass at one edge and a side
+window's -- or a 1-deep bay's facade -- at the other, at any depth (mid-edge to mid-edge centred,
+corner to corner flush). It faces the quarter the placer looks into: looking north-west it faces
+north, its outsides north and west. Its glass is drawn turned 45 degrees about y, with a post at
+each end, and its collision is eight overlapping steps along the diagonal.
+
+**Patterns.** Plain is the pane's look (glass to the edges, a 1 px frame only where the window
+ends). The others give each cell its own sash unit in a 1.5 px frame:
+
+| Pattern | Closed | Open |
+|---|---|---|
+| Double-hung 1/1 | upper sash on the outer track, lower on the inner | the lower sash slid up behind the upper |
+| Double-hung 6/6 | the same, each sash three lights by two | the same |
+| Casement pair | two side-hung sashes meeting in the middle | both swung out square to the wall |
+
+Over a stack the sashes are laid out in stack coordinates and clipped per block, so the meeting
+rail is halfway up the opening: the middle of a 1-tall window, the joint of a 2-tall one (the
+lower sash is the bottom block, the upper the top), the middle of a 3-tall one's middle block. A
+6/6 sash spreads its two rows over its own height. Casements run the stack's full height. An
+open window collides as a closed one: nothing passes through it either way.
+
+**Depth** (metadata): centred (glass at 8 px), flush (the frame's face on the outer face, glass at
+1.5 px) or inset (a deep reveal, glass at 14.5 px). The outside is the way the placer looked. Two
+windows at different depths are different windows and frame against each other.
+
+**Arched top** (stored on the stack's top block): a round arch over each cell's opening, the
+spandrels filled with frame, stepped a pixel row at a time; the rise is half the opening's width,
+at most 12 px, so it stays in the top block.
+
+**Sill and head** (the sill stored on the foot, the head on the top): sill none / stone / frame;
+head none / flat stone lintel / keystone lintel. Both sit on the outside of the glass, from past the
+wall's outer face to the frame, with 1.5 px horns into a wall at a run's solid ends; a run's
+sills meet round an outside corner. The keystone rises 2 px above the window.
+
+**Controls** (an empty hand; the tooltip says the same):
+
+| | Anywhere else | Bottom quarter of the stack's foot | Top quarter of the stack's top |
+|---|---|---|---|
+| Right-click | next pattern, whole stack | open / close, whole stack (not plain) | arched / square top |
+| Sneak + right-click | next depth, whole stack | next sill | next head |
+
+Each click says what it set on the action bar.
+
+**Stored, and scripted placement.** Metadata `facing | depth << 2` (facing S0 W1 N2 E3; depth 0
+centred, 1 flush, 2 inset): 12 states a block. Tile entity, every key optional (missing = default,
+so a meta-only `server_set_blocks` gives a plain closed window with no trim):
+
+| Key | Type | Values | Read from |
+|---|---|---|---|
+| `pt` | byte | pattern: 0 plain, 1 double-hung 1/1, 2 double-hung 6/6, 3 casement pair | the stack's foot |
+| `op` | byte | 1 open | the stack's foot |
+| `sl` | byte | sill: 0 none, 1 stone, 2 frame | the stack's foot |
+| `ar` | byte | 1 arched top | the stack's top |
+| `hd` | byte | head: 0 none, 1 flat lintel, 2 keystone lintel | the stack's top |
+
+A click writes the pattern and open state to every block of the stack, so the stack keeps them
+whichever block is broken. Joins are never stored.
+
+**How it is drawn.** `getExtendedState` packs the joins, the stack and the settings into one
+`long` (`WindowLayout.Shape`, the unlisted `SHAPE`); the baked model lays out boxes from it, bakes
+them with `FaceBakery` under the facing's turn (and a 45-degree `BlockPartRotation` for the
+canted span), and caches the quads by finish and shape. The wrapper is registered after Core's
+glass split, so it splits its own quads: glass (named `glass_*`) in the translucent pass, frame
+and stone (`window_frame_*`, `window_stone`, never named glass) in the cutout pass. The tile
+entity's `getBakedModelKey` is its five settings, and a client listener
+(`GlazingWindowRenderUpdater`) rebuilds a window's whole column when any block of it changes or
+syncs, since a block's look depends on blocks up to seven away.
+
+**Assets** come from `gen_glazing_windows.py`: the frame and stone textures, an empty base model
+per finish (the particle texture only), the twelve-variant blockstates and the inventory icons.
+The geometry is `WindowLayout`'s, not the generator's, since it depends on run, stack and settings
+at run time; `WindowLayoutTest` covers it.
+
+**Traps.**
+
+- **No listed property for any stored setting.** A pane already has 2,592 states; the windows
+  keep 12 and pass everything else unlisted.
+- **A texture named glass is drawn translucent.** Frame and stone textures must not be named
+  `glass_*`; the item icons may be, since items are not split.
+- **The stack reaches further than a rebuild.** Without the render updater, a block two above a
+  changed one in the next section keeps its old sashes.
+- **Concave corners get no sill on their cross span**: the two sills would overlap in the outside
+  quarter and fight.
+
 ## Pricing
 
 `CsmFabricatorCosts.buildingMaterialCost` decides by **whole words in the English display name**,

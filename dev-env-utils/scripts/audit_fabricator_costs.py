@@ -174,6 +174,13 @@ def cost_for(registry, info, ancestors):
         return ("SIGN_BLANK",)
 
     if tab == "tabbuildingmaterials":
+        # glazing windows: by registry name, first (mirrors CsmFabricatorCosts)
+        if registry.startswith("glass_window_"):
+            if "_bronze" in registry or "_aluminium" in registry:
+                return ("glass_pane x2", "SHEET_METAL")
+            if "_white" in registry or "_black" in registry:
+                return ("glass_pane x2", "planks x2", "dye")
+            return ("glass_pane x2", "planks x2")
         if (has_word(registry, "door") and not has_word(registry, "garage")
                 and not has_word(registry, "keypad")):
             if has_word(registry, "cathedral"):

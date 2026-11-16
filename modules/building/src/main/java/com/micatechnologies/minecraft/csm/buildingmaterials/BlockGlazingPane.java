@@ -31,7 +31,8 @@ import net.minecraft.world.World;
  * bullet-resistant or frosted ({@link GlassKind}).
  *
  * <p>Like a vanilla pane it runs out to each side it connects on -- another pane, a {@link
- * BlockGlazing} block, or a solid face such as the wall it is set in. Unlike one, it knows which
+ * BlockGlazing} block, a {@link BlockGlazingWindow} (framed against, as different glass), or a
+ * solid face such as the wall it is set in. Unlike one, it knows which
  * of those connections are the same window: each side is {@link Side#NONE} (no pane that way),
  * {@link Side#EDGE} (the pane runs to the edge of the block and meets a wall or different glass)
  * or {@link Side#GLASS} (it runs on into the same glass). A thin dark bronze frame is drawn only
@@ -158,6 +159,7 @@ public class BlockGlazingPane extends AbstractBlock implements ICsmGlassFronted 
       return Side.GLASS;
     }
     if (other.getBlock() instanceof BlockGlazingPane || other.getBlock() instanceof BlockPane
+        || other.getBlock() instanceof BlockGlazingWindow
         || other.getBlockFaceShape(world, at, toward.getOpposite()) == BlockFaceShape.SOLID) {
       return Side.EDGE;
     }

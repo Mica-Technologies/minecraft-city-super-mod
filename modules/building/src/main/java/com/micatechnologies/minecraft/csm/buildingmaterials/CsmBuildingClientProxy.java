@@ -38,6 +38,8 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     CsmBakedModelWrappers.register(DoorLayerModel::wrap);
     // A room plate's number and name, baked into the chunk from its tile entity.
     RoomPlateBakedModel.register();
+    // A glazing window's frame, sashes and trim, baked from its shape; its stack rebuilt whole.
+    GlazingWindowBakedModel.register();
   }
 
   @Override

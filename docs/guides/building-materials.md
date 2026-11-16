@@ -78,6 +78,36 @@ over it to click the block beyond.
 
 All of this glass drops itself when broken, unlike vanilla glass. It needs no silk touch.
 
+### Windows
+
+Framed windows in seven finishes -- **Dark Bronze**, **Painted White**, **Painted Black**,
+**Oak**, **Walnut**, **Dark Oak** and **Aluminium** -- each as a **Window** and a **Canted Bay
+Window** for 45-degree bay corners. They join like the panes and more:
+
+- **A row of windows is one glazed run.** Windows of the same finish side by side share one
+  mullion; against a wall they run right to the block's edge.
+- **Stacked windows are one tall window**, with one sill at the bottom and one head at the top.
+  A double-hung window's meeting rail sits halfway up: in the middle of a 1-tall window, at the
+  joint of a 2-tall one, in the middle of a 3-tall one's middle block.
+- **Bays.** Place each window facing **out** (stand inside and look out). In a bay that projects
+  one block, the end windows turn back to the wall by themselves, so the bay's sides are glazed
+  with one corner post and no gap. A deeper bay's side windows (facing sideways) join the front
+  ones at a single post. For a canted bay, put a Canted Bay Window in each front corner, placed
+  looking diagonally out through that corner.
+- **Depth.** The glass can sit in the middle of the block, flush with the outside, or inset for a
+  deep reveal.
+
+With an empty hand:
+
+| | Most of the window | Bottom of the lowest block | Top of the highest block |
+|---|---|---|---|
+| **Right-click** | Next pattern: plain, double-hung 1/1, double-hung 6/6, casement pair | Open or close it | Arched or square top |
+| **Sneak + right-click** | Next depth: centred, flush, inset | Next sill: none, stone, frame | Next head: none, flat lintel, keystone lintel |
+
+An open double-hung window's lower sash slides up behind the upper one; open casements swing out.
+Nothing can pass through an open window. Windows drop themselves when broken, but not their
+settings.
+
 ## Structure and framing
 
 The **Structure & Framing** tab is a building before anything closes it in: stud walls, joists and

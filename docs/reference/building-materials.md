@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "295 blocks in this tab"
+!!! info "309 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -66,6 +66,13 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Buff Brick Stairs | `csm:brick_buff_stairs` | 2 | 10 | pickaxe | 1 |
 | Bullet-Resistant Glass | `csm:glass_bullet` |  |  | pickaxe | 0 |
 | Bullet-Resistant Glass Pane | `csm:glass_pane_bullet` |  |  | pickaxe | 0 |
+| Canted Bay Window (Aluminium) | `csm:glass_window_aluminium_canted` | 0.8 | 1.5 | pickaxe | 0 |
+| Canted Bay Window (Dark Bronze) | `csm:glass_window_bronze_canted` | 0.8 | 1.5 | pickaxe | 0 |
+| Canted Bay Window (Dark Oak) | `csm:glass_window_darkoak_canted` | 0.8 | 1.5 | pickaxe | 0 |
+| Canted Bay Window (Oak) | `csm:glass_window_oak_canted` | 0.8 | 1.5 | pickaxe | 0 |
+| Canted Bay Window (Painted Black) | `csm:glass_window_black_canted` | 0.8 | 1.5 | pickaxe | 0 |
+| Canted Bay Window (Painted White) | `csm:glass_window_white_canted` | 0.8 | 1.5 | pickaxe | 0 |
+| Canted Bay Window (Walnut) | `csm:glass_window_walnut_canted` | 0.8 | 1.5 | pickaxe | 0 |
 | Carved Panelling (Dark Oak) | `csm:panelling_carved_dark_oak` | 2 | 3 | axe | 0 |
 | Cast Stone Veneer | `csm:stone_cast` | 2 | 10 | pickaxe | 1 |
 | Cast Stone Veneer Fence | `csm:stone_cast_fence` | 2 | 10 | pickaxe | 1 |
@@ -300,6 +307,13 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Wide Automatic Sliding Door (Frameless Glass) | `csm:auto_door_wide_slider_frameless` |  |  |  |  |
 | Wide Automatic Sliding Door (Stainless Steel) | `csm:auto_door_wide_slider_stainless` |  |  |  |  |
 | Wide Automatic Sliding Door (White) | `csm:auto_door_wide_slider_white` |  |  |  |  |
+| Window (Aluminium) | `csm:glass_window_aluminium` | 0.8 | 1.5 | pickaxe | 0 |
+| Window (Dark Bronze) | `csm:glass_window_bronze` | 0.8 | 1.5 | pickaxe | 0 |
+| Window (Dark Oak) | `csm:glass_window_darkoak` | 0.8 | 1.5 | pickaxe | 0 |
+| Window (Oak) | `csm:glass_window_oak` | 0.8 | 1.5 | pickaxe | 0 |
+| Window (Painted Black) | `csm:glass_window_black` | 0.8 | 1.5 | pickaxe | 0 |
+| Window (Painted White) | `csm:glass_window_white` | 0.8 | 1.5 | pickaxe | 0 |
+| Window (Walnut) | `csm:glass_window_walnut` | 0.8 | 1.5 | pickaxe | 0 |
 | Wired Glass | `csm:glass_wired` |  |  | pickaxe | 0 |
 | Wired Glass Pane | `csm:glass_pane_wired` |  |  | pickaxe | 0 |
 | Yellow Metal | `csm:yellowmetal` | 2 | 10 | pickaxe | 1 |

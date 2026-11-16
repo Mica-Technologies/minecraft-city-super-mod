@@ -469,6 +469,21 @@ public final class CsmFabricatorCosts {
    * relative to the full block, mirroring vanilla's ratios.
    */
   private static List<FabricatorIngredient> buildingMaterialCost(Block block, String registryName) {
+    // A glazing window (or its canted bay corner) is two panes of glass in a frame: timber for
+    // the wood finishes, timber and paint for the painted ones, sheet metal for bronze and
+    // aluminium. By registry name, first, so no word in a finish's name (a colour, "Metal")
+    // takes it to another rule.
+    if (registryName.startsWith("glass_window_")) {
+      FabricatorIngredient glass = FabricatorIngredient.any(MC_GLASS_PANE, 2);
+      if (registryName.contains("_bronze") || registryName.contains("_aluminium")) {
+        return cost(glass, FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+      }
+      if (registryName.contains("_white") || registryName.contains("_black")) {
+        return cost(glass, FabricatorIngredient.any(MC_PLANKS, 2),
+            FabricatorIngredient.any(MC_DYE, 1));
+      }
+      return cost(glass, FabricatorIngredient.any(MC_PLANKS, 2));
+    }
     // Doors, first because "Hollow Metal Door" would otherwise be a coloured metal set: by what
     // they are made of -- a storefront door glass in an aluminium frame, a hollow metal, fire or
     // exit door steel sheet, the rest timber. Garage door fittings and the keypad are priced below.

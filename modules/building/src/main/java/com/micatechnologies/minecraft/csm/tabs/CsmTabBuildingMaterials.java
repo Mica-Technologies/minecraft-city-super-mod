@@ -24,6 +24,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoorOpene
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGarageDoor;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazing;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazingPane;
+import com.micatechnologies.minecraft.csm.buildingmaterials.BlockGlazingWindow;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlackMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetBlueMetal;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCopperMetal;
@@ -252,6 +253,22 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockGlazingPane("glass_pane_bullet")); // Bullet-Resistant Glass Pane
     initTabBlock(new BlockGlazing("glass_frosted")); // Frosted Glass
     initTabBlock(new BlockGlazingPane("glass_pane_frosted")); // Frosted Glass Pane
+
+    // Glazing windows: framed sash and casement windows, and canted bay corners.
+    initTabBlock(new BlockGlazingWindow("glass_window_bronze")); // Window (Dark Bronze)
+    initTabBlock(new BlockGlazingWindow("glass_window_bronze_canted")); // Canted Bay Window (Dark Bronze)
+    initTabBlock(new BlockGlazingWindow("glass_window_white")); // Window (Painted White)
+    initTabBlock(new BlockGlazingWindow("glass_window_white_canted")); // Canted Bay Window (Painted White)
+    initTabBlock(new BlockGlazingWindow("glass_window_black")); // Window (Painted Black)
+    initTabBlock(new BlockGlazingWindow("glass_window_black_canted")); // Canted Bay Window (Painted Black)
+    initTabBlock(new BlockGlazingWindow("glass_window_oak")); // Window (Oak)
+    initTabBlock(new BlockGlazingWindow("glass_window_oak_canted")); // Canted Bay Window (Oak)
+    initTabBlock(new BlockGlazingWindow("glass_window_walnut")); // Window (Walnut)
+    initTabBlock(new BlockGlazingWindow("glass_window_walnut_canted")); // Canted Bay Window (Walnut)
+    initTabBlock(new BlockGlazingWindow("glass_window_darkoak")); // Window (Dark Oak)
+    initTabBlock(new BlockGlazingWindow("glass_window_darkoak_canted")); // Canted Bay Window (Dark Oak)
+    initTabBlock(new BlockGlazingWindow("glass_window_aluminium")); // Window (Aluminium)
+    initTabBlock(new BlockGlazingWindow("glass_window_aluminium_canted")); // Canted Bay Window (Aluminium)
 
     // Garage doors: built to the size of the opening, animated only while they move.
     initTabBlock(new BlockGarageDoor("garage_door_sectional_white")); // Garage Door (White Raised Panel)

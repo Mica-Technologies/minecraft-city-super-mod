@@ -71,6 +71,14 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   bullet-resistant, frosted) as blocks and panes that join into one window with a frame only
   around its outside. One-way glass is two textures on two faces, since the back of a face is
   never drawn; a pane arm is drawn east and west, never turned 180; `--check` fails on drift
+- `gen_glazing_windows.py` -- the glazing windows (#357): seven frame finishes, each a straight
+  window and a 45-degree canted bay corner. Writes the frame and stone textures (named
+  `window_frame_*` / `window_stone`, never `glass_*`, which would put them in the translucent
+  pass), an empty base model per finish (particle only), the twelve-variant facing x depth
+  blockstates, the inventory icons and item models; `--fragments` prints the lang lines (blocks,
+  tooltip, action-bar messages) and the tab lines. The geometry is `WindowLayout.java`'s, laid out
+  at run time from joins, stack and stored settings (WALL_MATERIALS.md "Glazing windows");
+  `--check` fails on drift
 - `gen_scaffold.py` -- the frame scaffold: its textures, part models and the multipart blockstate
   that picks frames, braces, deck, jacks and guardrails from the neighbours, plus the three add-on
   items' icons. Stored: the frame axis and the add-ons (ladder frame, netting, casters), one bit
