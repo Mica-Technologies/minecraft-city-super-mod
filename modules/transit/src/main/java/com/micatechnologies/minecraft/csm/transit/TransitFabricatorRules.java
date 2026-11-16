@@ -105,7 +105,7 @@ public final class TransitFabricatorRules {
     if (registryName.startsWith("canopy_column_")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.POLE_SECTION, 1));
     }
-    if (registryName.equals("canopy_downlight")) {
+    if (registryName.equals("canopy_downlight") || registryName.equals("canopy_light_strip")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }

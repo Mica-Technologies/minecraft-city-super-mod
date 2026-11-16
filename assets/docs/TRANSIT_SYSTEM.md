@@ -462,6 +462,7 @@ drawn by `gen_transit_canopies.py`, laid out by a tool:
 | Bus Station Canopy (Flat, Glass Skylight, Sawtooth, Butterfly, Barrel Vault; four agencies each) | `csm:canopy_deck_<style>_<agency>` | `BlockCanopyDeck` |
 | Canopy Column (Steel, White, Graphite) | `csm:canopy_column_<finish>` | `BlockCanopyColumn` |
 | Canopy Downlight | `csm:canopy_downlight` | `BlockCanopyDownlight` |
+| Canopy Light Strip | `csm:canopy_light_strip` | `BlockCanopyLightStrip` |
 | Canopy Tool | `csm:canopy_tool` | `ItemCanopyTool` |
 
 ### Decks
@@ -512,22 +513,45 @@ projects Core's **light-up air** into the floor below, as the street lights do
 (`CsmLightupAir.projectColumn`, `ICsmLightupAirSource`), because its own light from 4 to 12
 blocks up reaches the pavement dim; a light arriving lit places its air a tick later. A click with
 an empty hand, or a change of redstone power (on when power comes, off when it goes; `powered`
-remembers), switches every downlight under the same canopy: it walks the decks joined to the one
-above it, up to 4096 tiles, and sets each light under them. Under a vault, lights hang only where
-the soffit is low (the springing), never in mid-air under the crown.
+remembers), switches every light under the same canopy, downlights and strips alike: it walks
+the decks joined to the one above it, up to 4096 tiles, and sets each light under them
+(`CanopyLights.switchCanopy`; both lights implement `ICanopyLight`). Under a vault, lights hang
+only where the soffit is low (the springing), never in mid-air under the crown.
+
+The **light strip** is the continuous LED bar of a bus bay: a white diffuser 1.5 px wide in a
+steel channel 2.5 px wide, flush with the soffit, light 15, in the block under a deck as the
+downlight is. It stores `lit` (1), `powered` (2) and its `axis` (4 for z); strips set end to end
+along the same axis join into one line (`neg`, `pos`, actual state), with a steel end cap only
+where the line stops. A strip placed by hand runs the way the placer looks, or carries on the
+line of a strip it is set at the end of. Under a shaped tile it always runs **across the
+profile**, along the ridge or valley line where the soffit is level, whatever axis it stores
+(`CanopyStyle.runAxisUnder`), so it only ever turns about its own length. Its raise and turn
+come in one property, `seat`, an index into `CanopyStyle.SEATS`: every (reach, slope) pair a
+tile's centre can give, eleven of them, built the same way by the generator (`SEATS`) and
+checked against it by `CanopyLightLayoutTest`. That keeps the block at 352 states rather than
+the 2,016 separate `reach` and `tilt` properties would give. It switches, and reads power, as the
+downlight does, and projects its light-up air from every other block of a line (where x + z is
+even), one column each: a strip of thirty places fifteen.
 
 Power at the deck tile a light hangs from counts as power at the light: the deck passes its
-neighbour changes down to a downlight under it. So an **inverted daylight sensor set on the
-roof**, over any light, is the canopy's photocell and switches the whole canopy at dusk and
-dawn. Lights are placed lit; a canopy given a photocell by day stays lit until it is switched
-off once, after which it follows the photocell.
+neighbour changes down to a light (downlight or strip) under it. So an **inverted daylight
+sensor set on the roof**, over any light, is the canopy's photocell and switches the whole
+canopy at dusk and dawn. Lights are placed lit; a canopy given a photocell by day stays lit
+until it is switched off once, after which it follows the photocell.
 
 ### The Canopy Tool
 
-Hold a deck in the off hand (or anywhere in the hotbar), and a column and the downlight in the
-hotbar if wanted. Click the ground at one corner, then the opposite one: the tool lays the deck
-over the rectangle at its clearance (4 to 12, default 6; a sneaking click in the air steps it),
-stands columns from the ground up and hangs the lights.
+Hold a deck in the off hand (or anywhere in the hotbar), and a column and the downlight (or the
+light strip) in the hotbar if wanted. Click the ground at one corner, then the opposite one: the
+tool lays the deck over the rectangle at its clearance (4 to 12, default 6; a sneaking click in
+the air steps it), stands columns from the ground up and hangs the lights.
+
+The tool has a **lights mode**, `lights` in its NBT, shown in its tooltip and stepped by a
+**sneaking click while looking up** (pitch above 60 degrees; under a canopy the look meets the
+roof or a light, and that counts too): 0, downlights (the default, and the only behaviour
+before the mode existed); 1, one strip down the middle; 2, a strip along each long edge, a block
+in. A strip mode takes strips from the hotbar instead of downlights; with none there it hangs no
+lights.
 
 - **Columns**: a flat style's stand a block in from each edge (two, on a side of 10 or more, so
   the deck overhangs), at most 9 blocks apart both ways. A shaped style's profile runs across the
@@ -537,6 +561,13 @@ stands columns from the ground up and hangs the lights.
   along the run.
 - **Lights** every third block both ways on a flat style; on a shaped one under its low phases,
   every third block along the run.
+- **Strips** run along the canopy's length (across the profile on a shaped style), a block in
+  from each end, broken where a column stands (`ItemCanopyTool.stripRows`). The middle row, or
+  the rows a block in from each long edge (the middle alone under three deep). On a shaped style
+  each row moves to the nearest row whose soffit is low (`CanopyStyle.lightAt`, the lower row on
+  a tie): under a single vault arch the middle is the crown, so its strip goes to a springing;
+  across two arches the middle is the gutter between them; a butterfly's two edge rows are the
+  two sides of its valley; a sawtooth module has one low row, so both edge rows are that one.
 - **Nothing is placed unless every cell is free.** In survival every deck, column block and light
   comes out of the inventory, and nothing is placed unless all of them are there. A canopy is at
   most 64 a side.
@@ -559,7 +590,8 @@ stands columns from the ground up and hangs the lights.
 
 `TransitFabricatorRules`: a glass or sawtooth deck two sheet metal, two glass panes and a fastener
 kit; any other deck two sheet metal and a fastener kit; a column block a pole section; the
-downlight an LED module and sheet metal. `audit_fabricator_costs.py` mirrors them. The tool is a
+downlight and a block of light strip each an LED module and sheet metal.
+`audit_fabricator_costs.py` mirrors them. The tool is a
 crafting-table recipe in Core (`recipes/canopy_tool.json`, three sheet metal, a pole section and a
 fastener kit, on `csm_transit` loaded).
 

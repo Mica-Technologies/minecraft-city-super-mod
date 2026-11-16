@@ -26,10 +26,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /**
  * Builds a bus station canopy in two clicks. Hold a {@link BlockCanopyDeck} in the off hand (or
  * anywhere in the hotbar) and, optionally, a {@link BlockCanopyColumn} and the
- * {@link BlockCanopyDownlight} in the hotbar; click the ground at one corner, then at the other.
- * The tool lays the deck over the rectangle at the clearance it is set to (a sneaking click in the
- * air steps it through {@link #MIN_CLEARANCE} to {@link #MAX_CLEARANCE}), stands columns from the
- * ground up to it and hangs the lights under it.
+ * {@link BlockCanopyDownlight} (or the {@link BlockCanopyLightStrip}) in the hotbar; click the
+ * ground at one corner, then at the other. The tool lays the deck over the rectangle at the
+ * clearance it is set to (a sneaking click in the air steps it through {@link #MIN_CLEARANCE} to
+ * {@link #MAX_CLEARANCE}), stands columns from the ground up to it and hangs the lights under it.
+ * A sneaking click looking up (past {@link #LOOK_UP_PITCH}) steps the lights mode instead:
+ * downlights, one strip down the middle, or a strip along each long edge ({@link #stripRows}).
  *
  * <ul>
  *   <li>A flat style's columns stand a block in from the edges (two, on a side of
@@ -60,8 +62,20 @@ public class ItemCanopyTool extends AbstractItem {
   /** Blocks between lights. */
   public static final int LIGHT_SPACING = 3;
 
+  /** Lights mode: downlights every third block (the default). */
+  public static final int LIGHTS_DOWNLIGHTS = 0;
+  /** Lights mode: one light strip down the middle, along the canopy's length. */
+  public static final int LIGHTS_STRIP_CENTRE = 1;
+  /** Lights mode: two light strips along the canopy's long edges, a block in. */
+  public static final int LIGHTS_STRIP_EDGES = 2;
+  private static final int LIGHTS_MODES = 3;
+  /** Looking further up than this (pitch, degrees; -90 is straight up) a sneaking use steps the
+   * lights mode, not the clearance. */
+  static final float LOOK_UP_PITCH = -60;
+
   private static final String TAG_CLEARANCE = "clearance";
   private static final String TAG_CORNER = "corner";
+  private static final String TAG_LIGHTS = "lights";
 
   public ItemCanopyTool() {
     super(0, 1);
@@ -84,13 +98,36 @@ public class ItemCanopyTool extends AbstractItem {
     return t != null && t.hasKey(TAG_CLEARANCE) ? t.getInteger(TAG_CLEARANCE) : DEFAULT_CLEARANCE;
   }
 
+  /** The lights mode: {@link #LIGHTS_DOWNLIGHTS}, {@link #LIGHTS_STRIP_CENTRE} or
+   * {@link #LIGHTS_STRIP_EDGES}. */
+  static int lights(ItemStack stack) {
+    NBTTagCompound t = stack.getTagCompound();
+    int mode = t != null ? t.getInteger(TAG_LIGHTS) : LIGHTS_DOWNLIGHTS;
+    return mode >= 0 && mode < LIGHTS_MODES ? mode : LIGHTS_DOWNLIGHTS;
+  }
+
+  /** Whether a sneaking use is the lights-mode gesture: looking up, at the sky or the roof. */
+  private static boolean looksUp(EntityPlayer player) {
+    return player.isSneaking() && player.rotationPitch < LOOK_UP_PITCH;
+  }
+
+  /** Steps the lights mode on and tells the player. */
+  private static void stepLights(ItemStack stack, EntityPlayer player) {
+    int next = (lights(stack) + 1) % LIGHTS_MODES;
+    tag(stack).setInteger(TAG_LIGHTS, next);
+    player.sendStatusMessage(new TextComponentTranslation("csm.transit.canopy.lights",
+        new TextComponentTranslation("csm.transit.canopy.lights_" + next)), true);
+  }
+
   @Override
   @Nonnull
   public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player,
       @Nonnull EnumHand hand) {
     ItemStack stack = player.getHeldItem(hand);
     if (!world.isRemote) {
-      if (player.isSneaking()) {
+      if (looksUp(player)) {
+        stepLights(stack, player);
+      } else if (player.isSneaking()) {
         int next = clearance(stack) + 1;
         if (next > MAX_CLEARANCE) {
           next = MIN_CLEARANCE;
@@ -114,6 +151,11 @@ public class ItemCanopyTool extends AbstractItem {
       return EnumActionResult.SUCCESS;
     }
     ItemStack stack = player.getHeldItem(hand);
+    if (looksUp(player)) {
+      // under a canopy the look up meets the roof or a light, not the air
+      stepLights(stack, player);
+      return EnumActionResult.SUCCESS;
+    }
     NBTTagCompound t = tag(stack);
     if (!t.hasKey(TAG_CORNER)) {
       t.setLong(TAG_CORNER, pos.toLong());
@@ -122,7 +164,8 @@ public class ItemCanopyTool extends AbstractItem {
       return EnumActionResult.SUCCESS;
     }
     BlockPos a = BlockPos.fromLong(t.getLong(TAG_CORNER));
-    TextComponentTranslation result = build(world, player, a, pos, clearance(stack));
+    TextComponentTranslation result = build(world, player, a, pos, clearance(stack),
+        lights(stack));
     if (result.getKey().equals("csm.transit.canopy.built")) {
       t.removeTag(TAG_CORNER);
     }
@@ -172,15 +215,57 @@ public class ItemCanopyTool extends AbstractItem {
     return out;
   }
 
+  /**
+   * The rows across a canopy, from {@code lo} to {@code hi} across its short side, that a strip
+   * lights mode hangs its strips in: the middle row ({@link #LIGHTS_STRIP_CENTRE}), or the rows a
+   * block in from each long edge ({@link #LIGHTS_STRIP_EDGES}; the middle alone when the canopy
+   * is under three deep). A shaped style hangs lights only where its soffit is low
+   * ({@link CanopyStyle#lightAt}), so each row is moved to the nearest low row (the lower, on a
+   * tie): under a vault the middle of one arch is its crown, so its strip goes to the springing.
+   *
+   * @param style the deck's style
+   * @param lo    the first row across
+   * @param hi    the last row across
+   * @param mode  the lights mode
+   *
+   * @return the rows, ascending, no row twice
+   */
+  static List<Integer> stripRows(CanopyStyle style, int lo, int hi, int mode) {
+    List<Integer> targets = new ArrayList<>();
+    if (mode == LIGHTS_STRIP_EDGES && hi - lo >= 2) {
+      targets.add(lo + 1);
+      targets.add(hi - 1);
+    } else {
+      targets.add(lo + (hi - lo) / 2);
+    }
+    List<Integer> rows = new ArrayList<>();
+    for (int target : targets) {
+      int best = Integer.MIN_VALUE;
+      for (int c = lo; c <= hi; c++) {
+        boolean low = !style.isShaped() || style.lightAt((c - lo) % style.getModule());
+        if (low && (best == Integer.MIN_VALUE || Math.abs(c - target) < Math.abs(best - target))) {
+          best = c;
+        }
+      }
+      if (best != Integer.MIN_VALUE && !rows.contains(best)) {
+        rows.add(best);
+      }
+    }
+    rows.sort(Integer::compare);
+    return rows;
+  }
+
   private TextComponentTranslation build(World world, EntityPlayer player, BlockPos a,
-      BlockPos b, int clearance) {
+      BlockPos b, int clearance, int lightsMode) {
     ItemStack deckStack = find(player, BlockCanopyDeck.class);
     if (deckStack == null) {
       return new TextComponentTranslation("csm.transit.canopy.no_deck");
     }
     BlockCanopyDeck deck = (BlockCanopyDeck) ((ItemBlock) deckStack.getItem()).getBlock();
     ItemStack columnStack = find(player, BlockCanopyColumn.class);
-    ItemStack lightStack = find(player, BlockCanopyDownlight.class);
+    boolean strips = lightsMode != LIGHTS_DOWNLIGHTS;
+    ItemStack lightStack = find(player,
+        strips ? BlockCanopyLightStrip.class : BlockCanopyDownlight.class);
     CanopyStyle style = deck.getStyle();
 
     int x0 = Math.min(a.getX(), b.getX());
@@ -252,7 +337,27 @@ public class ItemCanopyTool extends AbstractItem {
         }
       }
     }
-    if (lightStack != null) {
+    // strips run along the canopy's length, across the profile (and so along a shaped tile's
+    // level ridge and valley lines), a block in from each end
+    EnumFacing.Axis run = axis == EnumFacing.Axis.X ? EnumFacing.Axis.Z : EnumFacing.Axis.X;
+    if (lightStack != null && strips) {
+      boolean acrossX = axis == EnumFacing.Axis.X;
+      int r0 = acrossX ? z0 : x0;
+      int r1 = acrossX ? z1 : x1;
+      if (r1 - r0 >= 2) {
+        r0++;
+        r1--;
+      }
+      for (int c : stripRows(style, acrossX ? x0 : z0, acrossX ? x1 : z1, lightsMode)) {
+        for (int r = r0; r <= r1; r++) {
+          int x = acrossX ? c : r;
+          int z = acrossX ? r : c;
+          if (!columnFeet.contains(new BlockPos(x, ground, z))) {
+            lights.add(new BlockPos(x, deckY - 1, z));
+          }
+        }
+      }
+    } else if (lightStack != null) {
       for (int x = x0 + 1; x <= x1; x += module == 1 || axis != EnumFacing.Axis.X
           ? LIGHT_SPACING : 1) {
         for (int z = z0 + 1; z <= z1; z += module == 1 || axis != EnumFacing.Axis.Z
@@ -325,8 +430,11 @@ public class ItemCanopyTool extends AbstractItem {
     }
     if (lightStack != null) {
       Block light = ((ItemBlock) lightStack.getItem()).getBlock();
+      IBlockState lightState = light instanceof BlockCanopyLightStrip
+          ? light.getDefaultState().withProperty(BlockCanopyLightStrip.AXIS, run)
+          : light.getDefaultState();
       for (BlockPos p : lights) {
-        world.setBlockState(p, light.getDefaultState(), 3);
+        world.setBlockState(p, lightState, 3);
       }
     }
     if (trimmed != null) {
@@ -376,6 +484,9 @@ public class ItemCanopyTool extends AbstractItem {
   public void addInformation(@Nonnull ItemStack stack, @Nullable World world,
       @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flag) {
     tooltip.add(I18n.format("csm.transit.canopy.clearance", clearance(stack)));
+    tooltip.add(I18n.format("csm.transit.canopy.lights",
+        I18n.format("csm.transit.canopy.lights_" + lights(stack))));
+    tooltip.add(I18n.format("csm.transit.canopy.controls"));
     NBTTagCompound t = stack.getTagCompound();
     if (t != null && t.hasKey(TAG_CORNER)) {
       BlockPos c = BlockPos.fromLong(t.getLong(TAG_CORNER));

@@ -167,8 +167,8 @@ public class BlockCanopyDeck extends AbstractBlock implements ICsmGlassFronted {
   }
 
   /**
-   * Passes a neighbour change down to a downlight hung under this tile, so power at the deck
-   * (a photocell on the roof) reaches it.
+   * Passes a neighbour change down to a light (a downlight or a light strip) hung under this
+   * tile, so power at the deck (a photocell on the roof) reaches it.
    */
   @Override
   @SuppressWarnings("deprecation")
@@ -177,7 +177,7 @@ public class BlockCanopyDeck extends AbstractBlock implements ICsmGlassFronted {
     super.neighborChanged(state, world, pos, block, fromPos);
     BlockPos below = pos.down();
     if (!world.isRemote && !below.equals(fromPos)
-        && world.getBlockState(below).getBlock() instanceof BlockCanopyDownlight) {
+        && world.getBlockState(below).getBlock() instanceof ICanopyLight) {
       world.neighborChanged(below, this, pos);
     }
   }

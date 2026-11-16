@@ -1,0 +1,111 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "c": "csm:blocks/transit/canopies/steel",
+    "l": "csm:blocks/transit/canopies/strip_off",
+    "particle": "csm:blocks/transit/canopies/steel"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        6.75,
+        24.9411,
+        0
+      ],
+      "to": [
+        9.25,
+        25.9411,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#c",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#c",
+          "uv": [
+            0,
+            0,
+            16,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#c",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "axis": "z",
+        "angle": -22.5,
+        "origin": [
+          8,
+          25.9411,
+          8
+        ]
+      }
+    },
+    {
+      "from": [
+        7.25,
+        24.5411,
+        0
+      ],
+      "to": [
+        8.75,
+        24.9411,
+        16
+      ],
+      "faces": {
+        "east": {
+          "texture": "#l",
+          "uv": [
+            0,
+            1,
+            16,
+            1.4
+          ]
+        },
+        "west": {
+          "texture": "#l",
+          "uv": [
+            0,
+            1,
+            16,
+            1.4
+          ]
+        },
+        "down": {
+          "texture": "#l",
+          "uv": [
+            7.25,
+            0,
+            8.75,
+            16
+          ]
+        }
+      },
+      "rotation": {
+        "axis": "z",
+        "angle": -22.5,
+        "origin": [
+          8,
+          25.9411,
+          8
+        ]
+      }
+    }
+  ]
+}

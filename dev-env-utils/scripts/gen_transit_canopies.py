@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Every asset the Transit tab's bus station canopy kit ships: the canopy decks in four styles
-and the four agencies' liveries, the round canopy columns, the soffit downlight and the Canopy
-Tool's icon.
+and the four agencies' liveries, the round canopy columns, the soffit downlight, the LED light
+strip and the Canopy Tool's icon.
 
     python dev-env-utils/scripts/gen_transit_canopies.py
     python dev-env-utils/scripts/gen_transit_canopies.py --check
@@ -166,6 +166,8 @@ def register_textures():
         "gutter": lambda: lc.fill((128, 132, 134), 16, 3, 162),
         "lens_on": lambda: lens(True),
         "lens_off": lambda: lens(False),
+        "strip_on": lambda: lc.fill((255, 252, 240), 16, 1, 154),
+        "strip_off": lambda: lc.fill((196, 198, 196), 16, 2, 155),
         "canopy_tool": tool_icon,
     }
     for i, a in enumerate(AGENCIES):
@@ -713,7 +715,126 @@ def downlight():
           models, {"multipart": mp}, item=item, tab=TAB)
 
 
+# CanopyStyle.SEATS: every (reach, slope) a tile's centre can give, flat first, sorted by reach
+# then slope. A light strip's `seat` (actual state) indexes this list, built the same way in Java.
+def seats():
+    out = {(0, 0.0)}
+    for style, _, module, _ in STYLES:
+        for p in range(module):
+            h, a = soffit_at(style, p)
+            reach = min(range(len(REACH_PX)), key=lambda i: abs(REACH_PX[i] - h))
+            out.add((reach, float(a)))
+    return sorted(out)
+
+
+SEATS = seats()
+LEGAL_ANGLES = (-45, -22.5, 0, 22.5, 45)
+MODEL_MIN, MODEL_MAX = -16, 32
+
+
+def strip_box(axis, a, b, x0, x1, y0, y1, tex, faces):
+    """A box of the strip, `a` to `b` along its run and x0..x1 across it (at z or x 8)."""
+    if axis == "z":
+        return el((x0, y0, a), (x1, y1, b), tex, faces)
+    return el((a, y0, x0), (b, y1, x1), tex, faces)
+
+
+def strip_faces(axis, ends=()):
+    """The faces a strip box shows: its two sides and its underside, plus the given ends
+    ('neg', 'pos'). The top lies against the soffit."""
+    sides = ("east", "west") if axis == "z" else ("north", "south")
+    end_face = {"neg": "north" if axis == "z" else "west",
+                "pos": "south" if axis == "z" else "east"}
+    return sides + ("down",) + tuple(end_face[e] for e in ends)
+
+
+def strip_body(axis):
+    """The run of strip through the whole block: a steel channel 2.5 px wide flush with the
+    soffit, and the diffuser under it, 1.5 px wide. No ends: a neighbour or a cap closes them."""
+    return [strip_box(axis, 0, 16, 6.75, 9.25, 15, 16, "c", strip_faces(axis)),
+            strip_box(axis, 0, 16, 7.25, 8.75, 14.6, 15, "l", strip_faces(axis))]
+
+
+def strip_cap(axis, end):
+    """The end cap where the line stops: a steel plate a little bigger than the channel."""
+    a, b = (0, 0.5) if end == "neg" else (15.5, 16)
+    return [strip_box(axis, a, b, 6.6, 9.4, 14.45, 16, "c", strip_faces(axis, ("neg", "pos")))]
+
+
+def seat_els(els, axis, seat):
+    """Raised to the soffit and turned to lie on it, as the downlight is: a strip runs across the
+    profile, so it turns about its own run (about z for a strip along z, under a profile along
+    x; about x, the other way round, for a strip along x)."""
+    reach, slope = SEATS[seat]
+    h = min(REACH_PX[reach], MAX_RAISE)
+    out = raise_els(els, h)
+    if slope:
+        rot = {"axis": "z", "angle": slope} if axis == "z" else {"axis": "x", "angle": -slope}
+        rot["origin"] = [8, round(16 + h, 4), 8]
+        out = [dict(e, rotation=rot) for e in out]
+    return out
+
+
+def check_elements(name, els):
+    """Every element inside the model limit, every turn one the game allows."""
+    for e in els:
+        for v in e["from"] + e["to"]:
+            assert MODEL_MIN <= v <= MODEL_MAX, (name, e)
+        if "rotation" in e:
+            assert e["rotation"]["angle"] in LEGAL_ANGLES, (name, e)
+
+
+def light_strip():
+    """The LED strip: a model per (axis, seat, lit) for the run and per (axis, seat, end) for the
+    caps. Under a shaped tile the strip always runs across the profile (CanopyStyle.runAxisUnder),
+    so every seat is turned about the strip's own run and both axes occur at every seat."""
+    reg = "canopy_light_strip"
+    models = {}
+    mp = []
+    for axis in ("x", "z"):
+        for seat in range(len(SEATS)):
+            for lit in (False, True):
+                tex = {"c": C.T("steel"), "l": C.T("strip_on" if lit else "strip_off"),
+                       "particle": C.T("steel")}
+                name = "strip/%s_%s_%d" % ("on" if lit else "off", axis, seat)
+                els = seat_els(strip_body(axis), axis, seat)
+                check_elements(name, els)
+                models[name] = lc.model(tex, els, ao=False)
+                mp.append({"when": {"axis": axis, "seat": str(seat),
+                                    "lit": "true" if lit else "false"},
+                           "apply": {"model": C.M(name)}})
+            for end in ("neg", "pos"):
+                tex = {"c": C.T("steel"), "particle": C.T("steel")}
+                name = "strip/cap_%s_%s_%d" % (end, axis, seat)
+                els = seat_els(strip_cap(axis, end), axis, seat)
+                check_elements(name, els)
+                models[name] = lc.model(tex, els, ao=False)
+                mp.append({"when": {"axis": axis, "seat": str(seat), end: "false"},
+                           "apply": {"model": C.M(name)}})
+    item_els = strip_body("x") + strip_cap("x", "neg") + strip_cap("x", "pos")
+    item = lc.model({"c": C.T("steel"), "l": C.T("strip_on"), "particle": C.T("steel")},
+                    item_els, ao=False)
+    item["display"] = {"gui": {"rotation": [-60, 0, 0], "translation": [0, 0, 0],
+                               "scale": [0.9] * 3}}
+    C.add(reg, 'new BlockCanopyLightStrip("%s")' % reg,
+          ("Canopy Light Strip", "Dach-Lichtband", "Tira de Luz de Marquesina",
+           "Takljuslist"),
+          models, {"multipart": mp}, item=item, tab=TAB)
+
+
 MESSAGES = {
+    "lights": ("Canopy lights: %s", "Dachbeleuchtung: %s", "Luces de marquesina: %s",
+               "Takbelysning: %s"),
+    "lights_0": ("downlights every third block", "Downlights jeden dritten Block",
+                 "focos cada tres bloques", "downlights vart tredje block"),
+    "lights_1": ("one light strip down the middle", "ein Lichtband in der Mitte",
+                 "una tira de luz por el centro", "en ljuslist i mitten"),
+    "lights_2": ("a light strip along each long edge", "ein Lichtband an jeder Längsseite",
+                 "una tira de luz en cada borde largo", "en ljuslist längs varje långsida"),
+    "controls": ("Sneak-use in the air: clearance; looking up: lights",
+                 "Schleichend in die Luft: Höhe; nach oben schauend: Beleuchtung",
+                 "Agachado al aire: altura; mirando arriba: luces",
+                 "Smyg i luften: höjd; titta uppåt: belysning"),
     "corner": ("Canopy corner set at %s %s %s: click the opposite corner",
                "Dachecke bei %s %s %s gesetzt: gegenüberliegende Ecke anklicken",
                "Esquina fijada en %s %s %s: haz clic en la esquina opuesta",
@@ -763,6 +884,7 @@ register_textures()
 decks()
 columns()
 downlight()
+light_strip()
 tool()
 
 if __name__ == "__main__":

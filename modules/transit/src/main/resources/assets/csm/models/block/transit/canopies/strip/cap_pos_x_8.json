@@ -1,0 +1,78 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "c": "csm:blocks/transit/canopies/steel",
+    "particle": "csm:blocks/transit/canopies/steel"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        15.5,
+        30.4,
+        6.6
+      ],
+      "to": [
+        16,
+        32,
+        9.4
+      ],
+      "faces": {
+        "north": {
+          "texture": "#c",
+          "uv": [
+            0,
+            0,
+            0.5,
+            1.55
+          ]
+        },
+        "south": {
+          "texture": "#c",
+          "uv": [
+            15.5,
+            0,
+            16.0,
+            1.55
+          ]
+        },
+        "down": {
+          "texture": "#c",
+          "uv": [
+            15.5,
+            6.6,
+            16.0,
+            9.4
+          ]
+        },
+        "west": {
+          "texture": "#c",
+          "uv": [
+            6.6,
+            0,
+            9.4,
+            1.55
+          ]
+        },
+        "east": {
+          "texture": "#c",
+          "uv": [
+            6.6,
+            0,
+            9.4,
+            1.55
+          ]
+        }
+      },
+      "rotation": {
+        "axis": "x",
+        "angle": 22.5,
+        "origin": [
+          8,
+          32,
+          8
+        ]
+      }
+    }
+  ]
+}
