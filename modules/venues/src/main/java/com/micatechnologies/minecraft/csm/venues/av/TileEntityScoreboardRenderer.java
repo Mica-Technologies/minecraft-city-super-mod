@@ -65,10 +65,22 @@ public class TileEntityScoreboardRenderer extends TileEntitySpecialRenderer<Tile
   /** The share of a screen the video takes in the video layout; the strip has the rest. */
   private static final float VIDEO_SHARE = 0.8f;
 
-  /** Releases a board's text lists. */
+  /** The game clock's figures, one list per face kind, compiled when the reading changes. */
+  private static final CsmDisplayListCache CLOCK_LONG = new CsmDisplayListCache(
+      "venue_scoreboard_clock_long");
+  private static final CsmDisplayListCache CLOCK_SHORT = new CsmDisplayListCache(
+      "venue_scoreboard_clock_short");
+
+  /** The panels' keys in the text caches, beside the static text's 0 (video) and 1 (score). */
+  private static final long PANELS_VIDEO = 2L;
+  private static final long PANELS_SCORE = 3L;
+
+  /** Releases a board's lists. */
   static void release(BlockPos pos) {
     LONG.invalidate(pos);
     SHORT.invalidate(pos);
+    CLOCK_LONG.invalidate(pos);
+    CLOCK_SHORT.invalidate(pos);
   }
 
   @Override
@@ -117,7 +129,7 @@ public class TileEntityScoreboardRenderer extends TileEntitySpecialRenderer<Tile
       GlStateManager.scale(1 / 16.0, -1 / 16.0, 1 / 16.0);
 
       GlStateManager.disableTexture2D();
-      panels(te, score, w, h);
+      cachedPanels(te, score, longFace, w, h);
       GlStateManager.enableTexture2D();
       // a colour array leaves GL's current colour undefined, where the state cache cannot see
       GlStateManager.resetColor();
@@ -131,7 +143,7 @@ public class TileEntityScoreboardRenderer extends TileEntitySpecialRenderer<Tile
       fr.bindAtlas();
       GlStateManager.translate(0, 0, TEXT_Z);
       staticText(te, fr, score, longFace, w, h);
-      clockText(fr, clock, score, w, h);
+      cachedClock(te, fr, clock, score, longFace, w, h);
       GlStateManager.resetColor();
       GlStateManager.color(1f, 1f, 1f, 1f);
       GlStateManager.depthMask(true);
@@ -147,6 +159,84 @@ public class TileEntityScoreboardRenderer extends TileEntitySpecialRenderer<Tile
   }
 
   // --- panels and video ----------------------------------------------------------------------
+
+  /**
+   * The panels from this face kind's list (beside its static text, released with it when the
+   * text version moves, which the team colours are part of).
+   */
+  private static void cachedPanels(TileEntityScoreboard te, boolean score, boolean longFace,
+      float w, float h) {
+    if (CsmRenderToggles.venueScoreboardPerFrame) {
+      panels(te, score, w, h);
+      return;
+    }
+    CsmDisplayListCache cache = longFace ? LONG : SHORT;
+    long key = score ? PANELS_SCORE : PANELS_VIDEO;
+    int list = cache.get(te.getPos(), key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      list = cache.allocate(te.getPos(), key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        panels(te, score, w, h);
+        GL11.glEndList();
+      }
+    }
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      panels(te, score, w, h);
+    }
+  }
+
+  /**
+   * The clock from this face kind's list, compiled again only when the reading changes (once a
+   * second, ten times a second under a minute) rather than tessellated for every face every frame.
+   */
+  private static void cachedClock(TileEntityScoreboard te, CsmFontRenderer fr, String clock,
+      boolean score, boolean longFace, float w, float h) {
+    long key = clockKey(clock, score);
+    if (key < 0 || CsmRenderToggles.venueScoreboardPerFrame) {
+      clockText(fr, clock, score, w, h);
+      return;
+    }
+    CsmDisplayListCache cache = longFace ? CLOCK_LONG : CLOCK_SHORT;
+    int list = cache.get(te.getPos(), key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      // One reading at a time: the last one is never shown again.
+      cache.invalidate(te.getPos());
+      list = cache.allocate(te.getPos(), key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        clockText(fr, clock, score, w, h);
+        GL11.glEndList();
+      }
+    }
+    if (list != CsmDisplayListCache.NO_LIST) {
+      GL11.glCallList(list);
+    } else {
+      clockText(fr, clock, score, w, h);
+    }
+  }
+
+  /**
+   * The clock reading and layout packed exactly into a key: seven bits a character, up to eight,
+   * then the length and the layout. -1 for a reading too long to pack (drawn as it is).
+   */
+  static long clockKey(String clock, boolean score) {
+    int n = clock.length();
+    if (n > 8) {
+      return -1L;
+    }
+    long key = 0;
+    for (int i = 0; i < n; i++) {
+      char c = clock.charAt(i);
+      if (c > 0x7F) {
+        return -1L;
+      }
+      key |= ((long) c) << (7 * i);
+    }
+    return key | ((long) n << 56) | (score ? 1L << 60 : 0L);
+  }
 
   private static void panels(TileEntityScoreboard te, boolean score, float w, float h) {
     Tessellator tess = Tessellator.getInstance();
