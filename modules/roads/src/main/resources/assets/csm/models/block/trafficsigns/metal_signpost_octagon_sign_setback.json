@@ -1,7 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
+		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+		"back": "csm:blocks/trafficsigns/octagon_sign_back"
 	},
 	"elements": [
 		{
@@ -11,7 +12,6 @@
 			"rotation": {"angle": 45, "axis": "z", "origin": [8, 0, 20]},
 			"faces": {
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"down": {"uv": [0, 0, 16, 16], "texture": "#0"}
@@ -33,7 +33,6 @@
 			"rotation": {"angle": 0, "axis": "z", "origin": [8, 0, 20]},
 			"faces": {
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"down": {"uv": [0, 0, 16, 16], "texture": "#0"}
@@ -55,7 +54,6 @@
 			"rotation": {"angle": 45, "axis": "z", "origin": [8, 0, 20]},
 			"faces": {
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"down": {"uv": [0, 0, 16, 16], "texture": "#0"}
@@ -77,10 +75,17 @@
 			"rotation": {"angle": 0, "axis": "z", "origin": [8, 0, 20]},
 			"faces": {
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"down": {"uv": [0, 0, 16, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "octagon_south",
+			"from": [-4, -4, 12.99],
+			"to": [20, 20, 13],
+			"faces": {
+				"south": {"uv": [0, 0, 16, 16], "texture": "#back"}
 			}
 		},
 		{

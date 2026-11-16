@@ -1,7 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign"
+		"0": "csm:blocks/trafficsigns/absolutely_nothing_sign",
+		"back": "csm:blocks/trafficsigns/octagon_sign_back"
 	},
 	"elements": [
 		{
@@ -26,25 +27,7 @@
 				]
 			},
 			"faces": {
-				"north": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
 				"east": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
-				"south": {
 					"uv": [
 						0,
 						0,
@@ -104,25 +87,7 @@
 				]
 			},
 			"faces": {
-				"north": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
 				"east": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
-				"south": {
 					"uv": [
 						0,
 						0,
@@ -182,25 +147,7 @@
 				]
 			},
 			"faces": {
-				"north": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
 				"east": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
-				"south": {
 					"uv": [
 						0,
 						0,
@@ -260,25 +207,7 @@
 				]
 			},
 			"faces": {
-				"north": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
 				"east": {
-					"uv": [
-						0,
-						0,
-						16,
-						16
-					],
-					"texture": "#0"
-				},
-				"south": {
 					"uv": [
 						0,
 						0,
@@ -313,6 +242,54 @@
 						16
 					],
 					"texture": "#0"
+				}
+			}
+		},
+		{
+			"name": "octagon_north",
+			"from": [
+				-4.0,
+				-4.0,
+				28.5
+			],
+			"to": [
+				20.0,
+				20.0,
+				28.51
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#back"
+				}
+			}
+		},
+		{
+			"name": "octagon_south",
+			"from": [
+				-4.0,
+				-4.0,
+				28.99
+			],
+			"to": [
+				20.0,
+				20.0,
+				29
+			],
+			"faces": {
+				"south": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#back"
 				}
 			}
 		}
