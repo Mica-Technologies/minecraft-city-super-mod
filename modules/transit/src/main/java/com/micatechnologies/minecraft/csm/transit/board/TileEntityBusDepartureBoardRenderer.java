@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
+import com.micatechnologies.minecraft.csm.transit.stop.TransitRoute;
 import com.micatechnologies.minecraft.csm.codeutils.CsmCompileBudget;
 import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
 import com.micatechnologies.minecraft.csm.codeutils.CsmFontRenderer;
@@ -310,8 +311,8 @@ public class TileEntityBusDepartureBoardRenderer
       int bay = shown[6 + 4 * i];
       int minutes = shown[7 + 4 * i];
       y = HEADER + COLHEAD + i * PITCH + (PITCH - TEXT_H) / 2;
-      fr.addString(buf, Integer.toString(route), u(xRoute, s), 0, 0, y, s,
-          BusAgency.values()[agency].getTextColour());
+      fr.addString(buf, TransitRoute.label(route), u(xRoute, s), 0, 0, y, s,
+          BusStation.colourOf(agency));
       fr.addString(buf, fit(fr, BusDepartures.DESTINATIONS[BusDepartures.destinationOf(route)],
           destinationWidth / s), u(xDestination, s), 0, 0, y, s, ROW_COLOUR);
       fr.addString(buf, Integer.toString(bay), u(xBay, s), 0, 0, y, s, ROW_COLOUR);
@@ -334,7 +335,7 @@ public class TileEntityBusDepartureBoardRenderer
     float s = TEXT_H / fr.FONT_HEIGHT;
     float h = HEAD_TEXT_H / fr.FONT_HEIGHT;
     xRoute = EDGE;
-    xDestination = xRoute + Math.max(fr.getStringWidth("88") * s,
+    xDestination = xRoute + Math.max(fr.getStringWidth("M88") * s,
         fr.getStringWidth("ROUTE") * h) + GAP;
     xMinutesRight = WIDTH - EDGE;
     float minutesWidth = Math.max(fr.getStringWidth("32 MIN") * s,

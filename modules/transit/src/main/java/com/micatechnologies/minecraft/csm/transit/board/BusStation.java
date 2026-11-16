@@ -1,15 +1,15 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
-import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFlag;
 import com.micatechnologies.minecraft.csm.transit.stop.BusAgency;
 import com.micatechnologies.minecraft.csm.transit.stop.BusDepartures;
+import com.micatechnologies.minecraft.csm.transit.stop.IBusStopSource;
 import com.micatechnologies.minecraft.csm.transit.stop.TileEntityBusStopFlag;
+import com.micatechnologies.minecraft.csm.transit.stop.TransitRoute;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -44,7 +44,7 @@ public final class BusStation {
   public static final int MAX_BAYS = 16;
   /** The most departures listed: two buses of every route of every bay. */
   public static final int MAX_DEPARTURES =
-      MAX_BAYS * TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE;
+      MAX_BAYS * TransitRoute.MAX_PER_LINE * BusDepartures.PER_ROUTE;
   /** How often the stops are looked for again. */
   private static final long RESCAN_TICKS = 100;
   /** Filters: 0 every agency, then one per agency. */
@@ -57,7 +57,8 @@ public final class BusStation {
   private final int bays;
   private final BlockPos[] bayPos = new BlockPos[MAX_BAYS];
   private final BusAgency[] bayAgency = new BusAgency[MAX_BAYS];
-  private final int[][] bayRoutes = new int[MAX_BAYS][TileEntityBusStopFlag.PLATES];
+  private final int[] bayColour = new int[MAX_BAYS];
+  private final int[][] bayRoutes = new int[MAX_BAYS][TransitRoute.MAX_PER_LINE];
   private final int[] bayRouteCount = new int[MAX_BAYS];
   private final Departures[] departures = new Departures[FILTERS];
 
@@ -91,29 +92,33 @@ public final class BusStation {
       return minutes[i];
     }
 
-    /** A departure's agency, an ordinal of {@link BusAgency}. */
+    /**
+     * A departure's agency: an ordinal of {@link BusAgency}, or for a custom agency
+     * {@code -1 - colour} (its route colour, 0xRRGGBB); see {@link #colourOf}.
+     */
     public int agency(int i) {
       return agency[i];
     }
   }
 
-  private BusStation(World world, long scannedAt, List<TileEntityBusStopFlag> flags) {
+  private BusStation(World world, long scannedAt, List<IBusStopSource> stops) {
     this.world = world;
     this.scannedAt = scannedAt;
     int n = 0;
-    for (TileEntityBusStopFlag flag : flags) {
+    for (IBusStopSource stop : stops) {
       if (n >= MAX_BAYS) {
         break;
       }
-      Block block = world.getBlockState(flag.getPos()).getBlock();
-      if (!(block instanceof BlockBusStopFlag)) {
-        continue;
+      int count = Math.min(TransitRoute.MAX_PER_LINE, stop.getStopRouteCount());
+      if (stop instanceof TileEntityBusStopFlag && stop.getStopAgency() == null) {
+        continue;   // a flag whose block is gone
       }
-      bayPos[n] = flag.getPos();
-      bayAgency[n] = ((BlockBusStopFlag) block).getAgency();
+      bayPos[n] = stop.getStopPos();
+      bayAgency[n] = stop.getStopAgency();
+      bayColour[n] = stop.getStopColour() & 0xFFFFFF;
       int routes = 0;
-      for (int i = 0; i < TileEntityBusStopFlag.PLATES; i++) {
-        int route = flag.getRoute(i);
+      for (int i = 0; i < count; i++) {
+        int route = stop.getStopRoute(i);
         if (route != 0) {
           bayRoutes[n][routes++] = route;
         }
@@ -122,6 +127,17 @@ public final class BusStation {
       n++;
     }
     bays = n;
+  }
+
+  /**
+   * The colour a departure's route is printed in.
+   *
+   * @param agency {@link Departures#agency}
+   *
+   * @return 0xRRGGBB
+   */
+  public static int colourOf(int agency) {
+    return agency >= 0 ? BusAgency.values()[agency].getTextColour() : -1 - agency;
   }
 
   /**
@@ -168,7 +184,7 @@ public final class BusStation {
   private static BusStation scan(World world, int cx, int cz, int band, long now) {
     int y0 = band * 16 - HEIGHT_REACH;
     int y1 = band * 16 + 15 + HEIGHT_REACH;
-    List<TileEntityBusStopFlag> flags = new ArrayList<>();
+    List<IBusStopSource> flags = new ArrayList<>();
     for (int x = cx - CHUNK_REACH; x <= cx + CHUNK_REACH; x++) {
       for (int z = cz - CHUNK_REACH; z <= cz + CHUNK_REACH; z++) {
         Chunk chunk = world.getChunkProvider().getLoadedChunk(x, z);
@@ -176,15 +192,16 @@ public final class BusStation {
           continue;
         }
         for (TileEntity te : chunk.getTileEntityMap().values()) {
-          if (te instanceof TileEntityBusStopFlag && !te.isInvalid()
+          if (te instanceof IBusStopSource && !te.isInvalid()
               && te.getPos().getY() >= y0 && te.getPos().getY() <= y1) {
-            flags.add((TileEntityBusStopFlag) te);
+            flags.add((IBusStopSource) te);
           }
         }
       }
     }
-    flags.sort(Comparator.comparingInt((TileEntityBusStopFlag f) -> f.getPos().getX())
-        .thenComparingInt(f -> f.getPos().getZ()).thenComparingInt(f -> f.getPos().getY()));
+    flags.sort(Comparator.comparingInt((IBusStopSource f) -> f.getStopPos().getX())
+        .thenComparingInt(f -> f.getStopPos().getZ())
+        .thenComparingInt(f -> f.getStopPos().getY()));
     return new BusStation(world, now, flags);
   }
 
@@ -263,16 +280,17 @@ public final class BusStation {
     d.minute = minute;
     int n = 0;
     for (int b = 0; b < bays; b++) {
-      if (f != 0 && bayAgency[b].ordinal() != f - 1) {
+      if (f != 0 && (bayAgency[b] == null || bayAgency[b].ordinal() != f - 1)) {
         continue;
       }
+      int agencyCode = bayAgency[b] != null ? bayAgency[b].ordinal() : -1 - bayColour[b];
       BlockPos p = bayPos[b];
       for (int r = 0; r < bayRouteCount[b]; r++) {
         int route = bayRoutes[b][r];
         int next = BusDepartures.minutesToNext(route, p.getX(), p.getZ(), minute);
         for (int k = 0; k < BusDepartures.PER_ROUTE; k++) {
           n = insert(d, n, route, b + 1, next + k * BusDepartures.headwayOf(route),
-              bayAgency[b].ordinal());
+              agencyCode);
         }
       }
     }

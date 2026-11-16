@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.transit.stop;
 
+import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * The route numbers on a bus stop flag's three route plates: 1 to {@link #MAX_ROUTE}, or 0 for a
@@ -13,7 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
  *
  * @since 2026.9
  */
-public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
+public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign implements IBusStopSource {
 
   /** How many route plates a flag has. */
   public static final int PLATES = 3;
@@ -111,6 +114,48 @@ public class TileEntityBusStopFlag extends AbstractTileEntityBusStopSign {
       compound.removeTag(KEY_LEFT);
     }
     return compound;
+  }
+
+  // --- a stop source: its plates' numbers are their route keys ---------------------------
+
+  @Override
+  public BlockPos getStopPos() {
+    return getPos();
+  }
+
+  @Override
+  public int getStopRouteCount() {
+    int n = 0;
+    for (int i = 0; i < PLATES; i++) {
+      if (routes[i] != 0) {
+        n++;
+      }
+    }
+    return n;
+  }
+
+  @Override
+  public int getStopRoute(int i) {
+    int n = 0;
+    for (int p = 0; p < PLATES; p++) {
+      if (routes[p] != 0 && n++ == i) {
+        return routes[p];
+      }
+    }
+    return 0;
+  }
+
+  @Override
+  @Nullable
+  public BusAgency getStopAgency() {
+    Block block = world == null ? null : world.getBlockState(pos).getBlock();
+    return block instanceof BlockBusStopFlag ? ((BlockBusStopFlag) block).getAgency() : null;
+  }
+
+  @Override
+  public int getStopColour() {
+    BusAgency agency = getStopAgency();
+    return agency == null ? 0xFFFFFF : agency.getTextColour();
   }
 
   /** Only which plates are there, and the side, reach the baked model. */

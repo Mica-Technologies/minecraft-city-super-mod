@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
+import com.micatechnologies.minecraft.csm.transit.stop.TransitRoute;
 import com.micatechnologies.minecraft.csm.transit.stop.BusDepartures;
 import com.micatechnologies.minecraft.csm.transit.stop.TileEntityBusArrivalDisplayRenderer;
 import com.micatechnologies.minecraft.csm.transit.stop.TileEntityBusStopFlag;
@@ -29,9 +30,9 @@ public class TileEntityBusBayDisplayRenderer
 
   /** The arrivals being drawn: scratch, render thread only. */
   private static final int[] ROUTES =
-      new int[TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE];
+      new int[TransitRoute.MAX_PER_LINE * BusDepartures.PER_ROUTE];
   private static final int[] MINUTES =
-      new int[TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE];
+      new int[TransitRoute.MAX_PER_LINE * BusDepartures.PER_ROUTE];
 
   @Override
   public void render(TileEntityBusBayDisplay te, double x, double y, double z,

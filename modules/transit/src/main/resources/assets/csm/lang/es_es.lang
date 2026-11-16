@@ -243,3 +243,7 @@ tile.canopy_column_white.name=Columna de Marquesina (Blanca)
 tile.canopy_column_graphite.name=Columna de Marquesina (Grafito)
 tile.canopy_downlight.name=Foco de Marquesina
 item.canopy_tool.name=Herramienta de Marquesinas
+csm.transit.stop_pole.short=Una parada completa necesita %s postes y %s banderas; se colocó una bandera
+csm.transit.stop_pole.blocked=No hay sitio para la parada: %s %s %s estorba; se colocó una bandera
+tile.bus_stop_pole_flag.name=Poste de Parada de Autobús (Tamaño Completo)
+tile.bus_stop_name_blade.name=Rótulo de Nombre de Parada

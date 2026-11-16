@@ -26,8 +26,9 @@ import org.lwjgl.opengl.GL11;
  * <p><b>How it is drawn.</b> The route numbers, the destinations and the minute readings are each
  * compiled once into a display list shared by every display ({@link CsmSharedDisplayLists}), laid
  * out within its column (the reading already right-aligned), so a line is three list calls under
- * one translation, and a frame's text is at most nine. There are 99 routes, 16 destinations and
- * 33 readings, so the lists are bounded. The atlas, the colour, the fullbright lightmap and the
+ * one translation, and a frame's text is at most nine. The routes are keyed on their route key
+ * ({@link TransitRoute}: a stop has at most a handful), with 16 destinations and 33 readings, so
+ * the lists stay few. The atlas, the colour, the fullbright lightmap and the
  * depth mask are set outside the lists, every frame. {@link #drawPanel} is the whole panel, which
  * the bay display ({@code transit.board}) draws on its own screen of the same size.</p>
  *
@@ -58,13 +59,9 @@ public class TileEntityBusArrivalDisplayRenderer
   /** How far in front of the screen the text sits, in sixteenths. */
   private static final float LIFT = 0.03f;
 
-  private static final String[] ROUTE_TEXT = new String[TileEntityBusStopFlag.MAX_ROUTE + 1];
   private static final String[] MINUTE_TEXT = new String[BusDepartures.MAX_MINUTES + 1];
 
   static {
-    for (int i = 0; i < ROUTE_TEXT.length; i++) {
-      ROUTE_TEXT[i] = Integer.toString(i);
-    }
     MINUTE_TEXT[0] = "DUE";
     for (int i = 1; i < MINUTE_TEXT.length; i++) {
       MINUTE_TEXT[i] = i + " MIN";
@@ -80,9 +77,9 @@ public class TileEntityBusArrivalDisplayRenderer
 
   /** The arrivals being drawn: scratch, render thread only. Two per route. */
   private static final int[] ARRIVAL_ROUTE =
-      new int[TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE];
+      new int[TransitRoute.MAX_PER_LINE * BusDepartures.PER_ROUTE];
   private static final int[] ARRIVAL_MINUTES =
-      new int[TileEntityBusStopFlag.PLATES * BusDepartures.PER_ROUTE];
+      new int[TransitRoute.MAX_PER_LINE * BusDepartures.PER_ROUTE];
 
   /** The layout in font units, worked out once the font exists. */
   private static float scale;
@@ -198,7 +195,8 @@ public class TileEntityBusArrivalDisplayRenderer
     top = -height / 2 + EDGE_Y / s;
     lineStep = LINE_PITCH / s;
     float space = fr.getStringWidth(" ");
-    destinationX = fr.getStringWidth("88") + space;
+    // room for the longest route id (three characters, "M15")
+    destinationX = fr.getStringWidth("M88") + space;
     destinationWidth = right - left - destinationX
         - fr.getStringWidth(MINUTE_TEXT[BusDepartures.MAX_MINUTES]) - space;
     scale = s;
@@ -236,7 +234,7 @@ public class TileEntityBusArrivalDisplayRenderer
     String text;
     int x = 0;
     if (kind == 0) {
-      text = ROUTE_TEXT[value];
+      text = TransitRoute.label(value);
     } else if (kind == 1) {
       text = fit(fr, BusDepartures.DESTINATIONS[value], destinationWidth);
     } else {

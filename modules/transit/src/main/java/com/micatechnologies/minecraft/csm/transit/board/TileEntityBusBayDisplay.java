@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.transit.board;
 
+import com.micatechnologies.minecraft.csm.transit.stop.TransitRoute;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
 import com.micatechnologies.minecraft.csm.transit.stop.BusDepartures;
@@ -32,7 +33,7 @@ public class TileEntityBusBayDisplay extends AbstractTileEntity {
 
   private long checkedAt = Long.MIN_VALUE;
   private EnumFacing facing = EnumFacing.NORTH;
-  private final int[] routes = new int[TileEntityBusStopFlag.PLATES];
+  private final int[] routes = new int[TransitRoute.MAX_PER_LINE];
   private int routeCount;
   private int stopX;
   private int stopZ;

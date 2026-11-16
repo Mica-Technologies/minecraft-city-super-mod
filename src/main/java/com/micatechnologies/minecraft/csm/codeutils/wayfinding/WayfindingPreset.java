@@ -90,6 +90,10 @@ public final class WayfindingPreset {
   private final WayfindingIcon pictogram;
   private final WayfindingArrow arrow;
   private final WayfindingScheme scheme;
+  private final String line3;
+  private final String line4;
+  private final int background;
+  private final int legend;
 
   /**
    * A preset.
@@ -102,11 +106,38 @@ public final class WayfindingPreset {
    */
   public WayfindingPreset(String line1, String line2, WayfindingIcon pictogram,
       WayfindingArrow arrow, WayfindingScheme scheme) {
+    this(line1, line2, "", "", pictogram, arrow, scheme, WayfindingSign.NO_COLOUR,
+        WayfindingSign.NO_COLOUR);
+  }
+
+  private WayfindingPreset(String line1, String line2, String line3, String line4,
+      WayfindingIcon pictogram, WayfindingArrow arrow, WayfindingScheme scheme, int background,
+      int legend) {
     this.line1 = line1;
     this.line2 = line2;
+    this.line3 = line3;
+    this.line4 = line4;
     this.pictogram = pictogram;
     this.arrow = arrow;
     this.scheme = scheme;
+    this.background = background;
+    this.legend = legend;
+  }
+
+  /**
+   * This preset with a third and fourth line and its own colours, which it sets on the sign in
+   * place of the scheme's: a transit agency's livery, which no scheme has.
+   *
+   * @param line3      the third line, empty for none
+   * @param line4      the fourth line, empty for none
+   * @param background the background, 0xRRGGBB, or {@link WayfindingSign#NO_COLOUR}
+   * @param legend     the legend, 0xRRGGBB, or {@link WayfindingSign#NO_COLOUR}
+   *
+   * @return the preset
+   */
+  public WayfindingPreset with(String line3, String line4, int background, int legend) {
+    return new WayfindingPreset(line1, line2, line3, line4, pictogram, arrow, scheme, background,
+        legend);
   }
 
   public String getLine1() {
@@ -124,13 +155,14 @@ public final class WayfindingPreset {
 
   /**
    * A sign showing this preset: the lines, pictogram, scheme and arrow (if any) put on the sign,
-   * lines 3 and 4, the line icons and the line count cleared, and its custom colours dropped so the
-   * scheme shows.
+   * the line icons and the line count cleared, and the custom colours set to the preset's own
+   * ({@link #with}), or dropped so the scheme shows. Lines 3 and 4 are the preset's, empty unless
+   * it has them.
    */
   public WayfindingSign applyTo(WayfindingSign sign) {
-    WayfindingSign.Builder b = sign.toBuilder().line(0, line1).line(1, line2).line(2, "")
-        .line(3, "").lineCount(0).pictogram(pictogram).scheme(scheme)
-        .background(WayfindingSign.NO_COLOUR).legend(WayfindingSign.NO_COLOUR);
+    WayfindingSign.Builder b = sign.toBuilder().line(0, line1).line(1, line2).line(2, line3)
+        .line(3, line4).lineCount(0).pictogram(pictogram).scheme(scheme)
+        .background(background).legend(legend);
     for (int i = 0; i < WayfindingSign.MAX_LINES; i++) {
       b.iconLeft(i, WayfindingIcon.NONE).iconRight(i, WayfindingIcon.NONE);
     }

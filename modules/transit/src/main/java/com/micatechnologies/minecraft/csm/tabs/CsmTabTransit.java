@@ -62,7 +62,9 @@ import com.micatechnologies.minecraft.csm.streetscape.UtilityBoxSpec;
 import com.micatechnologies.minecraft.csm.trafficsigns.BlockTrafficSign;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusArrivalDisplay;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopFlag;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopBlade;
 import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopPlaque;
+import com.micatechnologies.minecraft.csm.transit.stop.BlockBusStopPoleFlag;
 import com.micatechnologies.minecraft.csm.transit.wayfinding.BlockWayfindingPanel;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -159,6 +161,11 @@ public class CsmTabTransit extends CsmTab {
     initTabBlock(new BlockTrafficSign("bus_stop_route_map_case"));
     initTabBlock(new BlockBusArrivalDisplay("bus_stop_arrival_display"));
     initTabBlock(new BlockBusStopPlaque("bus_stop_curb_plaque"));
+
+    // Full-size stop (gen_transit_stop_signs.py --fragments): the pole's flag (its item builds the
+    // whole pole) and the stop-name blade, both wayfinding signs
+    initTabBlock(new BlockBusStopPoleFlag("bus_stop_pole_flag"));
+    initTabBlock(new BlockBusStopBlade("bus_stop_name_blade"));
 
     // Bus shelters (gen_transit_shelters.py --fragments)
     initTabBlock(new BlockBusShelter("bus_shelter_glass_cityline", BusShelterStyle.GLASS));
