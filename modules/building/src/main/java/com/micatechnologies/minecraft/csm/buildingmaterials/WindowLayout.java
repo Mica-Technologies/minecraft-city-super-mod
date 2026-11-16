@@ -99,7 +99,11 @@ public final class WindowLayout {
   public static final int EAST = 1 << 5;
   public static final int ALL = 63;
 
-  /** The tallest stack laid out as one window; a taller one repeats from its foot. */
+  /**
+   * The tallest stack laid out as one window. Each block looks at most this far up and down, so
+   * in a taller column the blocks past the reach each find their own foot and top: the column
+   * reads as overlapping windows. Build tall glazing as stacks of eight or fewer.
+   */
   public static final int MAX_STACK = 8;
 
   // plane face bits, before a span is mapped to the model
