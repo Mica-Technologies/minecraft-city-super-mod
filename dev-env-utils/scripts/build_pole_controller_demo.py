@@ -21,9 +21,9 @@ relative to the site origin, which is the player's position unless --x/--z say o
                       poles and flat on a wall, with a sign naming each
 
 Every cabinet stands a block above the walk (its bottom about 1 m up, its top at head height).
-A cabinet needs redstone power to run, as the ground controller does: the pole cabinets take it
-from a redstone torch on the walk under them, the wall one from a lever on the inside face of the
-wall it is bolted to.
+A cabinet needs redstone power to run, as the ground controller does: each pole cabinet has a
+lever on its side, switched on, like a service disconnect; the wall one is powered by a lever on
+the inside face of the wall it is bolted to.
 
 Everything goes through the orchestrator by instance id; the script never opens a game port, and
 it refuses any world not named "Pole Controller Demo".
@@ -141,12 +141,19 @@ def controller_nbt(circuits):
             'tcMxG:300L,tcMnGs:200L,tcMxGs:300L,tcCrc:%s}' % crc)
 
 
+# A lever on a cabinet's side, by the way the cabinet faces: the side to its right as you face
+# its door, as (dx, dz, lever metadata pointing that way); +8 is switched on.
+LEVER_SIDE = {N: (1, 0, 1), E: (0, 1, 3), S: (-1, 0, 2), W: (0, -1, 4)}
+
+
 def pole_cabinet(x, z, facing, colour, nbt=None, power=True):
     """A cabinet in the cell in front of a pole, a block above the walk, facing away from it;
-    a redstone torch on the walk under it powers it."""
+    a lever on its side, switched on, powers it (a service disconnect)."""
     put(x, CAB, z, 'signalcontroller_pole_' + colour, facing, nbt)
+    put(x, Y, z, 'minecraft:air')              # the redstone torch an older build put here
     if power:
-        put(x, Y, z, 'minecraft:redstone_torch', 5)
+        dx, dz, meta = LEVER_SIDE[facing]
+        put(x + dx, CAB, z + dz, 'minecraft:lever', meta | 8)
 
 
 # ------------------------------------------------------------------------------------------

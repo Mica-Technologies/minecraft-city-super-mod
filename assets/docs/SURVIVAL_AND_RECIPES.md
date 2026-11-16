@@ -218,7 +218,9 @@ hierarchy bottoms out at, rather than at each leaf, so subclasses cannot reintro
 - `logic/AbstractBlockControllableSignal`
 - `logic/AbstractBlockTrafficSignalSensor`
 - `logic/AbstractBlockTrafficSignalSensorHZEight`
-- `BlockTrafficSignalController` (light opacity 255 — the one genuine opaque full cube)
+- `BlockTrafficSignalController` (light opacity 255 — the one genuine opaque full cube; its pole
+  and wall cabinet subclass, `BlockTrafficSignalControllerPole`, passes 0 through the protected
+  constructor, since it is neither)
 - `BlockOverheightDetectionSensor`
 
 Light level stays 0 for these because every signal computes emitted light dynamically via

@@ -53,8 +53,9 @@ like the controller cabinet.
 - **On a wall:** click it onto a building face and it sits flat against the wall on two rails.
 
 Like the ground cabinet it only runs while it has **redstone power**. On a wall, a lever on the
-inside face of the wall block behind it powers it through the wall. On a pole, put the power
-source next to the cabinet itself, for example a redstone torch on the walk underneath it.
+inside face of the wall block behind it powers it through the wall. On a pole, put a lever on the
+cabinet's side, like a service disconnect switch, and switch it on. Sneak while you place the
+lever: a plain click on the cabinet opens its settings instead.
 
 ## Operating modes
 

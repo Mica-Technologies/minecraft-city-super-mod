@@ -1,48 +1,165 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:trafficsignals/pole_controller/signalcontroller_pole_wall",
-    "textures": {
-      "body": "csm:blocks/trafficsignals/shared_textures/metal_green",
-      "particle": "csm:blocks/trafficsignals/shared_textures/metal_green"
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_wall"
     }
   },
-  "variants": {
-    "facing": {
-      "north": {},
-      "east": {
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_wall"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "mount": "large"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_large"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "mount": "thin"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_thin"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "mount": "pedestal"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_pedestal"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_wall",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "mount": "large"
       },
-      "south": {
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_large",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "mount": "thin"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_thin",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "mount": "pedestal"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_pedestal",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_wall",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "mount": "large"
       },
-      "west": {
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_large",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "mount": "thin"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_thin",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "mount": "pedestal"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_pedestal",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "mount": "wall"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_wall",
         "y": 270
       }
     },
-    "powered": {
-      "false": {},
-      "true": {}
-    },
-    "mount": {
-      "wall": {
-        "model": "csm:trafficsignals/pole_controller/signalcontroller_pole_wall"
+    {
+      "when": {
+        "facing": "west",
+        "mount": "large"
       },
-      "large": {
-        "model": "csm:trafficsignals/pole_controller/signalcontroller_pole_large"
-      },
-      "thin": {
-        "model": "csm:trafficsignals/pole_controller/signalcontroller_pole_thin"
-      },
-      "pedestal": {
-        "model": "csm:trafficsignals/pole_controller/signalcontroller_pole_pedestal"
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_large",
+        "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:trafficsignals/pole_controller/signalcontroller_pole_wall",
-        "transform": "forge:default-block"
+    {
+      "when": {
+        "facing": "west",
+        "mount": "thin"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_thin",
+        "y": 270
       }
-    ]
-  }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "mount": "pedestal"
+      },
+      "apply": {
+        "model": "csm:trafficsignals/pole_controller/states/signalcontroller_pole_green/signalcontroller_pole_pedestal",
+        "y": 270
+      }
+    }
+  ]
 }

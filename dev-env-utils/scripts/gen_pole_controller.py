@@ -36,6 +36,7 @@ import sys
 import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import forge_multipart as FM  # noqa: E402
 import model_depth  # noqa: E402
 from gen_preempt_detector import box  # noqa: E402
 
@@ -170,8 +171,7 @@ def blockstate(colour):
             'facing': {'north': {}, 'east': {'y': 90}, 'south': {'y': 180}, 'west': {'y': 270}},
             'powered': {'false': {}, 'true': {}},
             'mount': {m: {'model': MODEL_REF + model_name(m)} for m in MOUNTS},
-            'inventory': [{'model': MODEL_REF + model_name('wall'),
-                           'transform': 'forge:default-block'}],
+            'inventory': [{'model': MODEL_REF + model_name('wall')}],
         },
     }
 
@@ -208,7 +208,14 @@ def files():
     for m in MOUNTS:
         out[os.path.join(MODEL_DIR, model_name(m) + '.json')] = model(m)
     for c in COLOURS:
-        out[os.path.join('blockstates', 'signalcontroller_pole_%s.json' % c)] = blockstate(c)
+        reg = 'signalcontroller_pole_%s' % c
+        # `powered` draws nothing and the colour only swaps a texture: written as multipart, one
+        # model location for the block's 32 states, each (mount, colour) a child model
+        # (forge_multipart, PERFORMANCE_AND_SECURITY.md "Memory")
+        state, kids = FM.convert(blockstate(c), MODEL_REF.rstrip('/'), reg)
+        for name, data in kids.items():
+            out[os.path.join('models', 'block', *name.split(':', 1)[1].split('/')) + '.json'] = data
+        out[os.path.join('blockstates', reg + '.json')] = state
     return out
 
 

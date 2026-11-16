@@ -73,8 +73,8 @@ is a model, a box and placement:
   facing (`IPreemptPoleMounted.placementFacing`, as the pole-side preempt devices do), so it stands
   in the cell in front of what was clicked with its door facing away from it. Placed on a top or
   bottom face it faces back toward the player. Put it a block or two above the walk: the cabinet
-  is about 0.9 m tall, so a cabinet one block up has its bottom at knee height and its top at
-  head height.
+  is about 0.9 m tall, so a cabinet one block up has its bottom about 1 m up, at waist height,
+  and its top at head height.
 - **Pole or wall.** `mount` is an actual-state property (`BlockTrafficSignalControllerPole.Mount`:
   `wall`, `large`, `thin`, `pedestal`), never stored. `mountBehind` reads the block behind the
   cabinet (`pos.offset(facing.getOpposite())`, the block it was clicked onto) by `getBlockState`
@@ -88,16 +88,21 @@ is a model, a box and placement:
   the back of the cell) is rotated from `NORTH_BOUNDING_BOX` by the stored facing and is the same
   for every mount, since the cabinet body is.
 - **Models.** `gen_pole_controller.py` writes the four mount models
-  (`models/block/trafficsignals/pole_controller/signalcontroller_pole_<mount>.json`), the four
-  blockstates, which swap the body texture per colour (galvanized is `metal_white`, as on the NYC
-  signal arms; `metal_black`; `metal_brown`; and `metal_green`, which the generator recolours from
-  the brown), and the green texture. The conduit drops out of the cabinet floor and turns back
+  (`models/block/trafficsignals/pole_controller/signalcontroller_pole_<mount>.json`), the green
+  texture, and the four blockstates. The body texture differs per colour (galvanized is
+  `metal_white`, as on the NYC signal arms; `metal_black`; `metal_brown`; and `metal_green`, which
+  the generator recolours from the brown) and `powered` draws nothing, so the blockstates are
+  written as multipart through `forge_multipart.py`: one model location per block, sixteen
+  `facing` x `mount` rules, each naming a child model under `pole_controller/states/<block>/`
+  that is the mount model with the colour's texture. The conduit drops out of the cabinet floor and turns back
   into the pole or wall, so the model never reaches the ground and works at any height.
 - **Power.** It needs redstone power to run, exactly as the ground controller does
   (`TileEntityTrafficSignalController.pauseTicking`, `isBlockPowered` on its own cell). Flat on a
   wall, a lever on the wall block's inside face strongly powers that block and so the cabinet. On
-  a pole nothing conducts, so the power has to be a source next to the cabinet itself, such as a
-  redstone torch on the walk under it.
+  a pole nothing conducts, so the power has to be a source next to the cabinet itself: a lever on
+  the cabinet's side (its side faces are vanilla's default SOLID, so a lever attaches), switched
+  on, reads as a service disconnect. Place it with a sneak-click, since a plain click on the
+  cabinet opens its GUI.
 
 By command, with the pole or wall at `x y z+1` and the cabinet facing north, a block above the
 walk at `y-1`:

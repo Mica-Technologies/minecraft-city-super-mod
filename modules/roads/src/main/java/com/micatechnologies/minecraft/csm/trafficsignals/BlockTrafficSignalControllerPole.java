@@ -3,6 +3,7 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
 import com.micatechnologies.minecraft.csm.codeutils.RotationUtils;
 import com.micatechnologies.minecraft.csm.trafficaccessories.IPreemptPoleMounted;
@@ -49,7 +50,7 @@ import net.minecraft.world.World;
  * @since 2026.11
  */
 public class BlockTrafficSignalControllerPole extends BlockTrafficSignalController
-    implements ICsmTrafficPoleIgnored {
+    implements ICsmTrafficPoleIgnored, ICsmNoSnowAccumulation {
 
   /** The way the cabinet's door faces; the pole or wall is behind it. */
   public static final PropertyDirection FACING =

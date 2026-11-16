@@ -153,8 +153,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   upright cabinet (rain cap, door on three hinge knuckles, handle and lock, police panel, door
   louvres, data plate, side vents, a conduit that turns back into the pole or wall) as JSON
   models, one per `mount` actual-state value (`wall` rails, and arms with a clamp band sized for
-  the `large`, `thin` and `pedestal` poles, CsmPoleFit's radii), the four colour blockstates that
-  swap the body texture, and `metal_green.png`, recoloured from `metal_brown.png`. The cabinet
+  the `large`, `thin` and `pedestal` poles, CsmPoleFit's radii), the four colour blockstates
+  (multipart through `forge_multipart.py`, the colour a child model under `states/<block>/`, since
+  it only swaps the body texture and `powered` draws nothing), and `metal_green.png`, recoloured from `metal_brown.png`. The cabinet
   body must stay the same in every model: the Java box does not look at the mount. `--check`
   (pixels for the PNG), `--fragments` (lang in the four locales, tab lines)
 - `build_pole_controller_demo.py` -- builds the "Pole Controller Demo" flat creative world
@@ -162,7 +163,7 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   galvanized cabinet on a mast pole, the same junction on black pedestal poles run by the black
   cabinet, a one-way street run by the green cabinet flat on a shop front (a lever inside powers
   it through the wall), and every colour on large, thin and pedestal poles and on a wall. Pole
-  cabinets are powered by a redstone torch on the walk under them. `--only <parts>` rebuilds a
+  cabinets are powered by a lever on their side, switched on. `--only <parts>` rebuilds a
   part in place; drives the game through the orchestrator by instance id
 - `gen_pole_bases.py` -- the bolted bases of the painted thin, thick and impact resistant
   traffic poles (square, squircle, slim, pedestal) as OBJ, borrowing the pedestal pole's mesh
