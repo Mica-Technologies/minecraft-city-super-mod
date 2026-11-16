@@ -32,6 +32,7 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSma
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficPoleSmallWhite;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzdoublemountunpainted;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficpolehorzsinglemountunpainted;
+import com.micatechnologies.minecraft.csm.trafficaccessories.ItemStreetLightConfigTool;
 import net.minecraft.block.Block;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -184,6 +185,9 @@ public class CsmTabTrafficPoles extends CsmTab {
     initTabBlock(new BlockTrafficPoleConcrete("trafficpolehorizontalconcrete", 4.0, 6.0));
     initTabBlock(new BlockTrafficPoleConcrete("trafficpolehorizontalconcreteoctagon", 4.0, 6.0));
     initTabBlock(BlockTrafficPoleHorizontalAngleConcrete.class, fmlPreInitializationEvent);
+
+    // Sets pedestal finials and concrete pole caps: a pole tool, so it sits with the poles.
+    initTabItem(ItemStreetLightConfigTool.class, fmlPreInitializationEvent); // Street Light Configuration Tool
 
     // --- Concrete pole accessories: every live family in round concrete, and the straight
     // vertical sections again in octagon concrete (curves and arms stay round) ---

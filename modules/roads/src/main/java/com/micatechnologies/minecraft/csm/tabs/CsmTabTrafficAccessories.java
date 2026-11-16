@@ -37,7 +37,6 @@ import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficSignalF
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSign;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignDouble;
 import com.micatechnologies.minecraft.csm.trafficaccessories.BlockTrafficStreetNameSignMount;
-import com.micatechnologies.minecraft.csm.trafficaccessories.ItemStreetLightConfigTool;
 import net.minecraft.block.Block;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -353,7 +352,6 @@ public class CsmTabTrafficAccessories extends CsmTab {
     initTabBlock(new BlockTrafficAccessoryNSEWUD("tlpmunpainted", BB_TL_PM, BlockRenderLayer.CUTOUT_MIPPED, 2F, true));
 
     // --- Street Light Configuration Tool: finials and caps on pedestal and concrete poles ---
-    initTabItem(ItemStreetLightConfigTool.class, fmlPreInitializationEvent); // Street Light Configuration Tool
 
     // --- Class-based: Fatigue Mitigators ---
     initTabBlock(BlockTrafficSignalFatigueMitigator1.class, fmlPreInitializationEvent);
