@@ -833,8 +833,12 @@ colour; a long name splits onto two lines.
   blocks. Do not add slots there.
 - **The rods' ceiling is looked for above the master's column only.** On a 3x1 or 5x2 the rods stand at the end columns. A board hung under a single block (not a deck) draws its rods past that block's sides. The item always hangs under the clicked block, so this shows only with `/setblock` or a one-block ceiling.
 - **The screen font's comma reads like a full stop** (`Routes B, 30`). This is a glyph of the font atlas and is the same on every board that uses `electronicSign`.
-- **Only `bus_arrival_board_part` is invisible.** The masters keep an empty `MODEL`, so the
-  block-breaking cracks still show.
+- **The screen, map and text stand 0.2 px apart** (`SCREEN_LIFT`, `TEXT_LIFT`), the depth
+  rule for faces read up to about 100 blocks away. Closer layers z-fight at the 96-block draw
+  distance.
+- **The masters' block model is empty** (particle only), as is the part's, which is
+  `INVISIBLE`. Whether block-breaking cracks show on a master has not been checked in game
+  (`PERFORMANCE_AND_SECURITY.md` expects an empty model to lose them).
 
 ### Prices
 

@@ -94,9 +94,12 @@ public class TileEntityBusArrivalBoardRenderer
   private static final int STEEL = 0x8C9096;
   private static final int CONCRETE = 0x8E8C86;
 
-  /** How far the screen and its text stand off the housing's face, px. */
-  private static final float SCREEN_LIFT = 0.03f;
-  private static final float TEXT_LIFT = 0.06f;
+  /**
+   * How far the screen and its text stand off the housing's face, px: 0.2 apart each, the depth
+   * buffer's rule for faces read up to about 100 blocks away (SignFaceDepthTest's GAP).
+   */
+  private static final float SCREEN_LIFT = 0.2f;
+  private static final float TEXT_LIFT = 0.4f;
   private static final float ROD = 0.55f;
   private static final float POST_HALF = 1.25f;
 
