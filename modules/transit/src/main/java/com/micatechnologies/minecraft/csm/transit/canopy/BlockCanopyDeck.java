@@ -4,6 +4,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -162,6 +163,22 @@ public class BlockCanopyDeck extends AbstractBlock {
           phase + 1, style.getModule()), true);
     }
     return true;
+  }
+
+  /**
+   * Passes a neighbour change down to a downlight hung under this tile, so power at the deck
+   * (a photocell on the roof) reaches it.
+   */
+  @Override
+  @SuppressWarnings("deprecation")
+  public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block,
+      BlockPos fromPos) {
+    super.neighborChanged(state, world, pos, block, fromPos);
+    BlockPos below = pos.down();
+    if (!world.isRemote && !below.equals(fromPos)
+        && world.getBlockState(below).getBlock() instanceof BlockCanopyDownlight) {
+      world.neighborChanged(below, this, pos);
+    }
   }
 
   @Override

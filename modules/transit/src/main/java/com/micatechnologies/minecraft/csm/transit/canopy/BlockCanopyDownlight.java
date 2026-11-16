@@ -32,7 +32,10 @@ import net.minecraft.world.World;
  * flush with the soffit. It is lit when placed. A click with an empty hand, or a change of
  * redstone power (on when power comes, off when it goes), switches every downlight under the
  * same canopy: the decks joined to the one above this light, walked side to side up to
- * {@link #REACH} tiles. Stored: {@link #LIT} (1) and {@link #POWERED} (2), the power it last saw.
+ * {@link #REACH} tiles. Power at the deck above counts too ({@link BlockCanopyDeck} passes its
+ * neighbour changes down), so an inverted daylight sensor set on the roof works the canopy's
+ * lights as a photocell does. Stored: {@link #LIT} (1) and {@link #POWERED} (2), the power it
+ * last saw.
  *
  * @since 2026.11
  */
@@ -136,7 +139,10 @@ public class BlockCanopyDownlight extends AbstractBlock {
     if (world.isRemote) {
       return;
     }
-    boolean powered = world.isBlockPowered(pos);
+    // power at the light, or at the deck it hangs from: a photocell (an inverted daylight
+    // sensor) set on the canopy's roof switches the lights under it
+    boolean powered = world.isBlockPowered(pos) || (world.getBlockState(pos.up()).getBlock()
+        instanceof BlockCanopyDeck && world.isBlockPowered(pos.up()));
     if (powered != state.getValue(POWERED)) {
       world.setBlockState(pos, state.withProperty(POWERED, powered), 2);
       switchCanopy(world, pos, powered);

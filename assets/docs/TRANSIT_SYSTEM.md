@@ -503,6 +503,12 @@ remembers), switches every downlight under the same canopy: it walks the decks j
 above it, up to 4096 tiles, and sets each light under them. Under a vault, lights hang only where
 the soffit is low (the springing), never in mid-air under the crown.
 
+Power at the deck tile a light hangs from counts as power at the light: the deck passes its
+neighbour changes down to a downlight under it. So an **inverted daylight sensor set on the
+roof**, over any light, is the canopy's photocell and switches the whole canopy at dusk and
+dawn. Lights are placed lit; a canopy given a photocell by day stays lit until it is switched
+off once, after which it follows the photocell.
+
 ### The Canopy Tool
 
 Hold a deck in the off hand (or anywhere in the hotbar), and a column and the downlight in the
@@ -1691,6 +1697,18 @@ Two things it has to do that a builder placing by hand does not: throw each circ
 and on again at the end (a light placed takes the state of the circuit it joins, so a batch placed
 at once comes up dark), and close the ad panel's setup screen, which opens when the panel is
 placed.
+
+### The Bus Station demo
+
+`dev-env-utils/scripts/build_bus_station_demo.py` builds the shelters and the canopy kit at
+scale, in a fresh flat creative world (the saved one is "Bus Station Demo"), through the MCMCP
+orchestrator by instance id (`--instance`, default the dev client): a street with every shelter
+style in every livery, one and two rows deep and three to six tall, Signage's ad panel in each
+glass shelter's frame, a stop at the curb and a sign on each; then every canopy style laid by the
+Canopy Tool as a player lays it -- a 30 x 14 two-bus bay at 9 clear with its column rows on the
+island and the far sidewalk, a glass canopy spanning a two-lane road, the sawtooth, butterfly and
+vault, a 4-clear canopy and a 12-clear one -- with photocells on the bay's and the vault's roofs
+and four transit buses parked under them (Vehicles; `--no-buses` skips them).
 
 ## Where the module is going
 
