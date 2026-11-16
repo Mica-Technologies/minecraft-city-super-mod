@@ -2,7 +2,7 @@ package com.micatechnologies.minecraft.csm.trafficaccessories;
 
 import com.micatechnologies.minecraft.csm.CsmRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
-import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.CsmExtendedBlockState;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmModelStateRules;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmPostTopFixture;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmRetiringBlock;
@@ -20,6 +20,8 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -48,7 +50,10 @@ import org.jetbrains.annotations.NotNull;
  * {@code ocpm}, {@code ocpt}), which now retire into this block.
  *
  * <p>The end properties are named in model space, exactly as the pedestal pole's are, and for
- * the same reason: see {@link BlockTrafficPolePedestal#endDirection}. Unlike the pedestal pole,
+ * the same reason: see {@link BlockTrafficPolePedestal#endDirection}. They are unlisted: worked
+ * out from the neighbours in {@link #getExtendedState}, never part of the state table, and turned
+ * into a model by {@code ConcretePoleModels}, which draws the variant the blockstate names for
+ * the pair, exactly as it was drawn when they were listed. Unlike the pedestal pole,
  * each end model carries its own half of the shaft, because the cap and the octagon's tapered
  * tenon are narrower than the shaft and need it to stop short. Geometry, blockstates and lang come
  * from {@code dev-env-utils/scripts/gen_concrete_poles.py}.
@@ -88,13 +93,41 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
     }
   }
 
-  /** What the model-north end of the shaft shows. */
-  public static final PropertyEnum<EndStyle> END_NORTH = PropertyEnum.create("endn",
-      EndStyle.class);
+  /** What the model-north end of the shaft shows (unlisted; the blockstate's {@code endn}). */
+  public static final IUnlistedProperty<EndStyle> END_NORTH = new EndProperty("endn");
 
-  /** What the model-south end of the shaft shows. */
-  public static final PropertyEnum<EndStyle> END_SOUTH = PropertyEnum.create("ends",
-      EndStyle.class);
+  /** What the model-south end of the shaft shows (unlisted; the blockstate's {@code ends}). */
+  public static final IUnlistedProperty<EndStyle> END_SOUTH = new EndProperty("ends");
+
+  /** An unlisted end property: one {@link EndStyle}, named as the blockstate names it. */
+  private static final class EndProperty implements IUnlistedProperty<EndStyle> {
+
+    private final String name;
+
+    EndProperty(String name) {
+      this.name = name;
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public boolean isValid(EndStyle value) {
+      return value != null;
+    }
+
+    @Override
+    public Class<EndStyle> getType() {
+      return EndStyle.class;
+    }
+
+    @Override
+    public String valueToString(EndStyle value) {
+      return value.getName();
+    }
+  }
 
   /**
    * What the owner picked for the top of the pole. Stored, and only an input to
@@ -251,11 +284,21 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
     return poleRadius;
   }
 
+  /**
+   * The plinth's box where the pole stands upright on the ground with a plinth, the shaft's
+   * otherwise. A plinth only ever shows at the end that points down, so only that end is worked
+   * out.
+   */
   @Override
   public AxisAlignedBB getBlockBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    if (state.getPropertyKeys().contains(END_NORTH)
-        && (isPlinth(state.getValue(END_NORTH)) || isPlinth(state.getValue(END_SOUTH)))) {
-      return baseBoundingBox;
+    IBlockState here = source.getBlockState(pos);
+    IBlockState s = here.getBlock() == this ? here : state;
+    if (s.getBlock() == this) {
+      EnumFacing facing = s.getValue(FACING);
+      if (facing.getAxis() == EnumFacing.Axis.Y && isPlinth(endStyle(source, pos, facing,
+          EnumFacing.DOWN, s.getValue(TOP), s.getValue(BASE)))) {
+        return baseBoundingBox;
+      }
     }
     return shaftBoundingBox;
   }
@@ -267,8 +310,9 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN,
-        END_NORTH, END_SOUTH, TOP, BASE);
+    return new CsmExtendedBlockState(this,
+        new IProperty<?>[]{FACING, MOUNT_EAST, MOUNT_WEST, MOUNT_UP, MOUNT_DOWN, TOP, BASE},
+        new IUnlistedProperty<?>[]{END_NORTH, END_SOUTH});
   }
 
   @Override
@@ -277,17 +321,20 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   }
 
   /**
-   * The end pairs the actual state can produce: a plinth only at the end that points down, a
-   * finial only at the end {@link #topEnd} names. The rest of the 36 pairs are never drawn, and
-   * so never baked ({@link ICsmModelStateRules}): 88 pairs of facing and ends out of 216.
+   * Whether {@link #getExtendedState} can give a pole facing {@code facing} this pair of ends: a
+   * plinth only at the end that points down, a finial only at the end {@link #topEnd} names. 88
+   * pairs of facing and ends out of 216; {@code ConcretePoleModels} bakes a variant for each, with
+   * each of the 16 mount combinations.
+   *
+   * @param facing the pole's facing
+   * @param north  the model-north end
+   * @param south  the model-south end
+   *
+   * @return {@code true} if the pair can be drawn
    */
-  @Override
-  public boolean isModelStateReachable(IBlockState state) {
-    EnumFacing facing = state.getValue(FACING);
-    return isEndReachable(state.getValue(END_NORTH), facing,
-        BlockTrafficPolePedestal.endDirection(facing, true))
-        && isEndReachable(state.getValue(END_SOUTH), facing,
-        BlockTrafficPolePedestal.endDirection(facing, false));
+  public static boolean isEndPairReachable(EnumFacing facing, EndStyle north, EndStyle south) {
+    return isEndReachable(north, facing, BlockTrafficPolePedestal.endDirection(facing, true))
+        && isEndReachable(south, facing, BlockTrafficPolePedestal.endDirection(facing, false));
   }
 
   private static boolean isEndReachable(EndStyle style, EnumFacing facing, EnumFacing end) {
@@ -366,17 +413,19 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   }
 
   /**
-   * The flank mounts come from the superclass; this adds what each end of the shaft shows.
+   * The flank mounts come from the superclass's actual state; this adds what each end of the
+   * shaft shows, for the model ({@code ConcretePoleModels}).
    */
   @Override
-  @SuppressWarnings("deprecation")
-  public @NotNull IBlockState getActualState(@NotNull IBlockState state,
+  public @NotNull IBlockState getExtendedState(@NotNull IBlockState state,
       @NotNull IBlockAccess worldIn, @NotNull BlockPos pos) {
-    IBlockState actual = super.getActualState(state, worldIn, pos);
-    EnumFacing facing = actual.getValue(FACING);
-    TopStyle top = actual.getValue(TOP);
-    BaseStyle base = actual.getValue(BASE);
-    return actual
+    if (!(state instanceof IExtendedBlockState)) {
+      return state;
+    }
+    EnumFacing facing = state.getValue(FACING);
+    TopStyle top = state.getValue(TOP);
+    BaseStyle base = state.getValue(BASE);
+    return ((IExtendedBlockState) state)
         .withProperty(END_NORTH, endStyle(worldIn, pos, facing,
             BlockTrafficPolePedestal.endDirection(facing, true), top, base))
         .withProperty(END_SOUTH, endStyle(worldIn, pos, facing,

@@ -124,28 +124,51 @@ regenerates into a temp directory and fails on drift, the texture included.
 plinth radius are constructor arguments, passed past `super()` with the pedestal pole's
 `ThreadLocal` trick. It adds `END_NORTH` / `END_SOUTH` (`endn` / `ends`) with four values,
 `none`, `cap`, `tenon` and `base`, and two more that only the owner's choices below produce,
-`basealt` and `finial`. All of them are actual state.
+`basealt` and `finial`. Both are **unlisted** properties (`CsmExtendedBlockState`), set in
+`getExtendedState` from the neighbours; they are not in the state table (see "Ends in the
+model, not the state table" below).
 
 ### The owner's choices: stored, never drawn
 
 `TOP` (`auto`, `finial`) and `BASE` (`auto`, `other`, `none`) are the stored properties besides
-the facing. They are inputs to `getActualState` and nothing else: what they change is the end
+the facing. They are inputs to `getExtendedState` (the ends) and nothing else: what they change is the end
 values. The other profile's plinth is a fifth end value, `basealt`, whose blockstate entry
 names the other pole's own base model (a plinth draws no shaft, so no new model file); a finial
 is a sixth, `finial`, with a model of its own; no base is `none`.
 
 So neither stored property picks a model itself, and six end values squared is 36 pairs, most
 of which a pole is never drawn in: a plinth is only ever at the end pointing down, a finial
-only at the end `topEnd` names. The block says both through `ICsmModelStateRules` (Core):
-`getModelIgnoredProperties` lists `TOP` and `BASE`, which are left out of the model locations
-and not named in the blockstate file, and `isModelStateReachable` refuses the end pairs the
-actual state cannot produce, which then share the default state's location instead of each
-baking a variant. A pole is 1,408 variants (88 reachable pairs of facing and ends x 16 mount
+only at the end `topEnd` names. `getModelIgnoredProperties` (`ICsmModelStateRules`, Core)
+lists `TOP` and `BASE`, which are left out of the model locations and not named in the
+blockstate file, and only the end pairs `isEndPairReachable` allows are baked (until 2026-11-16,
+when the ends were listed, `isModelStateReachable` sent the other pairs to the default state's
+location instead of each baking a variant). A pole is 1,408 variants (88 reachable pairs of facing and ends x 16 mount
 combinations), fewer than the 1,536 it was before it had any of this. Without the rule it
 would be 3,456; with the stored properties in the locations as well, 20,736.
 
-**Change `endStyle` and `isModelStateReachable` together.** A pair the rule wrongly refuses is
-drawn as the default state, a bare north-facing shaft, and nothing in the log says so.
+### Ends in the model, not the state table
+
+With the ends listed, the state table held every combination of facing, mounts, both ends and
+both choices: 20,736 states a pole, four times the 5,000-state rule in
+PERFORMANCE_AND_SECURITY.md, though only 1,408 were ever drawn. The choices are stored (in the
+metadata, below) and released worlds hold them, so they have to stay listed; the ends are worked
+out from the neighbours, so they went unlisted instead (2026-11-16): a pole's states are now its
+facing, four mounts, `top` and `base`, 576 of them, and the same 1,408 variants are baked.
+
+The blockstate file is unchanged and still names `endn` and `ends`. A state's own model location
+names only the facing and mounts (`ICsmModelStateRules` still leaves `top` and `base` out), and
+`ConcretePoleModels` (Roads, client) wraps that location's model: for a state's ends it draws the
+baked variant `endn=<n>,ends=<s>,facing=...,mountwest=...`, the location the state mapper handed
+out when the ends were listed. Those 1,408 variants are loaded as extra variants of the pole's
+item (`ModelLoader.registerItemVariants`, which loads a `#`-variant from the blockstate), one for
+each pair `BlockTrafficPoleConcrete.isEndPairReachable` allows, times the 16 mount combinations.
+So the quads drawn for a pole are the same baked models as before. A caller that asks for a
+pole's model with a state that carries no ends gets the location's own model, the blockstate's
+default for that facing and mounts. The plinth's wider selection box is worked out the same way,
+from the block below, in `getBlockBoundingBox`.
+
+**Change `endStyle` and `isEndPairReachable` together.** A pair the rule wrongly refuses is not
+baked, and a pole that gets it draws the missing model.
 
 The metadata keeps the facing in the six values the pole always used, so every pole already in a
 world reads back unchanged, and puts the choices in the spare ten: 6-10 an upright pole with a

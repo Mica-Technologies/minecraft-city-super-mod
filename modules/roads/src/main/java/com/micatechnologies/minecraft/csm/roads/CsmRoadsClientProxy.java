@@ -18,6 +18,8 @@ public class CsmRoadsClientProxy extends CsmRoadsCommonProxy {
   @Override
   public void preInit(FMLPreInitializationEvent event) {
     com.micatechnologies.minecraft.csm.trafficsigns.MileMarkerModels.register();
+    // The concrete poles' ends, unlisted, drawn from the blockstate's variants for them
+    com.micatechnologies.minecraft.csm.trafficaccessories.ConcretePoleModels.register();
   }
 
   @Override

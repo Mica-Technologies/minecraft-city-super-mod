@@ -65,12 +65,14 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
+import model_depth  # noqa: E402
 
 OWNER = layout.owner_of_folder("trafficaccessories")
 MODEL_DIR = layout.asset_dir_for_write(OWNER, "models/block/trafficaccessories/shared_models")
 BLOCKSTATE_DIR = layout.asset_dir_for_write(OWNER, "blockstates")
 TEXTURE_REL = "textures/blocks/trafficsignals/shared_textures/concrete_light_pole.png"
 TEXTURE_PATH = layout.resolve_asset(TEXTURE_REL)
+MODEL_SUBDIR = os.path.join("models", "block", "trafficaccessories", "shared_models")
 SCRATCH_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_concrete_poles_out")
 
 CONCRETE = "csm:blocks/trafficsignals/shared_textures/concrete_light_pole"
@@ -668,6 +670,17 @@ def generate(model_dir, blockstate_dir, scratch_dir, texture_path):
         dump(os.path.join(blockstate_dir, name + ".json"), pole_blockstate(pole, mount))
         blockstates.append(name + ".json")
         lang.append("tile.%s.name=%s" % (name, label))
+
+    # The faces each pole end model's own opaque boxes hide (the finials' stacked rings cover
+    # most of each other's tops and bottoms) are never seen, but are baked into every chunk mesh.
+    # Prune only: no face is moved, so nothing changes on screen. The real assets folder is the
+    # root, with the files just written laid over it, so a --check run prunes the same way.
+    root = os.path.normpath(MODEL_DIR)[:-len(MODEL_SUBDIR)].rstrip(os.sep)
+    pole_models_written = list(models)
+    model_depth.prune(root, [os.path.join(MODEL_SUBDIR, fn) for fn in pole_models_written],
+                      dump, overlay={os.path.normpath(os.path.join(MODEL_SUBDIR, fn)):
+                                     os.path.join(model_dir, fn)
+                                     for fn in pole_models_written})
 
     round_map, octagon_map = {}, {}
     for shape, sources, suffix, mapping in (("round", ROUND_SOURCE_MODELS, "_concrete", round_map),

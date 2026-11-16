@@ -56,6 +56,7 @@ logged in [Fix status](#fix-status), each with its own before and after.
 | - | HVAC heater and exhaust fan `receiveEnergy` mark dirty only when energy was taken | `d7efdf75e` | a chunk mark and comparator reads every tick under a mod that offers power to a full store | none (argued from code, not measured) |
 | OBJ quads: `PackedObjModel` swaps each Forge `UnpackedBakedQuad` for a plain `BakedQuad` on the same packed `int[]` and writes the list back into the `OBJBakedModel`, freeing the ~900-byte unpacked float arrays every OBJ quad kept; a street of the #99 OBJ street lights plus 11 other CSM OBJ models, A/C/D two runs each | `3c8b4354a` | live heap 1,923.3 MB (1,892.6 on main), memstats CSM quads 173.8 MB, 238k unpacked quads | 1,901.9 MB (-21.4), 151.0 MB, 212k (below main). Frame time not measured (machine under memory pressure); C and D drawn alike by eye, pixel diff inconclusive (camera not repeatable between runs) |
 | - | Canopy and bus shelter light switch spread over ticks (`LightSwitchRipple`, Transit): the light clicked switches at once, the rest four a server tick in the order the walk met them; a second switch replaces a waiting light's target, a chunk unloading or the server stopping switches what is left first. Toggle `lightSwitchAtOnce` | 2026-11-16 | Bus Station Demo, 20-light canopy, same session, worst tick in the 5 s after a click (`server_tick_stats`): on 55 and 41 ms, off 135, 76 and 71 ms | on 21, 38 and 15 ms; off 6.5 and 9.6 ms (85 ms on the first click after the toggle, cold). The canopy lights as a ripple over about 5 ticks; client frames did not show a spike either way in this session (window unfocused) |
+| - | Concrete traffic poles: the ends (`endn`, `ends`) unlisted, worked out in `getExtendedState`, and drawn by `ConcretePoleModels` from the same 1,408 blockstate variants (loaded as item variants); `top` and `base` stay listed (stored in released worlds' metadata). `gen_concrete_poles.py` now prunes the faces each end model's own boxes hide | 2026-11-16 | 20,736 states a pole (82,944 for the four); `/csm memstats` CSM states 562,199, tables ~195.8 MB; pole models 1,810 hidden faces by `audit_model_weight.py` (finials 858) | 576 a pole (2,304); 481,559, ~168.1 MB; 400 faces removed from the 36 end models (216 from the 8 finials), audit 618 (finials 178, the rest prune keeps since another texture set may see them). Selection boxes unchanged; a rig of every facing, top and base choice, tenon and mount in a flat world showed the same pieces before and after (screenshots differ only by a 1-2 px camera offset between sessions) |
 
 Every "before" and "after" in one row is from the same session and scene, A/B/A through a render
 toggle (`sharedBakesPerFrame`, `signalLayoutPerFrame`, the sign `*PerFrame` toggles), with
@@ -191,8 +192,8 @@ only spreading the switch out would help. The new JSON models since the 2026-10-
 (1,700 models, 33,217 quads) carry 1,060 faces hidden inside their own closed boxes
 (`audit_model_weight.py`), 828 of them in the eight concrete pole finial models
 `gen_concrete_poles.py` writes (#345), which does not run `model_depth.py`'s pruning; running it
-there would drop them with no visible change (not done: it needs the generator's `--check` and a
-look at the stacked-cap rule). Not measured: 1.12's `MultipartBakedModel.getQuads` tests every selector on every call, and the
+there would drop them with no visible change (done afterwards, prune only, no face moved: Fix
+status). Not measured: 1.12's `MultipartBakedModel.getQuads` tests every selector on every call, and the
 glass shelter has 216 selectors drawn in two layers, so a shelter section rebuild does thousands
 of predicate tests (a per-state quad cache in `CsmBakedModelWrappers` would remove them).
 
@@ -226,7 +227,8 @@ the NYC and truss signal arms (45 blocks, 38,292 locations, one OBJ part per sha
 decorative poles (12,288 locations, every connection a Forge `submodel`, so every location is a
 `MultiModel` with seven per-perspective copies). The four concrete traffic poles went from 1,536
 to 20,736 states each (the `base` and `top` properties); their model locations stay at 1,408
-through `ICsmModelStateRules`, but each is four times the 5,000-state rule. The 228 luminaire arm
+through `ICsmModelStateRules`, but each is four times the 5,000-state rule (576 since the ends
+went unlisted: Fix status). The 228 luminaire arm
 blocks add 15,416 OBJ bakes and as many locations, one per colour of each shape. Nothing here is a no-loss fix: folding
 shapes, moving the deco poles' connections into multipart, or keeping the pole base in the tile
 entity changes how the blocks are built and has to be designed and checked block by block.
