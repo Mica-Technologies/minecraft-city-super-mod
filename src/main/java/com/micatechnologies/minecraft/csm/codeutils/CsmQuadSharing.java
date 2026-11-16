@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.codeutils;
 
 import com.micatechnologies.minecraft.csm.Csm;
 import com.micatechnologies.minecraft.csm.CsmConfig;
+import com.google.common.collect.ImmutableList;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
@@ -28,6 +29,7 @@ import net.minecraft.client.renderer.block.model.SimpleBakedModel;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.model.BakedItemModel;
 import net.minecraftforge.client.model.obj.OBJModel;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -101,6 +103,19 @@ import org.apache.commons.lang3.tuple.Pair;
  * writes a model's field: those are CSM-only, done at the bake. Turning the switch off cannot
  * un-share, and need not, since a shared quad is equal to the one it replaced: the next launch or
  * resource reload bakes the models afresh and leaves other mods' quads alone.</p>
+ *
+ * <p><b>CSM's generated item models</b> ({@code builtin/generated}, baked by Forge's
+ * {@code ItemLayerModel} into a {@link BakedItemModel}) hold {@code UnpackedBakedQuad}s, each
+ * keeping its unpacked {@code float[4][elements][4]} (about 1 KB) for good after packing it into
+ * the vanilla {@code int[]}: 213 thousand quads, about 270 MB of the heap with every module
+ * (2026-11-16). The same pass swaps each for a plain {@link BakedQuad} on the same packed
+ * {@code int[]}, in the item model's list and in its GUI model's filtered copy, as
+ * {@code CsmObjModelLoader.PackedObjModel} does for OBJ quads. Item rendering reads the packed
+ * data ({@code LightUtil.renderQuadColor}); a pipeline that unpacks a quad
+ * ({@code LightUtil.putBakedQuad}) reads the same positions and texture coordinates bit for bit,
+ * and the axis-aligned normals of a generated item survive byte packing exactly, so what is drawn
+ * does not change. Only {@link BakedItemModel} itself (that exact class) under {@code csm:} is
+ * touched, at the bake, before any thread draws it.</p>
  *
  * <p>The dedup maps live only for the pass. A resource reload bakes new models and posts the
  * event again, so the pass reruns on them.</p>
@@ -249,6 +264,10 @@ public final class CsmQuadSharing {
 
   private final Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
   private final Map<Class<?>, Boolean> modelHelpers = new HashMap<>();
+  private Field itemQuadsField;
+  private Field guiModelField;
+  private Field guiQuadsField;
+  private long packedItemQuads;
   private Field generalQuadsField;
   private Field faceQuadsField;
   private Field overridesField;
@@ -347,6 +366,7 @@ public final class CsmQuadSharing {
     replaced = 0;
     skippedModels = 0;
     emptied = 0;
+    packedItemQuads = 0;
     try {
       generalQuadsField = ObfuscationReflectionHelper.findField(SimpleBakedModel.class,
           "field_177563_a");
@@ -363,8 +383,9 @@ public final class CsmQuadSharing {
       }
       Csm.getLogger().info(
           "Shared identical baked quads: {} quads in {} models, {} replaced by an equal quad, "
-              + "{} distinct kept ({} model classes skipped); {} empty lists shared, {} ms",
-          seen, visited.size(), replaced, canonical.size(), skippedModels, emptied,
+              + "{} distinct kept ({} model classes skipped); {} empty lists shared; {} item quads "
+              + "packed; {} ms",
+          seen, visited.size(), replaced, canonical.size(), skippedModels, emptied, packedItemQuads,
           (System.nanoTime() - start) / 1_000_000L);
       if (CsmConfig.isShareOtherModsQuads()) {
         OtherModsPass pass = shareOtherMods(registry, false);
@@ -445,6 +466,9 @@ public final class CsmQuadSharing {
     if (type == SimpleBakedModel.class) {
       share((SimpleBakedModel) model);
       return;
+    }
+    if (ownModels && type == BakedItemModel.class) {
+      packItemQuads((BakedItemModel) model);
     }
     String name = type.getName();
     if (!name.startsWith("net.minecraft.") && !name.startsWith("net.minecraftforge.")) {
@@ -545,6 +569,60 @@ public final class CsmQuadSharing {
       // A model built some other way keeps its own lists.
     }
     shareOverrides(model.getOverrides());
+  }
+
+  /**
+   * Swaps a CSM item model's unpacked quads for plain ones on the same packed data, in the model
+   * and its GUI model alike (the GUI model's list holds the same quad objects, filtered).
+   */
+  private void packItemQuads(BakedItemModel model) {
+    try {
+      if (itemQuadsField == null) {
+        itemQuadsField = BakedItemModel.class.getDeclaredField("quads");
+        itemQuadsField.setAccessible(true);
+        guiModelField = BakedItemModel.class.getDeclaredField("guiModel");
+        guiModelField.setAccessible(true);
+        guiQuadsField = BakedItemModel.BakedGuiItemModel.class.getDeclaredField("quads");
+        guiQuadsField.setAccessible(true);
+      }
+      @SuppressWarnings("unchecked")
+      List<BakedQuad> own = (List<BakedQuad>) itemQuadsField.get(model);
+      if (own == null || own.isEmpty()) {
+        return;
+      }
+      Map<BakedQuad, BakedQuad> plain = new java.util.IdentityHashMap<>();
+      for (BakedQuad q : own) {
+        if (q != null && q.getClass() != BakedQuad.class) {
+          plain.put(q, new BakedQuad(q.getVertexData(), q.getTintIndex(), q.getFace(),
+              q.getSprite(), q.shouldApplyDiffuseLighting(), q.getFormat()));
+        }
+      }
+      if (plain.isEmpty()) {
+        return;
+      }
+      itemQuadsField.set(model, swapped(own, plain));
+      Object gui = guiModelField.get(model);
+      if (gui instanceof BakedItemModel.BakedGuiItemModel) {
+        @SuppressWarnings("unchecked")
+        List<BakedQuad> guiQuads = (List<BakedQuad>) guiQuadsField.get(gui);
+        if (guiQuads != null) {
+          guiQuadsField.set(gui, swapped(guiQuads, plain));
+        }
+      }
+      packedItemQuads += plain.size();
+    } catch (ReflectiveOperationException | RuntimeException e) {
+      // Left unpacked: only a saving.
+    }
+  }
+
+  private static ImmutableList<BakedQuad> swapped(List<BakedQuad> quads,
+      Map<BakedQuad, BakedQuad> plain) {
+    ImmutableList.Builder<BakedQuad> out = ImmutableList.builder();
+    for (BakedQuad q : quads) {
+      BakedQuad p = plain.get(q);
+      out.add(p != null ? p : q);
+    }
+    return out.build();
   }
 
   private void shareOverrides(ItemOverrideList overrides) {
