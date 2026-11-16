@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -19,8 +20,9 @@ import net.minecraft.world.IBlockAccess;
 /**
  * A round steel column for the bus station canopies, one block of it at a time, stacked to any
  * height: a base plate where the column meets anything else below ({@link #BASE}) and a capital
- * under whatever it carries ({@link #CAP}), both actual state from the column's neighbours. It
- * stores nothing.
+ * under whatever it carries ({@link #CAP}), both actual state from the column's neighbours. Under
+ * a sloped canopy tile the head reaches up into the deck's block to its soffit
+ * ({@link #REACH}, a level of {@link CanopyStyle#REACH_PX}). It stores nothing.
  *
  * @since 2026.11
  */
@@ -28,6 +30,8 @@ public class BlockCanopyColumn extends AbstractBlock {
 
   public static final PropertyBool BASE = PropertyBool.create("base");
   public static final PropertyBool CAP = PropertyBool.create("cap");
+  public static final PropertyInteger REACH =
+      PropertyInteger.create("reach", 0, CanopyStyle.REACH_PX.length - 1);
 
   private static final AxisAlignedBB SHAFT =
       new AxisAlignedBB(4.5 / 16, 0, 4.5 / 16, 11.5 / 16, 1, 11.5 / 16);
@@ -45,7 +49,7 @@ public class BlockCanopyColumn extends AbstractBlock {
     super(stash(registryName), SoundType.METAL, "pickaxe", 1, 3.0F, 10.0F, 0.0F, 0);
     this.registryName = registryName;
     setDefaultState(blockState.getBaseState().withProperty(BASE, false)
-        .withProperty(CAP, false));
+        .withProperty(CAP, false).withProperty(REACH, 0));
     PENDING.remove();
   }
 
@@ -62,7 +66,7 @@ public class BlockCanopyColumn extends AbstractBlock {
   @Override
   @Nonnull
   protected BlockStateContainer createBlockState() {
-    return new CsmBlockStateContainer(this, BASE, CAP);
+    return new CsmBlockStateContainer(this, BASE, CAP, REACH);
   }
 
   @Override
@@ -84,7 +88,8 @@ public class BlockCanopyColumn extends AbstractBlock {
       BlockPos pos) {
     return state
         .withProperty(BASE, !(world.getBlockState(pos.down()).getBlock() instanceof BlockCanopyColumn))
-        .withProperty(CAP, !(world.getBlockState(pos.up()).getBlock() instanceof BlockCanopyColumn));
+        .withProperty(CAP, !(world.getBlockState(pos.up()).getBlock() instanceof BlockCanopyColumn))
+        .withProperty(REACH, CanopyStyle.reachUnder(world.getBlockState(pos.up())));
   }
 
   @Override
