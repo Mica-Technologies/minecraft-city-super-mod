@@ -1,5 +1,7 @@
 package com.micatechnologies.minecraft.csm.parks.zipline;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmDisplayListCache;
+import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -20,7 +22,14 @@ import org.lwjgl.opengl.GL11;
  * <p>A few hundred quads at most, for the longest line, drawn only while the launch anchor's chunk
  * is loaded and the line is in view; lit by the light at each end.</p>
  *
- * @version 1.0
+ * <p>The tube and the line lights are each compiled once into a display list, keyed on the
+ * landing anchor (the line is worked out from the two anchors alone), and replayed every frame:
+ * tessellating a 50-block line every frame measured 36 µs. The lists hold untextured
+ * {@code POSITION_COLOR} vertices only; the lightmap, texture and cull state are set around the
+ * call, never inside it. {@code /csm renderpass skip ziplineCablePerFrame} draws per frame for an
+ * A/B.</p>
+ *
+ * @version 1.1
  * @since 2026.11
  */
 @SideOnly(Side.CLIENT)
@@ -36,6 +45,15 @@ public class TileEntityZiplineCableRenderer
   private static final double LIGHT_SPACING = 6.0;
   private static final double LIGHT_HALF = 0.07;
 
+  private static final CsmDisplayListCache TUBES = new CsmDisplayListCache("zipline_cable");
+  private static final CsmDisplayListCache BEADS = new CsmDisplayListCache("zipline_lights");
+
+  /** Frees a launch anchor's lists, when its tile entity goes away or its chunk unloads. */
+  public static void cleanupDisplayLists(BlockPos pos) {
+    TUBES.invalidate(pos);
+    BEADS.invalidate(pos);
+  }
+
   @Override
   public void render(TileEntityZiplineAnchor te, double x, double y, double z,
       float partialTicks, int destroyStage, float alpha) {
@@ -44,7 +62,7 @@ public class TileEntityZiplineCableRenderer
       return;
     }
     BlockPos origin = te.getPos();
-    int chords = Math.max(2, MathHelper.ceil(line.length()));
+    long key = line.landing().toLong();
     int light = Math.max(lightAt(te, origin), lightAt(te, line.landing()));
     OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, light & 0xFFFF,
         light >> 16);
@@ -54,20 +72,57 @@ public class TileEntityZiplineCableRenderer
     GlStateManager.disableTexture2D();
     GlStateManager.disableLighting();
     GlStateManager.disableCull();
-    Tessellator tess = Tessellator.getInstance();
-    BufferBuilder buf = tess.getBuffer();
-    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-    Vec3d prev = line.point(0);
-    for (int i = 1; i <= chords; i++) {
-      Vec3d p = line.point(line.length() * i / chords);
-      ZiplineDraw.tube(buf, prev, p, RADIUS, RED, GREEN, BLUE);
-      prev = p;
-    }
-    tess.draw();
+    drawCached(TUBES, origin, key, line, false);
     if (te.hasLights()) {
       // Warm beads along the cable, lit whatever the light around them.
       OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-      buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+      drawCached(BEADS, origin, key, line, true);
+    }
+    // The vertex colours leave GL's colour where the state manager's cache does not know it.
+    GlStateManager.resetColor();
+    GlStateManager.enableCull();
+    GlStateManager.enableTexture2D();
+    GlStateManager.popMatrix();
+  }
+
+  private static void drawCached(CsmDisplayListCache cache, BlockPos origin, long key,
+      ZiplineLine line, boolean beads) {
+    if (CsmRenderToggles.ziplineCablePerFrame) {
+      draw(line, beads);
+      return;
+    }
+    int list = cache.get(origin, key);
+    if (list == CsmDisplayListCache.NO_LIST) {
+      // A new landing replaces the old line outright.
+      cache.invalidate(origin);
+      list = cache.allocate(origin, key);
+      if (list != CsmDisplayListCache.NO_LIST) {
+        GL11.glNewList(list, GL11.GL_COMPILE);
+        draw(line, beads);
+        GL11.glEndList();
+      }
+    }
+    if (list == CsmDisplayListCache.NO_LIST) {
+      draw(line, beads);
+    } else {
+      GL11.glCallList(list);
+    }
+  }
+
+  /** The tube, or the line lights, as one draw in world coordinates. */
+  private static void draw(ZiplineLine line, boolean beads) {
+    Tessellator tess = Tessellator.getInstance();
+    BufferBuilder buf = tess.getBuffer();
+    buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    if (!beads) {
+      int chords = Math.max(2, MathHelper.ceil(line.length()));
+      Vec3d prev = line.point(0);
+      for (int i = 1; i <= chords; i++) {
+        Vec3d p = line.point(line.length() * i / chords);
+        ZiplineDraw.tube(buf, prev, p, RADIUS, RED, GREEN, BLUE);
+        prev = p;
+      }
+    } else {
       Vec3d xAxis = new Vec3d(1, 0, 0);
       Vec3d yAxis = new Vec3d(0, 1, 0);
       Vec3d zAxis = new Vec3d(0, 0, 1);
@@ -76,11 +131,8 @@ public class TileEntityZiplineCableRenderer
         ZiplineDraw.box(buf, line.point(s).add(0, -LIGHT_HALF, 0), xAxis, yAxis, zAxis, half,
             1.0F, 0.86F, 0.55F);
       }
-      tess.draw();
     }
-    GlStateManager.enableCull();
-    GlStateManager.enableTexture2D();
-    GlStateManager.popMatrix();
+    tess.draw();
   }
 
   private static int lightAt(TileEntityZiplineAnchor te, BlockPos pos) {

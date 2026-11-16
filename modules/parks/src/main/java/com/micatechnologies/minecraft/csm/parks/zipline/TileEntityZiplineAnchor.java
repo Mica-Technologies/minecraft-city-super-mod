@@ -38,8 +38,27 @@ public class TileEntityZiplineAnchor extends AbstractTileEntity {
 
   /** Whether this is a launch anchor (its block says). */
   public boolean isLaunch() {
-    return world != null && world.getBlockState(pos).getBlock() instanceof BlockZiplineAnchor
-        && ((BlockZiplineAnchor) world.getBlockState(pos).getBlock()).isLaunch();
+    if (world == null) {
+      return false;
+    }
+    net.minecraft.block.Block block = world.getBlockState(pos).getBlock();
+    return block instanceof BlockZiplineAnchor && ((BlockZiplineAnchor) block).isLaunch();
+  }
+
+  @Override
+  public void invalidate() {
+    super.invalidate();
+    if (world != null && world.isRemote) {
+      TileEntityZiplineCableRenderer.cleanupDisplayLists(pos);
+    }
+  }
+
+  @Override
+  public void onChunkUnload() {
+    super.onChunkUnload();
+    if (world != null && world.isRemote) {
+      TileEntityZiplineCableRenderer.cleanupDisplayLists(pos);
+    }
   }
 
   /**
