@@ -1860,6 +1860,20 @@ public class RingBarrierState {
           windowEnd[n] = (i == onBarrier.size() - 1) ? barrierStart + len : cum;
         }
       }
+      // A phase whose window the other ring's excluding phase holds gets the wait and then its
+      // own time, taken from its ring's coordinated phase (issue #361; see spaceExcludedWindows).
+      // Its own time is its split as the cycle is normalised, not as its ring was stretched: a
+      // ring that budgets the wait in its splits is shorter on paper by exactly that wait.
+      long barrierSplit = Math.max(bs.total[0][b], bs.total[1][b]);
+      long[] own = new long[PHASE_SLOTS];
+      for (int ring = 1; ring <= 2; ring++) {
+        for (int n : activeOnBarrier(plan, ring, bs.order[b])) {
+          own[n] = barrierSplit > 0L
+              ? splitOrShare(plan, co, ring, n, cycle) * len / barrierSplit : 0L;
+        }
+      }
+      spaceExcludedWindows(plan, co, activeOnBarrier(plan, 1, bs.order[b]),
+          activeOnBarrier(plan, 2, bs.order[b]), windowStart, windowEnd, own, true);
       barrierStart += len;
     }
     for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
@@ -2127,6 +2141,79 @@ public class RingBarrierState {
   }
 
   /**
+   * Lays out room for a phase exclusion inside one barrier (issue #361). Windows tile each ring
+   * on its own, so a phase excluded beside the other ring's phase can be given a window that the
+   * other phase holds: ring 1 [1, 2] and ring 2 [5, 6] with 1 excluding 5 put 5's window at the
+   * barrier start, beside 1. The ring does wait for 5 there ({@link RingRuntime#exclusionWait}),
+   * but by the time 1 had cleared, 5's permissive period ({@link #startableIn}) had closed, so the
+   * ring went on to 6 and 5 was never served under coordination, while FREE served it right
+   * after 1 every cycle.
+   *
+   * <p>So the waiting phase's window is extended to hold the wait and then its own time: it keeps
+   * its start (the ring sits at that slot for the whole wait, which is what keeps acceptance, the
+   * coordinated yield for an opening window and the hold of issue #359 working) and ends no
+   * earlier than the excluding phase's window end plus its own split ({@code own}). The phase that
+   * comes up first keeps its window: the earlier window, or ring 1's on a tie, as the engine fills
+   * ring 1 first. The time comes out of the ring's coordinated phase after it (else its last
+   * phase), whose window starts that much later, never out of the barrier: the barrier keeps its
+   * typed length, so every other phase's window and every yield point stay where they were. A
+   * plan whose ring budgets the wait (the excluded phase's ring totals the excluding phase's split
+   * plus its own) gives the coordinated phase exactly its split. Windows of excluded phases that
+   * do not overlap, such as a lead-lag order, are left alone, as is every plan with no exclusion.
+   *
+   * @param fixedEnd {@code true} for the cycle's windows (the barrier end is fixed, so the time
+   *     comes out of the coordinated phase); {@code false} to let the ring run long instead, which
+   *     is how {@link #findBarrierMisalignment} measures a ring's total with its waits
+   */
+  private static void spaceExcludedWindows(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalCoordinationPlan co, List<Integer> ring1Phases, List<Integer> ring2Phases,
+      long[] start, long[] end, long[] own, boolean fixedEnd) {
+    for (int ring = 1; ring <= 2; ring++) {
+      List<Integer> phases = ring == 1 ? ring1Phases : ring2Phases;
+      List<Integer> others = ring == 1 ? ring2Phases : ring1Phases;
+      for (int i = 0; i < phases.size(); i++) {
+        int n = phases.get(i);
+        long need = end[n];
+        for (int m : others) {
+          boolean overlaps = start[m] < end[n] && start[n] < end[m];
+          boolean otherFirst = start[m] < start[n] || (start[m] == start[n] && ring == 2);
+          if (overlaps && otherFirst && plan.excludes(n, m)) {
+            need = Math.max(need, end[m] + own[n]);
+          }
+        }
+        long delta = need - end[n];
+        if (delta <= 0L || (fixedEnd && i == phases.size() - 1)) {
+          continue; // room enough already, or nothing after it to take the time from
+        }
+        int absorber = phases.size() - 1;
+        if (fixedEnd) {
+          for (int j = i + 1; j < phases.size(); j++) {
+            if (co.isCoordinatedPhase(phases.get(j))) {
+              absorber = j;
+              break;
+            }
+          }
+          int a = phases.get(absorber);
+          delta = Math.min(delta, end[a] - start[a] - 1L); // the absorber keeps a window
+          if (delta <= 0L) {
+            continue;
+          }
+        }
+        end[n] += delta;
+        for (int j = i + 1; j < phases.size(); j++) {
+          int p = phases.get(j);
+          if (!fixedEnd || j < absorber) {
+            start[p] += delta;
+            end[p] += delta;
+          } else if (j == absorber) {
+            start[p] += delta; // its window ends where it did: it gives the time
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Non-fatal check that the two rings' splits meet at every barrier. The rings cross a barrier
    * together, so the engine gives each barrier the <em>longer</em> ring's total and stretches the
    * shorter ring's phases to fill it: the cycle still holds, but the shorter ring's phases run
@@ -2140,15 +2227,46 @@ public class RingBarrierState {
    */
   String findBarrierMisalignment(TrafficSignalProgrammedPhasePlan plan) {
     TrafficSignalCoordinationPlan co = plan.getCoordination(Math.max(0, activeCoordinationSlot));
-    BarrierSplits bs = barrierSplits(plan, co, Math.max(1L, co.getCycleLength()));
+    long cycle = Math.max(1L, co.getCycleLength());
+    BarrierSplits bs = barrierSplits(plan, co, cycle);
     for (int b = 0; b < bs.order.length; b++) {
-      long t1 = bs.total[0][b];
-      long t2 = bs.total[1][b];
-      if (activeOnBarrier(plan, 1, bs.order[b]).isEmpty()
-          || activeOnBarrier(plan, 2, bs.order[b]).isEmpty() || t1 == t2) {
+      List<Integer> r1 = activeOnBarrier(plan, 1, bs.order[b]);
+      List<Integer> r2 = activeOnBarrier(plan, 2, bs.order[b]);
+      if (r1.isEmpty() || r2.isEmpty()) {
         continue;
       }
+      // Each ring's total counts the time it waits for an excluded phase (issue #361): ring 2
+      // [5, 6] beside ring 1 [1, 2] with 1 excluding 5 meets the barrier when 5 + 6 = 2, not
+      // 1 + 2. Laid out from the typed splits, letting a ring run long instead of squeezing it.
+      long[] start = new long[PHASE_SLOTS];
+      long[] end = new long[PHASE_SLOTS];
+      long[] own = new long[PHASE_SLOTS];
+      for (int ring = 1; ring <= 2; ring++) {
+        long cum = 0L;
+        for (int n : ring == 1 ? r1 : r2) {
+          own[n] = splitOrShare(plan, co, ring, n, cycle);
+          start[n] = cum;
+          cum += own[n];
+          end[n] = cum;
+        }
+      }
+      spaceExcludedWindows(plan, co, r1, r2, start, end, own, false);
+      long t1 = end[r1.get(r1.size() - 1)];
+      long t2 = end[r2.get(r2.size() - 1)];
+      if (t1 == t2) {
+        continue;
+      }
+      long waits = t1 + t2 - bs.total[0][b] - bs.total[1][b];
       char barrier = (char) ('A' + bs.order[b]);
+      if (waits > 0L) {
+        return "the rings' splits do not meet at barrier " + barrier + ": ring 1's phases there "
+            + "take " + t1 + " ticks and ring 2's " + t2 + ", counting the " + waits + " ticks "
+            + "a ring waits for a phase excluded beside the other ring's. The barrier keeps "
+            + "its typed length, " + Math.max(bs.total[0][b], bs.total[1][b]) + ", so a ring "
+            + "that waits gives the wait up from its coordinated phase, and a ring shorter than "
+            + "the barrier is stretched. Give both rings the same total on each barrier, "
+            + "counting the wait.";
+      }
       return "the rings' splits do not meet at barrier " + barrier + ": ring 1's phases there "
           + "total " + t1 + " ticks and ring 2's " + t2 + ". The rings cross a barrier "
           + "together, so the barrier runs the longer " + Math.max(t1, t2) + " and the shorter "

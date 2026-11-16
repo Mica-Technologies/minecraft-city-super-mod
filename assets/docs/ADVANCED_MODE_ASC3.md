@@ -308,7 +308,7 @@ The MAP screen's **EXC** column sets one partner per phase and keeps the pair wr
 round; a list of several survives from NBT and shows as `x5+`. (ASC/3 programs the same idea as
 its phase concurrency table.)
 
-The engine honours an exclusion in three places:
+The engine honours an exclusion in four places:
 
 - **Selection.** A ring never starts a phase excluded by the phase the other ring is serving, in
   any interval including its red clearance (`excludedByOtherRing`, checked by the forward
@@ -324,6 +324,21 @@ The engine honours an exclusion in three places:
   (`RingRuntime.exclusionFor`), and the other ring, going idle, starts nothing excluded beside it
   (`excludedBesideOtherRingsWait`). A ring that was already waiting keeps its turn, so two idle
   rings never wait on each other.
+- **Coordination windows.** Each ring's windows tile its splits on their own, so a phase
+  excluded beside the other ring's phase can get a window that phase holds: with `r1:[1,2,..]`,
+  `r2:[5,6,..]` and 1 excluding 5, 5's window opened at the barrier start beside 1, its
+  permissive period had closed by the time 1 cleared, and 5 was never served under
+  coordination, while FREE served it after 1 every cycle (issue #361).
+  `spaceExcludedWindows` now gives the phase that waits a window that keeps its start (the ring
+  sits at that slot for the whole wait, so acceptance, the coordinated yield and the hold above
+  still work) and ends no earlier than the excluding phase's window end plus its own split. The
+  phase that comes up first keeps its window: the earlier one, or ring 1's on a tie. The time
+  comes out of the waiting ring's next coordinated phase (else its last phase on the barrier),
+  never out of the barrier, so the cycle, the other windows and every yield point stay put. Splits
+  that budget the wait (ring 2's `5 + 6` equal to ring 1's `2`, so ring 2 totals `1 + 5 + 6`)
+  leave the coordinated phase exactly its split; splits that do not shorten it by the wait.
+  `findBarrierMisalignment` counts the wait in a ring's total. Excluded windows that do not
+  overlap (a lead-lag order) are left as they were.
 - **Termination.** `conflicts()` counts an excluded phase as conflicting demand, so a call on
   phase 5 gaps phase 1 out, runs its max-green timer and is never held at the barrier.
 - **The conflict monitor.** `checkExclusions` throws if both rings show an excluded pair green
@@ -597,7 +612,9 @@ running the coordinated phase long, never by shortening another phase's split.
 ### Our model
 
 Splits tile the cycle into permissive windows barrier by barrier (a barrier is as long as the
-longer ring's total on it, and a ring with no phase on a barrier waits at it), and **every phase terminates at its yield
+longer ring's total on it, and a ring with no phase on a barrier waits at it; a phase that waits
+for one excluded beside it in the other ring gets a window that holds the wait, see
+[Phase exclusions](#phase-exclusions-exc)), and **every phase terminates at its yield
 point** — window end less its own clearance — rather than at the window end. Non-coordinated phases
 force off there; the same point gates whether a new call is even accepted, since a call arriving
 later cannot be served this cycle.
