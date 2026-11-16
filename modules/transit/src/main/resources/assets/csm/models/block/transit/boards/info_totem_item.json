@@ -1,0 +1,241 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "housing": "csm:blocks/transit/boards/housing",
+    "face": "csm:blocks/transit/boards/face",
+    "particle": "csm:blocks/transit/boards/housing"
+  },
+  "elements": [
+    {
+      "from": [
+        4.5,
+        0,
+        6
+      ],
+      "to": [
+        11.5,
+        1,
+        10
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            15,
+            11.5,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            15,
+            11.5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            6,
+            15,
+            10,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            6,
+            15,
+            10,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            6,
+            11.5,
+            10
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            4.5,
+            6,
+            11.5,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        1,
+        6.75
+      ],
+      "to": [
+        11,
+        16,
+        9.25
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            5,
+            0,
+            11,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#face",
+          "uv": [
+            11,
+            0,
+            5,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            15
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            6.75,
+            0,
+            9.25,
+            15
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            5,
+            6.75,
+            11,
+            9.25
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.35,
+        0.35,
+        0.35
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}

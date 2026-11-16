@@ -22,6 +22,7 @@ import com.micatechnologies.minecraft.csm.transit.airport.BlockSecurityTray;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockSelfCheckinKiosk;
 import com.micatechnologies.minecraft.csm.transit.airport.BlockStandSign;
 import com.micatechnologies.minecraft.csm.transit.airport.ItemBoardingPass;
+import com.micatechnologies.minecraft.csm.transit.arrival.BlockBusArrivalBoard;
 import com.micatechnologies.minecraft.csm.transit.board.BlockBusBoard;
 import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyColumn;
 import com.micatechnologies.minecraft.csm.transit.canopy.BlockCanopyDeck;
@@ -166,6 +167,12 @@ public class CsmTabTransit extends CsmTab {
     // whole pole) and the stop-name blade, both wayfinding signs
     initTabBlock(new BlockBusStopPoleFlag("bus_stop_pole_flag"));
     initTabBlock(new BlockBusStopBlade("bus_stop_name_blade"));
+
+    // Arrival boards and the info totem (gen_transit_arrival_boards.py --fragments): placed
+    // whole by their items, hung, on a post or on a wall
+    initTabBlock(new BlockBusArrivalBoard("bus_arrival_board_3x1", 3, 1, false));
+    initTabBlock(new BlockBusArrivalBoard("bus_arrival_board_5x2", 5, 2, false));
+    initTabBlock(new BlockBusArrivalBoard("bus_info_totem", 1, 3, true));
 
     // Bus shelters (gen_transit_shelters.py --fragments)
     initTabBlock(new BlockBusShelter("bus_shelter_glass_cityline", BusShelterStyle.GLASS));

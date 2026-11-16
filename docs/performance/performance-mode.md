@@ -21,8 +21,8 @@ server's copy changes nothing for them.
 | Chunk builders trimmed over | 40% of direct memory | 30% | 25% | `chunkBuilderBudgetPercent` |
 
 ¹ Signals, crosswalks, guide and street signs, message and speed signs, beacons, arrow boards,
-barricade lights, crossing gates, cranes, sirens, ad boards, departure and flight boards, clocks,
-the goods on shop shelves.
+barricade lights, crossing gates, cranes, sirens, ad boards, departure, arrival and flight boards,
+clocks, the goods on shop shelves.
 Never farther than your own Minecraft render distance.
 
 ² [`chunkBuilderLimit`](../getting-started/configuration.md#performance) also caps this on every

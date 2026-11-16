@@ -32,7 +32,7 @@ world ever sees is namespaced with them.
 | Text to Speech | `csm_tts` | CSM: Text to Speech | `…-tts-<version>.jar` | `tts` | none — its blocks appear in Technology | 1 block + 1 item |
 | Signage & Advertising | `csm_signage` | CSM: Signage & Advertising | `…-signage-<version>.jar` | `signage` | Signage & Advertising (18), hidden (−8) | 15 |
 | Parks & Greenery | `csm_parks` | CSM: Parks & Greenery | `…-parks-<version>.jar` | `parks` | Trees & Plants (19), Parks (20) | 166 + 1 item |
-| Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27) | 119 + 2 items |
+| Transit | `csm_transit` | CSM: Transit | `…-transit-<version>.jar` | `transit` | Transit (27), hidden (−14) | 119 + 2 items |
 | Healthcare | `csm_healthcare` | CSM: Healthcare | `…-healthcare-<version>.jar` | `healthcare` | Healthcare - Patient Care (29), Healthcare - Clinical (30), hidden (−11) | 0 (scaffold) |
 | Sports & Venues | `csm_venues` | CSM: Sports & Venues | `…-venues-<version>.jar` | `venues` | Sports & Venues - Seating & Venue (34), hidden (−12) | 21 |
 | Vehicles | `csm_vehicles` | CSM: Vehicles | `…-vehicles-<version>.jar` | `vehicles` | none — its content is an Immersive Vehicles pack | 0 (6 IV parts) |

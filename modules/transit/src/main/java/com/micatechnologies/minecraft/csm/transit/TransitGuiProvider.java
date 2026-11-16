@@ -1,6 +1,9 @@
 package com.micatechnologies.minecraft.csm.transit;
 
 import com.micatechnologies.minecraft.csm.codeutils.gui.ICsmGuiProvider;
+import com.micatechnologies.minecraft.csm.transit.arrival.BlockBusArrivalBoard;
+import com.micatechnologies.minecraft.csm.transit.arrival.GuiBusStopInfo;
+import com.micatechnologies.minecraft.csm.transit.arrival.TileEntityBusArrivalBoard;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareGate;
 import com.micatechnologies.minecraft.csm.transit.fare.BlockFareVendingMachine;
 import com.micatechnologies.minecraft.csm.transit.fare.FareGateConfigGui;
@@ -14,7 +17,8 @@ import net.minecraft.world.World;
 
 /**
  * The transit module's screens, handed to Core's GUI handler through {@code CsmGuiRegistry}: the
- * fare vending machine (16) and the fare gate's configuration (17). GUI ids are global across the
+ * fare vending machine (16), the fare gate's configuration (17) and the arrival board's and info
+ * totem's editor (80, {@code BlockBusArrivalBoard.GUI_ID}). GUI ids are global across the
  * mod; both kept the ids they had before the fare equipment moved here from Technology. The large
  * hanging sign's editor (46) is Core's, shared by every wayfinding panel.
  *
@@ -28,6 +32,12 @@ public class TransitGuiProvider implements ICsmGuiProvider {
     if (id == BlockFareVendingMachine.GUI_ID
         && world.getBlockState(pos).getBlock() instanceof BlockFareVendingMachine) {
       return new FareVendingGui(pos);
+    }
+    if (id == BlockBusArrivalBoard.GUI_ID) {
+      TileEntity tileEntity = world.getTileEntity(pos);
+      if (tileEntity instanceof TileEntityBusArrivalBoard) {
+        return new GuiBusStopInfo((TileEntityBusArrivalBoard) tileEntity);
+      }
     }
     if (id == BlockFareGate.OP_CONFIG_GUI_ID) {
       TileEntity tileEntity = world.getTileEntity(pos);

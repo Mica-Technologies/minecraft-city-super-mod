@@ -1,0 +1,25 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:transit/boards/arrival_board_empty"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {},
+      "south": {},
+      "west": {}
+    },
+    "mount": {
+      "hung": {},
+      "post": {},
+      "wall": {},
+      "floor": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:transit/boards/info_totem_item"
+      }
+    ]
+  }
+}

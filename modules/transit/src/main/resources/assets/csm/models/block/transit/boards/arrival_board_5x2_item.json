@@ -1,0 +1,300 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "housing": "csm:blocks/transit/boards/housing",
+    "face": "csm:blocks/transit/boards/face",
+    "particle": "csm:blocks/transit/boards/housing"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        4.8,
+        7
+      ],
+      "to": [
+        16,
+        11.2,
+        9
+      ],
+      "faces": {
+        "north": {
+          "texture": "#face",
+          "uv": [
+            0,
+            4,
+            16,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#face",
+          "uv": [
+            16,
+            4,
+            0,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            7,
+            4.8,
+            9,
+            11.2
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            7,
+            4.8,
+            9,
+            11.2
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            7,
+            16,
+            9
+          ]
+        },
+        "down": {
+          "texture": "#housing",
+          "uv": [
+            0,
+            7,
+            16,
+            9
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        11.2,
+        7.5
+      ],
+      "to": [
+        4,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            12,
+            0,
+            13,
+            4.8
+          ]
+        },
+        "south": {
+          "texture": "#housing",
+          "uv": [
+            3,
+            0,
+            4,
+            4.8
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            4.8
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            4.8
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            3,
+            7.5,
+            4,
+            8.5
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        12,
+        11.2,
+        7.5
+      ],
+      "to": [
+        13,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#housing",
+          "uv": [
+            3,
+            0,
+            4,
+            4.8
+          ]
+        },
+        "south": {
+          "texture": "#housing",
+          "uv": [
+            12,
+            0,
+            13,
+            4.8
+          ]
+        },
+        "east": {
+          "texture": "#housing",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            4.8
+          ]
+        },
+        "west": {
+          "texture": "#housing",
+          "uv": [
+            7.5,
+            0,
+            8.5,
+            4.8
+          ]
+        },
+        "up": {
+          "texture": "#housing",
+          "uv": [
+            12,
+            7.5,
+            13,
+            8.5
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.62,
+        0.62,
+        0.62
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "thirdperson_righthand": {
+      "rotation": [
+        75,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2.5,
+        0
+      ],
+      "scale": [
+        0.35,
+        0.35,
+        0.35
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        0,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        0,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    }
+  }
+}

@@ -5,6 +5,8 @@ import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoard;
 import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoardLarge;
 import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoardLargeRenderer;
 import com.micatechnologies.minecraft.csm.transit.airport.TileEntityFlightBoardRenderer;
+import com.micatechnologies.minecraft.csm.transit.arrival.TileEntityBusArrivalBoard;
+import com.micatechnologies.minecraft.csm.transit.arrival.TileEntityBusArrivalBoardRenderer;
 import com.micatechnologies.minecraft.csm.transit.board.BusBoardAnnouncer;
 import com.micatechnologies.minecraft.csm.transit.board.BusStation;
 import com.micatechnologies.minecraft.csm.transit.board.TileEntityBusBayDisplay;
@@ -49,6 +51,8 @@ public class CsmTransitClientProxy extends CsmTransitCommonProxy {
         new TileEntityBusDepartureBoardRenderer());
     ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBusBayDisplay.class,
         new TileEntityBusBayDisplayRenderer());
+    ClientRegistry.bindTileEntitySpecialRenderer(TileEntityBusArrivalBoard.class,
+        new TileEntityBusArrivalBoardRenderer());
     BusBoardAnnouncer announcer = new BusBoardAnnouncer();
     MinecraftForge.EVENT_BUS.register(announcer);
     CsmLifecycleHooks.onClientDisconnect(() -> {

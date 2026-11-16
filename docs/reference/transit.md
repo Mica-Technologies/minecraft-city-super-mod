@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside.
 
-!!! info "172 blocks in this tab"
+!!! info "175 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -28,6 +28,8 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Baggage Cart | `csm:airport_baggage_cart` | 3 | 12 | pickaxe | 1 |
 | Baggage Tug | `csm:airport_baggage_tug` | 3 | 12 | pickaxe | 1 |
 | Boarding Pass Scanner | `csm:airport_boarding_pass_scanner` | 2.0 | 6.0 | pickaxe | 1 |
+| Bus Arrival Board (3x1) | `csm:bus_arrival_board_3x1` | 2.0 | 6.0 | pickaxe | 1 |
+| Bus Arrival Board (5x2) | `csm:bus_arrival_board_5x2` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Arrival Display | `csm:bus_stop_arrival_display` | 2 | 10 | pickaxe | 1 |
 | Bus Bay Display | `csm:bus_bay_display` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Departure Board | `csm:bus_departure_board` | 2.0 | 6.0 | pickaxe | 1 |
@@ -68,6 +70,7 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Bus Stop Flag (EMBERLINE) | `csm:bus_stop_flag_emberline` | 2 | 10 | pickaxe | 1 |
 | Bus Stop Flag (RIVERWAY) | `csm:bus_stop_flag_riverway` | 2 | 10 | pickaxe | 1 |
 | Bus Stop Flag (VERDANT) | `csm:bus_stop_flag_verdant` | 2 | 10 | pickaxe | 1 |
+| Bus Stop Info Totem | `csm:bus_info_totem` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Stop Name Blade | `csm:bus_stop_name_blade` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Stop Pole (Full Size) | `csm:bus_stop_pole_flag` | 2.0 | 6.0 | pickaxe | 1 |
 | Bus Stop Route Map Case | `csm:bus_stop_route_map_case` | 2 | 10 | pickaxe | 1 |

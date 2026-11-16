@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
 import com.micatechnologies.minecraft.csm.materials.CsmFabricatorCosts;
+import com.micatechnologies.minecraft.csm.transit.arrival.BusStopInfoPacket;
 import com.micatechnologies.minecraft.csm.transit.fare.FareGateOpModeHandler;
 import com.micatechnologies.minecraft.csm.transit.fare.FareGateOpModePacket;
 import com.micatechnologies.minecraft.csm.transit.fare.FareVendingPurchaseHandler;
@@ -92,6 +93,10 @@ public class CsmTransit {
     NETWORK.registerMessage(
         FareGateOpModeHandler.class,
         FareGateOpModePacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(
+        BusStopInfoPacket.Handler.class,
+        BusStopInfoPacket.class,
         Side.SERVER);
 
     proxy.preInit(event);

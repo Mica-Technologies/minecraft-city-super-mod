@@ -70,6 +70,24 @@ public final class TransitFabricatorRules {
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
+    // the large arrival boards: an LED module a screen's worth, and their housing; the totem a
+    // screen, its housing and a concrete plinth
+    if (registryName.equals("bus_arrival_board_3x1")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 2),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 2));
+    }
+    if (registryName.equals("bus_arrival_board_5x2")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 4),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 3));
+    }
+    if (registryName.equals("bus_info_totem")) {
+      return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
+          FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
+          FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
+          FabricatorIngredient.part(CsmParts.CONCRETE_MIX, 1));
+    }
     if (registryName.equals("bus_departure_board") || registryName.equals("bus_bay_display")) {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.LED_MODULE, 1),
           FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),

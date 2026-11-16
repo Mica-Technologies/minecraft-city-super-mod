@@ -19,6 +19,13 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   by its `hang` property (shift crossed with side), with no `shift` variants (its state mapper
   leaves `shift` out of the model locations); the flag models are shared by the agencies, the
   blockstate filling the plate slots with the plate or a clear texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
+- `gen_transit_arrival_boards.py` -- the large bus arrival boards (`bus_arrival_board_3x1`,
+  `bus_arrival_board_5x2`), the info totem (`bus_info_totem`) and the invisible cell they fill
+  (`bus_arrival_board_part`, Transit's hidden tab). The renderer draws everything, so the block
+  models are empty (particle only) and the blockstates (`facing` x `mount`, the part's `toward`)
+  all point at that; the item models are small boxes of the board and the totem, which also put
+  the `housing` and `face` textures on the block atlas. Writes the four names, the editor's
+  captions and the no-room message in all four locales; `--check`, `--fragments`
 - `gen_transit_shelters.py` -- the bus shelters (Transit): glass and steel, cantilever canopy and
   flat roof, at real scale: columns of `bottom`, `second`, any number of `middle` and a `top`
   (`section`, actual state), joining along their length and front to back from actual state
