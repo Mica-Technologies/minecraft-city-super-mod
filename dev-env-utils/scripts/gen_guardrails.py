@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_guardrails.py -- the W-beam guardrail RAIL blocks for the Traffic Accessories tab.
+gen_guardrails.py -- the W-beam guardrail RAIL blocks for the Work Zone & Roadside Safety tab.
 
 Four sibling blocks -- steel or timber post, one rail or two -- that join into runs, take all eight
 facings, and ramp with the grade. Everything a rail block draws is generated here: the OBJ models,

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_work_zone_devices.py -- the work zone channelizing devices for the Traffic Accessories tab.
+gen_work_zone_devices.py -- the work zone channelizing devices for the Work Zone & Roadside Safety tab.
 
 Cones, drums, channelizers, delineators and sand barrels: the temporary hardware that closes a
 lane. Every one of them is a body of revolution, which is exactly what a hand-authored Blockbench

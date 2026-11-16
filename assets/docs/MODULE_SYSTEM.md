@@ -21,7 +21,7 @@ world ever sees is namespaced with them.
 | Module | Mod id | Display name | Release jar | Java packages | Creative tabs (load order) | Blocks |
 |---|---|---|---|---|---|---|
 | Core | `csm` | CSM: Core | `minecraft-city-super-mod-core-<version>.jar` | root, `codeutils`, `api`, `materials`, `tabs/CsmTabMaterials` | Materials (14) | 1 block + 15 items |
-| Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` | Road Signs (7), Traffic Accessories (9), Traffic Signals (10), Streetscape (11), hidden (−10) | 1,357 |
+| Roads & Traffic | `csm_roads` | CSM: Roads & Traffic | `…-roads-<version>.jar` | `trafficsignals`, `trafficaccessories`, `trafficsigns`, `streetscape` | Road Signs (7), Traffic Poles & Arms (9/−1), Traffic Accessories (9), Work Zone & Roadside Safety (9/1), Traffic Signals (10), Streetscape (11), hidden (−10) | 1,357 |
 | Life Safety | `csm_lifesafety` | CSM: Life Safety | `…-lifesafety-<version>.jar` | `lifesafety`, `api/firealarm` | Fire Alarm & Detection (3), Exits & Emergency Lighting (21), Fire Protection (22), Emergency Services (23) | 299 |
 | HVAC | `csm_hvac` | CSM: HVAC | `…-hvac-<version>.jar` | `hvac` | HVAC (2) | 46 |
 | Lighting | `csm_lighting` | CSM: Lighting | `…-lighting-<version>.jar` | `lighting` | Lighting (4), hidden (−9) | 140 |
@@ -157,7 +157,7 @@ Forge runs the lifecycle **per phase, across all mods**, not per mod. The order 
 2. **Core's `preInit`.** `CsmTab.initTabs(event)` asks `ASMDataTable` for every `@CsmTab.Load`
    class on the classpath — that scan spans **every loaded jar**, which is the whole mechanism that
    lets a module contribute content without Core naming it. Tabs are sorted by their `order` value
-   and each one's `initTabElements` runs, constructing its blocks and items, which register
+   (then by `sub`, see step 6 of adding a module) and each one's `initTabElements` runs, constructing its blocks and items, which register
    themselves into `CsmRegistry` from their constructors.
 3. **Each module's `preInit`.** The module registers its services with Core (next section).
 4. **Registry events.** Core's listeners hand `CsmRegistry`'s blocks and items, and
@@ -268,7 +268,11 @@ of one entry's arguments.
    `"requiredMods": ["csm"]` and `"logoFile": "assets/csm/textures/csm_icon.png"`.
 6. **Write the tab class(es)** in `…/csm/tabs/` under the module tree, annotated
    `@CsmTab.Load(order = N)` with the next free order value — and update the order list in
-   `CsmTab`'s class javadoc, which is the only place the whole order is written down.
+   `CsmTab`'s class javadoc, which is the only place the whole order is written down. A tab
+   split into several keeps the original's `order` and tells the parts apart with `sub`
+   (`@CsmTab.Load(order = 9, sub = -1)`; lowest first, `0` by default), so no other tab is
+   renumbered: Roads' Traffic Poles & Arms, Traffic Accessories and Work Zone & Roadside
+   Safety are 9/−1, 9/0 and 9/1. The pair must be unique; `CsmTabLoadOrderTest` checks it.
 7. **Add a hidden tab** if the module has retiring blocks: negative `order`, `getTabHidden()` true,
    `getTabId()` and `getTabIcon()` returning `null`. Hidden blocks get a `null` creative tab, which
    is also what keeps them out of the Fabricator.

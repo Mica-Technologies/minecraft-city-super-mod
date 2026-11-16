@@ -201,6 +201,8 @@ public class CsmFabricatorGui extends GuiScreen {
       case "roadsigns": return "Road Signs";
       case "technology": return "Technology";
       case "trafficaccessories": return "Traffic Accessories";
+      case "trafficpoles": return "Traffic Poles";
+      case "workzone": return "Work Zone";
       case "trafficsignals": return "Traffic Signals";
       case "utilities": return "Utilities";
       default: return base;

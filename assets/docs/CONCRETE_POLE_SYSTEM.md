@@ -11,7 +11,7 @@ naming of its ends is not repeated here.
 
 ## What it is in game
 
-Four pole blocks, in Traffic Accessories after the pedestal poles:
+Four pole blocks, in Traffic Poles & Arms after the pedestal poles:
 
 | Block | Id | Shaft | Real thing |
 |---|---|---|---|
@@ -262,7 +262,7 @@ they are.
 ## Decorative and historic poles
 
 The same idea carries the decorative street light poles of GitHub #99
-(`BlockTrafficPoleDecorative`, Traffic Accessories after the luminaire arms). Each design is one
+(`BlockTrafficPoleDecorative`, Traffic Poles & Arms after the luminaire arms). Each design is one
 block stacked to any height whose ends are decided from its neighbours, in the concrete pole's
 order: another decorative pole beyond an end (any design) is a plain joint, an
 `ICsmPostTopFixture` gets the design's **capital**, the open air its **cap**, and the bottom of a

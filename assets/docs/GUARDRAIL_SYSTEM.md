@@ -222,7 +222,7 @@ filler would put the box a third of the way into the next cell.
 2. Write or extend a generator against that contract; emit core / post / fill / end_left /
    end_right pieces per slope, plus the inventory model.
 3. `python dev-env-utils/scripts/audit_obj_models.py <the new .obj files>` — 0 FAIL.
-4. Register in `CsmTabTrafficAccessories` with the bounding boxes the generator's tab fragment
+4. Register in `CsmTabWorkZone` with the bounding boxes the generator's tab fragment
    emits, passing the rail-kind constant.
 5. Add it to `ItemGuardrailTool`'s ring if it has siblings.
 6. Lang in all four languages, then `validate_lang_translations.py`.

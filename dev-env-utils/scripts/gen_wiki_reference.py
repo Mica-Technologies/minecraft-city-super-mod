@@ -273,9 +273,19 @@ TABS = {
                            "ticket scanner with the Venue Ticket, the suite bar counter and drink "
                            "rail, and the team store's jersey rack, hat wall, apparel table and "
                            "jersey mannequin in any team's colours."),
+    "tabtrafficpoles": ("traffic-poles", "Traffic Poles & Arms",
+                        "Traffic poles and every pole part: painted, concrete, pedestal, "
+                        "impact and decorative street light poles, their bases, connectors, "
+                        "mounts and finials, and the mast arm curves, truss and NYC signal "
+                        "arms and luminaire arms."),
     "tabtrafficaccessories": ("traffic-accessories", "Traffic Accessories",
-                              "Poles, mounts, mast arms, span wire hardware, backplates and "
-                              "cameras."),
+                              "Signal hardware: control boxes, backplates, covers and mount "
+                              "kits, span wire and bridge cables, cameras, message and speed "
+                              "signs, beacons and street name signs."),
+    "tabworkzone": ("work-zone", "Work Zone & Roadside Safety",
+                    "Work zone channelizing devices, barricades and arrow boards, and "
+                    "roadside safety: guardrails with their ends and transitions, box "
+                    "beam, cable barrier and crash cushions, with the Guardrail Tool."),
     "tabtrafficsignals": ("traffic-signals", "Traffic Signals",
                           "Signal heads, crosswalk signals and the controllers that drive them."),
     "tabutilities": ("utilities", "Utilities",
@@ -310,10 +320,10 @@ PAGE_ORDER = ["tabbuildingmaterials", "tabcommercialoffice", "tabconstructionsit
               "tabhvac", "tabinteriorfinishes", "tablifesafety", "tablighting", "tabmarketstore",
               "tabmaterials",
               "tabnovelties", "tabparks", "tabpowergrid", "tabresidential", "tabroadsigns", "tabsignage", "tabstairsrailings", "tabstreetscape", "tabstructureframing",
-              "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficsignals", "tabtransit",
+              "tabtechnology", "tabtechcomputers", "tabtechnetworking", "tabtrafficaccessories", "tabtrafficpoles", "tabtrafficsignals", "tabtransit",
               "tabtreesplants", "tabutilities", "tabvenuesseating", "tabvenuesarena",
               "tabvenuesconcourse", "tabvenuesballpark", "tabvenuesfootball", "tabvenuesbowling",
-              "tabvenuescourts", "tabvenuesgolf", "tabvenuesskate",
+              "tabvenuescourts", "tabvenuesgolf", "tabvenuesskate", "tabworkzone",
               "tabnone"]
 
 

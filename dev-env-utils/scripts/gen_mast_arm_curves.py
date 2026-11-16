@@ -66,7 +66,7 @@ OUTPUT
   blockstates/trafficpolemastarmcurve<preset><color>.json                        (presets x colors)
   src/main/java/.../trafficaccessories/MastArmCurveProfile.java, in whichever tree already has
     it (the roads module today; resolved via csm_layout.source_for_write)      (generated enum)
-  scratch fragments for en_us.lang and CsmTabTrafficAccessories.java
+  scratch fragments for en_us.lang and CsmTabTrafficPoles.java
 
 The Java enum is GENERATED, not hand-written, because the block's placement code has to know the
 exact same cell list the geometry was split on. Hand-copying that is a drift bug waiting to

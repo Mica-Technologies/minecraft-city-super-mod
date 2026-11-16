@@ -621,7 +621,9 @@ def cost_for(registry, info, ancestors):
         if registry.startswith("bus_shelter_"):
             return ("POLE_SECTION", "SHEET_METAL", "LED_MODULE")
         return ("CONTROL_BOARD", "SHEET_METAL", "WIRING_HARNESS")
-    if tab == "tabtrafficaccessories":
+    # Traffic Poles & Arms and Work Zone & Roadside Safety were split out of Traffic Accessories
+    # and are priced as it is (CsmFabricatorCosts)
+    if tab in ("tabtrafficaccessories", "tabtrafficpoles", "tabworkzone"):
         return ("SHEET_METAL", "FASTENER_KIT")
     if tab == "tabsignage":
         if has_word(registry, "shelter"):

@@ -84,6 +84,9 @@ public final class CsmFabricatorCosts {
   private static final String TAB_TECH_COMPUTERS = "tabtechcomputers";
   private static final String TAB_TECH_NETWORKING = "tabtechnetworking";
   private static final String TAB_TRAFFIC_ACCESSORIES = "tabtrafficaccessories";
+  // Split out of Traffic Accessories: priced as it is, so no block's cost changed in the split
+  private static final String TAB_TRAFFIC_POLES = "tabtrafficpoles";
+  private static final String TAB_WORK_ZONE = "tabworkzone";
   private static final String TAB_TRAFFIC_SIGNALS = "tabtrafficsignals";
 
   private static final String MC_PLANKS = "minecraft:planks";
@@ -341,6 +344,8 @@ public final class CsmFabricatorCosts {
         return techNetworkingCost(registryName);
 
       case TAB_TRAFFIC_ACCESSORIES:
+      case TAB_TRAFFIC_POLES:
+      case TAB_WORK_ZONE:
         return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
             FabricatorIngredient.part(CsmParts.FASTENER_KIT, 1));
 

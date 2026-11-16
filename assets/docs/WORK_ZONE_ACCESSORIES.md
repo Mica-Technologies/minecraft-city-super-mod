@@ -3,8 +3,8 @@
 The channelizing devices a road crew puts out: cones, drums, channelizers, barricades, delineator
 posts, temporary pavement markers, barrier walls, sand barrels and the arrow board. Thirty-seven
 blocks, all generated from one script, and all sharing one behaviour — they **settle onto the
-surface underneath them** instead of floating a cell above it. Thirty-four are in the Traffic
-Accessories tab; the three delineators are in the Streetscape tab, with the other street fixtures
+surface underneath them** instead of floating a cell above it. Thirty-four are in the Work Zone
+& Roadside Safety tab; the three delineators are in the Streetscape tab, with the other street fixtures
 that settle the same way (the fire hydrant among them, and the U-channel and flexible delineators
 `gen_road_markers.py` writes on the same class).
 

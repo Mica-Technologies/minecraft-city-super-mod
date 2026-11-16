@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 gen_guardrails_box_cable.py -- the BOX BEAM guardrail RAIL blocks, the CABLE BARRIER RAIL blocks,
-and the cable barrier's own END TREATMENT (an anchor, not a deflecting shoe) for the Traffic
-Accessories tab.
+and the cable barrier's own END TREATMENT (an anchor, not a deflecting shoe) for the Work
+Zone & Roadside Safety tab.
 
 Three block families, all built here because they share one texture folder and the box beam and
 the cable barrier are both thin enough on distinguishing geometry that splitting them into their

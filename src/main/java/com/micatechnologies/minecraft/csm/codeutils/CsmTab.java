@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +47,9 @@ import org.apache.logging.log4j.Logger;
  *   Order  6 = CsmTabPowerGrid
  *   Order  7 = CsmTabRoadSigns
  *   Order  8 = CsmTabTechnology
- *   Order  9 = CsmTabTrafficAccessories
+ *   Order  9 = CsmTabTrafficPoles       (sub -1: Traffic Poles &amp; Arms)
+ *   Order  9 = CsmTabTrafficAccessories (sub  0)
+ *   Order  9 = CsmTabWorkZone           (sub  1: Work Zone &amp; Roadside Safety)
  *   Order 10 = CsmTabTrafficSignals
  *   Order 11 = CsmTabStreetscape
  *   Order 12 = CsmTabFurniture
@@ -74,7 +77,9 @@ import org.apache.logging.log4j.Logger;
  *   Order 34 = CsmTabVenuesSeating    (Sports &amp; Venues)
  *   Order 35 = CsmTabVenuesArena      (Sports &amp; Venues)
  * </pre>
- * <p>When adding a new tab, choose the next available order value and update this list. A
+ * <p>When adding a new tab, choose the next available order value and update this list. A tab
+ * split into several keeps the original's order and tells the parts apart with
+ * {@link Load#sub()} (lowest first), so no other tab has to be renumbered. A
  * module that owns retiring blocks ships its own hidden tab at a negative order; hidden tabs
  * have no display, so their order relative to each other does not matter, only that they come
  * before the visible tabs as the single hidden tab used to.</p>
@@ -98,6 +103,16 @@ public abstract class CsmTab {
    * @since 1.0
    */
   private static final Map<Class<? extends CsmTab>, CsmTab> TABS = new HashMap<>();
+
+  /**
+   * The order tabs are built in, and so the order they appear in the creative menu: by
+   * {@link Load#order()}, then by {@link Load#sub()}.
+   *
+   * @since 2026.11.16
+   */
+  static final Comparator<Class<?>> LOAD_ORDER = Comparator
+      .comparingInt((Class<?> c) -> c.getAnnotation(Load.class).order())
+      .thenComparingInt(c -> c.getAnnotation(Load.class).sub());
 
   /**
    * The underlying creative tab instance being created and interfaced.
@@ -231,25 +246,22 @@ public abstract class CsmTab {
       }
     }
 
-    // Validate that no two tabs share the same order value
+    // Validate that no two tabs share the same (order, sub) pair
     Logger logger = LogManager.getLogger(CsmTab.class);
-    Map<Integer, String> seenOrders = new HashMap<>();
+    Map<String, String> seenOrders = new HashMap<>();
     for (Class<? extends CsmTab> clazz : tabClasses) {
-      int order = clazz.getAnnotation(Load.class).order();
-      String previousClass = seenOrders.put(order, clazz.getSimpleName());
+      Load load = clazz.getAnnotation(Load.class);
+      String key = load.order() + "/" + load.sub();
+      String previousClass = seenOrders.put(key, clazz.getSimpleName());
       if (previousClass != null) {
-        logger.warn("Duplicate @CsmTab.Load order value {} found on {} and {}. "
+        logger.warn("Duplicate @CsmTab.Load order {} (sub {}) found on {} and {}. "
             + "Tab initialization order may be non-deterministic.",
-            order, previousClass, clazz.getSimpleName());
+            load.order(), load.sub(), previousClass, clazz.getSimpleName());
       }
     }
 
-    // Sort tab classes based on their order in the Load annotation
-    tabClasses.sort((class1, class2) -> {
-      int order1 = class1.getAnnotation(Load.class).order();
-      int order2 = class2.getAnnotation(Load.class).order();
-      return Integer.compare(order1, order2);
-    });
+    // Sort tab classes by the order in the Load annotation, then by its sub
+    tabClasses.sort(LOAD_ORDER);
 
     // Initialize the sorted tabs, naming each on the loading screen as it is built: building a
     // tab constructs every block in it, which is most of pre-initialization
@@ -541,5 +553,15 @@ public abstract class CsmTab {
      * @return the processing order
      */
     int order();
+
+    /**
+     * Places tabs that share an {@link #order()} value, lowest first. It lets a tab split into
+     * several stay where the original sat without renumbering every tab after it: the split
+     * tabs keep the original's order and differ here. The pair ({@code order}, {@code sub}) must
+     * be unique across all tabs.
+     *
+     * @return the position among the tabs with the same order, {@code 0} by default
+     */
+    int sub() default 0;
   }
 }

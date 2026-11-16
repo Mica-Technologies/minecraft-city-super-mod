@@ -114,7 +114,7 @@ fills the other.
 `BlockTrafficPoleImpact` (GitHub #347) is the thick pole's heavier sibling, for the corner that
 keeps getting hit: a 16-gon the full width of its block, in the five finishes, stacked like any
 pole, standing on the same bases a size up. Five blocks, `trafficpoleimpact<finish>`, in Traffic
-Accessories after the pedestal poles.
+Poles & Arms after the pedestal poles.
 
 It is an `AbstractBlockTrafficPole`, so everything that treats a block as a pole does: signal
 heads, arms and signs mount to it, a post light takes its colour, and a pole above or below it

@@ -3,7 +3,8 @@
 The hardware along and over a road that is not a signal or a sign face: work zone devices and the
 arrow board, guardrails, overhead sign trusses, concrete and pedestal poles, enforcement cameras,
 and mile markers, object markers and delineators. It all ships in the **CSM: Roads & Traffic**
-module, mostly in the **Traffic Accessories** tab.
+module: the work zone devices and guardrails in the **Work Zone & Roadside Safety** tab, the
+trusses and cameras in **Traffic Accessories**, and the poles in **Traffic Poles & Arms**.
 
 Some roadside hardware has a page of its own: [Railroad Crossings](railroad-crossings.md),
 [Mast Arms](mast-arms.md), [Span Wire](span-wire.md), [Road Signs](road-signs.md),
@@ -265,8 +266,10 @@ Both kinds settle and take eight facings, like the object markers.
 
 ## See also
 
-- [Traffic Accessories](../reference/traffic-accessories.md): work zone devices, guardrails,
-  trusses, poles and cameras in the reference.
+- [Work Zone & Roadside Safety](../reference/work-zone.md): work zone devices and guardrails in
+  the reference.
+- [Traffic Accessories](../reference/traffic-accessories.md): the trusses and cameras.
+- [Traffic Poles & Arms](../reference/traffic-poles.md): the concrete and pedestal poles.
 - [Road Signs](../reference/road-signs.md): mile markers and object markers.
 - [Streetscape](../reference/streetscape.md): the delineators.
 - [Compatibility](../getting-started/compatibility.md): road mods whose sloped blocks these devices

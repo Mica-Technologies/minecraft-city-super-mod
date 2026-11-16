@@ -306,6 +306,6 @@ whole family depends on that pairing.
 ## Adding a colour
 
 Add a tuple to `COLORS` in the script (id, texture, label), re-run it, paste the new line from
-`_pedestal_out/tab_fragment.txt` into `CsmTabTrafficAccessories` and the lang line into each
+`_pedestal_out/tab_fragment.txt` into `CsmTabTrafficPoles` and the lang line into each
 locale. `TRAFFIC_POLE_COLOR` has to have the value; it feeds the lighting accessories that
 inherit a pole's colour.

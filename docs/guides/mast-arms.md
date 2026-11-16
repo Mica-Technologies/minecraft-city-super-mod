@@ -46,7 +46,7 @@ Five curves, named for the road they suit:
 | 10×2 | 10 × 2 | Wide arterial |
 
 Each comes in the full set of pole colours. All of them are in the
-[Traffic Accessories](../reference/traffic-accessories.md) reference.
+[Traffic Poles & Arms](../reference/traffic-poles.md) reference.
 
 ## Building with one
 

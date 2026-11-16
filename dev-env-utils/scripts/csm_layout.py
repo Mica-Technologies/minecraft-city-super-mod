@@ -69,6 +69,8 @@ MODULE_OF_TAB = {
     "tabpowergrid": "powergrid",
     "tabroadsigns": "roads",
     "tabtrafficaccessories": "roads",
+    "tabtrafficpoles": "roads",
+    "tabworkzone": "roads",
     "tabtrafficsignals": "roads",
     "tabroadshidden": "roads",
     "tabtechnology": "technology",

@@ -6,7 +6,7 @@ reproduction cast-iron set.
 
 TWO HALVES, TWO MODULES
 -----------------------
-* The POLES are Roads blocks (``BlockTrafficPoleDecorative``, Traffic Accessories), one per
+* The POLES are Roads blocks (``BlockTrafficPoleDecorative``, Traffic Poles & Arms), one per
   design, stacked to any height. Each block decides its own ends from its neighbours exactly as
   the concrete pole does (CONCRETE_POLE_SYSTEM.md): a cast base on the ground, the design's cap in
   the open, its capital under a post-top fixture, nothing against another block of the pole. The
@@ -1591,7 +1591,7 @@ def same(path, data):
 
 
 def fragments(stats):
-    print("--- Roads tab (CsmTabTrafficAccessories) ---")
+    print("--- Roads tab (CsmTabTrafficPoles) ---")
     for d in POLE_DESIGNS:
         print('    initTabBlock(new BlockTrafficPoleDecorative("%s", %.1f, %.1f, %.1f, '
               'TRAFFIC_POLE_COLOR.%s));' % (pole_registry(d), d.fit_radius, d.shaft_r,
