@@ -49,7 +49,11 @@ logged in [Fix status](#fix-status), each with its own before and after.
 | - | Syncs sent from `neighborChanged` go out at the end of the server tick (`CsmDeferredSync`), behind the block change that caused them; blankout and crosswalk bodies draw directly if no list can be allocated | `751e47bf2` | a sync could beat its block change and leave a stale cache | kit and cover right within 250 ms, zero changed pixels |
 | P3 | Emergency lights: glow compiled once per block class into a list shared by every light (`CsmSharedDisplayLists`), both bulbs in one draw | `7d5af67c4` | 16.6 µs a light live (46 draws before) | 1.4 µs a light; 256 placed, 155 in view: frame 3.3 to 0.9 ms. Pixels: lit area within 3 levels on every pair, one baked/live pair identical |
 | - | Parking meters: each head's window (and the EXPIRED flag) one vertex-coloured shared list per look and head size, the needle one list under its sweep, the fixed texts and a pay station's count shared lists keyed on the string and head size; windows first under one bind, then text under one; a digital reading formatted once a second per head, not per frame | 2026-09-26 | 256 copies, per call: digital double paid 8.9-9.5 µs, expired 6.6-6.7; mechanical double paid 8.1-8.4; pay station 5.0-5.6 | 5.8-6.4, 4.8-5.1; 6.0-6.4; 4.4. Frame at 256 mechanical doubles 2.15-2.20 to 1.82 ms. Pixels identical by the matched-second pairs (the LCD ticks) |
-| - | OBJ quads: `PackedObjModel` swaps each Forge `UnpackedBakedQuad` for a plain `BakedQuad` on the same packed `int[]` and writes the list back into the `OBJBakedModel`, freeing the ~900-byte unpacked float arrays every OBJ quad kept; a street of the #99 OBJ street lights plus 11 other CSM OBJ models, A/C/D two runs each | `3c8b4354a` | live heap 1,923.3 MB (1,892.6 on main), memstats CSM quads 173.8 MB, 238k unpacked quads | 1,901.9 MB (-21.4), 151.0 MB, 212k (below main). Frame time not measured (machine under memory pressure); C and D drawn alike by eye, pixel diff inconclusive (camera not repeatable between runs) |
+| - | - | Zipline cable: the tube and the line lights each in a display list keyed on the landing anchor, released with the anchor; `resetColor()` after the vertex-coloured draws. Toggle `ziplineCablePerFrame` | `0575b0438` | 35.5-38.7 µs a lit 50-block line | 4.4-5.1 µs. No cross-path pixel outside the pixels that also moved within a path (animals) |
+| - | Centre-hung scoreboard: panels in the per-face-kind text cache (released with the text version, which holds the team colours), the clock in a list per face kind compiled when the reading changes. Toggle `venueScoreboardPerFrame` | `dcc20c37c` | 29.2-31.6 µs a board (one of three clocks running) | 26.6-27.5 µs; clocks stopped, within 1 µs either way. No cross-path pixel outside the boards' animated lamps |
+| - | CSM's generated item models: the quad sharing pass swaps each `UnpackedBakedQuad` in a `BakedItemModel` (and its GUI model's copy) for a plain `BakedQuad` on the same packed `int[]` | `ffe3be7f5` | 8,414 unpacked CSM item quads; menu heap 2,181.9 MB | 0; 2,171.8 MB. The other 205 thousand unpacked quads in the dev client are Immersive Vehicles' and vanilla item models |
+| - | HVAC heater and exhaust fan `receiveEnergy` mark dirty only when energy was taken | `d7efdf75e` | a chunk mark and comparator reads every tick under a mod that offers power to a full store | none (argued from code, not measured) |
+| OBJ quads: `PackedObjModel` swaps each Forge `UnpackedBakedQuad` for a plain `BakedQuad` on the same packed `int[]` and writes the list back into the `OBJBakedModel`, freeing the ~900-byte unpacked float arrays every OBJ quad kept; a street of the #99 OBJ street lights plus 11 other CSM OBJ models, A/C/D two runs each | `3c8b4354a` | live heap 1,923.3 MB (1,892.6 on main), memstats CSM quads 173.8 MB, 238k unpacked quads | 1,901.9 MB (-21.4), 151.0 MB, 212k (below main). Frame time not measured (machine under memory pressure); C and D drawn alike by eye, pixel diff inconclusive (camera not repeatable between runs) |
 
 Every "before" and "after" in one row is from the same session and scene, A/B/A through a render
 toggle (`sharedBakesPerFrame`, `signalLayoutPerFrame`, the sign `*PerFrame` toggles), with
@@ -129,7 +133,87 @@ station or gate, so 20 in view is a third of a millisecond. A candidate if a ter
 is ever built: one list per board keyed on the text it shows, rebuilt only when a row changes.
 Done 2026-10-28 for both flight boards, after the large board measured about 50 µs whatever its
 size (`FlightBoardPage`, "The large flight boards" in `TRANSIT_SYSTEM.md`); not yet measured
-after. The bus departure board is still drawn piece by piece.
+after. The bus departure board has since been moved to the same scheme (one flat
+`POSITION_TEX_COLOR` list per board keyed on what it shows, compiled through
+`CsmCompileBudget`); the 18.8 µs above predates that and has not been measured again.
+
+## New renderers and the sweep, 2026-11-16
+
+Every block with a renderer added since the 2026-10-28 sweep (Sports & Venues, the zipline, the
+signal cluster hanger, the bridge cables, the preempt confirmation lights, the bus arrival boards
+and totem), 8 copies each in the flat world (`harness/inv_orch.py`, the harness ported to
+`mcmcp_orchestrator.py` by instance id, never a fixed port; A/B through `harness/ab_orch.py`), 6 s
+warm-up and window, input locked, at `0452d249c`. Data: `inventory-new-2026-11-16.json`. The
+A/B pixel checks counted the cross-path pixels that differ outside every pixel that also changed
+between frames of one path (the scenes animate).
+The hawk head as a reference read 3.26 µs (2.2-2.9 on 09-24: inside the restart noise). Multi-block
+boards overlap when placed two blocks apart, so fewer than 8 drew.
+
+| Block | Renderer | µs each | Note |
+|---|---|---|---|
+| Centre-hung scoreboard (large / small) | `TileEntityScoreboardRenderer` | 35.5 / 27.0 | 1 and 3 drawn; 27 after `dcc20c37c` |
+| Football / soccer scoreboard | `TileEntityFieldScoreboardRenderer` | 7.7 / 5.5 | panels and clock tessellated each frame |
+| Ballpark scoreboard / count board | `TileEntityBallparkScoreboardRenderer` | 6.8 / 4.4 | panels each frame |
+| Golf hole sign / pool scoreboard | `TileEntityVenueSignRenderer` | 6.3 / 4.1 | the tee sign splits a string with a regex each frame |
+| Bus info totem | `TileEntityBusArrivalBoardRenderer` | 5.8 (13.9 in the Bus Station demo) | |
+| Bus arrival board 5x2 / 3x1 | the same | 4.4 / 4.1 | |
+| LED ribbon text | `TileEntityRibbonTextRenderer` | 4.9 | |
+| Court scoreboard / lap counter | `TileEntityCourtBoardRenderer` | 4.5 / 4.0 | |
+| Bowling scoring monitor | `TileEntityBowlingMonitorRenderer` | 4.4 | panels each frame |
+| Marquee board | `TileEntityMarqueeRenderer` | 4.2 (8.2 in the Venues demo) | |
+| End zone lettering | `TileEntityEndZoneLetteringRenderer` | 2.9 empty, 8.7 with "HOME" (Venues demo) | every glyph and its outline tessellated each frame |
+| Championship / retired number banner | `TileEntityVenueBannerRenderer` | 2.8 / 2.6 | lists |
+| Pool pace clock | `TileEntityPaceClockRenderer` | 2.5 | |
+| Signal cluster hanger | `TileEntitySignalClusterHangerRenderer` | 1.7 | lists |
+| Outfield wall marker | `TileEntityOutfieldMarkerRenderer` | 1.6 | |
+| Zipline launch anchor, lit 50-block line | `TileEntityZiplineCableRenderer` | 36.1, 4.6 after `0575b0438` | unlinked anchors 0.04 |
+| Bridge cable anchors, preempt confirmation lights | | under 0.2 unlinked / idle | |
+
+**Server tick.** None of the new tile entities ticks. "Venues Demo" 0.5 ms a tick, "Bus Station
+Demo" 1.1 ms (steady, 5 s windows). One exception, measured: **a canopy light switch** sets every
+light of the canopy (and its light-up air in the floor) in one tick, each a relight: clicking one
+of the demo's 15-light canopies made one 86 ms server tick switching on and one 229 ms tick
+switching off, and a 97 ms client frame. Spreading the switch over a few ticks with a budget (as
+`CsmLightFootprints` does) would remove it, but the canopy would then light as a ripple over a
+few ticks instead of at once, which is a visible change, so it was not done. The shelter light
+switch has the same shape at a smaller size.
+
+**Chunk geometry and rebuilds.** No new tile entity syncs on a cadence; the arrival boards,
+glazing windows, pole flags and blades key their section rebuilds (`getBakedModelKey`). The
+light-up air bakes no quads (`/csm memstats`: 0), so making it `INVISIBLE` would save nothing.
+Not measured: 1.12's `MultipartBakedModel.getQuads` tests every selector on every call, and the
+glass shelter has 216 selectors drawn in two layers, so a shelter section rebuild does thousands
+of predicate tests (a per-state quad cache in `CsmBakedModelWrappers` would remove them).
+
+**Model registry, launch and heap** (`/csm memstats dump` against the 2026-10-28 dump):
+
+| | 2026-10-28 | 2026-11-16 |
+|---|---|---|
+| CSM blocks / states | 4,295 / 360,976 | 5,121 / 562,199 |
+| Model locations | 145,161 | 212,347 |
+| OBJ bakes (distinct parts) | 11,453 | 39,277 |
+| `MultiModel$Baked` (Forge-variant submodels, with their per-perspective copies) | about 540 thousand | 888 thousand |
+| Block atlas (`atlas_budget.py`, CSM and the base dev sprites) | 8192 x 4096, 97.4% | 8192 x 8192, 101.5% (+1.38 Mpx; venues 1.5 Mpx) |
+| Launch to the menu, every module and the IV packs (dev log times) | 36-38 s (10-30, 10-31) | 54-61 s earlier today, 71-72 s with a game running beside it |
+| Live heap at the main menu | not taken | 2,182 MB (2,172 after `ffe3be7f5`) |
+
+The launch growth is in loading the blockstates (7-8 s to 12-17 s), the bake (5-6 to 8-11 s) and
+the passes after it (3 to 7-9 s). Three families of the light poles work (#99) hold most of it:
+the NYC and truss signal arms (45 blocks, 38,292 locations, one OBJ part per shape) and the eight
+decorative poles (12,288 locations, every connection a Forge `submodel`, so every location is a
+`MultiModel` with seven per-perspective copies). The four concrete traffic poles went from 1,536
+to 20,736 states each (the `base` and `top` properties); their model locations stay at 1,408
+through `ICsmModelStateRules`, but each is four times the 5,000-state rule. The 228 luminaire arm
+blocks add 15,416 OBJ bakes and as many locations, one per colour of each shape. Nothing here is a no-loss fix: folding
+shapes, moving the deco poles' connections into multipart, or keeping the pole base in the tile
+entity changes how the blocks are built and has to be designed and checked block by block.
+
+**Leads not taken (small or not no-loss):** the field, ballpark, bowling and venue sign panels
+and the end zone lettering could go into lists keyed on their text version (2-6 µs each); the
+centre-hung scoreboard's remaining cost is its per-face state changes (one flat list per board
+would take most of it); the bridge cable anchors re-resolve their layout every 2 s on a
+`BlockPos.hashCode()` stagger (`fmix32` would spread a grid); the zipline anchor's render distance
+does not go through `CsmPerformance.capRenderDistanceSq` (doing so changes LOW and MEDIUM).
 
 ## Busy states and moving parts, 2026-09-26
 

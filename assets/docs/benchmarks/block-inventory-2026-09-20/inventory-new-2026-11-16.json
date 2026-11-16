@@ -1,0 +1,191 @@
+{
+ "csm:zipline_anchor_launch": {
+  "rendered": 8,
+  "renderer": "TileEntityZiplineCableRenderer",
+  "us_total": 0.3,
+  "us_each": 0.04,
+  "per_call": 0.0
+ },
+ "csm:bridge_cable_clevis": {
+  "rendered": 8,
+  "renderer": "TileEntityBridgeCableAnchorRenderer",
+  "us_total": 0.4,
+  "us_each": 0.05,
+  "per_call": 0.0
+ },
+ "csm:signal_cluster_hanger": {
+  "rendered": 8,
+  "renderer": "TileEntitySignalClusterHangerRenderer",
+  "us_total": 13.3,
+  "us_each": 1.66,
+  "per_call": 1.7
+ },
+ "csm:bus_arrival_board_3x1": {
+  "rendered": 8,
+  "renderer": "TileEntityBusArrivalBoardRenderer",
+  "us_total": 32.4,
+  "us_each": 4.05,
+  "per_call": 4.1
+ },
+ "csm:bus_arrival_board_5x2": {
+  "rendered": 4,
+  "renderer": "TileEntityBusArrivalBoardRenderer",
+  "us_total": 17.7,
+  "us_each": 4.42,
+  "per_call": 4.4
+ },
+ "csm:bus_info_totem": {
+  "rendered": 8,
+  "renderer": "TileEntityBusArrivalBoardRenderer",
+  "us_total": 46.7,
+  "us_each": 5.84,
+  "per_call": 5.8
+ },
+ "csm:preempt_confirm_par_blue_pole": {
+  "rendered": 8,
+  "renderer": "TileEntityTrafficBeaconRenderer",
+  "us_total": 1.2,
+  "us_each": 0.15,
+  "per_call": 0.1
+ },
+ "csm:bridge_cable_saddle": {
+  "rendered": 8,
+  "renderer": "TileEntityBridgeCableAnchorRenderer",
+  "us_total": 0.5,
+  "us_each": 0.06,
+  "per_call": 0.1
+ },
+ "csm:centre_hung_scoreboard": {
+  "rendered": 1,
+  "renderer": "TileEntityScoreboardRenderer",
+  "us_total": 35.5,
+  "us_each": 35.5,
+  "per_call": 35.5
+ },
+ "csm:centre_hung_scoreboard_small": {
+  "rendered": 3,
+  "renderer": "TileEntityScoreboardRenderer",
+  "us_total": 81.1,
+  "us_each": 27.03,
+  "per_call": 27.0
+ },
+ "csm:led_ribbon_board_text": {
+  "rendered": 8,
+  "renderer": "TileEntityRibbonTextRenderer",
+  "us_total": 39.2,
+  "us_each": 4.9,
+  "per_call": 4.9
+ },
+ "csm:championship_banner": {
+  "rendered": 8,
+  "renderer": "TileEntityVenueBannerRenderer",
+  "us_total": 22.3,
+  "us_each": 2.79,
+  "per_call": 2.8
+ },
+ "csm:retired_number_banner": {
+  "rendered": 8,
+  "renderer": "TileEntityVenueBannerRenderer",
+  "us_total": 20.5,
+  "us_each": 2.56,
+  "per_call": 2.6
+ },
+ "csm:marquee_board_controller": {
+  "rendered": 8,
+  "renderer": "TileEntityMarqueeRenderer",
+  "us_total": 33.5,
+  "us_each": 4.19,
+  "per_call": 4.2
+ },
+ "csm:outfield_wall_marker": {
+  "rendered": 8,
+  "renderer": "TileEntityOutfieldMarkerRenderer",
+  "us_total": 12.9,
+  "us_each": 1.61,
+  "per_call": 1.6
+ },
+ "csm:ballpark_scoreboard": {
+  "rendered": 8,
+  "renderer": "TileEntityBallparkScoreboardRenderer",
+  "us_total": 54.0,
+  "us_each": 6.75,
+  "per_call": 6.8
+ },
+ "csm:ballpark_count_board": {
+  "rendered": 8,
+  "renderer": "TileEntityBallparkScoreboardRenderer",
+  "us_total": 35.2,
+  "us_each": 4.4,
+  "per_call": 4.4
+ },
+ "csm:football_end_zone_lettering": {
+  "rendered": 8,
+  "renderer": "TileEntityEndZoneLetteringRenderer",
+  "us_total": 23.3,
+  "us_each": 2.91,
+  "per_call": 2.9
+ },
+ "csm:football_scoreboard": {
+  "rendered": 8,
+  "renderer": "TileEntityFieldScoreboardRenderer",
+  "us_total": 61.2,
+  "us_each": 7.65,
+  "per_call": 7.7
+ },
+ "csm:soccer_scoreboard": {
+  "rendered": 8,
+  "renderer": "TileEntityFieldScoreboardRenderer",
+  "us_total": 44.0,
+  "us_each": 5.5,
+  "per_call": 5.5
+ },
+ "csm:bowling_scoring_monitor": {
+  "rendered": 8,
+  "renderer": "TileEntityBowlingMonitorRenderer",
+  "us_total": 34.9,
+  "us_each": 4.36,
+  "per_call": 4.4
+ },
+ "csm:court_scoreboard": {
+  "rendered": 4,
+  "renderer": "TileEntityCourtBoardRenderer",
+  "us_total": 18.0,
+  "us_each": 4.5,
+  "per_call": 4.5
+ },
+ "csm:track_lap_counter": {
+  "rendered": 8,
+  "renderer": "TileEntityCourtBoardRenderer",
+  "us_total": 32.0,
+  "us_each": 4.0,
+  "per_call": 4.0
+ },
+ "csm:pool_pace_clock": {
+  "rendered": 7,
+  "renderer": "TileEntityPaceClockRenderer",
+  "us_total": 17.8,
+  "us_each": 2.54,
+  "per_call": 2.5
+ },
+ "csm:pool_scoreboard": {
+  "rendered": 8,
+  "renderer": "TileEntityVenueSignRenderer",
+  "us_total": 33.0,
+  "us_each": 4.12,
+  "per_call": 4.1
+ },
+ "csm:golf_hole_sign": {
+  "rendered": 8,
+  "renderer": "TileEntityVenueSignRenderer",
+  "us_total": 50.2,
+  "us_each": 6.28,
+  "per_call": 6.3
+ },
+ "csm:controllablehawksignal": {
+  "rendered": 8,
+  "renderer": "TileEntityTrafficSignalHeadRenderer",
+  "us_total": 26.1,
+  "us_each": 3.26,
+  "per_call": 3.3
+ }
+}
