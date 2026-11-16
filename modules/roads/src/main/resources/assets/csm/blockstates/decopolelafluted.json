@@ -1,280 +1,652 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj",
-    "custom": {
-      "flip-v": true
-    },
-    "textures": {
-      "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-      "#trim": "csm:blocks/decorativepoles/trim_bronze",
-      "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-      "particle": "csm:blocks/decorativepoles/paint_la_bronze"
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficaccessories/shared_models/decopole_lafluted_inv.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze&transform=forge:default-block"
     }
   },
-  "variants": {
-    "inventory": [
-      {
-        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_inv.obj",
-        "custom": {
-          "flip-v": true
-        },
-        "textures": {
-          "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-          "#trim": "csm:blocks/decorativepoles/trim_bronze",
-          "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-          "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-        },
-        "transform": "forge:default-block"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
       }
-    ],
-    "facing": {
-      "north": {},
-      "east": {
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
       },
-      "south": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
       },
-      "west": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
         "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "down"
       },
-      "up": {
-        "x": 270
-      },
-      "down": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
         "x": 90
       }
     },
-    "mounteast": {
-      "false": {},
-      "true": {
-        "submodel": {
-          "mounte": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            },
-            "transform": {
-              "rotation": [
-                {
-                  "x": 0
-                },
-                {
-                  "y": 90
-                },
-                {
-                  "z": 0
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "mountwest": {
-      "false": {},
-      "true": {
-        "submodel": {
-          "mountw": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            },
-            "transform": {
-              "rotation": [
-                {
-                  "x": 0
-                },
-                {
-                  "y": 270
-                },
-                {
-                  "z": 0
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "mountup": {
-      "false": {},
-      "true": {
-        "submodel": {
-          "mountu": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            },
-            "transform": {
-              "rotation": [
-                {
-                  "x": 270
-                },
-                {
-                  "y": 0
-                },
-                {
-                  "z": 0
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "mountdown": {
-      "false": {},
-      "true": {
-        "submodel": {
-          "mountd": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            },
-            "transform": {
-              "rotation": [
-                {
-                  "x": 90
-                },
-                {
-                  "y": 0
-                },
-                {
-                  "z": 0
-                }
-              ]
-            }
-          }
-        }
-      }
-    },
-    "endn": {
-      "none": {},
-      "cap": {
-        "submodel": {
-          "cap_n": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            }
-          }
-        }
+    {
+      "when": {
+        "facing": "up"
       },
-      "tenon": {
-        "submodel": {
-          "tenon_n": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            }
-          }
-        }
-      },
-      "base": {
-        "submodel": {
-          "base_n": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            }
-          }
-        }
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_shaft.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
       }
     },
-    "ends": {
-      "none": {},
-      "cap": {
-        "submodel": {
-          "cap_s": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            }
-          }
-        }
+    {
+      "when": {
+        "endn": "base",
+        "facing": "north"
       },
-      "tenon": {
-        "submodel": {
-          "tenon_s": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            }
-          }
-        }
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "endn": "base",
+        "facing": "east"
       },
-      "base": {
-        "submodel": {
-          "base_s": {
-            "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj",
-            "custom": {
-              "flip-v": true
-            },
-            "textures": {
-              "#body": "csm:blocks/decorativepoles/paint_la_bronze",
-              "#trim": "csm:blocks/decorativepoles/trim_bronze",
-              "#tile": "csm:blocks/decorativepoles/paint_la_bronze",
-              "particle": "csm:blocks/decorativepoles/paint_la_bronze"
-            }
-          }
-        }
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "endn": "base",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "endn": "base",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "endn": "base",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "endn": "base",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "ends": "base",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "ends": "base",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "ends": "base",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "ends": "base",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "ends": "base",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "ends": "base",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_base_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "endn": "cap",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "endn": "cap",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "endn": "cap",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "endn": "cap",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "endn": "cap",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "endn": "cap",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "ends": "cap",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "ends": "cap",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "ends": "cap",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "ends": "cap",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "ends": "cap",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "ends": "cap",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_cap_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "mountdown": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_d.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "mountdown": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_d.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "mountdown": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_d.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "mountdown": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_d.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "mountdown": "true",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_d.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "mountdown": "true",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_d.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "mounteast": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_e.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "mounteast": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_e.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "mounteast": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_e.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "mounteast": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_e.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "mounteast": "true",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_e.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "mounteast": "true",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_e.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "mountup": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_u.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "mountup": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_u.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "mountup": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_u.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "mountup": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_u.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "mountup": "true",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_u.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "mountup": "true",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_u.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "mountwest": "true",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_w.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "mountwest": "true",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_w.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "mountwest": "true",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_w.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "mountwest": "true",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_w.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "mountwest": "true",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_w.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "mountwest": "true",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_mount_w.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "endn": "tenon",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "endn": "tenon",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "endn": "tenon",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "endn": "tenon",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "endn": "tenon",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "endn": "tenon",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_n.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
+      }
+    },
+    {
+      "when": {
+        "ends": "tenon",
+        "facing": "north"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze"
+      }
+    },
+    {
+      "when": {
+        "ends": "tenon",
+        "facing": "east"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "ends": "tenon",
+        "facing": "south"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "ends": "tenon",
+        "facing": "west"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "ends": "tenon",
+        "facing": "down"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "ends": "tenon",
+        "facing": "up"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/decopole_lafluted_tenon_s.obj?flip-v&body=csm:blocks/decorativepoles/paint_la_bronze&tile=csm:blocks/decorativepoles/paint_la_bronze&trim=csm:blocks/decorativepoles/trim_bronze",
+        "x": 270
       }
     }
-  }
+  ]
 }

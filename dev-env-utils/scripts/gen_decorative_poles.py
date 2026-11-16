@@ -48,6 +48,7 @@ from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
+import forge_multipart  # noqa: E402
 
 ROADS = layout.owner_of_folder("trafficaccessories")
 LIGHTING = layout.owner_of_folder("lighting")
@@ -841,6 +842,27 @@ def build_mount(m, r):
     tube(m, "body", [(8.0, 8.0, INSET), (8.0, 8.0, face - 1.0)], 1.4, sides=8, cap1=False)
 
 
+# The clamp turned into each flank, as the Forge form's sub-model transforms turned it (a
+# right-handed turn about the block's centre, Forge's "rotation": [{"y": 90}]): a multipart rule
+# turns a part only with the variant's own x and y, so each flank is its own file.
+MOUNT_TURNS = (("e", "y", 90, "east of the shaft"), ("w", "y", 270, "west of the shaft"),
+               ("u", "x", 270, "up from the shaft"), ("d", "x", 90, "down from the shaft"))
+
+
+def turn_about_centre(axis, deg):
+    """A right-handed quarter turn about an axis through the block's centre (8, 8, 8)."""
+    c = int(round(math.cos(math.radians(deg))))
+    s = int(round(math.sin(math.radians(deg))))
+    if axis == "y":
+        m = ((c, 0, s), (0, 1, 0), (-s, 0, c))
+    else:
+        m = ((1, 0, 0), (0, c, -s), (0, s, c))
+    m = tuple(tuple(float(v) for v in row) for row in m)
+    centre = (8.0, 8.0, 8.0)
+    rc = Xf(m).apply(centre)
+    return Xf(m, tuple(centre[k] - rc[k] for k in range(3)))
+
+
 def model_ref(prefix, name):
     return "%s/%s.obj" % (prefix, name)
 
@@ -862,7 +884,9 @@ def pole_parts(d):
         parts["base_" + end] = standing(d.base, xf_bottom, "base at the model-%s end" % end)
     mount = Mesh()
     build_mount(mount, d.shaft_r)
-    parts["mount"] = (mount, "flank clamp, pointing model north")
+    for flank, axis, deg, where in MOUNT_TURNS:
+        parts["mount_" + flank] = (mount.transformed(turn_about_centre(axis, deg)),
+                                   "flank clamp, pointing model %s" % where)
     inv = Mesh()
     d.base(inv)
     d.shaft(inv)
@@ -898,10 +922,10 @@ def pole_blockstate(d):
                            "transform": "forge:default-block"}],
             "facing": {"north": {}, "east": {"y": 90}, "south": {"y": 180}, "west": {"y": 270},
                        "up": {"x": 270}, "down": {"x": 90}},
-            "mounteast": {"false": {}, "true": {"submodel": {"mounte": sub("mount", (0, 90, 0))}}},
-            "mountwest": {"false": {}, "true": {"submodel": {"mountw": sub("mount", (0, 270, 0))}}},
-            "mountup": {"false": {}, "true": {"submodel": {"mountu": sub("mount", (270, 0, 0))}}},
-            "mountdown": {"false": {}, "true": {"submodel": {"mountd": sub("mount", (90, 0, 0))}}},
+            "mounteast": {"false": {}, "true": {"submodel": {"mounte": sub("mount_e")}}},
+            "mountwest": {"false": {}, "true": {"submodel": {"mountw": sub("mount_w")}}},
+            "mountup": {"false": {}, "true": {"submodel": {"mountu": sub("mount_u")}}},
+            "mountdown": {"false": {}, "true": {"submodel": {"mountd": sub("mount_d")}}},
             "endn": ends("n"),
             "ends": ends("s"),
         },
@@ -1554,7 +1578,7 @@ def outputs():
             files[(ROADS, POLE_MODEL_REL + "/" + name + ".obj")] = mesh.text(
                 name, POLE_MTL, "%s: %s" % (d.label, header)).encode()
         files[(ROADS, "blockstates/%s.json" % pole_registry(d))] = (
-            json.dumps(pole_blockstate(d), indent=2) + "\n").encode()
+            json.dumps(forge_multipart.convert_obj(pole_blockstate(d)), indent=2) + "\n").encode()
         stats.append(("pole", pole_registry(d), d.label,
                       {p: parts[p][0].tris() for p in ("shaft", "base_s", "cap_n", "tenon_n")}))
     for f in FIXTURES:

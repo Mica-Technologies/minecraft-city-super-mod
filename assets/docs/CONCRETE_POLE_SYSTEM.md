@@ -314,13 +314,19 @@ What differs from the concrete pole:
   4-across fluted shaft with its thin-pole saddle.
 - **Assets come from `gen_decorative_poles.py`**, which also writes the post-top fixtures for
   Lighting (LIGHTING_SYSTEM.md, "Decorative and Historic Post Tops"). Parts per design:
-  `decopole_<id>_shaft`, `_base_n/_s`, `_cap_n/_s`, `_tenon_n/_s`, `_mount`, `_inv` (OBJ), one
+  `decopole_<id>_shaft`, `_base_n/_s`, `_cap_n/_s`, `_tenon_n/_s`, `_mount_e/_w/_u/_d`, `_inv` (OBJ), one
   `decopole.mtl` with `body`, `trim` and `tile`, and `blockstates/decopole<id>.json`. The paint
   swatches live in Core (`textures/blocks/decorativepoles/`) because both modules use them.
 - **Flutes and ledges.** A fluted lathe cuts rounded grooves (three samples a flute). Wherever a
   fluted section meets a round moulding, the moulding carries a ledge reaching in past the groove
   depth, or the grooves leave slivers to see through. The audit's see-through warnings on the end
   parts are expected: each is an open ring round a shaft drawn by another submodel.
+- **One model location a design.** The blockstate is written as Forge variants (every facing,
+  flank and end combination, 1,536 of them, each a `MultiModel` of its sub-models) and turned into
+  multipart by `forge_multipart.convert_obj`: 66 rules, one location. A multipart rule cannot turn
+  a part as a sub-model `transform` did, so the flank clamp is written once per flank, already
+  turned (`MOUNT_TURNS`), and the paints and flip-v ride in each OBJ location's options
+  (PERFORMANCE_AND_SECURITY.md, "Memory").
 - **Caps may rise above the block.** The Anaheim finial reaches y 21; nothing else leaves its
   block. The generator asserts every other part inside it.
 

@@ -113,7 +113,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   like the mast arm curves (one block per cell, cell list and hitboxes in the generated
   `LuminaireArmProfile.java`) and placed by the same block class; the tip lands where every
   street light's neck expects an arm. Writes the per-cell OBJs, the pole-joint cells once per
-  `CsmPoleFit`, the inventory icons, the blockstates and the enum; `--check`, `--fragments`
+  `CsmPoleFit`, the inventory icons, the blockstates and the enum; `--check`, `--fragments`.
+  The blockstates are multipart (`forge_multipart.convert_obj`), and a double arm draws its single
+  arm's cell files (the second arm at `y` + 180), so it writes none of its own
 - `gen_truss_signal_arms.py` -- the truss signal mast arms (GitHub #99): two-chord signal arms,
   level top 6/8/10/12 blocks, sloped 8/12, and diagonal across a corner 5/8 steps, in galvanized,
   silver and black (`trusssignalarm<id><finish>`, 24 blocks). Straight pipes cut at cell
@@ -121,7 +123,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   side (identical ones shared as `trusssignalarm_stub_<n>.obj`). Writes the OBJs, the blockstates
   and `TrussSignalArmProfile.java`, whose `shape` packing is per cell; a diagonal arm's cell 0 has
   a sideways offset, which is how the block knows to move itself on placement. `--check`,
-  `--fragments`. MAST_ARM_CURVE_SYSTEM.md, "Truss signal mast arms". The same script writes a
+  `--fragments`. The blockstates are multipart (`forge_multipart.convert_obj`).
+  MAST_ARM_CURVE_SYSTEM.md, "Truss signal mast arms". The same script writes a
   second family, the New York City guyed arms (`nycsignalarm<id><finish>`, 15 blocks: regular
   4/6/8, diagonal 4/6, in brown, galvanized and black; `NycSignalArmProfile.java`): a bent,
   tapered pipe under two guy rods, and the `metal_brown` texture it tints from `metal_silver`.
@@ -130,7 +133,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   (`decopole<id>`, `BlockTrafficPoleDecorative`: the LA electroliers, Hollywood, Anaheim #749,
   the reproduction post) AND their post-top fixtures in Lighting (`la*`, `repro*`). Lathes,
   fluted lathes, tubes and lantern frames into OBJ: per pole the shaft, base, cap and capital
-  at each model end, the flank clamp and the inventory icon; per fixture the model and a shrunk
+  at each model end, the flank clamp turned into each flank, and the inventory icon (the pole
+  blockstates are multipart, `forge_multipart.convert_obj`); per fixture the model and a shrunk
   `_inv`; the two MTLs, the blockstates and the paint and glass swatches in Core
   (`textures/blocks/decorativepoles`). `--check`, `--fragments` (tab lines for both modules and
   the English lang), `--stats` (triangles and boxes). See CONCRETE_POLE_SYSTEM.md, "Decorative
