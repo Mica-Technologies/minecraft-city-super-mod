@@ -90,7 +90,7 @@ For a stop at the scale of a real street, next to wide lanes and tall buildings:
   Road signs still stack on its posts.
 - **Editing the flag and the blade.** Right-click either with an empty hand to open the sign
   editor. The presets put each agency's colours on it; set your own colours for an agency of your
-  own. The flag's third line is its routes: type the route ids there, letters or numbers ("B 30",
+  own. The flag's last line is its routes: type the route ids there, letters or numbers ("B 30",
   "12 / 40"), and the departure boards and arrival boards nearby list those routes.
 - **Bus Stop Name Blade** on its own goes on a wall, on a pole or under a canopy; place more of
   them side by side for a longer name.

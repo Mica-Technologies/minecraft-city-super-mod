@@ -94,6 +94,7 @@ public final class WayfindingPreset {
   private final String line4;
   private final int background;
   private final int legend;
+  private final WayfindingIcon lineIcon;
 
   /**
    * A preset.
@@ -107,12 +108,12 @@ public final class WayfindingPreset {
   public WayfindingPreset(String line1, String line2, WayfindingIcon pictogram,
       WayfindingArrow arrow, WayfindingScheme scheme) {
     this(line1, line2, "", "", pictogram, arrow, scheme, WayfindingSign.NO_COLOUR,
-        WayfindingSign.NO_COLOUR);
+        WayfindingSign.NO_COLOUR, WayfindingIcon.NONE);
   }
 
   private WayfindingPreset(String line1, String line2, String line3, String line4,
       WayfindingIcon pictogram, WayfindingArrow arrow, WayfindingScheme scheme, int background,
-      int legend) {
+      int legend, WayfindingIcon lineIcon) {
     this.line1 = line1;
     this.line2 = line2;
     this.line3 = line3;
@@ -122,6 +123,7 @@ public final class WayfindingPreset {
     this.scheme = scheme;
     this.background = background;
     this.legend = legend;
+    this.lineIcon = lineIcon;
   }
 
   /**
@@ -137,7 +139,20 @@ public final class WayfindingPreset {
    */
   public WayfindingPreset with(String line3, String line4, int background, int legend) {
     return new WayfindingPreset(line1, line2, line3, line4, pictogram, arrow, scheme, background,
-        legend);
+        legend, lineIcon);
+  }
+
+  /**
+   * This preset with an icon at the start of its first line: a symbol on a sign too narrow for a
+   * pictogram, which is a square the panel's height (a stop flag a block wide and two high).
+   *
+   * @param icon the icon
+   *
+   * @return the preset
+   */
+  public WayfindingPreset withLineIcon(WayfindingIcon icon) {
+    return new WayfindingPreset(line1, line2, line3, line4, pictogram, arrow, scheme, background,
+        legend, icon);
   }
 
   public String getLine1() {
@@ -166,6 +181,7 @@ public final class WayfindingPreset {
     for (int i = 0; i < WayfindingSign.MAX_LINES; i++) {
       b.iconLeft(i, WayfindingIcon.NONE).iconRight(i, WayfindingIcon.NONE);
     }
+    b.iconLeft(0, lineIcon);
     if (arrow != null) {
       b.arrow(arrow);
     }

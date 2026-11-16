@@ -27,7 +27,8 @@ import net.minecraft.world.World;
  * <p>The flag is Core's wayfinding panel ({@code assets/docs/WAYFINDING_PANELS.md}), baked with
  * no renderer and edited with an empty-handed click; its presets are the agencies' liveries
  * ({@link BusStopSignPresets#FLAG}), and the editor's custom colours are a custom agency. Its
- * third (or fourth) line is the stop's routes, read by the boards and displays
+ * last line (the fourth, or the third when the fourth is empty) is the stop's routes, read by the
+ * boards and displays
  * ({@link TileEntityBusStopPoleFlag}), so a route may be a letter ("B") as well as a number.</p>
  *
  * <p><b>Placing.</b> The item ({@link ItemPole}) builds the whole stop in one click on the ground,
