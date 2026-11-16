@@ -148,6 +148,22 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   of all four (`<name>_span`, #321): the device without its stub, hung on a collar and pipe from
   the top of the cell under a span wire mount; and the pole-side versions (`<name>_pole`, #338):
   the device on a bracket and clamp band reaching back into a vertical pole's cell; `--check`
+- `gen_pole_controller.py` -- the pole/wall controller cabinets (#360,
+  `signalcontroller_pole_<colour>`, `BlockTrafficSignalControllerPole`): a slim NYC-style
+  upright cabinet (rain cap, door on three hinge knuckles, handle and lock, police panel, door
+  louvres, data plate, side vents, a conduit that turns back into the pole or wall) as JSON
+  models, one per `mount` actual-state value (`wall` rails, and arms with a clamp band sized for
+  the `large`, `thin` and `pedestal` poles, CsmPoleFit's radii), the four colour blockstates that
+  swap the body texture, and `metal_green.png`, recoloured from `metal_brown.png`. The cabinet
+  body must stay the same in every model: the Java box does not look at the mount. `--check`
+  (pixels for the PNG), `--fragments` (lang in the four locales, tab lines)
+- `build_pole_controller_demo.py` -- builds the "Pole Controller Demo" flat creative world
+  (refuses any other; `--create` makes it): a tight NYC corner on four mast arms run by the
+  galvanized cabinet on a mast pole, the same junction on black pedestal poles run by the black
+  cabinet, a one-way street run by the green cabinet flat on a shop front (a lever inside powers
+  it through the wall), and every colour on large, thin and pedestal poles and on a wall. Pole
+  cabinets are powered by a redstone torch on the walk under them. `--only <parts>` rebuilds a
+  part in place; drives the game through the orchestrator by instance id
 - `gen_pole_bases.py` -- the bolted bases of the painted thin, thick and impact resistant
   traffic poles (square, squircle, slim, pedestal) as OBJ, borrowing the pedestal pole's mesh
   and lathe; the impact resistant pole's tube; and those fifteen poles' blockstates, whose one

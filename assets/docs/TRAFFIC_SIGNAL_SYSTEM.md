@@ -55,6 +55,59 @@ vehicle detection sensors, and signal overlaps. All traffic signal code lives in
 - **`TrafficSignalControllerTicker`** -- Handles phase transition logic per operating mode.
   Called from `onTick()`. Tracks `timeSinceLastPhaseChange` using world tick time.
 
+### Pole and wall cabinets (#360)
+
+For a tight sidewalk with no room for a ground cabinet, the controller also comes in a slim
+NYC-style cabinet that clamps to a pole or bolts to a wall: `signalcontroller_pole_galvanized`,
+`signalcontroller_pole_black`, `signalcontroller_pole_green`, `signalcontroller_pole_brown`
+(`BlockTrafficSignalControllerPole`, one instance per colour, Traffic Signals tab next to the
+controller). Each **is** the controller: it subclasses `BlockTrafficSignalController` and makes
+the same `TileEntityTrafficSignalController`, so linking (Signal Link Tool), every mode, the
+ADVANCED programming GUI (plain click by an op or creative player), sneak-click mode switching,
+the NBT, the tooltip and the Fabricator cost (`TrafficSignalsFabricatorRules`, `instanceof
+BlockTrafficSignalController`: enclosure shell, two control boards, wiring harness) are the
+controller's own. It is `ICsmTrafficPoleIgnored`, so a pole draws no mount stub at it. All it adds
+is a model, a box and placement:
+
+- **Placement.** Click it onto the side of a pole or a wall: it takes the clicked face as its
+  facing (`IPreemptPoleMounted.placementFacing`, as the pole-side preempt devices do), so it stands
+  in the cell in front of what was clicked with its door facing away from it. Placed on a top or
+  bottom face it faces back toward the player. Put it a block or two above the walk: the cabinet
+  is about 0.9 m tall, so a cabinet one block up has its bottom at knee height and its top at
+  head height.
+- **Pole or wall.** `mount` is an actual-state property (`BlockTrafficSignalControllerPole.Mount`:
+  `wall`, `large`, `thin`, `pedestal`), never stored. `mountBehind` reads the block behind the
+  cabinet (`pos.offset(facing.getOpposite())`, the block it was clicked onto) by `getBlockState`
+  alone: an `AbstractBlockTrafficPole` (painted, large, thin, pedestal, concrete, impact,
+  decorative) gives the arms and clamp band sized for its tube by `CsmPoleFit.forPoleRadius`;
+  anything else (a wall, a full block, a pole connector, air) gives the wall rails. Breaking the
+  pole or wall leaves the cabinet drawing the wall rails against nothing.
+- **States.** `facing` (4) x `powered` (2) x `mount` (4) = 32 states per block, 128 for the four;
+  metadata holds the horizontal facing index in bits 0-1 (south 0, west 1, north 2, east 3, as
+  every NSEW block) and `powered` in bit 2. The box (the cabinet, its rain cap and its mount up to
+  the back of the cell) is rotated from `NORTH_BOUNDING_BOX` by the stored facing and is the same
+  for every mount, since the cabinet body is.
+- **Models.** `gen_pole_controller.py` writes the four mount models
+  (`models/block/trafficsignals/pole_controller/signalcontroller_pole_<mount>.json`), the four
+  blockstates, which swap the body texture per colour (galvanized is `metal_white`, as on the NYC
+  signal arms; `metal_black`; `metal_brown`; and `metal_green`, which the generator recolours from
+  the brown), and the green texture. The conduit drops out of the cabinet floor and turns back
+  into the pole or wall, so the model never reaches the ground and works at any height.
+- **Power.** It needs redstone power to run, exactly as the ground controller does
+  (`TileEntityTrafficSignalController.pauseTicking`, `isBlockPowered` on its own cell). Flat on a
+  wall, a lever on the wall block's inside face strongly powers that block and so the cabinet. On
+  a pole nothing conducts, so the power has to be a source next to the cabinet itself, such as a
+  redstone torch on the walk under it.
+
+By command, with the pole or wall at `x y z+1` and the cabinet facing north, a block above the
+walk at `y-1`:
+
+```
+/setblock x y z csm:signalcontroller_pole_galvanized 2
+```
+
+The demo world is `dev-env-utils/scripts/build_pole_controller_demo.py` ("Pole Controller Demo").
+
 ### Circuits and Phases
 
 - **`TrafficSignalControllerCircuit`** -- Groups linked devices for one direction/movement.
@@ -616,6 +669,7 @@ set of cars either way (all signals share one facing).
 ```
 AbstractBlock
 ├── BlockTrafficSignalController (ICsmTileEntityProvider)
+│   └── BlockTrafficSignalControllerPole (pole/wall cabinet, ICsmTrafficPoleIgnored)
 └── AbstractBlockRotatableNSEW
     ├── AbstractBlockTrafficSignalSensor (ICsmTileEntityProvider)
     └── AbstractBlockControllableSignal

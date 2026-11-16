@@ -39,6 +39,23 @@ Then use the **Traffic Signal Configuration Tool** to change timings and behavio
     car in two boxes still counts once. Sneak + right-click a sensor to see how many boxes each
     zone has, remove the last one you drew, or clear a zone.
 
+### Pole and wall cabinets
+
+On a tight sidewalk with no room for a ground cabinet, use the **pole/wall cabinet** instead: the
+same controller in a slim upright box, in the pole colours (galvanized, black, green and brown),
+in the Traffic Signals tab next to the controller. It links, programs and switches modes exactly
+like the controller cabinet.
+
+- **On a pole:** click it onto the side of a traffic pole a block or two above the walk. It stands
+  in front of the pole, door facing away from it, on two arms that clamp round the pole. Any CSM
+  vertical pole works: painted, large, thin, pedestal, concrete and impact poles, mast arm poles
+  included, and the clamp fits the pole's width.
+- **On a wall:** click it onto a building face and it sits flat against the wall on two rails.
+
+Like the ground cabinet it only runs while it has **redstone power**. On a wall, a lever on the
+inside face of the wall block behind it powers it through the wall. On a pole, put the power
+source next to the cabinet itself, for example a redstone torch on the walk underneath it.
+
 ## Operating modes
 
 A controller runs in one of these:
