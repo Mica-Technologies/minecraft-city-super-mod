@@ -39,6 +39,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -520,13 +521,20 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
       }
     }
 
-    /** A sneaking click in the air switches between the full and the compact footprint. */
+    /**
+     * A sneaking click in the air switches between the full and the compact footprint. Only in
+     * the air: a sneaking click on a block that cannot place there (a column with no room, a
+     * shelter lowered with something beside the face clicked) is passed on to this method by the
+     * client too, and must not switch the mode.
+     */
     @Override
     @Nonnull
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player,
         @Nonnull EnumHand hand) {
       ItemStack stack = player.getHeldItem(hand);
-      if (!player.isSneaking()) {
+      RayTraceResult look = rayTrace(world, player, false);
+      if (!player.isSneaking()
+          || (look != null && look.typeOfHit == RayTraceResult.Type.BLOCK)) {
         return super.onItemRightClick(world, player, hand);
       }
       if (!world.isRemote) {

@@ -384,7 +384,9 @@ one: facing, the top bit, and bit 8 as `lit` in the top or `powered` in the bott
   columns long (`COMPACT_LENGTH`), one row deep, from one block on the placer's left to one on
   their right, at the least height (three) unless it joins a taller shelter. A **sneaking click in
   the air** switches the item between full and compact, with a status message; the tooltip shows
-  which it places. The mode is the stack's NBT `compact`, written only while compact and removed
+  which it places. Only in the air: the client passes a sneaking click on a block that cannot
+  place (a column with no room) on to the item's right-click too, so the toggle ray-traces and
+  leaves the mode alone when the look meets a block. The mode is the stack's NBT `compact`, written only while compact and removed
   (with an emptied compound) when switched back, so full stacks still stack with fresh ones; a
   compact stack does not stack with a full one until switched back. The footprint
   (`BlockBusShelter.footprint`) and the survival rule are the same code as the full one: three
