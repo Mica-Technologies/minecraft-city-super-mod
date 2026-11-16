@@ -1,2202 +1,2037 @@
 {
- "forge_marker": 1,
- "defaults": {
-  "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-  "custom": {
-   "flip-v": true
-  },
-  "textures": {
-   "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver",
-   "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+ "variants": {
+  "inventory": {
+   "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_inv.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver&transform=forge:default-block"
   }
  },
- "variants": {
-  "shape": {
-   "0": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj"
-   },
-   "1": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "2": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "3": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "4": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "5": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "6": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "7": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "8": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj"
-   },
-   "9": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "10": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "11": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "12": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "13": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "14": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "15": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "16": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj"
-   },
-   "17": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "18": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "19": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "20": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "21": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "22": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "23": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "24": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1.obj"
-   },
-   "25": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "26": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_thin.obj"
-   },
-   "27": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_thin.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "28": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_pedestal.obj"
-   },
-   "29": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_pedestal.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "30": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c2.obj"
-   },
-   "31": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c2.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_43.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "32": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj"
-   },
-   "33": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "34": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "35": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "36": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "37": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "38": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "39": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "40": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c4.obj"
-   },
-   "41": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c4.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_47.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "42": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj"
-   },
-   "43": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "44": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "45": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "46": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "47": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "48": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "49": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "50": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj"
-   },
-   "51": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "52": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "53": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "54": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "55": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "56": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "57": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "58": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "59": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "60": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "61": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "62": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "63": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "64": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "65": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "66": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj"
-   },
-   "67": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "68": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "69": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "70": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "71": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "72": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "73": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "74": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj"
-   },
-   "75": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "76": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "77": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "78": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "79": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "80": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "81": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "82": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c9.obj"
-   },
-   "83": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c9.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_61.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "84": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj"
-   },
-   "85": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "86": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "87": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "88": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "89": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "90": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "91": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "92": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c11.obj"
-   },
-   "93": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c11.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_65.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "94": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj"
-   },
-   "95": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "96": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "97": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "98": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "99": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "100": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "101": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "102": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj"
-   },
-   "103": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "104": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "105": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "106": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "107": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "108": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "109": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "110": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "111": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "112": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "113": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "114": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "115": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "116": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
-   },
-   "117": {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj",
-    "submodel": {
-     "mount_down": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_up": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_east": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     },
-     "mount_west": {
-      "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj",
-      "custom": {
-       "flip-v": true
-      },
-      "textures": {
-       "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver"
-      }
-     }
-    }
+ "multipart": [
+  {
+   "when": {
+    "facing": "north",
+    "shape": "0|1|2|3|4|5|6|7"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
    }
   },
-  "facing": {
-   "north": {
-    "y": 0
+  {
+   "when": {
+    "facing": "east",
+    "shape": "0|1|2|3|4|5|6|7"
    },
-   "east": {
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
     "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "0|1|2|3|4|5|6|7"
    },
-   "south": {
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
     "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "0|1|2|3|4|5|6|7"
    },
-   "west": {
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
     "y": 270
    }
   },
-  "inventory": [
-   {
-    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_inv.obj",
-    "transform": "forge:default-block"
+  {
+   "when": {
+    "facing": "north",
+    "shape": "16|17|18|19|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
    }
-  ]
- }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "16|17|18|19|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "16|17|18|19|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "16|17|18|19|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "8|9|10|11|12|13|14|15"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "8|9|10|11|12|13|14|15"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "8|9|10|11|12|13|14|15"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "8|9|10|11|12|13|14|15"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "24|25"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "24|25"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "24|25"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "24|25"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "84|85|86|87|88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "84|85|86|87|88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "84|85|86|87|88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "84|85|86|87|88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c10.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "92|93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c11.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "92|93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c11.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "92|93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c11.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "92|93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c11.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "94|95|96|97|98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "94|95|96|97|98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "94|95|96|97|98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "94|95|96|97|98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c12.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "102|103|104|105|106|107|108|109|110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c13.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "28|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "28|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "28|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "28|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "26|27"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "26|27"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "26|27"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "26|27"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "30|31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "30|31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "30|31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "30|31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "32|33|34|35|36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "32|33|34|35|36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "32|33|34|35|36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "32|33|34|35|36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "40|41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "40|41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "40|41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "40|41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "42|43|44|45|46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "42|43|44|45|46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "42|43|44|45|46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "42|43|44|45|46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "50|51|52|53|54|55|56|57|58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "66|67|68|69|70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "66|67|68|69|70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "66|67|68|69|70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "66|67|68|69|70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "74|75|76|77|78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "74|75|76|77|78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "74|75|76|77|78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "74|75|76|77|78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c8.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "82|83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c9.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "82|83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c9.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "82|83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c9.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "82|83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_sloped8_c9.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "1|3|5|7|9|11|13|15|17|19|21|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "1|3|5|7|9|11|13|15|17|19|21|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "1|3|5|7|9|11|13|15|17|19|21|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "1|3|5|7|9|11|13|15|17|19|21|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_39.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "2|3|6|7|10|11|14|15|18|19|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "2|3|6|7|10|11|14|15|18|19|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "2|3|6|7|10|11|14|15|18|19|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "2|3|6|7|10|11|14|15|18|19|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_40.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "4|5|6|7|12|13|14|15|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "4|5|6|7|12|13|14|15|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "4|5|6|7|12|13|14|15|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "4|5|6|7|12|13|14|15|20|21|22|23"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_41.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "25|27|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "25|27|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "25|27|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "25|27|29"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_42.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_43.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_43.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_43.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "31"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_43.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "33|35|37|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "33|35|37|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "33|35|37|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "33|35|37|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_44.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "34|35|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "34|35|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "34|35|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "34|35|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_45.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "36|37|38|39"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_46.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_47.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_47.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_47.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "41"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_47.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "43|45|47|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "43|45|47|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "43|45|47|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "43|45|47|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_48.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "44|45|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "44|45|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "44|45|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "44|45|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_49.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "46|47|48|49"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_50.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "51|53|55|57|59|61|63|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "51|53|55|57|59|61|63|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "51|53|55|57|59|61|63|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "51|53|55|57|59|61|63|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_51.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "52|53|56|57|60|61|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "52|53|56|57|60|61|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "52|53|56|57|60|61|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "52|53|56|57|60|61|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_52.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "54|55|56|57|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "54|55|56|57|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "54|55|56|57|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "54|55|56|57|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_53.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "58|59|60|61|62|63|64|65"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_54.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "67|69|71|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "67|69|71|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "67|69|71|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "67|69|71|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_55.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "68|69|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "68|69|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "68|69|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "68|69|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_56.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "70|71|72|73"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_57.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "75|77|79|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "75|77|79|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "75|77|79|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "75|77|79|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_58.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "76|77|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "76|77|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "76|77|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "76|77|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_59.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "78|79|80|81"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_60.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_61.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_61.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_61.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "83"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_61.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "85|87|89|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "85|87|89|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "85|87|89|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "85|87|89|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_62.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "86|87|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "86|87|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "86|87|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "86|87|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_63.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "88|89|90|91"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_64.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_65.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_65.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_65.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "93"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_65.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "95|97|99|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "95|97|99|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "95|97|99|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "95|97|99|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_66.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "96|97|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "96|97|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "96|97|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "96|97|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_67.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "98|99|100|101"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_68.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "103|105|107|109|111|113|115|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "103|105|107|109|111|113|115|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "103|105|107|109|111|113|115|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "103|105|107|109|111|113|115|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_69.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "104|105|108|109|112|113|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "104|105|108|109|112|113|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "104|105|108|109|112|113|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "104|105|108|109|112|113|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_70.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "106|107|108|109|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "106|107|108|109|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "106|107|108|109|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "106|107|108|109|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_71.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "shape": "110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "shape": "110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "shape": "110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "shape": "110|111|112|113|114|115|116|117"
+   },
+   "apply": {
+    "model": "csm:trafficaccessories/shared_models/trusssignalarm_stub_72.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+    "y": 270
+   }
+  }
+ ]
 }

@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.codeutils.AbstractBlockTrafficPole;
 import com.micatechnologies.minecraft.csm.codeutils.BlockUtils;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPoleFit;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmMultipartQuadCached;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmNoSnowAccumulation;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTileEntityProvider;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmTrafficPoleIgnored;
@@ -72,7 +73,8 @@ import org.jetbrains.annotations.NotNull;
  * impossible to aim, so it was dropped.
  */
 public class BlockTrafficPoleMastArmCurve extends AbstractBlockRotatableNSEW
-    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored {
+    implements ICsmTileEntityProvider, ICsmNoSnowAccumulation, ICsmTrafficPoleIgnored,
+    ICsmMultipartQuadCached {
 
   /**
    * Carries the constructor arguments past {@code super()}. {@link #getBlockRegistryName()} and

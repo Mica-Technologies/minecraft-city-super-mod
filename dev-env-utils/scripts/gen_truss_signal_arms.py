@@ -86,6 +86,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
+import forge_multipart  # noqa: E402
 
 OWNER = layout.owner_of_folder("trafficaccessories")
 MODEL_REL = "models/block/trafficaccessories/shared_models"
@@ -856,6 +857,12 @@ def blockstate(fam, prof, texture, pool):
     }
 
 
+# The blockstate above is the Forge form, every (shape, facing) a variant with its stubs as
+# sub-models: 38 thousand model locations across the two families. It is written as multipart
+# (forge_multipart.convert_obj), one location a block, each cell model and each stub a rule
+# listing the shape values that draw it; the finish and flip-v go in each OBJ's location.
+
+
 def inventory_text(fam, prof, label):
     whole = prof["whole"]
     lo, hi = whole.bounds()
@@ -1049,7 +1056,8 @@ def outputs():
                 fam, prof, label)
             for fid, tex, _flabel in fam["finishes"]:
                 files[("asset", "blockstates/%s.json" % registry(fam, pid, fid))] = json.dumps(
-                    blockstate(fam, prof, tex, pool), indent=1) + "\n"
+                    forge_multipart.convert_obj(blockstate(fam, prof, tex, pool)),
+                    indent=1) + "\n"
             profiles.append((meta, prof))
         for k, m in enumerate(pool.meshes):
             files[("asset", MODEL_REL + "/%s_stub_%d.obj" % (prefix, k))] = m.text(
