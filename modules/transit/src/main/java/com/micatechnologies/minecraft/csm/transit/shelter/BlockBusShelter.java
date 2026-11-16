@@ -52,8 +52,9 @@ import net.minecraft.world.World;
  *
  * <p>The item ({@link ItemShelter}) places a whole shelter, {@link #FOOT_LENGTH} columns long
  * and {@link #FOOT_DEPTH} rows deep, the front row in the block clicked; sneaking, it places one
- * column. In survival the footprint takes an item a column, and one column is placed when there
- * are not enough. Clicking a shelter with the item makes every column of that shelter a section
+ * column. Placed beside a shelter of the same block it takes that shelter's height, so the roof
+ * carries on level. In survival the footprint takes an item a column, and one column is placed
+ * when there are not enough. Clicking a shelter with the item makes every column of that shelter a section
  * taller; sneaking, a section shorter, down to three.</p>
  *
  * <p>Shelters join. Set side by side, facing the same way, they read as one shelter of any
@@ -257,12 +258,13 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
   }
 
-  /** Whether a column of the shelter's least height fits at {@code base}. */
-  private boolean columnFits(World world, BlockPos base, EntityPlayer player, ItemStack stack) {
-    if (base.getY() < 0 || base.getY() + MIN_HEIGHT > world.getHeight()) {
+  /** Whether a column {@code height} tall fits at {@code base}. */
+  private boolean columnFits(World world, BlockPos base, int height, EntityPlayer player,
+      ItemStack stack) {
+    if (base.getY() < 0 || base.getY() + height > world.getHeight()) {
       return false;
     }
-    for (int i = 0; i < MIN_HEIGHT; i++) {
+    for (int i = 0; i < height; i++) {
       BlockPos at = base.up(i);
       if (!free(world, at) || !player.canPlayerEdit(at, EnumFacing.UP, stack)) {
         return false;
@@ -271,14 +273,15 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     return true;
   }
 
-  /** Sets a column of the least height at {@code base}, its light as given. */
-  private void placeColumn(World world, BlockPos base, EnumFacing facing, boolean lit) {
+  /** Sets a column {@code height} tall at {@code base}, its light as given. */
+  private void placeColumn(World world, BlockPos base, EnumFacing facing, boolean lit,
+      int height) {
     IBlockState lower = getDefaultState().withProperty(FACING, facing);
     world.setBlockState(base, lower, 3);
-    for (int i = 1; i < MIN_HEIGHT - 1; i++) {
+    for (int i = 1; i < height - 1; i++) {
       world.setBlockState(base.up(i), lower, 3);
     }
-    world.setBlockState(base.up(MIN_HEIGHT - 1),
+    world.setBlockState(base.up(height - 1),
         lower.withProperty(SECTION, BusShelterSection.TOP).withProperty(LIT, lit), 3);
   }
 
@@ -296,6 +299,26 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
       }
     }
     return true;
+  }
+
+  /**
+   * The height a new column takes: that of a shelter of this block, facing the same way, whose
+   * bottom stands beside one of {@code bases}, so the roof carries on level; else the least.
+   */
+  private int joinedHeight(World world, List<BlockPos> bases, EnumFacing facing) {
+    for (BlockPos base : bases) {
+      for (EnumFacing side : EnumFacing.HORIZONTALS) {
+        BlockPos next = base.offset(side);
+        if (bases.contains(next)) {
+          continue;
+        }
+        if (part(world, next, facing) && !isTop(world.getBlockState(next))
+            && !below(world, next, facing)) {
+          return Math.max(MIN_HEIGHT, topOf(world, next, facing).getY() - next.getY() + 1);
+        }
+      }
+    }
+    return MIN_HEIGHT;
   }
 
   /** Every column of the shelter whose bottom is {@code bottom}: the bottoms, joined. */
@@ -331,10 +354,13 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
     List<BlockPos> bottoms = shelterBottoms(world, bottomOf(world, pos, facing), facing);
     List<BlockPos> tops = new ArrayList<>();
     int height = 0;
+    int lowest = Integer.MAX_VALUE;
     for (BlockPos bottom : bottoms) {
       BlockPos top = topOf(world, bottom, facing);
       tops.add(top);
-      height = Math.max(height, top.getY() - bottom.getY() + 1);
+      int h = top.getY() - bottom.getY() + 1;
+      height = Math.max(height, h);
+      lowest = Math.min(lowest, h);
     }
     if (taller) {
       if (height >= MAX_HEIGHT) {
@@ -347,7 +373,7 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
               at.getY(), at.getZ());
         }
       }
-    } else if (height <= MIN_HEIGHT) {
+    } else if (lowest <= MIN_HEIGHT) {
       return new TextComponentTranslation("csm.transit.shelter.lowest", MIN_HEIGHT);
     }
     RESHAPING.set(true);
@@ -465,8 +491,9 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
             bases.add(pos.offset(along, i).offset(away, row));
           }
         }
+        int height = shelter.joinedHeight(world, bases, facing);
         for (BlockPos base : bases) {
-          if (!shelter.columnFits(world, base, player, stack)) {
+          if (!shelter.columnFits(world, base, height, player, stack)) {
             if (!world.isRemote) {
               player.sendStatusMessage(new TextComponentTranslation(
                   "csm.transit.shelter.no_room", base.getX(), base.getY(), base.getZ()), true);
@@ -475,10 +502,11 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
           }
         }
       } else {
-        if (!shelter.columnFits(world, pos, player, stack)) {
+        bases.add(pos);
+        if (!shelter.columnFits(world, pos, shelter.joinedHeight(world, bases, facing), player,
+            stack)) {
           return false;
         }
-        bases.add(pos);
         if (!player.isSneaking() && !world.isRemote) {
           player.sendStatusMessage(new TextComponentTranslation(
               "csm.transit.shelter.one_column", footprint), true);
@@ -488,8 +516,9 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
         return true;
       }
       boolean lit = shelter.joinedLight(world, bases, facing);
+      int height = shelter.joinedHeight(world, bases, facing);
       for (BlockPos base : bases) {
-        shelter.placeColumn(world, base, facing, lit);
+        shelter.placeColumn(world, base, facing, lit, height);
       }
       if (!creative && bases.size() > 1) {
         stack.shrink(bases.size() - 1);  // onItemUse takes the last one

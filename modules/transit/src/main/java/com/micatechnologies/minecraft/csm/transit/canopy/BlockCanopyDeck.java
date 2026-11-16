@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.transit.canopy;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractBlock;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBlockStateContainer;
+import com.micatechnologies.minecraft.csm.codeutils.ICsmGlassFronted;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -39,7 +40,7 @@ import net.minecraft.world.World;
  *
  * @since 2026.11
  */
-public class BlockCanopyDeck extends AbstractBlock {
+public class BlockCanopyDeck extends AbstractBlock implements ICsmGlassFronted {
 
   public static final PropertyEnum<EnumFacing.Axis> AXIS =
       PropertyEnum.create("axis", EnumFacing.Axis.class, EnumFacing.Axis.X, EnumFacing.Axis.Z);
@@ -237,5 +238,11 @@ public class BlockCanopyDeck extends AbstractBlock {
   @Nonnull
   public BlockRenderLayer getBlockRenderLayer() {
     return style != null ? style.getLayer() : BlockRenderLayer.CUTOUT;
+  }
+
+  /** A glazed deck draws its glass in the translucent pass and its steel in the cutout one. */
+  @Override
+  public boolean isGlassFronted() {
+    return getBlockRenderLayer() == BlockRenderLayer.TRANSLUCENT;
   }
 }

@@ -72,6 +72,125 @@ public enum CanopyStyle {
     return contains(lightPhases, phase);
   }
 
+  /** A tile turned 22.5 degrees rises this much across a block, in sixteenths. */
+  private static final double R22 = 16 * Math.tan(Math.PI / 8);
+
+  /**
+   * The heights (sixteenths above the deck block's foot) a column's head or a downlight is
+   * raised to under a sloped tile: every soffit height a tile's centre can have, so the
+   * generator draws one model per level ({@code REACH_PX} in gen_transit_canopies.py).
+   */
+  public static final double[] REACH_PX = {0, R22 / 2, 8, R22 * 1.5, R22 * 2.5,
+      16 + R22 / 2, 16 + R22 * 1.5};
+
+  /**
+   * How high the soffit is at the centre of a tile at this phase, above the deck block's foot,
+   * in sixteenths: where a column under it has to reach, and a light hang.
+   *
+   * @param phase the tile's place in the module
+   *
+   * @return the height
+   */
+  public double soffitAt(int phase) {
+    switch (this) {
+      case SAWTOOTH:
+        return R22 * (phase + 0.5);
+      case BUTTERFLY:
+        return phase == 0 || phase == 3 ? R22 * 1.5 : R22 / 2;
+      case VAULT:
+        // the tile centres of the arch: 45 degrees, then 22.5, then the crown
+        return phase == 0 || phase == 5 ? 8 : phase == 1 || phase == 4 ? 16 + R22 / 2
+            : 16 + R22 * 1.5;
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * The {@link #REACH_PX} level nearest the soffit at this phase.
+   *
+   * @param phase the tile's place in the module
+   *
+   * @return the level's index
+   */
+  public int reachAt(int phase) {
+    double h = soffitAt(phase);
+    int best = 0;
+    for (int i = 1; i < REACH_PX.length; i++) {
+      if (Math.abs(REACH_PX[i] - h) < Math.abs(REACH_PX[best] - h)) {
+        best = i;
+      }
+    }
+    return best;
+  }
+
+  /** The slope angles a light can be tilted to, after flat ({@code tilt} 1..4 along x, 5..8 z). */
+  public static final double[] TILT_DEG = {22.5, -22.5, 45, -45};
+
+  /**
+   * The slope of the soffit at the centre of a tile at this phase, in degrees, rising toward the
+   * profile's +x (its +z, for axis z).
+   *
+   * @param phase the tile's place in the module
+   *
+   * @return the angle: 0, 22.5 or 45, either sign
+   */
+  public double slopeAt(int phase) {
+    switch (this) {
+      case SAWTOOTH:
+        return 22.5;
+      case BUTTERFLY:
+        return phase < 2 ? -22.5 : 22.5;
+      case VAULT:
+        return phase == 0 ? 45 : phase == 1 ? 22.5 : phase == 4 ? -22.5 : phase == 5 ? -45 : 0;
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * The tilt a downlight under {@code above} takes to sit flush on its soffit: 0 flat, else
+   * 1 + the index in {@link #TILT_DEG}, plus 4 for a profile along z.
+   *
+   * @param above the state of the block above
+   *
+   * @return the tilt
+   */
+  public static int tiltUnder(net.minecraft.block.state.IBlockState above) {
+    if (!(above.getBlock() instanceof BlockCanopyDeck)) {
+      return 0;
+    }
+    CanopyStyle style = ((BlockCanopyDeck) above.getBlock()).getStyle();
+    if (style == null) {
+      return 0;
+    }
+    double a = style.slopeAt(above.getValue(BlockCanopyDeck.PHASE));
+    for (int i = 0; i < TILT_DEG.length; i++) {
+      if (TILT_DEG[i] == a) {
+        return 1 + i
+            + (above.getValue(BlockCanopyDeck.AXIS) == net.minecraft.util.EnumFacing.Axis.Z ? 4
+            : 0);
+      }
+    }
+    return 0;
+  }
+
+  /**
+   * The reach level for something under {@code above}: its tile's, or 0 under anything but a
+   * canopy deck.
+   *
+   * @param above the state of the block above
+   *
+   * @return the level's index
+   */
+  public static int reachUnder(net.minecraft.block.state.IBlockState above) {
+    if (!(above.getBlock() instanceof BlockCanopyDeck)) {
+      return 0;
+    }
+    CanopyStyle style = ((BlockCanopyDeck) above.getBlock()).getStyle();
+    return style == null ? 0 : style.reachAt(above.getValue(BlockCanopyDeck.PHASE));
+  }
+
   private static boolean contains(int[] values, int v) {
     for (int x : values) {
       if (x == v) {

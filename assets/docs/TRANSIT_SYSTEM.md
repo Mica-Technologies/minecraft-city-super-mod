@@ -365,7 +365,10 @@ one: facing, the top bit, and bit 8 as `lit` in the top or `powered` in the bott
   when the stack is short.
 - **Height**: clicking a shelter with its own item raises every column of that shelter by a
   section (the top moves up and a `middle` takes its place); sneaking lowers it, down to three,
-  up to `MAX_HEIGHT` (12). Every column, so the roof stays level.
+  up to `MAX_HEIGHT` (12). Every column, so the roof stays level. A column or footprint placed
+  beside a shelter of the same block facing the same way takes that shelter's height
+  (`joinedHeight`); to add a column, sneak-place it on the ground, since a click on the shelter
+  itself resizes it.
 - **Breaking** any section takes its column; the section broken drops the one item.
 
 Old 2-block shelters in a world load as a column of `bottom` and `top` only; clicking one with its
@@ -496,8 +499,18 @@ collision is the 3 px deck slab at the foot, the selection box the whole block.
 **Columns** are round (an octagon of inradius 3.5 px, about 0.45 m across), one block at a time,
 stacked to any height: a base plate where a column meets anything else below (`base`) and a
 capital under whatever it carries (`cap`), both actual state. Livery-neutral, in three paints.
+Under a sloped tile the soffit is higher than the deck block's foot (up to 16.6 px over the
+sawtooth's ridge, 8 px over the vault's springing), so the head reaches up into the deck's block
+to meet it: `reach`, actual state, one of `CanopyStyle.REACH_PX`, read off the tile above's style
+and phase (`CanopyStyle.soffitAt`). A model ends at y 32, so a head is raised a block at most.
 
-The **downlight** hangs in the block under a deck, flush with the soffit, light 15. A click with
+The **downlight** hangs in the block under a deck, flush with the soffit, light 15. Under a
+sloped tile it is raised to the soffit as a column head is (`reach`) and turned to lie on it
+(`tilt`: 22.5 or 45 degrees, either way, about the profile's axis; `CanopyStyle.slopeAt`), so it
+never floats under the slope. Only the (reach, tilt) pairs a tile can give have models. Lit, it
+projects Core's **light-up air** into the floor below, as the street lights do
+(`CsmLightupAir.projectColumn`, `ICsmLightupAirSource`), because its own light from 4 to 12
+blocks up reaches the pavement dim; a light arriving lit places its air a tick later. A click with
 an empty hand, or a change of redstone power (on when power comes, off when it goes; `powered`
 remembers), switches every downlight under the same canopy: it walks the decks joined to the one
 above it, up to 4096 tiles, and sets each light under them. Under a vault, lights hang only where
@@ -530,6 +543,9 @@ stands columns from the ground up and hangs the lights.
 
 ### Traps
 
+- **A slope's end faces only go where they fill a joint.** Each sloped piece draws its ends,
+  which close the wedge a convex joint opens on the roof, except the vault's two 45 degree
+  pieces over the gutter between arches: turned opposite ways they crossed there and flickered.
 - **The slope's sign.** A block model's positive angle about z raises the +x end. From below, a
   correct vault reads as a bowl and a correct butterfly as ridges: check a shaped style from a
   side elevation at deck height, never from under it.

@@ -2,7 +2,9 @@
   "multipart": [
     {
       "when": {
-        "lit": "false"
+        "lit": "false",
+        "reach": "0",
+        "tilt": "0"
       },
       "apply": {
         "model": "csm:transit/canopies/downlight_off"
@@ -10,10 +12,392 @@
     },
     {
       "when": {
-        "lit": "true"
+        "lit": "false",
+        "reach": "1",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_1_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "1",
+        "tilt": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_1_2"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "1",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_1_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "1",
+        "tilt": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_1_6"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "2",
+        "tilt": "3"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_2_3"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "2",
+        "tilt": "4"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_2_4"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "2",
+        "tilt": "7"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_2_7"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "2",
+        "tilt": "8"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_2_8"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "3",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_3_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "3",
+        "tilt": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_3_2"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "3",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_3_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "3",
+        "tilt": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_3_6"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "4",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_4_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "4",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_4_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "5",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_5_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "5",
+        "tilt": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_5_2"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "5",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_5_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "5",
+        "tilt": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_5_6"
+      }
+    },
+    {
+      "when": {
+        "lit": "false",
+        "reach": "6",
+        "tilt": "0"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_off_6_0"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "0",
+        "tilt": "0"
       },
       "apply": {
         "model": "csm:transit/canopies/downlight_on"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "1",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_1_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "1",
+        "tilt": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_1_2"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "1",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_1_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "1",
+        "tilt": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_1_6"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "2",
+        "tilt": "3"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_2_3"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "2",
+        "tilt": "4"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_2_4"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "2",
+        "tilt": "7"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_2_7"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "2",
+        "tilt": "8"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_2_8"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "3",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_3_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "3",
+        "tilt": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_3_2"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "3",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_3_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "3",
+        "tilt": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_3_6"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "4",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_4_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "4",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_4_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "5",
+        "tilt": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_5_1"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "5",
+        "tilt": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_5_2"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "5",
+        "tilt": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_5_5"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "5",
+        "tilt": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_5_6"
+      }
+    },
+    {
+      "when": {
+        "lit": "true",
+        "reach": "6",
+        "tilt": "0"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/downlight_on_6_0"
       }
     }
   ]

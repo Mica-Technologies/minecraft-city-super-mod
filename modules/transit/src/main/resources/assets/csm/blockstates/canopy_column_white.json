@@ -15,10 +15,59 @@
     },
     {
       "when": {
-        "cap": "true"
+        "cap": "true",
+        "reach": "0"
       },
       "apply": {
         "model": "csm:transit/canopies/column/white_cap"
+      }
+    },
+    {
+      "when": {
+        "reach": "1"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/white_cap_1"
+      }
+    },
+    {
+      "when": {
+        "reach": "2"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/white_cap_2"
+      }
+    },
+    {
+      "when": {
+        "reach": "3"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/white_cap_3"
+      }
+    },
+    {
+      "when": {
+        "reach": "4"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/white_cap_4"
+      }
+    },
+    {
+      "when": {
+        "reach": "5"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/white_cap_5"
+      }
+    },
+    {
+      "when": {
+        "reach": "6"
+      },
+      "apply": {
+        "model": "csm:transit/canopies/column/white_cap_6"
       }
     }
   ]

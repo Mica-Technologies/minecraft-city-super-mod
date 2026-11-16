@@ -275,14 +275,14 @@ SLAB = 2.5                                   # the thickness of a sloped deck
 TURN_SIGN = 1
 
 
-def slope(x0, x1, ya, yb, angle):
+def slope(x0, x1, ya, yb, angle, faces=ALL):
     """A sloped deck piece from (x0, ya) to (x1, yb) (underside heights), turned about the
     run. rescale stretches it across the turned length; the angle must be 0, 22.5 or 45."""
     xc = (x0 + x1) / 2
     yc = (ya + yb) / 2
     if angle == 0:
         return deck_slab(x0, x1, ya, ya + SLAB)
-    return el((x0, yc, 0), (x1, yc + SLAB, 16), "frame", ALL,
+    return el((x0, yc, 0), (x1, yc + SLAB, 16), "frame", faces,
               per={"up": "roof", "down": "soffit"},
               rot={"origin": [xc, yc, 8], "axis": "z", "angle": TURN_SIGN * angle,
                    "rescale": True})
@@ -348,7 +348,17 @@ def shaped_parts(style):
     module = len(prof)
     parts = []
     for p, segs in enumerate(prof):
-        deck = [slope(*s) for s in segs]
+        deck = []
+        for k, sg in enumerate(segs):
+            faces = ALL
+            # The vault's two 45 degree pieces meet over the gutter between arches turned
+            # opposite ways, and their end faces there fought; the gutter covers that joint.
+            # Every other end stays: it fills the wedge a convex joint opens on the roof.
+            if style == "vault" and p == 0 and k == 0:
+                faces = tuple(f for f in ALL if f != "west")
+            if style == "vault" and p == module - 1 and k == len(segs) - 1:
+                faces = tuple(f for f in ALL if f != "east")
+            deck.append(slope(*sg, faces=faces))
         rib = []
         for s in segs:
             rib += end_rib(*s)
@@ -592,6 +602,23 @@ def item_display():
 # Columns, the downlight, the tool
 # ------------------------------------------------------------------------------------------
 COL_R = 3.5   # a column's inradius: 7 px, about 0.45 m across
+# How high a column's head or a downlight reaches into the deck's block to meet a sloped tile's
+# soffit: CanopyStyle.REACH_PX, every height a tile's centre can have (`reach`, actual state).
+REACH_PX = [0, R22 / 2, 8, R22 * 1.5, R22 * 2.5, 16 + H22, 16 + 3 * H22]
+# A model ends at y 32, so a head or a light is raised a block at most: under the sawtooth's
+# ridge (16.6) it stops 0.6 px short, and under a vault's upper tiles, where the tool stands
+# nothing, it stops at the top of the deck's block.
+MAX_RAISE = 16
+
+
+def raise_els(els, dy):
+    out = []
+    for e in els:
+        e2 = dict(e)
+        e2["from"] = [e["from"][0], round(e["from"][1] + dy, 4), e["from"][2]]
+        e2["to"] = [e["to"][0], round(e["to"][1] + dy, 4), e["to"][2]]
+        out.append(e2)
+    return out
 
 
 def columns():
@@ -608,15 +635,55 @@ def columns():
         }
         mp = [{"apply": {"model": C.M("column/%s_shaft" % fid)}},
               {"when": {"base": "true"}, "apply": {"model": C.M("column/%s_base" % fid)}},
-              {"when": {"cap": "true"}, "apply": {"model": C.M("column/%s_cap" % fid)}}]
+              {"when": {"cap": "true", "reach": "0"},
+               "apply": {"model": C.M("column/%s_cap" % fid)}}]
+        for i, h in enumerate(REACH_PX[1:], 1):
+            # the shaft carried on up into the deck's block, and the capital at the soffit
+            h = min(h, MAX_RAISE)
+            ext = lc.post(8, 8, COL_R, 16, 13 + h, "c", top=False, bottom=False) if h > 3 else []
+            name = "column/%s_cap_%d" % (fid, i)
+            models[name] = lc.model(tex, ext + raise_els(cap, h))
+            mp.append({"when": {"reach": str(i)}, "apply": {"model": C.M(name)}})
         item = lc.model(tex, shaft + base + cap)
         C.add(reg, 'new BlockCanopyColumn("%s")' % reg, names, models, {"multipart": mp},
               item=item, tab=TAB)
 
 
+TILT_DEG = [22.5, -22.5, 45, -45]   # CanopyStyle.TILT_DEG: tilt 1..4 along x, 5..8 along z
+
+
+def soffit_at(style, phase):
+    """CanopyStyle.soffitAt / slopeAt: (height, slope) at a tile's centre."""
+    if style == "sawtooth":
+        return R22 * (phase + 0.5), 22.5
+    if style == "butterfly":
+        return (R22 * 1.5 if phase in (0, 3) else R22 / 2), (-22.5 if phase < 2 else 22.5)
+    if style == "vault":
+        return ([8, 16 + H22, 16 + 3 * H22, 16 + 3 * H22, 16 + H22, 8][phase],
+                [45, 22.5, 0, 0, -22.5, -45][phase])
+    return 0, 0
+
+
+def light_cases():
+    """Every (reach, tilt) a downlight under any tile can show."""
+    cases = {(0, 0)}
+    for style, _, module, _ in STYLES:
+        for p in range(module):
+            h, a = soffit_at(style, p)
+            reach = min(range(len(REACH_PX)), key=lambda i: abs(REACH_PX[i] - h))
+            for axis_off in (0, 4):
+                tilt = 0 if a == 0 else 1 + TILT_DEG.index(a) + axis_off
+                cases.add((reach, tilt))
+    return sorted(cases)
+
+
 def downlight():
+    """The light raised to a sloped tile's soffit and turned to lie on it: about the soffit's
+    line through the tile centre, about z for a profile along x and about x (the other way
+    round, a positive x turn lowering +z) for one along z."""
     reg = "canopy_downlight"
     models = {}
+    mp = []
     for lit in (False, True):
         tex = {"b": C.T("steel"), "l": C.T("lens_on" if lit else "lens_off"),
                "particle": C.T("steel")}
@@ -624,15 +691,26 @@ def downlight():
                                                           "down")),
                el((5.5, 14.75, 5.5), (10.5, 15, 10.5), "l",
                   ("north", "south", "east", "west", "down"))]
-        models["downlight_%s" % ("on" if lit else "off")] = lc.model(tex, els, ao=False)
-    bs = {"multipart": [{"when": {"lit": "false"}, "apply": {"model": C.M("downlight_off")}},
-                        {"when": {"lit": "true"}, "apply": {"model": C.M("downlight_on")}}]}
+        for reach, tilt in light_cases():
+            h = min(REACH_PX[reach], MAX_RAISE)
+            raised = raise_els(els, h)
+            if tilt:
+                a = TILT_DEG[(tilt - 1) % 4]
+                rot = ({"axis": "z", "angle": a} if tilt <= 4 else {"axis": "x", "angle": -a})
+                rot["origin"] = [8, round(16 + h, 4), 8]
+                raised = [dict(e, rotation=rot) for e in raised]
+            name = "downlight_%s%s" % ("on" if lit else "off",
+                                       "_%d_%d" % (reach, tilt) if reach or tilt else "")
+            models[name] = lc.model(tex, raised, ao=False)
+            mp.append({"when": {"lit": "true" if lit else "false", "reach": str(reach),
+                                "tilt": str(tilt)},
+                       "apply": {"model": C.M(name)}})
     item = {"parent": "csm:block/transit/canopies/downlight_on",
             "display": {"gui": {"rotation": [-60, 0, 0], "translation": [0, 0, 0],
                                 "scale": [0.9] * 3}}}
     C.add(reg, 'new BlockCanopyDownlight("%s")' % reg,
           ("Canopy Downlight", "Dach-Downlight", "Foco de Marquesina", "Takdownlight"),
-          models, bs, item=item, tab=TAB)
+          models, {"multipart": mp}, item=item, tab=TAB)
 
 
 MESSAGES = {

@@ -1,0 +1,147 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "b": "csm:blocks/transit/canopies/steel",
+    "l": "csm:blocks/transit/canopies/lens_on",
+    "particle": "csm:blocks/transit/canopies/steel"
+  },
+  "ambientocclusion": false,
+  "elements": [
+    {
+      "from": [
+        4.5,
+        31,
+        4.5
+      ],
+      "to": [
+        11.5,
+        32,
+        11.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#b",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            1
+          ]
+        },
+        "south": {
+          "texture": "#b",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            1
+          ]
+        },
+        "east": {
+          "texture": "#b",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            1
+          ]
+        },
+        "west": {
+          "texture": "#b",
+          "uv": [
+            4.5,
+            0,
+            11.5,
+            1
+          ]
+        },
+        "down": {
+          "texture": "#b",
+          "uv": [
+            4.5,
+            4.5,
+            11.5,
+            11.5
+          ]
+        }
+      },
+      "rotation": {
+        "axis": "x",
+        "angle": 22.5,
+        "origin": [
+          8,
+          32,
+          8
+        ]
+      }
+    },
+    {
+      "from": [
+        5.5,
+        30.75,
+        5.5
+      ],
+      "to": [
+        10.5,
+        31,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#l",
+          "uv": [
+            5.5,
+            1,
+            10.5,
+            1.25
+          ]
+        },
+        "south": {
+          "texture": "#l",
+          "uv": [
+            5.5,
+            1,
+            10.5,
+            1.25
+          ]
+        },
+        "east": {
+          "texture": "#l",
+          "uv": [
+            5.5,
+            1,
+            10.5,
+            1.25
+          ]
+        },
+        "west": {
+          "texture": "#l",
+          "uv": [
+            5.5,
+            1,
+            10.5,
+            1.25
+          ]
+        },
+        "down": {
+          "texture": "#l",
+          "uv": [
+            5.5,
+            5.5,
+            10.5,
+            10.5
+          ]
+        }
+      },
+      "rotation": {
+        "axis": "x",
+        "angle": 22.5,
+        "origin": [
+          8,
+          32,
+          8
+        ]
+      }
+    }
+  ]
+}
