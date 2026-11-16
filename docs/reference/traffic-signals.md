@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "105 blocks in this tab"
+!!! info "109 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -69,6 +69,10 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Traffic Light Sensor (Miovision SmartView 360) | `csm:trafficlightsensormiovision360` | 2 | 10 | pickaxe | 1 |
 | Traffic Light Sensor (Miovision SmartView 360, Mast Arm) | `csm:trafficlightsensormiovision360tall` | 2 | 10 | pickaxe | 1 |
 | Traffic Signal Controller | `csm:signalcontroller` | 2 | 10 | pickaxe | 1 |
+| Traffic Signal Controller (Pole/Wall Cabinet, Black) | `csm:signalcontroller_pole_black` | 2 | 10 | pickaxe | 1 |
+| Traffic Signal Controller (Pole/Wall Cabinet, Brown) | `csm:signalcontroller_pole_brown` | 2 | 10 | pickaxe | 1 |
+| Traffic Signal Controller (Pole/Wall Cabinet, Galvanized) | `csm:signalcontroller_pole_galvanized` | 2 | 10 | pickaxe | 1 |
+| Traffic Signal Controller (Pole/Wall Cabinet, Green) | `csm:signalcontroller_pole_green` | 2 | 10 | pickaxe | 1 |
 | Traffic Signal Locking Rail Controller | `csm:controllabletrafficsignaltraincontroller` | 2 | 10 | pickaxe | 1 |
 | Traffic Signal Tattle Tale Beacon | `csm:controllabletattletalebeacon` | 2 | 10 | pickaxe | 1 |
 | Vertical FYA Left Signal (Red / Yellow / Green+FYA Bimodal) | `csm:controllableverticalbimodalgreenleftsignal` |  |  |  |  |

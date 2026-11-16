@@ -39,6 +39,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorTrafiRadar;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensorVantageVector;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalController;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalControllerPole;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSensorZoneTool;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalVisibilityProgrammer;
 import com.micatechnologies.minecraft.csm.trafficsignals.ItemSignalConfigurationTool;
@@ -250,6 +251,11 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // PreemptDetectorPole (pole side)
     initTabBlock(BlockTrafficSignalController.class,
         fmlPreInitializationEvent); // TrafficSignalController
+    // The same controller in a pole or wall cabinet (#360), one per pole colour
+    initTabBlock(new BlockTrafficSignalControllerPole("signalcontroller_pole_galvanized"));
+    initTabBlock(new BlockTrafficSignalControllerPole("signalcontroller_pole_black"));
+    initTabBlock(new BlockTrafficSignalControllerPole("signalcontroller_pole_green"));
+    initTabBlock(new BlockTrafficSignalControllerPole("signalcontroller_pole_brown"));
     initTabItem(ItemSensorZoneTool.class, fmlPreInitializationEvent); // Sensor Zone Tool
     initTabItem(ItemSignalLinkTool.class, fmlPreInitializationEvent); // Signal Link Tool
     initTabItem(ItemSignalConfigurationTool.class,

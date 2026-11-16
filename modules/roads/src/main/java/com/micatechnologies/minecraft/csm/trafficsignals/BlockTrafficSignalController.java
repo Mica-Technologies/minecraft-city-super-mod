@@ -46,6 +46,22 @@ public class BlockTrafficSignalController extends AbstractBlock implements ICsmT
     setTickRandomly(true);
   }
 
+  /**
+   * For a controller in another housing (the pole and wall cabinets): the same controller, with
+   * that housing's material, sound and light opacity.
+   *
+   * @param material     the housing's material
+   * @param soundType    its sound
+   * @param lightOpacity its light opacity (0 for a cabinet that is not a full cube)
+   *
+   * @since 2026.11
+   */
+  protected BlockTrafficSignalController(Material material, SoundType soundType,
+      int lightOpacity) {
+    super(material, soundType, "pickaxe", 1, 2F, 10F, 0F, lightOpacity);
+    setTickRandomly(true);
+  }
+
   public static EnumFacing getFacingFromEntity(BlockPos clickedBlock, EntityLivingBase entity) {
     return EnumFacing.getFacingFromVector((float) (entity.posX - clickedBlock.getX()),
         (float) (entity.posY - clickedBlock.getY()),
