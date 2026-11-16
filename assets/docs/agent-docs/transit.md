@@ -91,6 +91,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   leaf and the same leaf swung a quarter about its hinge, the sixteen line bullets and the booth
   counter; the legends, lines and globe colours are listed as the Java lists them; `--check`,
   `--fragments`
+- `build_bus_station_demo.py` -- builds the Bus Station demo world (the real-scale shelters and
+  the station canopy kit, buses parked under) in a flat creative world, through the MCMCP
+  orchestrator by instance id (`--instance`); TRANSIT_SYSTEM.md "The Bus Station demo"
 - `build_transit_demo.py` -- builds the Transit demo world in a flat creative world loaded in a
   dev client, over MCMCP (borrowing `csm_bench.py`'s client; `--client-port`, `--server-port` and
   `--config` aim it at a client other than the dev client): a bus street with every agency's
