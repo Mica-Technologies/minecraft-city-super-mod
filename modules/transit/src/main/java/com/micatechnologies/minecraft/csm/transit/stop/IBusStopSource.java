@@ -13,6 +13,14 @@ import net.minecraft.util.math.BlockPos;
  */
 public interface IBusStopSource {
 
+  /**
+   * Whether this is a stop at all: a bay on the boards. A full-size flag is several cells of one
+   * sign, and only its controller cell is the stop; every other source is one.
+   */
+  default boolean isStopBay() {
+    return true;
+  }
+
   /** Where the stop is: its column seeds the countdown. */
   BlockPos getStopPos();
 

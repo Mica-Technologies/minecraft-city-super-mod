@@ -48,6 +48,11 @@ public class TileEntityBusStopPoleFlag extends AbstractTileEntityWayfindingPanel
   }
 
   @Override
+  public boolean isStopBay() {
+    return isController();
+  }
+
+  @Override
   public BlockPos getStopPos() {
     return getPos();
   }

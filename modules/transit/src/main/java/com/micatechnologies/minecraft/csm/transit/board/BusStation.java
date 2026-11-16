@@ -192,7 +192,7 @@ public final class BusStation {
           continue;
         }
         for (TileEntity te : chunk.getTileEntityMap().values()) {
-          if (te instanceof IBusStopSource && !te.isInvalid()
+          if (te instanceof IBusStopSource && !te.isInvalid() && ((IBusStopSource) te).isStopBay()
               && te.getPos().getY() >= y0 && te.getPos().getY() <= y1) {
             flags.add((IBusStopSource) te);
           }
