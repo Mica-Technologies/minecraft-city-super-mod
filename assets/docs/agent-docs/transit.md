@@ -25,6 +25,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   by its `hang` property (shift crossed with side), with no `shift` variants (its state mapper
   leaves `shift` out of the model locations); the flag models are shared by the agencies, the
   blockstate filling the plate slots with the plate or a clear texture from `route1`..`route3`. Also the curb plaque; `--check`, `--fragments`
+- `gen_transit_stop_signs.py` -- the full-size stop's two wayfinding signs (Transit): the pole
+  flag (`bus_stop_pole_flag`, whose item builds the whole pole) and the stop-name blade
+  (`bus_stop_name_blade`). Core's baked panel draws them from NBT, so it writes only their
+  blockstates (Core's empty panel model turned by facing), item models, the blade's item
+  texture and lang, with the pole item's messages; `--check`, `--fragments`
 - `gen_transit_arrival_boards.py` -- the large bus arrival boards (`bus_arrival_board_3x1`,
   `bus_arrival_board_5x2`), the info totem (`bus_info_totem`) and the invisible cell they fill
   (`bus_arrival_board_part`, Transit's hidden tab). The renderer draws everything, so the block

@@ -104,6 +104,8 @@ def sign(x, z, lines, rot=0):
 # ------------------------------------------------------------------------------------------
 # World rules and the ground
 # ------------------------------------------------------------------------------------------
+# creative: the Canopy Tool and the stop pole take their pieces from the inventory in survival
+cmds("gamemode 1 %s" % PLAYER)
 cmds("gamerule doDaylightCycle false", "gamerule doWeatherCycle false",
      "gamerule doMobSpawning false", "difficulty peaceful", "time set 6000",
      "weather clear 1000000", "kill @e[type=!player]")
@@ -199,11 +201,13 @@ try:
     # --------------------------------------------------------------------------------------
     # The canopies, each laid by the Canopy Tool
     # --------------------------------------------------------------------------------------
-    def canopy(deck, clearance, x0, z0, x1, z1, column="canopy_column_steel"):
-        cmds("replaceitem entity %s slot.hotbar.0 csm:canopy_tool 1 0 {clearance:%d}"
-             % (PLAYER, clearance),
+    def canopy(deck, clearance, x0, z0, x1, z1, column="canopy_column_steel", lights=0):
+        """lights: 0 downlights, 1 a strip down the middle, 2 strips along the long edges."""
+        cmds("replaceitem entity %s slot.hotbar.0 csm:canopy_tool 1 0 {clearance:%d,lights:%d}"
+             % (PLAYER, clearance, lights),
              "replaceitem entity %s slot.hotbar.1 csm:%s 64" % (PLAYER, column),
-             "replaceitem entity %s slot.hotbar.2 csm:canopy_downlight 64" % PLAYER,
+             "replaceitem entity %s slot.hotbar.2 csm:%s 64"
+             % (PLAYER, "canopy_light_strip" if lights else "canopy_downlight"),
              "replaceitem entity %s slot.weapon.offhand csm:%s 64" % (PLAYER, deck))
         server("server_teleport_player", player=PLAYER, x=X0 + x0 - 2.5, y=Y,
                z=Z0 + z0 - 2.5, fly=True)
@@ -246,6 +250,50 @@ try:
     sign(36, 44, ["Flat, small", "8 x 6, 4 clear"], 0)
     sign(50, 44, ["Glass skylight", "16 x 12", "12 clear"], 0)
     sign(-3, 60, ["Canopy Tool:", "deck in off hand,", "click 2 corners;", "sneak-air: height"], 0)
+    flush()
+
+    # --------------------------------------------------------------------------------------
+    # A full-size stop (z 64..76), facing south, as the live UWS bays are built: a strip-lit
+    # canopy with a two-sided 5x2 arrival board hung under it, the full-size pole beside it, an
+    # info totem, the outdoor fare machine and a compact shelter
+    # --------------------------------------------------------------------------------------
+    def use(item, target, face, nbt=""):
+        """Right-click target's face holding item, as the player standing south of it, facing
+        north, so what is placed faces south."""
+        cmds("replaceitem entity %s slot.hotbar.0 %s 1 0 %s" % (PLAYER, item, nbt))
+        server("server_teleport_player", player=PLAYER, x=X0 + target[0] + 0.5, y=Y,
+               z=Z0 + target[2] + 6.5, yaw=180, pitch=20, fly=True)
+        r = server("server_use_item_on_block", player=PLAYER, x=X0 + target[0], y=target[1],
+                   z=Z0 + target[2], face=face, slot=0)
+        if r.get("result") != "success":
+            print("  %s: %s" % (item, r))
+
+    canopy("canopy_deck_flat_cityline", 8, 0, 66, 9, 72, lights=1)
+    deck_y = Y + 8
+    # the board, hung from the deck's underside two blocks from the strip; the master is the
+    # bottom-centre cell
+    use("csm:bus_arrival_board_5x2", (5, deck_y, 70), "down")
+    board = ('{ag:0b,sn:"Riverside",dr:"Northbound",rt:"B 30",'
+             'dt:["Upper West Side","Downtown"]}')
+    cmds("blockdata %d %d %d %s" % (X0 + 5, deck_y - 2, Z0 + 70, board))
+    # the pole: posts at x 12, the flag beside them at x 13 (the reader's right), routes B 30
+    use("csm:bus_stop_pole_flag", (12, G, 70), "up")
+    flag = ('{l1:"BUS",l2:"STOP",l3:"CITYLINE",l4:"B 30",ts3:0.55f,ts4:0.8f,il1:"bus",'
+            'p:"none",a:"none",s:"transit",d:1b,al:"c",m:"ceiling",bg:"#0E5E6F",fg:"#F4C428"}')
+    blade = ('{l1:"RIVERSIDE",l2:"CITYLINE",p:"none",a:"none",s:"transit",d:1b,al:"c",'
+             'm:"ceiling",bg:"#0E5E6F",fg:"#F4C428"}')
+    for y in (Y + 2, Y + 3):
+        cmds("blockdata %d %d %d %s" % (X0 + 13, y, Z0 + 70, flag))
+    for x in (12, 13):
+        cmds("blockdata %d %d %d %s" % (X0 + x, Y + 4, Z0 + 70, blade))
+    # the totem, the outdoor fare machine and a compact (3 x 1) glass shelter
+    use("csm:bus_info_totem", (16, G, 70), "up")
+    cmds("blockdata %d %d %d %s" % (X0 + 16, Y, Z0 + 70, board))
+    use("csm:fare_vending_machine_outdoor", (18, G, 70), "up")
+    use("csm:bus_shelter_glass_cityline", (22, G, 70), "up", "{compact:1b}")
+    cmds("clear %s" % PLAYER)
+    sign(-3, 66, ["Full-size stop:", "strip-lit canopy,", "5x2 arrival board,", "pole, totem"], 0)
+    sign(21, 72, ["Compact shelter", "3 x 1, 3 tall", "sneak-use air", "to switch"], 0)
     flush()
 
     # ------------------------------------------------------------------------------------------
