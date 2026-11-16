@@ -171,6 +171,12 @@ public final class CsmRenderToggles {
    */
   public static boolean venueScoreboardPerFrame = false;
 
+  /**
+   * Bake the light-up air's clear cube into the chunk mesh again, as it was before it became
+   * invisible. Read when a chunk is built, so reload the chunks after setting it. Measurement only.
+   */
+  public static boolean lightupAirModel = false;
+
   /** Skip what the venues' centre-hung scoreboards' screens show. Measurement only. */
   public static boolean skipVenueScoreboard = false;
 
@@ -248,6 +254,7 @@ public final class CsmRenderToggles {
     values.put("bridgeCablePerFrame", bridgeCablePerFrame);
     values.put("ziplineCablePerFrame", ziplineCablePerFrame);
     values.put("venueScoreboardPerFrame", venueScoreboardPerFrame);
+    values.put("lightupAirModel", lightupAirModel);
     values.put("venueScoreboard", skipVenueScoreboard);
     values.put("venueRibbonText", skipVenueRibbonText);
     values.put("venueBanners", skipVenueBanners);
@@ -326,6 +333,8 @@ public final class CsmRenderToggles {
       ziplineCablePerFrame = skipped;
     } else if ("venueScoreboardPerFrame".equalsIgnoreCase(name)) {
       venueScoreboardPerFrame = skipped;
+    } else if ("lightupAirModel".equalsIgnoreCase(name)) {
+      lightupAirModel = skipped;
     } else if ("venueScoreboard".equalsIgnoreCase(name)) {
       skipVenueScoreboard = skipped;
     } else if ("venueRibbonText".equalsIgnoreCase(name)) {
@@ -382,6 +391,7 @@ public final class CsmRenderToggles {
     bridgeCablePerFrame = false;
     ziplineCablePerFrame = false;
     venueScoreboardPerFrame = false;
+    lightupAirModel = false;
     skipVenueScoreboard = false;
     skipVenueRibbonText = false;
     skipVenueBanners = false;

@@ -45,6 +45,22 @@ public class BlockLightupAir extends AbstractBlockRotatableNSEWUD {
     return instance;
   }
 
+  /**
+   * Never drawn. Its model is a cube on a fully clear texture, which put five cutout faces into
+   * the chunk mesh for every light-up air (a stadium's light footprint is thousands), each
+   * rasterised and alpha-discarded every frame. Its target box is empty, so there is no crack
+   * overlay to keep either. The same for every state, so the default state's answer, which is
+   * what the chunk builder asks, is right for all of them. {@code /csm renderpass skip
+   * lightupAirModel} brings the cube back (after a chunk reload) for an A/B.
+   */
+  @Override
+  @Nonnull
+  public net.minecraft.util.EnumBlockRenderType getRenderType(IBlockState state) {
+    return com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles.lightupAirModel
+        ? net.minecraft.util.EnumBlockRenderType.MODEL
+        : net.minecraft.util.EnumBlockRenderType.INVISIBLE;
+  }
+
   @Override
   public boolean isPassable(IBlockAccess worldIn, BlockPos pos) {
     return true;
