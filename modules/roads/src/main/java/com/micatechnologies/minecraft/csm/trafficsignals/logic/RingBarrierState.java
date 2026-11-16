@@ -176,6 +176,10 @@ public class RingBarrierState {
     // slot rather than skipping past it, and dual entry leaves it alone, so the excluded phase is
     // served as soon as the other ring's phase has cleared.
     boolean exclusionWait = false;
+    // The phase this ring is waiting for while exclusionWait is set. The other ring reads it so
+    // that, going idle, it does not start a phase excluded beside the one being waited for and
+    // starve it again (issue #359).
+    int exclusionFor = 0;
   }
 
   private int currentBarrier = 0;
@@ -932,6 +936,7 @@ public class RingBarrierState {
     ring.yieldedFor = 0;
     ring.barrierWaiting = false;
     ring.exclusionWait = false;
+    ring.exclusionFor = 0;
   }
 
   // region: Ring stepping
@@ -1294,17 +1299,23 @@ public class RingBarrierState {
     if (ring.activePhase != 0) {
       return;
     }
+    // A ring already waiting for an excluded call keeps its turn: it ignores a wait the other ring
+    // has just taken up beside it, so two idle rings never wait on each other.
+    boolean held = ring.exclusionWait;
     ring.exclusionWait = false;
+    ring.exclusionFor = 0;
     int[] seq = plan.getRingSequence(ringNum);
     for (int idx = ring.sequencePos + 1; idx < seq.length; idx++) {
       int phaseNumber = seq[idx];
       TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
       if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
           && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
-          && excludedByOtherRing(ring, phaseNumber, plan)) {
-        // Called, but excluded from timing beside the other ring's phase: wait at this slot
-        // (sequencePos stays before it) until that phase has cleared, rather than skip it.
-        ring.exclusionWait = true;
+          && (excludedByOtherRing(ring, phaseNumber, plan)
+          || excludedBesideOtherRingsWait(ring, held, phaseNumber, plan))) {
+        // Called, but excluded from timing beside the other ring's phase (or beside the phase
+        // the idle other ring is waiting for): wait at this slot (sequencePos stays before it)
+        // until that phase has cleared, rather than skip it.
+        waitForExclusion(ring, phaseNumber);
         return;
       }
       ring.sequencePos = idx;
@@ -1331,7 +1342,8 @@ public class RingBarrierState {
         if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
             && phase.isConditionalService()
             && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
-            && !excludedByOtherRing(ring, phaseNumber, plan)) {
+            && !excludedByOtherRing(ring, phaseNumber, plan)
+            && !excludedBesideOtherRingsWait(ring, held, phaseNumber, plan)) {
           startGreen(ring, phase, now);
           ring.condServiceUsed = true;
           return;
@@ -1343,6 +1355,13 @@ public class RingBarrierState {
     // Parking would force a full both-ring barrier re-cross — needlessly clearing the other ring's
     // compatible green (e.g. the adjacent through would run green -> yellow -> red -> green around
     // a left-turn call that never conflicted with it).
+    //
+    // A called phase the wrap reaches that is excluded beside the other ring's phase holds the
+    // ring, as the forward path does, rather than being skipped for the next called phase: skipping
+    // it restarted (say) a recalled through, the other ring's termination for it was wasted, and
+    // it starved for as long as no other barrier called (issue #359). A phase excluded beside the
+    // one the idle other ring is waiting for is skipped instead, so that ring's wait is not wasted
+    // either.
     if (nextBarrierWithDemand(plan, called) == currentBarrier) {
       for (int idx = 0; idx < seq.length; idx++) {
         int phaseNumber = seq[idx];
@@ -1350,7 +1369,11 @@ public class RingBarrierState {
         if (phase != null && phase.isActive() && phase.getBarrier() == currentBarrier
             && phaseNumber >= 1 && phaseNumber < called.length && called[phaseNumber]
             && phaseNumber != ring1.activePhase && phaseNumber != ring2.activePhase
-            && !excludedByOtherRing(ring, phaseNumber, plan)) {
+            && !excludedBesideOtherRingsWait(ring, held, phaseNumber, plan)) {
+          if (excludedByOtherRing(ring, phaseNumber, plan)) {
+            waitForExclusion(ring, phaseNumber);
+            return;
+          }
           startGreen(ring, phase, now);
           ring.sequencePos = idx;
           return;
@@ -1374,7 +1397,12 @@ public class RingBarrierState {
         if (seq[idx] == target && phase != null && phase.isActive()
             && phase.getBarrier() == currentBarrier && target < called.length && called[target]
             && target != ring1.activePhase && target != ring2.activePhase
-            && !excludedByOtherRing(ring, target, plan)) {
+            && !excludedBesideOtherRingsWait(ring, held, target, plan)) {
+          if (excludedByOtherRing(ring, target, plan)) {
+            ring.yieldedFor = target; // still owed: wait for it rather than drop it
+            waitForExclusion(ring, target);
+            return;
+          }
           startGreen(ring, phase, now);
           ring.sequencePos = idx;
           return;
@@ -2727,6 +2755,23 @@ public class RingBarrierState {
       TrafficSignalProgrammedPhasePlan plan) {
     RingRuntime other = ring == ring1 ? ring2 : ring1;
     return other.activePhase != 0 && plan.excludes(phaseNumber, other.activePhase);
+  }
+
+  /**
+   * Whether {@code phaseNumber} is excluded beside the phase the other ring, idle, is waiting for
+   * ({@link RingRuntime#exclusionFor}). Starting it would put the waiting phase back behind it.
+   */
+  private boolean excludedBesideOtherRingsWait(RingRuntime ring, boolean held, int phaseNumber,
+      TrafficSignalProgrammedPhasePlan plan) {
+    RingRuntime other = ring == ring1 ? ring2 : ring1;
+    return !held && other.activePhase == 0 && other.exclusionWait && other.exclusionFor != 0
+        && plan.excludes(phaseNumber, other.exclusionFor);
+  }
+
+  /** Holds {@code ring} idle for {@code phaseNumber}, an excluded call (see the flag's note). */
+  private static void waitForExclusion(RingRuntime ring, int phaseNumber) {
+    ring.exclusionWait = true;
+    ring.exclusionFor = phaseNumber;
   }
 
   /**

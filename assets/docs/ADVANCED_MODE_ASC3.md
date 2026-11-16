@@ -317,7 +317,13 @@ The engine honours an exclusion in three places:
   (`RingRuntime.exclusionWait`, sequence position left before it) instead of skipping past: a
   skipped phase would wait for the next cycle every time both lefts were called, and the ring
   serves it the moment the other phase has cleared. Dual entry leaves a waiting ring alone, or it
-  would companion past the waiting phase.
+  would companion past the waiting phase. The within-barrier wrap and the coordinated yield's
+  re-serve wait the same way when the called phase they reach is excluded (issue #359: skipping
+  it restarted a recalled through, the other ring's termination was wasted, and the excluded left
+  starved for as long as no other barrier called). The waiting ring records the phase
+  (`RingRuntime.exclusionFor`), and the other ring, going idle, starts nothing excluded beside it
+  (`excludedBesideOtherRingsWait`). A ring that was already waiting keeps its turn, so two idle
+  rings never wait on each other.
 - **Termination.** `conflicts()` counts an excluded phase as conflicting demand, so a call on
   phase 5 gaps phase 1 out, runs its max-green timer and is never held at the barrier.
 - **The conflict monitor.** `checkExclusions` throws if both rings show an excluded pair green

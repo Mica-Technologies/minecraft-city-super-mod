@@ -99,6 +99,49 @@ class PhaseExclusionTest {
     assertFalse(r[2], "excluded phases 1 and 5 were up together");
   }
 
+  /**
+   * Issue #359, as set up on the live server: lefts 1 and 5 with standing calls, throughs 2 and 6
+   * on MIN recall, phase 4 alone on barrier B with no demand (so the barrier never needs to
+   * cross), and phase 1 excluded beside 5 and 6. The within-barrier wrap used to skip the
+   * excluded 1 and re-serve 2, and ring 2 re-served 5 and 6 around it, so 1 starved until a
+   * barrier B call came. It must come back every cycle.
+   */
+  @Test
+  @DisplayName("an excluded call waits its turn instead of starving while the barrier stays put")
+  void excludedCallIsNotStarvedByTheWithinBarrierWrap() {
+    TrafficSignalProgrammedPhasePlan plan = boulevard();
+    RingBarrierStateTest.enable(plan, 4, 2);
+    plan.getPhase(4).setMinGreen(100L);
+    plan.getPhase(4).setPassage(40L);
+    plan.getPhase(4).setMaxGreen(300L);
+    plan.getPhase(2).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    plan.getPhase(6).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+    plan.getPhase(1).setExclusionMask((1 << 5) | (1 << 6));
+    RingBarrierState rb = new RingBarrierState();
+    TrafficSignalControllerCircuits ckts = RingBarrierStateTest.circuits(3);
+    Demand lefts = new Demand().veh(0, 0, 3, 0).veh(1, 0, 3, 0);
+    int starts1 = 0;
+    long lastStart1 = 0;
+    long longestWait = 0;
+    boolean was1 = false;
+    for (long t = 0; t < 12000L; t++) {
+      rb.tick(plan, ckts, RingBarrierStateTest.NO_OVERLAPS, t, lefts);
+      ServedMovement m1 = rb.getLastServed(1);
+      ServedMovement m2 = rb.getLastServed(2);
+      boolean is1 = up(m1, 1);
+      if (is1 && !was1) {
+        starts1++;
+        longestWait = Math.max(longestWait, t - lastStart1);
+        lastStart1 = t;
+      }
+      was1 = is1;
+      assertFalse(is1 && (up(m2, 5) || up(m2, 6)), "phase 1 up beside an excluded phase");
+    }
+    longestWait = Math.max(longestWait, 12000L - lastStart1);
+    assertTrue(starts1 >= 5, "phase 1 served only " + starts1 + " times in 10 minutes");
+    assertTrue(longestWait < 2400L, "phase 1 waited " + longestWait / 20 + " s for service");
+  }
+
   @Test
   @DisplayName("exclusions round-trip through NBT, and a hand-typed list of ints reads")
   void exclusionNbt() {
