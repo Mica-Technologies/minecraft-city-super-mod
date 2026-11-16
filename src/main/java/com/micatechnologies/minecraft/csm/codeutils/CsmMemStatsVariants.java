@@ -217,7 +217,8 @@ public final class CsmMemStatsVariants {
   private static boolean isObj(List<Object> part) {
     Object loc = "sub".equals(part.get(0)) ? ((List<?>) part.get(2)).get(5) : part.get(1);
     return loc instanceof ResourceLocation
-        && ((ResourceLocation) loc).getPath().endsWith(".obj");
+        && (((ResourceLocation) loc).getPath().endsWith(".obj")
+            || ((ResourceLocation) loc).getPath().contains(CsmObjModelLoader.OPTIONS));
   }
 
   private List<Object> subKey(Object sub) throws Exception {

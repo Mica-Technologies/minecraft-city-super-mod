@@ -203,7 +203,8 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   own quad cache, built lazily in the world) 106 thousand -> 10 thousand; 238 MiB less at the
   menu; baking 10.6 -> 5.6 s, and the post-bake passes below 3.3 -> 2.0 s because they find less.
   It also frees the unbaked copies the baked models pinned (`this$1`), except one per distinct
-  part. `-Dcsm.noPartBakeCache=true` turns it off (OBJ files go back to Forge's loader).
+  part. `-Dcsm.noPartBakeCache=true` turns it off (every part baked per variant; CSM's OBJ files still
+  load through `CsmObjModelLoader`, which alone reads OBJ location options, below).
   **Rules: a CSM baked model may be one object for many states and items**, so never change one and
   never key per-state data on a baked model's identity expecting one model per state; **never load
   CSM's `.obj` files any other way** (no `OBJLoader.addDomain("csm")`: two loaders accepting one
@@ -257,6 +258,40 @@ run on `ModelBakeEvent` at the lowest priority, in the order the client proxy re
   be the same in every state**, since a multipart model's particle is its first part's (the
   verifier and the test check it).
 
+- **An OBJ blockstate whose properties pick parts is multipart too** (`forge_multipart.convert_obj`,
+  `CsmObjModelLoader`, Core, client). The light pole families of GitHub #99 were Forge variant
+  blockstates of OBJ models: a signal arm's `shape` picked a cell's model and its mount stubs (as
+  sub-models), a decorative pole's ends and flanks added sub-models, a luminaire arm's colour was a
+  retexture. Every combination was a model location and a Forge `MultiModel` (with its seven
+  per-perspective copies): 66 thousand locations and about 470 thousand `MultiModel$Baked`
+  objects between them. A multipart rule names only a model, `x`, `y` and uvlock, so what a Forge variant
+  says about an OBJ model goes into the model's location, after the file name:
+  `csm:a/b.obj?flip-v&body=csm:blocks/x`. `flip-v`, `ambient` and `gui3d` are Forge's custom data,
+  `transform=forge:default-block` an item variant's display transforms (the model's default
+  state), and any other key a material retextured as a variant's `"#key"`. `CsmObjModelLoader`
+  reads the file once whatever options name it, so six colours of a shape hold its geometry once.
+  `convert_obj` resolves every state of the Forge form to its parts (a sub-model under the
+  variant's rotation, with only its own custom data and textures, as Forge bakes it) and writes a
+  rule per part listing the values that draw it (`"shape": "3|7|11"`), checking state by state
+  that each draws exactly what it drew; a sub-model `transform` cannot be said, so a generator
+  writes the part already turned (the decorative poles' four flank clamps).
+  `verify_obj_multipart.py <rev> --changed` checks every converted blockstate against its Forge
+  form at a revision, triangle by triangle, and its particle. The variants' own models' rules come
+  first, so the particle is the one a Forge variant had (its own model's, not a sub-model's). The arms' blockstates are up to 424 rules and 7,500
+  listed values, which vanilla's multipart model tests on every `getQuads`; their block class
+  implements `ICsmMultipartQuadCached`, and `CsmMultipartQuadCache` keeps each state's quads the
+  first time it is drawn. **Rules: a new OBJ family whose properties pick parts goes through
+  `convert_obj`**; **an OBJ location's options are read only by `CsmObjModelLoader`**, so a tool
+  that follows blockstate models splits them off first (`csm_layout.split_obj_options`); and
+  **a multipart model's particle is its first part's, read when the model is made**, so an OBJ
+  bake reports the sprite of the last face it builds from the start (`PackedObjModel`), not
+  Forge's white sprite before its first draw.
+- **Parsed OBJ vertices are shared** (`CsmObjModelLoader.parsed`, Core, client). Forge's parser
+  gives every corner of every face its own vertex and position copy, although the file names each
+  once; the parse is kept for the game's life, since an OBJ bake builds its quads when first drawn.
+  Corners equal in position, texture coordinate, normal and material are made one vertex when a
+  file is first read. Only a corner with a texture coordinate is shared: Forge fills in a missing
+  one per corner, the one write to a parsed vertex.
 - **Baked quads are shared** (`CsmQuadSharing`, Core, client). Forge bakes a submodel again for
   every blockstate variant that names it, so 7.0 million baked quads held about 750 thousand
   distinct ones. With the part bake cache there are 1.9 million, but distinct parts still repeat

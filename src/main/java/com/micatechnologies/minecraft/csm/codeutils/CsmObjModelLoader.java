@@ -6,8 +6,11 @@ import java.lang.reflect.Field;
 import com.micatechnologies.minecraft.csm.CsmConstants;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
@@ -21,6 +24,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.BakedModelWrapper;
+import net.minecraftforge.client.model.ForgeBlockStateV1;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -64,19 +68,90 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
 
   @Override
   public void onResourceManagerReload(IResourceManager resourceManager) {
-    // Forge's OBJ loader, which reads the files, is told of the reload on its own.
+    // Forge's OBJ loader, which reads the files, is told of the reload on its own; what was
+    // parsed from the old resources is let go.
+    synchronized (PARSED) {
+      PARSED.clear();
+    }
   }
+
+  /** Starts the options in an OBJ model's location: {@code <file>.obj?<option>&<option>...}. */
+  public static final String OPTIONS = ".obj?";
 
   @Override
   public boolean accepts(ResourceLocation modelLocation) {
-    return CsmConstants.MOD_NAMESPACE.equals(modelLocation.getNamespace())
-        && modelLocation.getPath().endsWith(".obj");
+    if (!CsmConstants.MOD_NAMESPACE.equals(modelLocation.getNamespace())) {
+      return false;
+    }
+    String path = modelLocation.getPath();
+    return path.endsWith(".obj") || path.contains(OPTIONS);
   }
 
+  /**
+   * Loads an OBJ model, applying the options its location may carry.
+   *
+   * <p>A vanilla multipart rule names a model, a rotation and uvlock, nothing else, so it cannot
+   * retexture an OBJ model or set Forge's custom data on it as a Forge variant does. Those
+   * multipart blockstates (the generators' {@code forge_multipart.convert_obj}) put them in the
+   * location instead, after the file name: {@code csm:a/b.obj?flip-v&body=csm:blocks/x}. Each
+   * option is {@code key} or {@code key=value}: {@code flip-v}, {@code ambient} and {@code gui3d}
+   * are Forge's OBJ custom data (a bare key means {@code true}); {@code transform} names one of
+   * Forge's transform presets ({@code forge:default-block}), which an item variant uses for its
+   * display transforms; every other key is a material, retextured as a Forge variant's
+   * {@code "#key"} texture is. The file is parsed once, however many option sets name it
+   * ({@link #parsed}), and every copy shares its faces, so a shape drawn in six colours holds its
+   * geometry once.</p>
+   */
   @Override
   public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-    IModel model = OBJLoader.INSTANCE.loadModel(modelLocation);
-    return model instanceof OBJModel ? new CsmObjModel((OBJModel) model) : model;
+    String path = modelLocation.getPath();
+    int at = path.indexOf(OPTIONS);
+    if (at < 0) {
+      return CsmObjModel.wrap(parsed(modelLocation));
+    }
+    ResourceLocation file = new ResourceLocation(modelLocation.getNamespace(),
+        path.substring(0, at + OPTIONS.length() - 1));
+    IModel model = CsmObjModel.wrap(parsed(file));
+    ImmutableMap.Builder<String, String> custom = ImmutableMap.builder();
+    ImmutableMap.Builder<String, String> textures = ImmutableMap.builder();
+    IModelState transform = null;
+    boolean anyCustom = false;
+    boolean anyTexture = false;
+    for (String option : path.substring(at + OPTIONS.length()).split("&")) {
+      if (option.isEmpty()) {
+        continue;
+      }
+      int eq = option.indexOf('=');
+      String key = eq < 0 ? option : option.substring(0, eq);
+      String value = eq < 0 ? "true" : option.substring(eq + 1);
+      switch (key) {
+        case "flip-v":
+        case "ambient":
+        case "gui3d":
+          custom.put(key, value);
+          anyCustom = true;
+          break;
+        case "transform":
+          transform = ForgeBlockStateV1.Transforms.get(value).orElseThrow(
+              () -> new IllegalArgumentException("unknown transform " + value + " in "
+                  + modelLocation));
+          break;
+        default:
+          textures.put("#" + key, value);
+          anyTexture = true;
+          break;
+      }
+    }
+    if (anyCustom) {
+      model = model.process(custom.build());
+    }
+    if (anyTexture) {
+      model = model.retexture(textures.build());
+    }
+    if (transform != null && model instanceof CsmObjModel) {
+      model = ((CsmObjModel) model).withDefaultState(transform);
+    }
+    return model;
   }
 
   @Override
@@ -84,17 +159,130 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
     return "CsmObjModelLoader";
   }
 
+  /**
+   * Each file's parse, by file, until the next resource reload. Forge's OBJ loader reads and
+   * parses the file again on every call; the model registry used to call it once a file, but a
+   * file named with several option sets is several locations, each loaded on its own.
+   */
+  private static final Map<ResourceLocation, IModel> PARSED = new HashMap<>();
+
+  /**
+   * Forge's parse of a file, read once until the next resource reload, its equal vertices made
+   * one object.
+   *
+   * <p>Forge's OBJ parser gives every corner of every face a vertex of its own, each with its
+   * own copy of the position, though the file names each position, texture coordinate and
+   * normal once and faces refer to them by number: a triangle mesh holds every position about
+   * six times. The parsed model is kept for as long as the game runs (its bakes build their
+   * quads lazily, when first drawn), so that was most of the memory CSM's OBJ models held:
+   * 2.3 million vertices and their positions for 750 thousand faces. Corners equal in
+   * position, texture coordinate, normal and material are now one vertex. A face's vertices
+   * are only read once parsed: every bake transforms each face into a new one
+   * ({@code Group.applyTransform}); the one write, a missing texture coordinate filled in per
+   * corner, is why a corner without one is left alone.</p>
+   */
+  private static IModel parsed(ResourceLocation file) throws Exception {
+    synchronized (PARSED) {
+      IModel model = PARSED.get(file);
+      if (model == null) {
+        model = OBJLoader.INSTANCE.loadModel(file);
+        if (model instanceof OBJModel) {
+          shareVertices(((OBJModel) model).getMatLib());
+        }
+        PARSED.put(file, model);
+      }
+      return model;
+    }
+  }
+
+  private static void shareVertices(OBJModel.MaterialLibrary lib) {
+    Map<VertexKey, OBJModel.Vertex> seen = new HashMap<>();
+    for (OBJModel.Group group : lib.getGroups().values()) {
+      for (OBJModel.Face face : group.getFaces()) {
+        OBJModel.Vertex[] verts = face.getVertices();
+        if (verts == null) {
+          continue;
+        }
+        for (int i = 0; i < verts.length; i++) {
+          OBJModel.Vertex v = verts[i];
+          if (v == null || !v.hasTextureCoordinate()) {
+            continue;
+          }
+          OBJModel.Vertex shared = seen.putIfAbsent(new VertexKey(v), v);
+          if (shared != null) {
+            verts[i] = shared;
+          }
+        }
+      }
+    }
+  }
+
+  /** A parsed vertex by value: its position, and its texture coordinate, normal and material. */
+  private static final class VertexKey {
+
+    private final float x;
+    private final float y;
+    private final float z;
+    private final float w;
+    private final Object uv;
+    private final Object normal;
+    private final Object material;
+    private final int hash;
+
+    VertexKey(OBJModel.Vertex v) {
+      this.x = v.getPos().x;
+      this.y = v.getPos().y;
+      this.z = v.getPos().z;
+      this.w = v.getPos().w;
+      // The parser hands every corner the same texture coordinate and normal objects for the
+      // same index in the file, so identity is the file's own numbering.
+      this.uv = v.getTextureCoordinate();
+      this.normal = v.hasNormal() ? v.getNormal() : null;
+      this.material = v.getMaterial();
+      this.hash = Objects.hash(Float.floatToIntBits(x), Float.floatToIntBits(y),
+          Float.floatToIntBits(z), Float.floatToIntBits(w), System.identityHashCode(uv),
+          System.identityHashCode(normal), System.identityHashCode(material));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (!(o instanceof VertexKey)) {
+        return false;
+      }
+      VertexKey k = (VertexKey) o;
+      return Float.floatToIntBits(x) == Float.floatToIntBits(k.x)
+          && Float.floatToIntBits(y) == Float.floatToIntBits(k.y)
+          && Float.floatToIntBits(z) == Float.floatToIntBits(k.z)
+          && Float.floatToIntBits(w) == Float.floatToIntBits(k.w)
+          && uv == k.uv && normal == k.normal && material == k.material;
+    }
+
+    @Override
+    public int hashCode() {
+      return hash;
+    }
+  }
+
   /** Forge's OBJ model, whose copies stay this class and whose bakes are shared. */
   public static final class CsmObjModel extends OBJModel {
+
+    /**
+     * The model's own default state when a location option set one ({@code transform}); null
+     * for Forge's (the identity).
+     */
+    private IModelState defaultState;
 
     CsmObjModel(OBJModel from) throws IllegalAccessException {
       super(from.getMatLib(),
           (ResourceLocation) CsmPartBakeCache.objLocationField().get(from));
       CsmPartBakeCache.objCustomDataField().set(this,
           CsmPartBakeCache.objCustomDataField().get(from));
+      if (from instanceof CsmObjModel) {
+        this.defaultState = ((CsmObjModel) from).defaultState;
+      }
     }
 
-    private static IModel wrap(IModel model) {
+    static IModel wrap(IModel model) {
       if (model instanceof OBJModel && !(model instanceof CsmObjModel)) {
         try {
           return new CsmObjModel((OBJModel) model);
@@ -105,14 +293,40 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
       return model;
     }
 
+    private IModel keepState(IModel copy) {
+      if (defaultState != null && copy instanceof CsmObjModel && copy != this) {
+        ((CsmObjModel) copy).defaultState = defaultState;
+      }
+      return copy;
+    }
+
+    /**
+     * A copy of this model whose default state is {@code state}: a Forge variant's
+     * {@code "transform"}, which the variant would otherwise have composed with the model's.
+     */
+    CsmObjModel withDefaultState(IModelState state) {
+      try {
+        CsmObjModel copy = new CsmObjModel(this);
+        copy.defaultState = state;
+        return copy;
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+    @Override
+    public IModelState getDefaultState() {
+      return defaultState != null ? defaultState : super.getDefaultState();
+    }
+
     @Override
     public IModel process(ImmutableMap<String, String> customData) {
-      return wrap(super.process(customData));
+      return keepState(wrap(super.process(customData)));
     }
 
     @Override
     public IModel retexture(ImmutableMap<String, String> textures) {
-      return wrap(super.retexture(textures));
+      return keepState(wrap(super.retexture(textures)));
     }
 
     @Override
@@ -120,7 +334,41 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
         Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
       return CsmPartBakeCache.instance().bakeObj(this, state, format, bakedTextureGetter,
           () -> new PackedObjModel(super.bake(state, format, bakedTextureGetter),
-              unshadedSprites(bakedTextureGetter)));
+              unshadedSprites(bakedTextureGetter), particleSprite(bakedTextureGetter)));
+    }
+
+    /**
+     * The sprite Forge's OBJ bake reports as its particle once its quads are built: the sprite of
+     * the last face it builds (groups in the library's order, faces in each group's). Forge
+     * answers its white sprite until then, which is what a multipart model, reading its first
+     * part's particle when it is made, would keep for good, so every block broken would scatter
+     * white. Answering it from the start gives the multipart model the sprite a Forge variant
+     * shows after its first draw.
+     */
+    @Nullable
+    private TextureAtlasSprite particleSprite(
+        Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+      OBJModel.MaterialLibrary lib = getMatLib();
+      OBJModel.Face last = null;
+      for (OBJModel.Group group : lib.getGroups().values()) {
+        for (OBJModel.Face face : group.getFaces()) {
+          last = face;
+        }
+      }
+      if (last == null) {
+        return null;
+      }
+      OBJModel.Material material = lib.getMaterial(last.getMaterialName());
+      if (material == null) {
+        return null;
+      }
+      if (material.isWhite()) {
+        return net.minecraftforge.client.model.ModelLoader.White.INSTANCE;
+      }
+      if (material.getTexture().getTextureLocation().getPath().startsWith("#")) {
+        return bakedTextureGetter.apply(new ResourceLocation("missingno"));
+      }
+      return bakedTextureGetter.apply(material.getTexture().getTextureLocation());
     }
 
     /**
@@ -194,9 +442,21 @@ public final class CsmObjModelLoader implements ICustomModelLoader {
     private List<BakedQuad> ownQuads;
     private List<BakedQuad> ownQuadsUnshaded;
 
-    PackedObjModel(IBakedModel baked, Set<TextureAtlasSprite> unshaded) {
+    /** The particle sprite Forge's bake reports once built; null to ask the bake. */
+    @Nullable
+    private final TextureAtlasSprite particle;
+
+    PackedObjModel(IBakedModel baked, Set<TextureAtlasSprite> unshaded,
+        @Nullable TextureAtlasSprite particle) {
       super(baked);
       this.unshaded = unshaded;
+      this.particle = particle;
+    }
+
+    @Override
+    @Nonnull
+    public TextureAtlasSprite getParticleTexture() {
+      return particle != null ? particle : originalModel.getParticleTexture();
     }
 
     @Override

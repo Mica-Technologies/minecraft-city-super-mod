@@ -100,8 +100,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * <p>What sharing a baked part changes: the part's baked object is now the same for several
  * variants, so the unbaked model a baked JSON part keeps (Forge's animation support holds it)
  * is the first variant's, which is equal to the others in everything the bake read. Nothing
- * that is drawn differs. {@code -Dcsm.noPartBakeCache=true} turns the whole mechanism off and
- * loads CSM's OBJ files through Forge's own loader again.</p>
+ * that is drawn differs. {@code -Dcsm.noPartBakeCache=true} turns the sharing off: every part
+ * is baked per variant again. CSM's OBJ files still load through {@link CsmObjModelLoader}, which
+ * alone reads the options a multipart blockstate puts in an OBJ model's location.</p>
  *
  * <p><b>The rules this makes:</b> a CSM baked model may be the same object for many states and
  * items, so never change one (already a rule for its quad lists), and never key per-state data
@@ -167,7 +168,16 @@ public final class CsmPartBakeCache {
    */
   public static void install() {
     if (Boolean.getBoolean(DISABLE_PROPERTY)) {
-      OBJLoader.INSTANCE.addDomain(CsmConstants.MOD_NAMESPACE);
+      // CSM's OBJ loader stays: the multipart blockstates name OBJ models with options in the
+      // location (CsmObjModelLoader), which only it reads. With the window never opened, its
+      // bakes all go to Forge, one per variant.
+      try {
+        INSTANCE.objFields();
+        ModelLoaderRegistry.registerLoader(CsmObjModelLoader.INSTANCE);
+      } catch (Throwable t) {
+        Csm.getLogger().warn("CSM's OBJ loader could not start; OBJ models go to Forge's", t);
+        OBJLoader.INSTANCE.addDomain(CsmConstants.MOD_NAMESPACE);
+      }
       Csm.getLogger().info("Part bake cache off (-D{}=true)", DISABLE_PROPERTY);
       return;
     }
