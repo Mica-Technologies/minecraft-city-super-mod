@@ -249,3 +249,7 @@ csm.transit.canopy.lights_1=ein Lichtband in der Mitte
 csm.transit.canopy.lights_2=ein Lichtband an jeder Längsseite
 csm.transit.canopy.controls=Schleichend in die Luft: Höhe; nach oben schauend: Beleuchtung
 tile.canopy_light_strip.name=Dach-Lichtband
+csm.transit.shelter.mode=Setzt: %s
+csm.transit.shelter.mode_full=ein ganzes Wartehäuschen, 4 lang und 2 tief
+csm.transit.shelter.mode_compact=ein kompaktes Wartehäuschen, 3 lang und 1 tief
+csm.transit.shelter.mode_hint=Schleichend in die Luft zum Wechseln

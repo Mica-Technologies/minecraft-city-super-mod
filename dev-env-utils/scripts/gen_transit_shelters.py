@@ -644,6 +644,18 @@ MESSAGES = {
                    "Ein ganzes Wartehäuschen braucht %s; eine Säule gesetzt",
                    "Una marquesina entera necesita %s; se colocó una columna",
                    "En hel busskur kräver %s; en sektion placerad"),
+    # the item's placing mode (BlockBusShelter.ItemShelter)
+    "mode": ("Places: %s", "Setzt: %s", "Coloca: %s", "Placerar: %s"),
+    "mode_full": ("a full shelter, 4 long and 2 deep",
+                  "ein ganzes Wartehäuschen, 4 lang und 2 tief",
+                  "una marquesina entera, 4 de largo y 2 de fondo",
+                  "en hel busskur, 4 lång och 2 djup"),
+    "mode_compact": ("a compact shelter, 3 long and 1 deep",
+                     "ein kompaktes Wartehäuschen, 3 lang und 1 tief",
+                     "una marquesina compacta, 3 de largo y 1 de fondo",
+                     "en kompakt busskur, 3 lång och 1 djup"),
+    "mode_hint": ("Sneak-use in the air to switch", "Schleichend in die Luft zum Wechseln",
+                  "Agachado al aire para cambiar", "Smyg i luften för att byta"),
 }
 for key, names in MESSAGES.items():
     C.add_lang("csm.transit.shelter." + key, names)

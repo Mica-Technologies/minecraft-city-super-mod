@@ -363,6 +363,15 @@ one: facing, the top bit, and bit 8 as `lit` in the top or `powered` in the bott
   to two on their right. It faces the placer; its open front is that side. Sneaking places one
   column. In survival the footprint takes an item a column, and places one column (saying why)
   when the stack is short.
+- **Compact**: for a narrow pavement the item can place a **compact** shelter instead: three
+  columns long (`COMPACT_LENGTH`), one row deep, from one block on the placer's left to one on
+  their right, at the least height (three) unless it joins a taller shelter. A **sneaking click in
+  the air** switches the item between full and compact, with a status message; the tooltip shows
+  which it places. The mode is the stack's NBT `compact`, written only while compact and removed
+  (with an emptied compound) when switched back, so full stacks still stack with fresh ones; a
+  compact stack does not stack with a full one until switched back. The footprint
+  (`BlockBusShelter.footprint`) and the survival rule are the same code as the full one: three
+  items, or one column when short. `BusShelterFootprintTest` pins both footprints.
 - **Height**: clicking a shelter with its own item raises every column of that shelter by a
   section (the top moves up and a `middle` takes its place); sneaking lowers it, down to three,
   up to `MAX_HEIGHT` (12). Every column, so the roof stays level. A column or footprint placed

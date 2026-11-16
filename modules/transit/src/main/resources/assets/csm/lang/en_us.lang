@@ -249,3 +249,7 @@ csm.transit.canopy.lights_1=one light strip down the middle
 csm.transit.canopy.lights_2=a light strip along each long edge
 csm.transit.canopy.controls=Sneak-use in the air: clearance; looking up: lights
 tile.canopy_light_strip.name=Canopy Light Strip
+csm.transit.shelter.mode=Places: %s
+csm.transit.shelter.mode_full=a full shelter, 4 long and 2 deep
+csm.transit.shelter.mode_compact=a compact shelter, 3 long and 1 deep
+csm.transit.shelter.mode_hint=Sneak-use in the air to switch

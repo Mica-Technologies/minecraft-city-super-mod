@@ -249,3 +249,7 @@ csm.transit.canopy.lights_1=en ljuslist i mitten
 csm.transit.canopy.lights_2=en ljuslist längs varje långsida
 csm.transit.canopy.controls=Smyg i luften: höjd; titta uppåt: belysning
 tile.canopy_light_strip.name=Takljuslist
+csm.transit.shelter.mode=Placerar: %s
+csm.transit.shelter.mode_full=en hel busskur, 4 lång och 2 djup
+csm.transit.shelter.mode_compact=en kompakt busskur, 3 lång och 1 djup
+csm.transit.shelter.mode_hint=Smyg i luften för att byta

@@ -79,6 +79,9 @@ Three styles in each agency's livery: **glass** (with a bench and a lit name fas
 (a curved canopy on one column a block) and **flat roof** (with a lean rail). A shelter is two
 blocks tall and places like a door. Its open front faces you.
 
+- **Compact.** For a narrow pavement, sneak and right-click in the air with the shelter in hand:
+  it now places a compact shelter, three columns long and one deep. Do it again to go back to the
+  full shelter. The tooltip says which it places.
 - **Joining.** Place shelters of the same block facing the same way side by side for a longer
   shelter, or one behind the other for a deeper one. End walls appear only at the ends. Shelters
   of different agencies don't join.

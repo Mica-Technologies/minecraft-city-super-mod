@@ -22,12 +22,16 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -38,6 +42,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * A bus shelter at real scale, drawn by {@code gen_transit_shelters.py}: glass and steel, a
@@ -52,7 +58,8 @@ import net.minecraft.world.World;
  *
  * <p>The item ({@link ItemShelter}) places a whole shelter, {@link #FOOT_LENGTH} columns long
  * and {@link #FOOT_DEPTH} rows deep, the front row in the block clicked; sneaking, it places one
- * column. Placed beside a shelter of the same block it takes that shelter's height, so the roof
+ * column. Switched to compact (a sneaking click in the air), it places {@link #COMPACT_LENGTH}
+ * columns in one row instead, for a narrow pavement. Placed beside a shelter of the same block it takes that shelter's height, so the roof
  * carries on level. In survival the footprint takes an item a column, and one column is placed
  * when there are not enough. Clicking a shelter with the item makes every column of that shelter a section
  * taller; sneaking, a section shorter, down to three.</p>
@@ -104,6 +111,8 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
   public static final int FOOT_LENGTH = 4;
   /** The rows a placed shelter runs front to back. */
   public static final int FOOT_DEPTH = 2;
+  /** The columns a compact shelter runs along its length, one row deep. */
+  public static final int COMPACT_LENGTH = 3;
   /** The most columns of one shelter a switch, or a change of height, reaches. */
   public static final int REACH = 256;
 
@@ -450,13 +459,94 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
   }
 
   /**
+   * The columns a shelter placed from {@code pos} stands on, its front row in {@code pos}: a full
+   * shelter, {@link #FOOT_LENGTH} long and {@link #FOOT_DEPTH} deep, from one block on the
+   * placer's left to two on their right; or a compact one, {@link #COMPACT_LENGTH} long and one
+   * deep, from one block on the left to one on the right.
+   *
+   * @param pos     the block clicked into
+   * @param facing  the shelter's facing (its open front, toward the placer)
+   * @param compact whether it is the compact footprint
+   *
+   * @return the bottoms of its columns
+   */
+  static List<BlockPos> footprint(BlockPos pos, EnumFacing facing, boolean compact) {
+    EnumFacing away = facing.getOpposite();      // from the front row to the back
+    EnumFacing along = away.rotateY();           // the placer's right
+    int length = compact ? COMPACT_LENGTH : FOOT_LENGTH;
+    int depth = compact ? 1 : FOOT_DEPTH;
+    List<BlockPos> bases = new ArrayList<>();
+    for (int i = -1; i < length - 1; i++) {
+      for (int row = 0; row < depth; row++) {
+        bases.add(pos.offset(along, i).offset(away, row));
+      }
+    }
+    return bases;
+  }
+
+  /**
    * The shelter's item: places a whole shelter (one column, sneaking), and makes a shelter
-   * taller or shorter when used on one.
+   * taller or shorter when used on one. A sneaking click in the air switches what it places
+   * between a full shelter and a compact one ({@link #COMPACT_LENGTH} x 1, for a narrow
+   * pavement), kept in the stack's NBT ({@code compact}) only while compact, so a stack of full
+   * shelters still stacks with any other.
    */
   public static class ItemShelter extends ItemBlock {
 
+    private static final String TAG_COMPACT = "compact";
+
     public ItemShelter(BlockBusShelter block) {
       super(block);
+    }
+
+    /** Whether this stack places the compact footprint. */
+    static boolean isCompact(ItemStack stack) {
+      NBTTagCompound t = stack.getTagCompound();
+      return t != null && t.getBoolean(TAG_COMPACT);
+    }
+
+    /** Sets the stack's mode, dropping the tag (and an emptied compound) for the full one. */
+    static void setCompact(ItemStack stack, boolean compact) {
+      if (compact) {
+        if (!stack.hasTagCompound()) {
+          stack.setTagCompound(new NBTTagCompound());
+        }
+        stack.getTagCompound().setBoolean(TAG_COMPACT, true);
+      } else if (stack.hasTagCompound()) {
+        stack.getTagCompound().removeTag(TAG_COMPACT);
+        if (stack.getTagCompound().isEmpty()) {
+          stack.setTagCompound(null);
+        }
+      }
+    }
+
+    /** A sneaking click in the air switches between the full and the compact footprint. */
+    @Override
+    @Nonnull
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player,
+        @Nonnull EnumHand hand) {
+      ItemStack stack = player.getHeldItem(hand);
+      if (!player.isSneaking()) {
+        return super.onItemRightClick(world, player, hand);
+      }
+      if (!world.isRemote) {
+        boolean compact = !isCompact(stack);
+        setCompact(stack, compact);
+        player.sendStatusMessage(new TextComponentTranslation("csm.transit.shelter.mode",
+            new TextComponentTranslation(compact ? "csm.transit.shelter.mode_compact"
+                : "csm.transit.shelter.mode_full")), true);
+      }
+      return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void addInformation(@Nonnull ItemStack stack, @Nullable World world,
+        @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flag) {
+      super.addInformation(stack, world, tooltip, flag);
+      tooltip.add(I18n.format("csm.transit.shelter.mode", I18n.format(isCompact(stack)
+          ? "csm.transit.shelter.mode_compact" : "csm.transit.shelter.mode_full")));
+      tooltip.add(I18n.format("csm.transit.shelter.mode_hint"));
     }
 
     @Override
@@ -480,17 +570,12 @@ public class BlockBusShelter extends AbstractBlockRotatableNSEW
         @Nonnull IBlockState newState) {
       BlockBusShelter shelter = (BlockBusShelter) block;
       EnumFacing facing = newState.getValue(FACING);
-      EnumFacing away = facing.getOpposite();      // from the front row to the back
-      EnumFacing along = away.rotateY();           // the placer's right
       List<BlockPos> bases = new ArrayList<>();
       boolean creative = player.capabilities.isCreativeMode;
-      int footprint = FOOT_LENGTH * FOOT_DEPTH;
+      List<BlockPos> whole = footprint(pos, facing, isCompact(stack));
+      int footprint = whole.size();
       if (!player.isSneaking() && (creative || stack.getCount() >= footprint)) {
-        for (int i = -1; i < FOOT_LENGTH - 1; i++) {
-          for (int row = 0; row < FOOT_DEPTH; row++) {
-            bases.add(pos.offset(along, i).offset(away, row));
-          }
-        }
+        bases.addAll(whole);
         int height = shelter.joinedHeight(world, bases, facing);
         for (BlockPos base : bases) {
           if (!shelter.columnFits(world, base, height, player, stack)) {

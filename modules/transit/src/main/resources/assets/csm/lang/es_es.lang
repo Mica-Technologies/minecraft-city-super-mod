@@ -249,3 +249,7 @@ csm.transit.canopy.lights_1=una tira de luz por el centro
 csm.transit.canopy.lights_2=una tira de luz en cada borde largo
 csm.transit.canopy.controls=Agachado al aire: altura; mirando arriba: luces
 tile.canopy_light_strip.name=Tira de Luz de Marquesina
+csm.transit.shelter.mode=Coloca: %s
+csm.transit.shelter.mode_full=una marquesina entera, 4 de largo y 2 de fondo
+csm.transit.shelter.mode_compact=una marquesina compacta, 3 de largo y 1 de fondo
+csm.transit.shelter.mode_hint=Agachado al aire para cambiar
