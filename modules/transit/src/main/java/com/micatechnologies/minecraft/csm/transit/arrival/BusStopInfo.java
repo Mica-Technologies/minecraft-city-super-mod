@@ -4,9 +4,13 @@ import com.micatechnologies.minecraft.csm.codeutils.CsmPacketUtils;
 import com.micatechnologies.minecraft.csm.transit.stop.TransitRoute;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * What an arrival board or an info totem shows besides the countdown: its agency, the stop's name,
@@ -32,7 +36,11 @@ import net.minecraft.nbt.NBTTagCompound;
  *   <tr><td>{@code rt}</td><td>string</td><td>the board's own routes as typed ("B 30"), at most
  *   {@value #MAX_ROUTES}, read with {@link TransitRoute#parseLine}; empty to list the nearest
  *   stop's</td></tr>
- *   <tr><td>{@code ds}</td><td>boolean</td><td>show each route's destination (default off)</td></tr>
+ *   <tr><td>{@code dt}</td><td>list of strings</td><td>each route's destination as typed, by the
+ *   route's place in the routes listed (the first route the first), at most
+ *   {@value TransitRoute#MAX_PER_LINE} of at most {@value #MAX_DESTINATION}; blank shows none.
+ *   The old {@code ds} switch (show generic destinations) is ignored when read and dropped when
+ *   written</td></tr>
  *   <tr><td>{@code cl}</td><td>boolean</td><td>closed: STATION CLOSED in place of the routes</td></tr>
  *   <tr><td>{@code ts}</td><td>boolean</td><td>two-sided; absent means "as the mount suggests":
  *   two-sided unless on a wall ({@link #isTwoSided})</td></tr>
@@ -46,6 +54,7 @@ public final class BusStopInfo {
   public static final int MAX_STOP_NAME = 32;
   public static final int MAX_DIRECTION = 24;
   public static final int MAX_ROUTES = 24;
+  public static final int MAX_DESTINATION = 16;
   /** The most bytes a string may claim on the wire: four UTF-8 bytes a character at most. */
   public static final int MAX_WIRE_BYTES = 128;
 
@@ -56,7 +65,9 @@ public final class BusStopInfo {
   public static final String KEY_STOP_NAME = "sn";
   public static final String KEY_DIRECTION = "dr";
   public static final String KEY_ROUTES = "rt";
-  public static final String KEY_DESTINATIONS = "ds";
+  public static final String KEY_DESTINATIONS = "dt";
+  /** The retired "show generic destinations" switch: ignored when read, dropped when written. */
+  public static final String LEGACY_KEY_SHOW_DESTINATIONS = "ds";
   public static final String KEY_CLOSED = "cl";
   public static final String KEY_TWO_SIDED = "ts";
 
@@ -64,7 +75,7 @@ public final class BusStopInfo {
   public static final int DEFAULT_CUSTOM_GROUND = 0x3A4250;
   public static final int DEFAULT_CUSTOM_LEGEND = 0xF4F4F4;
 
-  private static final int FLAG_DESTINATIONS = 1;
+  /** Bit 1 was the retired destinations switch; it is never set and ignored when read. */
   private static final int FLAG_CLOSED = 2;
   private static final int FLAG_SIDED_SET = 4;
   private static final int FLAG_TWO_SIDED = 8;
@@ -76,7 +87,7 @@ public final class BusStopInfo {
   private String stopName = "";
   private String direction = "";
   private String routes = "";
-  private boolean destinations;
+  private final String[] destinations = new String[TransitRoute.MAX_PER_LINE];
   private boolean closed;
   /** Null: as the mount suggests. */
   @Nullable
@@ -86,6 +97,10 @@ public final class BusStopInfo {
   private int[] routeKeys = new int[0];
   /** Moves on every change, so a renderer knows to compile its text again. */
   private int version;
+
+  {
+    Arrays.fill(destinations, "");
+  }
 
   // --- values ---------------------------------------------------------------------------------
 
@@ -185,13 +200,30 @@ public final class BusStopInfo {
     return routeKeys;
   }
 
-  public boolean isDestinations() {
-    return destinations;
+  /**
+   * The destination typed for a route, by its place in the routes the board lists.
+   *
+   * @param i 0 to {@link TransitRoute#MAX_PER_LINE} less one
+   *
+   * @return the destination, "" for none (and for an index out of range)
+   */
+  public String getDestination(int i) {
+    return i >= 0 && i < destinations.length ? destinations[i] : "";
   }
 
-  public void setDestinations(boolean on) {
-    if (on != destinations) {
-      destinations = on;
+  /**
+   * Sets a route's destination; an index out of range is ignored.
+   *
+   * @param i    0 to {@link TransitRoute#MAX_PER_LINE} less one
+   * @param text the destination, cleaned and cut to {@value #MAX_DESTINATION}
+   */
+  public void setDestination(int i, @Nullable String text) {
+    if (i < 0 || i >= destinations.length) {
+      return;
+    }
+    String s = clean(text, MAX_DESTINATION);
+    if (!s.equals(destinations[i])) {
+      destinations[i] = s;
       version++;
     }
   }
@@ -263,7 +295,9 @@ public final class BusStopInfo {
     setStopName(other.stopName);
     setDirection(other.direction);
     setRoutes(other.routes);
-    setDestinations(other.destinations);
+    for (int i = 0; i < destinations.length; i++) {
+      setDestination(i, other.destinations[i]);
+    }
     setClosed(other.closed);
     setTwoSided(other.twoSided);
   }
@@ -285,7 +319,10 @@ public final class BusStopInfo {
     setStopName(nbt.getString(KEY_STOP_NAME));
     setDirection(nbt.getString(KEY_DIRECTION));
     setRoutes(nbt.getString(KEY_ROUTES));
-    setDestinations(nbt.getBoolean(KEY_DESTINATIONS));
+    NBTTagList list = nbt.getTagList(KEY_DESTINATIONS, Constants.NBT.TAG_STRING);
+    for (int i = 0; i < destinations.length; i++) {
+      setDestination(i, i < list.tagCount() ? list.getStringTagAt(i) : "");
+    }
     setClosed(nbt.getBoolean(KEY_CLOSED));
     setTwoSided(nbt.hasKey(KEY_TWO_SIDED) ? nbt.getBoolean(KEY_TWO_SIDED) : null);
   }
@@ -303,7 +340,20 @@ public final class BusStopInfo {
     nbt.setString(KEY_STOP_NAME, stopName);
     nbt.setString(KEY_DIRECTION, direction);
     nbt.setString(KEY_ROUTES, routes);
-    nbt.setBoolean(KEY_DESTINATIONS, destinations);
+    int last = destinations.length;
+    while (last > 0 && destinations[last - 1].isEmpty()) {
+      last--;
+    }
+    if (last > 0) {
+      NBTTagList list = new NBTTagList();
+      for (int i = 0; i < last; i++) {
+        list.appendTag(new NBTTagString(destinations[i]));
+      }
+      nbt.setTag(KEY_DESTINATIONS, list);
+    } else {
+      nbt.removeTag(KEY_DESTINATIONS);
+    }
+    nbt.removeTag(LEGACY_KEY_SHOW_DESTINATIONS);
     nbt.setBoolean(KEY_CLOSED, closed);
     if (twoSided != null) {
       nbt.setBoolean(KEY_TWO_SIDED, twoSided);
@@ -327,7 +377,11 @@ public final class BusStopInfo {
     writeString(buf, stopName);
     writeString(buf, direction);
     writeString(buf, routes);
-    int flags = (destinations ? FLAG_DESTINATIONS : 0) | (closed ? FLAG_CLOSED : 0)
+    buf.writeByte(destinations.length);
+    for (String d : destinations) {
+      writeString(buf, d);
+    }
+    int flags = (closed ? FLAG_CLOSED : 0)
         | (twoSided != null ? FLAG_SIDED_SET : 0)
         | (twoSided != null && twoSided ? FLAG_TWO_SIDED : 0);
     buf.writeByte(flags);
@@ -357,8 +411,14 @@ public final class BusStopInfo {
     info.setStopName(CsmPacketUtils.readBoundedString(buf, MAX_WIRE_BYTES));
     info.setDirection(CsmPacketUtils.readBoundedString(buf, MAX_WIRE_BYTES));
     info.setRoutes(CsmPacketUtils.readBoundedString(buf, MAX_WIRE_BYTES));
+    int count = buf.readUnsignedByte();
+    if (count > TransitRoute.MAX_PER_LINE) {
+      throw new IndexOutOfBoundsException("Too many destinations: " + count);
+    }
+    for (int i = 0; i < count; i++) {
+      info.setDestination(i, CsmPacketUtils.readBoundedString(buf, MAX_WIRE_BYTES));
+    }
     int flags = buf.readUnsignedByte();
-    info.setDestinations((flags & FLAG_DESTINATIONS) != 0);
     info.setClosed((flags & FLAG_CLOSED) != 0);
     info.setTwoSided((flags & FLAG_SIDED_SET) != 0 ? (flags & FLAG_TWO_SIDED) != 0 : null);
     return info;

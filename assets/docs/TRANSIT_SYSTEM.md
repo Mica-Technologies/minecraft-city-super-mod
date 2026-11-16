@@ -774,7 +774,8 @@ class, `BlockBusArrivalBoard`: the **Bus Arrival Board (3x1)**, the **Bus Arriva
 the **Bus Stop Info Totem** (1 wide, 3 tall). They replace the live server's hand-built
 LittleFrames boards: a 5 x 2 screen, two of them back to back under a canopy, with two pages
 turning every five seconds. Page 1 reads `CITYLINE: <stop>` and one line a route
-(`Bus Route B:` ... `4 mins`). Page 2 reads `CITYLINE: <stop>`, a blank line, and
+(`Bus Route B:` ... `4 mins`; with a destination typed, `Bus Route B: Upper West Side` ...
+`4 mins`, cut to the board's width). Page 2 reads `CITYLINE: <stop>`, a blank line, and
 `Northbound - Routes B, 30`. The small arrival display on a stop's post (`bus_stop_arrival_display`)
 is unchanged and stays for tight sidewalks.
 
@@ -816,7 +817,7 @@ replaceable and editable. Otherwise nothing is placed and the action bar names t
 | `sn` | string | stop name, at most 32 (the longest live name is 26) |
 | `dr` | string | direction line, at most 24; empty means there is no second page |
 | `rt` | string | the board's own routes as typed, at most 24, read with `TransitRoute.parseLine` (so `B 30` works); empty lists the nearest stop's |
-| `ds` | bool | show destinations (default off), from `BusDepartures.DESTINATIONS` |
+| `dt` | list of strings | a destination typed for each route, by its place in the routes listed, up to 6 of at most 16; blank shows none. The old `ds` switch (generic destinations) is ignored when read and dropped when written |
 | `cl` | bool | closed: STATION CLOSED replaces the route lines |
 | `ts` | bool | two-sided; absent means "as the mount suggests" (two-sided unless on a wall). A wall board is always drawn one-sided |
 
@@ -825,10 +826,13 @@ the same setters whether it comes from a save, the packet or the GUI, so the cap
 
 **Editing.** An empty-handed click on any cell opens `GuiBusStopInfo` (GUI id 80, through
 `TransitGuiProvider`). It has an agency button (shift-click steps back), name and hex colour fields
-for a custom agency, fields for the stop name, direction and routes, toggles for destinations,
-closed and two-sided, and Save. Save sends one `BusStopInfoPacket`, which is Transit channel
+for a custom agency, fields for the stop name, direction and routes, a destination field per
+route, toggles for closed and two-sided, and Save. Each destination field is labelled with the
+route the routes field reads at that moment (`B 30` shows a B field and a 30 field). With no
+routes typed they are numbered #1 to #6, the nearest stop's routes in order. A destination
+belongs to its place in the list, so reordering routes means moving destinations too. Save sends one `BusStopInfoPacket`, which is Transit channel
 discriminator 2, appended after the fare packets. The packet follows "Network safety": bounded
-reads of 128 bytes per string, an unknown agency rejected while decoding, `canPlayerReach` first,
+reads of 128 bytes per string, at most 6 destinations, an unknown agency rejected while decoding, `canPlayerReach` first,
 work on the server thread, and the caps applied again through the setters. Reach is the only
 permission, as for the other sign editors.
 
@@ -892,7 +896,10 @@ colour; a long name splits onto two lines.
 - **The 3x1 screen is about 10 px tall.** Three slots give about 2.4 px text, legible from a few
   blocks. Do not add slots there.
 - **The rods' ceiling is looked for above the master's column only.** On a 3x1 or 5x2 the rods stand at the end columns. A board hung under a single block (not a deck) draws its rods past that block's sides. The item always hangs under the clicked block, so this shows only with `/setblock` or a one-block ceiling.
-- **The screen font's comma reads like a full stop** (`Routes B, 30`). This is a glyph of the font atlas and is the same on every board that uses `electronicSign`.
+- **The dot-matrix comma is given its tail by hand.** `CsmFontRenderer.applyDotMatrix` samples
+  a dot at each square's middle, and a comma's thin tail fell between samples, so it read as a
+  full stop. The comma's cell gets two tail dots (`addCommaTail`), and no other cell changes
+  (`CsmFontRendererDotMatrixTest`).
 - **The screen, map and text stand 0.2 px apart** (`SCREEN_LIFT`, `TEXT_LIFT`), the depth
   rule for faces read up to about 100 blocks away. Closer layers z-fight at the 96-block draw
   distance.

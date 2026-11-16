@@ -39,7 +39,8 @@ class BusStopInfoTest {
     assertEquals("", info.getDirection());
     assertEquals("", info.getRoutes());
     assertEquals(0, info.getRouteKeys().length);
-    assertFalse(info.isDestinations());
+    assertEquals("", info.getDestination(0));
+    assertEquals("", info.getDestination(99));
     assertFalse(info.isClosed());
     assertEquals(BusStopInfo.DEFAULT_CUSTOM_GROUND, info.getCustomGround());
     assertEquals(BusStopInfo.DEFAULT_CUSTOM_LEGEND, info.getCustomLegend());
@@ -56,7 +57,8 @@ class BusStopInfoTest {
     info.setCustomName("Harbour Bus");
     info.setCustomGround(0x123456);
     info.setCustomLegend(0xFEDCBA);
-    info.setDestinations(true);
+    info.setDestination(0, "Upper West Side");
+    info.setDestination(3, "Harbor");
     info.setClosed(true);
     info.setTwoSided(false);
     NBTTagCompound nbt = new NBTTagCompound();
@@ -133,7 +135,7 @@ class BusStopInfoTest {
   void wireRoundTrip() {
     BusStopInfo info = live();
     info.setAgency(BoardAgency.METRO);
-    info.setDestinations(true);
+    info.setDestination(1, "Lakeside");
     info.setTwoSided(true);
     ByteBuf buf = Unpooled.buffer();
     info.writeTo(buf);
@@ -179,6 +181,64 @@ class BusStopInfoTest {
   }
 
   @Test
+  void oldShowDestinationsSwitchIsIgnoredAndDropped() {
+    NBTTagCompound nbt = new NBTTagCompound();
+    nbt.setBoolean(BusStopInfo.LEGACY_KEY_SHOW_DESTINATIONS, true);
+    nbt.setString(BusStopInfo.KEY_STOP_NAME, "Riverside");
+    BusStopInfo info = new BusStopInfo();
+    info.readFrom(nbt);
+    assertEquals("Riverside", info.getStopName());
+    assertEquals("", info.getDestination(0));
+    NBTTagCompound out = new NBTTagCompound();
+    out.setBoolean(BusStopInfo.LEGACY_KEY_SHOW_DESTINATIONS, true);
+    info.writeTo(out);
+    assertFalse(out.hasKey(BusStopInfo.LEGACY_KEY_SHOW_DESTINATIONS));
+    assertFalse(out.hasKey(BusStopInfo.KEY_DESTINATIONS));
+  }
+
+  @Test
+  void destinationsAreCappedFromASave() {
+    NBTTagCompound nbt = new NBTTagCompound();
+    net.minecraft.nbt.NBTTagList list = new net.minecraft.nbt.NBTTagList();
+    for (int i = 0; i < 10; i++) {
+      list.appendTag(new net.minecraft.nbt.NBTTagString(repeat('d', 40)));
+    }
+    nbt.setTag(BusStopInfo.KEY_DESTINATIONS, list);
+    BusStopInfo info = new BusStopInfo();
+    info.readFrom(nbt);
+    assertEquals(BusStopInfo.MAX_DESTINATION, info.getDestination(0).length());
+    assertEquals(BusStopInfo.MAX_DESTINATION,
+        info.getDestination(TransitRoute.MAX_PER_LINE - 1).length());
+  }
+
+  @Test
+  void wireRejectsTooManyDestinations() {
+    ByteBuf buf = Unpooled.buffer();
+    buf.writeByte(0);
+    BusStopInfo.writeString(buf, "");
+    buf.writeInt(0);
+    buf.writeInt(0);
+    BusStopInfo.writeString(buf, "");
+    BusStopInfo.writeString(buf, "");
+    BusStopInfo.writeString(buf, "");
+    buf.writeByte(TransitRoute.MAX_PER_LINE + 1);
+    assertThrows(IndexOutOfBoundsException.class, () -> BusStopInfo.readFrom(buf));
+  }
+
+  @Test
+  void wireCapsADestination() {
+    BusStopInfo info = live();
+    ByteBuf buf = Unpooled.buffer();
+    info.writeTo(buf);
+    BusStopInfo back = BusStopInfo.readFrom(buf);
+    back.setDestination(0, repeat('x', 40));
+    ByteBuf buf2 = Unpooled.buffer();
+    back.writeTo(buf2);
+    assertEquals(BusStopInfo.MAX_DESTINATION, BusStopInfo.readFrom(buf2).getDestination(0)
+        .length());
+  }
+
+  @Test
   void wireCapsTextWithinTheByteBound() {
     // 100 characters fit the wire's 128 bytes but not the stop name's cap: cut on arrival
     ByteBuf buf = Unpooled.buffer();
@@ -189,7 +249,8 @@ class BusStopInfoTest {
     BusStopInfo.writeString(buf, repeat('s', 100));
     BusStopInfo.writeString(buf, "");
     BusStopInfo.writeString(buf, "");
-    buf.writeByte(0);
+    buf.writeByte(0);   // no destinations
+    buf.writeByte(0);   // flags
     BusStopInfo info = BusStopInfo.readFrom(buf);
     assertEquals(BusStopInfo.MAX_STOP_NAME, info.getStopName().length());
     assertEquals(BoardAgency.VERDANT, info.getAgency());
@@ -230,7 +291,9 @@ class BusStopInfoTest {
     assertEquals(a.getDirection(), b.getDirection());
     assertEquals(a.getRoutes(), b.getRoutes());
     assertArrayEquals(a.getRouteKeys(), b.getRouteKeys());
-    assertEquals(a.isDestinations(), b.isDestinations());
+    for (int i = 0; i < TransitRoute.MAX_PER_LINE; i++) {
+      assertEquals(a.getDestination(i), b.getDestination(i));
+    }
     assertEquals(a.isClosed(), b.isClosed());
     assertEquals(a.isTwoSidedSet(), b.isTwoSidedSet());
     assertEquals(a.isTwoSided(false), b.isTwoSided(false));

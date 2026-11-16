@@ -112,14 +112,30 @@ class ArrivalBoardTextTest {
   }
 
   @Test
-  void destinationsAreSpokenOnBoardsAndCapitalsOnTheTotem() {
+  void typedDestinationsFollowTheirRoute() {
     BusStopInfo info = riverside();
-    info.setDestinations(true);
-    String board = ArrivalBoardText.page(info, ROUTES, MINUTES, 2, 6, false, 0).get(1).left;
-    assertTrue(board.startsWith("Bus Route B to "), board);
-    assertTrue(board.endsWith(":"), board);
-    String totem = ArrivalBoardText.page(info, ROUTES, MINUTES, 2, 3, true, 0).get(0).left;
-    assertTrue(totem.startsWith("B "), totem);
+    info.setDestination(0, "Upper West Side");
+    List<ArrivalBoardText.Line> board = ArrivalBoardText.page(info, ROUTES, MINUTES, 2, 6, false,
+        0);
+    assertEquals("Bus Route B: Upper West Side", board.get(1).left);
+    assertEquals("4 mins", board.get(1).right);
+    // route 30 has none typed: no destination
+    assertEquals("Bus Route 30:", board.get(2).left);
+    List<ArrivalBoardText.Line> totem = ArrivalBoardText.page(info, ROUTES, MINUTES, 2, 3, true,
+        0);
+    assertEquals("B Upper West Side", totem.get(0).left);
+    assertEquals("30", totem.get(1).left);
+  }
+
+  @Test
+  void destinationsGoWithThePlaceOnLaterPages() {
+    int[] routes = {1, 2, 3};
+    int[] minutes = {1, 2, 3};
+    BusStopInfo info = riverside();
+    info.setDestination(2, "Harbor");
+    List<ArrivalBoardText.Line> second = ArrivalBoardText.page(info, routes, minutes, 3, 2, false,
+        1);
+    assertEquals("Bus Route 3: Harbor", second.get(1).left);
   }
 
   @Test

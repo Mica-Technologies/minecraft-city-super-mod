@@ -1,6 +1,5 @@
 package com.micatechnologies.minecraft.csm.transit.arrival;
 
-import com.micatechnologies.minecraft.csm.transit.stop.BusDepartures;
 import com.micatechnologies.minecraft.csm.transit.stop.TransitRoute;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +10,8 @@ import java.util.List;
  * renderer measures and places the lines; this only decides their words.
  *
  * <p><b>Pages.</b> First the route pages: the header, then one line a route
- * ("Bus Route B:" ... "4 mins"), {@code perPage} routes a page, in the order the routes are
+ * ("Bus Route B:" ... "4 mins", or "Bus Route B: Upper West Side" ... "4 mins" when a
+ * destination was typed for it), {@code perPage} routes a page, in the order the routes are
  * listed. With no routes at all, one line reading "N/A mins"; closed, one line reading STATION
  * CLOSED in place of every route line (one page). Then, if there is a direction line, the
  * direction page: the header, a blank line and "Northbound - Routes B, 30", as the live server's
@@ -166,7 +166,8 @@ public final class ArrivalBoardText {
     }
     int per = Math.max(1, perPage);
     for (int i = p * per; i < count && i < (p + 1) * per; i++) {
-      out.add(new Line(routeLabel(info, routes[i], compact), minutes(minutes[i]), KIND_AMBER));
+      out.add(new Line(routeLabel(info, routes[i], i, compact), minutes(minutes[i]),
+          KIND_AMBER));
     }
     return out;
   }
@@ -206,18 +207,21 @@ public final class ArrivalBoardText {
     return Math.max(minSlots, body + (compact ? 0 : 1));
   }
 
-  /** "Bus Route B:" (with "to Downtown" when destinations are on), or compact "B". */
-  static String routeLabel(BusStopInfo info, int route, boolean compact) {
+  /**
+   * "Bus Route B:", then the destination typed for it if there is one
+   * ("Bus Route B: Upper West Side"); compact, "B" or "B Upper West Side".
+   *
+   * @param index the route's place in the routes the board lists, which its destination is
+   *              stored under
+   */
+  static String routeLabel(BusStopInfo info, int route, int index, boolean compact) {
     String id = TransitRoute.label(route);
+    String destination = info.getDestination(index);
     if (compact) {
-      return info.isDestinations()
-          ? id + " " + BusDepartures.DESTINATIONS[BusDepartures.destinationOf(route)] : id;
+      return destination.isEmpty() ? id : id + " " + destination;
     }
-    if (info.isDestinations()) {
-      return "Bus Route " + id + " to "
-          + BusDepartures.DESTINATIONS_SPOKEN[BusDepartures.destinationOf(route)] + ":";
-    }
-    return "Bus Route " + id + ":";
+    return destination.isEmpty() ? "Bus Route " + id + ":"
+        : "Bus Route " + id + ": " + destination;
   }
 
   /** "Routes B, 30", "Route B", or "" with none. */
