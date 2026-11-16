@@ -80,7 +80,8 @@ public class TileEntityHvacExhaustFan extends AbstractTileEntity implements IEne
   @Override
   public int receiveEnergy(int maxReceive, boolean simulate) {
     int received = Math.min(MAX_RECEIVE, Math.min(MAX_ENERGY - storedEnergy, maxReceive));
-    if (!simulate) {
+    // An energy mod may offer power every tick to a full store: nothing changed, nothing to save.
+    if (!simulate && received > 0) {
       storedEnergy += received;
       markDirty();
     }

@@ -164,7 +164,8 @@ public class TileEntityHvacHeater extends AbstractTileEntity
   @Override
   public int receiveEnergy(int maxReceive, boolean simulate) {
     int energyReceived = Math.min(MAX_RECEIVE, Math.min(MAX_ENERGY - storedEnergy, maxReceive));
-    if (!simulate) {
+    // An energy mod may offer power every tick to a full store: nothing changed, nothing to save.
+    if (!simulate && energyReceived > 0) {
       storedEnergy += energyReceived;
       markDirty();
     }
