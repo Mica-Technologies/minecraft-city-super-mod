@@ -335,7 +335,19 @@ already understood for the diagonal truss arms.
 
 **Double arms.** The second arm is the first turned half round about the pole, so its cells are at
 negative `alongArm` (two blocks behind the root and on), each cell's model the first arm's turned
-about its own block centre.
+about its own block centre. A double arm has no cell files of its own: its first arm is its single
+arm cell for cell (the generator asserts it, fits included), and each second-arm cell is the single
+arm's cell under `y` + 180 in the blockstate, so the geometry is parsed once for both blocks.
+
+**The blockstates are multipart.** Each luminaire, truss and New York arm blockstate is written
+in the Forge form (a variant per `shape` and `facing`, the stubs as sub-models) and turned into
+multipart by `forge_multipart.convert_obj`: one model location a block, each cell model and each
+stub a rule listing the `shape` values that draw it, the finish and flip-v in the OBJ location's
+options (PERFORMANCE_AND_SECURITY.md, "Memory"). The 273 arm blocks had 54 thousand model
+locations as Forge variants. A rule list is long (up to 424 rules and 7,500 values on the New York
+diagonal 12), so `BlockTrafficPoleMastArmCurve` is an `ICsmMultipartQuadCached`: each state's
+quads are found once. The mast arm curves (`trafficpolemastarmcurve*`) are the same block class
+and stay Forge variants, which the cache leaves alone.
 
 **The pole joint.** A luminaire arm is narrower than every CSM pole, so each member that starts at
 the pole is saddle-cut against the pole's own cylinder for all three `CsmPoleFit` widths: no
@@ -507,6 +519,10 @@ the mirror seam is invisible.
 python dev-env-utils/scripts/gen_mast_arm_curves.py
 python dev-env-utils/scripts/audit_obj_models.py <the emitted .obj files>
 ```
+
+For the luminaire, truss and New York arms, run their generators with `--check`, and after a
+change to what a blockstate draws, `verify_obj_multipart.py <rev> --changed`, which compares every
+state with the Forge form at that revision, triangle by triangle.
 
 The audit must report no FAIL, no coplanar overlap and no faces on a block boundary. `winding` and
 `see-through` warnings need reading rather than obeying: each cell is an open-ended slice of a

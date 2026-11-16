@@ -72,6 +72,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import csm_layout as layout  # noqa: E402
+import forge_multipart  # noqa: E402
 
 OWNER = layout.owner_of_folder("trafficaccessories")
 MODEL_REL = "models/block/trafficaccessories/shared_models"
@@ -798,6 +799,50 @@ def blockstate(prof, texture):
     }
 
 
+def multipart_blockstate(prof, texture, single=None):
+    """The blockstate as written: the Forge form above turned into one multipart location
+    (``forge_multipart.convert_obj``; the finish and flip-v go in each OBJ's location). A double
+    arm names its single arm's cell files: its first arm's cells are the single arm's
+    (``same_cells``), and its second arm's are those turned half round (``mirrored``), which a
+    rule says as ``y`` + 180, so the double arm's own cells are not written and their geometry
+    is not parsed a second time."""
+    state = blockstate(prof, texture)
+    props, table = forge_multipart.forge_obj_parts(state)
+    if single is not None:
+        n = len(single["offsets"])
+        assert len(prof["offsets"]) == 2 * n, "%s: not twice its single arm" % prof["id"]
+        fits = [None] + [f for f, _r in FITS[1:]]
+        swap = {}
+        for i in range(2 * n):
+            for fit in fits:
+                own = "%s/%s" % (MODEL_PREFIX, model_name(prof["id"], i, fit))
+                swap[own] = ("%s/%s" % (MODEL_PREFIX, model_name(single["id"], i % n, fit)),
+                             180 if i >= n else 0)
+
+        def moved(part):
+            loc, x, y = part
+            file, sep, opts = loc.partition("?")
+            new, dy = swap[file]
+            return (new + sep + opts, x, (y + dy) % 360)
+        table = {k: [moved(p) for p in parts] for k, parts in table.items()}
+    return forge_multipart.obj_multipart(props, table, forge_multipart.forge_obj_inventory(state))
+
+
+def same_cells(single, double):
+    """Whether a double arm's first arm is its single arm, cell for cell and fit for fit: what
+    lets ``multipart_blockstate`` draw the double from the single's files."""
+    n = len(single["meshes"])
+    if len(double["meshes"]) != 2 * n:
+        return False
+    if any(not double["meshes"][i].same_as(single["meshes"][i]) for i in range(n)):
+        return False
+    sv = dict(single["variants"])
+    dv = dict(double["variants"])
+    if sorted(dv) != sorted(sv) + [n + i for i in sorted(sv)]:
+        return False
+    return all(all(a.same_as(b) for a, b in zip(dv[i], sv[i])) for i in sv)
+
+
 def inventory_mesh(whole):
     lo, hi = whole.bounds()
     span = max(hi[k] - lo[k] for k in range(3))
@@ -936,9 +981,24 @@ def outputs():
     """Every file the script owns: (tree-relative kind, relative path) -> text."""
     files = {("asset", MODEL_REL + "/" + MTL_NAME): mtl_text()}
     profiles = []
+    built = {}
     for meta in catalogue():
         pid, builder, double, label, ft, run, rise = meta
         prof = build(pid, builder(), double)
+        built[pid] = prof
+        single = None
+        if double:
+            assert pid.endswith("double"), pid
+            single = built[pid[:-len("double")]]
+            assert same_cells(single, prof), "%s: its first arm is not its single arm" % pid
+        for fid, tex, _flabel in finishes_of(pid):
+            files[("asset", "blockstates/%s.json" % registry(pid, fid))] = json.dumps(
+                multipart_blockstate(prof, tex, single), indent=2) + "\n"
+        files[("asset", MODEL_REL + "/luminairearm_%s_inv.obj" % pid)] = inventory_mesh(
+            prof["whole"]).text("luminairearm_%s_inv" % pid, "%s, inventory icon" % label)
+        profiles.append((meta, prof))
+        if double:
+            continue
         for i, m in enumerate(prof["meshes"]):
             files[("asset", MODEL_REL + "/" + model_name(pid, i))] = m.text(
                 "luminairearm_%s_c%d" % (pid, i), "%s, cell %d at %s" % (label, i, prof["offsets"][i]))
@@ -948,12 +1008,6 @@ def outputs():
                     "luminairearm_%s_c%d_%s" % (pid, idx, fit),
                     "%s, cell %d %s" % (label, idx, "on a full block's face, with its back plate"
                                         if r is None else "on the %s pole (radius %.0f)" % (fit, r)))
-        files[("asset", MODEL_REL + "/luminairearm_%s_inv.obj" % pid)] = inventory_mesh(
-            prof["whole"]).text("luminairearm_%s_inv" % pid, "%s, inventory icon" % label)
-        for fid, tex, _flabel in finishes_of(pid):
-            files[("asset", "blockstates/%s.json" % registry(pid, fid))] = json.dumps(
-                blockstate(prof, tex), indent=2) + "\n"
-        profiles.append((meta, prof))
     files[("java", JAVA_REL)] = java_enum(profiles)
     return files, profiles
 

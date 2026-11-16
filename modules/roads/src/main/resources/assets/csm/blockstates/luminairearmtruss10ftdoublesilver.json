@@ -1,121 +1,1101 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c0.obj",
-    "custom": {
-      "flip-v": true
-    },
-    "textures": {
-      "#body": "csm:blocks/trafficsignals/shared_textures/metal_silver",
-      "particle": "csm:blocks/trafficsignals/shared_textures/metal_silver"
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_inv.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver&transform=forge:default-block"
     }
   },
-  "variants": {
-    "shape": {
-      "0": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c0.obj"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "shape": "0"
       },
-      "1": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c1.obj"
-      },
-      "2": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c2.obj"
-      },
-      "3": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c3.obj"
-      },
-      "4": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c4.obj"
-      },
-      "5": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c5.obj"
-      },
-      "6": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c6.obj"
-      },
-      "7": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c7.obj"
-      },
-      "8": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c8.obj"
-      },
-      "9": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c9.obj"
-      },
-      "10": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c10.obj"
-      },
-      "11": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c11.obj"
-      },
-      "12": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c12.obj"
-      },
-      "13": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c13.obj"
-      },
-      "14": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c14.obj"
-      },
-      "15": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c15.obj"
-      },
-      "16": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c0_thin.obj"
-      },
-      "17": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c0_pedestal.obj"
-      },
-      "18": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c0_wall.obj"
-      },
-      "19": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c1_thin.obj"
-      },
-      "20": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c1_pedestal.obj"
-      },
-      "21": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c1_wall.obj"
-      },
-      "22": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c8_thin.obj"
-      },
-      "23": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c8_pedestal.obj"
-      },
-      "24": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c8_wall.obj"
-      },
-      "25": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c9_thin.obj"
-      },
-      "26": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c9_pedestal.obj"
-      },
-      "27": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_c9_wall.obj"
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
       }
     },
-    "facing": {
-      "north": {
-        "y": 0
+    {
+      "when": {
+        "facing": "south",
+        "shape": "8"
       },
-      "east": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "0"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "8"
       },
-      "south": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "8"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "0"
       },
-      "west": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "8"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
         "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ftdouble_inv.obj",
-        "transform": "forge:default-block"
+    {
+      "when": {
+        "facing": "west",
+        "shape": "0"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
       }
-    ]
-  }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "17"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "23"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "17"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "23"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "23"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "17"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "23"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "17"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "16"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "22"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "16"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "22"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "22"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "16"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "22"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "16"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "18"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "24"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "18"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "24"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "24"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "18"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "24"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "18"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c0_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "20"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "26"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "20"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "26"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "26"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "20"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "26"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "20"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_pedestal.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "19"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "25"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "19"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "25"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "25"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "19"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "25"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "19"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_thin.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "21"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "27"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "21"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "27"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "27"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "21"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "27"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "21"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c1_wall.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c2.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "3"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "3"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "3"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "3"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c3.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "12"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "12"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "12"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "12"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c4.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "13"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "13"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "13"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "13"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c5.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "14"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "14"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "14"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "14"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c6.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "15"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "15"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "15"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "15"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_truss10ft_c7.obj?flip-v&body=csm:blocks/trafficsignals/shared_textures/metal_silver",
+        "y": 270
+      }
+    }
+  ]
 }

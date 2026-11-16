@@ -1,73 +1,477 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c0.obj",
-    "custom": {
-      "flip-v": true
-    },
-    "textures": {
-      "#body": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
-      "particle": "csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+  "variants": {
+    "inventory": {
+      "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_inv.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan&transform=forge:default-block"
     }
   },
-  "variants": {
-    "shape": {
-      "0": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c0.obj"
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "shape": "0"
       },
-      "1": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c1.obj"
-      },
-      "2": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c2.obj"
-      },
-      "3": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c3.obj"
-      },
-      "4": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c4.obj"
-      },
-      "5": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c5.obj"
-      },
-      "6": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c0_thin.obj"
-      },
-      "7": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c0_pedestal.obj"
-      },
-      "8": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c0_wall.obj"
-      },
-      "9": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c3_thin.obj"
-      },
-      "10": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c3_pedestal.obj"
-      },
-      "11": {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_c3_wall.obj"
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
       }
     },
-    "facing": {
-      "north": {
-        "y": 0
+    {
+      "when": {
+        "facing": "south",
+        "shape": "3"
       },
-      "east": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "0"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
         "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "3"
       },
-      "south": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "3"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
         "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "0"
       },
-      "west": {
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "3"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
         "y": 270
       }
     },
-    "inventory": [
-      {
-        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ftdouble_inv.obj",
-        "transform": "forge:default-block"
+    {
+      "when": {
+        "facing": "west",
+        "shape": "0"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
       }
-    ]
-  }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "10"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "7"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_pedestal.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "9"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "6"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_thin.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "8"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "8"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "8"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "11"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "8"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c0_wall.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "4"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "1"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c1.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "shape": "5"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "shape": "2"
+      },
+      "apply": {
+        "model": "csm:trafficaccessories/shared_models/luminairearm_caltrans6ft_c2.obj?flip-v&body=csm:blocks/trafficaccessories/shared_textures/metal_mattetan",
+        "y": 270
+      }
+    }
+  ]
 }
