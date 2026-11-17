@@ -59,8 +59,8 @@ public class BlockLectureSeating extends BlockHealthcareRun {
   private static final AxisAlignedBB RISER_BOX = new AxisAlignedBB(0, 0, 0, 1, RISER, 1);
   private static final AxisAlignedBB SEAT_BOX = new AxisAlignedBB(0, 0, 5.5 / 16.0, 1,
       7.6 / 16.0, 13 / 16.0);
-  private static final AxisAlignedBB BACK_BOX = new AxisAlignedBB(0, 7.6 / 16.0, 12.2 / 16.0, 1,
-      15.5 / 16.0, 14.2 / 16.0);
+  private static final AxisAlignedBB BACK_BOX = new AxisAlignedBB(0, 7.6 / 16.0, 12.0 / 16.0, 1,
+      15.5 / 16.0, 15.6 / 16.0);
 
   /** Constructs the seat. */
   public BlockLectureSeating() {
