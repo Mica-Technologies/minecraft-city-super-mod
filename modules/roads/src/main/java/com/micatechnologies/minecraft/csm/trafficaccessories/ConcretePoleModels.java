@@ -40,12 +40,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  * {@code endn=<n>,ends=<s>,facing=...,mountwest=...}, is still loaded and baked, as an extra
  * variant of the pole's item ({@link #registerVariants}), exactly as many of them as the state
  * mapper used to hand out (1,408: {@link BlockTrafficPoleConcrete#isEndPairReachable} times the
- * 16 mount combinations). A state's own location names only the facing and mounts; its model is
+ * 16 mount combinations). A state's own location is the variant with plain ends at both
+ * ({@link BlockTrafficPoleConcrete#MODEL_VARIANT_PREFIX}): one of those, since every facing can
+ * have that pair, and a location that left the ends out would name no variant in the file and
+ * load the missing model (drawn right through the wrapper, but its particle was the missing
+ * texture, and VintageFix logged every such location as a failed load). That location's model is
  * wrapped here, and draws the baked variant of the same facing and mounts with the state's two
  * ends, looked up once per pair and kept.</p>
  *
  * <p>A state without its ends (a caller that never asks for the extended state) draws the
- * location's own model: the blockstate's default for the facing and mounts.</p>
+ * location's own model: the pole with plain ends, for its facing and mounts. The particle is that
+ * model's too.</p>
  *
  * @since 2026.11
  */
@@ -109,11 +114,14 @@ public final class ConcretePoleModels {
         + ",mountwest=" + ((mounts & 8) != 0);
   }
 
-  /** The wrapper round a pole state's own model; {@code null} for any other model. */
+  /**
+   * The wrapper round a pole state's own model, the plain-ended variant the state mapper hands
+   * out; {@code null} for any other model, the other end pairs among them.
+   */
   @Nullable
   private static IBakedModel wrap(ModelResourceLocation location, IBakedModel model) {
-    if (model instanceof WithEnds || "inventory".equals(location.getVariant())
-        || location.getVariant().startsWith("endn=")
+    if (model instanceof WithEnds
+        || !location.getVariant().startsWith(BlockTrafficPoleConcrete.MODEL_VARIANT_PREFIX)
         || !"csm".equals(location.getNamespace())) {
       return null;
     }
@@ -126,6 +134,7 @@ public final class ConcretePoleModels {
   private static final class WithEnds extends BakedModelWrapper<IBakedModel> {
 
     private final ResourceLocation block;
+    /** The facing and mounts, the location's variant less its plain ends. */
     private final String variant;
     /** The variant for each end pair, by {@code north * ENDS.length + south}, once looked up. */
     private final AtomicReferenceArray<IBakedModel> byEnds =
@@ -134,10 +143,14 @@ public final class ConcretePoleModels {
     WithEnds(IBakedModel original, ModelResourceLocation location) {
       super(original);
       this.block = new ResourceLocation(location.getNamespace(), location.getPath());
-      this.variant = location.getVariant();
+      this.variant = location.getVariant()
+          .substring(BlockTrafficPoleConcrete.MODEL_VARIANT_PREFIX.length());
     }
 
-    /** The model for a state's ends, or this location's own when the state carries none. */
+    /**
+     * The model for a state's ends, or this location's own (plain ends) when the state carries
+     * none or has plain ends. Never looks its own location up: that is this wrapper.
+     */
     private IBakedModel forState(@Nullable IBlockState state) {
       if (!(state instanceof IExtendedBlockState)) {
         return originalModel;
@@ -145,7 +158,8 @@ public final class ConcretePoleModels {
       IExtendedBlockState ext = (IExtendedBlockState) state;
       EndStyle north = ext.getValue(BlockTrafficPoleConcrete.END_NORTH);
       EndStyle south = ext.getValue(BlockTrafficPoleConcrete.END_SOUTH);
-      if (north == null || south == null) {
+      if (north == null || south == null
+          || (north == EndStyle.NONE && south == EndStyle.NONE)) {
         return originalModel;
       }
       int slot = north.ordinal() * ENDS.length + south.ordinal();

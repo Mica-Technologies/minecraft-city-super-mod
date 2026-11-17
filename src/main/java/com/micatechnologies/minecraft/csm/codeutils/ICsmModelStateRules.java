@@ -57,4 +57,19 @@ public interface ICsmModelStateRules {
   default boolean isModelStateReachable(IBlockState state) {
     return true;
   }
+
+  /**
+   * Properties the blockstate file names but the state does not list, written before the state's
+   * own in every model location, as {@code name=value,} pairs in the order the variant keys sort.
+   *
+   * <p>For a block whose blockstate still names a property that went unlisted: every variant key
+   * in such a file carries it, so a location without it names no variant and loads the missing
+   * model. The prefix picks the variant that stands for the state when the unlisted value is not
+   * known.</p>
+   *
+   * @return the prefix, or an empty string for none
+   */
+  default String getModelVariantPrefix() {
+    return "";
+  }
 }

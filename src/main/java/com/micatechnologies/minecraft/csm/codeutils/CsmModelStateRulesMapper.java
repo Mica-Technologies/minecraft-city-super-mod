@@ -47,7 +47,9 @@ public final class CsmModelStateRulesMapper extends StateMapperBase {
     IBlockState drawn = rules.isModelStateReachable(state) ? state : block.getDefaultState();
     Map<IProperty<?>, Comparable<?>> properties = new LinkedHashMap<>(drawn.getProperties());
     properties.keySet().removeAll(ignored);
-    return new ModelResourceLocation(Block.REGISTRY.getNameForObject(block),
-        getPropertyString(properties));
+    String prefix = rules.getModelVariantPrefix();
+    String variant = properties.isEmpty() && !prefix.isEmpty()
+        ? prefix.substring(0, prefix.length() - 1) : prefix + getPropertyString(properties);
+    return new ModelResourceLocation(Block.REGISTRY.getNameForObject(block), variant);
   }
 }

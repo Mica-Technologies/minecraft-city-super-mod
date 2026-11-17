@@ -156,15 +156,20 @@ out from the neighbours, so they went unlisted instead (2026-11-16): a pole's st
 facing, four mounts, `top` and `base`, 576 of them, and the same 1,408 variants are baked.
 
 The blockstate file is unchanged and still names `endn` and `ends`. A state's own model location
-names only the facing and mounts (`ICsmModelStateRules` still leaves `top` and `base` out), and
-`ConcretePoleModels` (Roads, client) wraps that location's model: for a state's ends it draws the
+is the plain-ended variant of its facing and mounts, `endn=none,ends=none,facing=...`
+(`ICsmModelStateRules.getModelVariantPrefix`; `top` and `base` are still left out). It has to
+name the ends: every variant key in the file carries them, so a location without them names no
+variant and loads the missing model. It did for a while: the pole still drew right through the
+wrapper, but its break particles were the missing texture and VintageFix logged every such
+location as a failed load. `ConcretePoleModels` (Roads, client) wraps that location's model: for a
+state's ends it draws the
 baked variant `endn=<n>,ends=<s>,facing=...,mountwest=...`, the location the state mapper handed
 out when the ends were listed. Those 1,408 variants are loaded as extra variants of the pole's
 item (`ModelLoader.registerItemVariants`, which loads a `#`-variant from the blockstate), one for
 each pair `BlockTrafficPoleConcrete.isEndPairReachable` allows, times the 16 mount combinations.
 So the quads drawn for a pole are the same baked models as before. A caller that asks for a
-pole's model with a state that carries no ends gets the location's own model, the blockstate's
-default for that facing and mounts. The plinth's wider selection box is worked out the same way,
+pole's model with a state that carries no ends gets the location's own model, the pole with plain
+ends for that facing and mounts, and the particle is that model's. The plinth's wider selection box is worked out the same way,
 from the block below, in `getBlockBoundingBox`.
 
 **Change `endStyle` and `isEndPairReachable` together.** A pair the rule wrongly refuses is not

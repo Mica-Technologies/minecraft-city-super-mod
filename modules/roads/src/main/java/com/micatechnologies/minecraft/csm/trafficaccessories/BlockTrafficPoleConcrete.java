@@ -321,6 +321,20 @@ public class BlockTrafficPoleConcrete extends AbstractBlockTrafficPole
   }
 
   /**
+   * The ends a state's own model location names: the blockstate file still names {@code endn}
+   * and {@code ends} in every variant, so a location without them would load the missing model.
+   * Plain ends at both, a pair every facing can have; {@code ConcretePoleModels} draws a state's
+   * real ends from there.
+   */
+  public static final String MODEL_VARIANT_PREFIX =
+      "endn=" + EndStyle.NONE.getName() + ",ends=" + EndStyle.NONE.getName() + ",";
+
+  @Override
+  public String getModelVariantPrefix() {
+    return MODEL_VARIANT_PREFIX;
+  }
+
+  /**
    * Whether {@link #getExtendedState} can give a pole facing {@code facing} this pair of ends: a
    * plinth only at the end that points down, a finial only at the end {@link #topEnd} names. 88
    * pairs of facing and ends out of 216; {@code ConcretePoleModels} bakes a variant for each, with
