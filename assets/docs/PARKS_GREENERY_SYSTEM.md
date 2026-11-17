@@ -1009,6 +1009,15 @@ Together the 24 blocks have 4 x 5 + 5 x (1 + 2 + 1 + 40) = 240 states.
   block, slab and stairs use the thin mat's texture of the same colour. Their models have vanilla
   parents (`cube_all`, `half_slab`, `upper_slab`, `stairs`, `inner_stairs`, `outer_stairs`), and
   the stairs blockstate is vanilla's 40-variant oak stairs table.
+- **Checked in game** (2026-11-16, flat world "Safety Surface 365"):
+  - every colour of full block was laid in the ground layer;
+  - spring riders, teeter totters, slides and both swing sets were placed by the normal
+    right-click path. On a full block each stands in the cell directly above, on its top face. On
+    the thin mat of the same colour it stands a cell higher;
+  - a hand-placed slab goes on top or bottom by where it is clicked, and stacks into the double
+    slab;
+  - stairs ramps turn outer corners, and an upside-down stair draws correctly;
+  - no model or texture errors in the log.
 
 ### The zipline (#351)
 
