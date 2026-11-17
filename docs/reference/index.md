@@ -26,7 +26,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Market & Store](market-store.md) | 149 | Grocery stores and shops: stocked refrigerated displays, gondola shelving, produce, the checkout lane and its registers and card terminals, carts, aisle signs and the shop floor's fixtures. |
 | [Materials](materials.md) | 1 | The CSM Fabricator, which turns vanilla ingots into CSM blocks. |
 | [Novelties](novelties.md) | 19 | Decorative oddities that did not belong anywhere else. |
-| [Parks](parks.md) | 36 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
+| [Parks](parks.md) | 55 | Park amenities: benches, tables, bins, playground pieces, fountains and irrigation. |
 | [Power Grid](power-grid.md) | 46 | Utility poles, transformers and the Forge Energy that runs through them. |
 | [Residential](residential.md) | 391 | The furniture of homes: dining and living room furniture and sofas that join into runs, kitchens with working appliances, beds you can sleep in, bathrooms and laundry, living room extras, and the backyard. |
 | [Road Signs](road-signs.md) | 698 | The MUTCD sign set, grouped the way the manual groups it. |
@@ -54,7 +54,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Sports & Venues - Skate Park](venues-skate.md) | 6 | Skate park basics in smooth concrete: quarter pipes of 1 m and 2 m, a bowl corner that turns two quarter pipes round an inside corner, a kicker, a bank and a box top for a funbox, a grind rail and a ledge that join into runs. The curves are drawn true; the collision is a staircase under them that a player can walk up. |
 | [Work Zone & Roadside Safety](work-zone.md) | 59 | Work zone channelizing devices, barricades and arrow boards, and roadside safety: guardrails with their ends and transitions, box beam, cable barrier and crash cushions, with the Guardrail Tool. |
 | [Unlisted](unlisted.md) | 184 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **5061** | |
+| **Total** | **5080** | |
 
 ## How to read the table
 
