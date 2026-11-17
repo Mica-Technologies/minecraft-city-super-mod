@@ -659,10 +659,10 @@ def _phoropter_front():
 # patient's right, the operatory light on a post from the back, the cuspidor on the left
 DENTAL = [el([5, 0, 5], [11, 1, 13], "grey"),
           el([6.5, 1, 7], [9.5, 5, 11], "body"),
-          el([3, 5, 2], [13, 7.5, 13], "vinyl"),
+          el([3, 5, 2], [13, 7.5, 12], "vinyl"),
           rot(el([4, 6, -4], [12, 8, 2], "vinyl"), "x", 22.5, [8, 7, 2]),
-          rot(el([3.5, 7, 12], [12.5, 18, 14.5], "vinyl"), "x", -22.5, [8, 7, 13]),
-          el([5.5, 17, 14.6], [10.5, 20, 16.5], "vinyl"),
+          rot(el([3.5, 7, 9], [12.5, 18, 11.5], "vinyl"), "x", 22.5, [8, 7, 10]),
+          el([5.5, 17, 13.5], [10.5, 20, 16], "vinyl"),
           el([2.2, 7.5, 4], [3.2, 9.5, 11], "body"), el([12.8, 7.5, 4], [13.8, 9.5, 11], "body"),
           # delivery unit
           el([13.5, 1, 9], [15, 12, 10.5], "body"),

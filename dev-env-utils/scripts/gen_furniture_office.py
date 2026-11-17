@@ -1258,8 +1258,8 @@ def tilted(spec, angle, origin, axis="x"):
 PEW_BODY = [board([0, 7, 2.5], [16, 8, 11.5]),
             board([0, 6, 3], [16, 7, 4], faces=("north", "down")),
             board([0, 1.5, 7], [16, 2.75, 8.5], faces=("north", "south", "up", "down")),
-            tilted(board([0, 8, 11.5], [16, 17, 12.5], grain="h"), -22.5, (8, 8, 12)),
-            board([0, 9, 13.75], [16, 9.6, 16], faces=("up", "down", "south")),
+            tilted(board([0, 8, 11.5], [16, 17, 12.5], grain="h"), 22.5, (8, 8, 12)),
+            board([0, 9, 12.9], [16, 9.6, 16], faces=("up", "down", "south")),
             board([0, 9.6, 15.4], [16, 11.6, 16], faces=("north", "south", "up"))]
 PEW_END = [board([0, 0, 2], [1, 15, 15.5], grain="v"),
            board([0, 15, 1.75], [1.25, 15.75, 15.75])]

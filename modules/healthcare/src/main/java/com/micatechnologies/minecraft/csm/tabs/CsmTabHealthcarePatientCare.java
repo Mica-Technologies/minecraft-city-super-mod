@@ -112,9 +112,9 @@ public class CsmTabHealthcarePatientCare extends CsmTab {
     initTabBlock(new BlockHealthcareRun("parallel_bars", new int[]{0, 0, 0, 16, 16, 16}, HealthcareMaterial.WOOD, false, "parallel_bars"));
     initTabBlock(new BlockHealthcarePair("treatment_plinth", new int[]{0, 0, 2, 16, 10, 14}, HealthcareMaterial.CLOTH, BlockHealthcare.Mount.FLOOR, BlockHealthcarePair.Shape.WIDE).withSeat(9.5, 0));
     initTabBlock(new BlockExerciseStairs());
-    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_blue", new int[]{0, 0, 3, 16, 15, 13}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
-    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_teal", new int[]{0, 0, 3, 16, 15, 13}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
-    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_charcoal", new int[]{0, 0, 3, 16, 15, 13}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
+    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_blue", new int[]{0, 0, 3, 16, 15, 16}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
+    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_teal", new int[]{0, 0, 3, 16, 15, 16}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
+    initTabBlock(new BlockHealthcareRun("waiting_beam_chair_charcoal", new int[]{0, 0, 3, 16, 15, 16}, HealthcareMaterial.METAL, true, "waiting_beam_chair").withSeat(7.6, 0));
     initTabBlock(new BlockQueueController("check_in_kiosk", new int[]{3, 0, 4, 13, 16, 13}, true));
     initTabBlock(new BlockQueueController("queue_desk_console", new int[]{4, 0, 5, 12, 4, 12}, false));
     initTabBlock(new BlockNowServingDisplay());

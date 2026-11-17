@@ -518,8 +518,8 @@ pair_block("exercise_stairs",
 CHAIR_BODY = [el([0, 4, 7], [16, 5.4, 9], "metal", faces=("north", "south", "up", "down")),
               el([7, 5.4, 6], [9, 6.2, 10], "grey"),
               el([1, 6.2, 3], [15, 7.6, 11.5], "seat"),
-              el([7.2, 6.2, 11], [8.8, 10, 12.5], "grey"),
-              rot(el([1, 8.2, 11.4], [15, 15.5, 12.8], "seat"), "x", -22.5, [8, 8.2, 12.1]),
+              el([7.2, 6.2, 11.6], [8.8, 9.6, 13.3], "grey"),
+              rot(el([1, 8.2, 11.4], [15, 15.5, 12.8], "seat"), "x", 22.5, [8, 8.2, 12.1]),
               el([0, 5.4, 6.8], [1, 6.4, 9.2], "grey"),
               el([0.1, 6.4, 7.5], [0.9, 10.5, 8.5], "grey"),
               el([0, 10.5, 3.5], [1, 11.3, 11], "arm")]
@@ -534,7 +534,7 @@ for _cid, _tex, _names in (
         ("teal", W("vinyl_teal"), ("Teal", "Petrol", "verde azulado", "petrol")),
         ("charcoal", W("charcoal"), ("Charcoal", "Anthrazit", "antracita", "antracit"))):
     _reg = "waiting_beam_chair_" + _cid
-    run_block(_reg, run_java(_reg, (0, 0, 3, 16, 15, 13), "METAL", True, "waiting_beam_chair",
+    run_block(_reg, run_java(_reg, (0, 0, 3, 16, 15, 16), "METAL", True, "waiting_beam_chair",
                              (7.6, 0)),
               tuple("%s (%s)" % (n, c) for n, c in zip(
                   ("Waiting Room Beam Seating", "Wartezimmer-Traversenbank",
@@ -755,8 +755,8 @@ def lecture_body(lift):
     els = [el([1, y + 6.2, 6], [15, y + 7.6, 12.5], "seat"),
            el([7.3, y, 8.5], [8.7, y + 6.2, 10], "metal"),
            el([5, y, 7.5], [11, y + 0.6, 11], "metal"),
-           rot(el([1, y + 7.8, 12.4], [15, y + 15.5, 13.6], "seat"), "x", -22.5,
-               [8, y + 7.8, 13]),
+           rot(el([1, y + 7.8, 11.65], [15, y + 15.5, 12.85], "seat"), "x", 22.5,
+               [8, y + 7.8, 12.25]),
            el([0, y, 6], [0.8, y + 11, 15], "wood"),
            el([0, y + 11, 5], [0.8, y + 11.6, 13], "wood"),
            el([8.5, y + 11.6, 1.5], [16, y + 12.1, 6], "wood"),
