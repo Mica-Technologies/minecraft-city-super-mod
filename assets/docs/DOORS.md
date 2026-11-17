@@ -860,6 +860,17 @@ only keys off their default are written (always `num`). For example:
 /blockdata ~ ~1 ~ {num:"12",lay:"v",plate:"s"}
 ```
 
+### Checked in game
+
+In the dev client, in "Address Plaques 364" (`build_address_plaques_demo.py --create`): three
+brownstones with stoops, CSM front doors, gold-leaf numbers on the transom pane (`dz` 7) under the
+hood, a plate and a lit box beside each door, a stack on a pier, and a gallery of every style
+with 2 to 5 digits, flat and stacked. Every sprite loads (no missing texture), all four facings
+read the right way round with the hitbox on the wall, an editor edit and the same `/blockdata`
+draw the same plaque, a `/setblock` with metadata and NBT equals a hand placement, the lit box
+gives light 10 at night, and the numbers read at 3 and 10 blocks. The stand-off numerals were
+thinned to 0.4 px after this check showed thicker ones smearing a small street line.
+
 ### Traps
 
 - **The facing is the way to the wall**, not the way the plaque faces (the wayfinding panels' is
