@@ -150,7 +150,10 @@ public class CsmTabTransit extends CsmTab {
   public void initTabElements(FMLPreInitializationEvent fmlPreInitializationEvent) {
     initTabBlock(BlockFareVendingMachine.class, fmlPreInitializationEvent);
     // gen_transit_fare_vending_outdoor.py --fragments
-    initTabBlock(BlockFareVendingMachineOutdoor.class, fmlPreInitializationEvent);
+    initTabBlock(new BlockFareVendingMachineOutdoor("fare_vending_machine_outdoor"));
+    initTabBlock(new BlockFareVendingMachineOutdoor("fare_vending_machine_outdoor_riverway"));
+    initTabBlock(new BlockFareVendingMachineOutdoor("fare_vending_machine_outdoor_verdant"));
+    initTabBlock(new BlockFareVendingMachineOutdoor("fare_vending_machine_outdoor_emberline"));
     initTabBlock(BlockFareGate.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGateAda2.class, fmlPreInitializationEvent);
     initTabBlock(BlockFareGateAda3.class, fmlPreInitializationEvent);

@@ -58,8 +58,9 @@ public final class TransitFabricatorRules {
           FabricatorIngredient.part(CsmParts.SHEET_METAL, cells * (shape.isLarge() ? 2 : 3)),
           FabricatorIngredient.part(CsmParts.FASTENER_KIT, cells));
     }
-    if (registryName.equals("fare_vending_machine_outdoor")) {
+    if (registryName.startsWith("fare_vending_machine_outdoor")) {
       // the indoor machine's board and wiring, in a second sheet's worth of weatherproof cabinet
+      // (every livery)
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 2),
           FabricatorIngredient.part(CsmParts.WIRING_HARNESS, 1));

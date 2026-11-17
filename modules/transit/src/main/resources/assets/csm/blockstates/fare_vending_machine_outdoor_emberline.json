@@ -1,0 +1,82 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "upper": "false"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/lower"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/emberline/upper"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "false"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/lower",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/emberline/upper",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "false"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/lower",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/emberline/upper",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "false"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/lower",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "upper": "true"
+      },
+      "apply": {
+        "model": "csm:transit/fare_vending_outdoor/emberline/upper",
+        "y": 270
+      }
+    }
+  ]
+}

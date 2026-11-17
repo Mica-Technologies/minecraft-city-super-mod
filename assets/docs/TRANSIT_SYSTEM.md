@@ -100,11 +100,19 @@ belongs to the Furniture & Novelties module, so the handler looks it up by name 
 block's chime when that module is not installed. Transit requires Roads, and nothing else but
 Core.
 
-The **Outdoor Fare Vending Machine** (`csm:fare_vending_machine_outdoor`,
-`BlockFareVendingMachineOutdoor`) is the street version, at the shelters' scale: a weatherproof
-stainless cabinet with graphite trim on a short plinth, a hood (a roof plate and two cheeks) over
-the screen, the same keypad, tap pad, slots and tray in relief, and a cap with a small
-CITYLINE-teal band, drawn by `gen_transit_fare_vending_outdoor.py`. It is a subclass of the
+The **Outdoor Fare Vending Machine** (`BlockFareVendingMachineOutdoor`) is the street version,
+at the shelters' scale: a weatherproof stainless cabinet with graphite trim on a short plinth, a
+hood (a roof plate and two cheeks) over the screen, the same keypad, tap pad, slots and tray in
+relief, and a cap with a small band in the agency's colours, drawn by
+`gen_transit_fare_vending_outdoor.py`. It comes in the four agencies' liveries, as the shelters
+and canopies do, one block each: `csm:fare_vending_machine_outdoor` is CITYLINE (teal with a
+yellow line, the id it first shipped under, unchanged), and
+`csm:fare_vending_machine_outdoor_riverway`, `_verdant` and `_emberline` the other three. The
+livery is only the cap's band and the bar heading the screen, both in the upper half, so the lower
+half's model is shared and each other agency's upper (and item) model is a child of CITYLINE's
+naming its own `band_<agency>` and `front_upper_<agency>` textures; each block has the same 16
+states. The class takes its registry name (the shelters' pattern, stashed for the base
+constructor). It is a subclass of the
 indoor machine, so it opens the same GUI (id 16) and the purchase handler's "within six blocks
 of a real vending machine" check accepts it unchanged: same packets, same purchases, same prices.
 Unlike the indoor machine it is **two blocks**, placed as one piece as a door is: the lower
@@ -114,8 +122,9 @@ takes both, and only the lower drops the machine (the lower, finding its upper g
 itself; breaking the upper in creative clears the lower first, quietly), so one machine comes
 back however it is broken, explosions included. Clicking either half opens the GUI for the
 lower. Meta is the facing (horizontal only) plus 8 for the upper; it cannot be pushed. Its
-Fabricator cost is the indoor machine's (a control board, sheet metal, a wiring harness) with a
-second sheet of metal.
+Fabricator cost, the same in every livery (`TransitFabricatorRules` matches the registry name's
+`fare_vending_machine_outdoor` prefix), is the indoor machine's (a control board, sheet metal, a
+wiring harness) with a second sheet of metal.
 
 The **Fare Ticket** is a plain single-use item. The **Transit Card** stacks to one, because every
 card carries its own balance (`trips` in its NBT) and its tooltip shows it.
@@ -209,7 +218,8 @@ models from `hang` instead, once for each side.
 ### Flags and route plates
 
 Four invented agencies, each with its own flag layout so they read as four agencies and not one in
-four colours: **CITYLINE** (teal and yellow, the fare machine's livery), **RIVERWAY** (navy and
+four colours: **CITYLINE** (teal and yellow, the indoor fare machine's livery; the outdoor machine
+comes in all four), **RIVERWAY** (navy and
 orange), **VERDANT** (green and white) and **EMBERLINE** (red and graphite). Each carries the bus
 pictogram, BUS STOP, the agency's name and the accessibility symbol, all drawn by the generator in
 its pixel font and pixel art. The flag is a 10 x 13 plate printed on both faces (the back uses the

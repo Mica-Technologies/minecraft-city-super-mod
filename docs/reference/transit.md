@@ -2,7 +2,7 @@
 
 Public transit: bus stop flags, timetable and map cases and the arrival display (road signs, stood on the Road Signs tab's sign posts), bus shelters, bus station departure boards, fare gates, the fare vending machine and the tickets and cards they take, station and platform fit-out, station entrances and fare lines, and the airport terminal and airside.
 
-!!! info "177 blocks in this tab"
+!!! info "180 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -135,7 +135,10 @@ Public transit: bus stop flags, timetable and map cases and the arrival display 
 | Luggage Cart | `csm:airport_luggage_cart` | 2.0 | 6.0 | pickaxe | 1 |
 | Luggage Cart Rack | `csm:airport_cart_rack` | 2.0 | 6.0 | pickaxe | 1 |
 | Network Map Board | `csm:station_network_map` | 2.0 | 6.0 | pickaxe | 1 |
-| Outdoor Fare Vending Machine | `csm:fare_vending_machine_outdoor` | 2 | 10 | pickaxe | 1 |
+| Outdoor Fare Vending Machine (CITYLINE) | `csm:fare_vending_machine_outdoor` | 2 | 10 | pickaxe | 1 |
+| Outdoor Fare Vending Machine (EMBERLINE) | `csm:fare_vending_machine_outdoor_emberline` | 2 | 10 | pickaxe | 1 |
+| Outdoor Fare Vending Machine (RIVERWAY) | `csm:fare_vending_machine_outdoor_riverway` | 2 | 10 | pickaxe | 1 |
+| Outdoor Fare Vending Machine (VERDANT) | `csm:fare_vending_machine_outdoor_verdant` | 2 | 10 | pickaxe | 1 |
 | Platform Bench | `csm:platform_bench` | 2.0 | 6.0 | pickaxe | 1 |
 | Platform Canopy | `csm:platform_canopy` | 2.5 | 8.0 | pickaxe | 1 |
 | Platform Clock | `csm:platform_clock` | 2.0 | 6.0 | pickaxe | 1 |

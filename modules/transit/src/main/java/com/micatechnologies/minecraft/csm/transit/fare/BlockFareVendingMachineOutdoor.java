@@ -22,8 +22,10 @@ import net.minecraft.world.World;
 
 /**
  * The outdoor fare vending machine: a weatherproof street ticket machine on a short plinth, a
- * hood over its screen, stainless and graphite with a small CITYLINE-teal band, drawn by
- * {@code gen_transit_fare_vending_outdoor.py}. It sells exactly what the indoor
+ * hood over its screen, stainless and graphite with a small band in an agency's colours, drawn by
+ * {@code gen_transit_fare_vending_outdoor.py}. One block per livery, as the shelters are:
+ * {@code fare_vending_machine_outdoor} (CITYLINE) and {@code fare_vending_machine_outdoor_<agency>}
+ * for RIVERWAY, VERDANT and EMBERLINE; only their upper half's model differs. It sells exactly what the indoor
  * {@link BlockFareVendingMachine} does, through the same GUI ({@link #GUI_ID}), packets and
  * purchases: it <em>is</em> one, so the GUI provider's and the purchase handler's checks pass for
  * it unchanged.
@@ -49,9 +51,35 @@ public class BlockFareVendingMachineOutdoor extends BlockFareVendingMachine {
   private static final AxisAlignedBB UPPER_BOX =
       new AxisAlignedBB(1.5 / 16, 0, 2.0 / 16, 14.5 / 16, 13.5 / 16, 13.5 / 16);
 
+  /** The registry name, while the base constructor (which asks for it) runs. */
+  private static final ThreadLocal<String> PENDING = new ThreadLocal<>();
+
+  private final String registryName;
+
+  /**
+   * A machine in one agency's livery.
+   *
+   * @param registryName {@code fare_vending_machine_outdoor} or
+   *                     {@code fare_vending_machine_outdoor_<agency>}
+   */
+  public BlockFareVendingMachineOutdoor(String registryName) {
+    this(stash(registryName));
+  }
+
+  private BlockFareVendingMachineOutdoor(Void stashed) {
+    super();
+    this.registryName = PENDING.get();
+    PENDING.remove();
+  }
+
+  private static Void stash(String registryName) {
+    PENDING.set(registryName);
+    return null;
+  }
+
   @Override
   public String getBlockRegistryName() {
-    return "fare_vending_machine_outdoor";
+    return registryName != null ? registryName : PENDING.get();
   }
 
   @Override

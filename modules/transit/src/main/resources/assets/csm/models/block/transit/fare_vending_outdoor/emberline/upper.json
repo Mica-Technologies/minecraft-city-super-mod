@@ -1,0 +1,7 @@
+{
+  "parent": "csm:block/transit/fare_vending_outdoor/upper",
+  "textures": {
+    "band": "csm:blocks/transit/fare_vending_outdoor/band_emberline",
+    "front_upper": "csm:blocks/transit/fare_vending_outdoor/front_upper_emberline"
+  }
+}

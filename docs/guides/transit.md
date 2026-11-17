@@ -21,7 +21,9 @@ each with its own colours: **CITYLINE** (teal and yellow), **RIVERWAY** (navy an
 
 The **Outdoor Fare Vending Machine** is the street version for a bus stop: two blocks tall, with
 a hood over its screen. It sells exactly the same fares through the same screen. Place it like a
-door (it needs the block above free); break either half and the whole machine comes back.
+door (it needs the block above free); break either half and the whole machine comes back. It
+comes in the same four agency liveries as the shelters and canopies (CITYLINE, RIVERWAY, VERDANT
+and EMBERLINE), which colour the band on its cap and the header on its screen.
 
 A card shows its trips left in its tooltip. Cards don't stack, since each one carries its own
 balance. If your inventory is full, what you bought drops at your feet.

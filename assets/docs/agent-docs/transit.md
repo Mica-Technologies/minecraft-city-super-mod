@@ -9,7 +9,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   two-block street ticket machine, a model per half (`lower`, `upper`) under a multipart
   blockstate on `facing` and `upper`, textures drawn at 4 texels a unit in UV windows; the item
   is both halves stacked. A north face reads from +x on the viewer's left, so the keypad
-  (x 8.8 .. 12.3) carries the left label. It deletes `models/block/transit/fare_vending_outdoor/`
+  (x 8.8 .. 12.3) carries the left label. Four liveries (`AGENCIES`, the shelters' colours):
+  CITYLINE is the base under the original id, the other three are child models of `upper` and
+  of the item naming their own `band_<agency>` and `front_upper_<agency>`. It deletes `models/block/transit/fare_vending_outdoor/`
   before writing; `--check`, `--fragments`
 - `gen_transit_fare_vending.py` -- the fare vending machine's model, textures and blockstate
   (Transit): a free-standing machine two blocks tall in the invented CITYLINE livery, drawn from one

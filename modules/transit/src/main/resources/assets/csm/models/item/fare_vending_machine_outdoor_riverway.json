@@ -1,0 +1,7 @@
+{
+  "parent": "csm:item/fare_vending_machine_outdoor",
+  "textures": {
+    "band": "csm:blocks/transit/fare_vending_outdoor/band_riverway",
+    "front_upper": "csm:blocks/transit/fare_vending_outdoor/front_upper_riverway"
+  }
+}

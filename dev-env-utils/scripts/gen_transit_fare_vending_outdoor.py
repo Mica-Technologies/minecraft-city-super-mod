@@ -8,14 +8,21 @@ tall, placed as one piece into its block and the one above, as a door is.
 
 A stainless cabinet with graphite trim on a short concrete-grey plinth, a hooded touchscreen (a
 roof plate and two cheeks keep the rain off the screen), keypad and tap pad, cash, card and coin
-slots and a ticket tray in relief, and a deeper cap over the whole with a small CITYLINE-teal
-TICKETS band on its front. The indoor machine (gen_transit_fare_vending.py) is one block drawing
+slots and a ticket tray in relief, and a deeper cap over the whole with a small band in the
+agency's colours on its front. The indoor machine (gen_transit_fare_vending.py) is one block drawing
 into the air above; this one is two (BlockFareVendingMachineOutdoor's `upper`), so each half has
 its own model and the upper half can be clicked.
 
 Each half is drawn facing north, the machine standing a little back from the front of its block;
 the multipart blockstate turns it by `facing`. Face art is drawn at 4 texels a model unit in a
 window at the top left of a 64 x 64 sheet, the face's UV that window, so nothing is stretched.
+
+It comes in the four invented agencies' liveries, as the shelters and canopies do: one block
+each, `fare_vending_machine_outdoor` (CITYLINE, the id it shipped with) and
+`fare_vending_machine_outdoor_<agency>` for the other three. The livery is only the cap's band
+and the screen's header bar, both in the upper half, so the models are drawn once in CITYLINE's
+colours and every other agency's upper and item model is a child naming its own `band` and
+`front_upper` textures; the lower half is shared.
 """
 import os
 import shutil
@@ -43,6 +50,17 @@ SCREEN = (22, 34, 44)
 SCREEN_LIT = (206, 232, 240)
 GREEN = (60, 200, 110)
 STEEL = (150, 156, 160)
+RED = (176, 36, 32)
+
+# The agencies, in the shelters' colours (gen_transit_shelters.py's AGENCIES): id, name, the
+# band's ground and its accent (the line under the band, the square in the screen's header)
+AGENCIES = [
+    ("cityline", "CITYLINE", TEAL, YELLOW),
+    ("riverway", "RIVERWAY", (31, 58, 115), (240, 138, 36)),
+    ("verdant", "VERDANT", (36, 116, 60), (240, 242, 240)),
+    ("emberline", "EMBERLINE", RED, GRAPHITE),
+]
+BASE = "cityline"   # the agency the base models are drawn in, under the id that shipped first
 
 # The cabinet, in each half's own coordinates (north is the front)
 X0, X1 = 2.0, 14.0            # 12 wide
@@ -64,16 +82,16 @@ def win(w, h):
 # ------------------------------------------------------------------------------------------
 # Textures
 # ------------------------------------------------------------------------------------------
-def front_upper():
-    """The upper front, 12 x 12 units: the screen with a fare menu under the hood, the PIN and
-    TAP labels over the keypad and tap pad."""
+def front_upper(ground=TEAL, accent=YELLOW):
+    """The upper front, 12 x 12 units: the screen with a fare menu under the hood, its header
+    bar in the agency's colours, the PIN and TAP labels over the keypad and tap pad."""
     img = canvas(STAINLESS, 31)
     w = int((X1 - X0) * PX)
     # the screen, between the hood's cheeks: y 5.5 .. 10.5 (rows 6 .. 26)
     lc.rect(img, 4, 5, w - 4, 27, GRAPHITE)
     lc.rect(img, 6, 7, w - 6, 25, SCREEN)
-    lc.rect(img, 7, 8, w - 7, 12, TEAL)
-    lc.rect(img, 8, 9, 11, 11, YELLOW)
+    lc.rect(img, 7, 8, w - 7, 12, ground)
+    lc.rect(img, 8, 9, 11, 11, accent)
     lc.draw_text_centred(img, "FARES", w / 2.0 + 1, 13, SCREEN_LIT)
     for i, c in enumerate(((66, 160, 220), (90, 190, 120))):
         y = 19 + i * 3
@@ -115,11 +133,12 @@ def side():
     return img
 
 
-def band():
-    """The cap's front, 13 x 1.5 units: CITYLINE teal, a yellow line under it."""
-    img = canvas(TEAL, 34)
+def band(ground=TEAL, accent=YELLOW):
+    """The cap's front, 13 x 1.5 units: the agency's colour, its accent in a line under it
+    (CITYLINE teal with yellow)."""
+    img = canvas(ground, 34)
     w, h = int(13 * PX), int((CAP_TOP - UPPER_TOP) * PX)
-    lc.rect(img, 0, h - 1, w, h, YELLOW)
+    lc.rect(img, 0, h - 1, w, h, accent)
     return img
 
 
@@ -170,6 +189,11 @@ TEXTURES = {
     "plinth": lambda: lc.fill(PLINTH, size=16, grain=5, seed=40),
     "steel": lambda: lc.fill(STEEL, size=16, grain=4, seed=41),
 }
+LIVERY_KEYS = ("band", "front_upper")
+for _aid, _name, _ground, _accent in AGENCIES:
+    if _aid != BASE:
+        TEXTURES["band_" + _aid] = (lambda g=_ground, a=_accent: band(g, a))
+        TEXTURES["front_upper_" + _aid] = (lambda g=_ground, a=_accent: front_upper(g, a))
 for _name, _draw in TEXTURES.items():
     C.texture(_name)(_draw)
 
@@ -271,26 +295,26 @@ def check(name, els):
                 assert 0 <= v <= 16, (name, f)
 
 
+AGENCY_TEXTURES = set(k + "_" + a[0] for a in AGENCIES if a[0] != BASE for k in LIVERY_KEYS)
+
+
 def textures():
-    t = {k: C.T(k) for k in TEXTURES}
+    t = {k: C.T(k) for k in TEXTURES if k not in AGENCY_TEXTURES}
     t["particle"] = C.T("side")
     return t
+
+
+def livery_textures(aid):
+    """A child model's textures: only what the agency changes."""
+    return {k: C.T(k + "_" + aid) for k in LIVERY_KEYS}
 
 
 def machine():
     lower, upper = lower_elements(), upper_elements()
     check("lower", lower)
     check("upper", upper)
-    models = {"lower": lc.model(textures(), lower, ao=False),
-              "upper": lc.model(textures(), upper, ao=False)}
-    mp = []
-    for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
-        for half in ("lower", "upper"):
-            apply = {"model": C.M(half)}
-            if y:
-                apply["y"] = y
-            mp.append({"when": {"facing": facing, "upper": "true" if half == "upper" else "false"},
-                       "apply": apply})
+    base_models = {"lower": lc.model(textures(), lower, ao=False),
+                   "upper": lc.model(textures(), upper, ao=False)}
     item_els = lower + shifted(upper, 16)
     check("item", item_els)
     item = lc.model(textures(), item_els, ao=False)
@@ -305,10 +329,29 @@ def machine():
         "firstperson_lefthand": {"rotation": [0, 225, 0], "translation": [0, 0, 0],
                                  "scale": [0.28] * 3},
     }
-    C.add(REG, "BlockFareVendingMachineOutdoor.class, fmlPreInitializationEvent",
-          ("Outdoor Fare Vending Machine", "Fahrscheinautomat (Außen)",
-           "Máquina Expendedora de Tarifas (Exterior)", "Biljettautomat (Utomhus)"),
-          models, {"multipart": mp}, item=item, tab=TAB)
+    names = ("Outdoor Fare Vending Machine (%s)", "Fahrscheinautomat (Außen, %s)",
+             "Máquina Expendedora de Tarifas (Exterior, %s)", "Biljettautomat (Utomhus, %s)")
+    for aid, name, _ground, _accent in AGENCIES:
+        reg = REG if aid == BASE else "%s_%s" % (REG, aid)
+        if aid == BASE:
+            models, upper_ref, agency_item = dict(base_models), "upper", item
+        else:
+            upper_ref = "%s/upper" % aid
+            models = {upper_ref: {"parent": "csm:block/%s/upper" % SUB,
+                                  "textures": livery_textures(aid)}}
+            agency_item = {"parent": "csm:item/" + REG, "textures": livery_textures(aid)}
+        mp = []
+        for facing, y in (("north", 0), ("east", 90), ("south", 180), ("west", 270)):
+            for half in ("lower", "upper"):
+                apply = {"model": C.M(upper_ref if half == "upper" else half)}
+                if y:
+                    apply["y"] = y
+                mp.append({"when": {"facing": facing,
+                                    "upper": "true" if half == "upper" else "false"},
+                           "apply": apply})
+        C.add(reg, 'new BlockFareVendingMachineOutdoor("%s")' % reg,
+              tuple(n % name for n in names), models, {"multipart": mp}, item=agency_item,
+              tab=TAB)
 
 
 machine()
