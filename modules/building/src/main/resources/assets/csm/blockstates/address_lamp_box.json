@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:plaques/address_lamp_box_base"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {},
+      "south": {},
+      "west": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:plaques/address_lamp_box_item"
+      }
+    ]
+  }
+}

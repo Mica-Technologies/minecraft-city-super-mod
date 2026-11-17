@@ -1,0 +1,19 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:plaques/address_transom_decal_base"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "east": {},
+      "south": {},
+      "west": {}
+    },
+    "inventory": [
+      {
+        "model": "csm:plaques/address_transom_decal_item"
+      }
+    ]
+  }
+}

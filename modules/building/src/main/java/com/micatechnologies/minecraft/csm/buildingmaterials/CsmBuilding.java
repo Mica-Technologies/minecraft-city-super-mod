@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.CsmNetwork;
 import com.micatechnologies.minecraft.csm.Tags;
+import com.micatechnologies.minecraft.csm.buildingmaterials.plaques.AddressPlaquePacket;
 import com.micatechnologies.minecraft.csm.buildingmaterials.stairs.StairsRailingsFabricatorRules;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
@@ -89,6 +90,8 @@ public class CsmBuilding {
     NETWORK.registerMessage(GarageKeypadPacketHandler.class, GarageKeypadPacket.class,
         Side.SERVER);
     NETWORK.registerMessage(DoorWorkshopPacketHandler.class, DoorWorkshopPacket.class,
+        Side.SERVER);
+    NETWORK.registerMessage(AddressPlaquePacket.Handler.class, AddressPlaquePacket.class,
         Side.SERVER);
     proxy.preInit(event);
   }

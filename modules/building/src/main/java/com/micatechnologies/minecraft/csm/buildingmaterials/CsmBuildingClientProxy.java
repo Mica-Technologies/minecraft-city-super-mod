@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
+import com.micatechnologies.minecraft.csm.buildingmaterials.plaques.PlaqueBakedModel;
 import com.micatechnologies.minecraft.csm.codeutils.CsmBakedModelWrappers;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.constructionsite.JobTrailerRenderUpdater;
@@ -38,6 +39,8 @@ public class CsmBuildingClientProxy extends CsmBuildingCommonProxy {
     CsmBakedModelWrappers.register(DoorLayerModel::wrap);
     // A room plate's number and name, baked into the chunk from its tile entity.
     RoomPlateBakedModel.register();
+    // An address plaque's plate, number and street line, baked from its tile entity.
+    PlaqueBakedModel.register();
     // A glazing window's frame, sashes and trim, baked from its shape; its stack rebuilt whole.
     GlazingWindowBakedModel.register();
   }

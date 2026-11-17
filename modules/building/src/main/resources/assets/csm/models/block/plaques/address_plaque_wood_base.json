@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "minecraft:blocks/planks_spruce",
+    "glyphs": "csm:blocks/plaques/address_plaque_glyphs",
+    "bodies": "csm:blocks/plaques/address_plaque_bodies"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "particle": "minecraft:blocks/coal_block",
+    "glyphs": "csm:blocks/plaques/address_plaque_glyphs",
+    "bodies": "csm:blocks/plaques/address_plaque_bodies"
+  }
+}

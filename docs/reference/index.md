@@ -9,7 +9,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 
 | Tab | Blocks | What is in it |
 |---|---|---|
-| [Building Materials](building-materials.md) | 309 | Bulk material sets, with matching stairs, slabs and fences. |
+| [Building Materials](building-materials.md) | 318 | Bulk material sets, with matching stairs, slabs and fences. |
 | [Commercial & Office](commercial-office.md) | 98 | The furniture of offices, schools and studios: desks that join into runs and L-shapes, cubicle panels, office seating, boards that join into one of any size, classroom seating, lecterns, lockers, a trophy case, projectors, the cafeteria table, the things on a desk and a copier that copies books. |
 | [Construction Site](construction-site.md) | 50 | What stands around a building while it goes up: scaffolding, formwork, earthworks, site logistics and facilities. |
 | [Furniture](furniture.md) | 21 | Interior fittings: seating, counters, appliances and fixtures. |
@@ -54,7 +54,7 @@ Every block the City Super Mod registers, grouped by the creative tab it appears
 | [Sports & Venues - Skate Park](venues-skate.md) | 6 | Skate park basics in smooth concrete: quarter pipes of 1 m and 2 m, a bowl corner that turns two quarter pipes round an inside corner, a kicker, a bank and a box top for a funbox, a grind rail and a ledge that join into runs. The curves are drawn true; the collision is a staircase under them that a player can walk up. |
 | [Work Zone & Roadside Safety](work-zone.md) | 59 | Work zone channelizing devices, barricades and arrow boards, and roadside safety: guardrails with their ends and transitions, box beam, cable barrier and crash cushions, with the Guardrail Tool. |
 | [Unlisted](unlisted.md) | 184 | Blocks that appear in no creative tab: retired ones kept so old worlds still load, and the hidden pieces other blocks place for themselves. |
-| **Total** | **5052** | |
+| **Total** | **5061** | |
 
 ## How to read the table
 

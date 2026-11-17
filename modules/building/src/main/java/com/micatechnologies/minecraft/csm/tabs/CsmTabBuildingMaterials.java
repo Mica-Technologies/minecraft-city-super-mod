@@ -60,6 +60,7 @@ import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetCladdingComp
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneAshlar;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneFieldstone;
 import com.micatechnologies.minecraft.csm.buildingmaterials.BlockSetStoneCast;
+import com.micatechnologies.minecraft.csm.buildingmaterials.plaques.BlockAddressPlaque;
 import com.micatechnologies.minecraft.csm.codeutils.CsmTab;
 import com.micatechnologies.minecraft.csm.constructionsite.BlockSiteFence;
 import net.minecraft.block.Block;
@@ -378,5 +379,17 @@ public class CsmTabBuildingMaterials extends CsmTab {
     initTabBlock(new BlockCathedralTympanum("cathedral_tympanum_weathered_oak")); // Tympanum (Weathered Oak)
     initTabBlock(new BlockCathedralTympanum("cathedral_tympanum_bronze")); // Tympanum (Bronze)
     initTabBlock(new BlockCarvedPanelling("panelling_carved_dark_oak")); // Carved Panelling (Dark Oak)
+
+    // Address plaques: house numbers on a plate, as stand-off numerals, as gold leaf on
+    // transom glass, or in a lit box, beside the doors above (GitHub #364).
+    initTabBlock(new BlockAddressPlaque("address_plaque_brass")); // Address Plaque (Brass)
+    initTabBlock(new BlockAddressPlaque("address_plaque_cast_iron")); // Address Plaque (Cast Iron)
+    initTabBlock(new BlockAddressPlaque("address_plaque_enamel")); // Address Plaque (White Enamel)
+    initTabBlock(new BlockAddressPlaque("address_plaque_stone")); // Address Tablet (Carved Stone)
+    initTabBlock(new BlockAddressPlaque("address_plaque_wood")); // Address Plaque (Painted Wood)
+    initTabBlock(new BlockAddressPlaque("address_plaque_steel")); // Address Plaque (Brushed Steel)
+    initTabBlock(new BlockAddressPlaque("address_numerals")); // House Numerals (Stand-Off)
+    initTabBlock(new BlockAddressPlaque("address_transom_decal")); // Transom Numbers (Gold Leaf)
+    initTabBlock(new BlockAddressPlaque("address_lamp_box")); // Illuminated Address Box
   }
 }

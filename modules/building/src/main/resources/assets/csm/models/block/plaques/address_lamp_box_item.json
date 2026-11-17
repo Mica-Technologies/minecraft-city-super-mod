@@ -1,0 +1,76 @@
+{
+  "textures": {
+    "icon": "csm:blocks/plaques/address_lamp_box_icon",
+    "particle": "csm:blocks/plaques/address_lamp_box_icon"
+  },
+  "elements": [
+    {
+      "from": [
+        1.0,
+        4.5,
+        0
+      ],
+      "to": [
+        15.0,
+        11.5,
+        3.0
+      ],
+      "faces": {
+        "south": {
+          "texture": "#icon",
+          "uv": [
+            0,
+            0,
+            16,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#icon",
+          "uv": [
+            0,
+            0,
+            0.25,
+            8
+          ]
+        },
+        "east": {
+          "texture": "#icon",
+          "uv": [
+            15.75,
+            0,
+            16,
+            8
+          ]
+        },
+        "west": {
+          "texture": "#icon",
+          "uv": [
+            0,
+            0,
+            0.25,
+            8
+          ]
+        },
+        "up": {
+          "texture": "#icon",
+          "uv": [
+            0,
+            0,
+            16,
+            0.25
+          ]
+        },
+        "down": {
+          "texture": "#icon",
+          "uv": [
+            0,
+            7.75,
+            16,
+            8
+          ]
+        }
+      }
+    }
+  ]
+}

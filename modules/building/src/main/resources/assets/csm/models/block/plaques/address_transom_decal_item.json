@@ -1,0 +1,40 @@
+{
+  "textures": {
+    "icon": "csm:blocks/plaques/address_transom_decal_icon",
+    "particle": "csm:blocks/plaques/address_transom_decal_icon"
+  },
+  "elements": [
+    {
+      "from": [
+        1.0,
+        4.5,
+        0.5
+      ],
+      "to": [
+        15.0,
+        11.5,
+        0.5
+      ],
+      "faces": {
+        "south": {
+          "texture": "#icon",
+          "uv": [
+            0,
+            0,
+            16,
+            8
+          ]
+        },
+        "north": {
+          "texture": "#icon",
+          "uv": [
+            16,
+            0,
+            0,
+            8
+          ]
+        }
+      }
+    }
+  ]
+}

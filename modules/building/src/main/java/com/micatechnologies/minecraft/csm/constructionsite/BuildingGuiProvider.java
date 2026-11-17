@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.constructionsite;
 
+import com.micatechnologies.minecraft.csm.buildingmaterials.plaques.AddressPlaqueGui;
 import com.micatechnologies.minecraft.csm.buildingmaterials.ContainerDoorWorkshop;
 import com.micatechnologies.minecraft.csm.buildingmaterials.GuiDoorWorkshop;
 import com.micatechnologies.minecraft.csm.buildingmaterials.GuiGarageKeypad;
@@ -41,9 +42,19 @@ public class BuildingGuiProvider implements ICsmGuiProvider {
    */
   public static final int DOOR_WORKSHOP_GUI_ID = 27;
 
+  /**
+   * The address plaque editor.
+   *
+   * @since 2026.11
+   */
+  public static final int ADDRESS_PLAQUE_GUI_ID = 47;
+
   @Nullable
   @Override
   public Object getClientGuiElement(int id, EntityPlayer player, World world, BlockPos pos) {
+    if (id == ADDRESS_PLAQUE_GUI_ID) {
+      return AddressPlaqueGui.open(world, pos);
+    }
     if (id == DOOR_WORKSHOP_GUI_ID) {
       TileEntity te = world.getTileEntity(pos);
       return te instanceof TileEntityDoorWorkshop

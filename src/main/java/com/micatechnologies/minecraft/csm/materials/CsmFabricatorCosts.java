@@ -474,6 +474,24 @@ public final class CsmFabricatorCosts {
    * relative to the full block, mirroring vanilla's ratios.
    */
   private static List<FabricatorIngredient> buildingMaterialCost(Block block, String registryName) {
+    // An address plaque (#364) is a small casting, tablet or board with its numerals: by
+    // registry name, first, so "Transom" or "Box" in a name takes it to no other rule.
+    if (registryName.startsWith("address_")) {
+      if (registryName.endsWith("_stone")) {
+        return cost(FabricatorIngredient.any(MC_COBBLESTONE, 1));
+      }
+      if (registryName.endsWith("_wood")) {
+        return cost(FabricatorIngredient.any(MC_PLANKS, 1), FabricatorIngredient.any(MC_DYE, 1));
+      }
+      if (registryName.endsWith("_decal")) {
+        return cost(FabricatorIngredient.any(MC_PAPER, 1), FabricatorIngredient.any(MC_DYE, 1));
+      }
+      if (registryName.endsWith("_lamp_box")) {
+        return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1),
+            FabricatorIngredient.part(CsmParts.LED_MODULE, 1));
+      }
+      return cost(FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
+    }
     // A glazing window (or its canted bay corner) is two panes of glass in a frame: timber for
     // the wood finishes, timber and paint for the painted ones, sheet metal for bronze and
     // aluminium. By registry name, first, so no word in a finish's name (a colour, "Metal")

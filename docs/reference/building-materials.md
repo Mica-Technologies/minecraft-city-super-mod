@@ -2,7 +2,7 @@
 
 Bulk material sets, with matching stairs, slabs and fences.
 
-!!! info "309 blocks in this tab"
+!!! info "318 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -11,6 +11,12 @@ Bulk material sets, with matching stairs, slabs and fences.
 
 | Block | Registry ID | Hardness | Resistance | Tool | Harvest |
 |---|---|---|---|---|---|
+| Address Plaque (Brass) | `csm:address_plaque_brass` | 0.8 | 3 | pickaxe | 0 |
+| Address Plaque (Brushed Steel) | `csm:address_plaque_steel` | 0.8 | 3 | pickaxe | 0 |
+| Address Plaque (Cast Iron) | `csm:address_plaque_cast_iron` | 0.8 | 3 | pickaxe | 0 |
+| Address Plaque (Painted Wood) | `csm:address_plaque_wood` | 0.8 | 3 | pickaxe | 0 |
+| Address Plaque (White Enamel) | `csm:address_plaque_enamel` | 0.8 | 3 | pickaxe | 0 |
+| Address Tablet (Carved Stone) | `csm:address_plaque_stone` | 0.8 | 3 | pickaxe | 0 |
 | Ashlar Stone Veneer | `csm:stone_ashlar` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Fence | `csm:stone_ashlar_fence` | 2 | 10 | pickaxe | 1 |
 | Ashlar Stone Veneer Slab | `csm:stone_ashlar_slab` | 2 | 10 | pickaxe | 1 |
@@ -169,6 +175,8 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Hospital Door (Sage Metal, Half Glass, Narrow Leaf) | `csm:door_hosp_metal_sage_halfglass_narrow` |  |  |  |  |
 | Hospital Door (Sage Metal, Vision Lite) | `csm:door_hosp_metal_sage_lite` |  |  |  |  |
 | Hospital Door (Sage Metal, Vision Lite, Narrow Leaf) | `csm:door_hosp_metal_sage_lite_narrow` |  |  |  |  |
+| House Numerals (Stand-Off) | `csm:address_numerals` | 0.8 | 3 | pickaxe | 0 |
+| Illuminated Address Box | `csm:address_lamp_box` | 0.8 | 3 | pickaxe | 0 |
 | Insulated Panel Cladding | `csm:cladding_insulated` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Fence | `csm:cladding_insulated_fence` | 3 | 10 | pickaxe | 1 |
 | Insulated Panel Cladding Slab | `csm:cladding_insulated_slab` | 3 | 10 | pickaxe | 1 |
@@ -290,6 +298,7 @@ Bulk material sets, with matching stairs, slabs and fences.
 | Telescoping Automatic Sliding Door (Frameless Glass) | `csm:auto_door_tele_slider_frameless` |  |  |  |  |
 | Telescoping Automatic Sliding Door (Stainless Steel) | `csm:auto_door_tele_slider_stainless` |  |  |  |  |
 | Telescoping Automatic Sliding Door (White) | `csm:auto_door_tele_slider_white` |  |  |  |  |
+| Transom Numbers (Gold Leaf) | `csm:address_transom_decal` | 0.8 | 3 | pickaxe | 0 |
 | Tympanum (Bronze) | `csm:cathedral_tympanum_bronze` |  |  |  |  |
 | Tympanum (Dark Oak) | `csm:cathedral_tympanum_dark_oak` |  |  |  |  |
 | Tympanum (Weathered Oak) | `csm:cathedral_tympanum_weathered_oak` |  |  |  |  |
