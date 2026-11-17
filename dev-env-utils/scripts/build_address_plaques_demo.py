@@ -9,10 +9,10 @@ Building module. Refuses any world not named "Address Plaques 364"; --create mak
 first. Sets peaceful, no mob spawning, fixed time.
 
 - **Three UWS-style brownstones** (x 0..17, the facade on z 0, the street to the south): each a
-  stoop up to a door two blocks above the pavement, a transom pane over the door with gold-leaf
-  numbers on it, a hood (top slabs) over the transom, a plaque beside the door at the door's
-  upper half and an illuminated number box on the other side. The third house has a one-block
-  pier between two windows carrying a vertical stack.
+  stoop up to a CSM front door two blocks above the pavement, a transom pane over the door with
+  gold-leaf numbers on it, a hood (top slabs) over the transom, a plaque beside the door at the
+  door's upper half and an illuminated number box on the other side. The third house has a
+  one-block pier between two windows carrying a vertical stack.
 - **A gallery wall** (x 22..58, z 0): every plate style with 2, 3, 4 and 5 digits (one with a
   street line), each also as a vertical stack, and the stand-off numerals in four inks.
 
@@ -77,9 +77,10 @@ def house(b, x0, number, plate, lamp_number, pier):
     b.put(xd, FLOOR + 1, 2, STOOP[0], STOOP[1])
     b.put(xd, FLOOR + 2, 2, STAIR, STAIR_UP_NORTH)
     b.put(xd, FLOOR + 1, 3, STAIR, STAIR_UP_NORTH)
-    # door opening two high, a transom pane over it, a hood over the transom
-    b.put(xd, FLOOR + 3, 0, "minecraft:air")
-    b.put(xd, FLOOR + 4, 0, "minecraft:air")
+    # a front door (facing north, the inside: lower half first, then the upper, hinged left;
+    # DOORS.md "Placing by command"), a transom pane over it, a hood over the transom
+    b.put(xd, FLOOR + 3, 0, "door_front_dark_oak", 2)
+    b.put(xd, FLOOR + 4, 0, "door_front_dark_oak", 8)
     b.put(xd, FLOOR + 5, 0, "minecraft:glass_pane")
     for x in (xd - 1, xd, xd + 1):
         b.put(x, FLOOR + 6, 1, *HOOD)

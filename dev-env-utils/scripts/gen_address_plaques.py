@@ -22,7 +22,7 @@ Output, in the Building module's tree (``modules/building/src/main/``):
     resources/assets/csm/textures/blocks/plaques/address_plaque_glyphs.png   white on clear
     resources/assets/csm/textures/blocks/plaques/address_plaque_bodies.png   the plate tiles
     resources/assets/csm/textures/blocks/plaques/address_plaque_bodies_e.png OptiFine emissive
-    resources/assets/csm/textures/blocks/plaques/<block>_icon.png            item icons
+    resources/assets/csm/textures/blocks/plaques/<block>_icon.png            item icons (64 x 64, the art in the top half)
     resources/assets/csm/blockstates/<block>.json
     resources/assets/csm/models/block/plaques/<block>_base.json / <block>_item.json
     java/.../buildingmaterials/plaques/PlaqueSheet.java
@@ -72,10 +72,12 @@ FONTS = [
 ]
 # SHARED with PlaqueSheet.CHARS (written below): every character a plaque can carry.
 CHARS = (" 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.,-'/&#")
-CAP = 34        # cap height on the sheet, px: the largest whose glyphs fit 1024 x 512
+CAP = 52        # cap height on the sheet, px: the largest whose glyphs fit 1024 x 1024
 SUPER = 4       # drawn this many times larger and reduced
 PAD = 2         # clear border round each glyph, px
-GLYPH_SIZES = [(512, 512), (1024, 512), (1024, 1024)]
+# Square only: 1.12 refuses a block atlas sprite that is not square unless it is an animation
+# ("broken aspect ratio and not an animation") and draws the missing texture instead.
+GLYPH_SIZES = [(512, 512), (1024, 1024)]
 
 
 def font_file(source):
@@ -194,6 +196,7 @@ def glyph_sheet():
 
 TILE = 64
 BORDER = 12              # texels of a tile's border band
+GUTTER = 4               # each tile's edge repeated round it, so mip levels do not bleed
 BODY_SHEET = 256
 TILES = ["brass", "cast_iron", "enamel", "stone", "wood", "steel", "lamp_lit", "lamp_unlit",
          "lamp_housing"]
@@ -202,7 +205,7 @@ WHITE = (BODY_SHEET - 16, BODY_SHEET - 16, 8)    # x, y, size of the flat white 
 
 def tile_origin(name):
     i = TILES.index(name)
-    return (i % 3) * TILE, (i // 3) * TILE
+    return (i % 3) * (TILE + 2 * GUTTER) + GUTTER, (i // 3) * (TILE + 2 * GUTTER) + GUTTER
 
 
 def _rng(name):
@@ -324,7 +327,12 @@ def tile(name):
 def body_sheet():
     sheet = Image.new("RGBA", (BODY_SHEET, BODY_SHEET), (0, 0, 0, 0))
     for name in TILES:
-        sheet.paste(tile(name), tile_origin(name))
+        t = tile(name)
+        x, y = tile_origin(name)
+        # the gutter: the tile stretched a few texels past itself, its edges repeated
+        sheet.paste(t.resize((TILE + 2 * GUTTER, TILE + 2 * GUTTER), Image.NEAREST),
+                    (x - GUTTER, y - GUTTER))
+        sheet.paste(t, (x, y))
     x, y, n = WHITE
     sheet.paste(Image.new("RGBA", (n, n), (255, 255, 255, 255)), (x, y))
     return sheet
@@ -413,7 +421,8 @@ def _text_image(text, fid, cap, rgb):
 
 
 def icon(name):
-    """The item icon: a medium plate (14 x 7 px) with the sample number, 64 x 32."""
+    """The item icon: a medium plate (14 x 7 px) with the sample number, 64 x 32 at the top of
+    a clear 64 x 64."""
     _, tile_name, fid, ink, _, _ = next(b for b in BLOCKS if b[0] == name)
     w, h = 64, 32
     if tile_name is not None:
@@ -440,7 +449,10 @@ def icon(name):
         # cutout: every pixel opaque or clear
         a = img.getchannel("A").point(lambda v: 255 if v >= 128 else 0)
         img.putalpha(a)
-    return img
+    # square, as every atlas sprite must be: the art in the top half (the item model's UVs)
+    square = Image.new("RGBA", (w, w), (0, 0, 0, 0))
+    square.paste(img, (0, 0))
+    return square
 
 
 def blockstate(name):
@@ -637,7 +649,7 @@ def fragments():
 
 def contact_sheet(path):
     """Every icon and both sheets on one image, for review."""
-    icons = [icon(b[0]).resize((256, 128), Image.NEAREST) for b in BLOCKS]
+    icons = [icon(b[0]).crop((0, 0, 64, 32)).resize((256, 128), Image.NEAREST) for b in BLOCKS]
     gs = glyph_sheet()
     bs = body_sheet().resize((512, 512), Image.NEAREST)
     w = max(gs.width, 3 * 260, 512)

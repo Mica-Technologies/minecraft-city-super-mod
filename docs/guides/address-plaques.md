@@ -27,8 +27,7 @@ wall you are facing.
 
 For the **transom numbers**, stand outside and click the glass over the door. If the glass sits
 in the middle of its block (a glass pane), set **Depth into glass** to 7 so the numbers sit on the
-glass. If the doorway's hood is in the way outside, you can put the numbers on from inside the
-house instead: place the block inside, facing the street, and set a depth of about -20.
+glass; on a full glass block leave it at 0.
 
 ## Changing the number
 

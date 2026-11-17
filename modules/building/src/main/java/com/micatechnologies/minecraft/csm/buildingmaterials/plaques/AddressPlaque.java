@@ -28,8 +28,8 @@ import net.minecraft.nbt.NBTTagCompound;
  *   <tr><td>{@code dx}, {@code dy}</td><td>byte</td><td>moves the plaque across and up its
  *   block, px, -8 to 8 (it never leaves the block)</td></tr>
  *   <tr><td>{@code dz}</td><td>byte</td><td>the transom decal only: how far behind the block's
- *   back face the decal lies, px, -24 to 16 (7 reaches a pane in the middle of the block behind;
- *   -20 or so reaches glass in front of a decal placed inside)</td></tr>
+ *   back face the decal lies, px, -24 to 16 (7 reaches a pane in the middle of the block behind,
+ *   0 a full glass block; negative brings it forward into its own block)</td></tr>
  *   <tr><td>{@code lit}</td><td>byte</td><td>the lamp box only: lit (default 1)</td></tr>
  * </table>
  *

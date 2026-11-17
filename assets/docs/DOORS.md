@@ -780,7 +780,7 @@ wrapper on every `BlockAddressPlaque` variant except `inventory`) adds:
   `textures/blocks/plaques/address_plaque_bodies.png` (corners fixed, the border band
   `PlaqueStyle.border` px whatever the plate's size), its four sides in the style's edge colour;
 - **the numerals and street line**, laid out by `PlaqueLayout` (client-free, tested): each glyph a
-  window on `address_plaque_glyphs.png` (1024 x 512, white on clear, capitals 34 px, every font's
+  window on `address_plaque_glyphs.png` (1024 x 1024, white on clear, capitals 52 px, every font's
   digits, letters, space and `. , - ' / & #`) tinted in its vertices, drawn as the style draws
   them: flat; raised (a darker copy under it); incised (a light edge under the dark letter);
   stand-off (three copies 0.45 px apart, the front 1.5 px out); or gold leaf (a dark outline of
@@ -788,10 +788,12 @@ wrapper on every `BlockAddressPlaque` variant except `inventory`) adds:
   inside as real gold leaf does).
 
 Layers stand at least 0.2 px apart (`PlaqueLayout.LIFT`, the `model_depth.py` gap). The number
-alone fills 0.7 of the plate inside its border, or 0.55 over a 0.22 street line; each line shrinks to
-fit across and the whole is scaled by the size setting (0.5 to 1). A vertical stack sets the
-number's characters one under another, 1.3 capitals apart, and leaves the street line out. On a
-medium plate three digits stand about 4 px (a quarter of a block) tall; `AddressPlaqueTest` holds
+alone fills 0.95 of the plate's height inside its border, or 0.62 over a 0.3 street line, measured
+on the glyphs' own extent (a font's digits often stand taller than its capitals, and a street line
+has descenders); each line shrinks to fit across and the whole is scaled by the size setting (0.5
+to 1). A vertical stack sets the number's characters one under another, 0.2 of a capital apart,
+and leaves the street line out. On a medium plate two or three digits stand about 4 px (a quarter
+of a block) tall and five about 3.1 px (3.75 in the narrow font); `AddressPlaqueTest` holds
 every style, size, font and layout with two to five digits, with and without a street line, to
 numerals at least 1.5 px tall and inside the plate.
 
@@ -800,7 +802,10 @@ terrace of identical plaques bakes once. A plaque is 13 (plate) plus one quad a 
 brass "123" is 16 quads, a stand-off "12345" 15, a stone tablet with a street line about 47. They
 sit in the chunk mesh, so nothing runs per frame and nothing ticks; an edit rebuilds the plaque's
 chunk section once (`TileEntityAddressPlaque.getBakedModelKey` is the plaque's hash, so a sync
-that changes nothing rebuilds nothing). Atlas: the two sheets and nine 64 x 32 icons, about 0.6 Mpx.
+that changes nothing rebuilds nothing). Atlas: the two sheets and nine icons, about 1.1 Mpx padded (`atlas_budget.py`).
+Every sprite is square, the icons' art in their top half: 1.12 refuses a non-square atlas sprite
+that is not an animation, and the plate tiles have a 4 px gutter of their own edges so the mip
+levels do not bleed one tile into the next.
 
 **The lamp box** swaps its lens tile (lit or not) and draws the lit lens and its numerals
 unshaded; `address_plaque_bodies_e.png` holds only the lit lens for OptiFine's emissive
@@ -818,10 +823,11 @@ block, to sit by a door's edge or at eye level.
 
 The **transom decal** is not glass itself, so it stays in the cutout pass and works on every kind
 of glass. Placed in the cell in front of a transom, it lies 0.3 px off the glass's face; `dz`
-pushes it into the block behind, so 7 reaches a pane centred in its block. Placed inside the
-building facing out (a stoop hood in the way outside), a `dz` of about -20 brings it forward
-onto the glass in front of it. Its hitbox stays in its own block, a sliver on the face it passed
-through.
+pushes it into the block behind, so 7 reaches a pane centred in its block (a full glass block
+needs 0); a negative `dz` brings it forward into its own block. Its hitbox stays in its own
+block, a sliver on the face it passed through. Putting the decal on from inside the building
+(a stoop hood in the way outside) would need the facing set by command, with the wall on the room
+side, and a `dz` near -23 for a centred pane; that is untested.
 
 ### Editing and NBT
 

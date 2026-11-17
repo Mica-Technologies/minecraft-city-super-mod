@@ -65,7 +65,7 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   cells, the arch head stepped a pixel row at a time, geometry parents shared by the three
   variants), the tympana and the carved panelling; `--check` fails on drift
 - `gen_address_plaques.py` -- the address plaques (#364, `buildingmaterials/plaques/`): the glyph
-  sheet (four fonts at a 34 px cap, three of them OFL faces fetched into the gitignored
+  sheet (four fonts at a 52 px cap, on a square 1024 sheet, three of them OFL faces fetched into the gitignored
   `_font_cache/` as `gen_ads.py` does, the fourth Mica Open Highway Series C), the body sheet of
   nine-slice plate tiles and its `_e` (the lit lens), the item icons, the blockstates and models,
   and `PlaqueSheet.java`, the glyph metrics and tile positions the baked model lays text out from;
