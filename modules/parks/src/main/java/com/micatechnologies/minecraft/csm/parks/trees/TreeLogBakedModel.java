@@ -126,7 +126,14 @@ public class TreeLogBakedModel implements IBakedModel {
         }
       }
     }
-    return b.build();
+    // Packed here, on the thread that bakes the list and before the cache publishes it: an
+    // UnpackedBakedQuad packs itself on its first getVertexData, flag first, so chunk builders
+    // reading a freshly cached quad at once (Celeritas, a planter copying a plant's quads) could
+    // take half-written vertices (PERFORMANCE_AND_SECURITY.md). A plain quad on the same data
+    // draws the same and drops the unpacked floats.
+    UnpackedBakedQuad unpacked = b.build();
+    return new BakedQuad(unpacked.getVertexData(), unpacked.getTintIndex(), unpacked.getFace(),
+        sprite, true, FORMAT);
   }
 
   @Override
