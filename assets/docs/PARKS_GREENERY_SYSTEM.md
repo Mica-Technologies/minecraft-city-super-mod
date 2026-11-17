@@ -968,6 +968,48 @@ saved worlds store) but draw the Trees & Plants tab's `planter_concrete` and
   Dust only powers the blocks it points into, and a line that connects to sprinklers on both sides
   becomes a cross that points nowhere, so a row of heads along one line would stay dry.
 
+### The rubber safety surface (#365)
+
+Poured playground rubber, in five colours: red, green, blue, black and tan. Each colour comes in
+four blocks, all separate blocks with no colour property:
+
+| Block | Registry name | Class | States |
+|---|---|---|---|
+| Thin mat (1 px) | `ground_rubber_safety` (red), `ground_rubber_safety_<colour>` | `BlockParkProp`, Kind `COVER` | 1 |
+| Full block | `ground_rubber_safety_<colour>_full` | `BlockRubberSafetySurface` | 1 |
+| Slab | `ground_rubber_safety_<colour>_slab` (+ `_slab_double`) | `BlockRubberSafetySurfaceSlab` | 2 (+1) |
+| Stairs | `ground_rubber_safety_<colour>_stairs` | `BlockRubberSafetySurfaceStairs` | 40 |
+
+`<colour>` is `red`, `green`, `blue`, `black` or `tan`. The red thin mat is the original block. It
+keeps its id, which has no colour, and its look, so existing playgrounds do not change.
+Together the 24 blocks have 4 x 5 + 5 x (1 + 2 + 1 + 40) = 240 states.
+
+- **Why the full block.** The thin mat sits in the cell above the ground, so a swing, seesaw,
+  spring rider or slide placed on it goes in the cell above that, a block up. The full block is
+  laid in the ground layer instead, in place of the soil, and equipment placed on it stands on its
+  top face at the normal height. The equipment models were not changed.
+- **Slabs and stairs** are the edges and ramps: a slab steps the surface down to a path, and stairs
+  ramp it up to a raised deck. They are vanilla's slab and stairs (`AbstractBlockSlab`,
+  `AbstractBlockStairs`). Slabs place top or bottom and stack into the double slab. Stairs join
+  into inner and outer corners and turn upside down. The stairs override `createBlockState` with
+  `CsmBlockStateContainer`. `AbstractBlockStairs` would otherwise keep vanilla's container, with a
+  neighbour table on each of the 40 states.
+- **Registry names in the constructor.** The slab and stairs base constructors ask for the registry
+  name before a subclass field is set. Each class parks the name in a `ThreadLocal` first, as
+  `BlockFloorFinishBlock` does. The stairs' model block is the full block of the same colour,
+  which `CsmRegistry` looks up by name. The tab therefore lists each colour's full block before its
+  stairs.
+- **Material.** Rubber is cloth to the game, as the studded rubber floor block is:
+  - `Material.CLOTH` and `SoundType.CLOTH`;
+  - wool's hardness (0.8) and blast resistance (4);
+  - no tool needed, so it is taken up by hand.
+- **Textures.** Red is the original `rubber.png`. `rubber_<colour>.png` is drawn with the same
+  noise seed, so every colour has the same grain. Each palette has three tones of the colour and
+  a fleck; black's fleck is a lighter grey, like the recycled crumb in a black top coat. The full
+  block, slab and stairs use the thin mat's texture of the same colour. Their models have vanilla
+  parents (`cube_all`, `half_slab`, `upper_slab`, `stairs`, `inner_stairs`, `outer_stairs`), and
+  the stairs blockstate is vanilla's 40-variant oak stairs table.
+
 ### The zipline (#351)
 
 A rideable line between two anchors, for parks, adventure courses and venue atriums. Loops and
@@ -1048,6 +1090,8 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
   - flower pots cost clay; the bird bath and fountains cost stone;
   - wooden benches, tables and the pergola cost planks;
   - the controller costs a control board;
+  - the rubber safety surface costs clay balls in any colour: 1 for the thin mat, 4 for the full
+    block, 2 for a slab and 3 for stairs;
   - everything else takes the generic steel cost.
 
 ---
@@ -1058,7 +1102,7 @@ Two rules, registered from `CsmParks.preInit` (`ParksFabricatorRules`):
 |---|---|
 | `gen_trees.py` | Bark and leaf-cluster textures; the palm crown sheets and icons; moss; the log and leaves placeholder models and blockstates; the lang for woods, leaves and presets; the tool's icon, model and messages. `--fragments` prints the tab lines |
 | `gen_park_plantings.py` | Every block in the accessories and plantings catalogue, the regional plantings and their potted copies, and the nursery, garden centre and farm pieces, and the troughs: textures, element models, blockstates, item models and lang. The planters' tab lines carry their soil height and plant scale. `--fragments` |
-| `gen_park_amenities.py` | The same for the amenities. It borrows `gen_park_plantings.py`'s helpers |
+| `gen_park_amenities.py` | The same for the amenities, including the rubber safety surface in every colour (the thin mats, and the full blocks, slabs and stairs with their textures, models and blockstates). It borrows `gen_park_plantings.py`'s helpers |
 | `gen_zipline.py` | The zipline anchors' models and blockstates, the Zipline Linker's sprite and item model, and the zipline's lang (names and chat lines). `--check`, `--fragments` |
 | `gen_park_legacy_amenities.py` | The models, textures and blockstates of the five amenities that kept their old ids (both swing sets, the teeter totter, the trash can, the bird bath). It writes no lang and no tab lines, since those blocks already have them |
 | `gen_parks_tools.py` | The tree tools' item sprites and models (the chainsaw's and the stump grinder's running sprites by their `csm:running` override) and the brush pile's textures, model and blockstate. `--check` (text compared with line endings ignored). The tools' lang and tab lines are hand-written |

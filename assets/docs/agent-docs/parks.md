@@ -21,7 +21,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   trellis) from one catalogue whose tab lines carry each block's size; `--check`, `--fragments`
 - `gen_park_amenities.py` -- the Parks tab: benches and picnic tables (end frames only at a run's
   ends), bins, bear-proof food lockers, playground, pergola, fountains with animated water,
-  irrigation; borrows
+  irrigation, and the rubber safety surface in five colours (`SURFACE_COLOURS`): the thin mats,
+  and the full blocks, slabs and stairs of #365 (vanilla parents, vanilla's 40-variant stairs
+  table, each colour's texture recoloured from red's seed; the red thin mat keeps its id); borrows
   gen_park_plantings.py's helpers; `--check`, `--fragments`
 - `gen_zipline.py` -- the zipline (#351): the launch and landing anchors' models and blockstates
   (reusing the amenity textures), the Zipline Linker's sprite and item model, and every zipline

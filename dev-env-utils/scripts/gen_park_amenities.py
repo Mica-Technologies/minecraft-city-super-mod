@@ -68,6 +68,15 @@ PLATFORM_BLUE = [(48, 110, 190), (40, 98, 172)]
 LIMESTONE = [(214, 206, 188), (202, 194, 176), (188, 180, 162), (172, 164, 148)]
 CEDAR = [(186, 138, 96), (170, 124, 84), (152, 110, 72), (132, 94, 60)]
 RUBBER = [(150, 58, 46), (132, 50, 40), (112, 42, 34), (70, 64, 62)]
+# The other colours of poured playground rubber (#365): three tones of the colour and a dark
+# fleck, drawn with the red's seed so every colour has the same grain. Black's fleck is lighter,
+# the grey of recycled crumb in a black EPDM top coat.
+RUBBER_COLOURS = {
+    "green": [(70, 128, 66), (58, 112, 56), (46, 94, 46), (52, 58, 52)],
+    "blue": [(58, 104, 166), (48, 90, 148), (40, 76, 128), (56, 60, 70)],
+    "black": [(60, 60, 62), (52, 52, 54), (44, 44, 46), (98, 94, 90)],
+    "tan": [(196, 166, 122), (180, 150, 108), (162, 132, 94), (112, 98, 84)],
+}
 
 
 def perforated(palette, seed):
@@ -356,6 +365,9 @@ TEXTURES = {
     "brass": lambda: noise_tex([(196, 160, 80), (178, 142, 66), (158, 124, 54)], 122),
     "sprinkler_cap": lambda: noise_tex([(44, 46, 48), (36, 38, 40)], 123),
 }
+for _colour, _palette in RUBBER_COLOURS.items():
+    TEXTURES["rubber_" + _colour] = (
+        lambda p=_palette: noise_tex(p, 118, cells=8, grain=0.95))
 ANIMATED = {"water": 6, "falling_water": 3}
 
 
@@ -702,6 +714,101 @@ add("ground_rubber_safety",
     {"forge_marker": 1, "defaults": {"model": MODEL + "ground_rubber_safety"},
      "variants": {"normal": [{}], "inventory": [{}]}})
 
+# The safety surface's other colours, and the surface as a full block, a slab and stairs in every
+# colour (#365), so playground equipment stands on it at the normal height. The red thin mat
+# above keeps its id and look; red's texture is "rubber", every other colour's "rubber_<colour>".
+# Per colour: the four language names of the colour, for the thin mat (es masculine, sv neuter),
+# the full block (es masculine, sv neuter), the slab (es feminine, sv common) and the stairs
+# (es feminine plural, sv common).
+SURFACE_COLOURS = [
+    # colour, en, de, (es thin/full, es slab, es stairs), (sv thin/full, sv slab/stairs)
+    ("red", "Red", "Rot", ("rojo", "roja", "rojas"), ("rött", "röd")),
+    ("green", "Green", "Grün", ("verde", "verde", "verdes"), ("grönt", "grön")),
+    ("blue", "Blue", "Blau", ("azul", "azul", "azules"), ("blått", "blå")),
+    ("black", "Black", "Schwarz", ("negro", "negra", "negras"), ("svart", "svart")),
+    ("tan", "Tan", "Beige", ("beige", "beige", "beige"), ("beige", "beige")),
+]
+
+
+def rubber_tex(colour):
+    return T("rubber" if colour == "red" else "rubber_" + colour)
+
+
+def stairs_state(name):
+    """Vanilla's stairs table (oak_stairs.json): forty variants from three models, turned and
+    uv-locked, so straight runs, corners and upside-down stairs all draw right."""
+    turn = {"east": 0, "south": 90, "west": 180, "north": 270}
+    variants = {}
+    for facing, y in turn.items():
+        for half in ("bottom", "top"):
+            for shape in ("straight", "inner_left", "inner_right", "outer_left", "outer_right"):
+                kind = "stairs" if shape == "straight" else shape.split("_")[0] + "_stairs"
+                left = shape.endswith("_left")
+                if half == "bottom":
+                    yy = (y - 90) % 360 if left else y
+                else:
+                    yy = y if (left or shape == "straight") else (y + 90) % 360
+                if shape == "straight":
+                    yy = y
+                v = {"model": MODEL + name + "_" + kind}
+                if half == "top":
+                    v["x"] = 180
+                if yy:
+                    v["y"] = yy
+                if half == "top" or yy:
+                    v["uvlock"] = True
+                variants["facing=%s,half=%s,shape=%s" % (facing, half, shape)] = v
+    variants["inventory"] = {"model": MODEL + name + "_stairs"}
+    return {"variants": variants}
+
+
+for (_c, _en, _de, _es, _sv) in SURFACE_COLOURS:
+    _tex = rubber_tex(_c)
+    _sides = {"bottom": _tex, "top": _tex, "side": _tex}
+    if _c != "red":
+        _thin = "ground_rubber_safety_" + _c
+        add(_thin, 'new BlockParkProp("%s", BlockParkProp.Kind.COVER, 1, 0)' % _thin,
+            ("Rubber Safety Surface (%s)" % _en, "Fallschutzbelag (%s)" % _de,
+             "Suelo de caucho de seguridad (%s)" % _es[0], "Fallskyddsgummi (%s)" % _sv[0]),
+            {_thin: model({"all": _tex, "particle": _tex},
+                          [box([0, 0, 0], [16, 1, 16], "all")])},
+            {"forge_marker": 1, "defaults": {"model": MODEL + _thin},
+             "variants": {"normal": [{}], "inventory": [{}]}})
+    _base = "ground_rubber_safety_" + _c
+    add(_base + "_full", 'new BlockRubberSafetySurface("%s_full")' % _base,
+        ("Rubber Safety Surface Block (%s)" % _en, "Fallschutzbelag-Block (%s)" % _de,
+         "Bloque de caucho de seguridad (%s)" % _es[0],
+         "Fallskyddsgummiblock (%s)" % _sv[0]),
+        {_base + "_full": model({"all": _tex}, None, parent="block/cube_all")},
+        {"forge_marker": 1, "defaults": {"model": MODEL + _base + "_full"},
+         "variants": {"normal": [{}], "inventory": [{}]}})
+    add(_base + "_slab", 'new BlockRubberSafetySurfaceSlab("%s_slab")' % _base,
+        ("Rubber Safety Surface Slab (%s)" % _en, "Fallschutzbelag-Stufe (%s)" % _de,
+         "Losa de caucho de seguridad (%s)" % _es[1],
+         "Fallskyddsgummiplatta (%s)" % _sv[1]),
+        {_base + "_slab": model(_sides, None, parent="block/half_slab"),
+         _base + "_slab_top": model(_sides, None, parent="block/upper_slab")},
+        {"forge_marker": 1, "defaults": {"model": MODEL + _base + "_slab"},
+         "variants": {"half": {"bottom": {}, "top": {"model": MODEL + _base + "_slab_top"}},
+                      "variant": {"default": {}}, "inventory": [{}]}})
+    # The double slab AbstractBlockSlab makes: no tab line, drawn as the full block.
+    add(_base + "_slab_double", None,
+        ("Rubber Safety Surface Double Slab (%s)" % _en,
+         "Fallschutzbelag-Doppelstufe (%s)" % _de,
+         "Losa doble de caucho de seguridad (%s)" % _es[1],
+         "Dubbel fallskyddsgummiplatta (%s)" % _sv[1]),
+        {},
+        {"forge_marker": 1, "defaults": {"model": MODEL + _base + "_full"},
+         "variants": {"variant": {"default": {}}}})
+    add(_base + "_stairs", 'new BlockRubberSafetySurfaceStairs("%s_stairs")' % _base,
+        ("Rubber Safety Surface Stairs (%s)" % _en, "Fallschutzbelag-Treppe (%s)" % _de,
+         "Escaleras de caucho de seguridad (%s)" % _es[2],
+         "Fallskyddsgummitrappa (%s)" % _sv[1]),
+        {_base + "_stairs": model(_sides, None, parent="block/stairs"),
+         _base + "_inner_stairs": model(_sides, None, parent="block/inner_stairs"),
+         _base + "_outer_stairs": model(_sides, None, parent="block/outer_stairs")},
+        stairs_state(_base))
+
 # --- gazebo: a kit of post, railing and deck, and a roof block drawn as an OBJ ---
 white = {"paint": T("white_paint"), "particle": T("white_paint")}
 # A post stacked from blocks is one turned column: the shaft in every block, the base only at the
@@ -948,6 +1055,8 @@ def fragments():
         if b["registry"] in CLASS_BLOCKS:
             lines.append("    initTabBlock(%s.class, fmlPreInitializationEvent);"
                          % CLASS_BLOCKS[b["registry"]])
+        elif b["java"] is None:
+            continue  # made by another block (a slab's double), so no tab line of its own
         else:
             lines.append("    initTabBlock(%s);" % b["java"])
     return "\n".join(lines)

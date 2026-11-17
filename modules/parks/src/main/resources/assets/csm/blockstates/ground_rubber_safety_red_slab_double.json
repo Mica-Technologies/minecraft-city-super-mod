@@ -1,0 +1,11 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/amenities/ground_rubber_safety_red_full"
+  },
+  "variants": {
+    "variant": {
+      "default": {}
+    }
+  }
+}

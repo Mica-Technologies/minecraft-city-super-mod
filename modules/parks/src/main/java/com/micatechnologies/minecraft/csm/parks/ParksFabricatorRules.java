@@ -229,7 +229,19 @@ public final class ParksFabricatorRules {
       return CsmFabricatorCosts.cost(FabricatorIngredient.part(CsmParts.CONTROL_BOARD, 1),
           FabricatorIngredient.part(CsmParts.SHEET_METAL, 1));
     }
-    if (registryName.equals("ground_rubber_safety")) {
+    // The rubber safety surface: the thin mat a clay ball in any colour, and the full block
+    // (#365) as much as a few mats, its slab half that and its stairs three quarters, as
+    // vanilla's ratios go.
+    if (registryName.startsWith("ground_rubber_safety")) {
+      if (registryName.endsWith("_full")) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 4));
+      }
+      if (registryName.endsWith("_stairs")) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 3));
+      }
+      if (registryName.endsWith("_slab")) {
+        return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 2));
+      }
       return CsmFabricatorCosts.cost(FabricatorIngredient.any(MC_CLAY_BALL, 1));
     }
     return null;

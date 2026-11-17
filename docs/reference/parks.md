@@ -2,7 +2,7 @@
 
 Park amenities: benches, tables, bins, playground pieces, fountains and irrigation.
 
-!!! info "36 blocks in this tab"
+!!! info "55 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -39,6 +39,25 @@ Park amenities: benches, tables, bins, playground pieces, fountains and irrigati
 | Recycling Bin | `csm:recycling_bin` | 1.0 | 2.0 | axe | 0 |
 | Round Flower Pot | `csm:roundflowerpot` | 2 | 10 | pickaxe | 1 |
 | Rubber Safety Surface | `csm:ground_rubber_safety` |  |  |  |  |
+| Rubber Safety Surface (Black) | `csm:ground_rubber_safety_black` |  |  |  |  |
+| Rubber Safety Surface (Blue) | `csm:ground_rubber_safety_blue` |  |  |  |  |
+| Rubber Safety Surface (Green) | `csm:ground_rubber_safety_green` |  |  |  |  |
+| Rubber Safety Surface (Tan) | `csm:ground_rubber_safety_tan` |  |  |  |  |
+| Rubber Safety Surface Block (Black) | `csm:ground_rubber_safety_black_full` |  |  |  | 0 |
+| Rubber Safety Surface Block (Blue) | `csm:ground_rubber_safety_blue_full` |  |  |  | 0 |
+| Rubber Safety Surface Block (Green) | `csm:ground_rubber_safety_green_full` |  |  |  | 0 |
+| Rubber Safety Surface Block (Red) | `csm:ground_rubber_safety_red_full` |  |  |  | 0 |
+| Rubber Safety Surface Block (Tan) | `csm:ground_rubber_safety_tan_full` |  |  |  | 0 |
+| Rubber Safety Surface Slab (Black) | `csm:ground_rubber_safety_black_slab` |  |  |  | 0 |
+| Rubber Safety Surface Slab (Blue) | `csm:ground_rubber_safety_blue_slab` |  |  |  | 0 |
+| Rubber Safety Surface Slab (Green) | `csm:ground_rubber_safety_green_slab` |  |  |  | 0 |
+| Rubber Safety Surface Slab (Red) | `csm:ground_rubber_safety_red_slab` |  |  |  | 0 |
+| Rubber Safety Surface Slab (Tan) | `csm:ground_rubber_safety_tan_slab` |  |  |  | 0 |
+| Rubber Safety Surface Stairs (Black) | `csm:ground_rubber_safety_black_stairs` |  |  |  | 0 |
+| Rubber Safety Surface Stairs (Blue) | `csm:ground_rubber_safety_blue_stairs` |  |  |  | 0 |
+| Rubber Safety Surface Stairs (Green) | `csm:ground_rubber_safety_green_stairs` |  |  |  | 0 |
+| Rubber Safety Surface Stairs (Red) | `csm:ground_rubber_safety_red_stairs` |  |  |  | 0 |
+| Rubber Safety Surface Stairs (Tan) | `csm:ground_rubber_safety_tan_stairs` |  |  |  | 0 |
 | Spring Rider | `csm:spring_rider` | 1.0 | 2.0 | axe | 0 |
 | Teeter Totter | `csm:teetertotter` | 2 | 10 | pickaxe | 1 |
 | Tiered Fountain | `csm:fountain_tiered` |  |  |  |  |

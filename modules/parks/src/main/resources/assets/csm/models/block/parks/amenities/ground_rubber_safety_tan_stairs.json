@@ -1,0 +1,8 @@
+{
+  "parent": "block/stairs",
+  "textures": {
+    "bottom": "csm:blocks/parks/amenities/rubber_tan",
+    "top": "csm:blocks/parks/amenities/rubber_tan",
+    "side": "csm:blocks/parks/amenities/rubber_tan"
+  }
+}

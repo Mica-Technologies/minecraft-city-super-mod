@@ -1,0 +1,20 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:parks/amenities/ground_rubber_safety_red_slab"
+  },
+  "variants": {
+    "half": {
+      "bottom": {},
+      "top": {
+        "model": "csm:parks/amenities/ground_rubber_safety_red_slab_top"
+      }
+    },
+    "variant": {
+      "default": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

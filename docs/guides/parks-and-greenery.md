@@ -123,6 +123,14 @@ breaking, so you take out one block at a time).
   station.
 - **Playground**: the slide, spring rider, swings and teeter totter, and a rubber safety surface to
   go under them.
+- **Rubber safety surface** in red, green, blue, black and tan. Each colour comes as:
+  - a **thin mat**, laid on top of the ground;
+  - a **full block**, which you lay in the ground itself, in place of the dirt or grass;
+  - a **slab** and **stairs**, for the edges and ramps.
+
+  Use the full block under playground equipment: a swing, seesaw, spring rider or slide placed on
+  it stands at the normal height. On the thin mat it stands a block up. Slabs step the surface down
+  to a path, and stairs ramp it up to a raised deck. They turn corners as any stairs do.
 - **A pergola**: stand pergola posts at the corners, then fill the top with pergola beams at any
   size. The beams run round the outside and the rafters across.
 - **A gazebo**: lay a floor of gazebo deck, stand gazebo posts 3 high at the corners (and at the
