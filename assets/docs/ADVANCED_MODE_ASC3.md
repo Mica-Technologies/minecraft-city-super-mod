@@ -991,6 +991,13 @@ rather than relying on in-world checks.
   parent-to-parent hold); a head that loses its green at entry still gets its yellow from the
   output clearance. Before this every overlap head went red for the whole preempt, so a right-turn
   FYA on the preempted approach showed a red arrow to the emergency vehicle it was clearing for.
+- **`-GRN/YEL` holds inside a preempt** (issue #363). The preempt path applies the modifier like
+  the rings do: the overlap is red while a modifier phase is green or yellow among the stage's
+  movements. Each stage also passes the phases the next stage starts green (entry: the first
+  stage; track clear and track-clear exit: the dwell), so an overlap whose modifier is coming up
+  clears with its yellow beforehand and is never green when the modifier greens. Before this, a
+  dwell serving both parent and modifier (bike heads `in:[8] md:[3]`, dwell `[3, 8]`) showed the
+  overlap green beside the left arrow it must not run with.
 - **Advance-warning beacons and NO-TURN blankouts are driven in ADVANCED mode**
   (`AdvancedPhaseBuilder.applyAccessoryStates`, mirroring NORMAL mode): beacons flash yellow
   whenever their circuit's through is not green, and blankout signs light per-facing wherever the

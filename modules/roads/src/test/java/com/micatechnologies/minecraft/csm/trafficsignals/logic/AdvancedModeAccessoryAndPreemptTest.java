@@ -194,6 +194,113 @@ class AdvancedModeAccessoryAndPreemptTest {
   }
 
   @Nested
+  @DisplayName("a -GRN/YEL overlap stays red beside its modifier in a preempt")
+  class PreemptModifierTest {
+
+    private final BlockPos arrow = new BlockPos(40, 0, 0);
+    private final BlockPos bike = new BlockPos(41, 0, 0);
+
+    /**
+     * A bike path beside a northbound approach: NB through 8 on circuit 0, NB left 3 (protected) on
+     * circuit 1, SB through 4 on circuit 2. The bike heads are an overlap on circuit 3, green with
+     * 8 except while 3 is green or yellow ({@code in:[8], md:[3]}). The NB preempt (circuit 4's
+     * through zone) dwells 3 + 8.
+     */
+    private TrafficSignalProgrammedPhasePlan plan() {
+      TrafficSignalProgrammedPhasePlan plan = TrafficSignalProgrammedPhasePlan.createDefault();
+      RingBarrierStateTest.enable(plan, 8, 0);
+      RingBarrierStateTest.enable(plan, 3, 1);
+      plan.getPhase(3).setMovement(TrafficSignalPhaseMovement.PROTECTED_LEFT);
+      RingBarrierStateTest.enable(plan, 4, 2);
+      plan.getPhase(4).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      plan.getPhase(8).setRecallMode(TrafficSignalRecallMode.MINIMUM);
+      TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+      ov.setEnabled(true);
+      ov.setOutputCircuitIndex(3);
+      ov.setOutputMovement(TrafficSignalPhaseMovement.THROUGH);
+      ov.setType(TrafficSignalOverlapType.MINUS_GREEN_YELLOW);
+      ov.setIncludedPhases(new int[] {8});
+      ov.setModifierPhases(new int[] {3});
+      plan.getVehicleOverlaps().add(ov);
+      TrafficSignalPreempt pe = new TrafficSignalPreempt();
+      pe.setEnabled(true);
+      pe.setTriggerCircuitIndex(4);
+      pe.setTriggerMovement(TrafficSignalPhaseMovement.THROUGH);
+      pe.setDwellPhases(new int[] {3, 8});
+      plan.getPreempts().add(pe);
+      return plan;
+    }
+
+    private TrafficSignalControllerCircuits circuits() {
+      TrafficSignalControllerCircuits circuits = RingBarrierStateTest.circuits(5);
+      circuits.getCircuit(0).getThroughSignals().add(new BlockPos(42, 0, 0));
+      circuits.getCircuit(1).getProtectedSignals().add(arrow);
+      circuits.getCircuit(2).getThroughSignals().add(new BlockPos(43, 0, 0));
+      circuits.getCircuit(3).getThroughSignals().add(bike);
+      return circuits;
+    }
+
+    @Test
+    @DisplayName("builder: a dwell serving the modifier keeps the overlap red; without it, green")
+    void dwellAppliesModifier() {
+      TrafficSignalPhase both = AdvancedPhaseBuilder.buildForPhases(null, plan(), circuits(),
+          NO_OVERLAPS, java.util.Arrays.asList(3, 8), VehInterval.GREEN);
+      assertTrue(both.getGreenSignals().contains(arrow), "sanity: the left arrow dwells green");
+      assertTrue(both.getRedSignals().contains(bike),
+          "the bike overlap must be red while its modifier 3 dwells green");
+      TrafficSignalPhase throughOnly = AdvancedPhaseBuilder.buildForPhases(null, plan(),
+          circuits(), NO_OVERLAPS, Collections.singletonList(8), VehInterval.GREEN);
+      assertTrue(throughOnly.getGreenSignals().contains(bike),
+          "with only its parent 8 dwelling the overlap is green");
+    }
+
+    @Test
+    @DisplayName("engine: through preempt entry and dwell the overlap is never green or yellow "
+        + "beside a green or yellow left arrow, and never skips its yellow")
+    void preemptNeverConflicts() {
+      TrafficSignalProgrammedPhasePlan plan = plan();
+      TrafficSignalControllerCircuits ckts = circuits();
+      RingBarrierState rb = new RingBarrierState();
+      RingBarrierStateTest.Demand none = new RingBarrierStateTest.Demand();
+      RingBarrierStateTest.Demand preempt = new RingBarrierStateTest.Demand().veh(4, 1, 0, 0);
+      TrafficSignalPhase shown = null;
+      Integer lastBike = null;
+      boolean sawBikeGreen = false;
+      boolean sawArrowGreen = false;
+      for (long t = 0; t < 1200; t++) {
+        boolean calling = t >= 200 && t < 900;
+        TrafficSignalPhase p = rb.tick(plan, ckts, NO_OVERLAPS, t, calling ? preempt : none);
+        if (p != null) {
+          shown = p;
+        }
+        if (shown == null) {
+          continue;
+        }
+        java.util.Map<BlockPos, Integer> states = shown.resolveVehicleSignalStates();
+        Integer bikeState = states.get(bike);
+        Integer arrowState = states.get(arrow);
+        boolean bikeOn = bikeState != null && !TrafficSignalPhase.isRedIndication(bikeState);
+        boolean arrowOn = arrowState != null && !TrafficSignalPhase.isRedIndication(arrowState);
+        if (t < 200 && bikeState != null && TrafficSignalPhase.isGreenIndication(bikeState)) {
+          sawBikeGreen = true;
+        }
+        if (calling && arrowState != null && TrafficSignalPhase.isGreenIndication(arrowState)) {
+          sawArrowGreen = true;
+        }
+        assertFalse(bikeOn && arrowOn, "t=" + t + ": bike overlap " + bikeState
+            + " beside the left arrow " + arrowState);
+        if (lastBike != null && TrafficSignalPhase.isGreenIndication(lastBike)) {
+          assertFalse(TrafficSignalPhase.isRedIndication(bikeState),
+              "t=" + t + ": the bike overlap went green to red without a yellow");
+        }
+        lastBike = bikeState;
+      }
+      assertTrue(sawBikeGreen, "sanity: the overlap runs green with 8 before the preempt");
+      assertTrue(sawArrowGreen, "sanity: the preempt dwell brings up the left arrow");
+    }
+  }
+
+  @Nested
   @DisplayName("beacons and NO-TURN blankouts are driven in ADVANCED mode")
   class AccessoryDriveTest {
 

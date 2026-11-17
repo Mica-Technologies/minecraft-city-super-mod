@@ -3182,12 +3182,17 @@ public class RingBarrierState {
           served.add(new ServedMovement(n, clearing,
               preemptPedClearPhases.contains(n) ? PedInterval.FDW : PedInterval.NONE));
         }
+        // A -GRN/YEL overlap whose modifier the first stage brings up clears here, beside its
+        // parent if that continues, so it is never green when the modifier greens.
+        int[] first = active.getTrackClearPhases().length > 0
+            ? active.getTrackClearPhases() : active.getDwellPhases();
         return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served,
-            active);
+            active, first);
       }
       case TRACK_CLEAR:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN, active);
+            toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN, active,
+            active.getDwellPhases());
       case TRACK_EXIT: {
         List<ServedMovement> served = new ArrayList<>();
         for (int n : trackClearContinuingPhases(active)) {
@@ -3197,7 +3202,7 @@ public class RingBarrierState {
           served.add(new ServedMovement(n, clearing, PedInterval.NONE));
         }
         return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served,
-            active);
+            active, active.getDwellPhases());
       }
       case DWELL:
         return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,

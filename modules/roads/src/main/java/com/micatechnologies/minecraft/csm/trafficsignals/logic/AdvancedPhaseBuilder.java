@@ -95,7 +95,7 @@ public final class AdvancedPhaseBuilder {
     }
     applyFyaLenses(phase, plan, circuits, served, holdFlash);
     applyOverlaps(phase, overlaps);
-    applyProgrammedOverlaps(phase, plan, circuits, served, overlapIntervals);
+    applyProgrammedOverlaps(phase, plan, circuits, served, overlapIntervals, null);
     // No preempt is running on this path — preempt-driven blankout legends stay dark.
     applyAccessoryStates(world, phase, circuits, null);
     return phase;
@@ -111,12 +111,19 @@ public final class AdvancedPhaseBuilder {
    * preempt stage serves (any number), so an overlap follows the phases a preempt runs exactly as
    * it follows the rings: green while an included phase dwells, an FYA overlap flashing while its
    * permissive parent does, and the parents' own clearance at entry and exit (issue #341).</p>
+   *
+   * <p>A {@code -GRN/YEL} overlap is forced red while a modifier phase is green or yellow on
+   * either path. The rings' path has it already in {@code overlapIntervals}; the stateless preempt
+   * path applies it here. {@code upcomingGreen} names the phases the next preempt stage starts
+   * green, so an overlap one of them modifies clears in the stage before rather than being green
+   * when its modifier comes up; {@code null} on the rings' path.</p>
    */
   private static void applyProgrammedOverlaps(TrafficSignalPhase phase,
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
       List<RingBarrierState.ServedMovement> served,
-      List<RingBarrierState.VehInterval> overlapIntervals) {
+      List<RingBarrierState.VehInterval> overlapIntervals,
+      int[] upcomingGreen) {
     List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
     for (int i = 0; i < ovs.size(); i++) {
       TrafficSignalProgrammedOverlap ov = ovs.get(i);
@@ -148,10 +155,18 @@ public final class AdvancedPhaseBuilder {
       }
       RingBarrierState.VehInterval precomputed =
           overlapIntervals != null && i < overlapIntervals.size() ? overlapIntervals.get(i) : null;
+      boolean modifierActive = ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
+          && (anyServedActive(ov.getModifierPhases(), served)
+              || containsAny(ov.getModifierPhases(), upcomingGreen));
       RingBarrierState.VehInterval state =
           precomputed != null ? precomputed : overlapState(ov.getIncludedPhases(), served);
+      if (modifierActive) {
+        // The bike heads of an overlap that must not run beside a left arrow went green with the
+        // arrow in a preempt dwell serving both: the preempt path never applied the modifier.
+        state = RingBarrierState.VehInterval.RED;
+      }
       if (ov.getPermissivePhases().length > 0) {
-        applyFyaOverlap(phase, ov, circuit, heads, state, served);
+        applyFyaOverlap(phase, ov, circuit, heads, state, modifierActive, served);
         continue;
       }
       phase.removeSignals(heads);
@@ -189,7 +204,7 @@ public final class AdvancedPhaseBuilder {
   private static void applyFyaOverlap(TrafficSignalPhase phase,
       TrafficSignalProgrammedOverlap ov, TrafficSignalControllerCircuit circuit,
       List<BlockPos> heads, RingBarrierState.VehInterval protectedInterval,
-      List<RingBarrierState.ServedMovement> served) {
+      boolean modifierActive, List<RingBarrierState.ServedMovement> served) {
     FyaLensState state;
     switch (protectedInterval) {
       case GREEN:
@@ -200,12 +215,10 @@ public final class AdvancedPhaseBuilder {
         break;
       case RED:
       default: {
-        // The precomputed protected interval is already -GRN/YEL-aware, but its forced RED must
-        // not be overridden by the permissive flash — re-check the modifier here.
-        boolean modRed = ov.getType() == TrafficSignalOverlapType.MINUS_GREEN_YELLOW
-            && anyServedActive(ov.getModifierPhases(), served);
+        // The protected interval is already -GRN/YEL-aware, but its forced RED must not be
+        // overridden by the permissive flash.
         RingBarrierState.VehInterval perm =
-            modRed ? RingBarrierState.VehInterval.RED
+            modifierActive ? RingBarrierState.VehInterval.RED
                 : overlapState(ov.getPermissivePhases(), served);
         state = perm == RingBarrierState.VehInterval.GREEN ? FyaLensState.FLASH
             : perm == RingBarrierState.VehInterval.YELLOW ? FyaLensState.SOLID_YELLOW
@@ -496,6 +509,21 @@ public final class AdvancedPhaseBuilder {
 
   /** {@link #anyServedActive(int[], RingBarrierState.ServedMovement,
    * RingBarrierState.ServedMovement)} over any number of served movements. */
+  /** Whether any of {@code phases} is in {@code among} ({@code null} holds none). */
+  private static boolean containsAny(int[] phases, int[] among) {
+    if (among == null) {
+      return false;
+    }
+    for (int p : phases) {
+      for (int a : among) {
+        if (p == a) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   static boolean anyServedActive(int[] phases, List<RingBarrierState.ServedMovement> served) {
     for (int p : phases) {
       RingBarrierState.VehInterval iv = servedInterval(p, served);
@@ -555,12 +583,33 @@ public final class AdvancedPhaseBuilder {
       Collection<Integer> phaseNumbers,
       RingBarrierState.VehInterval interval,
       TrafficSignalPreempt activePreempt) {
+    return buildForPhases(world, plan, circuits, overlaps, phaseNumbers, interval, activePreempt,
+        null);
+  }
+
+  /**
+   * As {@link #buildForPhases(World, TrafficSignalProgrammedPhasePlan,
+   * TrafficSignalControllerCircuits, TrafficSignalControllerOverlaps, Collection,
+   * RingBarrierState.VehInterval, TrafficSignalPreempt)}, naming the phases the next preempt stage
+   * starts green ({@code null} for none): see {@link #buildForMovements(World,
+   * TrafficSignalProgrammedPhasePlan, TrafficSignalControllerCircuits,
+   * TrafficSignalControllerOverlaps, List, TrafficSignalPreempt, int[])}.
+   */
+  public static TrafficSignalPhase buildForPhases(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      Collection<Integer> phaseNumbers,
+      RingBarrierState.VehInterval interval,
+      TrafficSignalPreempt activePreempt,
+      int[] upcomingGreen) {
     List<RingBarrierState.ServedMovement> served = new ArrayList<>(phaseNumbers.size());
     for (int n : phaseNumbers) {
       served.add(new RingBarrierState.ServedMovement(n, interval,
           RingBarrierState.PedInterval.NONE));
     }
-    return buildForMovements(world, plan, circuits, overlaps, served, activePreempt);
+    return buildForMovements(world, plan, circuits, overlaps, served, activePreempt,
+        upcomingGreen);
   }
 
   /**
@@ -574,6 +623,24 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalControllerOverlaps overlaps,
       List<RingBarrierState.ServedMovement> served,
       TrafficSignalPreempt activePreempt) {
+    return buildForMovements(world, plan, circuits, overlaps, served, activePreempt, null);
+  }
+
+  /**
+   * As {@link #buildForMovements(World, TrafficSignalProgrammedPhasePlan,
+   * TrafficSignalControllerCircuits, TrafficSignalControllerOverlaps, List,
+   * TrafficSignalPreempt)}, with {@code upcomingGreen} the phases the next preempt stage starts
+   * green ({@code null} for none). A {@code -GRN/YEL} overlap one of them modifies is cleared in
+   * this stage, so its heads have had their yellow before the modifier comes up rather than being
+   * green beside it.
+   */
+  public static TrafficSignalPhase buildForMovements(World world,
+      TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits circuits,
+      TrafficSignalControllerOverlaps overlaps,
+      List<RingBarrierState.ServedMovement> served,
+      TrafficSignalPreempt activePreempt,
+      int[] upcomingGreen) {
     TrafficSignalPhase phase = redBaseline(circuits);
     boolean anyGreen = false;
     for (RingBarrierState.ServedMovement movement : served) {
@@ -591,7 +658,7 @@ public final class AdvancedPhaseBuilder {
     // dwells, and entry and exit clear it with its parents. Left out, every overlap head went red
     // for the whole preempt, even on the approach being preempted (issue #341). Stateless here:
     // no lag, lead or parent-to-parent hold is run inside a preempt.
-    applyProgrammedOverlaps(phase, plan, circuits, served, null);
+    applyProgrammedOverlaps(phase, plan, circuits, served, null, upcomingGreen);
     applyAccessoryStates(world, phase, circuits, activePreempt);
     return phase;
   }
