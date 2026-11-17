@@ -17,11 +17,16 @@ read and baked at once.
 
 | Install | Heap the game needs (`-Xmx`) | Held in a world |
 |---|---|---|
-| Every module | **2 GB** (starts at 1.75 GB, a little slower; does not start at 1.5 GB) | about 650–700 MB |
+| Every module | **4 GB** (3.5 GB starts, slowly; 3 GB does not start) | about 2 GB |
+| Every module, G1 collector (`-XX:+UseG1GC`) | **3 GB** (2.75 GB starts, slowly; 2.5 GB does not start) | about 2 GB |
 | Core only | 512 MB | about 230 MB |
 
-Those are CSM alone. Add what the rest of your modpack needs. Most launchers give 2 GB by default,
-and the `-Xmx` setting is in your launcher profile's JVM arguments.
+Those are CSM with the Immersive Vehicles content packs; add what the rest of your modpack needs.
+The `-Xmx` setting is in your launcher profile's JVM arguments. **Most launchers give 2 GB by
+default, and that is not enough for every module**: the game stops while it loads its models. The
+G1 line applies if your profile's JVM arguments include `-XX:+UseG1GC`, as the vanilla launcher's
+defaults and most modpack profiles do. (Measured 2026-11-16, one launch per size; the Core-only
+line is from September.)
 
 **Install only the modules you use.** Each module jar is optional (see
 [Installation](../getting-started/installation.md)), and a module you leave out costs nothing: no

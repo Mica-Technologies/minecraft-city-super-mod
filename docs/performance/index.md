@@ -9,7 +9,7 @@ modpack makers and server owners.
 | If you are short on… | Do this |
 |---|---|
 | **Anything, and you want one switch** | Type **`/csmclient performance medium`** or **`low`** in chat. See [Performance mode](performance-mode.md) |
-| **RAM** (the game crashes or freezes while loading) | Give the game **2 GB** (`-Xmx2G`), or install fewer [modules](../getting-started/installation.md). See [Memory](memory.md#heap-ram) |
+| **RAM** (the game crashes or freezes while loading) | Give the game **4 GB** (`-Xmx4G`; 3 GB at least with G1), or install fewer [modules](../getting-started/installation.md). See [Memory](memory.md#heap-ram) |
 | **RAM, in a large modpack** | Try **`/csmclient quadsharing on`**. It can save a few hundred MB that other mods' models waste. See [Sharing other mods' quads](memory.md#sharing-other-mods-quads) |
 | **Direct memory** (the game stops after a while with "Direct buffer memory") | See [Running out of memory after a while](memory.md#running-out-of-memory-after-a-while) |
 | **Video memory** (the game stops while loading textures, or stutters) | Install fewer modules, and turn **Mipmap Levels** down. See [Video memory](memory.md#video-memory-vram) |

@@ -16,7 +16,7 @@ game on any server, with no operator rights.
 | Low frame rate in one place | [`/csm renderpass`](#frame-time-csm-renderpass) | Which piece of CSM's drawing is costing the frame time there |
 | Not sure which performance level you are on, or what it does | [`/csmclient performance`](../getting-started/commands.md#csmclient) | Your level, and every distance and effect it sets now |
 | High memory use, or the heap creeping up | [`/csm displaylists`](#memory-csm-displaylists-and-memstats) | What CSM's render caches hold, and the heap in use |
-| A long load, or a heap that needs more than 2 GB | [`/csm memstats`](#memory-csm-displaylists-and-memstats) | What each block costs in memory |
+| A long load, or a heap that needs more than [Memory](memory.md#heap-ram) says | [`/csm memstats`](#memory-csm-displaylists-and-memstats) | What each block costs in memory |
 | A large modpack using a lot of memory | [`/csmclient quadsharing status`](memory.md#sharing-other-mods-quads) | Whether other mods' duplicate quads are shared, and what it saved |
 | "Direct buffer memory" crashes after a while | [`/csmclient chunkbuffers`](#direct-memory-chunkbuffers) | How much direct memory Minecraft's chunk builders hold |
 | A slow server tick | [`/csmhvac perf`](servers.md#hvac-lightweight-mode) | What the HVAC simulation costs, the one part of CSM that grows with a city |

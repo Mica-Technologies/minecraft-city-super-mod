@@ -223,8 +223,10 @@ thousand faces in 3,301 files, against 1,256 files on 10-28; no face is held twi
 major GC running about every 17 s after a few world loads (15 in 263 s, 20 s in all, one of 2.3 s,
 old generation 2.35 of 4 GB at `-Xmx6G`), and the menu heap now above 2 GB, the "give it 2 GB"
 advice in PERFORMANCE_AND_SECURITY.md's heap floor no longer holds for every module with the IV
-packs. It was not re-measured with `lowmem.gradle` in this sweep. (The 600 MiB figures in that
-section are from 2026-09, without the Vehicles module and the IV packs; not comparable.)
+packs. Re-measured with `lowmem.gradle` afterwards on `b649a5de1` (PERFORMANCE_AND_SECURITY.md,
+"The heap floor"): the full set now needs 4 GB with ParallelGC (3 GB does not start) and 3 GB
+with G1 (2.5 GB does not start). (The 600 MiB figures in that section are from 2026-09, without
+the Vehicles module and the IV packs; not comparable.)
 
 The launch growth is in loading the blockstates (7-8 s to 12-17 s), the bake (5-6 to 8-11 s) and
 the passes after it (3 to 7-9 s). Three families of the light poles work (#99) hold most of it:

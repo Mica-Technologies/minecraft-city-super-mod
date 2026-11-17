@@ -7,6 +7,16 @@ caches.
     ./gradlew -I dev-env-utils/gradle/lowmem.gradle -Dcsm.testHeap=2G runClient
 
 A later `-Xmx` wins in HotSpot, so appending overrides the default without editing `build.gradle`.
+Add `-Dcsm.testG1=true` to run G1 instead of Java 8's default ParallelGC, as the vanilla launcher
+and most modpack profiles do; the floors differ by about a gigabyte.
+
+## Measured floor (2026-11-16)
+
+Every module, the IV content packs, RoughlyEnoughIDs and the dev extras: 4 GB with ParallelGC
+(3 GB fails baking the models), 3 GB with G1 (2.5 GB fails). The table, the method (`jstat`
+sampled through the launch, then a two-minute teleport tour of a copy of MKTNG) and the machine
+load caveat are in `assets/docs/PERFORMANCE_AND_SECURITY.md`, "The heap floor". Everything below
+is the first measurement, kept for the history.
 
 ## Measured floor (2026-08-27, CSM + JEI + TheOneProbe + FAWE + WorldEdit)
 

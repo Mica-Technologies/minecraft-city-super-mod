@@ -8,7 +8,7 @@
 | **Mod loader** | [Forge for 1.12.2](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.12.2.html) |
 | **Java** | Whatever your Forge 1.12.2 profile already uses (Java 8) |
 | **Block IDs** | **[RoughlyEnoughIDs](https://modrinth.com/mod/reid) and [MixinBooter](https://modrinth.com/mod/mixinbooter)** -- required with every module installed, and with most installs alongside other content mods. See [Block IDs](#block-ids-roughlyenoughids-is-required) |
-| **Memory** | **2 GB** for the game client with every module installed (`-Xmx2G` in the launcher profile's JVM arguments, which is what most launchers give by default), and more if the modpack has other large mods. It needs that much only while it loads its models; in a world it uses well under 1 GB. At 1.75 GB it still starts, a little slower; at 1.5 GB or less it does not reach the title screen. Core alone runs in 512 MB. See [Memory](../performance/memory.md) for video memory and the settings that lighten the load |
+| **Memory** | **4 GB** for the game client with every module installed (`-Xmx4G` in the launcher profile's JVM arguments), and more if the modpack has other large mods. If the profile runs the G1 collector (`-XX:+UseG1GC`, as the vanilla launcher's default arguments and most modpack profiles do), 3 GB is the least it starts in. The 2 GB most launchers give by default is **not enough** for every module: the game stops while loading its models. In a world it holds about 2 GB. Install fewer modules to need less; Core alone runs in 512 MB. See [Memory](../performance/memory.md) for video memory and the settings that lighten the load |
 
 ## The mod comes in pieces
 

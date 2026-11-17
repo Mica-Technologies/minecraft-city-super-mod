@@ -512,7 +512,47 @@ the retextured copies and the unbaked models released it completes, and the heap
 flat world is 692 MiB (930 without the part bake cache). The part bake cache is rebuilt on every
 reload with the same counts and empties at the bake event, so nothing is carried across reloads.
 
-**The heap floor, and what to tell players.** Measured 2026-09-26 on the build with every fix
+**The heap floor, and what to tell players (2026-11-16).** The full set now needs about twice
+what it did in September: 4 GB with Java 8's default collector, 3 GB with G1. Measured on
+`b649a5de1` with `dev-env-utils/gradle/lowmem.gradle` (Java 8, `-Xms256M`; `-Dcsm.testG1=true`
+for G1), one launch per size: seconds from the first log line to Forge's "successfully loaded",
+full GCs during launch from `jstat -gc` sampled every 2 s, then the copy of MKTNG loaded and
+toured by teleport for two minutes (twelve points up to 200 blocks out). Mods: every CSM module,
+the Immersive Vehicles content packs (official, CSM's devpack and the two UNU packs),
+RoughlyEnoughIDs and MixinBooter, plus the dev client's JEI, TheOneProbe, FAWE, WorldEdit, MCMCP
+and the test road mod. **The machine was busy throughout**: the user's AltoTEST client (16 GB heap)
+ran the whole time and another session's compatibility clients part of it (63-81% of RAM in use,
+CPU around 70%), so the launch times are slower than on a quiet machine and only comparable within
+the table. The "in a world" figure is the old generation's peak during the tour, used rather than
+live (it includes garbage):
+
+| `-Xmx` | ParallelGC (Java 8's default) | G1 (`-XX:+UseG1GC`) |
+|---|---|---|
+| 6 GB | 57 s, 9 full GCs (7.1 s); in a world 2,054 MiB, 1.2% of the time in GC | |
+| 4 GB | **62 s, 12 full GCs (11.0 s)**; in a world 2,083 MiB (old generation 76% full), 1.2% in GC | |
+| 3.5 GB | Starts, badly: 83 s, 26 full GCs (29.2 s); in a world 2,077 MiB (87% full), 1.5% in GC | |
+| 3 GB | Does not start: `OutOfMemoryError` (GC overhead) baking the models, after 69 full GCs (63 s) | **59 s, 1 full GC (4.5 s)**; in a world 2,069 MiB, 2.9% in GC |
+| 2.75 GB | | Starts, badly: 101 s, 10 full GCs (35.5 s); in a world 2,159 MiB (90% full) |
+| 2.5 GB | | Does not start: `OutOfMemoryError` (GC overhead), after 46 full GCs (153 s) |
+
+The 3 GB ParallelGC row is from `b66fa80f0`, a few hours earlier with the same content; the same
+session measured 6 GB at 78 s, 5 GB at 76 s (10 full GCs, 8.0 s) and 4 GB at 106 s (13, 19.4 s)
+under heavier load. ParallelGC gives the old generation two thirds of the heap, so at 3 GB it has
+2 GiB, and the live set is already about 2.0 GiB at the main menu (PERFORMANCE_INVENTORY.md, Fix
+status): launch now fails where it used to start. G1 has no fixed split, which is why it gets by
+with a gigabyte less. The growth since September is content (5,121 CSM blocks on 2026-11-16 against
+4,295 on 2026-10-28, the #99 light poles, the Vehicles module and the IV packs), accounted class by
+class in PERFORMANCE_INVENTORY.md.
+
+**Tell players to give the game 4 GB with every module** (`-Xmx4G` in the launcher profile's JVM
+arguments), or 3 GB at the very least if the profile runs G1 (`-XX:+UseG1GC`, which the vanilla
+launcher's default arguments and most modpack profiles set), and more for a large modpack. The
+launchers' usual 2 GB no longer starts the full set. Core alone ran in 512 MB in September and has
+not been re-measured; a partial set lies in between and has not been measured module by module.
+Re-measure with `dev-env-utils/gradle/lowmem.gradle` whenever a large batch of blocks or models
+lands, and update `docs/getting-started/installation.md` and `docs/performance/memory.md` with it.
+
+The September measurement, for the history: measured 2026-09-26 on the build with every fix
 above (the dev client's JVM: Java 8, ParallelGC, `-Xms256M`), each size launched to the main menu,
 then two minutes touring the flat test world by teleport, then two minutes touring a copy of the
 MKTNG test city, with `jstat` sampled throughout. "Before" is the build without the element sharing
@@ -546,12 +586,8 @@ So the launch peak went from about 1.25 GiB to about 0.9 GiB, and it is now the 
 (every sprite's pixels at every mip level, with the unbaked models), not the bake. Launch time at
 `-Xmx6G` did not change (medians of four interleaved launches 28, 28 and 28.5 s, within the
 +-2 s of single runs; full GC in launch 1.8 -> 1.3 s pays for the 0.8 s the two walks take).
-**Tell players to give the game 2 GB with every module** (`-Xmx2G` in the launcher profile's JVM
-arguments, which is what most launchers default to), 1.75 GB at the very least, and more for a
-large modpack; **Core alone runs in 512 MB** (a partial set lies in between and has not been
-measured module by module). Re-measure with `dev-env-utils/gradle/lowmem.gradle` whenever a large
-batch of blocks or models lands, and update `docs/getting-started/installation.md` with it. What is
-left in the peak: every sprite's pixels while the atlas is stitched (a sprite can only be released
+That was when 2 GB was enough (superseded by the 2026-11-16 floor above). What was left in the
+peak then: every sprite's pixels while the atlas is stitched (a sprite can only be released
 once it is uploaded), and the unbaked models themselves (the variants and their retextured model
 copies, now without their own elements), which are needed until the bake is over.
 
