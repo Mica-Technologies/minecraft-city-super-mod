@@ -64,6 +64,20 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   closer's parts and item; and, through `gen_cathedral_doors.py`, the cathedral doors (a leaf's
   cells, the arch head stepped a pixel row at a time, geometry parents shared by the three
   variants), the tympana and the carved panelling; `--check` fails on drift
+- `gen_address_plaques.py` -- the address plaques (#364, `buildingmaterials/plaques/`): the glyph
+  sheet (four fonts at a 34 px cap, three of them OFL faces fetched into the gitignored
+  `_font_cache/` as `gen_ads.py` does, the fourth Mica Open Highway Series C), the body sheet of
+  nine-slice plate tiles and its `_e` (the lit lens), the item icons, the blockstates and models,
+  and `PlaqueSheet.java`, the glyph metrics and tile positions the baked model lays text out from;
+  `--check` fails on drift, `--fragments` prints the lang and tab lines, `--sheet` a contact sheet.
+  The layout itself is `PlaqueLayout.java`; `CSM_PLAQUE_PREVIEW=<png> ./gradlew test --tests
+  '*PlaqueLayoutPreview*'` draws every style head on from it without a client (DOORS.md "Address
+  plaques")
+- `build_address_plaques_demo.py` -- builds the #364 test street in a flat world named "Address
+  Plaques 364" (refuses any other; `--create` makes one) through the orchestrator by instance id:
+  three brownstones with stoops, hooded doors, transom numbers, a plaque and a lit box beside each
+  door and a vertical stack on a pier, and a gallery wall of every style with 2 to 5 digits, flat
+  and stacked. Places blocks, then writes each plaque's NBT, and checks every plaque block placed
 - `gen_garage_doors.py` -- the garage doors, opener and hanger: textures, the part models drawn
   on the edge of the door they belong to, the sectional door's ceiling runs and tracks and the
   opener's rail as OBJ per length, and the multipart blockstates; `--check` fails on drift

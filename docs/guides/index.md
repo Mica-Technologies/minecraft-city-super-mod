@@ -151,6 +151,13 @@ How each system works, and how to build with it.
     Doors that pair, close themselves and lock with a keypad, and garage doors built to the size of
     the opening, with openers.
 
+-   :material-numeric:{ .lg .middle } **[Address Plaques](address-plaques.md)**
+
+    ---
+
+    House numbers beside the door: brass, cast iron, enamel, stone, wood and steel plates,
+    stand-off numerals, gold leaf on the transom and a lit number box.
+
 -   :material-crane:{ .lg .middle } **[Construction Site](construction-site.md)**
 
     ---

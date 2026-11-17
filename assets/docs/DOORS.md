@@ -27,6 +27,7 @@ one class (`BlockBuildingDoor`, constructed by registry name), the **Door Closer
 | Cathedral Door (Dark Oak / Weathered Oak / Bronze), and its Arch Head | `cathedral_door_<variant>`, `cathedral_door_<variant>_arch`; variant `dark_oak`, `weathered_oak`, `bronze` |
 | Tympanum (Dark Oak / Weathered Oak / Bronze) | `cathedral_tympanum_<variant>` |
 | Carved Panelling (Dark Oak) | `panelling_carved_dark_oak` |
+| Address plaques: brass, cast iron, enamel, stone, painted wood and brushed steel plates, stand-off numerals, gold-leaf transom numbers, a lit number box | `address_plaque_<style>`, `address_numerals`, `address_transom_decal`, `address_lamp_box`; see **Address plaques** |
 
 The dark oak and cathedral doors were added for a Gothic church (2026-10), whose great west
 portal had to be built of CSM doors; see **Dark oak doors** and **Cathedral doors** below.
@@ -733,3 +734,132 @@ designs**; it is never ticked or drawn.
 - **The screen is 236 high** with 18-high buttons (`ShortButton` draws the texture's bottom edge
   rather than cutting it off), so it fits a 240-high window: a small window at GUI scale 2.
 
+
+## Address plaques
+
+House numbers for the doors above (GitHub #364): nine blocks in one class
+(`buildingmaterials/plaques/BlockAddressPlaque`, constructed by registry name), in the Building
+Materials tab after the carved panelling. Each block is a `PlaqueStyle`. The textures, blockstates,
+models and `PlaqueSheet.java` come from `dev-env-utils/scripts/gen_address_plaques.py`
+(`--check` fails on drift, `--fragments` prints the lang and tab lines).
+
+| Block | Registry name | Plate | Default font, numerals |
+|---|---|---|---|
+| Address Plaque (Brass) | `address_plaque_brass` | 0.5 px, screwed at the corners | classic, black infill |
+| Address Plaque (Cast Iron) | `address_plaque_cast_iron` | 0.75 px, gold rim | classic, raised gold |
+| Address Plaque (White Enamel) | `address_plaque_enamel` | 0.5 px, blue border (NYC / Paris) | didone, blue |
+| Address Tablet (Carved Stone) | `address_plaque_stone` | 2 px limestone | classic, incised slate |
+| Address Plaque (Painted Wood) | `address_plaque_wood` | 1 px green board, routed edge | classic, cream |
+| Address Plaque (Brushed Steel) | `address_plaque_steel` | 0.5 px | modern, black numerals standing 1.5 px off it |
+| House Numerals (Stand-Off) | `address_numerals` | none | classic, brass numerals 1.5 px off the wall |
+| Transom Numbers (Gold Leaf) | `address_transom_decal` | none | didone, gold leaf with a dark outline, on glass |
+| Illuminated Address Box | `address_lamp_box` | 3 px housing, lens | modern, black on the lens; lit gives light 10 |
+
+**4 states a block, 36 in all.** The only property is the facing, the way to the wall
+(S 0, W 1, N 2, E 3 in metadata), as the room plate and the wall finishes. Clicking the side of a
+block hangs the plaque on that block; clicking a floor or ceiling hangs it on the wall the player
+faces. Nothing checks for a wall or pops off, so `/setblock x y z csm:address_plaque_brass 2`
+is exactly what a hand placement facing that way makes. Everything else (the number, the street
+line, the font, sizes, layout, colour, offsets, the lamp box's light) is the tile entity's, so
+none of it adds a state or a model location.
+
+**Vertical stack, size and fonts are settings, not blocks.** Every block lays out flat or as a
+vertical stack for a narrow pier, on a small, medium (14 x 7 px, about 1 x 1/2 block) or large
+plate, in any of the four fonts: `classic` (Libre Baskerville Bold), `didone` (Abril Fatface),
+`modern` (Poppins SemiBold), all SIL Open Font License faces rendered by the generator as
+`gen_ads.py` does, and `narrow` (the mod's own Mica Open Highway Series C) for five digits on a
+small plate. A block per combination would have been 9 x 2 x 3 x 4 blocks.
+
+### Drawing
+
+Baked, never rendered, like the room plates and the wayfinding panels. The blockstate's world
+model is empty (particle and the two sheets only); `PlaqueBakedModel` (a `CsmBakedModelWrappers`
+wrapper on every `BlockAddressPlaque` variant except `inventory`) adds:
+
+- **the plate**: its front as a nine-slice of the style's 64 px tile on
+  `textures/blocks/plaques/address_plaque_bodies.png` (corners fixed, the border band
+  `PlaqueStyle.border` px whatever the plate's size), its four sides in the style's edge colour;
+- **the numerals and street line**, laid out by `PlaqueLayout` (client-free, tested): each glyph a
+  window on `address_plaque_glyphs.png` (1024 x 512, white on clear, capitals 34 px, every font's
+  digits, letters, space and `. , - ' / & #`) tinted in its vertices, drawn as the style draws
+  them: flat; raised (a darker copy under it); incised (a light edge under the dark letter);
+  stand-off (three copies 0.45 px apart, the front 1.5 px out); or gold leaf (a dark outline of
+  four offset copies, and the gilding's back drawn facing the glass, so it reads mirrored from
+  inside as real gold leaf does).
+
+Layers stand at least 0.2 px apart (`PlaqueLayout.LIFT`, the `model_depth.py` gap). The number
+alone fills 0.7 of the plate inside its border, or 0.55 over a 0.22 street line; each line shrinks to
+fit across and the whole is scaled by the size setting (0.5 to 1). A vertical stack sets the
+number's characters one under another, 1.3 capitals apart, and leaves the street line out. On a
+medium plate three digits stand about 4 px (a quarter of a block) tall; `AddressPlaqueTest` holds
+every style, size, font and layout with two to five digits, with and without a street line, to
+numerals at least 1.5 px tall and inside the plate.
+
+**Cost.** Quads are cached by style, facing and plaque (`PlaqueBakedModel.CACHE`, 2,048), so a
+terrace of identical plaques bakes once. A plaque is 13 (plate) plus one quad a glyph a layer: a
+brass "123" is 16 quads, a stand-off "12345" 15, a stone tablet with a street line about 47. They
+sit in the chunk mesh, so nothing runs per frame and nothing ticks; an edit rebuilds the plaque's
+chunk section once (`TileEntityAddressPlaque.getBakedModelKey` is the plaque's hash, so a sync
+that changes nothing rebuilds nothing). Atlas: the two sheets and nine 64 x 32 icons, about 0.6 Mpx.
+
+**The lamp box** swaps its lens tile (lit or not) and draws the lit lens and its numerals
+unshaded; `address_plaque_bodies_e.png` holds only the lit lens for OptiFine's emissive
+rendering. A lit box gives light 10 (`PlaqueStyle.LAMP_LIGHT`); `getLightValue` reads the tile
+entity through the chunk with `CHECK` (never creating one while light spreads), and switching it
+relights the block on both sides.
+
+### Shape and placement
+
+The hitbox is the plate, or the numerals' bounds, from the same `PlaqueLayout` the model draws,
+and at most 3 px deep (the lamp box); there is no collision box and no solid face. So a plaque fits
+beside a door, under a stoop hood, on a pier or a door frame, at any height, without a block of
+depth. Inside its block it can be moved up to 8 px across and up (`dx`, `dy`), never out of the
+block, to sit by a door's edge or at eye level.
+
+The **transom decal** is not glass itself, so it stays in the cutout pass and works on every kind
+of glass. Placed in the cell in front of a transom, it lies 0.3 px off the glass's face; `dz`
+pushes it into the block behind, so 7 reaches a pane centred in its block. Placed inside the
+building facing out (a stoop hood in the way outside), a `dz` of about -20 brings it forward
+onto the glass in front of it. Its hitbox stays in its own block, a sliver on the face it passed
+through.
+
+### Editing and NBT
+
+An empty-handed click opens `AddressPlaqueGui` (GUI id 47, `BuildingGuiProvider`): the number and
+street fields, then font, text size, plate, layout, numeral colour, move across and up, and on the
+decal its depth and on the lamp box its light. A click steps a setting, Shift-click steps it back,
+and every change is sent at once (`AddressPlaquePacket`, the Building channel's fourth packet):
+the server checks reach and edit rights and reads the NBT exactly as a `/blockdata`.
+
+The NBT is at the top of the tile entity (`AddressPlaque`); every key is optional:
+
+| Key | Type | Meaning |
+|---|---|---|
+| `num` | string | the house number, up to 8 characters (default `123`); a number (`num:12`) reads as its digits |
+| `st` | string | the street line, up to 32 characters; empty for none |
+| `font` | string | `classic`, `didone`, `modern`, `narrow`; absent for the style's |
+| `size` | float | text size, 0.5 to 1 (default 1) |
+| `plate` | string | `s`, `m` (default), `l` |
+| `lay` | string | `h` (default) or `v`, a vertical stack |
+| `ink` | string | `default`, `black`, `white`, `gold`, `brass`, `bronze`, `blue`, `steel`, `red`, `green`, `slate` |
+| `dx`, `dy` | byte | px across and up, -8 to 8 |
+| `dz` | byte | the decal only: px behind its block's back face, -24 to 16 |
+| `lit` | byte | the lamp box only: 1 (default) or 0 |
+
+Characters outside the font are dropped, numbers clamped, unknown ids read as the default, and
+only keys off their default are written (always `num`). For example:
+
+```
+/setblock ~ ~1 ~ csm:address_plaque_enamel 2 replace {num:"245",st:"W 86th St"}
+/blockdata ~ ~1 ~ {num:"12",lay:"v",plate:"s"}
+```
+
+### Traps
+
+- **The facing is the way to the wall**, not the way the plaque faces (the wayfinding panels' is
+  the other way round). Metadata 2 (north) hangs a plaque on the block to its north, read from
+  the south.
+- **Never edit `PlaqueSheet.java` or the sheets by hand**: they and `PlaqueStyle`'s tiles, depths
+  and defaults are shared with the generator.
+- **The OFL fonts are fetched on first use** into the gitignored `_font_cache/`, so a fresh clone's
+  `--check` needs the network once.

@@ -42,7 +42,9 @@ of the file names by module). Read the doc itself before changing its subsystem.
   the hospital, smoke barrier and lead-lined doors, the automatic sliding doors and their
   activation mat; the dark oak doors; the cathedral doors (a leaf two wide built to its opening, one
   block per cell with every cell the same four bits, the pointed arch head and tympanum, why not a
-  master and parts); and the metadata table for placing every door by command
+  master and parts); the metadata table for placing every door by command; and the address
+  plaques (#364): the nine styles, text baked from a glyph sheet by `PlaqueLayout`, the NBT keys,
+  the transom decal's depth and the lit box
 - `assets/docs/CONSTRUCTION_SITE.md` -- Frame scaffold, formwork, shoring, rebar and the tower
   crane, site fences, earthworks, logistics and facilities: why the scaffold's look is actual state and its sides three-valued, the guardrail that
   needs its own collision handler, why the crane head draws its jib in Java rather than as blocks
