@@ -5,6 +5,12 @@ gradle.projectsEvaluated {
     rootProject.tasks.matching { it.name == 'runClient' }.configureEach {
         extraJvmArgs.add("-Xmx${heap}".toString())
         extraJvmArgs.add("-Xms256M")
-        logger.lifecycle("[lowmem] runClient heap capped at ${heap}")
+        // -Dcsm.testG1=true: G1 instead of Java 8's default ParallelGC, as the vanilla launcher
+        // and most modpack profiles run it.
+        def g1 = Boolean.getBoolean('csm.testG1')
+        if (g1) {
+            extraJvmArgs.add("-XX:+UseG1GC")
+        }
+        logger.lifecycle("[lowmem] runClient heap capped at ${heap}${g1 ? ', G1' : ''}")
     }
 }
