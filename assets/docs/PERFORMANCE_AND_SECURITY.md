@@ -457,6 +457,69 @@ To see a pack's behaviour, run `runObfClient` with VintageFix, MixinBooter and O
 `run/obfuscated/mods` along with the module jars. The task empties that folder on every launch, so
 start the game again from its command line (read it off the running JVM) after copying them back.
 
+### Under Celeritas, AUSM and OptiFine shaders
+
+The packs also run other renderers: the AltoCELERITAS variant has Celeritas (a Sodium-style chunk
+renderer) and AUSM (a shader pipeline for Iris/OptiFine shader packs), the main Alto pack OptiFine
+with a shader pack. All three were checked against a plain client on 2026-11-16 (Celeritas 2.5.0-dev
+at commit 38ccea6, AUSM 1.0.9 with its "BSL v10.1 + AUSM 1.12.2 Patches" pack, OptiFine HD U G6_pre1
+with BSL 8.2.04 and Complementary Reimagined r5.6.1, each with VintageFix and Alfheim as the packs
+run them): the trees, leaves and plantings, OBJ light poles and arms, the bus station canopy,
+wayfinding panels and span-wire signals, by day and at night. Nothing CSM draws came out black,
+invisible or patchworked under any of them. What differs, and why:
+
+- **AUSM switches Celeritas' chunk renderer off.** Its coremod strips Celeritas' world renderer,
+  so with both installed terrain is meshed by the vanilla and Forge pipeline and Celeritas only
+  helps around it. Only a pack with Celeritas and no AUSM runs Celeritas' meshing.
+- **Celeritas meshes on many threads and reads quads raw.** It calls `getVertexData()` on every
+  quad from up to ten builder threads (and the main thread, by work stealing), honours
+  `canRenderInLayer` and the quad's own vertex format (ITEM-format quads are read right), and
+  lights them with its own pipeline, not Forge's: diffuse shading comes from the quad's first
+  vertex normal, so smooth normals shade per quad, and a vertex outside the block takes the light
+  at the block's edge. Measured, the whole scene (vanilla grass included) draws about 10% darker
+  than plain with Alfheim alongside; CSM's trees match it. A lazily packed quad shared between
+  threads is the #240 race again (see the OBJ rule above), so the tree logs and leaves
+  (`TreeLogBakedModel.bakeQuad`) hand out plain quads packed as they are baked.
+- **Celeritas does not frustum-test tile entities.** A tile entity is drawn when its own 16-block
+  section is visible, whatever its `getRenderBoundingBox`, and one whose renderer is a global
+  renderer is drawn every frame, on screen or not. CSM's global renderers (bridge and zipline
+  cables, ad boards, scoreboards, flight and arrival boards, the crane head, ceiling fans, sirens,
+  marquees) therefore cost a draw every frame there. Geometry reaching past its own section can
+  drop out when that section is culled; a span-wire piece (4 blocks) did not, in the test.
+- **Shader packs map blocks by registry name, and list no `csm:` blocks.** CSM leaves get id 0
+  under BSL and Complementary, so they do not wave and get no foliage material; they still draw
+  and shade correctly, next to vanilla leaves (decided 2026-11-16: no mapping shipped). OptiFine
+  would read a mod's own `assets/<modid>/shaders/block.properties`, but each pack numbers leaves
+  differently (BSL 8.2 10105, BSL 10.1 under AUSM 10500, Complementary 10009), and AUSM reads only
+  the pack's file.
+- **A shader pack does its own lighting**, so `"shade": false` and the `unshaded_` OBJ materials
+  do nothing there: a downward lit lens (the street lights, troffers) reads as dark as its housing
+  unless it has an emissive companion. OptiFine draws the `_e` companions (floodlights, signal
+  backplates, LED signs, exit signs) with and without a shader pack.
+- **AUSM ignores OptiFine's `emissive.properties`**, so no `_e` companion glows under AUSM. Its
+  bloom reads `_glow`, `_emissive` and `_bloom` overlays (Lumenized style) instead. Lit blocks get
+  only their block light.
+- **AUSM replaces each terrain quad's normals with one face normal** (Iris' formula), so CSM's
+  smooth-normal logs and leaf cards shade per face under AUSM shaders, as they do in Celeritas.
+- **Under a shadow-casting pack, a crown's shadow is a lattice of blobs.** Each leaves cell casts
+  the ragged outline of its leaf-cluster sprite, and the gaps between neighbouring cells show
+  through, where a vanilla leaves block casts a square. It is visible under BSL and Complementary
+  (`ofcomp_arbclose.png` in the test run below), and the same geometry draws the crown without
+  shaders, so it cannot change without changing that look.
+- **TESRs are fine under all three.** The display-list rules in TRAFFIC_SIGNAL_SYSTEM.md hold:
+  AUSM runs a `glCallList` under whichever program is bound, OptiFine the same, and Celeritas
+  leaves no state behind its terrain pass.
+
+**To repeat the test:** `run/compat/` (gitignored) holds a production 1.12.2-14.23.5.2860 client
+copied from a pack install (`env/`: libraries, `minecraft.jar`, natives, the 1.12 assets and the
+classpath), with one game directory per variant (`plain`, `celeritas`, `optifine`), each muted and
+with its own mods, configs, shader packs and copies of the demo worlds. `py -3 -I
+run/compat/launch.py <variant>` starts one (offline). AUSM starts with shaders off unless
+`config/ausm/client-settings.properties` sets `automaticShaderDisabling=false` and
+`config/ausm/shaders.properties` names the pack with `enabled=true`; OptiFine reads
+`optionsshaders.txt` at launch. `run/compat/tools/views.sh` shoots the same Parks demo views and the
+day and night views of the other demo worlds in any variant.
+
 **The block atlas has a budget.** Every block and item sprite goes into one texture whose size is
 the next power of two the stitcher can pack them into, and CSM is nearly all of it. Crossing a size
 is silent and doubles the cost: at 8192 x 8192 instead of 8192 x 4096 the atlas takes twice the GPU
