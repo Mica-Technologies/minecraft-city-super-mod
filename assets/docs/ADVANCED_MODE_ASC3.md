@@ -466,7 +466,11 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   point: 6 held green 80 ticks past it, 5 started 80 late and cleared into barrier B, and under a
   cold start it cost 3 and 8 whole cycles. A press on coordinated phase 2's crosswalk just
   before its yield point did it at once: 2 held green 200 ticks past its yield point, and ring 1
-  skipped 3 that cycle.
+  skipped 3 that cycle. The rule holds with **nothing** calling at the press too: on a UWS
+  junction (ring 1 [1, 2, 4], ring 2 [5, 6]) a W press 60 ticks before phase 2's yield re-ran the
+  walk, a phase 4 press a second later then missed barrier B's window, and 4 (no slack) waited a
+  cycle (`CoordinatedLatePedestrianTest`). Outside its window the request waits for the walk at
+  its window start.
 - **FYA flash hold is decided on "next"** — `computeFyaHoldFlash` holds a called left's flash
   only when that left is what its ring will serve next on this barrier (`servesNextOnBarrier`:
   forward sequence, conditional service, or the within-barrier wrap). A left whose slot the ring
@@ -634,6 +638,11 @@ owes the full interval) plus yellow and red. It ends a coordinated green, with o
 
 - Before it, gap-out and conflicting calls **cannot** take the phase off green — it holds past max
   green (coordinated phases are already max-out exempt).
+- At it, a call **across the barrier** does not end it while the other ring still has more to
+  time than its own clearance (a walk running past that ring's yield point): the barrier cannot
+  cross before both rings clear, so yielding only sat this ring red beside a green it does not
+  conflict with. It holds and yields when its clearance ends with the other ring's
+  (`barrierClearTime`). A call on its own barrier still ends it at the yield point.
 - A coordinated phase sitting outside its own window **dwells** on green until the yield point comes
   round again. That is the whole of our offset correction, and it is add-only by construction: no
   side-street split and no pedestrian interval is ever cut short to catch up.

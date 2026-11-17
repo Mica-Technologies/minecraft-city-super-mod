@@ -1078,11 +1078,31 @@ public class RingBarrierState {
         // over: one whose permissive period will still be open then (startableIn). Yielding to a
         // call that has missed its period this cycle served nobody -- the call waits for its next
         // window -- and the coordinated green went green, yellow, red and green again.
-        boolean coordYieldDue = isCoord && !ring.dualEntry
-            && ((coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)
-            && demandConflictsWith(phase, ringNum, plan,
-                startableAfter(plan, tickRawCalled, coordClearance)))
-            || windowOpeningFor != 0);
+        //
+        // A call across the barrier also waits for the other ring: the barrier crosses only once
+        // both rings have cleared. While the other ring still has more to time than this phase's
+        // own clearance (a walk and its clearance running past its yield point), yielding to a
+        // cross-barrier call only put this ring red beside a green it does not conflict with,
+        // for as long as the overrun lasted (a UWS junction's NB through sat red with nothing
+        // against it). So the coordinated phase holds green and yields once its own clearance
+        // ends with the other ring's, and both cross together.
+        boolean coordYieldDue = false;
+        if (isCoord && !ring.dualEntry) {
+          if (windowOpeningFor != 0) {
+            coordYieldDue = true;
+          } else if (coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)) {
+            boolean[] startable = startableAfter(plan, tickRawCalled, coordClearance);
+            if (barrierClearTime(companion, plan, now) > coordClearance) {
+              for (int n = 1; n < startable.length; n++) {
+                TrafficSignalProgrammedPhase other = plan.getPhase(n);
+                if (other == null || other.getBarrier() != phase.getBarrier()) {
+                  startable[n] = false;
+                }
+              }
+            }
+            coordYieldDue = demandConflictsWith(phase, ringNum, plan, startable);
+          }
+        }
         // While a coordinated phase is holding for its yield point, ordinary gap-out/conflict
         // termination must not take it off green — that is what the hold IS.
         boolean coordHold = isCoord && !ring.dualEntry && !coordYieldDue;
@@ -1129,15 +1149,16 @@ public class RingBarrierState {
         // it for the next service. Without this the request was never served and, since the
         // requester only resets on WALK/FDW, it stayed lit for good.
         //
-        // A coordinated phase recycles its walk only inside its pedestrian permissive period
-        // while a conflicting call waits: the new walk, its clearance, yellow and red must all
-        // end by the phase's window end. The waiting phases' windows have not opened, so
-        // `conflict` does not see them, and a walk recycled late ran past the yield point: the
-        // next phase started late and the overrun carried across the barrier. The latched
+        // A coordinated phase recycles its walk only inside its pedestrian permissive period: the
+        // new walk, its clearance, yellow and red must all end by the phase's window end. The
+        // waiting phases' windows have not opened, so `conflict` does not see them, and a walk
+        // recycled late ran past the yield point: the next phase started late and the overrun
+        // carried across the barrier. That holds with nothing calling at the press too: a call
+        // registered a moment after the walk came up could no longer be served in its own window
+        // (a UWS junction's barrier B call waited a whole cycle behind such a walk). The latched
         // request is served with the phase's next walk instead.
         boolean recycleFits = true;
-        if (isCoord && !ring.dualEntry
-            && demandConflictsWith(phase, ringNum, plan, tickRawCalled)) {
+        if (isCoord && !ring.dualEntry) {
           long windowLen = windowEnd[phaseNum] - windowStart[phaseNum];
           long pos = windowPos(windowStart[phaseNum]);
           recycleFits = windowLen <= 0L || (pos < windowLen
@@ -2534,6 +2555,41 @@ public class RingBarrierState {
     long startPos = ((localCycle - greenElapsed) % cycleTicks + cycleTicks) % cycleTicks;
     long arcToYield = ((yieldPos - startPos) % cycleTicks + cycleTicks) % cycleTicks;
     return greenElapsed >= arcToYield;
+  }
+
+  /**
+   * Ticks until {@code ring} could be clear of its phase if it began terminating now: what is left
+   * of its pedestrian walk and clearance (a walk is never cut short), then its green flash,
+   * yellow and red; or what is left of a clearance already under way. {@code 0} for an idle ring.
+   * Minimum green is not counted: a ring this is asked about is normally well past it.
+   */
+  private long barrierClearTime(RingRuntime ring, TrafficSignalProgrammedPhasePlan plan,
+      long now) {
+    if (ring.activePhase == 0) {
+      return 0L;
+    }
+    TrafficSignalProgrammedPhase p = plan.getPhase(ring.activePhase);
+    if (p == null) {
+      return 0L;
+    }
+    long elapsed = now - ring.intervalStart;
+    switch (ring.interval) {
+      case GREEN: {
+        long ped = 0L;
+        if (ring.pedServing) {
+          ped = ring.resting && p.isRestInWalk() ? p.getPedClear()
+              : Math.max(0L, ring.pedStart + ring.walkHold + p.getPedClear() - now);
+        }
+        long flash = ring.gfActive ? Math.max(0L, greenFlashTicks - (now - ring.gfStart))
+            : greenFlashTicks;
+        return ped + flash + p.getYellow() + p.getRedClear();
+      }
+      case YELLOW:
+        return Math.max(0L, p.getYellow() - elapsed) + p.getRedClear();
+      case RED:
+      default:
+        return Math.max(0L, p.getRedClear() - elapsed);
+    }
   }
 
   /**
