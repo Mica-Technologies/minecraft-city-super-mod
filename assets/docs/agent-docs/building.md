@@ -77,7 +77,14 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   Plaques 364" (refuses any other; `--create` makes one) through the orchestrator by instance id:
   three brownstones with stoops, hooded doors, transom numbers, a plaque and a lit box beside each
   door and a vertical stack on a pier, and a gallery wall of every style with 2 to 5 digits, flat
-  and stacked. Places blocks, then writes each plaque's NBT, and checks every plaque block placed
+  and stacked. Places blocks, then writes each plaque's NBT, and checks every plaque block placed.
+  It also builds the glazing windows street (#357, `windows()`, x 65..175): every finish in every
+  pattern, the depths with 2- and 3-tall stacks and every sill and head, open sashes, arched tops,
+  a two-storey brownstone with a canted and a 90-degree bay (`bay()`, spandrel panels at base,
+  floor line and top) and a canted bay per finish. `stack()` writes a window the way hand
+  placement and clicks leave it (meta `facing | depth << 2`; `pt`, `op` on every block, `sl` on
+  the foot, `ar`, `hd` on the top, `pn` on a panel); `bay()` and `facade()` are reusable for
+  other test worlds
 - `gen_garage_doors.py` -- the garage doors, opener and hanger: textures, the part models drawn
   on the edge of the door they belong to, the sectional door's ceiling runs and tracks and the
   opener's rail as OBJ per length, and the multipart blockstates; `--check` fails on drift
