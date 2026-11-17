@@ -493,9 +493,12 @@ invisible or patchworked under any of them. What differs, and why:
   differently (BSL 8.2 10105, BSL 10.1 under AUSM 10500, Complementary 10009), and AUSM reads only
   the pack's file.
 - **A shader pack does its own lighting**, so `"shade": false` and the `unshaded_` OBJ materials
-  do nothing there: a downward lit lens (the street lights, troffers) reads as dark as its housing
-  unless it has an emissive companion. OptiFine draws the `_e` companions (floodlights, signal
-  backplates, LED signs, exit signs) with and without a shader pack.
+  do nothing there. A lit lens still reads lit: the fixture's own light (15) is full block light
+  on its faces. An unlit lens, which vanilla draws unshaded, reads darker under a shader pack, as
+  any downward face does. Adding `_e` companions to the lit street-light, troffer and decorative
+  lenses was tried (2026-11-16) and changed nothing visible under BSL 8.2 by day or night, nor
+  without shaders, so they were not added; the floodlights, signal backplates, LED signs and exit
+  signs keep theirs.
 - **AUSM ignores OptiFine's `emissive.properties`**, so no `_e` companion glows under AUSM. Its
   bloom reads `_glow`, `_emissive` and `_bloom` overlays (Lumenized style) instead. Lit blocks get
   only their block light.
