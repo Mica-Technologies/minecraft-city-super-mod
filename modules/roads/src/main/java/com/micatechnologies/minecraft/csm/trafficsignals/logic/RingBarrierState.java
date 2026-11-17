@@ -1128,7 +1128,23 @@ public class RingBarrierState {
         // With a conflicting call the phase terminates instead and the latched request recalls
         // it for the next service. Without this the request was never served and, since the
         // requester only resets on WALK/FDW, it stayed lit for good.
-        if (pedDone && !conflict && !coordYieldDue && !ring.delayActive
+        //
+        // A coordinated phase recycles its walk only inside its pedestrian permissive period
+        // while a conflicting call waits: the new walk, its clearance, yellow and red must all
+        // end by the phase's window end. The waiting phases' windows have not opened, so
+        // `conflict` does not see them, and a walk recycled late ran past the yield point: the
+        // next phase started late and the overrun carried across the barrier. The latched
+        // request is served with the phase's next walk instead.
+        boolean recycleFits = true;
+        if (isCoord && !ring.dualEntry
+            && demandConflictsWith(phase, ringNum, plan, tickRawCalled)) {
+          long windowLen = windowEnd[phaseNum] - windowStart[phaseNum];
+          long pos = windowPos(windowStart[phaseNum]);
+          recycleFits = windowLen <= 0L || (pos < windowLen
+              && pos + phase.getWalk() + phase.getPedClear() + phase.getYellow()
+              + phase.getRedClear() + greenFlashTicks <= windowLen);
+        }
+        if (pedDone && !conflict && !coordYieldDue && recycleFits && !ring.delayActive
             && !(ring.resting && phase.isRestInWalk()) && pedRequestPresent(phase)) {
           ring.pedServing = true;
           ring.pedStart = now;

@@ -458,6 +458,13 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   overwrite it with the rest-in-walk flag, silently dropping a ped recall on the rest phase — and
   the rest-in-walk clearance re-arm applies only to rest-in-walk phases (a finished, timed ped
   service is not re-run as an extra FDW when a conflict arrives).
+  A **coordinated** phase recycles its walk only inside its pedestrian permissive period while a
+  conflicting call waits: the new walk, its clearance, yellow and red must end by its window end,
+  or the request waits for the next walk. Its conflicts' windows have not opened, so they do not
+  count as conflicting there, and on the UWS W-E4 program (`UwsWe4ReplayTest`) a button held on
+  coordinated phase 6's crosswalk recycled the walk at local 300 with 220 ticks left to the yield
+  point: 6 held green 80 ticks past it, 5 started 80 late and cleared into barrier B, and under a
+  cold start it cost 3 and 8 whole cycles.
 - **FYA flash hold is decided on "next"** — `computeFyaHoldFlash` holds a called left's flash
   only when that left is what its ring will serve next on this barrier (`servesNextOnBarrier`:
   forward sequence, conditional service, or the within-barrier wrap). A left whose slot the ring
