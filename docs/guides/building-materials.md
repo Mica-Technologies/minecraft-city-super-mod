@@ -96,13 +96,18 @@ Window** for 45-degree bay corners. They join like the panes and more:
   looking diagonally out through that corner.
 - **Depth.** The glass can sit in the middle of the block, flush with the outside, or inset for a
   deep reveal.
+- **Spandrel panels.** Any window block can be a solid stone panel instead of glass: for a bay's
+  base, the band between two storeys and its top. A panel follows the window's line, so on a
+  canted corner it runs on the diagonal where a brick would stand square. It is its own window,
+  so the windows above and below it keep their own sills and heads. Sneak + right-click the
+  window **from the room side** to switch that one block between panel and glass.
 
 With an empty hand:
 
 | | Most of the window | Bottom of the lowest block | Top of the highest block |
 |---|---|---|---|
 | **Right-click** | Next pattern: plain, double-hung 1/1, double-hung 6/6, casement pair | Open or close it | Arched or square top |
-| **Sneak + right-click** | Next depth: centred, flush, inset | Next sill: none, stone, frame | Next head: none, flat lintel, keystone lintel |
+| **Sneak + right-click** | Next depth: centred, flush, inset (from the room side: panel or glass) | Next sill: none, stone, frame | Next head: none, flat lintel, keystone lintel |
 
 An open double-hung window's lower sash slides up behind the upper one; open casements swing out.
 Nothing can pass through an open window. Windows drop themselves when broken, but not their

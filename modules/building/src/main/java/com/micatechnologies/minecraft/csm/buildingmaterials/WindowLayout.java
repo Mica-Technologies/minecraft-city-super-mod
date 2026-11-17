@@ -37,6 +37,12 @@ import java.util.List;
  * the inner one; open, the lower slides up behind the upper), and {@link #CASEMENT} (a pair of
  * side-hung sashes meeting in the middle; open, both swing out square to the wall).</p>
  *
+ * <p><b>Spandrel panels.</b> A block marked {@link Shape#panel} draws a solid stone panel in its
+ * spans' plane instead of glass and sashes, so a bay's base, the spandrel at a floor line and its
+ * top follow the window's own run, turns and canted diagonal where a brick block would stand
+ * square past them. The posts, the turns and the trim are the window's; a panel is its own stack,
+ * so the windows above and below it keep their own sills and heads.</p>
+ *
  * @version 1.0
  * @since 2026.11
  */
@@ -118,6 +124,8 @@ public final class WindowLayout {
   /** Sash members: stiles and top rail, bottom rail. */
   private static final float S = 1.25f;
   private static final float BOTTOM_RAIL = 2f;
+  /** A spandrel panel's half thickness: as deep as a patterned window's frame. */
+  private static final float PANEL_HALF = 1.5f;
 
   private WindowLayout() {
   }
@@ -180,6 +188,8 @@ public final class WindowLayout {
     /** A solid face above the stack's top, below its foot: the frame is lined there. */
     public boolean solidAbove;
     public boolean solidBelow;
+    /** A solid spandrel panel in place of the glass (this block's own setting). */
+    public boolean panel;
 
     /** The packed shape. */
     public long pack() {
@@ -199,6 +209,7 @@ public final class WindowLayout {
       k |= (long) (head & 3) << 25;
       k |= (solidAbove ? 1L : 0L) << 27;
       k |= (solidBelow ? 1L : 0L) << 28;
+      k |= (panel ? 1L : 0L) << 29;
       return k;
     }
 
@@ -221,6 +232,7 @@ public final class WindowLayout {
       s.head = (int) (k >> 25 & 3);
       s.solidAbove = (k >> 27 & 1) != 0;
       s.solidBelow = (k >> 28 & 1) != 0;
+      s.panel = (k >> 29 & 1) != 0;
       return s;
     }
   }
@@ -470,6 +482,26 @@ public final class WindowLayout {
     float fd = patterned ? 1.5f : 1f;
     float u0 = sp.u0;
     float u1 = sp.u1;
+
+    if (s.panel) {
+      // a solid panel the frame's depth, the span's whole width but the corner posts' (drawn
+      // apart); no face where the same window carries on, so a run of panels reads as one
+      float post = patterned ? 1.25f : 1f;
+      int faces = P_ALL;
+      if (sp.lo == END_JOIN) {
+        faces &= ~U_LO;
+      }
+      if (sp.hi == END_JOIN) {
+        faces &= ~U_HI;
+      }
+      float a = u0 + (sp.lo == END_POST ? post : 0f);
+      float b = u1 - (sp.hi == END_POST ? post : 0f);
+      out.add(new PBox(a, b, 0, top, -PANEL_HALF, PANEL_HALF, STONE, faces));
+      if (sp.trim) {
+        trim(out, sp, s, PANEL_HALF, top);
+      }
+      return;
+    }
 
     // the frame: sill, head, and the jambs or half mullions at the span's ends
     out.add(new PBox(u0, u1, 0, f, -fd, fd, FRAME, P_ALL));
@@ -771,6 +803,7 @@ public final class WindowLayout {
     p.arch = false;
     p.sill = SILL_NONE;
     p.head = HEAD_NONE;
+    p.panel = false;
     p.height = 1;
     p.index = 0;
     return p;

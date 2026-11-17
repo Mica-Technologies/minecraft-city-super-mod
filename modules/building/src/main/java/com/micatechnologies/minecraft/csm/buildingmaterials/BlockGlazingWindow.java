@@ -60,7 +60,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *
  * <p><b>Stored:</b> metadata {@code facing | depth << 2} (facing S0 W1 N2 E3, the outside, the way
  * the placer looked; depth 0 centred, 1 flush with the outside, 2 inset), and the tile entity's
- * {@code pt}, {@code op}, {@code sl}, {@code ar}, {@code hd} ({@link TileEntityGlazingWindow}). So
+ * {@code pt}, {@code op}, {@code sl}, {@code ar}, {@code hd}, {@code pn}
+ * ({@link TileEntityGlazingWindow}). So
  * {@code server_set_blocks} with the meta and that NBT gives exactly the hand-placed window. 12
  * states a block; everything else reaches the model as one unlisted value ({@link #SHAPE}).</p>
  *
@@ -74,6 +75,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  *   <li>Sneak + right-click the bottom quarter of the foot: the next sill (none, stone, frame).</li>
  *   <li>Sneak + right-click the top quarter of the top: the next head (none, flat lintel,
  *       keystone lintel).</li>
+ *   <li>Sneak + right-click from the room side (a face the window does not look out of), not on
+ *       those quarters: this block alone becomes a solid spandrel panel, or glass again
+ *       ({@code pn}). A panel is a stack of its own, so a bay's floor line can be a panel between
+ *       two windows that keep their own sills and heads.</li>
  * </ul>
  * <p>An open window's collision is its closed glass: nothing passes through it either way.</p>
  *
@@ -233,11 +238,18 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
         f.rotateYCCW()}) {
       BlockPos p = pos.offset(d);
       IBlockState other = world.getBlockState(p);
-      if (other.getBlock() == this && other.getValue(FACING) == f) {
+      // a spandrel panel is not a window to copy: a window placed on one takes the next
+      if (other.getBlock() == this && other.getValue(FACING) == f && !isPanel(world, p)) {
         return p;
       }
     }
     return null;
+  }
+
+  /** Whether the window at {@code pos} is a spandrel panel. */
+  private static boolean isPanel(IBlockAccess world, BlockPos pos) {
+    TileEntity te = BlockUtils.getTileEntitySafe(world, pos);
+    return te instanceof TileEntityGlazingWindow && ((TileEntityGlazingWindow) te).isPanel();
   }
 
   @Override
@@ -274,9 +286,15 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
     return out;
   }
 
-  private boolean sameStack(IBlockState here, IBlockState other) {
+  /**
+   * Whether the window at {@code at} (state {@code other}) is in the same stack as this one at
+   * {@code pos}: the same block, facing and depth, and both panels or both glass.
+   */
+  private boolean sameStack(IBlockAccess world, BlockPos pos, IBlockState here, BlockPos at,
+      IBlockState other) {
     return other.getBlock() == this && other.getValue(FACING) == here.getValue(FACING)
-        && other.getValue(DEPTH) == here.getValue(DEPTH);
+        && other.getValue(DEPTH) == here.getValue(DEPTH)
+        && isPanel(world, at) == isPanel(world, pos);
   }
 
   private int runEnd(IBlockAccess world, BlockPos pos, IBlockState here, EnumFacing toward) {
@@ -363,14 +381,15 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
     if (!settings) {
       return s;
     }
+    s.panel = isPanel(world, pos);
     int below = 0;
-    while (below < WindowLayout.MAX_STACK - 1
-        && sameStack(state, world.getBlockState(pos.down(below + 1)))) {
+    while (below < WindowLayout.MAX_STACK - 1 && sameStack(world, pos, state,
+        pos.down(below + 1), world.getBlockState(pos.down(below + 1)))) {
       below++;
     }
     int above = 0;
-    while (below + above < WindowLayout.MAX_STACK - 1
-        && sameStack(state, world.getBlockState(pos.up(above + 1)))) {
+    while (below + above < WindowLayout.MAX_STACK - 1 && sameStack(world, pos, state,
+        pos.up(above + 1), world.getBlockState(pos.up(above + 1)))) {
       above++;
     }
     s.height = below + above + 1;
@@ -414,14 +433,16 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
   private List<BlockPos> stack(World world, BlockPos pos, IBlockState state) {
     BlockPos foot = pos;
     int n = 0;
-    while (n < WindowLayout.MAX_STACK - 1 && sameStack(state, world.getBlockState(foot.down()))) {
+    while (n < WindowLayout.MAX_STACK - 1
+        && sameStack(world, pos, state, foot.down(), world.getBlockState(foot.down()))) {
       foot = foot.down();
       n++;
     }
     List<BlockPos> out = new ArrayList<>();
     BlockPos p = foot;
     out.add(p);
-    while (out.size() < WindowLayout.MAX_STACK && sameStack(state, world.getBlockState(p.up()))) {
+    while (out.size() < WindowLayout.MAX_STACK
+        && sameStack(world, pos, state, p.up(), world.getBlockState(p.up()))) {
       p = p.up();
       out.add(p);
     }
@@ -432,6 +453,17 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
   private static TileEntityGlazingWindow te(World world, BlockPos pos) {
     TileEntity te = world.getTileEntity(pos);
     return te instanceof TileEntityGlazingWindow ? (TileEntityGlazingWindow) te : null;
+  }
+
+  /**
+   * Whether a click on {@code side} came from the room: the face opposite the one the window
+   * looks out of (a canted corner, which looks out of its facing and the side anticlockwise of
+   * it, has two). A straight window's ends are not the room side: at a bay's end one faces the
+   * street.
+   */
+  private boolean roomSide(IBlockState state, EnumFacing side) {
+    EnumFacing f = state.getValue(FACING);
+    return side == f.getOpposite() || canted && side == f.rotateY();
   }
 
   private static void say(EntityPlayer player, String key) {
@@ -472,6 +504,21 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
         topTe.setHead(topTe.getHead() + 1);
         topTe.markDirtySync(world, top, world.getBlockState(top), true);
         say(player, "head." + topTe.getHead());
+      } else if (roomSide(state, side)) {
+        TileEntityGlazingWindow here = te(world, pos);
+        if (here != null) {
+          here.setPanel(!here.isPanel());
+          if (here.isPanel()) {
+            // a panel copied its window neighbour's trim when it was placed; as a stack of its
+            // own it would draw that sill and head on the floor line
+            here.setSill(WindowLayout.SILL_NONE);
+            here.setHead(WindowLayout.HEAD_NONE);
+            here.setArch(false);
+            here.setOpen(false);
+          }
+          here.markDirtySync(world, pos, state, true);
+          say(player, here.isPanel() ? "panel.on" : "panel.off");
+        }
       } else {
         Depth next = Depth.values()[(state.getValue(DEPTH).ordinal() + 1) % WindowLayout.DEPTHS];
         for (BlockPos p : stack) {
@@ -520,6 +567,7 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
       ITooltipFlag flag) {
     tooltip.add(I18n.format("csm.building.window.tooltip.click"));
     tooltip.add(I18n.format("csm.building.window.tooltip.sneak"));
+    tooltip.add(I18n.format("csm.building.window.tooltip.panel"));
   }
 
   // --- tile entity --------------------------------------------------------------------------

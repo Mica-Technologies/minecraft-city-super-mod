@@ -275,6 +275,62 @@ class WindowLayoutTest {
   }
 
   @Test
+  void panelIsSolidStoneAcrossTheRunWithNoGlass() {
+    WindowLayout.Shape s = shape(WindowLayout.HUNG_1_1, 1, 0);
+    s.endW = WindowLayout.END_JOIN;
+    s.panel = true;
+    List<WindowLayout.Box> boxes = WindowLayout.boxes(s);
+    assertFalse(any(boxes, b -> b.part == WindowLayout.GLASS));
+    assertTrue(any(boxes, b -> b.part == WindowLayout.STONE && b.x0 <= 0f && b.x1 >= 16f
+        && b.y0 <= 0f && b.y1 >= 16f));
+    // no face where the next panel carries on, so a run of panels has no seam
+    WindowLayout.Box panel = boxes.stream().filter(b -> b.part == WindowLayout.STONE)
+        .findFirst().orElseThrow(AssertionError::new);
+    assertEquals(0, panel.faces & WindowLayout.WEST);
+    assertTrue((panel.faces & WindowLayout.EAST) != 0);
+    // its collision is the glass's
+    s.panel = false;
+    List<float[]> glass = WindowLayout.collision(s);
+    s.panel = true;
+    List<float[]> solid = WindowLayout.collision(s);
+    assertEquals(glass.size(), solid.size());
+  }
+
+  @Test
+  void cantedPanelFollowsTheDiagonalBetweenItsPosts() {
+    WindowLayout.Shape s = shape(WindowLayout.HUNG_1_1, 1, 0);
+    s.canted = true;
+    s.depth = WindowLayout.FLUSH;
+    s.panel = true;
+    List<WindowLayout.Box> boxes = WindowLayout.boxes(s);
+    WindowLayout.Box panel = boxes.stream().filter(b -> b.part == WindowLayout.STONE)
+        .findFirst().orElseThrow(AssertionError::new);
+    assertTrue(panel.rotated);
+    float diagonal = (16 - WindowLayout.planeOf(WindowLayout.FLUSH)) * (float) Math.sqrt(2);
+    assertEquals(diagonal - 2 * 1.25f, panel.x1 - panel.x0, 1e-3);
+    assertEquals(2, boxes.stream().filter(b -> b.part == WindowLayout.FRAME).count());
+  }
+
+  @Test
+  void panelIsStoredOnlyWhileSetAndChangesTheKeys() {
+    TileEntityGlazingWindow te = new TileEntityGlazingWindow();
+    long glass = te.settingsKey();
+    assertFalse(te.writeNBT(new NBTTagCompound()).hasKey(TileEntityGlazingWindow.KEY_PANEL));
+    te.setPanel(true);
+    NBTTagCompound nbt = te.writeNBT(new NBTTagCompound());
+    assertEquals(1, nbt.getByte(TileEntityGlazingWindow.KEY_PANEL));
+    TileEntityGlazingWindow read = new TileEntityGlazingWindow();
+    read.readNBT(nbt);
+    assertTrue(read.isPanel());
+    assertNotEquals(glass, read.settingsKey());
+    WindowLayout.Shape s = shape(WindowLayout.PLAIN, 1, 0);
+    long k = s.pack();
+    s.panel = true;
+    assertNotEquals(k, s.pack());
+    assertTrue(WindowLayout.Shape.unpack(s.pack()).panel);
+  }
+
+  @Test
   void cantedFacingNamesTheQuarterLookedInto() {
     // horizontal indices: S0 W1 N2 E3
     assertEquals(2, WindowLayout.cantedFacing(135f));    // north-west: north

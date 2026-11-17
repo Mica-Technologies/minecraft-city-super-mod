@@ -18,6 +18,8 @@ import net.minecraft.nbt.NBTTagCompound;
  *   <li>{@code ar} (byte, 0/1) arched top. Read from the stack's top.</li>
  *   <li>{@code hd} (byte) head: 0 none, 1 flat lintel, 2 keystone lintel. Read from the stack's
  *       top.</li>
+ *   <li>{@code pn} (byte, 0/1) a solid spandrel panel in place of the glass. This block's own,
+ *       never the stack's: a panel is a stack of its own. Written only while set.</li>
  * </ul>
  * <p>The facing and depth are metadata, not NBT. A click writes the pattern and the open state
  * to every block of the stack, so the stack keeps them whichever block is broken.</p>
@@ -32,12 +34,22 @@ public class TileEntityGlazingWindow extends AbstractTileEntity {
   static final String KEY_ARCH = "ar";
   static final String KEY_SILL = "sl";
   static final String KEY_HEAD = "hd";
+  static final String KEY_PANEL = "pn";
 
   private int pattern = WindowLayout.PLAIN;
   private boolean open;
   private boolean arch;
   private int sill = WindowLayout.SILL_NONE;
   private int head = WindowLayout.HEAD_NONE;
+  private boolean panel;
+
+  public boolean isPanel() {
+    return panel;
+  }
+
+  void setPanel(boolean panel) {
+    this.panel = panel;
+  }
 
   public int getPattern() {
     return pattern;
@@ -94,6 +106,7 @@ public class TileEntityGlazingWindow extends AbstractTileEntity {
     arch = read(compound, KEY_ARCH, 2) == 1;
     sill = read(compound, KEY_SILL, WindowLayout.SILLS);
     head = read(compound, KEY_HEAD, WindowLayout.HEADS);
+    panel = read(compound, KEY_PANEL, 2) == 1;
   }
 
   @Override
@@ -103,6 +116,11 @@ public class TileEntityGlazingWindow extends AbstractTileEntity {
     compound.setByte(KEY_ARCH, (byte) (arch ? 1 : 0));
     compound.setByte(KEY_SILL, (byte) sill);
     compound.setByte(KEY_HEAD, (byte) head);
+    if (panel) {
+      compound.setByte(KEY_PANEL, (byte) 1);
+    } else {
+      compound.removeTag(KEY_PANEL);
+    }
     return compound;
   }
 
@@ -118,6 +136,7 @@ public class TileEntityGlazingWindow extends AbstractTileEntity {
 
   /** The settings packed into an int, for the model key and its test. */
   long settingsKey() {
-    return pattern | (open ? 1 : 0) << 2 | (arch ? 1 : 0) << 3 | sill << 4 | head << 6;
+    return pattern | (open ? 1 : 0) << 2 | (arch ? 1 : 0) << 3 | sill << 4 | head << 6
+        | (panel ? 1 : 0) << 8;
   }
 }

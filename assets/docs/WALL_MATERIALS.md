@@ -276,6 +276,17 @@ windows at different depths are different windows and frame against each other.
 spandrels filled with frame, stepped a pixel row at a time; the rise is half the opening's width,
 at most 12 px, so it stays in the top block.
 
+**Spandrel panel** (stored on the block itself, `pn`): the block draws a solid stone panel, 3 px
+thick, in its spans' plane instead of glass and sashes, between the posts, with no face where the
+same window carries on beside it. It is for a bay's base, the band at a floor line and the top:
+brick blocks there stand square past a canted corner's diagonal and a turned end's side (the
+#357 two-storey bay showed it at every storey join), where a panel keeps the window's line. A
+panel is its own stack (two blocks are one stack only if both are panels or both glass), so a
+storey's window above and below one keeps its own sill and head; a window placed by hand never
+copies a panel neighbour, and never copies `pn`. Turning a block into a panel clears its own
+sill, head, arch and open state (copied from the window it was placed on, they would trim the
+floor line); its pattern stays, for the posts' width. Its collision is the glass's.
+
 **Sill and head** (the sill stored on the foot, the head on the top): sill none / stone / frame;
 head none / flat stone lintel / keystone lintel. Both sit on the outside of the glass, from past the
 wall's outer face to the frame, with 1.5 px horns into a wall at a run's solid ends; a run's
@@ -286,9 +297,11 @@ sills meet round an outside corner. The keystone rises 2 px above the window.
 | | Anywhere else | Bottom quarter of the stack's foot | Top quarter of the stack's top |
 |---|---|---|---|
 | Right-click | next pattern, whole stack | open / close, whole stack (not plain) | arched / square top |
-| Sneak + right-click | next depth, whole stack | next sill | next head |
+| Sneak + right-click | next depth, whole stack (from the room side: panel or glass, this block) | next sill | next head |
 
-Each click says what it set on the action bar.
+The room side is the face opposite the one the window looks out of (a canted corner's two such
+faces); a straight window's ends never count, since at a bay's end one faces the street. Each
+click says what it set on the action bar.
 
 **Placing by hand copies the neighbour.** A window placed against another of the same block
 facing the same way (looked for below, above, then either side) takes its depth, pattern, open
@@ -307,6 +320,7 @@ so a meta-only `server_set_blocks` gives a plain closed window with no trim):
 | `sl` | byte | sill: 0 none, 1 stone, 2 frame | the stack's foot |
 | `ar` | byte | 1 arched top | the stack's top |
 | `hd` | byte | head: 0 none, 1 flat lintel, 2 keystone lintel | the stack's top |
+| `pn` | byte | 1 spandrel panel (written only while set) | the block itself |
 
 A click writes the pattern and open state to every block of the stack, so the stack keeps them
 whichever block is broken. Joins are never stored.
@@ -317,7 +331,7 @@ them with `FaceBakery` under the facing's turn (and a 45-degree `BlockPartRotati
 canted span), and caches the quads by finish and shape. The wrapper is registered after Core's
 glass split, so it splits its own quads: glass (named `glass_*`) in the translucent pass, frame
 and stone (`window_frame_*`, `window_stone`, never named glass) in the cutout pass. The tile
-entity's `getBakedModelKey` is its five settings, and a client listener
+entity's `getBakedModelKey` is its six settings, and a client listener
 (`GlazingWindowRenderUpdater`) rebuilds a window's whole column when any block of it changes or
 syncs, since a block's look depends on blocks up to seven away.
 
