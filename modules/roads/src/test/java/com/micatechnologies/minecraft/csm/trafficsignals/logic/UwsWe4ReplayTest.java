@@ -36,10 +36,10 @@ import org.junit.jupiter.api.Test;
  * program carries two workarounds for bugs in the build that was live; this test puts each back:
  * <ul>
  *   <li>exclusions 1:[5] and 3:[7] (a safety net under the lead-lag order) skipped phase 8, and
- *   once 3, for whole cycles under coordination (filed as issue #361). In this replay the lead-lag
- *   order keeps the excluded windows apart, so the #361 window spacing changes nothing; the skips
- *   came from coordinated phase 6 recycling its walk past its yield point, which the engine no
- *   longer does;</li>
+ *   once 3, for whole cycles under coordination (put down to issue #361). In this replay the
+ *   lead-lag order keeps the excluded windows apart, so the #361 window spacing changes nothing;
+ *   the skips came from a coordinated phase (2 or 6) recycling its walk past its yield point,
+ *   which the engine no longer does;</li>
  *   <li>the NB preempt's dwell [3, 8] showed the bike heads green beside the NB left arrow
  *   (issue #363); the live program dwells [8] only.</li>
  * </ul>
@@ -137,18 +137,18 @@ class UwsWe4ReplayTest {
     assertArrayEquals(new int[] {8}, live.getPreempts().get(2).getDwellPhases());
   }
 
-  // region (a) exclusions under coordination (issue #361)
+  // region (a) exclusions under coordination
 
   @Test
   @DisplayName("with exclusions 1:[5] and 3:[7] under coordination, recall only: every phase once "
-      + "a cycle, the excluded pairs never together (issue #361)")
+      + "a cycle, the excluded pairs never together")
   void exclusionsRecallOnly() throws Exception {
     runCoordinated(true, new Demand(), "ex, recall only");
   }
 
   @Test
   @DisplayName("with exclusions under coordination, every vehicle and ped called: every phase "
-      + "once a cycle, the excluded pairs never together (issue #361)")
+      + "once a cycle, the excluded pairs never together")
   void exclusionsAllCalled() throws Exception {
     runCoordinated(true, allCalled(true), "ex, all called");
   }
@@ -182,7 +182,7 @@ class UwsWe4ReplayTest {
    */
   @Test
   @DisplayName("with exclusions under coordination, a cold start anywhere in the cycle: barrier B "
-      + "served every cycle, every phase from the second full cycle (issue #361)")
+      + "served every cycle, every phase from the second full cycle")
   void exclusionsColdStartAnywhere() throws Exception {
     TrafficSignalProgrammedPhasePlan plan = plan(true, false);
     TrafficSignalControllerCircuits ckts = circuits();
@@ -252,7 +252,32 @@ class UwsWe4ReplayTest {
    */
   private static final long[] WINDOW_START = {0, 0, 240, 900, 1200, 660, 0, 1500, 900};
 
+  /**
+   * The live trace that skipped 3 and 8 shows a WB walk come up at local ~741, just before phase
+   * 2's yield point (760): a button on phase 2's crosswalk (circuit 0) pressed late in its window.
+   * A recycled walk there (100 + 160) would hold 2 green to ~1000, past barrier B's start.
+   */
+  @Test
+  @DisplayName("with and without exclusions, a button on the coordinated phase 2's crosswalk "
+      + "pressed just before its yield point: no recycled walk, every phase starts on time")
+  void latePressOnCoordinatedPhase2() throws Exception {
+    Demand quiet = allCalled(false);
+    Demand pressed = allCalled(false).ped(0);
+    java.util.function.LongFunction<RingBarrierState.DemandSource> latePress = t -> {
+      long local = ((t - OFFSET) % CYCLE + CYCLE) % CYCLE;
+      return local >= 700L && local < 750L ? pressed : quiet;
+    };
+    runCoordinated(true, latePress, "ex, late phase 2 press");
+    runCoordinated(false, latePress, "no ex, late phase 2 press");
+  }
+
   private static void runCoordinated(boolean exclusions, Demand demand, String label)
+      throws Exception {
+    runCoordinated(exclusions, t -> demand, label);
+  }
+
+  private static void runCoordinated(boolean exclusions,
+      java.util.function.LongFunction<RingBarrierState.DemandSource> demandAt, String label)
       throws Exception {
     TrafficSignalProgrammedPhasePlan plan = plan(exclusions, false);
     TrafficSignalControllerCircuits ckts = circuits();
@@ -271,7 +296,8 @@ class UwsWe4ReplayTest {
     StringBuilder timeline = new StringBuilder();
     long end = OFFSET + CYCLE * cycles;
     for (long t = 0; t < end; t++) {
-      TrafficSignalPhase applied = rb.tick(plan, ckts, RingBarrierStateTest.NO_OVERLAPS, t, demand);
+      TrafficSignalPhase applied = rb.tick(plan, ckts, RingBarrierStateTest.NO_OVERLAPS, t,
+          demandAt.apply(t));
       ServedMovement m1 = rb.getLastServed(1);
       ServedMovement m2 = rb.getLastServed(2);
       String key = (m1 == null ? "idle" : m1.phaseNumber + ":" + m1.vehicle) + " | "

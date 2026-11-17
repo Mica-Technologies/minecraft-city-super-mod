@@ -464,7 +464,9 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   count as conflicting there, and on the UWS W-E4 program (`UwsWe4ReplayTest`) a button held on
   coordinated phase 6's crosswalk recycled the walk at local 300 with 220 ticks left to the yield
   point: 6 held green 80 ticks past it, 5 started 80 late and cleared into barrier B, and under a
-  cold start it cost 3 and 8 whole cycles.
+  cold start it cost 3 and 8 whole cycles. A press on coordinated phase 2's crosswalk just
+  before its yield point did it at once: 2 held green 200 ticks past its yield point, and ring 1
+  skipped 3 that cycle.
 - **FYA flash hold is decided on "next"** — `computeFyaHoldFlash` holds a called left's flash
   only when that left is what its ring will serve next on this barrier (`servesNextOnBarrier`:
   forward sequence, conditional service, or the within-barrier wrap). A left whose slot the ring
