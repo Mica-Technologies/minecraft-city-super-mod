@@ -235,8 +235,9 @@ public final class PlaqueLayout {
       }
       case STANDOFF: {
         float front = face + STANDOFF;
-        glyphLayer(out, glyphs, front - 2 * 0.45f, scale(ink, 0.45f), 0, 0, false, true);
-        glyphLayer(out, glyphs, front - 0.45f, scale(ink, 0.6f), 0, 0, false, true);
+        // a numeral 0.4 px thick: thicker smeared a small street line into a shadow at an angle
+        glyphLayer(out, glyphs, front - 2 * LIFT, scale(ink, 0.45f), 0, 0, false, true);
+        glyphLayer(out, glyphs, front - LIFT, scale(ink, 0.6f), 0, 0, false, true);
         glyphLayer(out, glyphs, front, ink, 0, 0, false, true);
         return front;
       }

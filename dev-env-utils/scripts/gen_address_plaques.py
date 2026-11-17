@@ -489,7 +489,21 @@ def item_model(name):
                         "west": {"texture": "#icon", "uv": [0, 0, 0.25, 8]},
                         "up": {"texture": "#icon", "uv": [0, 0, 16, 0.25]},
                         "down": {"texture": "#icon", "uv": [0, 7.75, 16, 8]}}}
-    return {"textures": {"icon": tex, "particle": tex}, "elements": [el]}
+    # held and dropped at a plaque's size, not a block's (a 14 px plate filled the first-person view)
+    display = {
+        "gui": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [1, 1, 1]},
+        "ground": {"rotation": [0, 0, 0], "translation": [0, 3, 0], "scale": [0.3, 0.3, 0.3]},
+        "fixed": {"rotation": [0, 180, 0], "translation": [0, 0, 0], "scale": [0.6, 0.6, 0.6]},
+        "thirdperson_righthand": {"rotation": [0, 0, 0], "translation": [0, 2.5, 2],
+                                  "scale": [0.375, 0.375, 0.375]},
+        "thirdperson_lefthand": {"rotation": [0, 0, 0], "translation": [0, 2.5, 2],
+                                 "scale": [0.375, 0.375, 0.375]},
+        "firstperson_righthand": {"rotation": [0, -20, 0], "translation": [0, 2, 0],
+                                  "scale": [0.4, 0.4, 0.4]},
+        "firstperson_lefthand": {"rotation": [0, 20, 0], "translation": [0, 2, 0],
+                                 "scale": [0.4, 0.4, 0.4]},
+    }
+    return {"textures": {"icon": tex, "particle": tex}, "elements": [el], "display": display}
 
 
 # --------------------------------------------------------------------------------------------

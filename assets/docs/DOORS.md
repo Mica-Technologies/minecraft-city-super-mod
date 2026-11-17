@@ -783,7 +783,7 @@ wrapper on every `BlockAddressPlaque` variant except `inventory`) adds:
   window on `address_plaque_glyphs.png` (1024 x 1024, white on clear, capitals 52 px, every font's
   digits, letters, space and `. , - ' / & #`) tinted in its vertices, drawn as the style draws
   them: flat; raised (a darker copy under it); incised (a light edge under the dark letter);
-  stand-off (three copies 0.45 px apart, the front 1.5 px out); or gold leaf (a dark outline of
+  stand-off (three copies 0.2 px apart, a numeral 0.4 px thick, the front 1.5 px out); or gold leaf (a dark outline of
   four offset copies, and the gilding's back drawn facing the glass, so it reads mirrored from
   inside as real gold leaf does).
 
