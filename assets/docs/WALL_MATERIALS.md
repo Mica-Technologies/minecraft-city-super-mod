@@ -278,14 +278,17 @@ at most 12 px, so it stays in the top block.
 
 **Spandrel panel** (stored on the block itself, `pn`): the block draws a solid stone panel, 3 px
 thick, in its spans' plane instead of glass and sashes, between the posts, with no face where the
-same window carries on beside it. It is for a bay's base, the band at a floor line and the top:
+same window carries on beside it, and fills the cell behind that plane back to the inner face (a
+canted corner: the triangle behind its diagonal, in 16 steps), drawn and collidable, so at a
+storey join it is the bay's floor and at the top its ceiling, as the brick was. Beside a glazed
+window of the same finish it is framed, not joined. It is for a bay's base, the band at a floor line and the top:
 brick blocks there stand square past a canted corner's diagonal and a turned end's side (the
 #357 two-storey bay showed it at every storey join), where a panel keeps the window's line. A
 panel is its own stack (two blocks are one stack only if both are panels or both glass), so a
 storey's window above and below one keeps its own sill and head; a window placed by hand never
 copies a panel neighbour, and never copies `pn`. Turning a block into a panel clears its own
 sill, head, arch and open state (copied from the window it was placed on, they would trim the
-floor line); its pattern stays, for the posts' width. Its collision is the glass's.
+floor line); its pattern stays, for the posts' width.
 
 **Sill and head** (the sill stored on the foot, the head on the top): sill none / stone / frame;
 head none / flat stone lintel / keystone lintel. Both sit on the outside of the glass, from past the

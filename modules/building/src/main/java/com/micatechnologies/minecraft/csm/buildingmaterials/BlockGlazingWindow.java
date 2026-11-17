@@ -304,7 +304,9 @@ public class BlockGlazingWindow extends AbstractBlock implements ICsmGlassFronte
     if (block instanceof BlockGlazingWindow) {
       BlockGlazingWindow w = (BlockGlazingWindow) block;
       boolean sameDepth = other.getValue(DEPTH) == here.getValue(DEPTH);
-      if (w.finish.equals(finish) && sameDepth) {
+      // a panel beside glass is framed against it, not joined: the panel would leave its end
+      // open and the window would end in half a mullion
+      if (w.finish.equals(finish) && sameDepth && isPanel(world, at) == isPanel(world, pos)) {
         if (w.canted) {
           return WindowLayout.END_JOIN;
         }

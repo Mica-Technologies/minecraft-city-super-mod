@@ -288,12 +288,25 @@ class WindowLayoutTest {
         .findFirst().orElseThrow(AssertionError::new);
     assertEquals(0, panel.faces & WindowLayout.WEST);
     assertTrue((panel.faces & WindowLayout.EAST) != 0);
-    // its collision is the glass's
-    s.panel = false;
-    List<float[]> glass = WindowLayout.collision(s);
+    // it fills the cell behind its plane, drawn and collidable: a bay's floor at a storey join
+    assertTrue(any(boxes, b -> b.part == WindowLayout.STONE && b.z1 >= 16f && b.z0 >= 9f));
+    assertTrue(WindowLayout.collision(s).stream().anyMatch(c -> c[3] >= 16f && c[1] <= 9.5f));
+  }
+
+  @Test
+  void cantedPanelFillsTheCellBehindItsDiagonal() {
+    WindowLayout.Shape s = shape(WindowLayout.HUNG_1_1, 1, 0);
+    s.canted = true;
+    s.depth = WindowLayout.CENTRED;
     s.panel = true;
-    List<float[]> solid = WindowLayout.collision(s);
-    assertEquals(glass.size(), solid.size());
+    long fill = WindowLayout.boxes(s).stream().filter(b -> b.part == WindowLayout.STONE)
+        .count();
+    assertTrue(fill > 1);
+    // standing room up to the inner corner, none past the diagonal on the outside
+    List<float[]> c = WindowLayout.collision(s);
+    assertTrue(c.stream().anyMatch(b -> b[2] >= 15f && b[3] >= 16f && b[1] <= 13f));
+    s.panel = false;
+    assertTrue(WindowLayout.collision(s).size() < c.size());
   }
 
   @Test

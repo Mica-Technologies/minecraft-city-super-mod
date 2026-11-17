@@ -40,7 +40,9 @@ import java.util.List;
  * <p><b>Spandrel panels.</b> A block marked {@link Shape#panel} draws a solid stone panel in its
  * spans' plane instead of glass and sashes, so a bay's base, the spandrel at a floor line and its
  * top follow the window's own run, turns and canted diagonal where a brick block would stand
- * square past them. The posts, the turns and the trim are the window's; a panel is its own stack,
+ * square past them. It fills the cell behind its plane (behind a canted diagonal, in steps), so
+ * it is the bay's floor and ceiling as the brick was. The posts, the turns and the trim are the
+ * window's; a panel is its own stack,
  * so the windows above and below it keep their own sills and heads.</p>
  *
  * @version 1.0
@@ -497,6 +499,14 @@ public final class WindowLayout {
       float a = u0 + (sp.lo == END_POST ? post : 0f);
       float b = u1 - (sp.hi == END_POST ? post : 0f);
       out.add(new PBox(a, b, 0, top, -PANEL_HALF, PANEL_HALF, STONE, faces));
+      if (sp.wInner > PANEL_HALF + 0.01f) {
+        // the cell behind the panel, back to the inner face: a bay's floor at a storey join
+        // and its ceiling at the top, where the brick it replaces filled the cell
+        out.add(new PBox(a, b, 0, top, PANEL_HALF, sp.wInner, STONE, faces & ~W_LO));
+      }
+      if (sp.plane == Plane.CANTED) {
+        cantedFill(out, sp, top);
+      }
       if (sp.trim) {
         trim(out, sp, s, PANEL_HALF, top);
       }
@@ -551,6 +561,23 @@ public final class WindowLayout {
 
     if (sp.trim) {
       trim(out, sp, s, fd, top);
+    }
+  }
+
+  /**
+   * A canted panel's cell behind its diagonal: the right triangle between the diagonal and the
+   * cell's inner corner, in steps along the diagonal that stay inside it.
+   */
+  private static void cantedFill(List<PBox> out, Span sp, float top) {
+    float len = sp.u1 - sp.u0;
+    int steps = 16;
+    for (int k = 0; k < steps; k++) {
+      float u0 = sp.u0 + len * k / steps;
+      float u1 = sp.u0 + len * (k + 1) / steps;
+      float depth = Math.min(Math.min(u0 - sp.u0, sp.u1 - u0), Math.min(u1 - sp.u0, sp.u1 - u1));
+      if (depth > PANEL_HALF + 0.01f) {
+        out.add(new PBox(u0, u1, 0, top, PANEL_HALF, depth, STONE, P_ALL & ~W_LO));
+      }
     }
   }
 
@@ -781,10 +808,23 @@ public final class WindowLayout {
         float zb = 16 - (16 - zd) * t1;
         out.add(clamp(Math.min(xa, xb) - 1, Math.min(za, zb) - 1, Math.max(xa, xb) + 1,
             Math.max(za, zb) + 1));
+        if (s.panel) {
+          // the panel's fill, between the diagonal and the inner corner: something to stand on
+          out.add(clamp(xa, Math.max(za, zb), xb, 16));
+        }
       }
       return out;
     }
     List<float[]> out = new ArrayList<>();
+    if (s.panel) {
+      Shape p = withoutDecoration(s);
+      p.panel = true;
+      for (Box b : boxes(p)) {
+        if (b.part == STONE) {
+          out.add(clamp(b.x0, b.z0, b.x1, b.z1));
+        }
+      }
+    }
     for (Box b : boxes(withoutDecoration(s))) {
       if (b.part == GLASS) {
         boolean alongX = b.x1 - b.x0 >= b.z1 - b.z0;

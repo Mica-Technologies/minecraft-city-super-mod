@@ -110,8 +110,8 @@ yellow line, the id it first shipped under, unchanged), and
 `csm:fare_vending_machine_outdoor_riverway`, `_verdant` and `_emberline` the other three. The
 livery is only the cap's band and the bar heading the screen, both in the upper half, so the lower
 half's model is shared and each other agency's upper (and item) model is a child of CITYLINE's
-naming its own `band_<agency>` and `front_upper_<agency>` textures; each block has the same 16
-states. The class takes its registry name (the shelters' pattern, stashed for the base
+naming its own `band_<agency>` and `front_upper_<agency>` textures; each block has the same 12
+states (the base class's six-way facing, of which placing uses four, times `upper`). The class takes its registry name (the shelters' pattern, stashed for the base
 constructor). It is a subclass of the
 indoor machine, so it opens the same GUI (id 16) and the purchase handler's "within six blocks
 of a real vending machine" check accepts it unchanged: same packets, same purchases, same prices.
