@@ -873,11 +873,13 @@ public class TrafficSignalControllerTicker {
         // Create variable to store upcoming phase
         TrafficSignalPhase upcomingPhase = null;
         if (allSensored) {
-          if (upcomingPhasePriorityIndicator == null && originalPhase.getCircuit() > 0
-              && (turnSpecific || !servesAnyVehicle(originalPhase))) {
+          if (upcomingPhasePriorityIndicator == null
+              && restsOnPrimaryWithNoDemand(originalPhase, turnSpecific)) {
             // No demand anywhere, and the movement this phase served has gone (or it serves
             // none, as a circuit of left heads alone has for a default): rest on the primary
             // circuit's throughs rather than hold a turn arrow, or all red, for no one (#289).
+            // The dedicated pedestrian phase too: held as a recall, the all-walk never ended
+            // once its pedestrians had gone, with every vehicle head red.
             TrafficSignalPhase rest =
                 TrafficSignalControllerTickerUtilities.getDefaultPhaseForCircuitNumber(
                     circuits, overlaps, 1, overlapPedestrianSignals, world);
@@ -1107,6 +1109,23 @@ public class TrafficSignalControllerTicker {
    * A circuit of left heads alone has a default (through) phase that does none of these; NORMAL
    * never rests on or recycles to such a phase (#289).
    */
+  /**
+   * Whether a green, once nothing is calling anywhere, should give way to the primary circuit's
+   * throughs rather than be held as a recall: a turn or directional phase, a phase that turns no
+   * vehicle head green, and always the dedicated pedestrian phase (circuit -1). The pedestrian
+   * phase serves no vehicle and belongs to no circuit, so the rest test used to skip it and the
+   * recall held the all-walk for good.
+   */
+  static boolean restsOnPrimaryWithNoDemand(TrafficSignalPhase phase, boolean turnSpecific) {
+    if (phase == null) {
+      return false;
+    }
+    if (phase.getApplicability() == TrafficSignalPhaseApplicability.PEDESTRIAN) {
+      return true;
+    }
+    return phase.getCircuit() > 0 && (turnSpecific || !servesAnyVehicle(phase));
+  }
+
   private static boolean servesAnyVehicle(TrafficSignalPhase phase) {
     return phase != null && (!phase.getGreenSignals().isEmpty()
         || !phase.getFyaSignals().isEmpty() || !phase.getFlashingGreenSignals().isEmpty());
