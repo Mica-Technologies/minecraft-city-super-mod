@@ -484,6 +484,13 @@ timing falls (phase 6 gapping out early can no longer bring 5 up beside 1).
   (fixed since: see "Rewriting the plan of a running controller" below), and a lead left served
   in FREE just before the switch into coordination was accepted again in its window, which made
   that case show up on the first cycle after programming.
+  The hold also needs a flash to hold: it applies only while the permissive phase is up and past
+  its delayed green. With a leading pedestrian interval on the opposing through, holding before
+  that through had greened flashed the arrow while it was still red and the crosswalk was
+  walking, then a steady yellow arrow over the walk when the hold dropped. And the hold reads a
+  call committed on the same tick (phase next): without it the arrow showed a one-step steady
+  yellow as the opposing through went yellow, then flashed again (`FyaLeadingPedestrianTest`,
+  replaying the UWS W2-E4 and RIM-E5 programs).
 
 - **Rewriting the plan of a running controller** — `/blockdata` (which merges into the tile
   entity's NBT and re-reads it, whether the write is the whole `tcAdv` or only `tcAdv:{co:...}` or

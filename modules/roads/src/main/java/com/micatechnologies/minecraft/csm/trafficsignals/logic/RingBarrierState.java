@@ -543,7 +543,14 @@ public class RingBarrierState {
     this.lastServed2 = m2;
     checkExclusions(plan);
     List<VehInterval> overlapIntervals = computeOverlapIntervals(plan, m1, m2, now, called);
-    java.util.Set<Integer> fyaHoldFlash = computeFyaHoldFlash(plan, called);
+    // A call committed this tick (phase next, set as a ring terminated above) is not in `called`,
+    // which was read before the rings moved: the flash hold would miss it for one tick, and the
+    // FYA head showed a steady yellow for that tick before flashing again.
+    boolean[] holdCalled = called.clone();
+    for (int n = 1; n < holdCalled.length && n < committedCalls.length; n++) {
+      holdCalled[n] |= committedCalls[n];
+    }
+    java.util.Set<Integer> fyaHoldFlash = computeFyaHoldFlash(plan, holdCalled);
     return changedOrNull(enforceOutputClearance(AdvancedPhaseBuilder.build(
         world, plan, circuits, overlaps, m1, m2, overlapIntervals, fyaHoldFlash), plan, now));
   }
@@ -659,6 +666,18 @@ public class RingBarrierState {
       }
       int ringNum = ringOf(plan, pn);
       if (ringNum == 0) {
+        continue;
+      }
+      // There is only a flash to hold once the permissive phase has shown green: the hold carries
+      // it through that phase's clearance. Before then -- the permissive phase still in its
+      // delayed green (a leading pedestrian interval), or not yet up -- the arrow stays red.
+      // Holding it there flashed the arrow while the opposing through was still red and the
+      // crosswalk it turns across was walking, and when the hold then dropped, the output
+      // clearance painted a steady yellow arrow over the walk.
+      int pp = p.getPermissivePhase();
+      RingRuntime permRing = ring1.activePhase == pp ? ring1
+          : ring2.activePhase == pp ? ring2 : null;
+      if (permRing == null || permRing.delayActive) {
         continue;
       }
       RingRuntime ring = ringNum == 1 ? ring1 : ring2;
