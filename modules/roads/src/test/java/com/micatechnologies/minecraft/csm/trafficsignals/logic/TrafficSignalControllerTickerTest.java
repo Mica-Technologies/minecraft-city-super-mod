@@ -542,4 +542,41 @@ class TrafficSignalControllerTickerTest {
       assertEquals(5, invoke(5, true));
     }
   }
+  @Nested
+  @DisplayName("restsOnPrimaryWithNoDemand (simple mode, nothing calling)")
+  class RestsOnPrimaryWithNoDemand {
+
+    private TrafficSignalPhase phase(int circuit, TrafficSignalPhaseApplicability a,
+        boolean green) {
+      TrafficSignalPhase p = new TrafficSignalPhase(circuit, null, a);
+      if (green) {
+        p.addGreenSignals(java.util.Collections.singletonList(new BlockPos(1, 2, 3)));
+      }
+      return p;
+    }
+
+    @Test
+    @DisplayName("the dedicated pedestrian phase gives way instead of holding the all-walk")
+    void pedestrianPhaseRests() {
+      TrafficSignalPhase ped = phase(-1, TrafficSignalPhaseApplicability.PEDESTRIAN, false);
+      assertTrue(TrafficSignalControllerTicker.restsOnPrimaryWithNoDemand(ped, false));
+    }
+
+    @Test
+    @DisplayName("a through green that turns heads green is held as a recall")
+    void throughGreenHolds() {
+      TrafficSignalPhase through =
+          phase(1, TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS, true);
+      assertFalse(TrafficSignalControllerTicker.restsOnPrimaryWithNoDemand(through, false));
+    }
+
+    @Test
+    @DisplayName("a turn phase, or one that greens nothing, gives way (#289)")
+    void turnOrEmptyRests() {
+      assertTrue(TrafficSignalControllerTicker.restsOnPrimaryWithNoDemand(
+          phase(2, TrafficSignalPhaseApplicability.ALL_LEFTS, true), true));
+      assertTrue(TrafficSignalControllerTicker.restsOnPrimaryWithNoDemand(
+          phase(2, TrafficSignalPhaseApplicability.ALL_THROUGHS_RIGHTS, false), false));
+    }
+  }
 }
