@@ -162,6 +162,9 @@ public class RingBarrierState {
     // phase whose window is about to open: that phase's number, or 0. Latched so the yield still
     // happens when min green or a pedestrian clearance holds the green past the opening point.
     int coordYieldFor = 0;
+    // This ring's coordinated phase wants to yield for a call across the barrier this tick: the
+    // other ring's coordinated phase follows it (see the coordinated yield in advanceRing).
+    boolean crossYieldWanted = false;
     // The phase a coordinated green of this ring last ended for (coordYieldFor at termination),
     // or 0. The ring may wrap back to that one phase even while another barrier is calling; see
     // fillIdleRing. Cleared by the next green this ring starts.
@@ -268,6 +271,14 @@ public class RingBarrierState {
    * leaving a standing call that kept the rings from returning to the phases ahead of it.
    */
   private final long[] servedWindow = new long[PHASE_SLOTS];
+  /** The cycle time ({@link #cycleTime}) each phase last went green, or Long.MIN_VALUE. */
+  private final long[] lastGreenStart = initLastGreenStart();
+
+  private static long[] initLastGreenStart() {
+    long[] a = new long[PHASE_SLOTS];
+    java.util.Arrays.fill(a, Long.MIN_VALUE);
+    return a;
+  }
 
   {
     java.util.Arrays.fill(servedWindow, Long.MIN_VALUE);
@@ -521,7 +532,10 @@ public class RingBarrierState {
     // same tick. A ring 1 green that is only being held for the barrier therefore re-decides once
     // ring 2 has moved: a concurrent pair that both gap out still goes to yellow together, instead
     // of ring 1 trailing ring 2 by a tick. (Ring 2 needs no such pass — it already sees ring 1.)
-    if (ring1.barrierWaiting && ring1.interval == VehInterval.GREEN) {
+    // Likewise a ring 1 coordinated green re-decides when ring 2's coordinated phase has just
+    // decided to yield across the barrier, so the two yield on the same tick (issue #372).
+    if ((ring1.barrierWaiting || ring2.crossYieldWanted)
+        && ring1.interval == VehInterval.GREEN) {
       advanceRing(ring1, plan, 1, now, called);
     }
 
@@ -963,6 +977,7 @@ public class RingBarrierState {
   /** Advances one ring's currently-active phase through green -> yellow -> red clearance. */
   private void advanceRing(RingRuntime ring, TrafficSignalProgrammedPhasePlan plan, int ringNum,
       long now, boolean[] called) {
+    ring.crossYieldWanted = false; // re-decided below, only while a coordinated phase is green
     if (ring.activePhase == 0) {
       return;
     }
@@ -1098,28 +1113,61 @@ public class RingBarrierState {
         // call that has missed its period this cycle served nobody -- the call waits for its next
         // window -- and the coordinated green went green, yellow, red and green again.
         //
-        // A call across the barrier also waits for the other ring: the barrier crosses only once
-        // both rings have cleared. While the other ring still has more to time than this phase's
-        // own clearance (a walk and its clearance running past its yield point), yielding to a
-        // cross-barrier call only put this ring red beside a green it does not conflict with,
-        // for as long as the overrun lasted (a UWS junction's NB through sat red with nothing
-        // against it). So the coordinated phase holds green and yields once its own clearance
-        // ends with the other ring's, and both cross together.
+        // A call across the barrier is one decision for both rings: the barrier crosses only
+        // once both have cleared.
+        // - It must still be startable once the slower ring has cleared (partnerClear), not just
+        //   this one.
+        // - While the other ring still has more to time than this phase's own clearance (a walk
+        //   running past its yield point), this ring holds green and yields when its clearance
+        //   ends with the other's. Yielding at once only put it red beside a green it does not
+        //   conflict with for as long as the overrun lasted (a UWS junction's NB through).
+        // - When either ring's coordinated phase yields for one (crossYieldWanted), the other's
+        //   follows, even before its own yield point or while it dwells outside its window.
+        //   Otherwise, after a preempt, one through yielded early for barrier B's window while
+        //   the other, still finishing its walk, missed it and dwelled a whole cycle with the
+        //   first ring dark beside it (issue #372).
         boolean coordYieldDue = false;
         if (isCoord && !ring.dualEntry) {
+          long partnerClear = barrierClearTime(companion, plan, now);
+          long crossClear = Math.max(Math.max(coordClearance, barrierClearTime(ring, plan, now)),
+              partnerClear);
+          boolean partnerSlower = partnerClear > coordClearance;
           if (windowOpeningFor != 0) {
-            coordYieldDue = true;
-          } else if (coordYieldReached(phaseNum, coordClearance, now - ring.greenStart)) {
-            boolean[] startable = startableAfter(plan, tickRawCalled, coordClearance);
-            if (barrierClearTime(companion, plan, now) > coordClearance) {
+            TrafficSignalProgrammedPhase opening = plan.getPhase(windowOpeningFor);
+            boolean cross = opening == null || opening.getBarrier() != phase.getBarrier();
+            if (!cross) {
+              coordYieldDue = true;
+            } else if (startableIn(plan, windowOpeningFor, crossClear)) {
+              ring.crossYieldWanted = true;
+              coordYieldDue = !partnerSlower;
+            } else {
+              ring.coordYieldFor = 0; // the barrier cannot cross in time for it: dwell instead
+              windowOpeningFor = 0;
+            }
+          }
+          if (windowOpeningFor == 0) {
+            boolean reached = coordYieldReached(phaseNum, coordClearance, now - ring.greenStart);
+            boolean follow = companion.crossYieldWanted;
+            if (reached || follow) {
+              boolean[] startable = startableAfter(plan, tickRawCalled, coordClearance);
+              boolean[] crossStartable = startableAfter(plan, tickRawCalled, crossClear);
+              boolean[] within = new boolean[startable.length];
+              boolean[] across = new boolean[startable.length];
               for (int n = 1; n < startable.length; n++) {
                 TrafficSignalProgrammedPhase other = plan.getPhase(n);
-                if (other == null || other.getBarrier() != phase.getBarrier()) {
-                  startable[n] = false;
+                if (other != null && other.getBarrier() == phase.getBarrier()) {
+                  within[n] = startable[n];
+                } else {
+                  across[n] = crossStartable[n];
                 }
               }
+              boolean acrossDemand = demandConflictsWith(phase, ringNum, plan, across);
+              if (reached && acrossDemand) {
+                ring.crossYieldWanted = true;
+              }
+              coordYieldDue = (reached && demandConflictsWith(phase, ringNum, plan, within))
+                  || (acrossDemand && !partnerSlower);
             }
-            coordYieldDue = demandConflictsWith(phase, ringNum, plan, startable);
           }
         }
         // While a coordinated phase is holding for its yield point, ordinary gap-out/conflict
@@ -1222,9 +1270,12 @@ public class RingBarrierState {
         // there is nothing to return the time to). A dual-entry companion is exempt while riding —
         // its own split/force-off apply only when it is served on its own call; the pair ends via
         // the companion's termination.
+        // A lead started early, before its barrier's time (beforeLeadWindow), is not outside its
+        // window but ahead of it: it is not forced off until its own yield point.
         boolean forceOff = coordinated && !isCoord && !ring.resting && !ring.dualEntry
             && pastYieldPoint(plan, phaseNum,
-                phase.getYellow() + phase.getRedClear() + greenFlashTicks) && pedDone;
+                phase.getYellow() + phase.getRedClear() + greenFlashTicks) && pedDone
+            && !beforeLeadWindow(plan, phaseNum, 0L, false);
 
         // Terminate on max-out or force-off, or once min green is met, ped clearance is done, the
         // phase has gapped out, and something conflicting is actually waiting (otherwise rest in
@@ -1509,8 +1560,13 @@ public class RingBarrierState {
       lockedCalls[phase.getPhaseNumber()] = false; // LOCK: service discharges the latched call
       windowAccepted[phase.getPhaseNumber()] = false; // service consumes the window acceptance
       committedCalls[phase.getPhaseNumber()] = false; // service discharges the commitment
+      lastGreenStart[phase.getPhaseNumber()] = cycleTime;
       if (coordinated) {
-        servedWindow[phase.getPhaseNumber()] = windowInstance(phase.getPhaseNumber());
+        // A lead started early serves the window about to open, not the one before it: counted
+        // against that, its window would open after it had run and accept its call again.
+        servedWindow[phase.getPhaseNumber()] = windowInstance(phase.getPhaseNumber())
+            + (tickPlan != null && beforeLeadWindow(tickPlan, phase.getPhaseNumber(), 0L, false)
+            ? 1L : 0L);
       }
     }
     ring.activePhase = phase.getPhaseNumber();
@@ -2504,7 +2560,93 @@ public class RingBarrierState {
     long need = startNeed(phase);
     long latestStart = room - need >= 1L ? room - need : Math.max(1L, room);
     long pos = ((localCycle + Math.max(0L, ahead) - start) % cycleTicks + cycleTicks) % cycleTicks;
-    return pos < latestStart;
+    return pos < latestStart || beforeLeadWindow(plan, phaseNumber, ahead);
+  }
+
+  /**
+   * Whether {@code phaseNumber} leads its barrier in its ring (the first active phase there, not
+   * coordinated) and the cycle, {@code ahead} ticks from now, is still in an earlier barrier's
+   * time. Such a phase may start early, when the rings reach its barrier before its window opens
+   * because the barrier before ended early (a gap-out or max-out short of its force-off).
+   *
+   * <p>Its window's position wraps round to the end of the cycle there, so it read as long past:
+   * the call was refused, the ring started the coordinated phase behind it early instead, and the
+   * lead was either cut in after it (the coordinated phase going green, yellow and green again) or
+   * skipped every cycle (issue #369). Starting early takes no one's time: the barrier before has
+   * finished, and the coordinated phase behind the lead dwells to its own yield point anyway.</p>
+   */
+  private boolean beforeLeadWindow(TrafficSignalProgrammedPhasePlan plan, int phaseNumber,
+      long ahead) {
+    return beforeLeadWindow(plan, phaseNumber, ahead, true);
+  }
+
+  /**
+   * {@link #beforeLeadWindow(TrafficSignalProgrammedPhasePlan, int, long)}; {@code toStart}:
+   * whether this is for starting the lead or accepting its call, which waits until no coordinated
+   * phase is up, rather than for one already running (force-off, the window it served).
+   */
+  private boolean beforeLeadWindow(TrafficSignalProgrammedPhasePlan plan, int phaseNumber,
+      long ahead, boolean toStart) {
+    if (!coordinated || phaseNumber < 1 || phaseNumber >= PHASE_SLOTS || coordPhase[phaseNumber]) {
+      return false;
+    }
+    // Only once the rings have actually come early: while a coordinated phase is up (in any
+    // interval) the time is the coordinated phase's, and a lead counted as startable then would
+    // have the coordinated phase yield to it ahead of the cycle and pull the plan off its offset.
+    if (toStart && ((ring1.activePhase > 0 && coordPhase[ring1.activePhase])
+        || (ring2.activePhase > 0 && coordPhase[ring2.activePhase]))) {
+      return false;
+    }
+    if (toStart) {
+      for (int n = 1; n <= TrafficSignalProgrammedPhasePlan.PHASE_COUNT; n++) {
+        long len = windowEnd[n] - windowStart[n];
+        if (len <= 0L || windowPos(windowStart[n]) >= len) {
+          continue; // its window is not open now
+        }
+        // Inside a coordinated phase's window the time is the coordinated phase's even with the
+        // rings idle (as after a preempt): a lead on the other barrier is not early there.
+        if (coordPhase[n]) {
+          return false;
+        }
+        // A call whose own window is open now and not yet served goes first: the lead is early
+        // only once the barrier before it has nothing left to serve. Served is judged from the
+        // phase's effective window start, since it may have started in a skipped phase's time.
+        TrafficSignalProgrammedPhase other = plan.getPhase(n);
+        if (n != phaseNumber && other != null && other.isActive() && n < tickRawCalled.length
+            && tickRawCalled[n]) {
+          long sinceOpen = windowPos(effectiveWindowStart(plan, n));
+          boolean served = lastGreenStart[n] != Long.MIN_VALUE
+              && cycleTime - lastGreenStart[n] <= sinceOpen;
+          if (!served) {
+            return false;
+          }
+        }
+      }
+    }
+    TrafficSignalProgrammedPhase phase = plan.getPhase(phaseNumber);
+    int ring = ringOf(plan, phaseNumber);
+    if (phase == null || ring == 0) {
+      return false;
+    }
+    List<Integer> own = activeOnBarrier(plan, ring, phase.getBarrier());
+    if (own.isEmpty() || own.get(0) != phaseNumber) {
+      return false;
+    }
+    // The barrier's span, from its start (the lead's window start) to the last window end on it
+    // in either ring.
+    long barrierStart = windowStart[phaseNumber];
+    long span = 0L;
+    for (int r = 1; r <= 2; r++) {
+      for (int n : activeOnBarrier(plan, r, phase.getBarrier())) {
+        span = Math.max(span, windowEnd[n] - barrierStart);
+      }
+    }
+    if (span <= 0L || span >= cycleTicks) {
+      return false;
+    }
+    long pos = ((localCycle + Math.max(0L, ahead) - barrierStart) % cycleTicks + cycleTicks)
+        % cycleTicks;
+    return pos >= span;
   }
 
   /**
@@ -2577,10 +2719,15 @@ public class RingBarrierState {
   }
 
   /**
-   * Ticks until {@code ring} could be clear of its phase if it began terminating now: what is left
-   * of its pedestrian walk and clearance (a walk is never cut short), then its green flash,
-   * yellow and red; or what is left of a clearance already under way. {@code 0} for an idle ring.
-   * Minimum green is not counted: a ring this is asked about is normally well past it.
+   * Ticks until {@code ring} could be clear of its phase if it began terminating now: the longer
+   * of what is left of its minimum green and of its pedestrian walk and clearance (neither is
+   * ever cut short), then its green flash, yellow and red; or what is left of a clearance already
+   * under way. {@code 0} for an idle ring.
+   *
+   * <p>Minimum green counts: a phase with a leading pedestrian interval goes green after its walk
+   * starts, so its minimum can outlast the walk. Left out, the other ring's coordinated phase
+   * judged a call across the barrier startable, yielded for it, and this ring then could not
+   * follow until the call's period had closed (issue #372).</p>
    */
   private long barrierClearTime(RingRuntime ring, TrafficSignalProgrammedPhasePlan plan,
       long now) {
@@ -2599,6 +2746,7 @@ public class RingBarrierState {
           ped = ring.resting && p.isRestInWalk() ? p.getPedClear()
               : Math.max(0L, ring.pedStart + ring.walkHold + p.getPedClear() - now);
         }
+        ped = Math.max(ped, ring.greenStart + p.getMinGreen() - greenFlashTicks - now);
         long flash = ring.gfActive ? Math.max(0L, greenFlashTicks - (now - ring.gfStart))
             : greenFlashTicks;
         return ped + flash + p.getYellow() + p.getRedClear();
@@ -2637,7 +2785,8 @@ public class RingBarrierState {
       TrafficSignalProgrammedPhase p = plan.getPhase(m);
       if (m == n || p == null || !p.isActive() || coordPhase[m] || !tickRawCalled[m]
           || m == ring1.activePhase || m == ring2.activePhase
-          || windowEnd[m] - windowStart[m] <= 0L || !conflicts(coord, ringNum, plan, m)) {
+          || windowEnd[m] - windowStart[m] <= 0L || !conflicts(coord, ringNum, plan, m)
+          || servedWindow[m] > windowInstance(m)) { // served early for that window already
         continue;
       }
       long arc = ((windowStart[m] - localCycle) % cycleTicks + cycleTicks) % cycleTicks;
@@ -2735,7 +2884,9 @@ public class RingBarrierState {
       windowAccepted[n] = false;
       return false;
     }
-    if (acceptanceOpen(plan, n) && servedWindow[n] != windowInstance(n)) {
+    // Before a lead's window (beforeLeadWindow) the call is for the window about to open.
+    long instance = windowInstance(n) + (beforeLeadWindow(plan, n, 0L, false) ? 1L : 0L);
+    if (acceptanceOpen(plan, n) && servedWindow[n] != instance) {
       windowAccepted[n] = true;
     }
     // An accepted call still waits if the phase could no longer be started in time to run its
