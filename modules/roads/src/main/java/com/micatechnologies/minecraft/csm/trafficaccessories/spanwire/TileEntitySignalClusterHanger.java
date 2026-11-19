@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.trafficaccessories.spanwire;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalBodyColor;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,8 @@ public class TileEntitySignalClusterHanger extends TileEntitySpanWireClusterMoun
   @Override
   public void onLoad() {
     super.onLoad();
-    recomputeCoverage();
+    // Reads neighbouring tile entities: on the server thread, even under an async editor (#375)
+    CsmServerThread.runOnLoad(this, this::recomputeCoverage);
   }
 
   @Override

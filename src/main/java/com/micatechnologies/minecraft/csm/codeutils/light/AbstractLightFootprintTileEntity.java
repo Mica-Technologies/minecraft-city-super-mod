@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.codeutils.light;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.nbt.NBTTagCompound;
@@ -129,8 +130,11 @@ public abstract class AbstractLightFootprintTileEntity extends AbstractTileEntit
   public void onLoad() {
     super.onLoad();
     if (world != null && !world.isRemote) {
-      CsmLightFootprints.track(this);
-      CsmLightFootprints.request(this);
+      // On the server thread even when an async world editor loads the chunk (#375).
+      CsmServerThread.runOnLoad(this, () -> {
+        CsmLightFootprints.track(this);
+        CsmLightFootprints.request(this);
+      });
     }
   }
 
@@ -138,13 +142,13 @@ public abstract class AbstractLightFootprintTileEntity extends AbstractTileEntit
   public void onChunkUnload() {
     super.onChunkUnload();
     unloaded = true;
-    CsmLightFootprints.untrack(this);
+    CsmServerThread.runOnUnload(this, () -> CsmLightFootprints.untrack(this));
   }
 
   @Override
   public void invalidate() {
     super.invalidate();
-    CsmLightFootprints.untrack(this);
+    CsmServerThread.runOnUnload(this, () -> CsmLightFootprints.untrack(this));
   }
 
   @Override

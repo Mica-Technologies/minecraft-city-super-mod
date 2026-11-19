@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.constructionsite;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import javax.annotation.Nonnull;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -230,7 +231,7 @@ public class TileEntityCraneHead extends AbstractTileEntity {
 
   private void gone() {
     if (world != null) {
-      CraneCollision.remove(this);
+      CsmServerThread.runOnUnload(this, () -> CraneCollision.remove(this));
       if (world.isRemote) {
         TileEntityCraneHeadRenderer.release(pos);
       }
@@ -247,7 +248,8 @@ public class TileEntityCraneHead extends AbstractTileEntity {
   public void validate() {
     super.validate();
     if (world != null) {
-      CraneCollision.add(this);
+      // On the server thread even when an async world editor loads the chunk (#375)
+      CsmServerThread.runOnLoad(this, () -> CraneCollision.add(this));
     }
   }
 

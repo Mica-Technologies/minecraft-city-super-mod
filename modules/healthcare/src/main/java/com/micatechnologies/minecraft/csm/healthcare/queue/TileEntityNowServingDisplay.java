@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.healthcare.queue;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmPerformance;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import com.micatechnologies.minecraft.csm.healthcare.BlockHealthcare;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -82,11 +83,14 @@ public class TileEntityNowServingDisplay extends AbstractTileEntity {
   public void onLoad() {
     super.onLoad();
     if (world != null && !world.isRemote) {
-      QueueNetwork net = QueueNetwork.get(world);
-      BlockPos c = net.controllerOf(pos);
-      if (c != null) {
-        number = net.numberOf(c);
-      }
+      // On the server thread even when an async world editor loads the chunk (#375)
+      CsmServerThread.runOnLoad(this, () -> {
+        QueueNetwork net = QueueNetwork.get(world);
+        BlockPos c = net.controllerOf(pos);
+        if (c != null) {
+          number = net.numberOf(c);
+        }
+      });
     }
   }
 

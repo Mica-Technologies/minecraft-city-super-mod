@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.material.Material;
@@ -146,28 +147,35 @@ public class TileEntityFireAlarmSensor extends AbstractTileEntity {
   @Override
   public void onLoad() {
     super.onLoad();
-    FireAlarmDeviceSampler.add(world, pos);
-    if (interconnectGroup != null) {
-      ResidentialInterconnect.join(world, interconnectGroup, pos);
-    }
+    // On the server thread even when an async world editor loads the chunk (#375)
+    CsmServerThread.runOnLoad(this, () -> {
+      FireAlarmDeviceSampler.add(world, pos);
+      if (interconnectGroup != null) {
+        ResidentialInterconnect.join(world, interconnectGroup, pos);
+      }
+    });
   }
 
   @Override
   public void invalidate() {
     super.invalidate();
-    FireAlarmDeviceSampler.remove(world, pos);
-    if (interconnectGroup != null) {
-      ResidentialInterconnect.leave(world, interconnectGroup, pos);
-    }
+    withdraw();
   }
 
   @Override
   public void onChunkUnload() {
     super.onChunkUnload();
-    FireAlarmDeviceSampler.remove(world, pos);
-    if (interconnectGroup != null) {
-      ResidentialInterconnect.leave(world, interconnectGroup, pos);
-    }
+    withdraw();
+  }
+
+  private void withdraw() {
+    BlockPos group = interconnectGroup;
+    CsmServerThread.runOnUnloadByPos(this, () -> {
+      FireAlarmDeviceSampler.remove(world, pos);
+      if (group != null) {
+        ResidentialInterconnect.leave(world, group, pos);
+      }
+    });
   }
 
   /**

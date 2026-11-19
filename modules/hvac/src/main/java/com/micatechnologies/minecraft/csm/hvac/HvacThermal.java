@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import java.util.Map;
 import java.util.WeakHashMap;
 import javax.annotation.Nullable;
@@ -114,26 +115,40 @@ public final class HvacThermal {
     }
   }
 
-  /** A chunk has loaded on the server: its HVAC devices are audited shortly (#353). */
+  /**
+   * A chunk has loaded on the server: its HVAC devices are audited shortly (#353). An async world
+   * editor fires this off the server thread, so the queueing is handed to it (#375).
+   */
   @SubscribeEvent
   public void onChunkLoad(ChunkEvent.Load event) {
     World world = event.getWorld();
     if (world == null || world.isRemote) {
       return;
     }
-    HvacThermalWorld w = peek(world);
-    if (w != null) {
-      w.queueChunkAudit(event.getChunk().x, event.getChunk().z);
-    }
+    int cx = event.getChunk().x;
+    int cz = event.getChunk().z;
+    CsmServerThread.run(world, () -> {
+      HvacThermalWorld w = peek(world);
+      if (w != null) {
+        w.queueChunkAudit(cx, cz);
+      }
+    });
   }
 
   @SubscribeEvent
   public void onChunkUnload(ChunkEvent.Unload event) {
     World world = event.getWorld();
-    HvacThermalWorld w = peek(world);
-    if (w != null) {
-      w.onChunkUnload(event.getChunk().x, event.getChunk().z);
+    if (world == null || world.isRemote) {
+      return;
     }
+    int cx = event.getChunk().x;
+    int cz = event.getChunk().z;
+    CsmServerThread.run(world, () -> {
+      HvacThermalWorld w = peek(world);
+      if (w != null) {
+        w.onChunkUnload(cx, cz);
+      }
+    });
   }
 
   @SubscribeEvent

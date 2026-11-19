@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.api.CsmDoorControl;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -77,8 +78,13 @@ public class TileEntityGarageDoorControl extends AbstractTileEntity {
    */
   @Override
   public void onLoad() {
-    if (world != null && !world.isRemote && target != null && isKeypad()) {
-      DoorLocks.get(world).adopt(target, pos);
+    if (world != null && !world.isRemote) {
+      // On the server thread even when an async world editor loads the chunk (#375)
+      CsmServerThread.runOnLoad(this, () -> {
+        if (target != null && isKeypad()) {
+          DoorLocks.get(world).adopt(target, pos);
+        }
+      });
     }
   }
 

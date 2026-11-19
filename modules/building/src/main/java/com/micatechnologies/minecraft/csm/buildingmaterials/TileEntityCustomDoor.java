@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.buildingmaterials;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -51,7 +52,8 @@ public class TileEntityCustomDoor extends AbstractTileEntity {
   /** A door put down, or read back from a save, with its sensor on starts looking. */
   @Override
   public void onLoad() {
-    armSensor();
+    // Scheduling a tick off the server thread (an async world editor's chunk load) races it (#375)
+    CsmServerThread.runOnLoad(this, this::armSensor);
   }
 
   /**
