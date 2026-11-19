@@ -341,14 +341,18 @@ post above, which stays for tight pavements:
 | Bus Stop Pole (Full Size) | `csm:bus_stop_pole_flag` | `transit.stop.BlockBusStopPoleFlag` |
 | Bus Stop Name Blade | `csm:bus_stop_name_blade` | `transit.stop.BlockBusStopBlade` |
 
-- **The pole is built in one click** (`BlockBusStopPoleFlag.ItemPole`): `POLE_HEIGHT` (4) of
-  Roads' sign posts from the block clicked, the flag (`FLAG_HEIGHT`, 2 cells) beside the top two
-  on the reader's right, and two blade cells across the top, over the post and the flag, all
-  facing the placer. The posts are Roads' `signpost`, so road signs still stack on the pole. In
-  survival it takes the two flags from the stack, the posts from the inventory and the blade if
-  there are two (else the stop is built without one); short of posts or flags, or with a cell in
-  the way, it places one flag cell as any wayfinding panel is placed and says why. Sneaking always
-  places one cell. Afterwards each piece is an ordinary block, broken and dropped on its own.
+- **The pole is built in one click** (`BlockBusStopPoleFlag.ItemPole`): the flag (`FLAG_HEIGHT`,
+  2 cells) at the top of a `POLE_HEIGHT` (4) block pole in the column clicked, and two blade cells
+  across the top, over the flag and to the reader's left of it, all facing the placer. The flag's
+  default mount is `post` (`BusStopSignPresets.FLAG_DEFAULT`), so the panel draws its own post
+  down through the two clear cells below it to the ground: one pole with the sign on it. Until
+  #367 the item stacked a column of Roads' sign posts and put the flag beside it, mounted
+  `ceiling`, which left a bare post standing next to a sign that nothing held up. In survival it
+  takes the two flags from the stack and the blade if there are two (else the stop is built
+  without one); short of flags, or with a cell in the way (the two cells under the flag must be
+  clear for its post), it places one flag cell as any wayfinding panel is placed and says why.
+  Sneaking always places one cell. Afterwards each piece is an ordinary block, broken and dropped
+  on its own.
 - **The flag and the blade are Core's wayfinding panel** (`WAYFINDING_PANELS.md`): baked, no
   renderer, edited with an empty-handed click, any size up to 16 x 6. Their presets
   (`BusStopSignPresets`) put each agency's livery on them: `BusAgency.getSignGround` /
@@ -406,7 +410,7 @@ post above, which stays for tight pavements:
 `TransitFabricatorRules` prices a stop by what it is made of: a flag a sign blank and a fastener
 kit; a case a sign blank and sheet metal; the arrival display an LED module, a control board and
 sheet metal; the plaque sheet metal; the full-size pole's flag a sign blank and a fastener kit; the
-name blade a sign blank and an LED module. The sign posts are Roads', priced by Roads.
+name blade a sign blank and an LED module.
 `audit_fabricator_costs.py` mirrors the branches.
 
 ### Why there is no bus stop pole
@@ -417,7 +421,9 @@ removed before any release, because a transit sign is a road sign: a stop built 
 posts stands next to a signal arm, hangs from a span wire, pairs back to back with a street name
 blade or a NO PARKING sign and matches every other post on the street, and a second pole family
 could do none of that without copying the sign system. The registry names of the flags, cases and
-display were kept. The full-size pole of 2026.11 keeps to this: its pole is Roads' sign posts.
+display were kept. The full-size pole of 2026.11 is no pole block either: its flag is a wayfinding
+panel on its own drawn post. Its first release stood the flag beside a column of Roads' sign
+posts instead, which read as a bare post next to the sign (#367).
 
 ## Shelters
 

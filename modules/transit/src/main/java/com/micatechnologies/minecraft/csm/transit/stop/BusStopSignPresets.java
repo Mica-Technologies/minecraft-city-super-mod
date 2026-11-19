@@ -42,13 +42,13 @@ public final class BusStopSignPresets {
   };
 
   /**
-   * The flag's default: CITYLINE's, centred, both sides, lit, flush with nothing holding it. The
+   * The flag's default: CITYLINE's, centred, both sides, lit, on its own post to the ground. The
    * lines are fitted together to the widest, so on a flag a block wide BUS and STOP each get a
    * line and the agency's name and the routes are drawn smaller, leaving BUS STOP large.
    */
   static final WayfindingSign FLAG_DEFAULT = FLAG[0].toSign(WayfindingArrow.NONE, true)
       .toBuilder().align(WayfindingSign.Align.CENTRE).lineScale(2, 0.55f).lineScale(3, 0.8f)
-      .mount(WayfindingMount.CEILING).doubleSided(true).build();
+      .mount(WayfindingMount.POST).doubleSided(true).build();
 
   /** The blade's default: CITYLINE's stop name, centred, both sides, lit. */
   static final WayfindingSign BLADE_DEFAULT = BLADE[0].toSign(WayfindingArrow.NONE, true)

@@ -276,15 +276,16 @@ try:
     board = ('{ag:0b,sn:"Riverside",dr:"Northbound",rt:"B 30",'
              'dt:["Upper West Side","Downtown"]}')
     cmds("blockdata %d %d %d %s" % (X0 + 5, deck_y - 2, Z0 + 70, board))
-    # the pole: posts at x 12, the flag beside them at x 13 (the reader's right), routes B 30
+    # the pole: the flag at the top of x 12 on its own post, the blade over it and x 11 (the
+    # reader's left), routes B 30
     use("csm:bus_stop_pole_flag", (12, G, 70), "up")
     flag = ('{l1:"BUS",l2:"STOP",l3:"CITYLINE",l4:"B 30",ts3:0.55f,ts4:0.8f,il1:"bus",'
-            'p:"none",a:"none",s:"transit",d:1b,al:"c",m:"ceiling",bg:"#0E5E6F",fg:"#F4C428"}')
+            'p:"none",a:"none",s:"transit",d:1b,al:"c",m:"post",bg:"#0E5E6F",fg:"#F4C428"}')
     blade = ('{l1:"RIVERSIDE",l2:"CITYLINE",p:"none",a:"none",s:"transit",d:1b,al:"c",'
              'm:"ceiling",bg:"#0E5E6F",fg:"#F4C428"}')
     for y in (Y + 2, Y + 3):
-        cmds("blockdata %d %d %d %s" % (X0 + 13, y, Z0 + 70, flag))
-    for x in (12, 13):
+        cmds("blockdata %d %d %d %s" % (X0 + 12, y, Z0 + 70, flag))
+    for x in (11, 12):
         cmds("blockdata %d %d %d %s" % (X0 + x, Y + 4, Z0 + 70, blade))
     # the totem, the outdoor fare machine and a compact (3 x 1) glass shelter
     use("csm:bus_info_totem", (16, G, 70), "up")
