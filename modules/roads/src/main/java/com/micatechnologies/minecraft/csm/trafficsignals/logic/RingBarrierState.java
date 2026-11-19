@@ -225,6 +225,15 @@ public class RingBarrierState {
   private final java.util.Set<Integer> preemptContinuePhases = new java.util.HashSet<>();
   /** Phases whose WALK/FDW was showing at preempt entry: their ped heads flash don't-walk through the entry. */
   private final java.util.Set<Integer> preemptPedClearPhases = new java.util.HashSet<>();
+  /**
+   * FYA left phases flashing as the preempt began whose opposing through has not left green
+   * since: a preempt that holds permissive lefts red lets these keep flashing rather than clear
+   * beside a through that stays green (a yellow trap, #374). Each drops out for good once its
+   * through has cleared.
+   */
+  private final java.util.Set<Integer> preemptFlashingLefts = new java.util.HashSet<>();
+  /** The same for FYA left overlaps, by plan overlap index. */
+  private final java.util.Set<Integer> preemptFlashingOverlaps = new java.util.HashSet<>();
 
   // Per-tick context / scratch (set at the top of each tick()).
   private World tickWorld;
@@ -3422,6 +3431,76 @@ public class RingBarrierState {
       (continues ? preemptContinuePhases : preemptClearPhases).add(ring.activePhase);
     }
     preemptClearance(plan, preemptClearPhases);
+    captureFlashingLefts(plan);
+  }
+
+  /**
+   * Records which FYA lefts and FYA left overlaps the heads were actually flashing on the tick
+   * before the preempt (#374). Read from the output rather than worked out from the phases, so a
+   * left the rings were not flashing for any reason can never start to under the preempt.
+   */
+  private void captureFlashingLefts(TrafficSignalProgrammedPhasePlan plan) {
+    preemptFlashingLefts.clear();
+    preemptFlashingOverlaps.clear();
+    if (lastApplied == null || tickCircuits == null) {
+      return;
+    }
+    Map<BlockPos, Integer> shown = lastApplied.resolveVehicleSignalStates();
+    for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
+      if (p.isActive() && p.getPermissivePhase() > 0
+          && (p.getMovement() == TrafficSignalPhaseMovement.LEFT
+              || p.getMovement() == TrafficSignalPhaseMovement.PROTECTED_LEFT)
+          && flashing(shown, p.getCircuitIndex())) {
+        preemptFlashingLefts.add(p.getPhaseNumber());
+      }
+    }
+    List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
+    for (int i = 0; i < ovs.size(); i++) {
+      TrafficSignalProgrammedOverlap ov = ovs.get(i);
+      if (ov.isActive() && ov.getPermissivePhases().length > 0
+          && (ov.getOutputMovement() == TrafficSignalPhaseMovement.LEFT
+              || ov.getOutputMovement() == TrafficSignalPhaseMovement.PROTECTED_LEFT)
+          && flashing(shown, ov.getOutputCircuitIndex())) {
+        preemptFlashingOverlaps.add(i);
+      }
+    }
+  }
+
+  /** Whether any flashing-left lens of the circuit was showing a flashing yellow arrow. */
+  private boolean flashing(Map<BlockPos, Integer> shown, int circuitIndex) {
+    if (circuitIndex < 0 || circuitIndex >= tickCircuits.getCircuitCount()) {
+      return false;
+    }
+    for (BlockPos lens : tickCircuits.getCircuit(circuitIndex).getFlashingLeftSignals()) {
+      Integer i = shown.get(lens);
+      if (i != null && i == TrafficSignalPhase.INDICATION_FYA) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Drops each recorded flashing left whose opposing through this stage no longer serves green or
+   * yellow (it has cleared), or whose own phase the stage serves. Once dropped it stays held red.
+   */
+  private void pruneFlashingLefts(TrafficSignalProgrammedPhasePlan plan,
+      List<ServedMovement> served) {
+    preemptFlashingLefts.removeIf(n -> {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      return p == null || AdvancedPhaseBuilder.servedInterval(n, served) != null
+          || !greenOrYellow(AdvancedPhaseBuilder.servedInterval(p.getPermissivePhase(), served));
+    });
+    List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
+    preemptFlashingOverlaps.removeIf(i -> i >= ovs.size()
+        || AdvancedPhaseBuilder.overlapState(ovs.get(i).getIncludedPhases(), served)
+            != VehInterval.RED
+        || !greenOrYellow(
+            AdvancedPhaseBuilder.overlapState(ovs.get(i).getPermissivePhases(), served)));
+  }
+
+  private static boolean greenOrYellow(VehInterval iv) {
+    return iv == VehInterval.GREEN || iv == VehInterval.YELLOW;
   }
 
   private static boolean contains(int[] phases, int phaseNumber) {
@@ -3494,13 +3573,15 @@ public class RingBarrierState {
     TrafficSignalPreempt active = plan.getPreempts().get(activePreemptIndex);
     long elapsed = now - preemptStageStart;
     VehInterval clearing = elapsed < preemptYellow ? VehInterval.YELLOW : VehInterval.RED;
+    List<ServedMovement> served;
+    int[] upcoming;
     switch (preemptStage) {
       case ENTER: {
         // Whatever was green clears yellow -> red while any movement the first stage serves
         // continues green. Ped heads that were in WALK/FDW flash don't-walk through the entry
         // (a truncated clearance — MUTCD 4D.27 permits shortening it on entry to preemption —
         // rather than snapping straight to don't-walk).
-        List<ServedMovement> served = new ArrayList<>();
+        served = new ArrayList<>();
         for (int n : preemptContinuePhases) {
           served.add(new ServedMovement(n, VehInterval.GREEN,
               preemptPedClearPhases.contains(n) ? PedInterval.FDW : PedInterval.NONE));
@@ -3511,34 +3592,47 @@ public class RingBarrierState {
         }
         // A -GRN/YEL overlap whose modifier the first stage brings up clears here, beside its
         // parent if that continues, so it is never green when the modifier greens.
-        int[] first = active.getTrackClearPhases().length > 0
+        upcoming = active.getTrackClearPhases().length > 0
             ? active.getTrackClearPhases() : active.getDwellPhases();
-        return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served,
-            active, first);
+        break;
       }
       case TRACK_CLEAR:
-        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            toPhaseList(active.getTrackClearPhases()), VehInterval.GREEN, active,
-            active.getDwellPhases());
+        served = movements(active.getTrackClearPhases(), VehInterval.GREEN);
+        upcoming = active.getDwellPhases();
+        break;
       case TRACK_EXIT: {
-        List<ServedMovement> served = new ArrayList<>();
+        served = new ArrayList<>();
         for (int n : trackClearContinuingPhases(active)) {
           served.add(new ServedMovement(n, VehInterval.GREEN, PedInterval.NONE));
         }
         for (int n : trackClearOnlyPhases(active)) {
           served.add(new ServedMovement(n, clearing, PedInterval.NONE));
         }
-        return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served,
-            active, active.getDwellPhases());
+        upcoming = active.getDwellPhases();
+        break;
       }
       case DWELL:
-        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            toPhaseList(active.getDwellPhases()), VehInterval.GREEN, active);
+        served = movements(active.getDwellPhases(), VehInterval.GREEN);
+        upcoming = null;
+        break;
       case EXIT:
       default:
-        return AdvancedPhaseBuilder.buildForPhases(world, plan, circuits, overlaps,
-            toPhaseList(active.getDwellPhases()), clearing, active);
+        served = movements(active.getDwellPhases(), clearing);
+        upcoming = null;
+        break;
     }
+    pruneFlashingLefts(plan, served);
+    return AdvancedPhaseBuilder.buildForMovements(world, plan, circuits, overlaps, served, active,
+        upcoming, preemptFlashingLefts, preemptFlashingOverlaps);
+  }
+
+  /** Each of {@code phaseNumbers} served at {@code interval}, with no pedestrian interval. */
+  private static List<ServedMovement> movements(int[] phaseNumbers, VehInterval interval) {
+    List<ServedMovement> list = new ArrayList<>(phaseNumbers.length);
+    for (int n : phaseNumbers) {
+      list.add(new ServedMovement(n, interval, PedInterval.NONE));
+    }
+    return list;
   }
 
   private static List<Integer> toPhaseList(int[] phaseNumbers) {

@@ -577,13 +577,25 @@ dwell clearance, so the dwell heads were still yellow after the resumed phase ha
 `buildForMovements` is the builder entry that lets a stage mix continuing greens with clearing
 movements and per-movement ped intervals.
 
-**Flashing yellow arrows in a preempt (#370).** From entry to exit, an FYA left (or FYA overlap)
-that the preempt does not serve is held **red**, whatever its permissive phase does. An
-emergency vehicle's dwell on SB used to flash the NBL arrow, which tells the left it may turn
-across the approach the vehicle is coming down. A left flashing as the preempt begins gets its
-yellow from the output clearance. A preempt's **permissive lefts** flag (NBT `fy`, the preempt
-page's *Lefts* cell, `permissiveLefts` in the JSON bridge) lets the lefts flash beside their
-permissive phase again, for a transit preempt where that turn is wanted. It is off by default.
+**Flashing yellow arrows in a preempt (#370, #374).** An FYA left (or FYA left overlap) that the
+preempt does not serve never *starts* flashing during it. An emergency vehicle's dwell on SB used
+to bring up the NBL arrow, which tells the left it may turn across the approach the vehicle is
+coming down. So:
+
+- A left that is **not flashing** when the preempt begins (red, or in its own protected
+  interval) is held red from entry to exit, whatever its permissive phase does.
+- A left that **is flashing** when the preempt begins keeps flashing while its permissive
+  (opposing through) phase stays green, and clears with it: solid yellow during the through's
+  yellow, then red. Taking it to yellow and red while the opposing through stays green into the
+  dwell is a yellow trap: the turning driver reads the yellow as oncoming traffic stopping too
+  (#374). Once its through has cleared, it is held red for the rest of the preempt, even if the
+  through greens again.
+
+"Flashing at entry" is read from the heads on the tick before the preempt, not inferred from
+the phases (`RingBarrierState.captureFlashingLefts`). A preempt's **permissive lefts** flag (NBT
+`fy`, the preempt page's *Lefts* cell, `permissiveLefts` in the JSON bridge) lets every left
+flash beside its permissive phase, for a transit preempt where that turn is wanted. It is off
+by default.
 
 Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
 `-` / `DE` / `CS` / `D+C`.

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Preempt display (issues #370 and #371), on the FYA arterial of {@link FyaBarrierClearanceTest}:
+ * Preempt display (issues #370, #371 and #374), on the FYA arterial of {@link FyaBarrierClearanceTest}:
  * FYA lefts 1 (permissive 2) and 5 (permissive 6) leading throughs 2 and 6, side streets 3 and 4,
  * every phase yellow 80 and red clearance 60, and an emergency preempt on the phase 6 circuit
  * dwelling 6.
@@ -22,6 +22,11 @@ class PreemptLeftsAndClearanceTest {
   private static final int PREEMPT_CIRCUIT = 3; // phase 6's circuit
 
   private static TrafficSignalProgrammedPhasePlan plan(boolean permissiveLefts, int[] exit) {
+    return plan(permissiveLefts, exit, new int[] {6});
+  }
+
+  private static TrafficSignalProgrammedPhasePlan plan(boolean permissiveLefts, int[] exit,
+      int[] dwell) {
     TrafficSignalProgrammedPhasePlan plan = FyaBarrierClearanceTest.arterialPlan(false);
     for (int n : new int[] {1, 2, 3, 4, 5, 6}) {
       plan.getPhase(n).setRedClear(60L);
@@ -31,7 +36,7 @@ class PreemptLeftsAndClearanceTest {
     pe.setType(TrafficSignalPreemptType.EMERGENCY);
     pe.setTriggerCircuitIndex(PREEMPT_CIRCUIT);
     pe.setTriggerOnDetectors(true);
-    pe.setDwellPhases(new int[] {6});
+    pe.setDwellPhases(dwell);
     pe.setExitPhases(exit);
     pe.setPermissiveLefts(permissiveLefts);
     plan.getPreempts().add(pe);
@@ -73,35 +78,72 @@ class PreemptLeftsAndClearanceTest {
     throw new AssertionError("the FYA left 5 never flashed");
   }
 
+  /** Finds a tick in the first 3000 at which the FYA head 5 is red (not flashing, not served). */
+  private static long redAt(TrafficSignalProgrammedPhasePlan plan) {
+    List<RingBarrierState> rbs = new ArrayList<>();
+    List<Map<BlockPos, Integer>> s = run(plan, Long.MAX_VALUE, Long.MAX_VALUE, 3000L, rbs);
+    for (int t = 600; t < s.size(); t++) {
+      Integer i = s.get(t).get(FyaBarrierClearanceTest.FYA_5);
+      if (i != null && TrafficSignalPhase.isRedIndication(i)) {
+        return t;
+      }
+    }
+    throw new AssertionError("the FYA left 5 was never red");
+  }
+
   @Test
-  @DisplayName("preempt: an FYA left whose permissive phase dwells is held red for the whole "
-      + "preempt, and clears through yellow when it was flashing at entry (issue #370)")
-  void fyaLeftHeldRedThroughEmergencyDwell() {
+  @DisplayName("preempt: an FYA left that is red when the preempt begins stays red for the whole "
+      + "preempt, though its permissive phase dwells (issue #370)")
+  void fyaLeftRedAtEntryHeldRedThroughDwell() {
+    TrafficSignalProgrammedPhasePlan plan = plan(false, new int[0]);
+    long start = redAt(plan) + 1L;
+    List<RingBarrierState> rbs = new ArrayList<>();
+    List<Map<BlockPos, Integer>> s = run(plan, start, start + 600L, start + 1200L, rbs);
+    BlockPos fya5 = FyaBarrierClearanceTest.FYA_5;
+    assertTrue(TrafficSignalPhase.isRedIndication(s.get((int) start - 1).get(fya5)),
+        "sanity: red at the call");
+    for (long t = start; t < start + 600L; t++) {
+      Integer now = s.get((int) t).get(fya5);
+      assertTrue(!lit(now), "FYA left 5 lit (" + now + ") at t=" + (t - start)
+          + " in a preempt it was red at the start of");
+    }
+  }
+
+  @Test
+  @DisplayName("preempt: an FYA left flashing when the preempt begins keeps flashing while its "
+      + "opposing through dwells, rather than clearing beside it (issue #374)")
+  void fyaLeftFlashingAtEntryKeepsFlashing() {
     TrafficSignalProgrammedPhasePlan plan = plan(false, new int[0]);
     long start = flashingAt(plan) + 1L;
     List<RingBarrierState> rbs = new ArrayList<>();
     List<Map<BlockPos, Integer>> s = run(plan, start, start + 600L, start + 1200L, rbs);
     BlockPos fya5 = FyaBarrierClearanceTest.FYA_5;
-    Integer prev = s.get((int) start - 1).get(fya5);
-    assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) prev, "sanity: flashing at the call");
-    boolean sawYellow = false;
+    assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) s.get((int) start - 1).get(fya5),
+        "sanity: flashing at the call");
     for (long t = start; t < start + 600L; t++) {
       Integer now = s.get((int) t).get(fya5);
-      if (now != null && now == AbstractBlockControllableSignal.SIGNAL_YELLOW) {
-        sawYellow = true;
-      }
-      if (t > start + 300L) {
-        assertTrue(!lit(now), "FYA left 5 lit (" + now + ") at t=" + (t - start)
-            + " in the dwell on its permissive phase 6");
-      }
-      if (prev != null && prev == TrafficSignalPhase.INDICATION_FYA && now != null
-          && TrafficSignalPhase.isRedIndication(now)) {
-        throw new AssertionError("FYA left 5 went from flashing to red without a yellow at t="
-            + (t - start));
-      }
-      prev = now;
+      assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) now, "FYA left 5 at t=" + (t - start)
+          + " while its opposing through 6 stays green into the dwell");
     }
-    assertTrue(sawYellow, "the flashing left cleared through a yellow at entry");
+  }
+
+  @Test
+  @DisplayName("preempt: dwelling both throughs, neither flashing left goes yellow or red while "
+      + "its opposing through stays green (issue #374)")
+  void noYellowTrapDwellingBothThroughs() {
+    TrafficSignalProgrammedPhasePlan plan = plan(false, new int[0], new int[] {2, 6});
+    long start = flashingAt(plan) + 1L;
+    List<RingBarrierState> rbs = new ArrayList<>();
+    List<Map<BlockPos, Integer>> s = run(plan, start, start + 600L, start + 1200L, rbs);
+    for (BlockPos lens : new BlockPos[] {FyaBarrierClearanceTest.FYA_1,
+        FyaBarrierClearanceTest.FYA_5}) {
+      assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) s.get((int) start - 1).get(lens),
+          "sanity: lens " + lens.getX() + " flashing at the call");
+      for (long t = start; t < start + 600L; t++) {
+        assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) s.get((int) t).get(lens),
+            "lens " + lens.getX() + " at t=" + (t - start) + " in a dwell of both throughs");
+      }
+    }
   }
 
   @Test
