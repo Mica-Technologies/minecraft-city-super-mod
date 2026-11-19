@@ -645,11 +645,33 @@ owes the full interval) plus yellow and red. It ends a coordinated green, with o
 
 - Before it, gap-out and conflicting calls **cannot** take the phase off green — it holds past max
   green (coordinated phases are already max-out exempt).
-- At it, a call **across the barrier** does not end it while the other ring still has more to
-  time than its own clearance (a walk running past that ring's yield point): the barrier cannot
-  cross before both rings clear, so yielding only sat this ring red beside a green it does not
-  conflict with. It holds and yields when its clearance ends with the other ring's
-  (`barrierClearTime`). A call on its own barrier still ends it at the yield point.
+- A call **across the barrier** is one decision for both rings, since the barrier crosses
+  only once both have cleared:
+  - The call must still be startable once the *slower* ring has cleared (`barrierClearTime`:
+    the longer of its remaining minimum green and walk, then its clearance).
+  - While the other ring has more to time than this one, this ring holds green and yields
+    when its clearance ends with the other's. Yielding at once sat it red beside a green it
+    does not conflict with.
+  - When either ring's coordinated phase yields for such a call (`crossYieldWanted`), the
+    other's follows on the same tick, even before its own yield point or while it dwells
+    outside its window. If the call could not start in time, neither yields and both dwell.
+    After a preempt exit, one through used to yield early for barrier B's window while the
+    other (still in the minimum green behind its leading interval) missed it, and its ring sat
+    dark beside the other through for a cycle (#372, `PreemptCoordinationResyncTest`
+    replaying Madison Ave x 86th).
+
+  A call on its own barrier still ends it at the yield point.
+- A **lead** (the first phase of its ring on a barrier, not coordinated) may start **early**,
+  when the rings reach its barrier before its window opens because the barrier before gapped
+  or maxed out (`beforeLeadWindow`). Its window position used to wrap round to the end of the
+  cycle there: the call was refused, the coordinated phase behind it started early, and the
+  lead was cut in after it or skipped every cycle (#369, `CoordinatedEarlyLeadTest`). The early
+  start has these effects:
+  - The call is accepted for the window about to open.
+  - The lead is not forced off as outside its window.
+  - The service counts for that window, so the window does not accept the call again.
+  - It applies only while no coordinated phase is up, so a coordinated phase never yields
+    ahead of the cycle for a lead that is merely early.
 - A coordinated phase sitting outside its own window **dwells** on green until the yield point comes
   round again. That is the whole of our offset correction, and it is add-only by construction: no
   side-street split and no pedestrian interval is ever cut short to catch up.

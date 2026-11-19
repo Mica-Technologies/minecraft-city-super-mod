@@ -456,24 +456,33 @@ class RingBarrierStateCoordinationTest {
   }
 
   @Test
-  @DisplayName("coordination: after an early return the lead left still runs in its own window "
-      + "at the top of the cycle, not straight after the side street")
-  void leadLeftStaysInItsWindowAfterEarlyReturn() {
+  @DisplayName("coordination: after an early return the lead left runs straight after the side "
+      + "street, once a cycle, before the coordinated through (issue #369)")
+  void leadLeftServedStraightAfterEarlyReturn() {
     // From the in-game test of the T intersection above: every phase on minimum recall with no
     // vehicles, so the side street gaps out at min green and the rings return to barrier A early.
-    // The coordinated through came up early and then dwelled across the top of the cycle, where
-    // the lead left's window is. The left was accepted there but could not be served until the
-    // through yielded at the end of ITS window, so it ran after the side street, far outside its
-    // own window, every cycle.
+    // The coordinated through first came up early and dwelled across the top of the cycle, where
+    // the lead left's window is, so the left ran after the through's whole window. Then the
+    // through was made to yield for the left's window instead -- green, yellow, red and green
+    // again each cycle, and when the through started early with its walk it could not clear in
+    // time and the left was skipped every cycle (#369). A lead whose rings reach its barrier
+    // early now goes first, in the time the side street gave back, and the through follows it
+    // once.
     TrafficSignalProgrammedPhasePlan plan = teePlan(
         new long[][] {{1, 200L}, {2, 900L}, {4, 700L}}, new long[][] {{6, 1100L}});
     for (int n : new int[] {1, 2, 4, 6}) {
       plan.getPhase(n).setRecallMode(TrafficSignalRecallMode.MINIMUM);
     }
+    // never inside barrier A after its own window, nor in the side street's time before it ends
     Map<Integer, java.util.Set<Long>> starts = greenStarts(plan, 4,
-        new RingBarrierStateTest.Demand(), 1, 200L, 1800L);
-    assertEquals(java.util.Collections.singleton(0L), starts.get(1),
-        "the lead left must start at its window start every cycle: " + starts);    assertEquals(java.util.Collections.singleton(1100L), starts.get(4),
+        new RingBarrierStateTest.Demand(), 1, 200L, 1100L);
+    assertEquals(1, starts.get(1).size(),
+        "the lead left must start at the same point every cycle: " + starts);
+    long lead = starts.get(1).iterator().next();
+    assertTrue(lead == 0L || lead >= 1100L,
+        "the lead left must start in its window or straight after the side street: " + starts);
+    assertEquals(1, starts.get(2).size(),
+        "the coordinated through must go green once a cycle, after the lead: " + starts);    assertEquals(java.util.Collections.singleton(1100L), starts.get(4),
         "the side street must still start at its window start every cycle: " + starts);
   }
 
@@ -631,7 +640,11 @@ class RingBarrierStateCoordinationTest {
         List<long[]> g = greens(plan, 3, t -> t >= from ? with : without, 5, from + cycle * 3);
         for (long[] green : g) {
           long local = ((green[0] - offset) % cycle + cycle) % cycle;
-          assertTrue(local < 100L, "with the call arriving at cycle position " + pos
+          // Inside its window it must start by the close of its permissive period; a lead may
+          // also start early, before its window, when the rings return early (#369): either way
+          // with at least its minimum green before its yield point (200).
+          long toYield = ((200L - local) % cycle + cycle) % cycle;
+          assertTrue(toYield >= 100L, "with the call arriving at cycle position " + pos
               + (side ? " (side street called)" : "")
               + (peds ? " (ped recall, rest in walk)" : "") + ", phase 5 started at cycle position "
               + local + ", after its permissive period closed at 100 (yield point 200 less its "
