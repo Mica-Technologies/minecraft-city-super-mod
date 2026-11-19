@@ -549,8 +549,18 @@ the circuit's preempt detectors, which a real ASC/3 takes from its optical preem
 "The preempt detector" in TRAFFIC_SIGNAL_SYSTEM.md. The clearances below are the same whichever
 input called it.
 
-Every preempt stage change that takes a movement from green to red runs the same fixed yellow
-(70 ticks) then red (40 ticks) clearance, `PREEMPT_CLEARANCE_TICKS`:
+Every preempt stage change that takes a movement from green to red runs a yellow then red
+clearance timed from the phases it clears (`preemptClearance`):
+- **Yellow:** the longest `ye` of those phases.
+- **Red:** the longest `rc` of those phases, or, when none has one, the plan's longest `rc`
+  (`entryClearanceRed`).
+- **Fallback:** 70 / 40 ticks only for a plan with no timing at all.
+
+The stage also waits until any head the output clearance is still holding yellow (a flashing
+left the preempt dropped, an overlap) has been red for that red clearance too (`stageCleared`).
+Until #371 it was a fixed 70 / 40 whatever the plan said, so the walks and greens resumed after a
+preempt came up 40 ticks after the dwell heads went red on plans that program 60. After a
+dropped FYA arrow the gap was only 30.
 
 | Stage | Shows |
 |---|---|
@@ -558,7 +568,7 @@ Every preempt stage change that takes a movement from green to red runs the same
 | `TRACK_CLEAR` | the track-clear phases green (100 ticks) |
 | `TRACK_EXIT` | track-clear phases that are **not** dwell phases clear yellow → red while those that continue stay green; skipped when every track-clear phase continues into the dwell |
 | `DWELL` | the dwell phases green until the call drops and `minDwell` has elapsed |
-| `EXIT` | the dwell phases clear yellow → red, then normal service resumes |
+| `EXIT` | the dwell phases clear yellow → red, then normal service resumes: on the preempt's **exit phases** (`ex`) when it names any (each in its own ring, on the barrier of the first, none beside one it is excluded from), otherwise from the calls |
 
 Before the audit `TRACK_CLEAR` went straight to `DWELL` (conflicting greens together, with the
 output clearance painting the track-clear heads yellow *beside* the dwell greens), and `EXIT` was
@@ -566,6 +576,14 @@ a 40-tick all-red — shorter than the yellow the output clearance synthesises f
 dwell clearance, so the dwell heads were still yellow after the resumed phase had gone green.
 `buildForMovements` is the builder entry that lets a stage mix continuing greens with clearing
 movements and per-movement ped intervals.
+
+**Flashing yellow arrows in a preempt (#370).** From entry to exit, an FYA left (or FYA overlap)
+that the preempt does not serve is held **red**, whatever its permissive phase does. An
+emergency vehicle's dwell on SB used to flash the NBL arrow, which tells the left it may turn
+across the approach the vehicle is coming down. A left flashing as the preempt begins gets its
+yellow from the output clearance. A preempt's **permissive lefts** flag (NBT `fy`, the preempt
+page's *Lefts* cell, `permissiveLefts` in the JSON bridge) lets the lefts flash beside their
+permissive phase again, for a transit preempt where that turn is wanted. It is off by default.
 
 Dual Entry and Conditional Service are set via the MAP **OPT** column, a combined cycle:
 `-` / `DE` / `CS` / `D+C`.

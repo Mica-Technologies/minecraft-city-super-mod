@@ -47,14 +47,15 @@ public class RingBarrierState {
   /** Stage of an in-progress preemption sequence. */
   private enum PreemptStage { NONE, ENTER, TRACK_CLEAR, TRACK_EXIT, DWELL, EXIT }
 
-  // Fixed preempt interval timing (ticks). Every stage change that takes a movement from green
-  // to red runs the same yellow-then-red clearance: entry (whatever was green), track clear to
-  // dwell (the track-clear movements that do not continue into the dwell) and exit (the dwell
-  // movements). A movement that continues green into the next stage is never cleared.
+  // Preempt interval timing (ticks). Every stage change that takes a movement from green to red
+  // runs a yellow-then-red clearance: entry (whatever was green), track clear to dwell (the
+  // track-clear movements that do not continue into the dwell) and exit (the dwell movements). A
+  // movement that continues green into the next stage is never cleared. Each clearance is timed
+  // from the cleared phases' own yellow and red clearance (preemptClearance); these are only the
+  // fallback for phases with none programmed (issue #371).
   private static final long PREEMPT_YELLOW_TICKS = 70L;       // 3.5 s
   private static final long PREEMPT_REDCLEAR_TICKS = 40L;     // 2 s
   private static final long PREEMPT_TRACK_CLEAR_TICKS = 100L; // 5 s
-  private static final long PREEMPT_CLEARANCE_TICKS = PREEMPT_YELLOW_TICKS + PREEMPT_REDCLEAR_TICKS;
 
   /** Immutable description of what one ring is serving this tick (consumed by the phase builder). */
   public static final class ServedMovement {
@@ -213,6 +214,11 @@ public class RingBarrierState {
   private PreemptStage preemptStage = PreemptStage.NONE;
   private int activePreemptIndex = -1;
   private long preemptStageStart = 0L;
+  /** The yellow and red of the clearance the current preempt stage runs (preemptClearance). */
+  private long preemptYellow = PREEMPT_YELLOW_TICKS;
+  private long preemptRed = PREEMPT_REDCLEAR_TICKS;
+  /** The last tick an output-stage clearance hold was running (see stageCleared). */
+  private long lastOutputHoldTick = Long.MIN_VALUE;
   /** Phases green (or in yellow) at preempt entry that the entry clearance takes to red. */
   private final java.util.Set<Integer> preemptClearPhases = new java.util.HashSet<>();
   /** Phases green at preempt entry that the first preempt stage keeps green (never cleared). */
@@ -3268,9 +3274,12 @@ public class RingBarrierState {
     }
 
     long elapsed = now - preemptStageStart;
+    if (!outputClearanceHolds.isEmpty()) {
+      lastOutputHoldTick = now;
+    }
     switch (preemptStage) {
       case ENTER:
-        if (elapsed >= PREEMPT_CLEARANCE_TICKS) {
+        if (stageCleared(elapsed, now)) {
           preemptStage = active.getTrackClearPhases().length > 0
               ? PreemptStage.TRACK_CLEAR : PreemptStage.DWELL;
           preemptStageStart = now;
@@ -3283,10 +3292,11 @@ public class RingBarrierState {
           preemptStage = trackClearOnlyPhases(active).isEmpty()
               ? PreemptStage.DWELL : PreemptStage.TRACK_EXIT;
           preemptStageStart = now;
+          preemptClearance(plan, trackClearOnlyPhases(active));
         }
         break;
       case TRACK_EXIT:
-        if (elapsed >= PREEMPT_CLEARANCE_TICKS) {
+        if (stageCleared(elapsed, now)) {
           preemptStage = PreemptStage.DWELL;
           preemptStageStart = now;
         }
@@ -3296,6 +3306,7 @@ public class RingBarrierState {
         if (!isPreemptCalled(active) && elapsed >= active.getMinDwell()) {
           preemptStage = PreemptStage.EXIT;
           preemptStageStart = now;
+          preemptClearance(plan, toPhaseList(active.getDwellPhases()));
         }
         break;
       case EXIT:
@@ -3303,11 +3314,84 @@ public class RingBarrierState {
         // The dwell movements get their own yellow and red before normal service resumes. An
         // all-red shorter than a yellow left the output clearance still painting the dwell heads
         // yellow after the resumed phase had gone green.
-        if (elapsed >= PREEMPT_CLEARANCE_TICKS) {
+        if (stageCleared(elapsed, now)) {
           preemptStage = PreemptStage.NONE;
           activePreemptIndex = -1;
+          startExitPhases(plan, active, now);
         }
         break;
+    }
+  }
+
+  /**
+   * Sets the clearance the stage starting now runs from {@code cleared}, the phases it takes off
+   * green: the longest yellow and the longest red clearance among them, or the plan's longest red
+   * when none of them has one (as the restart clearance does, entryClearanceRed), with the fixed
+   * 70 / 40 ticks only as the last fallback. Before #371 every preempt clearance was the fixed
+   * 70 / 40, so the walks and greens a preempt resumed came up 40 ticks after the dwell heads went
+   * red on a plan that programs 60.
+   */
+  private void preemptClearance(TrafficSignalProgrammedPhasePlan plan,
+      java.util.Collection<Integer> cleared) {
+    long yellow = 0L;
+    long red = 0L;
+    for (int n : cleared) {
+      TrafficSignalProgrammedPhase p = plan.getPhase(n);
+      if (p != null) {
+        yellow = Math.max(yellow, p.getYellow());
+        red = Math.max(red, p.getRedClear());
+      }
+    }
+    preemptYellow = yellow > 0L ? yellow : PREEMPT_YELLOW_TICKS;
+    preemptRed = red > 0L ? red : entryClearanceRed(plan);
+  }
+
+  /**
+   * Whether the clearance of the current preempt stage is over: its yellow and red have run, and
+   * any head the output stage was still holding yellow (a flashing left the preempt dropped, an
+   * overlap) has been red for the red clearance too. Ending on the stage's own timing alone
+   * started the next movements 30 ticks after such an arrow went red (issue #371).
+   */
+  private boolean stageCleared(long elapsed, long now) {
+    return elapsed >= preemptYellow + preemptRed
+        && (lastOutputHoldTick == Long.MIN_VALUE || now - lastOutputHoldTick > preemptRed);
+  }
+
+  /**
+   * Starts normal service on the preempt's exit phases ({@code ex}), when it names any: each in its
+   * own ring, all on the barrier of the first, none beside one it is excluded from. With none, the
+   * rings pick up from their calls as before.
+   */
+  private void startExitPhases(TrafficSignalProgrammedPhasePlan plan, TrafficSignalPreempt pe,
+      long now) {
+    int barrier = -1;
+    List<Integer> started = new ArrayList<>();
+    for (int n : pe.getExitPhases()) {
+      TrafficSignalProgrammedPhase phase = plan.getPhase(n);
+      int ringNum = ringOf(plan, n);
+      if (phase == null || !phase.isActive() || ringNum == 0
+          || (barrier >= 0 && phase.getBarrier() != barrier)) {
+        continue;
+      }
+      boolean excluded = false;
+      for (int s : started) {
+        excluded |= plan.excludes(s, n);
+      }
+      RingRuntime ring = ringNum == 1 ? ring1 : ring2;
+      if (excluded || ring.activePhase != 0) {
+        continue;
+      }
+      barrier = phase.getBarrier();
+      currentBarrier = barrier;
+      startGreen(ring, phase, now);
+      int[] seq = plan.getRingSequence(ringNum);
+      for (int idx = 0; idx < seq.length; idx++) {
+        if (seq[idx] == n) {
+          ring.sequencePos = idx;
+          break;
+        }
+      }
+      started.add(n);
     }
   }
 
@@ -3337,6 +3421,7 @@ public class RingBarrierState {
           && contains(first, ring.activePhase);
       (continues ? preemptContinuePhases : preemptClearPhases).add(ring.activePhase);
     }
+    preemptClearance(plan, preemptClearPhases);
   }
 
   private static boolean contains(int[] phases, int phaseNumber) {
@@ -3408,7 +3493,7 @@ public class RingBarrierState {
       TrafficSignalControllerCircuits circuits, TrafficSignalControllerOverlaps overlaps, long now) {
     TrafficSignalPreempt active = plan.getPreempts().get(activePreemptIndex);
     long elapsed = now - preemptStageStart;
-    VehInterval clearing = elapsed < PREEMPT_YELLOW_TICKS ? VehInterval.YELLOW : VehInterval.RED;
+    VehInterval clearing = elapsed < preemptYellow ? VehInterval.YELLOW : VehInterval.RED;
     switch (preemptStage) {
       case ENTER: {
         // Whatever was green clears yellow -> red while any movement the first stage serves

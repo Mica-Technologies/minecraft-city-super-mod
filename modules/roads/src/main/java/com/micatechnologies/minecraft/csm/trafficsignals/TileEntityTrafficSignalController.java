@@ -2418,6 +2418,12 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           plan.getPreempts().get(index).setTriggerOnDetectors(value != 0);
         }
         break;
+      case "pe.permLefts":
+        // FYA lefts keep flashing beside the phases this preempt serves (off: held red, #370).
+        if (validPreempt(plan, index)) {
+          plan.getPreempts().get(index).setPermissiveLefts(value != 0);
+        }
+        break;
       case "pe.minDwell":
         if (validPreempt(plan, index)) {
           plan.getPreempts().get(index).setMinDwell(clampTicks(value));
