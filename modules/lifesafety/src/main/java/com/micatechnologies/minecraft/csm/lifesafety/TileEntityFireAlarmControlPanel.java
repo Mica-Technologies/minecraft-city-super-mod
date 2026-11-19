@@ -5,6 +5,7 @@ import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmEvent;
 import com.micatechnologies.minecraft.csm.api.firealarm.FireAlarmPanelRegistry;
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTickableTileEntity;
 import com.micatechnologies.minecraft.csm.codeutils.CsmChunks;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -301,7 +302,8 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   @Override
   public void onLoad() {
     super.onLoad();
-    registerActiveAlarms();
+    // On the server thread even when an async world editor loads the chunk (#375)
+    CsmServerThread.runOnLoad(this, this::registerActiveAlarms);
   }
 
   /**
@@ -968,16 +970,20 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   @Override
   public void invalidate() {
-    stopEverythingOnRemoval();
-    unregisterActiveAlarms();
+    CsmServerThread.runOnUnloadByPos(this, this::withdraw);
     super.invalidate();
   }
 
   @Override
   public void onChunkUnload() {
+    CsmServerThread.runOnUnloadByPos(this, this::withdraw);
+    super.onChunkUnload();
+  }
+
+  /** Off the server thread (an async world editor's unload) this waits for it (#375). */
+  private void withdraw() {
     stopEverythingOnRemoval();
     unregisterActiveAlarms();
-    super.onChunkUnload();
   }
 
   @Override

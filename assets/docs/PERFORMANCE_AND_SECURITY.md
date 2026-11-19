@@ -973,6 +973,16 @@ a single quad, both visual trade-offs to cost against measured numbers before pr
   unload and a player's pending overheight-sensor pairing on logout. The setback cache is keyed by
   position alone, because the `IBlockAccess` a render-path `getActualState` receives exposes no
   dimension; a collision across dimensions is cosmetic and heals on the next neighbour change.
+- **Chunk and tile entity lifecycle hooks can run off the server thread.** An async world editor
+  (FAWE and its forks) loads and unloads chunks, and changes blocks, on its own worker threads, so
+  `ChunkEvent.Load`/`Unload`, a tile entity's `onLoad`, `validate`, `onChunkUnload` and
+  `invalidate`, and an `IWorldEventListener`'s `notifyBlockUpdate` fire there too. Anything they do
+  to state the tick also touches goes through `CsmServerThread`: `run` for an event handler,
+  `runOnLoad` / `runOnUnload` (instance- or owner-keyed registries) / `runOnUnloadByPos`
+  (position-keyed ones) for a tile entity. On the server thread they run inline, unchanged; off it
+  they queue to the next tick and re-check the tile entity is still live. A FAWE `//setbiome` hit
+  the HVAC chunk-audit queue mid-drain and crashed the Alto server (#375). A queued task
+  re-resolves the chunk or per-world state rather than capturing it, since either may be gone.
 
 ## Network safety
 

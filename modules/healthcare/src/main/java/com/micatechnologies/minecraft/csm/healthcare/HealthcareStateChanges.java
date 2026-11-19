@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.healthcare;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -78,7 +79,10 @@ public final class HealthcareStateChanges implements IWorldEventListener {
     }
     Block block = newState.getBlock();
     if (block instanceof Listening && oldState.getBlock() == block) {
-      ((Listening) block).onStateChangedInPlace(worldIn, pos, oldState, newState);
+      // An async world editor's change is handled on the server thread (#375)
+      BlockPos at = pos.toImmutable();
+      CsmServerThread.run(worldIn,
+          () -> ((Listening) block).onStateChangedInPlace(worldIn, at, oldState, newState));
     }
   }
 

@@ -1,5 +1,6 @@
 package com.micatechnologies.minecraft.csm.lifesafety;
 
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Map;
@@ -139,6 +140,12 @@ final class FireCensus implements IWorldEventListener {
     if (was == is) {
       return;
     }
+    if (!CsmServerThread.isServerThread(worldIn)) {
+      // An async world editor's change: the counts are the server thread's to touch (#375)
+      BlockPos at = pos.toImmutable();
+      CsmServerThread.run(worldIn, () -> notifyBlockUpdate(worldIn, at, oldState, newState, flags));
+      return;
+    }
     long k = key(pos.getX() >> 4, pos.getZ() >> 4, pos.getY() >> 4);
     int n = counts.get(k);
     if (n >= 0) {
@@ -163,13 +170,18 @@ final class FireCensus implements IWorldEventListener {
       if (w.isRemote) {
         return;
       }
-      FireCensus c;
-      synchronized (WORLDS) {
-        c = WORLDS.get(w);
-      }
-      if (c != null) {
-        c.forgetChunk(event.getChunk().x, event.getChunk().z);
-      }
+      int cx = event.getChunk().x;
+      int cz = event.getChunk().z;
+      // The counts belong to the server thread; an async world editor unloads off it (#375).
+      CsmServerThread.run(w, () -> {
+        FireCensus c;
+        synchronized (WORLDS) {
+          c = WORLDS.get(w);
+        }
+        if (c != null) {
+          c.forgetChunk(cx, cz);
+        }
+      });
     }
 
     @SubscribeEvent

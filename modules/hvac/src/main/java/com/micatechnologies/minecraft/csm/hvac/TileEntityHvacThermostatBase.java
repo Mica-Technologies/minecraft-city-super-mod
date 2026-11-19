@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
@@ -98,7 +99,7 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
   @Override
   public void onLoad() {
     super.onLoad();
-    register();
+    CsmServerThread.runOnLoad(this, this::register);
   }
 
   @Override
@@ -116,13 +117,13 @@ public abstract class TileEntityHvacThermostatBase extends AbstractTileEntity
 
   @Override
   public void onChunkUnload() {
-    detachFromSimulation();
+    CsmServerThread.runOnUnload(this, this::detachFromSimulation);
     super.onChunkUnload();
   }
 
   @Override
   public void invalidate() {
-    detachFromSimulation();
+    CsmServerThread.runOnUnload(this, this::detachFromSimulation);
     super.invalidate();
   }
 

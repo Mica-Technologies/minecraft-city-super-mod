@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.transit;
 
 import com.micatechnologies.minecraft.csm.codeutils.CsmRenderToggles;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -214,6 +215,12 @@ public final class LightSwitchRipple {
     public void onChunkUnload(ChunkEvent.Unload event) {
       World world = event.getWorld();
       if (world == null || world.isRemote) {
+        return;
+      }
+      // An async world editor unloads chunks off the server thread, where the queue is not safe to
+      // touch and no light may be set (#375). The entries stay for work(), which switches them if
+      // the chunk is back and otherwise drops them without loading it.
+      if (!CsmServerThread.isServerThread(world)) {
         return;
       }
       LinkedHashMap<BlockPos, Pending> queue = QUEUES.get(world);

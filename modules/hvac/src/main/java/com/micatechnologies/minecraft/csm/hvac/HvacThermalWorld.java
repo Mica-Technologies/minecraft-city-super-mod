@@ -2,6 +2,7 @@ package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.CsmConfig;
 import com.micatechnologies.minecraft.csm.codeutils.CsmEnvironment;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -1077,7 +1078,8 @@ public final class HvacThermalWorld implements IWorldEventListener {
   /**
    * Chunks that have loaded and are due an audit: {chunk key, due tick}. Each loaded chunk is
    * audited twice, a tick after it loads and again {@link #AUDIT_LATE_TICKS} later, so a
-   * registration that goes missing just after the load is caught too.
+   * registration that goes missing just after the load is caught too. Server thread only: the
+   * chunk-load handler hands its queueing over when it fires elsewhere (#375).
    */
   private final java.util.ArrayDeque<long[]> chunkAudits = new java.util.ArrayDeque<>();
   /** The late passes, kept apart so each queue stays in due order and is read from its head. */
@@ -1105,8 +1107,14 @@ public final class HvacThermalWorld implements IWorldEventListener {
     BlockPos first = null;
     for (java.util.ArrayDeque<long[]> queue : java.util.Arrays.asList(chunkAudits,
         lateChunkAudits)) {
-      while (!queue.isEmpty() && queue.peek()[1] <= now) {
-        long key = queue.poll()[0];
+      while (true) {
+        // One read of the head, null-checked: an audit must never be able to stop the tick (#375).
+        long[] head = queue.peek();
+        if (head == null || head[1] > now) {
+          break;
+        }
+        queue.poll();
+        long key = head[0];
         int cx = (int) key; // chunkKey packs x low and z high
         int cz = (int) (key >> 32);
         net.minecraft.world.chunk.Chunk chunk = world.getChunkProvider().getLoadedChunk(cx, cz);
@@ -1623,6 +1631,12 @@ public final class HvacThermalWorld implements IWorldEventListener {
       IBlockState newState, int flags) {
     if (oldState == newState || lightweight) {
       return; // a tile entity sync, not a change of shape; or no rooms to change
+    }
+    if (!CsmServerThread.isServerThread(worldIn)) {
+      // An async world editor's change: the rooms are the server thread's to touch (#375)
+      BlockPos at = pos.toImmutable();
+      CsmServerThread.run(worldIn, () -> notifyBlockUpdate(worldIn, at, oldState, newState, flags));
+      return;
     }
     perf.blockUpdates++;
     long key = ThermalScanner.pack(pos.getX(), pos.getY(), pos.getZ());

@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 
@@ -37,7 +38,7 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity implements IHvac
   @Override
   public void onLoad() {
     super.onLoad();
-    register();
+    CsmServerThread.runOnLoad(this, this::register);
   }
 
   @Override
@@ -57,13 +58,13 @@ public class TileEntityHvacVentRelay extends AbstractTileEntity implements IHvac
 
   @Override
   public void onChunkUnload() {
-    unregister();
+    CsmServerThread.runOnUnload(this, this::unregister);
     super.onChunkUnload();
   }
 
   @Override
   public void invalidate() {
-    unregister();
+    CsmServerThread.runOnUnload(this, this::unregister);
     super.invalidate();
   }
 

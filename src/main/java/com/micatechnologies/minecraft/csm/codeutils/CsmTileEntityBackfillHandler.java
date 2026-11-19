@@ -68,12 +68,28 @@ public class CsmTileEntityBackfillHandler {
    */
   @SubscribeEvent
   public void onChunkLoad(ChunkEvent.Load event) {
-    final Chunk chunk = event.getChunk();
-    final World world = chunk.getWorld();
+    final Chunk loaded = event.getChunk();
+    final World world = loaded.getWorld();
     if (world == null || world.isRemote) {
       return;
     }
+    if (CsmServerThread.isServerThread(world)) {
+      backfillAndReport(world, loaded);
+      return;
+    }
+    // An async world editor loaded this chunk on its own thread. Creating tile entities there
+    // races the tick (#375), so the walk runs on the server thread, on the chunk as it is then.
+    final int cx = loaded.x;
+    final int cz = loaded.z;
+    CsmServerThread.run(world, () -> {
+      final Chunk chunk = world.getChunkProvider().getLoadedChunk(cx, cz);
+      if (chunk != null) {
+        backfillAndReport(world, chunk);
+      }
+    });
+  }
 
+  private static void backfillAndReport(World world, Chunk chunk) {
     final int created = backfill(world, chunk);
     if (created > 0) {
       chunk.markDirty();

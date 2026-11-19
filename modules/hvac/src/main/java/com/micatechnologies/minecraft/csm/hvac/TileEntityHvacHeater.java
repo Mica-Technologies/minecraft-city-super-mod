@@ -1,6 +1,7 @@
 package com.micatechnologies.minecraft.csm.hvac;
 
 import com.micatechnologies.minecraft.csm.codeutils.AbstractTileEntity;
+import com.micatechnologies.minecraft.csm.codeutils.CsmServerThread;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -96,7 +97,7 @@ public class TileEntityHvacHeater extends AbstractTileEntity
   @Override
   public void onLoad() {
     super.onLoad();
-    register();
+    CsmServerThread.runOnLoad(this, this::register);
   }
 
   @Override
@@ -113,13 +114,13 @@ public class TileEntityHvacHeater extends AbstractTileEntity
 
   @Override
   public void onChunkUnload() {
-    unregister();
+    CsmServerThread.runOnUnload(this, this::unregister);
     super.onChunkUnload();
   }
 
   @Override
   public void invalidate() {
-    unregister();
+    CsmServerThread.runOnUnload(this, this::unregister);
     super.invalidate();
   }
 
