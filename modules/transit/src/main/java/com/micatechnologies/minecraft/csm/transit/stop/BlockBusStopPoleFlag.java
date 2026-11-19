@@ -21,35 +21,33 @@ import net.minecraft.world.World;
 
 /**
  * The full-size bus stop pole's flag: BUS STOP, the agency's name and the stop's routes on a
- * sign in the agency's livery, a block wide and two high, beside the top of a pole of Roads' sign
- * posts, with a stop-name blade ({@link BlockBusStopBlade}) across the top.
+ * sign in the agency's livery, a block wide and two high, on a post of its own, with a stop-name
+ * blade ({@link BlockBusStopBlade}) across the top.
  *
  * <p>The flag is Core's wayfinding panel ({@code assets/docs/WAYFINDING_PANELS.md}), baked with
  * no renderer and edited with an empty-handed click; its presets are the agencies' liveries
  * ({@link BusStopSignPresets#FLAG}), and the editor's custom colours are a custom agency. Its
  * last line (the fourth, or the third when the fourth is empty) is the stop's routes, read by the
  * boards and displays
- * ({@link TileEntityBusStopPoleFlag}), so a route may be a letter ("B") as well as a number.</p>
+ * ({@link TileEntityBusStopPoleFlag}), so a route may be a letter ("B") as well as a number.
+ * It is mounted on posts ({@code m: "post"}), which the panel draws down to the ground.</p>
  *
  * <p><b>Placing.</b> The item ({@link ItemPole}) builds the whole stop in one click on the ground,
- * facing the placer: {@link #POLE_HEIGHT} sign posts, the two flag cells beside the top two on
- * the reader's right, and two blade cells above the post and the flag. In survival it takes the
- * two flags from the stack, the posts from the inventory and the blade if there is one (a stop
- * without a blade is built when there is none). Sneaking, or with no room, it places one flag cell
- * as any wayfinding panel is placed, to grow or build a sign by hand. The pieces are ordinary
- * blocks afterwards: each breaks and drops on its own. Because the posts are Roads' sign posts,
- * road signs still stack on the pole.</p>
+ * facing the placer: the two flag cells at the top of a {@link #POLE_HEIGHT}-block pole, its post
+ * drawn through the clear cells below, and two blade cells above the flag and to the reader's
+ * left of it. In survival it takes the two flags from the stack and the blade if there is one (a
+ * stop without a blade is built when there is none). Sneaking, or with no room, it places one
+ * flag cell as any wayfinding panel is placed, to grow or build a sign by hand. The pieces are
+ * ordinary blocks afterwards: each breaks and drops on its own.</p>
  *
  * @since 2026.11
  */
 public class BlockBusStopPoleFlag extends AbstractBlockWayfindingPanel {
 
-  /** Sign posts in the pole. */
+  /** Height of the pole, from the block clicked to the blade on top. */
   public static final int POLE_HEIGHT = 4;
-  /** Flag cells, stacked, beside the top of the pole. */
+  /** Flag cells, stacked at the top of the pole; its post fills the cells below. */
   public static final int FLAG_HEIGHT = 2;
-  /** Roads' sign post. */
-  private static final ResourceLocation SIGN_POST = new ResourceLocation("csm", "signpost");
   /** The blade. */
   private static final ResourceLocation BLADE = new ResourceLocation("csm", "bus_stop_name_blade");
 
@@ -103,31 +101,32 @@ public class BlockBusStopPoleFlag extends AbstractBlockWayfindingPanel {
       if (player.isSneaking()) {
         return super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState);
       }
-      Block post = Block.REGISTRY.getObject(SIGN_POST);
       Block blade = Block.REGISTRY.getObject(BLADE);
       EnumFacing facing = newState.getValue(FACING);        // towards the reader
-      EnumFacing right = facing.getOpposite().rotateY();    // the reader's right, as they look
+      EnumFacing left = facing.getOpposite().rotateYCCW();  // the reader's left, as they look
       boolean creative = player.capabilities.isCreativeMode;
 
-      List<BlockPos> posts = new ArrayList<>();
+      // The flag stands on its own post (its mount, BusStopSignPresets.FLAG_DEFAULT), drawn down
+      // through the clear cells under it to the ground, so the pole is one post with the sign on
+      // it. A separate column of sign posts beside it used to leave a bare pole standing next to
+      // a flag that nothing held up (#367).
+      List<BlockPos> clear = new ArrayList<>();
       List<BlockPos> flags = new ArrayList<>();
       List<BlockPos> blades = new ArrayList<>();
-      for (int i = 0; i < POLE_HEIGHT; i++) {
-        posts.add(pos.up(i));
+      for (int i = 0; i < POLE_HEIGHT - FLAG_HEIGHT; i++) {
+        clear.add(pos.up(i));
       }
       for (int i = 0; i < FLAG_HEIGHT; i++) {
-        flags.add(pos.offset(right).up(POLE_HEIGHT - FLAG_HEIGHT + i));
+        flags.add(pos.up(POLE_HEIGHT - FLAG_HEIGHT + i));
       }
+      blades.add(pos.offset(left).up(POLE_HEIGHT));
       blades.add(pos.up(POLE_HEIGHT));
-      blades.add(pos.offset(right).up(POLE_HEIGHT));
 
-      Item postItem = post == null ? null : Item.getItemFromBlock(post);
       Item bladeItem = blade == null ? null : Item.getItemFromBlock(blade);
-      boolean havePosts = post != null && (creative || count(player, postItem) >= posts.size());
       boolean haveFlags = creative || stack.getCount() >= flags.size();
       boolean withBlade = blade != null
           && (creative || count(player, bladeItem) >= blades.size());
-      List<BlockPos> all = new ArrayList<>(posts);
+      List<BlockPos> all = new ArrayList<>(clear);
       all.addAll(flags);
       if (withBlade) {
         all.addAll(blades);
@@ -140,22 +139,17 @@ public class BlockBusStopPoleFlag extends AbstractBlockWayfindingPanel {
           break;
         }
       }
-      if (!havePosts || !haveFlags || blocked != null) {
+      if (!haveFlags || blocked != null) {
         if (!world.isRemote) {
           player.sendStatusMessage(blocked != null
               ? new TextComponentTranslation("csm.transit.stop_pole.blocked", blocked.getX(),
               blocked.getY(), blocked.getZ())
-              : new TextComponentTranslation("csm.transit.stop_pole.short", posts.size(),
-                  flags.size()), true);
+              : new TextComponentTranslation("csm.transit.stop_pole.short", flags.size()), true);
         }
         return super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState);
       }
       if (world.isRemote) {
         return true;
-      }
-      IBlockState postState = post.getStateFromMeta(facing.getHorizontalIndex());
-      for (BlockPos p : posts) {
-        world.setBlockState(p, postState, 3);
       }
       IBlockState flagState = block.getDefaultState().withProperty(FACING, facing);
       for (BlockPos p : flags) {
@@ -169,7 +163,6 @@ public class BlockBusStopPoleFlag extends AbstractBlockWayfindingPanel {
       }
       if (!creative) {
         stack.shrink(flags.size() - 1);  // onItemUse takes the last
-        take(player, postItem, posts.size());
         if (withBlade) {
           take(player, bladeItem, blades.size());
         }

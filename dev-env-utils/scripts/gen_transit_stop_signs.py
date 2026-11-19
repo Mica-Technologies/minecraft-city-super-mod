@@ -81,10 +81,10 @@ def blade_model():
 
 
 MESSAGES = {
-    "short": ("A full stop needs %s sign posts and %s flags; placed one flag",
-              "Eine ganze Haltestelle braucht %s Schildpfosten und %s Fahnen; eine Fahne gesetzt",
-              "Una parada completa necesita %s postes y %s banderas; se colocó una bandera",
-              "En hel hållplats kräver %s skyltstolpar och %s flaggor; en flagga placerad"),
+    "short": ("A full stop needs %s flags; placed one flag",
+              "Eine ganze Haltestelle braucht %s Fahnen; eine Fahne gesetzt",
+              "Una parada completa necesita %s banderas; se colocó una bandera",
+              "En hel hållplats kräver %s flaggor; en flagga placerad"),
     "blocked": ("No room for the stop: %s %s %s is in the way; placed one flag",
                 "Kein Platz für die Haltestelle: %s %s %s ist im Weg; eine Fahne gesetzt",
                 "No hay sitio para la parada: %s %s %s estorba; se colocó una bandera",
