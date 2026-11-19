@@ -1737,6 +1737,12 @@ class RingBarrierStateTest {
     enable(plan, 4, 1);
     quickTiming(plan, 2);
     quickTiming(plan, 4);
+    // Preempt clearances follow the cleared phases' own yellow and red (#371): 70 + 40 here, so
+    // the stage times below are the 110-tick clearances.
+    for (int n : new int[] {2, 4}) {
+      plan.getPhase(n).setYellow(70L);
+      plan.getPhase(n).setRedClear(40L);
+    }
     plan.getPhase(2).setPedRecall(true);
     plan.getPhase(2).setWalk(40L);
     plan.getPhase(2).setPedClear(60L);

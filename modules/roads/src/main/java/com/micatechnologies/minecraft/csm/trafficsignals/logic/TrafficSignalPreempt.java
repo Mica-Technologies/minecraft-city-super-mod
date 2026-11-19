@@ -42,6 +42,7 @@ public class TrafficSignalPreempt {
   private static final String K_MIN_GREEN_BEFORE = "mb";
   private static final String K_SIGN_CIRCUITS = "sc";
   private static final String K_TRIGGER_DETECTORS = "td";
+  private static final String K_PERMISSIVE_LEFTS = "fy";
 
   private boolean enabled = false;
   private TrafficSignalPreemptType type = TrafficSignalPreemptType.EMERGENCY;
@@ -53,6 +54,13 @@ public class TrafficSignalPreempt {
    * in its sensor zone for {@link #triggerMovement}. False in every plan saved before detectors.
    */
   private boolean triggerOnDetectors = false;
+  /**
+   * Whether a flashing-yellow-arrow left keeps flashing while its permissive phase is served by
+   * this preempt (issue #370). Off by default: an emergency vehicle preempt holds every left it
+   * does not serve red, so no left is told it may turn across the approach the vehicle is coming
+   * down. On for a transit preempt where the permissive turn is wanted.
+   */
+  private boolean permissiveLefts = false;
   private int[] trackClearPhases = new int[0];
   private int[] dwellPhases = new int[0];
   private int[] exitPhases = new int[0];
@@ -107,6 +115,14 @@ public class TrafficSignalPreempt {
 
   public void setTriggerOnDetectors(boolean triggerOnDetectors) {
     this.triggerOnDetectors = triggerOnDetectors;
+  }
+
+  public boolean isPermissiveLefts() {
+    return permissiveLefts;
+  }
+
+  public void setPermissiveLefts(boolean permissiveLefts) {
+    this.permissiveLefts = permissiveLefts;
   }
 
   public int[] getTrackClearPhases() {
@@ -184,6 +200,9 @@ public class TrafficSignalPreempt {
     if (triggerOnDetectors) {
       c.setBoolean(K_TRIGGER_DETECTORS, true);
     }
+    if (permissiveLefts) {
+      c.setBoolean(K_PERMISSIVE_LEFTS, true);
+    }
     return c;
   }
 
@@ -201,6 +220,7 @@ public class TrafficSignalPreempt {
         c.hasKey(K_MIN_GREEN_BEFORE) ? c.getLong(K_MIN_GREEN_BEFORE) : DEFAULT_MIN_GREEN_BEFORE;
     p.signCircuits = c.getIntArray(K_SIGN_CIRCUITS);
     p.triggerOnDetectors = c.getBoolean(K_TRIGGER_DETECTORS);
+    p.permissiveLefts = c.getBoolean(K_PERMISSIVE_LEFTS);
     return p;
   }
 

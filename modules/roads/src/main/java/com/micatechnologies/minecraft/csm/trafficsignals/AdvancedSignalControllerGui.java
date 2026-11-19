@@ -867,6 +867,11 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         () -> preemptText(pi, p -> secs(p.getMinDwell())),
         dir -> preemptEdit(pi, p -> send("pe.minDwell", pi, p.getMinDwell() + dir * 20L)),
         sec -> send("pe.minDwell", pi, Math.round(sec * 20))));
+    // On the same row: whether FYA lefts may keep flashing beside the phases this preempt serves.
+    cells.add(new Cell(lcdX + 220, y, 40,
+        () -> preemptText(pi, p -> p.isPermissiveLefts() ? "FYA" : "Red"),
+        dir -> preemptEdit(pi, p -> send("pe.permLefts", pi, p.isPermissiveLefts() ? 0 : 1)),
+        null));
     // Phase-set toggle rows: TRACK / DWELL / EXIT.
     y += 16;
     addPhaseToggleRow(pi, y, "pe.trackToggle", p -> contains(p.getTrackClearPhases()));
@@ -1781,6 +1786,13 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     addHelp(lcdX, y, 70, 9, "Minimum Dwell",
         "Shortest time the controller stays in the preempt's dwell",
         "(hold) state before it is allowed to end.");
+    fontRenderer.drawString("Lefts:", lcdX + 150, y, COLOR_AMBER_DIM);
+    addHelp(lcdX + 150, y, 60, 9, "Flashing Yellow Arrow Lefts",
+        "Red: every FYA left this preempt does not serve is held red",
+        "from entry to exit, so no left is told it may turn across",
+        "the approach an emergency vehicle is coming down.",
+        "FYA: a left keeps flashing beside its permissive phase when",
+        "the preempt serves it (for a transit preempt).");
     y += 16;
     fontRenderer.drawString("TRACK", lcdX, y, COLOR_AMBER_DIM);
     addHelp(lcdX, y, 60, 9, "Track Clearance Phases",

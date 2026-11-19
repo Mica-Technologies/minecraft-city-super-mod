@@ -241,6 +241,7 @@ public final class AdvancedPlanJson {
     o.addProperty("triggerCircuit", pe.getTriggerCircuitIndex());
     o.addProperty("triggerMovement", pe.getTriggerMovement().name());
     o.addProperty("triggerOnDetectors", pe.isTriggerOnDetectors());
+    o.addProperty("permissiveLefts", pe.isPermissiveLefts());
     o.add("trackClear", ints(pe.getTrackClearPhases()));
     o.add("dwell", ints(pe.getDwellPhases()));
     o.add("exit", ints(pe.getExitPhases()));
@@ -687,6 +688,9 @@ public final class AdvancedPlanJson {
     }
     if ((b = bool(o, "triggerOnDetectors", at + ".triggerOnDetectors")) != null) {
       pe.setTriggerOnDetectors(b);
+    }
+    if ((b = bool(o, "permissiveLefts", at + ".permissiveLefts")) != null) {
+      pe.setPermissiveLefts(b);
     }
     if (o.has("trackClear")) {
       pe.setTrackClearPhases(phaseList(o.get("trackClear"), at + ".trackClear"));

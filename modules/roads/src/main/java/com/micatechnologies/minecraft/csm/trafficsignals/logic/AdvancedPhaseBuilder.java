@@ -93,9 +93,9 @@ public final class AdvancedPhaseBuilder {
     if (ring2 != null) {
       served.add(ring2);
     }
-    applyFyaLenses(phase, plan, circuits, served, holdFlash);
+    applyFyaLenses(phase, plan, circuits, served, holdFlash, false);
     applyOverlaps(phase, overlaps);
-    applyProgrammedOverlaps(phase, plan, circuits, served, overlapIntervals, null);
+    applyProgrammedOverlaps(phase, plan, circuits, served, overlapIntervals, null, false);
     // No preempt is running on this path — preempt-driven blankout legends stay dark.
     applyAccessoryStates(world, phase, circuits, null);
     return phase;
@@ -123,7 +123,7 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalControllerCircuits circuits,
       List<RingBarrierState.ServedMovement> served,
       List<RingBarrierState.VehInterval> overlapIntervals,
-      int[] upcomingGreen) {
+      int[] upcomingGreen, boolean noPermissive) {
     List<TrafficSignalProgrammedOverlap> ovs = plan.getVehicleOverlaps();
     for (int i = 0; i < ovs.size(); i++) {
       TrafficSignalProgrammedOverlap ov = ovs.get(i);
@@ -166,7 +166,13 @@ public final class AdvancedPhaseBuilder {
         state = RingBarrierState.VehInterval.RED;
       }
       if (ov.getPermissivePhases().length > 0) {
-        applyFyaOverlap(phase, ov, circuit, heads, state, modifierActive, served);
+        // A preempt that holds permissive lefts red forces an FYA left overlap's flash off as the
+        // modifier does (#370). An FYA right yields only to the crosswalk beside it and keeps
+        // flashing with its permissive parent (#341).
+        boolean leftOverlap = ov.getOutputMovement() == TrafficSignalPhaseMovement.LEFT
+            || ov.getOutputMovement() == TrafficSignalPhaseMovement.PROTECTED_LEFT;
+        applyFyaOverlap(phase, ov, circuit, heads, state,
+            modifierActive || (noPermissive && leftOverlap), served);
         continue;
       }
       phase.removeSignals(heads);
@@ -444,7 +450,7 @@ public final class AdvancedPhaseBuilder {
       TrafficSignalProgrammedPhasePlan plan,
       TrafficSignalControllerCircuits circuits,
       List<RingBarrierState.ServedMovement> served,
-      java.util.Set<Integer> holdFlash) {
+      java.util.Set<Integer> holdFlash, boolean noPermissive) {
     for (TrafficSignalProgrammedPhase p : plan.getPhases()) {
       if (!p.isActive()) {
         continue;
@@ -472,6 +478,15 @@ public final class AdvancedPhaseBuilder {
       if (servedThis == null && holdFlash != null && holdFlash.contains(p.getPhaseNumber())
           && (state == FyaLensState.SOLID_YELLOW || state == FyaLensState.RED)) {
         state = FyaLensState.FLASH;
+      }
+      // A preempt that does not allow permissive lefts (TrafficSignalPreempt#isPermissiveLefts)
+      // holds every FYA left it does not serve red, whatever its permissive phase does: an
+      // emergency vehicle's dwell must not tell the opposing left it may turn across the
+      // approach the vehicle is coming down (issue #370). A left that was flashing as the preempt
+      // began gets its yellow from the output clearance.
+      if (servedThis == null && noPermissive
+          && (state == FyaLensState.FLASH || state == FyaLensState.SOLID_YELLOW)) {
+        state = FyaLensState.RED;
       }
       List<BlockPos> arrowLens = circuit.getLeftSignals();
       phase.removeSignals(fyaLens);
@@ -649,7 +664,8 @@ public final class AdvancedPhaseBuilder {
     }
     // FYA compound heads must be driven as one combined indication here too, or a preempt
     // dwell/track-clear serving a left phase shows a red 3-section lens under a lit green arrow.
-    applyFyaLenses(phase, plan, circuits, served, null);
+    boolean noPermissive = activePreempt != null && !activePreempt.isPermissiveLefts();
+    applyFyaLenses(phase, plan, circuits, served, null, noPermissive);
     if (anyGreen) {
       applyOverlaps(phase, overlaps);
     }
@@ -658,7 +674,7 @@ public final class AdvancedPhaseBuilder {
     // dwells, and entry and exit clear it with its parents. Left out, every overlap head went red
     // for the whole preempt, even on the approach being preempted (issue #341). Stateless here:
     // no lag, lead or parent-to-parent hold is run inside a preempt.
-    applyProgrammedOverlaps(phase, plan, circuits, served, null, upcomingGreen);
+    applyProgrammedOverlaps(phase, plan, circuits, served, null, upcomingGreen, noPermissive);
     applyAccessoryStates(world, phase, circuits, activePreempt);
     return phase;
   }
