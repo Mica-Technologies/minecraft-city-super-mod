@@ -45,7 +45,9 @@ import net.minecraft.world.World;
  * does not have yet.</p>
  *
  * <p><b>Collision</b>: a guard collides along each edge as tall as a fence, so it keeps players
- * from stepping off a landing; a wall handrail only where its rail is.</p>
+ * from stepping off a landing; a wall handrail only where its rail is. Each edge's collision is a
+ * thin slab ({@link RailingCollision}), thinner than the drawn railing, so a flight one block wide
+ * with a railing on both sides still leaves a player room to climb it.</p>
  *
  * @since 2026.10
  */
@@ -69,11 +71,6 @@ public class BlockStairRailing extends AbstractBlock {
   }
 
   private static final double P = 1.0 / 16;
-  /** A guard's collision on the cell's north edge, as tall as a fence. */
-  private static final AxisAlignedBB GUARD_NORTH = new AxisAlignedBB(0, 0, 0, 1, 1.5, 3.5 * P);
-  /** A wall handrail's collision on the north wall: where the rail runs, level or sloped. */
-  private static final AxisAlignedBB WALL_NORTH = new AxisAlignedBB(0, 7 * P, 0, 1, 24 * P,
-      4 * P);
   /** The outline on the north edge. */
   private static final AxisAlignedBB SELECT_NORTH = new AxisAlignedBB(0, 0, 0, 1, 1, 3.5 * P);
 
@@ -310,12 +307,9 @@ public class BlockStairRailing extends AbstractBlock {
   public void addCollisionBoxToList(IBlockState state, World world, BlockPos pos,
       AxisAlignedBB entityBox, List<AxisAlignedBB> boxes, @Nullable Entity entity,
       boolean isActualState) {
-    AxisAlignedBB north = kind == Kind.WALL ? WALL_NORTH : GUARD_NORTH;
-    for (EnumFacing side : EnumFacing.Plane.HORIZONTAL) {
-      if (state.getValue(edge(side))) {
-        addCollisionBoxToList(pos, entityBox, boxes,
-            RotationUtils.rotateBoundingBoxByFacing(north, side));
-      }
+    for (AxisAlignedBB box : RailingCollision.boxes(kind, state.getValue(NORTH),
+        state.getValue(EAST), state.getValue(SOUTH), state.getValue(WEST))) {
+      addCollisionBoxToList(pos, entityBox, boxes, box);
     }
   }
 

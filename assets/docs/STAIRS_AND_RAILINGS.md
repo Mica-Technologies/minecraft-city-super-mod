@@ -46,7 +46,12 @@ residential railing's newel stands in its `foot` cell, so start the railing on t
 of the bottom step.
 
 **Collision**: a guard along each edge as tall as a fence (it keeps a player on a landing); a wall
-handrail only where its rail runs.
+handrail only where its rail runs. Each edge's box is a 2 px slab (`RailingCollision.DEPTH`),
+thinner than the drawn railing on purpose: a flight one block wide has railings on both sides of
+the same cell, and the lane between them has to stay well over a player's 0.6 width. At the old
+3.5 px guard (4 px handrail) it was 0.5625 (0.5) and nobody could climb it (#368); at 2 px it is
+0.75, so a player walking in a little off centre is not stopped by the railings' ends.
+`RailingCollisionTest` holds the lane at 0.62 or more for every kind and pair of edges.
 
 ## The nosing line
 
