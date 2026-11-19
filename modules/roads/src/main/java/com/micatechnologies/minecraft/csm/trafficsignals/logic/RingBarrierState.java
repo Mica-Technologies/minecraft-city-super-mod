@@ -3450,7 +3450,9 @@ public class RingBarrierState {
       if (p.isActive() && p.getPermissivePhase() > 0
           && (p.getMovement() == TrafficSignalPhaseMovement.LEFT
               || p.getMovement() == TrafficSignalPhaseMovement.PROTECTED_LEFT)
-          && flashing(shown, p.getCircuitIndex())) {
+          && p.getCircuitIndex() >= 0 && p.getCircuitIndex() < tickCircuits.getCircuitCount()
+          && flashing(shown,
+              tickCircuits.getCircuit(p.getCircuitIndex()).getFlashingLeftSignals())) {
         preemptFlashingLefts.add(p.getPhaseNumber());
       }
     }
@@ -3460,18 +3462,16 @@ public class RingBarrierState {
       if (ov.isActive() && ov.getPermissivePhases().length > 0
           && (ov.getOutputMovement() == TrafficSignalPhaseMovement.LEFT
               || ov.getOutputMovement() == TrafficSignalPhaseMovement.PROTECTED_LEFT)
-          && flashing(shown, ov.getOutputCircuitIndex())) {
+          && flashing(shown,
+              AdvancedPhaseBuilder.fyaLeftOverlapFlashPositions(plan, ov, tickCircuits))) {
         preemptFlashingOverlaps.add(i);
       }
     }
   }
 
-  /** Whether any flashing-left lens of the circuit was showing a flashing yellow arrow. */
-  private boolean flashing(Map<BlockPos, Integer> shown, int circuitIndex) {
-    if (circuitIndex < 0 || circuitIndex >= tickCircuits.getCircuitCount()) {
-      return false;
-    }
-    for (BlockPos lens : tickCircuits.getCircuit(circuitIndex).getFlashingLeftSignals()) {
+  /** Whether any of {@code positions} was showing a flashing yellow arrow. */
+  private static boolean flashing(Map<BlockPos, Integer> shown, List<BlockPos> positions) {
+    for (BlockPos lens : positions) {
       Integer i = shown.get(lens);
       if (i != null && i == TrafficSignalPhase.INDICATION_FYA) {
         return true;

@@ -46,9 +46,14 @@ class PreemptLeftsAndClearanceTest {
   /** Every head's resolved indication per tick from {@code from} to {@code to}. */
   private static List<Map<BlockPos, Integer>> run(TrafficSignalProgrammedPhasePlan plan,
       long start, long release, long to, List<RingBarrierState> out) {
+    return run(plan, FyaBarrierClearanceTest.arterialCircuits(), start, release, to, out);
+  }
+
+  private static List<Map<BlockPos, Integer>> run(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalControllerCircuits ckts, long start, long release, long to,
+      List<RingBarrierState> out) {
     RingBarrierState rb = new RingBarrierState();
     out.add(rb);
-    TrafficSignalControllerCircuits ckts = FyaBarrierClearanceTest.arterialCircuits();
     RingBarrierStateTest.Demand normal = FyaBarrierClearanceTest.baysEmpty();
     RingBarrierStateTest.Demand pre = FyaBarrierClearanceTest.baysEmpty();
     pre.summaries.get(PREEMPT_CIRCUIT).withPreemptDetectorCalls(1);
@@ -124,6 +129,88 @@ class PreemptLeftsAndClearanceTest {
       Integer now = s.get((int) t).get(fya5);
       assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) now, "FYA left 5 at t=" + (t - start)
           + " while its opposing through 6 stays green into the dwell");
+    }
+  }
+
+  @Test
+  @DisplayName("preempt: a flashing left whose opposing through clears at entry is held red, and "
+      + "does not start flashing again when that through dwells after a track clear (#374)")
+  void fyaLeftNeverRestartsAfterItsThroughClears() {
+    TrafficSignalProgrammedPhasePlan plan = plan(false, new int[0]);
+    plan.getPreempts().get(0).setTrackClearPhases(new int[] {4});
+    long start = flashingAt(plan) + 1L;
+    List<RingBarrierState> rbs = new ArrayList<>();
+    List<Map<BlockPos, Integer>> s = run(plan, start, start + 900L, start + 1500L, rbs);
+    BlockPos fya5 = FyaBarrierClearanceTest.FYA_5;
+    boolean left = false;
+    for (long t = start; t < start + 900L; t++) {
+      Integer now = s.get((int) t).get(fya5);
+      boolean flashing = now != null && now == TrafficSignalPhase.INDICATION_FYA;
+      if (left) {
+        assertTrue(!flashing, "FYA left 5 flashing again at t=" + (t - start)
+            + " after it had cleared with its through");
+      }
+      left |= !flashing;
+    }
+    assertTrue(left, "the flashing left cleared when its opposing through cleared at entry");
+  }
+
+  /** A plain (non-compound) left head driven only by the FYA left overlap, on circuit 1. */
+  private static final BlockPos OVERLAP_LEFT = new BlockPos(310, 0, 0);
+
+  /** The arterial with an FYA left overlap: protected with 5, flashing while 6 is green. */
+  private static TrafficSignalProgrammedPhasePlan overlapPlan() {
+    TrafficSignalProgrammedPhasePlan plan = plan(false, new int[0]);
+    TrafficSignalProgrammedOverlap ov = new TrafficSignalProgrammedOverlap();
+    ov.setEnabled(true);
+    ov.setOutputCircuitIndex(1);
+    ov.setOutputMovement(TrafficSignalPhaseMovement.LEFT);
+    ov.setIncludedPhases(new int[] {5});
+    ov.setPermissivePhases(new int[] {6});
+    plan.getVehicleOverlaps().add(ov);
+    return plan;
+  }
+
+  private static TrafficSignalControllerCircuits overlapCircuits() {
+    TrafficSignalControllerCircuits ckts = FyaBarrierClearanceTest.arterialCircuits();
+    ckts.getCircuit(1).getLeftSignals().add(OVERLAP_LEFT);
+    return ckts;
+  }
+
+  @Test
+  @DisplayName("preempt: an FYA left overlap follows the same rule, kept flashing from a flashing "
+      + "entry and held red from a red one (#370, #374)")
+  void fyaLeftOverlapFollowsTheRule() {
+    TrafficSignalProgrammedPhasePlan plan = overlapPlan();
+    List<RingBarrierState> rbs = new ArrayList<>();
+    List<Map<BlockPos, Integer>> normal =
+        run(plan, overlapCircuits(), Long.MAX_VALUE, Long.MAX_VALUE, 3000L, rbs);
+    long flashing = -1;
+    long red = -1;
+    for (int t = 600; t < normal.size() && (flashing < 0 || red < 0); t++) {
+      Integer i = normal.get(t).get(OVERLAP_LEFT);
+      if (flashing < 0 && i != null && i == TrafficSignalPhase.INDICATION_FYA) {
+        flashing = t;
+      }
+      if (red < 0 && i != null && TrafficSignalPhase.isRedIndication(i)) {
+        red = t;
+      }
+    }
+    assertTrue(flashing >= 0 && red >= 0, "sanity: the overlap both flashed and was red");
+
+    long start = flashing + 1L;
+    List<Map<BlockPos, Integer>> s =
+        run(plan, overlapCircuits(), start, start + 600L, start + 1200L, rbs);
+    for (long t = start; t < start + 600L; t++) {
+      assertEquals(TrafficSignalPhase.INDICATION_FYA, (int) s.get((int) t).get(OVERLAP_LEFT),
+          "overlap left at t=" + (t - start) + " after a flashing entry, 6 dwelling");
+    }
+    start = red + 1L;
+    s = run(plan, overlapCircuits(), start, start + 600L, start + 1200L, rbs);
+    for (long t = start; t < start + 600L; t++) {
+      Integer now = s.get((int) t).get(OVERLAP_LEFT);
+      assertTrue(!lit(now), "overlap left lit (" + now + ") at t=" + (t - start)
+          + " after a red entry");
     }
   }
 

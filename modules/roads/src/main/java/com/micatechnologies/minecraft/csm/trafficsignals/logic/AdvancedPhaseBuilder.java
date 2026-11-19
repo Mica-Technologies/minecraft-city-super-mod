@@ -395,6 +395,22 @@ public final class AdvancedPhaseBuilder {
     }
   }
 
+  /**
+   * Where an FYA left overlap shows its flash: its circuit's compound flashing-left lens, or its
+   * output heads when the circuit has none, as {@link #applyFyaOverlap} draws it. Empty when the
+   * overlap's circuit is missing.
+   */
+  static List<BlockPos> fyaLeftOverlapFlashPositions(TrafficSignalProgrammedPhasePlan plan,
+      TrafficSignalProgrammedOverlap ov, TrafficSignalControllerCircuits circuits) {
+    int ci = ov.getOutputCircuitIndex();
+    if (ci < 0 || ci >= circuits.getCircuitCount()) {
+      return java.util.Collections.emptyList();
+    }
+    TrafficSignalControllerCircuit circuit = circuits.getCircuit(ci);
+    List<BlockPos> lens = circuit.getFlashingLeftSignals();
+    return lens.isEmpty() ? overlapOutputHeads(plan, ci, circuit, ov.getOutputMovement()) : lens;
+  }
+
   /** The four compound FYA-head indications (3-section lens + 1-section green-arrow add-on). */
   public enum FyaLensState { PROTECTED_GREEN, SOLID_YELLOW, FLASH, RED }
 
