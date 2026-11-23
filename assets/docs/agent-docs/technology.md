@@ -49,6 +49,15 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   the face), the clock/speaker panels (two halves), the PA speakers, the bell schedule controller
   and the hallway bell; `--check`, `--fragments`. `gen_technology_school_sounds.py` synthesises
   the bell, tone and chime
+- `gen_technology_radios.py` -- the handheld radios (`technology.radio.BlockRadio`, carried
+  as an item and stood on a surface as a block): the Bowfeng BF-5, the Harrow Unison XG-100,
+  the Micarolla TalkMate EM-1000 and the Micarolla APEX 8000 in black and hi-vis. Each face is
+  one 64 px picture drawn in tenths of a model pixel and laid over the body's whole front (a
+  two-box body gives each box its window of it); `Body` places parts as the radio faces you
+  (across, up, back) and turns them into the north-facing model; the Java box in each tab line
+  is the model's extent; the display transforms enlarge a 2.5 px model in the hand and the
+  inventory. Also writes the radios' tooltip strings. The presets are not generated: they are
+  `RadioModel`'s; `--check`, `--fragments`
 - `build_technology_demo.py` -- builds the Technology demo world in a flat creative world named
   "Technology Demo" (refuses any other) through the orchestrator by instance id (default
   `run-f2eb58`), in a dev client with every module: an office of workstations on full-block desks
