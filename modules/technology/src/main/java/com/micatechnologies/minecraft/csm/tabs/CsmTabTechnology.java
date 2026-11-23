@@ -10,6 +10,8 @@ import com.micatechnologies.minecraft.csm.technology.BlockMacBookPro;
 import com.micatechnologies.minecraft.csm.technology.BlockDeskDeviceFactory;
 import com.micatechnologies.minecraft.csm.technology.BlockSpeakerFactory;
 import com.micatechnologies.minecraft.csm.technology.ItemApplePencil;
+import com.micatechnologies.minecraft.csm.technology.radio.BlockRadio;
+import com.micatechnologies.minecraft.csm.technology.radio.RadioModel;
 import com.micatechnologies.minecraft.csm.technology.school.BlockBellController;
 import com.micatechnologies.minecraft.csm.technology.school.BlockSchoolBell;
 import com.micatechnologies.minecraft.csm.technology.school.BlockSchoolClock;
@@ -154,6 +156,13 @@ public class CsmTabTechnology extends CsmTab {
     initTabBlock(new BlockBellController("school_bell_controller", new double[]{3.0, 2.0, 13.5, 13.0, 14.0, 16.0}));
     initTabBlock(new BlockSchoolBell("school_bell_gong", new double[]{2.2, 1.0, 8.6, 13.8, 13.8, 16.0}));
     initTabItem(ItemBellLinker.class, fmlPreInitializationEvent);
+    // The handheld radios: carried as items, stood on a surface as blocks
+    // (gen_technology_radios.py --fragments).
+    initTabBlock(new BlockRadio("radio_bowfeng_bf5", RadioModel.BOWFENG_BF5, new double[]{6.5, 0.0, 7.0, 9.5, 10.25, 9.0}));
+    initTabBlock(new BlockRadio("radio_harrow_xg100", RadioModel.HARROW_XG100, new double[]{6.75, 0.0, 7.25, 9.5, 11.25, 9.0}));
+    initTabBlock(new BlockRadio("radio_micarolla_em1000", RadioModel.MICAROLLA_EM1000, new double[]{6.5, 0.0, 7.25, 9.5, 6.5, 9.0}));
+    initTabBlock(new BlockRadio("radio_micarolla_apex8000_black", RadioModel.MICAROLLA_APEX8000, new double[]{6.5, 0.0, 7.0, 9.75, 11.5, 9.25}));
+    initTabBlock(new BlockRadio("radio_micarolla_apex8000_hivis", RadioModel.MICAROLLA_APEX8000, new double[]{6.5, 0.0, 7.0, 9.75, 11.5, 9.25}));
     initTabItem(new ItemDecorativeFactory("appleipadpro", "This iPad does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonese2020", "This iPhone does nothing and is only for looks!"));
     initTabItem(new ItemDecorativeFactory("appleiphonexr", "This iPhone does nothing and is only for looks!"));

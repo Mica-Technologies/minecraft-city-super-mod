@@ -5,6 +5,8 @@ import com.micatechnologies.minecraft.csm.Tags;
 import com.micatechnologies.minecraft.csm.codeutils.CsmLifecycleHooks;
 import com.micatechnologies.minecraft.csm.codeutils.ICsmProxy;
 import com.micatechnologies.minecraft.csm.codeutils.gui.CsmGuiRegistry;
+import com.micatechnologies.minecraft.csm.technology.radio.RadioSettingsHandler;
+import com.micatechnologies.minecraft.csm.technology.radio.RadioSettingsPacket;
 import com.micatechnologies.minecraft.csm.technology.school.BellAnnounceHandler;
 import com.micatechnologies.minecraft.csm.technology.school.BellAnnouncePacket;
 import com.micatechnologies.minecraft.csm.technology.school.BellScheduleUpdateHandler;
@@ -96,6 +98,10 @@ public class CsmTechnology {
         BellAnnounceHandler.class,
         BellAnnouncePacket.class,
         Side.CLIENT);
+    NETWORK.registerMessage(
+        RadioSettingsHandler.class,
+        RadioSettingsPacket.class,
+        Side.SERVER);
 
     // Hand this module's sound names to Core's registrar. Forge runs every mod's
     // pre-initialization before it fires the sound registry event, so Core sees the complete

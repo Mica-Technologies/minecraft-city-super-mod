@@ -17,7 +17,7 @@ below).
 
 | Tab | Id | Order | Holds |
 |---|---|---|---|
-| **CSM: Technology** | `tabtechnology` | 8 | What was there before: TVs, speakers, the iMac family, set-top boxes, phones, the three older access points (`waptpl225`, `wapac`, `wapn`), the NEMA enclosure, the ONT, and the school time and PA set (`technology.school`) |
+| **CSM: Technology** | `tabtechnology` | 8 | What was there before: TVs, speakers, the iMac family, set-top boxes, phones, the three older access points (`waptpl225`, `wapac`, `wapn`), the NEMA enclosure, the ONT, the school time and PA set (`technology.school`) and the handheld radios (`technology.radio`) |
 | **CSM: Technology - Computers & Peripherals** | `tabtechcomputers` | 31 | Gaming rigs and desktops, monitors, keyboards, mice and pads, desk extras, consoles (51 blocks); console controllers and a VR headset as items (5) |
 | **CSM: Technology - Networking & IT** | `tabtechnetworking` | 32 | Micafi desktop switches, gateway, Control Hub, the Corvane modem, PoE injector, wall jacks, floor box, cable trays empty and full; Micafi access points and outdoor radios; the 42U racks, the pre-filled racks and the 12U wall cabinet (40 blocks); the fourteen rack-mount units as items (14) |
 
@@ -375,9 +375,103 @@ itself: the wall jacks are "Network Wall Jack (1 Port)", not "... Wall Plate"; t
 "Dual 24" Monitors on a Desk Stand", not "... on an Arm"; a qualifier goes in parentheses, where it
 is ignored. Keep to that when naming a new piece.
 
+## Handheld radios (`technology.radio`)
+
+Five walkie-talkies of four invented makes, in the main Technology tab: the **Bowfeng BF-5**
+(the cheap black dual-band handheld), the **Harrow Unison XG-100** (a grey-railed public-safety
+portable with a colour screen), the **Micarolla TalkMate EM-1000** (the blister-pack consumer
+radio) and the **Micarolla APEX 8000** in black and in high-visibility yellow-green (the rugged
+police and fire portable). They are the module's one exception to "nothing links, no screen of
+its own": each has a settings screen. **They do not transmit yet.** What they store is shaped so
+that push-to-talk can be added without migrating anything (below).
+
+### An item first, a block second
+
+A radio is a `BlockRadio` (facing only: 4 states, no setting is a block-state property) whose
+item is `ItemBlockRadio`, handed to Core through `AbstractBlock.createItemBlock`. The item is
+what a player mostly sees:
+
+| Action | What happens |
+|---|---|
+| Right-click with a radio in hand (air or block) | Opens the radio's screen. `onItemUse` passes unless the holder sneaks, so the click falls through to `onItemRightClick` |
+| Sneak and right-click a surface | Stands the radio up as a block, facing the placer |
+| Right-click a standing radio | Opens the same screen for that block |
+| Break or pick-block a standing radio | Gives the item back with its settings |
+
+One radio to a slot (`maxStackSize` 1): two radios are two sets of settings. The block's
+material is `Material.CIRCUITS`, not iron, so it comes away in the hand and drops; a
+tool-requiring material would break without giving the radio back.
+
+### Settings: one set of keys in the stack and in the tile entity
+
+`RadioSettings` is the whole of a radio's state: `on`, `ch` (preset index), `vol` (0..10), `sq`
+(0..9), `pc` (privacy code, 0 = none, up to 38), `scan`, `id` (unit ID, at most 8 characters of
+capitals, digits, space and dash). The same keys are written by `TileEntityRadio` and into the
+stack's `BlockEntityTag`, which vanilla's `ItemBlock` copies into the tile entity on placement.
+So setting a radio down needs no code at all, and picking it up is `BlockRadio.stackOf` writing
+the tile entity's settings back (`getDrops`, with the `removedByPlayer`/`harvestBlock` delay so
+the tile entity is still there, and `getPickBlock`). Every key is stored for every make, zero
+where the make lacks the setting.
+
+Nothing read from NBT or a packet is trusted. The `RadioSettings` constructor clamps every value
+to the widest range any make has; `forModel(RadioModel)` then narrows it to one make (a preset
+it has, no scan on a radio without scan). `RadioSettingsTest` covers both and the packet.
+
+### Makes and presets: `RadioModel`, `RadioChannel`
+
+`RadioModel` holds what differs between makes: brand and product words, the preset list, which
+of privacy code, scan and unit ID the make has, and the colours its screen is drawn in.
+
+| Make | Presets | Extras |
+|---|---|---|
+| Bowfeng BF-5 | 12 memories shown as frequencies (`MR 001`...), two of them receive-only weather | privacy code, scan |
+| Harrow Unison XG-100 | 10 talkgroups (`DISPATCH`, `TAC 1`-`3`, `FIRE`, `FIREGROUND`, `EMS`, `PUBLIC WORKS`, `TRANSIT`, `EVENTS`) | scan, unit ID |
+| Micarolla TalkMate EM-1000 | 22 numbered consumer channels | privacy code |
+| Micarolla APEX 8000 | the same 10 talkgroups | scan, unit ID |
+
+A `RadioChannel` is a name and a **frequency in hertz**, and the frequency is the channel's
+identity: the two public-safety radios share one talkgroup list, and the BF-5's first three
+memories are the EM-1000's channels 1 to 3. **When the radios are made to work, match on
+`getFrequencyHz()` (and the privacy code), never on the preset index or name**, which differ
+between makes. Presets may be appended to a make's list; inserting or reordering changes what a
+saved index means.
+
+### The screen and its packet
+
+`RadioGui` draws the radio's own face in its make's colours: the display (dark when the radio is
+off) with the product name, the unit ID, the preset's name at twice the size, its frequency, and
+a status line (volume, squelch, privacy code, a blinking `SCAN`); under it keys for power,
+channel, volume and squelch, then whichever of code, scan and the unit ID box the make has. The
+keys change a local copy. One `RadioSettingsPacket` (the module's channel, appended after the
+bell packets) goes to the server when the screen closes, and only if something changed.
+`RadioSettingsHandler` applies it to the radio in the named hand, or to the standing radio at
+the named position if the sender is within reach (`CsmPacketUtils.canPlayerReach`), narrowed to
+that radio's make; a packet naming anything else changes nothing.
+
+The GUI ids are 90 (held; the position's x is the hand's ordinal) and 91 (standing), served by
+`TechnologyGuiProvider`. The held screen is opened on the client only; the standing one through
+the mod's usual both-sides `openGui`.
+
+### Models
+
+`gen_technology_radios.py` writes everything. A radio's body is about 2.5 px wide in a 16 px
+block, so the face is one 64 px picture squeezed to the face's shape (`Pic`) and the rest is
+flat swatches; a body of two boxes (the BF-5's proud head, the EM-1000's waist) gives each box
+its window of the same picture. The APEX 8000 is one set of boxes with two face pictures and two
+body swatches. Models stand in the middle of the block on its floor, facing north, and the Java
+box in each tab line is the model's own extent. The display transforms enlarge the model in the
+hand, the inventory slot and an item frame.
+
+### Left for later
+
+- **Push-to-talk**: a key bind and a transmit state on the held item, a channel map in saved
+  data, and whatever carries the sound (chat relay, the TTS module, or a voice mod's API).
+- A desk charger or a multi-unit charging rack, a speaker microphone, a belt or vest slot.
+- `scan` and `sq` only show on the display; they have nothing to act on until radios receive.
+
 ## Generators
 
-All five share `gen_technology_common.py` (the Life Safety catalogue pointed at the Technology
+All six share `gen_technology_common.py` (the Life Safety catalogue pointed at the Technology
 tree, the `Pic` face-picture class, the element helper `E`, shared swatches, the Micafi mark,
 `model_depth.py` at the end of every write) and each has `--check` and `--fragments`:
 
@@ -388,6 +482,7 @@ tree, the `Pic` face-picture class, the element helper `E`, shared swatches, the
 | `gen_technology_rack.py` | the racks, the wall cabinet, the unit sheet and item models, the pre-filled racks' models, `RackUnitType.java` and `RackFrame.java`, the units' recipes (conditional on `csm_technology`) |
 | `gen_technology_wireless.py` | the Micafi access points and outdoor radios, their light textures, pole fits, the diagonal facings' transforms and the Beam's aimed head |
 | `gen_technology_school.py` | the school time and PA set (SCHOOL_TIME_AND_PA.md) |
+| `gen_technology_radios.py` | the five handheld radios: face pictures, swatches, models, blockstates, names and tooltip strings |
 
 `gen_pole_fit_models.py --check` covers the pole-fit copies too.
 

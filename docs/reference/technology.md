@@ -2,7 +2,7 @@
 
 Computers, network gear, TV accessories and speakers, and the school clock, bell and PA set.
 
-!!! info "54 blocks in this tab"
+!!! info "59 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -31,11 +31,13 @@ Computers, network gear, TV accessories and speakers, and the school clock, bell
 | Bose Speaker (White) | `csm:bose1` |  |  |  |  |
 | Boston Acoustics Speaker (Black) | `csm:boston_acoustics_speaker_black` |  |  |  |  |
 | Boston Acoustics Speaker (White) | `csm:boston_acoustics_speaker_white` |  |  |  |  |
+| Bowfeng BF-5 Handheld Radio | `csm:radio_bowfeng_bf5` | 0.3 | 2 | pickaxe | 0 |
 | Cable STB | `csm:stbox` |  |  |  |  |
 | Enterasys Wireless AC AP | `csm:wapac` |  |  |  |  |
 | Enterasys Wireless N AP | `csm:wapn` |  |  |  |  |
 | FourJay Speaker 1 | `csm:fjs1` |  |  |  |  |
 | FourJay Speaker 2 | `csm:fjs2` |  |  |  |  |
+| Harrow Unison XG-100 Portable Radio | `csm:radio_harrow_xg100` | 0.3 | 2 | pickaxe | 0 |
 | JBL Control Speaker (Black) | `csm:jblc2` |  |  |  |  |
 | JBL Control Speaker (White) | `csm:jblc1` |  |  |  |  |
 | Micaplex Bell Schedule Controller | `csm:school_bell_controller` | 2.0 | 6.0 | pickaxe | 1 |
@@ -44,7 +46,10 @@ Computers, network gear, TV accessories and speakers, and the school clock, bell
 | Micaplex Clock/Speaker Panel (Vertical) | `csm:school_clock_speaker_panel_vertical` | 2.0 | 6.0 | pickaxe | 1 |
 | Micaplex Double-Dial Clock (Ceiling) | `csm:school_hanging_clock` | 2.0 | 6.0 | pickaxe | 1 |
 | Micaplex Double-Dial Clock (Wall) | `csm:school_double_clock` | 2.0 | 6.0 | pickaxe | 1 |
+| Micarolla APEX 8000 Portable Radio (Black) | `csm:radio_micarolla_apex8000_black` | 0.3 | 2 | pickaxe | 0 |
+| Micarolla APEX 8000 Portable Radio (Hi-Vis) | `csm:radio_micarolla_apex8000_hivis` | 0.3 | 2 | pickaxe | 0 |
 | Micarolla ONT | `csm:micarolla_ont` |  |  |  |  |
+| Micarolla TalkMate EM-1000 Walkie-Talkie | `csm:radio_micarolla_em1000` | 0.3 | 2 | pickaxe | 0 |
 | NEMA Enclosure | `csm:nema_enclosure` |  |  |  |  |
 | Polk Audio Speaker (Black) | `csm:polk_audio_speaker_black` |  |  |  |  |
 | Polk Audio Speaker (White) | `csm:polk_audio_speaker_white` |  |  |  |  |
