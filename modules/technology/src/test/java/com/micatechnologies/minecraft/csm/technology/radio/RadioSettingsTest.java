@@ -44,7 +44,7 @@ class RadioSettingsTest {
     tag.setInteger("vol", 99);
     tag.setInteger("sq", -3);
     tag.setInteger("pc", 1000);
-    tag.setString("id", "car 54, where are you?");
+    tag.setString("uid", "car 54, where are you?");
     RadioSettings s = RadioSettings.read(tag);
     assertEquals(0, s.getChannel());
     assertEquals(RadioSettings.MAX_VOLUME, s.getVolume());
@@ -111,6 +111,25 @@ class RadioSettingsTest {
     assertEquals(0, s.withVolume(-1).getVolume());
     assertEquals(RadioSettings.MAX_SQUELCH, s.withSquelch(50).getSquelch());
     assertEquals(0, s.withPrivacyCode(-1).getPrivacyCode());
+  }
+
+  /**
+   * The settings share a compound with the tile entity's own tags. A key of theirs named like one
+   * of those ("id" was the unit ID's) saves a tile entity that cannot be loaded again.
+   */
+  @Test
+  void settingsLeaveTheTileEntitysOwnTagsAlone() {
+    NBTTagCompound saved = new NBTTagCompound();
+    saved.setString("id", "csm:tileentityradio");
+    saved.setInteger("x", 10);
+    saved.setInteger("y", 4);
+    saved.setInteger("z", 7);
+    new RadioSettings(true, 3, 8, 1, 5, true, "TRUCK 2").write(saved);
+    assertEquals("csm:tileentityradio", saved.getString("id"));
+    assertEquals(10, saved.getInteger("x"));
+    assertEquals(4, saved.getInteger("y"));
+    assertEquals(7, saved.getInteger("z"));
+    assertEquals("TRUCK 2", RadioSettings.read(saved).getUnitId());
   }
 
   @Test
