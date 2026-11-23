@@ -25,6 +25,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.BlockControllableTraffi
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockBlankoutBox;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockOverheightDetectionSensor;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockPreemptDetector;
+import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficSignalPatternSwitch;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockPreemptDetectorPole;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockPreemptDetectorSpan;
 import com.micatechnologies.minecraft.csm.trafficsignals.BlockTrafficLightSensor;
@@ -251,6 +252,8 @@ public class CsmTabTrafficSignals extends CsmTab {
         fmlPreInitializationEvent); // PreemptDetectorPole (pole side)
     initTabBlock(BlockTrafficSignalController.class,
         fmlPreInitializationEvent); // TrafficSignalController
+    initTabBlock(BlockTrafficSignalPatternSwitch.class,
+        fmlPreInitializationEvent); // TrafficSignalPatternSwitch (ADVANCED pattern select)
     // The same controller in a pole or wall cabinet (#360), one per pole colour
     initTabBlock(new BlockTrafficSignalControllerPole("signalcontroller_pole_galvanized"));
     initTabBlock(new BlockTrafficSignalControllerPole("signalcontroller_pole_black"));

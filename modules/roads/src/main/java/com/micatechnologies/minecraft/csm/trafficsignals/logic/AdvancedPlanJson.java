@@ -135,6 +135,10 @@ public final class AdvancedPlanJson {
       hours.add(new JsonPrimitive(plan.getCoordinationSchedule().getStartHour(slot)));
     }
     schedule.add("startHours", hours);
+    // Pattern select (-1: none). Not timing data, so SPATT neither reads nor writes them, and an
+    // import that leaves them out keeps what the controller has.
+    schedule.addProperty("manualSlot", plan.getManualPatternSlot());
+    schedule.addProperty("switchSlot", plan.getSwitchPatternSlot());
     root.add("schedule", schedule);
     root.addProperty("redAmber", redAmber);
     root.addProperty("greenFlash", greenFlash);
@@ -400,6 +404,17 @@ public final class AdvancedPlanJson {
       Boolean enabled = bool(schedule, "enabled", "schedule.enabled");
       if (enabled != null) {
         plan.setTimeOfDayPatterns(enabled);
+      }
+      long absent = Long.MIN_VALUE;
+      long manualSlot = integer(schedule, "manualSlot", "schedule.manualSlot", absent, -1L,
+          TrafficTimeOfDaySchedule.SLOT_COUNT - 1);
+      if (manualSlot != absent) {
+        plan.setManualPatternSlot((int) manualSlot);
+      }
+      long switchSlot = integer(schedule, "switchSlot", "schedule.switchSlot", absent, -1L,
+          TrafficTimeOfDaySchedule.SLOT_COUNT - 1);
+      if (switchSlot != absent) {
+        plan.setSwitchPatternSlot((int) switchSlot);
       }
       JsonArray hours = array(schedule, "startHours", "schedule.startHours");
       if (hours != null) {

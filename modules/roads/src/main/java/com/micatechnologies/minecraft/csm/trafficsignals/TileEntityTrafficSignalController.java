@@ -17,6 +17,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCont
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhase;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseApplicability;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhases;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPatternSelect;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhasePlan;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalStartupFlash;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedPhase;
@@ -29,6 +30,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPree
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreemptType;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalCoordinationMode;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.RingBarrierState;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +146,33 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    * @since 2026.6
    */
   private transient RingBarrierState advancedRuntime = null;
+
+  /** How often the linked pattern select switches are read, in ticks. */
+  private static final long PATTERN_SWITCH_POLL_INTERVAL_TICKS = 20L;
+
+  /** The most pattern select switches one controller keeps. */
+  private static final int MAX_PATTERN_SWITCHES = 8;
+
+  /**
+   * The pattern select switches linked to this controller
+   * ({@link BlockTrafficSignalPatternSwitch}). While any of them is on, the ADVANCED plan's switch
+   * pattern is the wanted one.
+   *
+   * @since 2026.11
+   */
+  private final List<BlockPos> patternSwitches = new ArrayList<>();
+
+  /** Whether a linked pattern select switch was on at the last look. */
+  private boolean patternSwitchOn = false;
+
+  /** World tick of the last look at the switches; negative forces one. */
+  private transient long patternSwitchPollTick = -1L;
+
+  /**
+   * The coordination pattern the ADVANCED engine is running, or negative when it is not known
+   * (not ADVANCED, or not ticked yet). Synced so the panel can show it.
+   */
+  private int runningPatternSlot = -1;
 
   /**
    * The circuit whose preemption beacons were last lit (-1: none), so they are written only on a
@@ -842,7 +871,13 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
         }
         advancedRuntime.setRedAmberTicks(redAmberTime);
         advancedRuntime.setGreenFlashTicks(greenFlashTime);
+        advancedRuntime.setPatternSwitchOn(readPatternSwitches(tickTime));
         newPhase = advancedRuntime.tick(getWorld(), plan, circuits, overlaps, tickTime);
+        int runningSlot = advancedRuntime.getActiveCoordinationSlot();
+        if (runningSlot != runningPatternSlot) {
+          runningPatternSlot = runningSlot;   // a pattern change: once a cycle at the very most
+          markDirtySync(getWorld(), getPos(), true);   // to clients too: the panel shows it
+        }
         showPreemptIndicators(advancedRuntime.getActivePreemptTriggerCircuit(plan),
             advancedRuntime.isActivePreemptEmergency(plan));
       } else if (resumeOnPrimaryGreen && currentPhase == null
@@ -1224,6 +1259,21 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
           compound.getLong(TrafficSignalControllerNBTKeys.LEGACY_DEDICATED_PED_SIGNAL_TIME);
     }
 
+    patternSwitches.clear();
+    int[] switchCoords = compound.getIntArray(TrafficSignalControllerNBTKeys.PATTERN_SWITCHES);
+    for (int i = 0; i + 2 < switchCoords.length && patternSwitches.size() < MAX_PATTERN_SWITCHES;
+        i += 3) {
+      BlockPos switchPos = new BlockPos(switchCoords[i], switchCoords[i + 1], switchCoords[i + 2]);
+      if (!patternSwitches.contains(switchPos)) {
+        patternSwitches.add(switchPos);
+      }
+    }
+    patternSwitchOn = !patternSwitches.isEmpty()
+        && compound.getBoolean(TrafficSignalControllerNBTKeys.PATTERN_SWITCH_ON);
+    patternSwitchPollTick = -1L;
+    runningPatternSlot = TrafficSignalPatternSelect.normalize(
+        compound.getInteger(TrafficSignalControllerNBTKeys.RUNNING_PATTERN) - 1);
+
     // Load the ADVANCED-mode programmed phase plan, if present (no legacy fallback — new feature)
     if (compound.hasKey(TrafficSignalControllerNBTKeys.ADVANCED_PLAN)) {
       programmedPhasePlan = TrafficSignalProgrammedPhasePlan.fromNBT(
@@ -1432,6 +1482,27 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
     // Write the dedicated pedestrian signal time to NBT
     compound.setLong(TrafficSignalControllerNBTKeys.DEDICATED_PED_SIGNAL_TIME,
         dedicatedPedSignalTime);
+
+    // Pattern select: nothing at all for a controller with no switch that is not ADVANCED.
+    if (patternSwitches.isEmpty()) {
+      compound.removeTag(TrafficSignalControllerNBTKeys.PATTERN_SWITCHES);
+      compound.removeTag(TrafficSignalControllerNBTKeys.PATTERN_SWITCH_ON);
+    } else {
+      int[] switchCoords = new int[patternSwitches.size() * 3];
+      for (int i = 0; i < patternSwitches.size(); i++) {
+        BlockPos switchPos = patternSwitches.get(i);
+        switchCoords[i * 3] = switchPos.getX();
+        switchCoords[i * 3 + 1] = switchPos.getY();
+        switchCoords[i * 3 + 2] = switchPos.getZ();
+      }
+      compound.setIntArray(TrafficSignalControllerNBTKeys.PATTERN_SWITCHES, switchCoords);
+      compound.setBoolean(TrafficSignalControllerNBTKeys.PATTERN_SWITCH_ON, patternSwitchOn);
+    }
+    if (runningPatternSlot >= 0) {
+      compound.setInteger(TrafficSignalControllerNBTKeys.RUNNING_PATTERN, runningPatternSlot + 1);
+    } else {
+      compound.removeTag(TrafficSignalControllerNBTKeys.RUNNING_PATTERN);
+    }
 
     // Write the ADVANCED-mode programmed phase plan only when one exists, so ordinary controllers
     // add no NBT overhead. Remove any stale tag when the plan has been cleared.
@@ -2158,6 +2229,18 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
    */
   public void applyAdvancedConfig(String action, int index, long value, int slot) {
     TrafficSignalProgrammedPhasePlan plan = getOrCreateProgrammedPhasePlan();
+    // Choosing a pattern is operating the controller, not reprogramming it: no restart. The
+    // running engine takes the new choice up at its next cycle boundary.
+    if ("co.manualSlot".equals(action)) {
+      setManualPattern((int) value);
+      return;
+    }
+    if ("co.switchSlot".equals(action)) {
+      plan.setSwitchPatternSlot((int) value);
+      markDirtySync(getWorld(), getPos());
+      syncServerToClient(getWorld());
+      return;
+    }
     TrafficSignalProgrammedPhase phase = plan.getPhase(index);
     boolean changed = true;
     switch (action) {
@@ -3085,6 +3168,159 @@ public class TileEntityTrafficSignalController extends AbstractTickableTileEntit
   public int getSignalCircuitCount() {
     return circuits.getCircuitCount();
   }
+
+  // region: pattern select
+
+  /**
+   * Links a pattern select switch ({@link BlockTrafficSignalPatternSwitch}) to this controller.
+   * A switch belongs to no circuit, and one switch may be linked to several controllers.
+   *
+   * @param pos the switch's position
+   *
+   * @return true if it was linked; false if it already was, or the controller has its fill
+   *
+   * @since 2026.11
+   */
+  public boolean linkPatternSwitch(BlockPos pos) {
+    if (patternSwitches.contains(pos) || patternSwitches.size() >= MAX_PATTERN_SWITCHES) {
+      return false;
+    }
+    patternSwitches.add(pos.toImmutable());
+    patternSwitchPollTick = -1L;
+    markDirtySync(getWorld(), getPos(), true);
+    return true;
+  }
+
+  /**
+   * Unlinks a pattern select switch from this controller.
+   *
+   * @param pos the switch's position
+   *
+   * @return true if it was linked
+   *
+   * @since 2026.11
+   */
+  public boolean unlinkPatternSwitch(BlockPos pos) {
+    if (!patternSwitches.remove(pos)) {
+      return false;
+    }
+    if (patternSwitches.isEmpty()) {
+      patternSwitchOn = false;
+    }
+    patternSwitchPollTick = -1L;
+    markDirtySync(getWorld(), getPos(), true);
+    return true;
+  }
+
+  /** The pattern select switches linked to this controller. */
+  public List<BlockPos> getPatternSwitches() {
+    return java.util.Collections.unmodifiableList(patternSwitches);
+  }
+
+  /** Whether a linked pattern select switch was on at the last look. */
+  public boolean isPatternSwitchOn() {
+    return patternSwitchOn;
+  }
+
+  /**
+   * The coordination pattern the ADVANCED engine is running, which trails the wanted one until the
+   * cycle rolls over.
+   *
+   * @return the slot index, or negative when it is not known
+   */
+  public int getRunningPatternSlot() {
+    return runningPatternSlot;
+  }
+
+  /**
+   * Holds a coordination pattern by hand, or lets go of it, without restarting the controller: the
+   * running engine takes it up at its next cycle boundary.
+   *
+   * @param slot the slot to hold; anything that is not a slot hands the choice back
+   *
+   * @since 2026.11
+   */
+  public void setManualPattern(int slot) {
+    getOrCreateProgrammedPhasePlan().setManualPatternSlot(slot);
+    markDirtySync(getWorld(), getPos());
+    syncServerToClient(getWorld());
+  }
+
+  /**
+   * Reads the linked pattern select switches, at most once every
+   * {@link #PATTERN_SWITCH_POLL_INTERVAL_TICKS}: a pattern is only taken up at a cycle boundary,
+   * so a second's delay in seeing the switch costs nothing.
+   *
+   * <p>A switch in a chunk that is not loaded cannot be read, and is taken to be as the switches
+   * last were rather than off; a controller must not drop out of its event plan because the
+   * cabinet across the road unloaded. A linked position that no longer holds a switch is
+   * unlinked.</p>
+   *
+   * @param now the world tick
+   *
+   * @return whether a linked switch is on
+   */
+  private boolean readPatternSwitches(long now) {
+    if (patternSwitches.isEmpty()) {
+      return false;
+    }
+    if (patternSwitchPollTick >= 0L && now - patternSwitchPollTick < PATTERN_SWITCH_POLL_INTERVAL_TICKS
+        && now >= patternSwitchPollTick) {
+      return patternSwitchOn;
+    }
+    patternSwitchPollTick = now;
+    boolean anyOn = false;
+    boolean anyUnread = false;
+    boolean changed = false;
+    for (java.util.Iterator<BlockPos> it = patternSwitches.iterator(); it.hasNext(); ) {
+      BlockPos switchPos = it.next();
+      if (!getWorld().isBlockLoaded(switchPos)) {
+        anyUnread = true;
+        continue;
+      }
+      Boolean on = BlockTrafficSignalPatternSwitch.readSwitch(getWorld(), switchPos);
+      if (on == null) {
+        it.remove();
+        changed = true;
+      } else if (on) {
+        anyOn = true;
+      }
+    }
+    boolean on = anyOn || (anyUnread && patternSwitchOn);
+    if (on != patternSwitchOn || changed) {
+      patternSwitchOn = on;
+      // To clients too (plain markDirtySync only saves): the panel shows the switch's state.
+      markDirtySync(getWorld(), getPos(), true);
+    }
+    return patternSwitchOn;
+  }
+
+  /**
+   * One line on which coordination pattern is in force and why, for the panel and
+   * {@code /csm signal pattern}.
+   *
+   * @return for example {@code "Running pattern 2 (switch)"}, or
+   *     {@code "Running pattern 1; pattern 2 (manual) at the next cycle"}
+   *
+   * @since 2026.11
+   */
+  public String describePattern() {
+    if (programmedPhasePlan == null) {
+      return "No ADVANCED program";
+    }
+    TrafficSignalPatternSelect.Source source = programmedPhasePlan.getPatternSource(patternSwitchOn);
+    int wanted = programmedPhasePlan.getWantedCoordinationSlot(getWorld(), patternSwitchOn);
+    String wantedText = "pattern " + (wanted + 1) + " (" + source.getLabel() + ")";
+    if (operatingMode != TrafficSignalControllerMode.ADVANCED || runningPatternSlot < 0) {
+      return "Not running; would run " + wantedText;
+    }
+    if (runningPatternSlot == wanted) {
+      return "Running " + wantedText;
+    }
+    return "Running pattern " + (runningPatternSlot + 1) + "; " + wantedText + " at the next cycle";
+  }
+
+  // endregion
 
   /**
    * Links the device at the specified {@link BlockPos} to the circuit with the specified circuit

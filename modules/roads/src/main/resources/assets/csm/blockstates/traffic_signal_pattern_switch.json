@@ -1,0 +1,35 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "csm:trafficsignals/shared_models/pattern_select_switch_off"
+  },
+  "variants": {
+    "facing": {
+      "north": {
+        "y": 0
+      },
+      "east": {
+        "y": 90
+      },
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      }
+    },
+    "on": {
+      "false": {},
+      "true": {
+        "model": "csm:trafficsignals/shared_models/pattern_select_switch_on"
+      }
+    },
+    "powered": {
+      "false": {},
+      "true": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

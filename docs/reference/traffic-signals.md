@@ -2,7 +2,7 @@
 
 Signal heads, crosswalk signals and the controllers that drive them.
 
-!!! info "109 blocks in this tab"
+!!! info "110 blocks in this tab"
 
     Every block below is registered in the mod and has a blockstate on disk. This page is
     generated from the source, so it cannot fall behind what the mod actually ships.
@@ -54,6 +54,7 @@ Signal heads, crosswalk signals and the controllers that drive them.
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Rear Mount) | `csm:controllablerampmeteronsignalmount` | 2 | 10 | pickaxe | 1 |
 | Ramp Meter On Crosswalk Light (Single 16-Inch, Right Mount) | `csm:controllablerampmeteronsignalrightmount` | 2 | 10 | pickaxe | 1 |
 | RRFB (Rectangular Rapid Flashing Beacon) | `csm:controllablerrfb` | 2 | 10 | pickaxe | 1 |
+| Signal Pattern Select Switch | `csm:traffic_signal_pattern_switch` | 2 | 10 | pickaxe | 1 |
 | Single Traffic Signal (Flashing Green) | `csm:controllablesinglesolidsignalgreen` |  |  |  |  |
 | Single Traffic Signal (Flashing Red) | `csm:controllablesinglesolidsignalred` |  |  |  |  |
 | Single Traffic Signal (Flashing Yellow) | `csm:controllablesinglesolidsignalyellow` |  |  |  |  |

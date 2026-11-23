@@ -103,7 +103,7 @@ table picks between them.
 
 <figure markdown="span">
   ![The ASC-3 COORD screen showing TOD enabled, the AM Peak pattern selected and starting at 6 AM, with its mode, cycle length, offset and per-phase splits below](../assets/img/asc3-coordination-patterns.png){ loading=lazy }
-  <figcaption>The COORD screen with time-of-day patterns on. The pattern selector chooses which one you are editing; a <code>*</code> marks the one the clock has actually selected.</figcaption>
+  <figcaption>The COORD screen with time-of-day patterns on. The pattern selector chooses which one you are editing; a <code>*</code> marks the one that is running.</figcaption>
 </figure>
 
 The four slots — **AM Peak, Midday, PM Peak, Night** — each have a start hour and run until the next
@@ -121,6 +121,38 @@ A night slot set to **Free** genuinely stops coordinating.
     turns over — that is the design, not a lag.
 
     Set `SINGLE` instead of `TOD` and the controller runs one plan, exactly as it always did.
+
+### Event mode: choosing a pattern by hand or by switch
+
+The clock is not the only thing that can pick a pattern. A stadium's junctions want an egress plan
+when the game ends, whatever the time is, and somebody throws a switch to say so. Two settings on
+the right of the COORD screen do that, and neither needs the time-of-day table to be on:
+
+| Setting | What it does |
+|---|---|
+| **Hold** | `CLOCK` leaves the choice to the clock. `P1`-`P4` holds that pattern until you set it back. `/csm signal pattern <clock|1-4>` does the same while you look at the controller (or give its `x y z`), which is the one to use from a command block. |
+| **Switch** | The pattern a **Signal Pattern Select Switch** selects while it is on (pattern 2 unless you change it). `IGNORE` makes this controller take no notice of switches. |
+
+<figure markdown="span">
+  ![The ASC-3 COORD screen with Hold set to CLOCK, Switch showing P2 ON, and the readout RUN P2 SW under them](../assets/img/asc3-pattern-select.png){ loading=lazy }
+  <figcaption>A linked switch is on, so the controller is running pattern 2 (<code>RUN P2 SW</code>) while the screen is looking at pattern 1.</figcaption>
+</figure>
+
+The **Signal Pattern Select Switch** is a small grey cabinet box in the Traffic Signals tab.
+Right-click throws it, and so does redstone: a lever next to it turns it on and off. To connect
+one, hold the **Signal Link Tool**, right-click the controller, then right-click the switch
+(sneak-click the switch to disconnect it). One switch can be linked to as many controllers as you
+like, and each controller decides for itself which pattern the switch means.
+
+**To set up an event plan:** on the COORD screen step the pattern selector to `PATTERN 2`, give it
+its own mode, cycle, offset and splits (longer outbound greens, say), link a switch, and throw it.
+All four patterns can be edited whether or not `TOD` is on.
+
+A switch that is on outranks Hold, and Hold outranks the clock. The line under the two settings
+says which pattern is running and why: `RUN P2 SW` is pattern 2 chosen by a switch (`MAN` is Hold,
+`CLK` the clock), and `P1 > P2 SW` means pattern 2 starts when the running cycle ends. As with a
+clock change, a selected pattern is taken up at the end of the cycle, so expect up to one cycle
+before the junction changes. An emergency preempt still overrides whichever pattern is running.
 
 ## Transit signal priority (TSP)
 

@@ -2,6 +2,8 @@ package com.micatechnologies.minecraft.csm.trafficsignals;
 
 import com.micatechnologies.minecraft.csm.CommandCsm;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.AdvancedPlanJson;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPatternSelect;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficTimeOfDaySchedule;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +34,12 @@ import net.minecraft.world.World;
  * controller's runtime and syncs, as a panel edit does, and a file that does not parse changes
  * nothing.
  *
+ * <p>{@code /csm signal pattern [clock|1-4] [x y z]}: with no value, says which coordination
+ * pattern the controller is running and who chose it (the clock, a manual hold or a pattern select
+ * switch); with one, holds that pattern by hand, or hands the choice back to the clock
+ * ({@link TileEntityTrafficSignalController#setManualPattern}). The controller is not restarted:
+ * it changes pattern at its next cycle boundary.</p>
+ *
  * @author Mica Technologies
  * @since 2026.11
  */
@@ -45,12 +53,16 @@ public class CommandCsmSignal implements CommandCsm.Subcommand {
 
   @Override
   public String usage() {
-    return "<export|import> <name> [x y z]";
+    return "<export|import> <name> [x y z] | pattern [clock|1-4] [x y z]";
   }
 
   @Override
   public void execute(MinecraftServer server, ICommandSender sender, String[] args)
       throws CommandException {
+    if (args.length >= 1 && "pattern".equalsIgnoreCase(args[0])) {
+      pattern(sender, args);
+      return;
+    }
     if (args.length != 2 && args.length != 5) {
       throw new WrongUsageException("/csm signal " + usage());
     }
@@ -60,17 +72,8 @@ public class CommandCsmSignal implements CommandCsm.Subcommand {
     }
     String name = planName(args[1]);
     World world = sender.getEntityWorld();
-    BlockPos pos = args.length == 5 ? CommandBase.parseBlockPos(sender, args, 2, false)
-        : lookedAt(sender);
-    if (pos == null) {
-      throw new CommandException("Look at a signal controller, or give its x y z.");
-    }
-    TileEntity te = world.getTileEntity(pos);
-    if (!(te instanceof TileEntityTrafficSignalController)) {
-      throw new CommandException("There is no signal controller at " + pos.getX() + " "
-          + pos.getY() + " " + pos.getZ() + ".");
-    }
-    TileEntityTrafficSignalController controller = (TileEntityTrafficSignalController) te;
+    TileEntityTrafficSignalController controller = controllerAt(sender, world,
+        args.length == 5 ? CommandBase.parseBlockPos(sender, args, 2, false) : lookedAt(sender));
     File file = new File(timingDir(server), name + ".json");
     if ("export".equals(action)) {
       try {
@@ -103,10 +106,62 @@ public class CommandCsmSignal implements CommandCsm.Subcommand {
     }
   }
 
+  /** {@code pattern [clock|1-4] [x y z]}: 1 or 4 arguments report, 2 or 5 set. */
+  private static void pattern(ICommandSender sender, String[] args) throws CommandException {
+    if (args.length != 1 && args.length != 2 && args.length != 4 && args.length != 5) {
+      throw new WrongUsageException("/csm signal pattern [clock|1-4] [x y z]");
+    }
+    boolean set = args.length == 2 || args.length == 5;
+    int at = set ? 2 : 1;
+    TileEntityTrafficSignalController controller = controllerAt(sender, sender.getEntityWorld(),
+        args.length > at ? CommandBase.parseBlockPos(sender, args, at, false) : lookedAt(sender));
+    if (set) {
+      controller.setManualPattern(patternSlot(args[1]));
+    }
+    tell(sender, TextFormatting.GREEN, controller.describePattern() + ".");
+  }
+
+  /**
+   * The slot a pattern argument names: {@code clock} (also {@code auto}, {@code off}) for none,
+   * or 1 to 4.
+   */
+  static int patternSlot(String raw) throws CommandException {
+    String value = raw.toLowerCase();
+    if ("clock".equals(value) || "auto".equals(value) || "off".equals(value)) {
+      return TrafficSignalPatternSelect.NONE;
+    }
+    try {
+      int number = Integer.parseInt(value);
+      if (number >= 1 && number <= TrafficTimeOfDaySchedule.SLOT_COUNT) {
+        return number - 1;
+      }
+    } catch (NumberFormatException ignored) {
+      // falls through to the usage error
+    }
+    throw new CommandException("A pattern is clock, or 1 to "
+        + TrafficTimeOfDaySchedule.SLOT_COUNT + ".");
+  }
+
+  private static TileEntityTrafficSignalController controllerAt(ICommandSender sender, World world,
+      BlockPos pos) throws CommandException {
+    if (pos == null) {
+      throw new CommandException("Look at a signal controller, or give its x y z.");
+    }
+    TileEntity te = world.getTileEntity(pos);
+    if (!(te instanceof TileEntityTrafficSignalController)) {
+      throw new CommandException("There is no signal controller at " + pos.getX() + " "
+          + pos.getY() + " " + pos.getZ() + ".");
+    }
+    return (TileEntityTrafficSignalController) te;
+  }
+
   @Override
   public List<String> tabComplete(MinecraftServer server, ICommandSender sender, String[] args) {
     if (args.length == 1) {
-      return CommandBase.getListOfStringsMatchingLastWord(args, "export", "import");
+      return CommandBase.getListOfStringsMatchingLastWord(args, "export", "import", "pattern");
+    }
+    if (args.length == 2 && "pattern".equalsIgnoreCase(args[0])) {
+      return CommandBase.getListOfStringsMatchingLastWord(args, "clock", "1", "2", "3", "4");
     }
     if (args.length == 2 && "import".equalsIgnoreCase(args[0])) {
       List<String> names = new ArrayList<>();

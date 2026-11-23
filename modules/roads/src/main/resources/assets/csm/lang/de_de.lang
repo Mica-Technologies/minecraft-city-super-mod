@@ -972,6 +972,7 @@ tile.tlvmountkit8inch.name=Vertikales Signalhalterungsset (8 Inch)
 tile.tlvtall90lmountkit.name=Vertikal-Hochsignal (90 Deg Links) Halterungsset
 tile.tlvtall90rmountkit.name=Vertikal-Hochsignal (90 Deg Rechts) Halterungsset
 tile.tlvtallmountkit.name=Vertikal-Hochsignal-Halterungsset
+tile.traffic_signal_pattern_switch.name=Signalprogramm-Wahlschalter
 tile.trafficlightmountkit.name=Dynamisches Signalhalterungsset
 tile.trafficlightsensor.name=Ampelsensor (Econolite Autoscope Solo Terra)
 tile.trafficlightsensorbell.name=Ampelsensor (GridSmart FE3)

@@ -9,6 +9,7 @@ import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficTimeOfDayS
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalFlashOverride;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPhaseMovement;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalOverlapType;
+import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPatternSelect;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreempt;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalProgrammedOverlap;
 import com.micatechnologies.minecraft.csm.trafficsignals.logic.TrafficSignalPreemptType;
@@ -715,6 +716,19 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         dir -> send("co.todStart", editingSlot,
             plan().getCoordinationSchedule().getStartHour(editingSlot) + dir), null));
 
+    // Pattern select, in the free space to the right of mode and cycle: a pattern held by hand,
+    // and the pattern a linked switch selects. Neither restarts the controller.
+    cells.add(new Cell(lcdX + 204, lcdY + 14, 60,
+        () -> patternLabel(plan().getManualPatternSlot(), "CLOCK"),
+        dir -> send("co.manualSlot", 0, cyc(plan().getManualPatternSlot() + 1, dir,
+            TrafficTimeOfDaySchedule.SLOT_COUNT + 1) - 1L), null));
+    cells.add(new Cell(lcdX + 204, lcdY + 26, 60,
+        () -> patternLabel(plan().getSwitchPatternSlot(), "IGNORE")
+            + (controller.getPatternSwitches().isEmpty() ? ""
+                : controller.isPatternSwitchOn() ? " ON" : " off"),
+        dir -> send("co.switchSlot", 0, cyc(plan().getSwitchPatternSlot() + 1, dir,
+            TrafficTimeOfDaySchedule.SLOT_COUNT + 1) - 1L), null));
+
     int y = lcdY + 14;
     cells.add(new Cell(lcdX + 70, y, 80,
         () -> coord().getMode().getName(),
@@ -748,7 +762,14 @@ public class AdvancedSignalControllerGui extends GuiScreen {
 
   /** The coordination pattern the COORD screen is currently editing. */
   private TrafficSignalCoordinationPlan coord() {
-    return plan().getCoordination(plan().isTimeOfDayPatterns() ? editingSlot : 0);
+    // All four patterns are always there to edit: with the time-of-day table off, a manual hold
+    // or a pattern select switch can still call for any of them.
+    return plan().getCoordination(editingSlot);
+  }
+
+  /** "P1".."P4" for a pattern slot, or {@code none} for {@link TrafficSignalPatternSelect#NONE}. */
+  private static String patternLabel(int slot, String none) {
+    return slot == TrafficSignalPatternSelect.NONE ? none : "P" + (slot + 1);
   }
 
   /**
@@ -757,19 +778,27 @@ public class AdvancedSignalControllerGui extends GuiScreen {
    * a different one.
    */
   private String editingSlotLabel() {
-    if (!plan().isTimeOfDayPatterns()) {
-      return "PLAN";
-    }
-    String name = TrafficTimeOfDaySchedule.SLOT_NAMES[editingSlot];
+    // With the clock table on the patterns go by their times of day; without it they are only
+    // numbers, which is also what the pattern select cells call them.
+    String name = plan().isTimeOfDayPatterns()
+        ? (editingSlot + 1) + ":" + TrafficTimeOfDaySchedule.SLOT_NAMES[editingSlot]
+        : "PATTERN " + (editingSlot + 1);
     return editingSlot == activeSlot() ? name + "*" : name;
   }
 
-  /** Which pattern the clock currently selects, or -1 when patterns are off or there is no world. */
+  /**
+   * Which pattern is in force: the one the controller reports running, or, until it has ticked in
+   * ADVANCED, the one that is wanted (a switch's, the manual one, or the clock's).
+   */
   private int activeSlot() {
-    if (!plan().isTimeOfDayPatterns() || mc == null || mc.world == null) {
+    int running = controller.getRunningPatternSlot();
+    if (running >= 0) {
+      return running;
+    }
+    if (mc == null || mc.world == null) {
       return -1;
     }
-    return plan().getCoordinationSchedule().getActiveSlot(mc.world);
+    return plan().getWantedCoordinationSlot(mc.world, controller.isPatternSwitchOn());
   }
 
   /**
@@ -1401,14 +1430,20 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "barrier, dim = side-street barrier. Configure on MAP and TIMING.");
     y += 14;
     int coordTop = y;
-    String coord = plan.getCoordination().isCoordinated()
-        ? ("COORD cycle " + secs(plan.getCoordination().getCycleLength()) + "s offset "
-            + secs(plan.getCoordination().getOffset()) + "s")
-        : "FREE (fully actuated)";
+    // The pattern in force, which a hold or a pattern select switch may have made another one
+    // than the first.
+    int runningSlot = Math.max(0, activeSlot());
+    TrafficSignalCoordinationPlan running = plan.getCoordination(runningSlot);
+    String coord = (running.isCoordinated()
+        ? ("COORD cycle " + secs(running.getCycleLength()) + "s offset "
+            + secs(running.getOffset()) + "s")
+        : "FREE (fully actuated)") + "  [" + patternStatus() + "]";
     fontRenderer.drawString(coord, lcdX, y, COLOR_AMBER);
     addHelp(lcdX, coordTop, lcdW - 6, 9, "Coordination",
         "FREE = fully actuated, no fixed cycle. COORD shows the running cycle",
-        "length and offset. Change it on the COORD screen.");
+        "length and offset. Change it on the COORD screen.",
+        "In brackets: the pattern running and who chose it (CLK the clock,",
+        "MAN a manual hold, SW a pattern select switch).");
     y += 11;
     fontRenderer.drawString("Preempts: " + plan.getPreempts().size(), lcdX, y, COLOR_AMBER);
     addHelp(lcdX, y, lcdW - 6, 9, "Preempts",
@@ -1569,6 +1604,21 @@ public class AdvancedSignalControllerGui extends GuiScreen {
     }
   }
 
+  /** The COORD screen's readout of the pattern in force: "RUN P1 CLK", or "P1 > P2 SW". */
+  private String patternStatus() {
+    boolean switchOn = controller.isPatternSwitchOn();
+    TrafficSignalPatternSelect.Source source = plan().getPatternSource(switchOn);
+    String by = source == TrafficSignalPatternSelect.Source.SWITCH ? "SW"
+        : source == TrafficSignalPatternSelect.Source.MANUAL ? "MAN" : "CLK";
+    int wanted = mc == null || mc.world == null ? 0
+        : plan().getWantedCoordinationSlot(mc.world, switchOn);
+    int running = controller.getRunningPatternSlot();
+    if (running < 0 || running == wanted) {
+      return "RUN P" + (wanted + 1) + " " + by;
+    }
+    return "P" + (running + 1) + " > P" + (wanted + 1) + " " + by;
+  }
+
   private void drawCoord() {
     fontRenderer.drawString("COORDINATION", lcdX, lcdY, COLOR_AMBER_HEAD);
     addHelp(lcdX + 112, lcdY, 34, 9, "Time-of-day patterns",
@@ -1577,8 +1627,31 @@ public class AdvancedSignalControllerGui extends GuiScreen {
         "cycle, offset and splits, chosen by the world clock.");
     addHelp(lcdX + 150, lcdY, 64, 9, "Pattern being edited",
         "Which of the four patterns the settings below belong to.",
-        "A * marks the one the clock has selected right now. Changing",
-        "this only changes what you are looking at, never what runs.");
+        "A * marks the one running right now. Changing this only",
+        "changes what you are looking at, never what runs.",
+        "All four can be set up with TOD off: Hold and Switch (right)",
+        "can call for any of them.");
+    fontRenderer.drawString("Hold:", lcdX + 160, lcdY + 14, COLOR_AMBER_DIM);
+    fontRenderer.drawString("Switch:", lcdX + 160, lcdY + 26, COLOR_AMBER_DIM);
+    fontRenderer.drawString(patternStatus(), lcdX + 160, lcdY + 38, COLOR_AMBER);
+    addHelp(lcdX + 160, lcdY + 14, 104, 9, "Manual pattern (hold)",
+        "CLOCK = the time-of-day table decides (pattern 1 when it is",
+        "SINGLE). P1-P4 = hold that pattern until set back to CLOCK,",
+        "whatever the clock says. Also: /csm signal pattern <clock|1-4>.",
+        "Taken up at the end of the running cycle; the controller is",
+        "not restarted. A preempt still overrides any pattern.");
+    addHelp(lcdX + 160, lcdY + 26, 104, 9, "Pattern select switch",
+        "The pattern a Pattern Select Switch selects while it is ON:",
+        "an event plan thrown from a cabinet switch or a lever. Link",
+        "the switch with the signal link tool (controller, then the",
+        "switch); one switch can serve several controllers, and each",
+        "controller picks its own pattern here. IGNORE = take no",
+        "notice of switches. ON/off shows the linked switch's state.",
+        "A switch that is on outranks Hold, which outranks the clock.");
+    addHelp(lcdX + 160, lcdY + 38, 104, 9, "Pattern in force",
+        "The pattern running and who chose it: CLK the clock, MAN the",
+        "Hold setting, SW a pattern select switch. '> P2' means the",
+        "controller changes to that pattern when this cycle ends.");
     addHelp(lcdX + 218, lcdY, 46, 9, "Pattern start time",
         "The hour this pattern takes over. Each pattern runs until the",
         "next one begins, wrapping past midnight, so the four of them",
