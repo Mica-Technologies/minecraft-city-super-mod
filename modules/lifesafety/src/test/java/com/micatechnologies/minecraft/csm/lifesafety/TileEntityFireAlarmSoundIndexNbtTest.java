@@ -42,4 +42,23 @@ class TileEntityFireAlarmSoundIndexNbtTest {
     NBTTagCompound output = te.writeNBT(new NBTTagCompound());
     assertEquals(0, output.getInteger("sIx"));
   }
+
+  /** Cycling from a stored index outside the table must land inside it, whatever was stored. */
+  @Test
+  void cyclingFromAnOutOfRangeIndexLandsInTheTable() {
+    for (int stored : new int[]{-5, -1, 4, 99, Integer.MAX_VALUE, Integer.MIN_VALUE}) {
+      NBTTagCompound input = new NBTTagCompound();
+      input.setInteger("sIx", stored);
+      TileEntityFireAlarmSoundIndex te = new TileEntityFireAlarmSoundIndex();
+      te.readNBT(input);
+
+      try {
+        te.cycleSoundIndex(4);
+      } catch (NullPointerException ignored) {
+        // markDirty has no world here; the index is set before it.
+      }
+      int index = te.getSoundIndex();
+      assertTrue(index >= 0 && index < 4, "sIx=" + stored + " cycled to " + index);
+    }
+  }
 }

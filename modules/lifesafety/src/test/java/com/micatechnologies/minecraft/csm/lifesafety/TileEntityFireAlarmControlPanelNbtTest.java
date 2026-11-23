@@ -85,4 +85,56 @@ class TileEntityFireAlarmControlPanelNbtTest {
     assertFalse(output.getBoolean("aSi"));
     assertFalse(output.getBoolean("gl"));
   }
+
+  /**
+   * A message index nothing in the game would have stored (written by a script, say) used to be
+   * kept as it was, and the alarm tick then threw on every tick it tried to name the message.
+   */
+  @Test
+  void outOfRangeSoundIndexFallsBackToTheFirstMessage() {
+    int messages = TileEntityFireAlarmControlPanel.getSoundNames().length;
+    for (int stored : new int[]{messages, messages + 1, 255, -1, Integer.MIN_VALUE,
+        Integer.MAX_VALUE}) {
+      for (String key : new String[]{"sIx", "soundIndex"}) {
+        NBTTagCompound input = new NBTTagCompound();
+        input.setInteger(key, stored);
+
+        TileEntityFireAlarmControlPanel te = new TileEntityFireAlarmControlPanel();
+        te.readNBT(input);
+
+        assertEquals(0, te.getSoundIndex(), key + "=" + stored);
+        assertEquals("csm:svenew", te.getCurrentSoundResourceName(), key + "=" + stored);
+        assertEquals(TileEntityFireAlarmControlPanel.getSoundNames()[0], te.getCurrentSoundName(),
+            key + "=" + stored);
+        assertEquals(0, te.writeNBT(new NBTTagCompound()).getInteger("sIx"), key + "=" + stored);
+      }
+    }
+  }
+
+  @Test
+  void lastSoundIndexIsKept() {
+    int last = TileEntityFireAlarmControlPanel.getSoundNames().length - 1;
+    NBTTagCompound input = new NBTTagCompound();
+    input.setInteger("sIx", last);
+
+    TileEntityFireAlarmControlPanel te = new TileEntityFireAlarmControlPanel();
+    te.readNBT(input);
+
+    assertEquals(last, te.getSoundIndex());
+    assertEquals("csm:fci_voic_evac_male", te.getCurrentSoundResourceName());
+  }
+
+  @Test
+  void validSoundIndexCoversBothTables() {
+    // The two tables are indexed by the same value; one longer than the other is the same crash.
+    int messages = TileEntityFireAlarmControlPanel.getSoundNames().length;
+    assertEquals(messages - 1, TileEntityFireAlarmControlPanel.validSoundIndex(messages - 1));
+    assertEquals(0, TileEntityFireAlarmControlPanel.validSoundIndex(messages));
+    TileEntityFireAlarmControlPanel te = new TileEntityFireAlarmControlPanel();
+    for (int i = 0; i < messages; i++) {
+      te.setSoundIndex(i);
+      assertNotNull(te.getCurrentSoundResourceName());
+      assertNotNull(te.getCurrentSoundName());
+    }
+  }
 }
