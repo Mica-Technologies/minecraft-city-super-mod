@@ -31,6 +31,7 @@ hand, the inventory and an item frame, where a 2.5 px model would otherwise be a
 
 The Java box in each tab line is the model's own extent, so the two cannot drift.
 """
+import math
 import os
 import sys
 
@@ -62,6 +63,8 @@ HIVIS = (196, 226, 34)
 SCREEN_NAVY = (12, 26, 60)
 
 N = 64      # a face picture's side, in texels
+HELD_TILT = 80      # degrees a radio is tipped back in a third-person hand
+HELD_SCALE = 0.9
 
 
 # ------------------------------------------------------------------------------------------
@@ -329,18 +332,30 @@ def display(height):
     def lift(scale):
         return round((8 - height / 2.0) * scale, 2)
     gui = min(1.7, 15.0 / height)
+    # An item frame draws its item at half size, so the radio is doubled and more to fill the
+    # frame. Unturned, a north-facing model shows its face out of the frame.
+    framed = round(min(2.4, 18.0 / height), 3)
+    # In the hand the item's up runs forward out of the fist, which is right for a sword and
+    # wrong for a radio: it is tipped back so the aerial runs up the forearm and the face looks
+    # ahead, and moved so the body (the lower part of the model) is what the fist holds. The
+    # hand's origin is the bottom front edge of the fist: the body's middle goes two pixels up
+    # from there, and just far enough forward for the face to stand clear of the fingers.
+    tilt = math.radians(HELD_TILT)
+    grip = (8 - 0.23 * height) * HELD_SCALE
+    held = {"rotation": [HELD_TILT, 0, 0],
+            "translation": [0, round(0.4 + grip * math.cos(tilt), 2),
+                            round(2 + grip * math.sin(tilt), 2)],
+            "scale": [HELD_SCALE] * 3}
     return {
         "gui": {"rotation": [12, 200, 0], "translation": [0, lift(gui), 0],
                 "scale": [round(gui, 3)] * 3},
         "ground": {"rotation": [0, 0, 0], "translation": [0, 2, 0], "scale": [0.8] * 3},
-        "fixed": {"rotation": [0, 180, 0], "translation": [0, lift(1.4), 0],
-                  "scale": [1.4] * 3},
-        "head": {"rotation": [0, 180, 0], "translation": [0, lift(1.4), 0],
+        "fixed": {"rotation": [0, 0, 0], "translation": [0, lift(framed), 0],
+                  "scale": [framed] * 3},
+        "head": {"rotation": [0, 0, 0], "translation": [0, lift(1.4), 0],
                  "scale": [1.4] * 3},
-        "thirdperson_righthand": {"rotation": [0, 180, 0], "translation": [0, 6.5, 1.5],
-                                  "scale": [0.9] * 3},
-        "thirdperson_lefthand": {"rotation": [0, 180, 0], "translation": [0, 6.5, 1.5],
-                                 "scale": [0.9] * 3},
+        "thirdperson_righthand": held,
+        "thirdperson_lefthand": dict(held),
         "firstperson_righthand": {"rotation": [0, 195, 0], "translation": [0, 7, 0],
                                   "scale": [1.0] * 3},
         "firstperson_lefthand": {"rotation": [0, 165, 0], "translation": [0, 7, 0],

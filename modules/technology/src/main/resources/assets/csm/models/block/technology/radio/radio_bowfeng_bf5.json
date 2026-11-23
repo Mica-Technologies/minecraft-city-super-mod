@@ -588,24 +588,24 @@
     "fixed": {
       "rotation": [
         0,
-        180,
+        0,
         0
       ],
       "translation": [
         0,
-        4.02,
+        5.05,
         0
       ],
       "scale": [
-        1.4,
-        1.4,
-        1.4
+        1.756,
+        1.756,
+        1.756
       ]
     },
     "head": {
       "rotation": [
         0,
-        180,
+        0,
         0
       ],
       "translation": [
@@ -621,14 +621,14 @@
     },
     "thirdperson_righthand": {
       "rotation": [
+        80,
         0,
-        180,
         0
       ],
       "translation": [
         0,
-        6.5,
-        1.5
+        1.28,
+        7.0
       ],
       "scale": [
         0.9,
@@ -638,14 +638,14 @@
     },
     "thirdperson_lefthand": {
       "rotation": [
+        80,
         0,
-        180,
         0
       ],
       "translation": [
         0,
-        6.5,
-        1.5
+        1.28,
+        7.0
       ],
       "scale": [
         0.9,
