@@ -405,8 +405,9 @@ tool-requiring material would break without giving the radio back.
 ### Settings: one set of keys in the stack and in the tile entity
 
 `RadioSettings` is the whole of a radio's state: `on`, `ch` (preset index), `vol` (0..10), `sq`
-(0..9), `pc` (privacy code, 0 = none, up to 38), `scan`, `id` (unit ID, at most 8 characters of
-capitals, digits, space and dash). The same keys are written by `TileEntityRadio` and into the
+(0..9), `pc` (privacy code, 0 = none, up to 38), `scan`, `uid` (unit ID, at most 8 characters of
+capitals, digits, space and dash; not `id`, which in a tile entity's compound is the tag vanilla
+finds its class by). The same keys are written by `TileEntityRadio` and into the
 stack's `BlockEntityTag`, which vanilla's `ItemBlock` copies into the tile entity on placement.
 So setting a radio down needs no code at all, and picking it up is `BlockRadio.stackOf` writing
 the tile entity's settings back (`getDrops`, with the `removedByPlayer`/`harvestBlock` delay so

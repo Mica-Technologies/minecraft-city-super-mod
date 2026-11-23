@@ -37,7 +37,12 @@ public final class RadioSettings {
   private static final String KEY_SQUELCH = "sq";
   private static final String KEY_PRIVACY_CODE = "pc";
   private static final String KEY_SCAN = "scan";
-  private static final String KEY_UNIT_ID = "id";
+  /**
+   * Not "id": these keys are written straight into the tile entity's own compound, where "id"
+   * (with "x", "y" and "z") is the tag vanilla finds the tile entity's class by. A unit ID stored
+   * there replaced it, and the radio was dropped when its chunk next loaded.
+   */
+  private static final String KEY_UNIT_ID = "uid";
 
   private final boolean on;
   private final int channel;
