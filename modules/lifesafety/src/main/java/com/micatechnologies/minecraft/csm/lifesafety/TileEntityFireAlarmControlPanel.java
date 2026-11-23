@@ -194,7 +194,20 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
 
   @Override
   public void readNBT(NBTTagCompound compound) {
-    soundIndex = readInt(compound, soundIndexKey, legacySoundIndexKey, 0);
+    int storedSoundIndex = readInt(compound, soundIndexKey, legacySoundIndexKey, 0);
+    soundIndex = validSoundIndex(storedSoundIndex);
+    if (soundIndex != storedSoundIndex) {
+      // Only the in-game controls check the range. A value written straight into the NBT (by a
+      // build script, an editor, a newer version with more messages) arrives here unchecked, and
+      // used as it is it throws on every alarm tick, which silences the voice message. The valid
+      // value is what the panel saves from here on.
+      // Asked for by name: the mod class is not loadable where a saved panel is read in a test.
+      org.apache.logging.log4j.LogManager.getLogger(
+          com.micatechnologies.minecraft.csm.CsmConstants.MOD_NAMESPACE).warn(
+          "Fire alarm control panel at {} had voice evac message index {}, outside 0..{}; "
+              + "using message 0",
+          getPos(), storedSoundIndex, SOUND_RESOURCE_NAMES.length - 1);
+    }
     alarm = readBool(compound, alarmKey, legacyAlarmKey);
     alarmStorm = readBool(compound, alarmStormKey, legacyAlarmStormKey);
     alarmAnnounced = readBool(compound, alarmAnnouncedKey, legacyAlarmAnnouncedKey);
@@ -361,6 +374,18 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
     }
   }
 
+  /**
+   * The index to use for a stored voice evacuation message index: itself when it names a message,
+   * and the first message otherwise.
+   *
+   * @param index a message index from anywhere, checked or not
+   *
+   * @return an index that is safe to use on the message tables
+   */
+  static int validSoundIndex(int index) {
+    return index >= 0 && index < SOUND_RESOURCE_NAMES.length ? index : 0;
+  }
+
   private static int readInt(NBTTagCompound compound, String key, String legacyKey, int def) {
     if (compound.hasKey(key)) {
       return compound.getInteger(key);
@@ -441,10 +466,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   public void switchSound() {
-    soundIndex++;
-    if (soundIndex >= SOUND_RESOURCE_NAMES.length) {
-      soundIndex = 0;
-    }
+    soundIndex = validSoundIndex(soundIndex + 1);
     markDirty();
   }
 
@@ -965,7 +987,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   public String getCurrentSoundName() {
-    return SOUND_NAMES[soundIndex];
+    return SOUND_NAMES[validSoundIndex(soundIndex)];
   }
 
   @Override
@@ -1419,7 +1441,7 @@ public class TileEntityFireAlarmControlPanel extends AbstractTickableTileEntity 
   }
 
   public String getCurrentSoundResourceName() {
-    return SOUND_RESOURCE_NAMES[soundIndex];
+    return SOUND_RESOURCE_NAMES[validSoundIndex(soundIndex)];
   }
 
   /** The panel block this tile entity belongs to, or {@code null} if it is not one. */

@@ -41,7 +41,10 @@ public class TileEntityFireAlarmSoundIndex extends AbstractTileEntity {
   }
 
   public void cycleSoundIndex(int maxSounds) {
-    soundIndex = (soundIndex + 1) % maxSounds;
+    // The stored index can be anything (NBT is not checked on the way in), and the caller uses the
+    // result on a table of maxSounds entries.
+    int next = soundIndex + 1;
+    soundIndex = next >= 0 && next < maxSounds ? next : 0;
     markDirty();
   }
 
