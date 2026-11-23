@@ -972,6 +972,7 @@ tile.tlvmountkit8inch.name=Vertikal Signalfästesats (8 Tum)
 tile.tlvtall90lmountkit.name=Vertikal Hög Signal (90 Graders Vänster) Fästesats
 tile.tlvtall90rmountkit.name=Vertikal Hög Signal (90 Graders Höger) Fästesats
 tile.tlvtallmountkit.name=Vertikal Hög Signal Fästesats
+tile.traffic_signal_pattern_switch.name=Signalprogramväljare
 tile.trafficlightmountkit.name=Dynamisk Signalfästesats
 tile.trafficlightsensor.name=Trafiksignalsensor (Econolite Autoscope Solo Terra)
 tile.trafficlightsensorbell.name=Trafiksignalsensor (GridSmart FE3)

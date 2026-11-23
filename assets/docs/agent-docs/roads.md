@@ -144,6 +144,10 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   blockstates, the concrete accessories (silver blockstates retextured, their 16-gon body
   redrawn with UVs that suit concrete, and again as an octagon for the straight vertical
   sections) and the `concrete_light_pole` texture itself; `--check` fails on drift
+- `gen_pattern_select_switch.py` -- the pattern select switch (`traffic_signal_pattern_switch`):
+  its off and on models (the toggle moves, so on is geometry), the legend and lamp textures and
+  the blockstate; prints the bounding box `BlockTrafficSignalPatternSwitch` uses; `--check` fails
+  on drift. The legend is drawn marks, not lettering, so the output does not depend on fonts
 - `gen_preempt_detector.py` -- the preempt detector's model and blockstate: a small black optical
   head (octagon body, lens in a bezel, cable connector, stepped sun-shield fin) on a mount stub
   reaching down to a thin traffic pole in the cell below, so it sits on top of a mast arm; and on

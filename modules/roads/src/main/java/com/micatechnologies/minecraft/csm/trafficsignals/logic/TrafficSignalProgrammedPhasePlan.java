@@ -49,6 +49,10 @@ public class TrafficSignalProgrammedPhasePlan {
   private static final String K_PATTERNS = "cop";
   private static final String K_SCHEDULE = "cos";
   private static final String K_PATTERNS_ENABLED = "coe";
+  /** The manual pattern, stored as slot + 1 so that an absent key reads as "none". */
+  private static final String K_MANUAL_PATTERN = "cpm";
+  /** The pattern a linked switch selects, stored as slot + 1 (0 = switches ignored). */
+  private static final String K_SWITCH_PATTERN = "cps";
   private static final String K_PRIORITY = "pri";
   private static final String K_PREEMPTS = "pe";
   private static final String K_OVERLAPS = "ov";
@@ -65,6 +69,16 @@ public class TrafficSignalProgrammedPhasePlan {
       new TrafficSignalCoordinationPlan[TrafficTimeOfDaySchedule.SLOT_COUNT];
   private final TrafficTimeOfDaySchedule coordinationSchedule = new TrafficTimeOfDaySchedule();
   private boolean timeOfDayPatterns = false;
+  /**
+   * A pattern held by hand, over whatever the clock selects, or
+   * {@link TrafficSignalPatternSelect#NONE}. See {@link TrafficSignalPatternSelect}.
+   */
+  private int manualPatternSlot = TrafficSignalPatternSelect.NONE;
+  /**
+   * The pattern a pattern select switch linked to the controller selects while it is on, or
+   * {@link TrafficSignalPatternSelect#NONE} to ignore switches.
+   */
+  private int switchPatternSlot = TrafficSignalPatternSelect.DEFAULT_SWITCH_SLOT;
   /**
    * The transit priority plans, one per bus movement served (one per direction on a corridor
    * with buses both ways). Never empty: entry 0 is the plan a controller has always had.
@@ -308,6 +322,60 @@ public class TrafficSignalProgrammedPhasePlan {
    */
   public int getScheduledCoordinationSlot(World world) {
     return timeOfDayPatterns ? coordinationSchedule.getActiveSlot(world) : 0;
+  }
+
+  /** The pattern held by hand, or {@link TrafficSignalPatternSelect#NONE}. */
+  public int getManualPatternSlot() {
+    return manualPatternSlot;
+  }
+
+  /**
+   * Holds a pattern by hand, or lets go of it.
+   *
+   * @param slot the slot to hold; anything that is not a slot means none
+   */
+  public void setManualPatternSlot(int slot) {
+    this.manualPatternSlot = TrafficSignalPatternSelect.normalize(slot);
+  }
+
+  /** The pattern a linked switch selects, or {@link TrafficSignalPatternSelect#NONE}. */
+  public int getSwitchPatternSlot() {
+    return switchPatternSlot;
+  }
+
+  /**
+   * Sets the pattern a linked pattern select switch selects while it is on.
+   *
+   * @param slot the slot; anything that is not a slot makes the controller ignore switches
+   */
+  public void setSwitchPatternSlot(int slot) {
+    this.switchPatternSlot = TrafficSignalPatternSelect.normalize(slot);
+  }
+
+  /**
+   * Which pattern should be running: a linked switch's, the manual one, or the clock's, in that
+   * order ({@link TrafficSignalPatternSelect}). Like {@link #getScheduledCoordinationSlot}, this
+   * is only the <em>wanted</em> pattern; the ring engine adopts it at a cycle boundary.
+   *
+   * @param world    the world to read the clock from
+   * @param switchOn whether a pattern select switch linked to the controller is on
+   *
+   * @return the slot index wanted
+   */
+  public int getWantedCoordinationSlot(World world, boolean switchOn) {
+    return TrafficSignalPatternSelect.slot(getScheduledCoordinationSlot(world), manualPatternSlot,
+        switchPatternSlot, switchOn);
+  }
+
+  /**
+   * Who chose {@link #getWantedCoordinationSlot}.
+   *
+   * @param switchOn whether a pattern select switch linked to the controller is on
+   *
+   * @return the switch, the manual setting or the clock
+   */
+  public TrafficSignalPatternSelect.Source getPatternSource(boolean switchOn) {
+    return TrafficSignalPatternSelect.source(manualPatternSlot, switchPatternSlot, switchOn);
   }
 
   /** The base coordination plan (slot 0), which is the only one a non-patterned plan uses. */
@@ -609,6 +677,12 @@ public class TrafficSignalProgrammedPhasePlan {
     c.setTag(K_PATTERNS, patternList);
     c.setTag(K_SCHEDULE, coordinationSchedule.writeNBT(new NBTTagCompound()));
     c.setBoolean(K_PATTERNS_ENABLED, timeOfDayPatterns);
+    if (manualPatternSlot != TrafficSignalPatternSelect.NONE) {
+      c.setInteger(K_MANUAL_PATTERN, manualPatternSlot + 1);
+    }
+    if (switchPatternSlot != TrafficSignalPatternSelect.DEFAULT_SWITCH_SLOT) {
+      c.setInteger(K_SWITCH_PATTERN, switchPatternSlot + 1);
+    }
     // One plan is written as the single compound it always was, so a world saved here still
     // reads in an older version; several are a list under the same key.
     List<TrafficSignalPriorityPlan> plans = getPriorities();
@@ -672,6 +746,11 @@ public class TrafficSignalProgrammedPhasePlan {
       plan.coordinationSchedule.readNBT(c.getCompoundTag(K_SCHEDULE));
     }
     plan.timeOfDayPatterns = c.getBoolean(K_PATTERNS_ENABLED);
+    plan.manualPatternSlot =
+        TrafficSignalPatternSelect.normalize(c.getInteger(K_MANUAL_PATTERN) - 1);
+    plan.switchPatternSlot = c.hasKey(K_SWITCH_PATTERN)
+        ? TrafficSignalPatternSelect.normalize(c.getInteger(K_SWITCH_PATTERN) - 1)
+        : TrafficSignalPatternSelect.DEFAULT_SWITCH_SLOT;
     if (c.hasKey(K_PRIORITY, 10)) {
       plan.priorities.add(TrafficSignalPriorityPlan.fromNBT(c.getCompoundTag(K_PRIORITY)));
     } else if (c.hasKey(K_PRIORITY, 9)) {

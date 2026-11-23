@@ -139,6 +139,33 @@ public class ItemSignalLinkTool extends AbstractItem {
             ")"));
 
         return EnumActionResult.SUCCESS;
+      } else if (state.getBlock() instanceof BlockTrafficSignalPatternSwitch) {
+        if (signalControllerPos == null) {
+          player.sendMessage(new TextComponentString("No signal controller has been selected."));
+          return EnumActionResult.SUCCESS;
+        }
+        TileEntity tileEntity = worldIn.getTileEntity(signalControllerPos);
+        if (!(tileEntity instanceof TileEntityTrafficSignalController)) {
+          player.sendMessage(new TextComponentString(
+              "Unable to link switch! Lost connection to previously connected controller."));
+          return EnumActionResult.SUCCESS;
+        }
+        TileEntityTrafficSignalController controller =
+            (TileEntityTrafficSignalController) tileEntity;
+        String at = " signal controller at (" + signalControllerPos.getX() + ","
+            + signalControllerPos.getY() + "," + signalControllerPos.getZ() + ")";
+        if (player.isSneaking()) {
+          player.sendMessage(new TextComponentString(controller.unlinkPatternSwitch(pos)
+              ? "Pattern select switch unlinked from" + at
+              : "That pattern select switch is not linked to" + at));
+        } else {
+          player.sendMessage(new TextComponentString(controller.linkPatternSwitch(pos)
+              ? "Pattern select switch connected to" + at
+              + ". Set the pattern it selects on the controller's COORD screen."
+              : "Pattern select switch is already connected to" + at
+                  + " (or the controller has its fill of switches)"));
+        }
+        return EnumActionResult.SUCCESS;
       } else if (signalControllerPos == null &&
           (state.getBlock() instanceof AbstractBlockControllableSignal ||
               state.getBlock() instanceof ITrafficSignalSensor ||

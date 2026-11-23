@@ -972,6 +972,7 @@ tile.tlvmountkit8inch.name=Vertical Signal Mount Kit (8 Inch)
 tile.tlvtall90lmountkit.name=Vertical Tall Signal (90 Deg Left) Mount Kit
 tile.tlvtall90rmountkit.name=Vertical Tall Signal (90 Deg Right) Mount Kit
 tile.tlvtallmountkit.name=Vertical Tall Signal Mount Kit
+tile.traffic_signal_pattern_switch.name=Signal Pattern Select Switch
 tile.trafficlightmountkit.name=Dynamic Signal Mount Kit
 tile.trafficlightsensor.name=Traffic Light Sensor (Econolite Autoscope Solo Terra)
 tile.trafficlightsensorbell.name=Traffic Light Sensor (GridSmart FE3)

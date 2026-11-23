@@ -802,14 +802,60 @@ Two cases skip the wait, and both matter:
 ### GUI
 
 The **COORD** screen gains two cells: `SINGLE`/`TOD`, and a pattern selector that chooses which
-slot's plan the rest of the screen is editing (marked `*` when it is the one the clock has
-selected). With `SINGLE` the screen edits slot 0 and the selector is inert.
+slot's plan the rest of the screen is editing (marked `*` when it is the one running). All four
+patterns can be edited with `SINGLE` too, where they are labelled `PATTERN 1`-`4` rather than by
+time of day: pattern select (below) can call for any of them without the clock table.
 
 ### Tests
 
 `TrafficTimeOfDayScheduleTest` covers slot selection across all 24 hours including the wrap and the
 NBT round trip; `CoordinationPatternTest` and `RingBarrierStateCoordinationTest` cover the
 boundary-deferred adoption, the cold start and the free-pattern exemption.
+
+### Pattern select: a manual hold and the pattern select switch
+
+The clock is not the only thing that may choose a pattern. A stadium's junctions run an egress
+plan when the game ends, whatever the time, and somebody throws a switch in a cabinet to say so.
+`TrafficSignalPatternSelect` ranks three authorities, highest first:
+
+1. **A pattern select switch that is on.** `BlockTrafficSignalPatternSwitch`
+   (`traffic_signal_pattern_switch`) is a small cabinet switch box, thrown by right-click or by
+   redstone: power arriving turns it on and power leaving turns it off, and it can be thrown by
+   hand between edges (its `powered` state is only that edge memory). It has no tile entity and
+   knows nothing about controllers. A controller is linked to it with the signal link tool
+   (controller, then switch; sneak to unlink) and keeps the positions itself (`tcPsw`, up to 8),
+   so one switch serves any number of controllers. Each plan says which pattern a switch selects
+   (`switchPatternSlot`, default pattern 2, or none to ignore switches), so the same lever can mean
+   different patterns at different junctions.
+2. **A manual hold**: `manualPatternSlot` on the plan, set from the COORD screen's `Hold` cell,
+   `/csm signal pattern <clock|1-4> [x y z]`, or NBT (`tcAdv.cpm`, stored as slot + 1).
+3. **The clock**: the time-of-day table, or pattern 1 when it is `SINGLE`.
+
+`plan.getWantedCoordinationSlot(world, switchOn)` is the only thing the engine asks, in place of
+the clock's answer, so **a selected pattern is taken up exactly as a scheduled one is: at the next
+cycle boundary** (at once on a cold start or from a FREE pattern). Neither setting restarts the
+controller: `co.manualSlot` and `co.switchSlot` are the two panel actions that skip
+`resetController`, because choosing a pattern is operating the controller, not reprogramming it.
+Preemption is untouched: a preempt overrides whatever pattern is running, and the selected pattern
+is still in force when it ends.
+
+The controller reads its switches once a second (`readPatternSwitches`), from the block state. A
+switch in an unloaded chunk reads as "what the switches last were", not as off, and that last
+reading is saved (`tcPswOn`): a controller must not fall out of its event plan because the cabinet
+across the road unloaded. A linked position that no longer holds a switch is unlinked.
+
+`RingBarrierState` is server-side and transient, so the pattern it is running is copied to the
+tile entity (`tcPat`, slot + 1) whenever it changes, which is at most once a cycle. The COORD
+screen shows it to the right of the offset: `RUN P2 SW` (running pattern 2, chosen by a switch;
+`MAN` a hold, `CLK` the clock), or `P1 > P2 SW` while the change is waiting for the cycle to end.
+`/csm signal pattern` with no value prints the same in words.
+
+The plan JSON carries both settings as `schedule.manualSlot` and `schedule.switchSlot` (-1: none).
+SPATT writes neither, and an import that leaves them out keeps the controller's own.
+
+`PatternSelectTest` covers the ranking, the save, the boundary rule for a switch and for a hold,
+every phase being served on either pattern, and a preempt winning over both.
+`gen_pattern_select_switch.py` writes the switch's models, textures and blockstate.
 
 ## 5d. Transit signal priority (TSP)
 

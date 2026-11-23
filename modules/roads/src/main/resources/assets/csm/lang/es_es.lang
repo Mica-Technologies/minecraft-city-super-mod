@@ -972,6 +972,7 @@ tile.tlvmountkit8inch.name=Kit de Soporte de Semáforo Vertical (8 Pulgadas)
 tile.tlvtall90lmountkit.name=Kit de Soporte de Semáforo Vertical Alto (90 Grados Izquierda)
 tile.tlvtall90rmountkit.name=Kit de Soporte de Semáforo Vertical Alto (90 Grados Derecha)
 tile.tlvtallmountkit.name=Kit de Soporte de Semáforo Vertical Alto
+tile.traffic_signal_pattern_switch.name=Interruptor Selector de Plan de Semáforo
 tile.trafficlightmountkit.name=Kit de Soporte de Semáforo Dinámico
 tile.trafficlightsensor.name=Sensor de Semáforo (Econolite Autoscope Solo Terra)
 tile.trafficlightsensorbell.name=Sensor de Semáforo (GridSmart FE3)

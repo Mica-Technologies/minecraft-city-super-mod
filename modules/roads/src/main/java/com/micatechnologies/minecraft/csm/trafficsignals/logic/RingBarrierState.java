@@ -336,6 +336,8 @@ public class RingBarrierState {
    * be the wrong one whenever a world was saved in one slot and loaded in another.</p>
    */
   private int activeCoordinationSlot = -1;
+  /** Whether a pattern select switch linked to the controller is on; set before each tick. */
+  private boolean patternSwitchOn = false;
 
   /**
    * Last tick's position in the background cycle, used only to notice the cycle rolling over.
@@ -1928,9 +1930,11 @@ public class RingBarrierState {
    */
   private void computeCoordination(TrafficSignalProgrammedPhasePlan plan, long now,
       World world) {
-    int scheduled = plan.getScheduledCoordinationSlot(world);
+    // The wanted pattern: a linked switch's, a manual hold or the clock's. Whoever chose it, it
+    // is taken up the same way, at a cycle boundary.
+    int scheduled = plan.getWantedCoordinationSlot(world, patternSwitchOn);
     if (activeCoordinationSlot < 0) {
-      // Cold start (first tick, or the first after a reload): take whatever the clock says now.
+      // Cold start (first tick, or the first after a reload): take whatever is wanted now.
       activeCoordinationSlot = scheduled;
     }
     TrafficSignalCoordinationPlan co = plan.getCoordination(activeCoordinationSlot);
@@ -2145,6 +2149,25 @@ public class RingBarrierState {
 
 
   /**
+   * Tells the engine whether a pattern select switch linked to the controller is on. The engine
+   * has no world of its own to look for one in, so the controller says, before each tick.
+   *
+   * @param patternSwitchOn whether a linked switch is on
+   */
+  public void setPatternSwitchOn(boolean patternSwitchOn) {
+    this.patternSwitchOn = patternSwitchOn;
+  }
+
+  /**
+   * The coordination pattern running now, which trails the wanted one until the cycle rolls over.
+   *
+   * @return the slot index, or negative before the first tick
+   */
+  public int getActiveCoordinationSlot() {
+    return activeCoordinationSlot;
+  }
+
+  /**
    * Decides which coordination pattern runs next.
    *
    * <p>The rule this encodes is the whole of time-of-day patterning as far as the engine is
@@ -2157,7 +2180,7 @@ public class RingBarrierState {
    * pattern yet, and a free pattern has no cycle.</p>
    *
    * @param activeSlot         the pattern running now, or negative if none has been chosen yet
-   * @param scheduledSlot      the pattern the clock selects
+   * @param scheduledSlot      the pattern wanted (the clock's, a manual hold or a switch's)
    * @param coordinated        whether the running pattern is coordinated at all
    * @param localCycle         this tick's position in the background cycle
    * @param previousLocalCycle last tick's position, or negative if there was none

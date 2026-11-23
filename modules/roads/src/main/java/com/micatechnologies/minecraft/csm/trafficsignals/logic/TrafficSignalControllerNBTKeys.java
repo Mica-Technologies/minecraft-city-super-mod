@@ -298,6 +298,30 @@ public class TrafficSignalControllerNBTKeys {
    */
   public static final String ADVANCED_RUNTIME = "tcAdvRt";
 
+  /**
+   * The pattern select switches linked to the controller, as x, y, z triples in one int array.
+   * Written only when there is one.
+   *
+   * @since 2026.11
+   */
+  public static final String PATTERN_SWITCHES = "tcPsw";
+
+  /**
+   * Whether a linked pattern select switch was on at the last look. Kept so that a controller
+   * whose switch is in a chunk that has not loaded yet carries on as it was.
+   *
+   * @since 2026.11
+   */
+  public static final String PATTERN_SWITCH_ON = "tcPswOn";
+
+  /**
+   * The coordination pattern the ADVANCED engine is running, stored as slot + 1 (absent: not
+   * known). The engine itself is server-side and transient; this is what the panel reads.
+   *
+   * @since 2026.11
+   */
+  public static final String RUNNING_PATTERN = "tcPat";
+
   ///endregion
 
   ///region: Legacy v2.0 long-form keys (read fallback only)
