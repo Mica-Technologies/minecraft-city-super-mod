@@ -45,7 +45,7 @@
     "hasRunningLights": true,
     "hasTurnSignals": true,
     "litVariable": "headlight",
-    "panel": "mts:default_car",
+    "panel": "csmvehicles:csm_car",
     "hudTexture": "csmvehicles:textures/guis/csm_stump_grinder_hud.png"
   },
   "parts": [

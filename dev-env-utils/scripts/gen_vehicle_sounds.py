@@ -12,7 +12,9 @@ is scaled to complete a whole number of cycles over it.
 and the tree crew chip bed's chipper: chipper_run (a diesel and the drum idling, looped) and
 chipper_chip (one log through the knives); and the fleet's engines and horns: a diesel's and a
 V8's idle (looped; Immersive Vehicles raises the pitch with the revs), cranking (looped) and
-start, an air horn and a car horn (looped while the horn is held).
+start, an air horn and a car horn (looped while the horn is held); and the doors: door_open
+(the latch letting go), door_close (the thump and the latch catching) and rollup (a fire
+compartment's roll-up door), played once at the ends of a door's swing.
 
 Immersive Vehicles plays a pack sound named "<packID>:<name>" from assets/<packID>/sounds/
 <name>.ogg, with no sounds.json, so the module's CSM sound enum and sounds.json have no part in
@@ -174,6 +176,63 @@ def horn(freqs, seconds):
     return out
 
 
+def latch(t, at, rng, level=1.0):
+    """A latch's click at `at` seconds: a short, bright tick of noise and a ring."""
+    s = t - at
+    on = s >= 0
+    s = np.where(on, s, 0)
+    tick = rng.normal(0, 1, len(t)) * np.exp(-s / 0.004)
+    ring = np.sin(2 * np.pi * 2300 * s) * np.exp(-s / 0.012) * 0.5
+    return np.where(on, (tick + ring) * level, 0)
+
+
+def door_open(seconds=0.45):
+    """A car door opening: the handle's latch letting go, then the seal's soft peel."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    rng = np.random.RandomState(41)
+    peel = rng.normal(0, 1, n) * np.exp(-((t - 0.09) / 0.06) ** 2) * 0.18
+    kernel = np.ones(20) / 20
+    peel = np.convolve(peel, kernel, mode='same')
+    out = latch(t, 0.01, rng) + peel * 6
+    out[-400:] *= np.linspace(1, 0, 400)
+    return out
+
+
+def door_close(seconds=0.5):
+    """A car door shutting: a low, padded thump as it meets the seals, the latch catching."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    rng = np.random.RandomState(42)
+    thump = (np.sin(2 * np.pi * 62 * t) + 0.5 * np.sin(2 * np.pi * 118 * t)) * np.exp(-t / 0.07)
+    body = rng.normal(0, 1, n) * np.exp(-t / 0.025) * 0.4
+    body = np.convolve(body, np.ones(8) / 8, mode='same')
+    out = thump * 1.6 + body + latch(t, 0.012, rng, 0.5)
+    out[-400:] *= np.linspace(1, 0, 400)
+    return out
+
+
+def rollup(seconds=0.9):
+    """A roll-up compartment door: the slats rattling over the drum, about 30 a second, and
+    the bar's clunk at the end of its travel."""
+    n = int(RATE * seconds)
+    t = np.arange(n) / RATE
+    rng = np.random.RandomState(43)
+    out = np.zeros(n)
+    k = 0
+    for at in np.arange(0.02, seconds - 0.15, 1 / 30.0):
+        s = t - at
+        on = s >= 0
+        out += np.where(on, rng.normal(0, 1, n) * np.exp(-np.where(on, s, 0) / 0.006), 0) * (
+            0.55 + 0.25 * ((k % 3) == 0))
+        k += 1
+    stop = seconds - 0.14
+    s = np.clip(t - stop, 0, None)
+    out += np.where(t >= stop, np.sin(2 * np.pi * 90 * s) * np.exp(-s / 0.04) * 2.0, 0)
+    out[-400:] *= np.linspace(1, 0, 400)
+    return out
+
+
 def diesel_idle():
     return engine_idle(26.0, 2.0, ((1, 1.0), (2, 0.6), (3, 0.45), (4, 0.2), (6, 0.12)), 0.35, 21)
 
@@ -197,6 +256,9 @@ SOUNDS = {
     'petrol_start': lambda: starting(cranking(6.0, 1.0, 240.0, 32), petrol_idle(), 0.8),
     'horn_air': lambda: horn((233.0, 294.0, 349.0), 1.0),
     'horn_car': lambda: horn((415.0, 494.0), 1.0),
+    'door_open': door_open,
+    'door_close': door_close,
+    'rollup': rollup,
 }
 
 

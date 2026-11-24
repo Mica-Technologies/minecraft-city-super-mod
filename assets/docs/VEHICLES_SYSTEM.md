@@ -265,7 +265,8 @@ catalogue (`--check` fails on drift). The engine and horn sounds come from
 - The default car panel has four custom switches: `EMERLTS` (the lights, and so preemption),
   `siren`, `siren_yelp` and `siren_hilo` (the siren speaker's tones).
 - The horn plays on IV's `horn`.
-- Headlights, brake, turn and reverse lights use IV's own variables.
+- Headlights, brake, turn and reverse lights use IV's own variables; high beams and fog lamps
+  are the panel's own buttons ("Headlights, high beams and fog lamps", below).
 
 **The IV rules this follows** (each silently breaks a vehicle when missed):
 - Wheel and engine slots carry `minValue`/`maxValue` around the part's height or fuel
@@ -558,6 +559,14 @@ render work fell from 21.3 ms to 2.47 ms (43 to 354 FPS); from the lot's aisle w
 the vehicles cost under half a millisecond. Keep it that way: a new box is `body` unless it moves
 or lights, and a lamp joins an existing lamp object whenever it lights the same.
 
+The doors (2026-11) roughly doubled the objects: each door is an object and its glass another,
+and the high beam, fog lamps and dome are lamps of their own. The fire engine went from 14 to 30,
+the ladder truck 17 to 35, the cars 7 to about 20. Measured in the demo lot from the aisle (x 554,
+z 201, dev client at 854 x 480, every module): render work 2.80 ms looking along the lot with all
+38 vehicles in view, 2.32 ms from the same spot facing away. The 0.48 ms between them is an
+upper bound on what all 38 vehicles cost with their doors (it includes the lot's own blocks).
+No before-and-after pair was taken; the earlier "under half a millisecond" figure is the nearest.
+
 ### Inside: hollow cabins
 
 The rider's eye is in the vehicle, and a face is drawn only from the side it faces. The first
@@ -603,12 +612,113 @@ are default instruments, which IV fits only when a vehicle is created: one place
 existed keeps a blank HUD until it is placed again. They are HUD only: placed on the dash they
 never showed, faced either way, so they stay off it until that is understood.
 
-### Getting in: the body takes no clicks
+### Getting in: the body takes no clicks, the doors do
 
 A seat is entered by right-clicking it. The body's collision group lists `block`, `entity` and
 `attack` but **not `click`**: its boxes enclose the cab, and with `click` they took every
 right-click before it reached a seat, so there was no way into a vehicle. The official pack uses
-`click` only on small door and hatch boxes.
+`click` only on small door and hatch boxes, and so do we (below): IV takes the **nearest** click
+box a ray meets (`EntityManager.getMultipartEntityIntersect`), so a closed door is in front of
+its seat. Open the door, then click the seat through the opening.
+
+### Doors
+
+Every cab and passenger door opens, and so do the hatches, trunks, tailgates, the ambulance's
+rear and curb-side doors and the fire apparatus' compartments. Right-click a door to open or
+shut it.
+
+| Vehicle | Doors |
+|---|---|
+| Fire engine, ladder truck | four crew cab doors; a roll-up door on every compartment (3 or 4 a side) |
+| Ambulance | two cab doors, the module's curb-side door, two rear barn doors |
+| Police SUV | four doors, the rear hatch (lifts on its roof hinge) |
+| Dump, bucket and tow trucks | two cab doors |
+| Pickups | four doors, the tailgate (drops) |
+| Impressa | four doors, the hatch |
+| WRZ STX | four doors, the trunk lid with its wing |
+| Transit bus | either door, clicked from the curb, works DOORS (both doors, as the driver's switch does) |
+
+**How a door is built** (`gen_vehicle_fleet.py`, `Vehicle.door`). A door is declared as a region
+of the body *before* the boxes it takes are added. Every box added afterwards that lies in the
+region is cut along the region's edges (`_cut`, along the axes the region names), and the piece
+inside goes into the door's own OBJ object. So the cab wall, the window glass, the lettering, the
+handles and the stripes that cross a door all come apart at the door's edges and swing with it,
+and the wall and the door can never disagree. The rules:
+
+- **Thin shell only, for side doors.** A side door's region is the wall's thickness out to 0.06
+  past it, so mirrors, steps and fenders (thicker) stay on the body.
+- **Glass** goes into `<door>_window`, an animated object with `applyAfter` the door. IV draws
+  any object whose name contains "window" as glass, so the door itself must not.
+- **Lamps are never cut.** A lamp object whose every box lies on one door rides it (`applyAfter`,
+  the police SUV's rear warning lamps on its hatch); one that is partly off it stays.
+- **Order matters.** A box added before the door is declared is not taken, which is how the
+  compartments' shelves stay behind their roll-up doors.
+
+**Click boxes.** IV's collision box is `width` in both x and z, so a door is a row of small cubes
+(`click_row`), in a `click` group with `applyAfter` the door: the boxes swing with it, and an open
+door is clicked shut where it now stands. Each box toggles the door's variable
+(`variableName`/`variableType: toggle`, the official Mustang's form). The variable is the door's
+object name (`door_fl`, `door_hatch`, `tailgate`, `comp_2r`).
+
+**Swings.** Side doors are hinged at their front edge and open 70 degrees (`DOOR_SWING`) in 12
+ticks: about y, negative on the left (+x) and positive on the right, as the Mustang's. The barn
+doors open 100 degrees on their outer edges; a hatch or trunk lifts about x (75 and 55 degrees),
+a tailgate drops 90. Door sounds are animation sounds: `door_open` as the swing starts,
+`door_close` as it ends (`gen_vehicle_sounds.py`).
+
+**Roll-up doors** shrink into their top edge. IV's SCALING animation scales by the unit axis
+times `value x |axis| + offset`, a zero component meaning 1
+(`AnimationSwitchbox.runScaling`, `DurationDelayClock.clampAndScale`), so a y axis of -0.96 with
+an offset of -1 is a scale of 1 shut and 0.04 open, about the `centerPoint` on the door's top.
+Behind each door, a hair behind its face so it is hidden while the door is down, is a dark recess
+with two shelves (`compartment_shelves`). The roll-up runs 18 ticks to the `rollup` sound.
+
+**The dome light.** A cab with doors has a dome lamp (`Vehicle.dome`) whose brightness is one
+translation per `door_*` variable: they add, so it is on while any door is open. Tailgates, trunks
+and compartments (not `door_*`) light no cabin.
+
+## Headlights, high beams and fog lamps
+
+**The cone.** IV draws a light cone for any blendable component of a light that has a
+`beamDiameter` (`RenderableVertices.createLightBeams`): its apex 0.15 behind `pos`, `beamDiameter`
+metres across at `beamLength` along the axis, which must be a unit vector. The flare and the cone
+are drawn only in the blended pass, at alpha `(1 - world light at the vehicle) x brightness`
+(`RenderableModelObject.render`), so **they show at night and not at noon**, and only with the
+player's `renderBeams` config on. Do not set `isBeam`: that is a different mode (the object itself
+is the beam mesh), and the renderer then skips the light's flares and cones.
+
+| Lamp | Variable | Axis (down) | Diameter x length | Brightness |
+|---|---|---|---|---|
+| Low beam (`&Headlight`) | IV's `headlight` (G) | about 4.6 degrees | 4.5 x 12 m | 1 |
+| High beam (`&HighBeam`) | `headlight` and `HIGHBEAM` | about 0.9 degrees | 6.5 x 30 m | 0.55 |
+| Fog (`&Fog`) | `FOG` | about 8 degrees | 7 x 6 m | 1 |
+
+A light is bound to its OBJ object by name, so the high beam has an object of its own: a box
+hidden inside each headlamp, not emissive (it adds only its flare and its cone). Its brightness
+animations are two visibilities (an AND: any false is 0) and a translation of 0.55. At 1 the long
+cone washed out everything seen head-on. The Silverline and the Impressa have fog lamps.
+
+**The panel.** HIGH BEAM and FOG are buttons on our own panel (`csmvehicles:csm_car`,
+`jsondefs/panels/csm_car.json`): IV's default car panel component for component, plus a fifth
+column. They are not custom variables, because the default panel has four custom switch slots and
+the fire apparatus already fill them. A panel button with a `clickAction` toggles any variable,
+and FOG's button shows only on a vehicle whose definition sets the constant `fog_present`
+(`constantValues`). The HUD lists HIGH BEAM and FOG LAMPS with the vehicle's switches.
+
+**Testing.** Put the vehicle in the dark (`/time set 18000` in a test world), sit in it, press G,
+and open the panel (U) for the high beams.
+
+Verified 2026-11-24 in the dev client, in a flat test world at night: the police SUV's four doors
+and hatch opened from their click boxes, the driver's seat was entered through the open door, the
+dome lit, low beams on G, high beams from the panel (whose FOG button stays hidden on the SUV);
+one of each other kind opened from a click: a fire engine compartment (rolled up onto its
+shelves), the ambulance's barn doors and curb door, the Impressa's door and hatch, the
+Silverline's tailgate, the STX's trunk and wing, the bus doors from the curb; the Silverline's fog
+lamps from its panel. Then every door vehicle spawned with all its doors open (a `/give` carrying
+the door variables, through a command block for the long ones), seen whole by day, and one of each
+kind clicked shut where it stood open: an SUV door, its hatch, the STX's trunk, the H-150's
+tailgate, an ambulance barn leaf and a fire engine compartment (whose click boxes are scaled up
+into the rolled shutter, not swung). Not heard: the door sounds (the test client is muted).
 
 ---
 

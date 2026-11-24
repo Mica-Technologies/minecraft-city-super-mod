@@ -59,7 +59,7 @@
     "hasRunningLights": true,
     "hasTurnSignals": true,
     "litVariable": "headlight",
-    "panel": "mts:default_car",
+    "panel": "csmvehicles:csm_car",
     "hudTexture": "csmvehicles:textures/guis/csm_subaroo_impressa_hud.png"
   },
   "parts": [
@@ -250,6 +250,255 @@
           "height": 1.36
         }
       ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_fl",
+      "collisions": [
+        {
+          "pos": [
+            0.81,
+            0.465,
+            0.692
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_fl",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.81,
+            0.465,
+            0.875
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_fl",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.81,
+            0.465,
+            1.058
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_fl",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_rl",
+      "collisions": [
+        {
+          "pos": [
+            0.81,
+            0.465,
+            0.025
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_rl",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.81,
+            0.465,
+            0.175
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_rl",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.81,
+            0.465,
+            0.325
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_rl",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_fr",
+      "collisions": [
+        {
+          "pos": [
+            -0.81,
+            0.465,
+            0.692
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_fr",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.81,
+            0.465,
+            0.875
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_fr",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.81,
+            0.465,
+            1.058
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_fr",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_rr",
+      "collisions": [
+        {
+          "pos": [
+            -0.81,
+            0.465,
+            0.025
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_rr",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.81,
+            0.465,
+            0.175
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_rr",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.81,
+            0.465,
+            0.325
+          ],
+          "width": 0.22,
+          "height": 0.73,
+          "variableName": "door_rr",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_hatch",
+      "collisions": [
+        {
+          "pos": [
+            0.634,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.423,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.211,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.0,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.211,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.423,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.634,
+            0.475,
+            -0.82
+          ],
+          "width": 0.22,
+          "height": 0.25,
+          "variableName": "door_hatch",
+          "variableType": "toggle"
+        }
+      ]
     }
   ],
   "rendering": {
@@ -270,6 +519,78 @@
       }
     ],
     "lightObjects": [
+      {
+        "objectName": "&FogL",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFF0D0",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "FOG",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.645,
+              0.0125,
+              3.6025
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.5,
+            "flareWidth": 0.5
+          },
+          {
+            "pos": [
+              0.645,
+              0.0125,
+              3.605
+            ],
+            "axis": [
+              0.0,
+              -0.1386,
+              0.9903
+            ],
+            "beamDiameter": 7.0,
+            "beamLength": 6.0
+          },
+          {
+            "pos": [
+              -0.645,
+              0.0125,
+              3.6025
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 0.5,
+            "flareWidth": 0.5
+          },
+          {
+            "pos": [
+              -0.645,
+              0.0125,
+              3.605
+            ],
+            "axis": [
+              0.0,
+              -0.1386,
+              0.9903
+            ],
+            "beamDiameter": 7.0,
+            "beamLength": 6.0
+          }
+        ]
+      },
       {
         "objectName": "&HeadlightL",
         "emissive": true,
@@ -300,6 +621,20 @@
           },
           {
             "pos": [
+              0.65,
+              0.365,
+              3.62
+            ],
+            "axis": [
+              0.0,
+              -0.0797,
+              0.9968
+            ],
+            "beamDiameter": 4.5,
+            "beamLength": 12.0
+          },
+          {
+            "pos": [
               -0.65,
               0.365,
               3.605
@@ -311,6 +646,107 @@
             ],
             "flareHeight": 0.6,
             "flareWidth": 0.6
+          },
+          {
+            "pos": [
+              -0.65,
+              0.365,
+              3.62
+            ],
+            "axis": [
+              0.0,
+              -0.0797,
+              0.9968
+            ],
+            "beamDiameter": 4.5,
+            "beamLength": 12.0
+          }
+        ]
+      },
+      {
+        "objectName": "&HighBeamL",
+        "emissive": false,
+        "isElectric": true,
+        "color": "#FFFFFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "headlight",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "visibility",
+            "variable": "HIGHBEAM",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.55,
+              0
+            ],
+            "variable": "HIGHBEAM"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.65,
+              0.365,
+              3.605
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 1.2,
+            "flareWidth": 1.2
+          },
+          {
+            "pos": [
+              0.65,
+              0.365,
+              3.616
+            ],
+            "axis": [
+              0.0,
+              -0.015,
+              0.9999
+            ],
+            "beamDiameter": 6.5,
+            "beamLength": 30.0
+          },
+          {
+            "pos": [
+              -0.65,
+              0.365,
+              3.605
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 1.2,
+            "flareWidth": 1.2
+          },
+          {
+            "pos": [
+              -0.65,
+              0.365,
+              3.616
+            ],
+            "axis": [
+              0.0,
+              -0.015,
+              0.9999
+            ],
+            "beamDiameter": 6.5,
+            "beamLength": 30.0
           }
         ]
       },
@@ -550,6 +986,212 @@
             "flareWidth": 0.35
           }
         ]
+      },
+      {
+        "objectName": "&Dome",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFE6B8",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_fl"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_rl"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_fr"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_rr"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_hatch"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.0,
+              1.1025,
+              0.5
+            ],
+            "axis": [
+              0,
+              -1,
+              0
+            ],
+            "flareHeight": 0.5,
+            "flareWidth": 0.5
+          }
+        ]
+      }
+    ],
+    "animatedObjects": [
+      {
+        "objectName": "door_fl",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              0.89,
+              0.0,
+              1.9500000000000002
+            ],
+            "axis": [
+              0,
+              -70,
+              0
+            ],
+            "variable": "door_fl",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_fl_window",
+        "applyAfter": "door_fl",
+        "animations": []
+      },
+      {
+        "objectName": "door_rl",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              0.89,
+              0.0,
+              0.5
+            ],
+            "axis": [
+              0,
+              -70,
+              0
+            ],
+            "variable": "door_rl",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_rl_window",
+        "applyAfter": "door_rl",
+        "animations": []
+      },
+      {
+        "objectName": "door_fr",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -0.89,
+              0.0,
+              1.9500000000000002
+            ],
+            "axis": [
+              0,
+              70,
+              0
+            ],
+            "variable": "door_fr",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_fr_window",
+        "applyAfter": "door_fr",
+        "animations": []
+      },
+      {
+        "objectName": "door_rr",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -0.89,
+              0.0,
+              0.5
+            ],
+            "axis": [
+              0,
+              70,
+              0
+            ],
+            "variable": "door_rr",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_rr_window",
+        "applyAfter": "door_rr",
+        "animations": []
+      },
+      {
+        "objectName": "door_hatch",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              0.0,
+              1.16,
+              -0.3
+            ],
+            "axis": [
+              75,
+              0,
+              0
+            ],
+            "variable": "door_hatch",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_hatch_window",
+        "applyAfter": "door_hatch",
+        "animations": []
       }
     ]
   },
@@ -591,6 +1233,9 @@
       "scale": 0.0
     }
   ],
+  "constantValues": {
+    "fog_present": 1.0
+  },
   "connectionGroups": [
     {
       "groupName": "Towing",
