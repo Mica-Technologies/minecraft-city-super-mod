@@ -24,6 +24,252 @@
     "width": 2.0,
     "height": 1.0
   },
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "cap_l",
+      "collisions": [
+        {
+          "pos": [
+            0.94,
+            0.35,
+            -0.554
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.94,
+            0.35,
+            -0.363
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.94,
+            0.35,
+            -0.171
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.94,
+            0.35,
+            0.021
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.94,
+            0.35,
+            0.212
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.94,
+            0.35,
+            0.404
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_l",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "cap_r",
+      "collisions": [
+        {
+          "pos": [
+            -0.94,
+            0.35,
+            -0.554
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.94,
+            0.35,
+            -0.363
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.94,
+            0.35,
+            -0.171
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.94,
+            0.35,
+            0.021
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.94,
+            0.35,
+            0.212
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.94,
+            0.35,
+            0.404
+          ],
+          "width": 0.22,
+          "height": 0.3,
+          "variableName": "cap_r",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "cap_rear",
+      "collisions": [
+        {
+          "pos": [
+            0.702,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.501,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.301,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.1,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.1,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.301,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.501,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.702,
+            0.325,
+            -0.95
+          ],
+          "width": 0.22,
+          "height": 0.35,
+          "variableName": "cap_rear",
+          "variableType": "toggle"
+        }
+      ]
+    }
+  ],
   "rendering": {
     "customVariables": [
       "BEACONS"
@@ -98,6 +344,74 @@
             ],
             "flareHeight": 0.4,
             "flareWidth": 0.4
+          }
+        ]
+      }
+    ],
+    "animatedObjects": [
+      {
+        "objectName": "cap_l",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              1.0,
+              0.62,
+              0.0
+            ],
+            "axis": [
+              0,
+              0,
+              80
+            ],
+            "variable": "cap_l",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "cap_r",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -1.0,
+              0.62,
+              0.0
+            ],
+            "axis": [
+              0,
+              0,
+              -80
+            ],
+            "variable": "cap_r",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "cap_rear",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              0.0,
+              0.6599999999999999,
+              -0.85
+            ],
+            "axis": [
+              80,
+              0,
+              0
+            ],
+            "variable": "cap_rear",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
           }
         ]
       }

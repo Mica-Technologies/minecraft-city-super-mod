@@ -122,6 +122,7 @@ DOOR_SWING = 70          # degrees a side door opens
 DOOR_SOUNDS = ('door_open', 'door_close')
 ROLLUP_SOUNDS = ('rollup', 'rollup')
 EPS = 0.002
+STEERING_RATIO = 6.0     # steering wheel degrees per degree of the front wheels (45 at lock)
 
 
 def side_door(v, name, sx, w, z0, z1, y0, y1, extra=(), clicks_y=None, swing=DOOR_SWING,
@@ -199,6 +200,16 @@ def rollup_compartments(v, w, spans, y0, y1):
             rollup_door(v, 'comp_%d%s' % (k + 1, side), sx, w, z0, z1, y0, y1)
 
 
+def hinged_compartments(v, w, spans, y0, y1):
+    """A utility body's compartment doors on both sides over each (z0, z1) of `spans`: hinged
+    at the front edge, swinging out, with shelves behind (added before the doors, so they stay)."""
+    for k, (z0, z1) in enumerate(spans):
+        compartment_shelves(v, w, z0, z1, y0, y1)
+        for side, sx in (('l', 1), ('r', -1)):
+            side_door(v, 'comp_%d%s' % (k + 1, side), sx, w, z0, z1, y0, y1,
+                      clicks_y=(y0 + 0.1, y1 - 0.1), swing=95)
+
+
 def rear_hatch(v, name, x_half, y0, y1, z0, z1, hinge, turn, split='y', click_z=None,
                click_y=None):
     """A door across the back hinged about x: a hatch or a trunk lid lifting (`turn` positive
@@ -270,6 +281,7 @@ class Vehicle:
         self.count = 0
         self.doors = []       # each: name, regions, animation, clicks, sounds, has_window
         self.lamp_doors = {}  # lamp object -> the doors (None: none) its boxes sit on
+        self.steer = None     # the steering wheel's centre, once it has one
 
     def door(self, name, regions, animation, clicks, sounds=DOOR_SOUNDS, duration=DOOR_TICKS,
              close_at_start=False):
@@ -340,7 +352,23 @@ class Vehicle:
             if len(holders) == 1 and None not in holders:
                 objects.append({'objectName': lamp, 'applyAfter': next(iter(holders)),
                                 'animations': []})
+        if self.steer:
+            # the Mustang's sign: a positive z component, its axis down the column
+            objects.append({'objectName': 'steering_wheel', 'animations': [
+                {'animationType': 'rotation', 'variable': 'rudder', 'centerPoint': self.steer,
+                 'axis': [0, 0, STEERING_RATIO]}]})
         return objects, groups
+
+    def steering_wheel(self, wx0, wx1, wy0, wy1, wz):
+        """The steering wheel: a ring, so the road shows through it, as an object of its own
+        that turns with the front wheels (IV's `rudder`, their angle in degrees) about its
+        column, STEERING_RATIO times as far."""
+        for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
+                       ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
+                       ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
+                       ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
+            self.box(lo, hi, 'black', obj='steering_wheel')
+        self.steer = [round((wx0 + wx1) / 2, 4), round((wy0 + wy1) / 2, 4), round(wz, 4)]
 
     def dome(self, lo, hi):
         """A cabin's dome light, on while any of its doors is open (each door's variable adds
@@ -541,11 +569,7 @@ def cabin(v, w, floor, belt, top, z0, z1, lower='paint', upper=None, windows=(),
         v.box((-w + t, fb - 0.3, z1 - 0.5), (w - t, fb - 0.02, z1 - t), 'black')  # dash
         # the steering wheel: a ring, so the road shows through it
         wx0, wx1, wy0, wy1, wz = driver_x - 0.16, driver_x + 0.16, fb - 0.2, fb + 0.08, z1 - 0.6
-        for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
-                       ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
-                       ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
-                       ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
-            v.box(lo, hi, 'black')
+        v.steering_wheel(wx0, wx1, wy0, wy1, wz)
 
 
 def fire_engine():
@@ -871,8 +895,10 @@ def bucket_truck():
     w = 1.15
     v.box((-0.5, -0.15, -2.5), (0.5, 0.25, 6.3), 'black')
     back = conventional_cab(v, w, 6.1)
+    spans = ((-2.4, -1.2), (-1.1, 0.4), (0.5, 2.0), (2.1, back - 0.2))
+    hinged_compartments(v, 1.22, spans, 0.35, 1.4)
     v.box((-1.22, 0.25, -2.5), (1.22, 1.5, back - 0.1), 'paint2')             # service body
-    for z0, z1 in ((-2.4, -1.2), (-1.1, 0.4), (0.5, 2.0), (2.1, back - 0.2)):
+    for z0, z1 in spans:
         v.both((1.22, 0.35, z0), (1.23, 1.4, z1), 'door', faces=('e', 'w'))
     v.both((1.23, 1.15, -2.5), (1.24, 1.3, back - 0.1), 'stripe', faces=('e', 'w'))
     v.box((-1.22, 1.5, -2.5), (1.22, 1.55, back - 0.1), 'black', faces=('u',))
@@ -926,6 +952,7 @@ def tow_truck():
     w = 1.15
     v.box((-0.5, -0.15, -3.4), (0.5, 0.25, 6.6), 'black')
     back = conventional_cab(v, w, 6.4)
+    hinged_compartments(v, 1.0, ((-2.0, -0.02), (0.02, 2.0)), 0.3, 0.9)      # tool boxes
     v.box((-1.0, 0.25, -3.3), (1.0, 1.0, back - 0.1), 'paint')                # subframe body
     v.box((-1.25, 1.0, 3.45), (1.25, 2.55, 3.55), 'paint')                     # headboard
     v.box((-1.25, 2.55, 3.4), (1.25, 2.65, 3.6), 'chrome')
@@ -1150,6 +1177,11 @@ def transit_bus():
     v.group('door_rear', [((-w - 0.03, 0.0, 3.2), (-w - 0.01, 2.35, 4.3), 'glass'),
                           ((-w - 0.04, 0.0, 4.23), (-w - 0.03, 2.35, 4.3), 'black')])
     v.road_lights(front + 0.02, rear, 1.15, 0.45, 0.6)
+    # the saloon lights: a strip down each side of the ceiling, on while the engine runs
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.55, sx * 0.75))
+        v.lamp('Saloon', (xa, 2.685, -1.9), (xb, 2.7, 8.0), 'white', '#FFF4E0',
+               [vp.visible_on('engines_on')], None, faces=('d',))
     return v, g
 
 
@@ -1218,11 +1250,7 @@ def raked_cab(v, w, belt, top, rake, steps=6):
     v.box((-w + t, belt - 0.3, roof_front - 0.3), (w - t, belt - 0.02, c1 - t), 'black')
     dx, wz = 0.42, roof_front - 0.38
     wx0, wx1, wy0, wy1 = dx - 0.16, dx + 0.16, belt - 0.2, belt + 0.08
-    for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
-                   ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
-                   ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
-                   ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
-        v.box(lo, hi, 'black')
+    v.steering_wheel(wx0, wx1, wy0, wy1, wz)
     v.dome((-0.15, top - 0.065, PICKUP_B_PILLAR - 0.15), (0.15, top - 0.05, PICKUP_B_PILLAR + 0.15))
     return roof_front
 
@@ -1427,6 +1455,23 @@ def pickup_cap():
     half = (PICKUP_BED_FRONT - PICKUP_REAR) / 2
     r, f = -half, half - 0.02
     top = 0.72
+    # the doors: a compartment door down each side lifting on its top hinge, and the rear door
+    # lifting the same way; a dark recess behind each, added first so the doors leave it
+    d0, d1, dy0, dy1 = r + 0.1, f - 0.23, 0.12, top - 0.1
+    for side, sx in (('l', 1), ('r', -1)):
+        xa, xb = sorted((sx * (w + 0.001), sx * (w + 0.004)))
+        v.box((xa, dy0, d0), (xb, dy1, d1), 'black', faces=('e', 'w'))
+        ra, rb = sorted((sx * (w - EPS), sx * (w + 0.06)))
+        v.door('cap_' + side, [((ra, dy0, d0), (rb, dy1, d1), '')],
+               {'animationType': 'rotation', 'centerPoint': [sx * w, dy1, 0.0],
+                'axis': [0, 0, sx * 80]},
+               click_row(((sx * (w - 0.06), d0 + 0.1), (sx * (w - 0.06), d1 - 0.1)), 0.2, 0.5))
+    v.box((-0.9, 0.1, r - 0.006), (0.9, top - 0.06, r - 0.002), 'black', faces=('n',))
+    # IV takes the nearest click box, and the part's own box (generic width 2.0, so 1.0 behind
+    # its origin) stands 0.15 behind this door: the door's boxes reach past it, or it never
+    # gets a click
+    rear_hatch(v, 'cap_rear', 0.9 + EPS, 0.1, top - 0.06, r - 0.03, r, (top - 0.06, r),
+               80, split='', click_z=r - 0.1, click_y=(0.15, 0.5))
     v.box((-w, 0.02, r), (w, 0.05, f), 'black')                               # rail seal
     v.box((-w, 0.05, r), (w, top, f), 'paint')                                # shell
     # a tinted window in the front wall, behind the cab's rear window, as a work cap has
@@ -1539,11 +1584,7 @@ def car_cabin(v, c):
     v.box((-w + t, belt - 0.25, zfr - 0.02), (w - t, belt - 0.02, zc), 'black')
     dx, wz = 0.36, zfr - 0.1
     wx0, wx1, wy0, wy1 = dx - 0.15, dx + 0.15, belt - 0.22, belt + 0.05
-    for lo, hi in (((wx0, wy0, wz - 0.02), (wx1, wy0 + 0.035, wz + 0.02)),
-                   ((wx0, wy1 - 0.035, wz - 0.02), (wx1, wy1, wz + 0.02)),
-                   ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
-                   ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
-        v.box(lo, hi, 'black')
+    v.steering_wheel(wx0, wx1, wy0, wy1, wz)
 
 
 def car_doors(v, c, pillar, rear):
@@ -1715,7 +1756,10 @@ def pickup_cap_json(v):
             'materialLists': [['minecraft:iron_ingot:0:8', 'minecraft:quartz_block:0:2',
                                'minecraft:redstone:0:1']]},
         'generic': {'width': 2.0, 'height': 1.0},
-        'rendering': {'customVariables': ['BEACONS'], 'lightObjects': v.lights},
+        # the compartment and rear doors open on a click, as the vehicles' doors do
+        'collisionGroups': v.door_json()[1],
+        'rendering': {'customVariables': ['BEACONS'], 'lightObjects': v.lights,
+                      'animatedObjects': v.door_json()[0]},
     }
 
 
@@ -2538,9 +2582,10 @@ FLEET = {
         engine_pos=(0.0, 0.5, -2.8), boxes=[-2.2, 0.3, 2.8, 5.3, 7.8, 9.3], box_width=2.55,
         box_height=2.9, box_y=1.1, switches=['DOORS', 'TSP'], initially_on=['TSP'],
         animated=door_animations,
-        # either door, clicked from the curb, works both (as the driver's DOORS switch does)
-        clicks=[(pos, width, height, 'DOORS', 'toggle')
-                for z0, z1 in ((8.35, 9.4), (3.2, 4.3))
+        # either door, clicked from the curb, works both (as the driver's DOORS switch does);
+        # each door's boxes slide with it, so an open door leaves its doorway clear to board
+        clicks=[(pos, width, height, 'DOORS', 'toggle', leaf)
+                for leaf, z0, z1 in (('door_front', 8.35, 9.4), ('door_rear', 3.2, 4.3))
                 for pos, width, height in click_row(((-1.2, z0 + 0.15), (-1.2, z1 - 0.15)),
                                                     0.2, 2.0, 0.25)]),
     'csm_ambulance': dict(
@@ -2811,15 +2856,24 @@ def extra_sounds(spec):
 def click_groups(spec):
     """The clickable boxes on a vehicle: (centre, width, height, variable, action), where the
     action is 'toggle' or 'set<value>'. IV runs the action on a click, as on a door."""
-    clicks = []
-    for centre, width, height, variable, action in spec.get('clicks', []):
+    groups = {}   # applyAfter (None: the body) -> its boxes
+    for click in spec.get('clicks', []):
+        centre, width, height, variable, action = click[:5]
+        after = click[5] if len(click) > 5 else None
         if action == 'toggle':
             act = {'action': 'toggle', 'variable': variable, 'value': 1}
         else:
             act = {'action': 'set', 'variable': variable, 'value': int(action[3:])}
-        clicks.append({'pos': [round(c, 3) for c in centre], 'width': width, 'height': height,
-                       'action': act})
-    return [{'collisionTypes': ['click'], 'collisions': clicks}] if clicks else []
+        groups.setdefault(after, []).append(
+            {'pos': [round(c, 3) for c in centre], 'width': width, 'height': height,
+             'action': act})
+    out = []
+    for after, clicks in groups.items():
+        group = {'collisionTypes': ['click'], 'collisions': clicks}
+        if after:
+            group['applyAfter'] = after   # the boxes ride that object, out of the way when open
+        out.append(group)
+    return out
 
 
 def trailer_json(name, v):

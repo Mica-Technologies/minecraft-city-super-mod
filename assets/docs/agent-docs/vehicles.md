@@ -37,8 +37,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   `trailer_standard` hookups and a rear `trailer_standard` hitch on the work trucks. Working
   doors on every vehicle (`Vehicle.door`: a region declared before the boxes it takes, which are
   cut at its edges into the door's object; glass into `<door>_window`; click rows that ride the
-  door; side doors, hatches, trunk, tailgates, barn doors, roll-up compartments by SCALING), a
-  dome light per cab on the `door_*` variables, headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
+  door; side doors, hatches, trunk, tailgates, barn doors, roll-up compartments by SCALING,
+  hinged utility body and tool box doors, the utility cap's doors), a dome light per cab on the
+  `door_*` variables, steering wheels turning on `rudder`, the bus's saloon lights, headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
   `FOG_BEAM` on the lamps' blendable components), and the `csm_car` panel with HIGH BEAM and FOG
   buttons; `--check`
 - `build_vehicles_demo.py` -- builds the Vehicles demo world in a flat creative world loaded in

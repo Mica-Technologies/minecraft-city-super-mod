@@ -500,7 +500,15 @@
             "variable": "DOORS",
             "value": 1
           }
-        },
+        }
+      ],
+      "applyAfter": "door_front"
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "collisions": [
         {
           "pos": [
             -1.2,
@@ -557,7 +565,8 @@
             "value": 1
           }
         }
-      ]
+      ],
+      "applyAfter": "door_rear"
     }
   ],
   "rendering": {
@@ -934,6 +943,20 @@
             "flareWidth": 0.35
           }
         ]
+      },
+      {
+        "objectName": "&Saloon",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFF4E0",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "engines_on",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
       }
     ],
     "animatedObjects": [
@@ -968,6 +991,25 @@
             "duration": 20,
             "forwardsDelay": 0,
             "reverseDelay": 0
+          }
+        ]
+      },
+      {
+        "objectName": "steering_wheel",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "rudder",
+            "centerPoint": [
+              0.75,
+              0.84,
+              9.2
+            ],
+            "axis": [
+              0,
+              0,
+              6.0
+            ]
           }
         ]
       }
