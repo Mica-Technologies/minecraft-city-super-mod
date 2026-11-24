@@ -663,6 +663,13 @@ the animations after it do not run, so the arm rests) and a rotation on the flas
 arms on the slope, turning about the glass's own normal (`raked_wipers`), so they stay on it.
 The WIPERS button shows only on a vehicle with the constant `wipers_present`.
 
+**Cab fittings** (`interior`): every driver's cab has an instrument cluster on the dash face behind
+the steering wheel (the `gauges` cell: two dials; a lamp lit 0.6 on `running_light`, so it glows
+when the lights are on), a rear-view mirror on a stem from the roof (the `mirror` cell), a sun
+visor each side and, except in the bus (whose aisle runs there), a console with a shifter between
+the front seats, 0.1 either side of the middle because the cars' front seats stand from 0.11. The
+seat part has side bolsters and a headrest on two posts, still one object.
+
 **Hazards.** The panel's HAZARDS flashes all the turn lamps (`turn_signal`). A turn lamp's
 visibility is the flash cycle and its brightness the sum of two translations, its own turn
 signal and HAZARDS: visibilities AND and translations add, so either one lights it. Trailers
@@ -754,7 +761,9 @@ tool box and the utility cap's side and rear doors opened from clicks; the bus b
 its open door to the driver's seat; the bus's steering wheel turned with A held; the saloon lights
 lit with the engine running. Then WIPERS and HAZARDS from the police SUV's panel: its wipers swept
 the upright windshield and its turn lamps flashed together; an Impressa spawned with both on swept
-its raked windshield. Not heard: the door sounds (the test client is muted).
+its raked windshield. Then the cab fittings seen from the drivers' seats of the police SUV (its
+cluster lit with its lights on), the Impressa, the H-150 and the fire engine, and the SUV's seats
+and console from the back. Not heard: the door sounds (the test client is muted).
 
 ---
 

@@ -81,6 +81,8 @@ CELLS = {
     # the pickups' cells: bumpers and bars (chrome or black by livery), grille mesh, badge
     'trim': cell(5, 4), 'mesh': cell(6, 4), 'badge': cell(7, 4),
     'script': cell(0, 5, 4, 1), 'gate': cell(4, 5, 4, 1),
+    # the cabin's: the instrument cluster (two dials on a dark face) and the rear-view mirror
+    'gauges': cell(0, 6, 2, 1), 'mirror': cell(2, 6),
 }
 
 LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4FF',
@@ -536,6 +538,32 @@ class Vehicle:
                       faces=back)
 
 
+def interior(v, w, dash_face_z, dash_top, driver_x, win_top, glass_z, roof_y, console=None):
+    """A cab's fittings: the instrument cluster on the dash face behind the steering wheel (lit
+    softly with the running lights, so it glows at night), the rear-view mirror on a stem from
+    the roof at the top of the windshield, a sun visor each side, and `console` (z0, z1, floor)
+    between the front seats."""
+    x0, x1 = driver_x - 0.18, driver_x + 0.18
+    v.lamp('Dash', (x0, dash_top - 0.17, dash_face_z - 0.006), (x1, dash_top - 0.03, dash_face_z),
+           'gauges', '#BFE3FF', [{'animationType': 'translation', 'axis': [0, 0.6, 0],
+                                  'variable': 'running_light'}], None, faces=('n',))
+    v.box((-0.12, win_top - 0.09, glass_z - 0.07), (0.12, win_top - 0.02, glass_z - 0.04),
+          'black')                                                              # mirror
+    v.box((-0.11, win_top - 0.085, glass_z - 0.0705), (0.11, win_top - 0.025, glass_z - 0.07),
+          'mirror', faces=('n',))
+    v.box((-0.01, win_top - 0.02, glass_z - 0.06), (0.01, roof_y, glass_z - 0.05), 'black')
+    for sx in (1, -1):                                                          # sun visors
+        xa, xb = sorted((sx * 0.06, sx * (w - 0.12)))
+        v.box((xa, roof_y - 0.03, glass_z - 0.32), (xb, roof_y - 0.005, glass_z - 0.04),
+              'interior')
+    if console:
+        z0, z1, floor = console
+        # 0.1 either side: the cars' front seats stand from 0.11 out
+        v.box((-0.1, floor, z0), (0.1, floor + 0.3, z1), 'black')
+        v.box((-0.02, floor + 0.3, z0 + 0.15), (0.02, floor + 0.42, z0 + 0.19), 'chrome')
+        v.box((-0.035, floor + 0.42, z0 + 0.135), (0.035, floor + 0.47, z0 + 0.205), 'black')
+
+
 def _spans(z0, z1, cut):
     """[z0, z1] less the spans in `cut`, as a list of (a, b)."""
     out = [(z0, z1)]
@@ -561,7 +589,8 @@ WALL = 0.05
 
 
 def cabin(v, w, floor, belt, top, z0, z1, lower='paint', upper=None, windows=(), win_top=None,
-          front='windshield', front_belt=None, rear='wall', right_gaps=(), driver_x=None):
+          front='windshield', front_belt=None, rear='wall', right_gaps=(), driver_x=None,
+          console=True):
     """A cabin a rider sits in: floor, roof, walls up to the belt line, pillars between the
     windows, a header above them, the front and rear walls, a dash and a steering wheel.
 
@@ -611,6 +640,8 @@ def cabin(v, w, floor, belt, top, z0, z1, lower='paint', upper=None, windows=(),
         v.steering_wheel(wx0, wx1, wy0, wy1, wz)
         if front == 'windshield':
             v.wipers(w - t, (fb, z1), (1.0, 0.0), (0.0, 1.0), win_top - fb)
+            interior(v, w, z1 - 0.5, fb - 0.02, driver_x, win_top, z1 - t, top - 0.05,
+                     console=(z1 - 1.3, z1 - 0.5, floor) if console else None)
 
 
 def fire_engine():
@@ -1199,7 +1230,8 @@ def transit_bus():
     pillars = [-2.75 + k * 1.35 for k in range(9)]
     windows = [(p + 0.1, q) for p, q in zip(pillars, pillars[1:])] + [(pillars[-1] + 0.1, 9.6)]
     cabin(v, w, 0.6, 1.25, 2.75, -2.2, front, lower='paint2', windows=windows, win_top=2.4,
-          front_belt=0.9, right_gaps=[(3.2, 4.3), (8.35, 9.4)], driver_x=0.75)
+          front_belt=0.9, right_gaps=[(3.2, 4.3), (8.35, 9.4)], driver_x=0.75,
+          console=False)                                     # the aisle runs where it would be
     v.box((-w + 0.05, 2.75, rear + 0.1), (w - 0.05, 2.85, front - 0.1), 'paint')
     v.box((-0.8, 2.85, 0.5), (0.8, 3.15, 4.0), 'chrome')                       # air conditioner
     v.both((w, 0.62, rear), (w + 0.01, 0.82, front), 'stripe', faces=('e', 'w'))
@@ -1292,6 +1324,8 @@ def raked_cab(v, w, belt, top, rake, steps=6):
     wx0, wx1, wy0, wy1 = dx - 0.16, dx + 0.16, belt - 0.2, belt + 0.08
     v.steering_wheel(wx0, wx1, wy0, wy1, wz)
     raked_wipers(v, w - t, belt, c1, win_top, roof_front)
+    interior(v, w, roof_front - 0.3, belt - 0.02, dx, win_top, roof_front, top - 0.05,
+             console=(PICKUP_B_PILLAR + 0.05, roof_front - 0.3, 0.1))
     v.dome((-0.15, top - 0.065, PICKUP_B_PILLAR - 0.15), (0.15, top - 0.05, PICKUP_B_PILLAR + 0.15))
     return roof_front
 
@@ -1634,6 +1668,8 @@ def car_cabin(v, c):
     wx0, wx1, wy0, wy1 = dx - 0.15, dx + 0.15, belt - 0.22, belt + 0.05
     v.steering_wheel(wx0, wx1, wy0, wy1, wz)
     raked_wipers(v, w - t, belt, zc, win_top, zfr)
+    interior(v, w, zfr - 0.02, belt - 0.02, dx, win_top, zfr, top - 0.05,
+             console=(0.45, zfr - 0.02, floor))
 
 
 def car_doors(v, c, pillar, rear):
@@ -2021,6 +2057,15 @@ def vehicle_texture(livery, decal_on='paint', extras=False, pickup=None):
     fill('glass', (40, 54, 66))
     d.line((80, 2, 88, 10), fill=(70, 88, 104, 255))
     fill('interior', (52, 50, 48))
+    # the instrument cluster: a speedometer and a tachometer, white rims, orange needles
+    fill('gauges', (16, 16, 18))
+    gx, gy = CELLS['gauges'][:2]
+    for cx in (gx + 8, gx + 24):
+        d.ellipse((cx - 6, gy + 2, cx + 5, gy + 13), outline=(214, 218, 224, 255))
+        d.line((cx, gy + 8, cx - 3, gy + 5), fill=(255, 120, 40, 255))
+    fill('mirror', (150, 158, 168))
+    mx, my = CELLS['mirror'][:2]
+    d.line((mx + 2, my + 12, mx + 12, my + 2), fill=(206, 212, 220, 255))
     fill('door', p)
     for y in range(1, 16, 3):                      # roll-up door slats
         d.line((112, y, 127, y), fill=shade(p, 0.8) + (255,))
@@ -2287,9 +2332,18 @@ def seat_obj(base=0.15):
     """The seat: cushion and back above its point, and a pedestal `base` deep under it. The cars'
     seat (csm_vehicle_seat_low) has a short one, as their seats stand right on the floor."""
     o = vp.Obj(tex=32)
-    o.box('body', (-0.25, 0.0, -0.25), (0.25, 0.12, 0.25), (0, 0, 16, 16))
-    o.box('body', (-0.25, 0.12, -0.32), (0.25, 0.75, -0.2), (0, 0, 16, 16))
-    o.box('body', (-0.2, -base, -0.2), (0.2, 0.0, 0.2), (16, 0, 32, 16))
+    cloth, frame = (0, 0, 16, 16), (16, 0, 32, 16)
+    o.box('body', (-0.25, 0.0, -0.25), (0.25, 0.12, 0.25), cloth)               # cushion
+    for sx in (1, -1):                                                         # bolsters
+        xa, xb = sorted((sx * 0.25, sx * 0.19))
+        o.box('body', (xa, 0.12, -0.2), (xb, 0.17, 0.22), cloth)
+        o.box('body', (xa, 0.17, -0.3), (xb, 0.68, -0.17), cloth)
+    o.box('body', (-0.25, 0.12, -0.32), (0.25, 0.75, -0.2), cloth)             # back
+    for sx in (1, -1):                                                         # headrest posts
+        xa, xb = sorted((sx * 0.06, sx * 0.08))
+        o.box('body', (xa, 0.75, -0.27), (xb, 0.8, -0.25), frame)
+    o.box('body', (-0.14, 0.8, -0.31), (0.14, 0.97, -0.21), cloth)            # headrest
+    o.box('body', (-0.2, -base, -0.2), (0.2, 0.0, 0.2), frame)                 # pedestal
     return o.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py')
 
 
