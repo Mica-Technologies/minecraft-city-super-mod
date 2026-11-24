@@ -46,8 +46,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   (`interior`: a cluster lit on `running_light`, mirror, visors, console; the seat's headrest),
   knuckle booms on the bucket and signal trucks (`knuckle_boom`, LIFT/ELBOW/SWING) and a
   three-section telescopic boom on the boom truck (`csm_boom_truck`, LIFT/SWING/REACH), steered
-  by hand from the panel (`BOOM_MANUAL`, an INHIBITOR on BOOM between the preset and the manual
-  animations) with a seat riding each bucket (`KNUCKLE_SEAT`, `TELE_SEAT`), the signal
+  by held keys and a HUD (`BoomControls`), the panel's steps (`BOOM_MANUAL`) and B/BOOM, which
+  CSM's server turns into a drive of the same variables (`BoomAutoDriver`; poses in `boom_constants`) with a seat riding each bucket (`KNUCKLE_SEAT`, `TELE_SEAT`), the signal
   maintenance truck (`csm_signal_truck`, `arrow_board` on ARROWBOARD), the reversing alarm
   parts on the work trucks (`BACKUP_ALARMS`, a white noise alarm fitted, a beeper to swap in,
   sounding on `engine_reversed_1`), the plow's curved

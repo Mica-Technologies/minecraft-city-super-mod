@@ -55,5 +55,10 @@ public class CsmVehicles {
     logger.info("Pre-initializing " + MOD_NAME + " v" + Tags.VERSION);
     CsmPreemptSources.register(new IvPreemptSource());
     MinecraftForge.EVENT_BUS.register(new StumpGrinderMachines());
+    MinecraftForge.EVENT_BUS.register(new BoomAutoDriver());
+    // BoomControls is client-only (keys, HUD); a dedicated server never loads the class
+    if (event.getSide().isClient()) {
+      BoomControls.register();
+    }
   }
 }

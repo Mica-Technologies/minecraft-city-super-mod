@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A telescopic aerial boom truck, for the longest reach: a three-section boom that runs out 8 m. BOOM raises it, swings it to the left and runs it out; with BOOM off the panel's LIFT, SWING and REACH steer it, from the cab or from the bucket, which has a seat. BEACONS runs its amber lights.",
+    "description": "A telescopic aerial boom truck, for the longest reach: a three-section boom that runs out 8 m. Hold the arrow keys (lift and swing) and [ ] (the reach) to steer it from the cab or from the bucket, which has a seat; B, or the BOOM switch, drives it to its working pose or back to stowed. BEACONS runs its amber lights.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -1623,29 +1623,6 @@
         "animations": [
           {
             "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              0,
-              90,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 100,
-            "reverseDelay": 100,
-            "centerPoint": [
-              0.0,
-              2.65,
-              -1.6
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "rotation",
             "variable": "BOOM_SWING",
             "axis": [
               0,
@@ -1664,29 +1641,6 @@
         "objectName": "boom",
         "applyAfter": "boom_turret",
         "animations": [
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              -55,
-              0,
-              0
-            ],
-            "duration": 100,
-            "forwardsDelay": 0,
-            "reverseDelay": 180,
-            "centerPoint": [
-              0.0,
-              2.65,
-              -1.6
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "rotation",
             "variable": "BOOM_LIFT",
@@ -1709,24 +1663,6 @@
         "animations": [
           {
             "animationType": "translation",
-            "variable": "BOOM",
-            "axis": [
-              0,
-              0,
-              3.0
-            ],
-            "duration": 100,
-            "forwardsDelay": 180,
-            "reverseDelay": 0
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
             "variable": "BOOM_REACH",
             "axis": [
               0,
@@ -1742,24 +1678,6 @@
         "animations": [
           {
             "animationType": "translation",
-            "variable": "BOOM",
-            "axis": [
-              0,
-              0,
-              3.0
-            ],
-            "duration": 100,
-            "forwardsDelay": 180,
-            "reverseDelay": 0
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "translation",
             "variable": "BOOM_REACH",
             "axis": [
               0,
@@ -1773,29 +1691,6 @@
         "objectName": "bucket",
         "applyAfter": "boom_upper",
         "animations": [
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              55,
-              0,
-              0
-            ],
-            "duration": 100,
-            "forwardsDelay": 0,
-            "reverseDelay": 180,
-            "centerPoint": [
-              0.0,
-              2.8,
-              5.0
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "rotation",
             "variable": "BOOM_LIFT",
@@ -2156,6 +2051,11 @@
   "constantValues": {
     "boom_present": 1.0,
     "reach_present": 1.0,
+    "boom_lift_max": 80.0,
+    "boom_reach_max": 8.0,
+    "boom_deploy_lift": 55.0,
+    "boom_deploy_reach": 6.0,
+    "boom_deploy_swing": 90.0,
     "wipers_present": 1.0
   },
   "connectionGroups": [

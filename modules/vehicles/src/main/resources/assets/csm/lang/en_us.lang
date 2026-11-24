@@ -1,0 +1,17 @@
+key.categories.csm_vehicles=CSM: Vehicles
+key.csm_vehicles.boom_lift_up=Boom: lift up
+key.csm_vehicles.boom_lift_down=Boom: lift down
+key.csm_vehicles.boom_swing_left=Boom: swing left
+key.csm_vehicles.boom_swing_right=Boom: swing right
+key.csm_vehicles.boom_elbow_out=Boom: open elbow / extend reach
+key.csm_vehicles.boom_elbow_in=Boom: close elbow / retract reach
+key.csm_vehicles.boom_toggle=Boom: one-touch deploy / stow
+csm_vehicles.boom.hud.title=BOOM
+csm_vehicles.boom.hud.lift=LIFT
+csm_vehicles.boom.hud.elbow=ELBOW
+csm_vehicles.boom.hud.reach=REACH
+csm_vehicles.boom.hud.swing=SWING
+csm_vehicles.boom.hud.left=left
+csm_vehicles.boom.hud.right=right
+csm_vehicles.boom.hud.deploy=%s: deploy
+csm_vehicles.boom.hud.stow=%s: stow

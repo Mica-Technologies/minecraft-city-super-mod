@@ -1,0 +1,17 @@
+key.categories.csm_vehicles=CSM: Vehículos
+key.csm_vehicles.boom_lift_up=Pluma: subir
+key.csm_vehicles.boom_lift_down=Pluma: bajar
+key.csm_vehicles.boom_swing_left=Pluma: girar a la izquierda
+key.csm_vehicles.boom_swing_right=Pluma: girar a la derecha
+key.csm_vehicles.boom_elbow_out=Pluma: abrir codo / extender
+key.csm_vehicles.boom_elbow_in=Pluma: cerrar codo / retraer
+key.csm_vehicles.boom_toggle=Pluma: desplegar / recoger con una tecla
+csm_vehicles.boom.hud.title=PLUMA
+csm_vehicles.boom.hud.lift=ALTURA
+csm_vehicles.boom.hud.elbow=CODO
+csm_vehicles.boom.hud.reach=ALCANCE
+csm_vehicles.boom.hud.swing=GIRO
+csm_vehicles.boom.hud.left=izq.
+csm_vehicles.boom.hud.right=der.
+csm_vehicles.boom.hud.deploy=%s: desplegar
+csm_vehicles.boom.hud.stow=%s: recoger

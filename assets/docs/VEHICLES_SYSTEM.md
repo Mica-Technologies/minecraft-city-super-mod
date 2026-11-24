@@ -671,26 +671,66 @@ the body, a lower boom stowed lying forward along it, an elbow at its front end,
 boom folded back on top with the bucket hung at the rear. LIFT raises the lower boom about its
 pin (`KNUCKLE_PIVOT`); ELBOW opens the upper boom about the elbow (`KNUCKLE_ELBOW`), a positive
 turn about x lifting its tip as it points back; the bucket turns back by the lift less the
-elbow and stays level. The one-touch BOOM lifts 70 degrees, opens the elbow 140 and swings 90
-to the left (`KNUCKLE_POSE`, in that order, stowing in reverse). The **boom truck**
-(`csm_boom_truck`, `telescopic_boom`, `tele_animations`) carries the long telescopic boom: three
-sections, the mid and the fly each running out half the reach, 8 m in all.
+elbow and stays level. BOOM's working pose is 70 degrees up, the elbow open 140 and 90 to the
+left (`KNUCKLE_POSE`). The **boom truck** (`csm_boom_truck`, `telescopic_boom`,
+`tele_animations`) carries the long telescopic boom: three sections, the mid and the fly each
+running out half the reach, 8 m in all; its working pose is 55 up, 6 m out and 90 left
+(`TELE_POSE`).
 
-**The boom by hand** (`BOOM_MANUAL`): BOOM keeps the one-touch deploy, and with BOOM off the
-panel's LIFT and SWING (+ and -) and ELBOW (knuckle) or REACH (telescopic), which share a place
-on the panel, step `BOOM_LIFT` (0-80 degrees, 5 a click), `BOOM_SWING` (-180 to 180, 10, + to
-the truck's left), `BOOM_ELBOW` (0-170, 10) and `BOOM_REACH` (0-8 m, 0.5), IV clamping them (an
-INCREMENT click action's `clampMin`/`clampMax`). Which show is set by the constants
-`boom_present`, `elbow_present` and `reach_present`. Each boom object runs its BOOM animation,
-then an INHIBITOR on BOOM (clamp 1..1: while it is on, the animations after it do not run),
-then its manual one, so the two never add: verified with the boom left at 40 degrees, 60 and
-2 m by hand, BOOM on gave the preset alone. The steps are instant, as IV eases only 0-1
-switches.
+**One set of variables moves the boom.** Every boom object animates on its manual variable
+alone, read straight onto its axis:
+
+- `BOOM_LIFT`: 0-80 degrees.
+- `BOOM_SWING`: -180 to 180, + to the truck's left.
+- `BOOM_ELBOW`: 0-170, knuckle booms.
+- `BOOM_REACH`: 0-8 m, telescopic booms.
+
+There is no BOOM animation and no inhibitor. Three things move those variables, and since they
+all work on the same values there is never a jump between them:
+
+- **The held keys.** CSM: Vehicles' `BoomControls` is client-only. Hold Up/Down to lift,
+  Left/Right to swing, and `]`/`[` to open and close the elbow (or extend and retract the reach).
+  The keys are rebindable under CSM: Vehicles in Controls.
+  - **Rates per tick:** 1 degree up, 1.5 round, 1.5 at the elbow, 0.05 m out (`BoomAxes`).
+  - **Message:** each tick a key is down sends the panel's own message, a
+    `PacketEntityVariableIncrement` clamped to the range, to the server and nothing locally. IV's
+    panel does exactly that (`GUIPanel`), and the server passes it to every client.
+  - **When:** keys are read straight from LWJGL, as IV reads its own, only with no screen open
+    and only for a player in a controller seat (the cab's or the bucket's).
+- **The panel's buttons** step the same variables (`BOOM_MANUAL`: 5 degrees, 10, 10 and 0.5 m a
+  click). Which buttons show is set by the constants `boom_present`, `elbow_present` and
+  `reach_present`.
+- **B, or the panel's BOOM switch.** Either flips BOOM, and CSM's server (`BoomAutoDriver`) turns
+  the flip into a drive of the same variables at the same rates:
+  - from stowed, to the working pose: lift, then elbow or reach, then swing; BOOM is left on;
+  - from any other pose, back to stowed in the reverse order; BOOM is left off.
+  - **Takeover:** a key or button that moves an axis while it drives takes over. The drive stops
+    where the boom is, BOOM goes off, and steering carries on with no jump.
+  - **Loading:** a truck seen for the first time only has its BOOM recorded, so loading a world
+    never starts a drive.
+
+The poses and ranges are the truck's own constants (`boom_constants`: `boom_lift_max`,
+`boom_elbow_max` or `boom_reach_max`, `boom_deploy_*`), which is where the Java reads them.
+
+**The HUD.** A player in a boom truck's controller seat sees a readout above IV's dashboard:
+LIFT, ELBOW or REACH and SWING, each with its value and keys, and the B line ("B: deploy" when
+stowed, "B: stow" otherwise). Key names come from the bindings, so a rebind shows.
+
+Verified 2026-11-24:
+
+- held keys from the cab, on both kinds of boom;
+- B stowing from a hand pose, with an Up press partway through taking over at the pose it had
+  reached;
+- B stowing fully, then deploying to 70 / 140 / 90 left;
+- a save and reload keeping every truck's pose with no drive starting.
+
+A truck saved under the old animations with BOOM on loads stowed with its switch on, and one B
+deploys it.
 
 **The bucket seats** (`KNUCKLE_SEAT`, `TELE_SEAT`): a seat slot with `applyAfter: bucket`, so
 its rider goes up with the boom, and `dismountPos` on the ground beside the truck. It is a
 controller, because IV opens the panel only for a controller seat
-(`ControlSystem.controlGroundVehicle`) and the boom is worked from the panel; so a player in the
+(`ControlSystem.controlGroundVehicle`) and the boom keys work only from one; so a player in the
 bucket could also drive. Verified: on the telescopic boom, steered 40 degrees up, 60 round and
 2 m out from the bucket, riding up to 12 m; on the knuckle boom, entered from the ground at the
 rear (5.7 m), 30 up, 120 at the elbow and 60 round from the bucket, riding up to 12.1 m; got out

@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A traffic signal maintenance truck: a knuckle boom (BOOM deploys it; with BOOM off the panel's LIFT, ELBOW and SWING steer it), a seat in the bucket to work on a signal head from, and an arrow board on a frame behind the cab that the panel's ARROW buttons step through left, right and caution. BEACONS runs its amber lights, which do not preempt signals.",
+    "description": "A traffic signal maintenance truck: a knuckle boom (hold the arrow keys and [ ] to steer it; B or BOOM deploys or stows it), a seat in the bucket to work on a signal head from, and an arrow board on a frame behind the cab that the panel's ARROW buttons step through left, right and caution. BEACONS runs its amber lights, which do not preempt signals.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -2059,29 +2059,6 @@
         "animations": [
           {
             "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              0,
-              90,
-              0
-            ],
-            "duration": 60,
-            "forwardsDelay": 160,
-            "reverseDelay": 0,
-            "centerPoint": [
-              0.0,
-              2.325,
-              -1.6
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "rotation",
             "variable": "BOOM_SWING",
             "axis": [
               0,
@@ -2100,29 +2077,6 @@
         "objectName": "boom",
         "applyAfter": "boom_turret",
         "animations": [
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              -70,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 0,
-            "reverseDelay": 140,
-            "centerPoint": [
-              0.0,
-              2.325,
-              -1.6
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "rotation",
             "variable": "BOOM_LIFT",
@@ -2145,29 +2099,6 @@
         "animations": [
           {
             "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              140,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 80,
-            "reverseDelay": 60,
-            "centerPoint": [
-              0.0,
-              2.59,
-              2.45
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "rotation",
             "variable": "BOOM_ELBOW",
             "axis": [
               1,
@@ -2186,46 +2117,6 @@
         "objectName": "bucket",
         "applyAfter": "boom_upper",
         "animations": [
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              70,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 0,
-            "reverseDelay": 140,
-            "centerPoint": [
-              0.0,
-              2.59,
-              -1.95
-            ]
-          },
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              -140,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 80,
-            "reverseDelay": 60,
-            "centerPoint": [
-              0.0,
-              2.59,
-              -1.95
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "rotation",
             "variable": "BOOM_LIFT",
@@ -2600,6 +2491,11 @@
   "constantValues": {
     "boom_present": 1.0,
     "elbow_present": 1.0,
+    "boom_lift_max": 80.0,
+    "boom_elbow_max": 170.0,
+    "boom_deploy_lift": 70.0,
+    "boom_deploy_elbow": 140.0,
+    "boom_deploy_swing": 90.0,
     "arrow_present": 1.0,
     "wipers_present": 1.0
   },
