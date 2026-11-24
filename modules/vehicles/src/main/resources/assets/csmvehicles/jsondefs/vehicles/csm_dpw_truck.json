@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A public works dump truck with a plow. BEACONS runs its amber lights (they are not emergency lights, so it does not preempt signals); DUMP tips the body.",
+    "description": "A public works dump truck with a plow. BEACONS runs its amber lights (they are not emergency lights, so it does not preempt signals); DUMP tips the body; PLOW lets the plow down onto the road (it is carried raised).",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -399,7 +399,8 @@
     "modelType": "obj",
     "customVariables": [
       "BEACONS",
-      "DUMP"
+      "DUMP",
+      "PLOW"
     ],
     "sounds": [
       {
@@ -1130,6 +1131,23 @@
         ]
       },
       {
+        "objectName": "plow",
+        "animations": [
+          {
+            "animationType": "translation",
+            "variable": "PLOW",
+            "axis": [
+              0,
+              -0.3,
+              0
+            ],
+            "duration": 30,
+            "forwardsDelay": 0,
+            "reverseDelay": 0
+          }
+        ]
+      },
+      {
         "objectName": "door_l",
         "animations": [
           {
@@ -1323,7 +1341,7 @@
           "pos": [
             0,
             -0.05,
-            6.95
+            7.47
           ],
           "distance": 2
         },
@@ -1341,7 +1359,7 @@
           "pos": [
             0,
             -0.45,
-            6.95
+            7.47
           ],
           "distance": 2
         }
