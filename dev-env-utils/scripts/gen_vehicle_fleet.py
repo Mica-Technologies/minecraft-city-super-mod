@@ -1007,12 +1007,15 @@ def plow_boxes(z_front):
         for x in (0.45, 1.15):
             ra, rb = sorted((sx * (x - 0.03), sx * (x + 0.03)))
             boxes.append(((ra, yb + 0.05, back - 0.1), (rb, top - 0.05, back), 'black'))
-        fa, fb = sorted((sx * 0.26, sx * 0.4))                                    # A-frame
-        boxes.append(((fa, yb + 0.22, 6.75), (fb, yb + 0.34, back - 0.1), 'black'))
+        # the A-frame: an arm each side from the push plate (into its face, so they never part)
+        # to a cross member across the moldboard's back
+        fa, fb = sorted((sx * 0.24, sx * 0.42))
+        boxes.append(((fa, yb + 0.12, 6.7), (fb, yb + 0.36, back - 0.1), 'black'))
         ma, mb = sorted((sx * (w - 0.06), sx * (w - 0.03)))                       # markers
         boxes.append(((ma, top, back - 0.05), (mb, top + 0.6, back - 0.02), 'chrome'))
         ta, tb = sorted((sx * (w - 0.075), sx * (w - 0.015)))
         boxes.append(((ta, top + 0.6, back - 0.065), (tb, top + 0.66, back - 0.005), 'blade'))
+    boxes.append(((-0.75, yb + 0.1, back - 0.2), (0.75, yb + 0.38, back - 0.04), 'black'))
     return boxes
 
 
@@ -1038,8 +1041,13 @@ def dpw_truck():
     v.box((-0.5, -0.15, -2.7), (0.5, 0.25, 6.5), 'black')
     back = conventional_cab(v, w, 6.3)
     v.box((-0.5, 0.25, back - 0.6), (0.5, 0.95, back), 'black')               # cab-to-body gap
-    # the plow's mount on the frame, and the lift tower its cylinder works from
-    v.box((-0.3, 0.0, 6.55), (0.3, 0.4, 6.75), 'black')
+    # the plow's push plate on the bumper, tall enough that the A-frame bears on it raised or
+    # lowered (the plow moves as one group, so a short mount left it hanging in the air), and
+    # the lift tower its cylinder works from
+    v.box((-0.46, PLOW_RAISED - PLOW_DROP - 0.12, 6.55), (0.46, 0.42, 6.75), 'black')
+    for sx in (1, -1):                                                         # hitch pins
+        xa, xb = sorted((sx * 0.43, sx * 0.47))
+        v.box((xa, PLOW_RAISED - PLOW_DROP, 6.6), (xb, 0.3, 6.7), 'chrome')
     v.box((-0.08, 0.4, 6.6), (0.08, 0.95, 6.72), 'black')
     v.box((-0.035, 0.45, 6.72), (0.035, 0.92, 6.79), 'chrome')                # lift cylinder
     v.group('plow', plow_boxes(7.35))   # out ahead of the mount, on its A-frame
@@ -1080,15 +1088,17 @@ BOOM_TURN = (100, 80, 100)
 BOOM_EXTEND = (180, 100, 0)
 
 
-def arrow_board(v, rear_z, y0):
-    """A lit arrow board on posts at the back of a body whose top is y0, facing the traffic
-    behind. ARROWBOARD picks its pattern (the panel's ARROW buttons step it): 1 an arrow to the
-    vehicle's left, 2 to its right, 3 caution (the corners flashing in pairs), 0 dark."""
+def arrow_board(v, rear_z, y0, post_from=None):
+    """A lit arrow board facing the traffic behind, its foot at y0 and its posts down to
+    `post_from` (y0 when None). ARROWBOARD picks its pattern (the panel's ARROW buttons step
+    it): 1 an arrow to the vehicle's left, 2 to its right, 3 caution (the corners flashing in
+    pairs), 0 dark."""
     z = rear_z + 0.04
     v.box((-0.82, y0 + 0.05, z), (0.82, y0 + 0.77, z + 0.06), 'black')        # the board
+    foot = y0 if post_from is None else post_from
     for sx in (1, -1):
         xa, xb = sorted((sx * 0.5, sx * 0.56))
-        v.box((xa, y0, z + 0.06), (xb, y0 + 0.05, z + 0.1), 'chrome')          # posts
+        v.box((xa, foot, z + 0.06), (xb, y0 + 0.05, z + 0.1), 'chrome')        # posts
     mid = y0 + 0.41
     shaft = [-0.55, -0.37, -0.19, -0.01, 0.17]
     head = [(0.33, 0.2), (0.45, 0.1), (0.57, 0.0), (0.45, -0.1), (0.33, -0.2)]
@@ -1114,12 +1124,14 @@ def arrow_board(v, rear_z, y0):
              [pattern(3), vp.lit_by('0_10_10_cycle' if k < 2 else '10_10_0_cycle')])
 
 
-def bucket_truck(arrow=False):
+def bucket_truck(arrow=False, boom='knuckle'):
     """A power company bucket truck: a conventional cab, a service body with compartments, and a
-    boom with an insulated bucket a lineman rides in. The BOOM switch raises it, swings it to the
-    left and runs the upper boom out, the bucket staying level all the way; with BOOM off, the
-    panel's LIFT, SWING and REACH steer it. With `arrow`, the signal maintenance truck: the same
-    with an arrow board at the back."""
+    boom with an insulated bucket a lineman rides in, the bucket staying level all the way.
+    `boom` is 'knuckle' (a lower boom and an upper boom hinged at an elbow, folded flat along
+    the body: the power company's and the signal shop's) or 'tele' (a three-section telescopic
+    boom: the boom truck, for the longest reach). BOOM deploys it in one go; with BOOM off, the
+    panel's LIFT, SWING and ELBOW or REACH steer it. With `arrow`, the signal maintenance truck:
+    an arrow board on a frame behind the cab, above the stowed booms."""
     v = Vehicle()
     g = -0.55
     w = 1.15
@@ -1133,15 +1145,10 @@ def bucket_truck(arrow=False):
     v.both((1.23, 1.15, -2.5), (1.24, 1.3, back - 0.1), 'stripe', faces=('e', 'w'))
     v.box((-1.22, 1.5, -2.5), (1.22, 1.55, back - 0.1), 'black', faces=('u',))
     v.both((1.22, 0.0, -2.4), (1.75, 0.15, -2.0), 'chrome')                    # outriggers
-    v.box((-0.2, 2.5, 3.2), (0.2, 2.65, 3.4), 'chrome')                        # boom rest
-    px, py, pz = BOOM_PIVOT
-    v.group('boom_turret', [((-0.5, 1.55, pz - 0.5), (0.5, 1.8, pz + 0.5), 'chrome'),
-                            ((-0.25, 1.8, pz - 0.25), (0.25, py, pz + 0.25), 'paint2')])
-    v.group('boom', [((-0.18, py, pz - 0.2), (0.18, py + 0.32, 4.6), 'paint2')])
-    v.group('boom_upper', [((-0.13, py + 0.04, pz + 0.3), (0.13, py + 0.28, 4.95), 'bucket')])
-    tx, ty, tz = BOOM_TIP
-    v.group('bucket', [((-0.4, ty - 0.25, tz), (0.4, ty + 0.75, tz + 0.75), 'bucket'),
-                       ((-0.42, ty + 0.7, tz - 0.02), (0.42, ty + 0.78, tz + 0.77), 'black')])
+    if boom == 'tele':
+        telescopic_boom(v)
+    else:
+        knuckle_boom(v)
     v.lightbar(0.85, 2.5, back + 0.6, ['lamp_amber'] * 8, variable='BEACONS', emitter=False)
     for side, sx in (('L', 1), ('R', -1)):
         xs = sorted((sx * 1.0, sx * 1.2))
@@ -1149,59 +1156,148 @@ def bucket_truck(arrow=False):
                   0 if sx > 0 else 1, [0, 0, -1], variable='BEACONS')
     v.road_lights(6.13, -2.5, 1.1, 0.75, 0.45)
     if arrow:
-        arrow_board(v, -2.5, 1.55)
+        # on a frame behind the cab, high enough to be seen over the stowed booms and bucket
+        arrow_board(v, back - 0.2, 2.8, post_from=1.55)
     return v, g
+
+
+def telescopic_boom(v):
+    """A three-section telescopic boom stowed forward over the cab: the base, a mid section
+    and the fly, each running out half the reach, the bucket on the fly's end."""
+    v.box((-0.2, 2.5, 3.2), (0.2, 2.65, 3.4), 'chrome')                        # boom rest
+    px, py, pz = BOOM_PIVOT
+    v.group('boom_turret', [((-0.5, 1.55, pz - 0.5), (0.5, 1.8, pz + 0.5), 'chrome'),
+                            ((-0.25, 1.8, pz - 0.25), (0.25, py, pz + 0.25), 'paint2')])
+    v.group('boom', [((-0.18, py, pz - 0.2), (0.18, py + 0.32, 4.6), 'paint2')])
+    v.group('boom_mid', [((-0.15, py + 0.025, pz + 0.2), (0.15, py + 0.295, 4.8), 'white')])
+    v.group('boom_upper', [((-0.12, py + 0.05, pz + 0.4), (0.12, py + 0.27, 4.95), 'bucket')])
+    tx, ty, tz = BOOM_TIP
+    v.group('bucket', [((-0.4, ty - 0.25, tz), (0.4, ty + 0.75, tz + 0.75), 'bucket'),
+                       ((-0.42, ty + 0.7, tz - 0.02), (0.42, ty + 0.78, tz + 0.77), 'black')])
+
+
+def knuckle_boom(v):
+    """An articulating (knuckle) boom, as the power company's and signal shop's trucks carry:
+    the turret at the back of the body, the lower boom lying forward along the body to the
+    elbow, the upper boom folded back on top of it, and the bucket hung from its end at the
+    rear, clear of the turret. A rest on the body holds the elbow end."""
+    px, py, pz = KNUCKLE_PIVOT
+    ex, ey, ez = KNUCKLE_ELBOW
+    tx, ty, tz = KNUCKLE_TIP
+    v.box((-0.18, 1.55, ez - 0.35), (0.18, 2.2, ez - 0.2), 'chrome')           # boom rest
+    v.group('boom_turret', [((-0.5, 1.55, pz - 0.5), (0.5, 1.8, pz + 0.5), 'chrome'),
+                            ((-0.22, 1.8, pz - 0.22), (0.22, py - 0.1, pz + 0.22), 'paint2'),
+                            ((-0.24, py - 0.15, pz - 0.15), (0.24, py + 0.12, pz + 0.15),
+                             'black')])                                       # the pin's yoke
+    v.group('boom', [((-0.15, py - 0.125, pz - 0.25), (0.15, py + 0.125, ez), 'paint2'),
+                     ((-0.2, ey - 0.45, ez - 0.15), (0.2, ey + 0.12, ez + 0.17), 'black')])
+    v.group('boom_upper', [((-0.12, ey - 0.11, tz - 0.02), (0.12, ey + 0.11, ez + 0.05),
+                            'bucket')])
+    v.group('bucket', [((-0.08, ty - 0.25, tz - 0.07), (0.08, ty + 0.03, tz + 0.03), 'black'),
+                       ((-0.4, ty - 0.87, tz - 0.8), (0.4, ty + 0.03, tz - 0.03), 'bucket'),
+                       ((-0.42, ty - 0.01, tz - 0.82), (0.42, ty + 0.07, tz - 0.01), 'black')])
 
 
 def signal_truck():
     return bucket_truck(arrow=True)
 
 
+def boom_truck():
+    return bucket_truck(boom='tele')
+
+
 # The boom by hand, from the panel (and from the bucket, whose seat is a controller): each
-# button steps its variable, IV clamping it to the range.
+# button steps its variable, IV clamping it to the range. LIFT and SWING are every aerial's;
+# REACH the telescopic boom's, ELBOW the knuckle boom's, sharing a place on the panel.
 BOOM_MANUAL = {
-    # variable: (step a click, minimum, maximum, the panel label)
-    'BOOM_LIFT': (5.0, 0.0, 75.0, 'LIFT'),         # degrees up from the rest
-    'BOOM_SWING': (10.0, -180.0, 180.0, 'SWING'),  # degrees, + to the truck's left
-    'BOOM_REACH': (0.25, 0.0, 4.0, 'REACH'),       # metres the upper boom runs out
+    # variable: (step a click, minimum, maximum, the panel label, panel column and row, the
+    #            constant that shows it)
+    'BOOM_LIFT': (5.0, 0.0, 80.0, 'LIFT', (220, 12), 'boom_present'),      # degrees up
+    'BOOM_SWING': (10.0, -180.0, 180.0, 'SWING', (220, 76), 'boom_present'),  # + to the left
+    'BOOM_REACH': (0.5, 0.0, 8.0, 'REACH', (265, 12), 'reach_present'),    # metres out
+    'BOOM_ELBOW': (10.0, 0.0, 170.0, 'ELBOW', (265, 12), 'elbow_present'),  # degrees open
 }
 
+HOLD = {'animationType': 'inhibitor', 'variable': 'BOOM', 'clampMin': 1, 'clampMax': 1}
 
-def boom_animations():
-    """The boom's animated objects. Each runs the one-touch BOOM sequence, then an INHIBITOR on
-    BOOM (while it is on, the animations after it do not run), then its manual step: so BOOM
-    deploys and stows the boom, and with BOOM off the panel's LIFT, SWING and REACH steer it.
-    The bucket turns back by both raises, so it stays level either way."""
+
+def by_hand(kind, axis, variable, centre=None):
+    """A boom's manual animation: the variable's value straight onto the axis."""
+    anim = {'animationType': kind, 'variable': variable, 'axis': axis}
+    if centre is not None:
+        anim['centerPoint'] = list(centre)
+    return anim
+
+
+def tele_animations():
+    """The telescopic boom truck's animated objects. Each runs the one-touch BOOM sequence,
+    then an INHIBITOR on BOOM (while it is on, the animations after it do not run), then its
+    manual step: so BOOM deploys and stows the boom, and with BOOM off the panel's LIFT, SWING
+    and REACH steer it. The boom has three sections, the mid and the fly each running out half
+    the reach. The bucket turns back by both raises, so it stays level either way."""
     pivot, tip = BOOM_PIVOT, BOOM_TIP
-    hold = {'animationType': 'inhibitor', 'variable': 'BOOM', 'clampMin': 1, 'clampMax': 1}
-
-    def by_hand(kind, axis, variable, centre=None):
-        anim = {'animationType': kind, 'variable': variable, 'axis': axis}
-        if centre is not None:
-            anim['centerPoint'] = list(centre)
-        return anim
-
     return [
         {'objectName': 'boom_turret', 'animations': [
-            aerial_animation('rotation', [0, 90, 0], BOOM_TURN, pivot, 'BOOM'), hold,
+            aerial_animation('rotation', [0, 90, 0], BOOM_TURN, pivot, 'BOOM'), HOLD,
             by_hand('rotation', [0, 1, 0], 'BOOM_SWING', pivot)]},
         {'objectName': 'boom', 'applyAfter': 'boom_turret', 'animations': [
-            aerial_animation('rotation', [-55, 0, 0], BOOM_RAISE, pivot, 'BOOM'), hold,
+            aerial_animation('rotation', [-55, 0, 0], BOOM_RAISE, pivot, 'BOOM'), HOLD,
             by_hand('rotation', [-1, 0, 0], 'BOOM_LIFT', pivot)]},
-        {'objectName': 'boom_upper', 'applyAfter': 'boom', 'animations': [
-            aerial_animation('translation', [0, 0, 4.0], BOOM_EXTEND, None, 'BOOM'), hold,
-            by_hand('translation', [0, 0, 1], 'BOOM_REACH')]},
+        {'objectName': 'boom_mid', 'applyAfter': 'boom', 'animations': [
+            aerial_animation('translation', [0, 0, 3.0], BOOM_EXTEND, None, 'BOOM'), HOLD,
+            by_hand('translation', [0, 0, 0.5], 'BOOM_REACH')]},
+        {'objectName': 'boom_upper', 'applyAfter': 'boom_mid', 'animations': [
+            aerial_animation('translation', [0, 0, 3.0], BOOM_EXTEND, None, 'BOOM'), HOLD,
+            by_hand('translation', [0, 0, 0.5], 'BOOM_REACH')]},
         {'objectName': 'bucket', 'applyAfter': 'boom_upper', 'animations': [
-            aerial_animation('rotation', [55, 0, 0], BOOM_RAISE, tip, 'BOOM'), hold,
+            aerial_animation('rotation', [55, 0, 0], BOOM_RAISE, tip, 'BOOM'), HOLD,
             by_hand('rotation', [1, 0, 0], 'BOOM_LIFT', tip)]},
     ]
 
 
-# The bucket's seat: it rides the bucket (applyAfter), and is a controller, since IV opens the
-# panel only for a controller seat and the boom is worked from the panel. Getting out puts the
-# rider on the ground beside the truck, not over the side of a raised bucket.
-BUCKET_SEAT = (0.0, BOOM_TIP[1] - 0.08, BOOM_TIP[2] + 0.35, True,
-               {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, BOOM_TIP[2]]})
+# The knuckle boom (the power company's and the signal shop's trucks): a turret at the back of
+# the body, a lower boom stowed lying forward along it, an elbow at its front end, and an
+# upper boom folded back on top with the bucket hung at the rear. LIFT raises the lower boom
+# about its pin, ELBOW opens the upper boom about the elbow; the bucket turns back by the lift
+# less the elbow, so it stays level in every pose.
+KNUCKLE_PIVOT = (0.0, 2.325, -1.6)       # the lower boom's pin on the turret
+KNUCKLE_ELBOW = (0.0, 2.59, 2.45)        # the elbow's pin
+KNUCKLE_TIP = (0.0, 2.59, -1.95)         # where the bucket hangs from the upper boom
+KNUCKLE_LIFT = (0, 80, 140)              # the one-touch sequence: forwards delay, duration,
+KNUCKLE_UNFOLD = (80, 80, 60)            # reverse delay (ticks): lift, then unfold, then
+KNUCKLE_TURN = (160, 60, 0)              # swing; stowing runs it backwards
+KNUCKLE_POSE = (70, 140, 90)             # degrees: lift, elbow, swing
+
+
+def knuckle_animations():
+    pivot, elbow, tip = KNUCKLE_PIVOT, KNUCKLE_ELBOW, KNUCKLE_TIP
+    lift, unfold, swing = KNUCKLE_POSE
+    return [
+        {'objectName': 'boom_turret', 'animations': [
+            aerial_animation('rotation', [0, swing, 0], KNUCKLE_TURN, pivot, 'BOOM'), HOLD,
+            by_hand('rotation', [0, 1, 0], 'BOOM_SWING', pivot)]},
+        {'objectName': 'boom', 'applyAfter': 'boom_turret', 'animations': [
+            aerial_animation('rotation', [-lift, 0, 0], KNUCKLE_LIFT, pivot, 'BOOM'), HOLD,
+            by_hand('rotation', [-1, 0, 0], 'BOOM_LIFT', pivot)]},
+        # the upper boom points back from the elbow: a positive turn about x lifts its tip
+        {'objectName': 'boom_upper', 'applyAfter': 'boom', 'animations': [
+            aerial_animation('rotation', [unfold, 0, 0], KNUCKLE_UNFOLD, elbow, 'BOOM'), HOLD,
+            by_hand('rotation', [1, 0, 0], 'BOOM_ELBOW', elbow)]},
+        {'objectName': 'bucket', 'applyAfter': 'boom_upper', 'animations': [
+            aerial_animation('rotation', [lift, 0, 0], KNUCKLE_LIFT, tip, 'BOOM'),
+            aerial_animation('rotation', [-unfold, 0, 0], KNUCKLE_UNFOLD, tip, 'BOOM'), HOLD,
+            by_hand('rotation', [1, 0, 0], 'BOOM_LIFT', tip),
+            by_hand('rotation', [-1, 0, 0], 'BOOM_ELBOW', tip)]},
+    ]
+
+
+# The buckets' seats: each rides its bucket (applyAfter), and is a controller, since IV opens
+# the panel only for a controller seat and the boom is worked from the panel. Getting out puts
+# the rider on the ground beside the truck, not over the side of a raised bucket.
+TELE_SEAT = (0.0, BOOM_TIP[1] - 0.08, BOOM_TIP[2] + 0.35, True,
+             {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, BOOM_TIP[2]]})
+KNUCKLE_SEAT = (0.0, KNUCKLE_TIP[1] - 0.72, KNUCKLE_TIP[2] - 0.42, True,
+                {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, KNUCKLE_TIP[2]]})
 
 
 # The tow truck's bed: it slides back, then tilts its back end down onto the road.
@@ -2140,6 +2236,14 @@ LIVERIES = {
         ('_yellow', 'Traffic Signal Truck (Yellow)', '#E8C21A', '#E8C21A', '#1C1C1C',
          'TRAFFIC SIGNALS', '#1C1C1C'),
     ],
+    'csm_boom_truck': [
+        ('_white', 'Telescopic Boom Truck', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'CITY POWER',
+         '#1E4AA0'),
+        ('_yellow', 'Telescopic Boom Truck (Yellow)', '#E8C21A', '#E8C21A', '#1C1C1C',
+         'CITY POWER', '#1C1C1C'),
+        ('_publicworks', 'Telescopic Boom Truck (Public Works)', '#E8761C', '#F2F2EE', '#1C1C1C',
+         'PUBLIC WORKS', '#1C1C1C'),
+    ],
     'csm_bucket_truck': [
         ('_white', 'Power Company Bucket Truck', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'CITY POWER',
          '#1E4AA0'),
@@ -2242,7 +2346,7 @@ DECAL_ON = {'csm_chipper_trailer': 'paint', 'csm_equipment_trailer': 'paint',
             'csm_stump_grinder': 'paint',
             'csm_fire_engine': 'paint', 'csm_ladder_truck': 'paint', 'csm_ambulance': 'paint2',
             'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint',
-            'csm_signal_truck': 'paint',
+            'csm_signal_truck': 'paint', 'csm_boom_truck': 'paint',
             'csm_tow_truck': 'paint', 'csm_transit_bus': 'paint2',
             'csm_pickup_h150_xl': 'paint', 'csm_pickup_h150_xlt': 'paint',
             'csm_pickup_silverline': 'paint', 'csm_pickup_h150_service': 'paint',
@@ -2962,32 +3066,46 @@ FLEET = {
         animated=dump_animations, trailer_hitch=True),
     'csm_bucket_truck': dict(
         build=bucket_truck,
-        description='A power company bucket truck. BEACONS runs its amber lights (not emergency '
-                    'lights, so it does not preempt signals); BOOM raises the boom, swings it to '
-                    'the left and runs it out, the bucket staying level. With BOOM off, the '
-                    'panel\'s LIFT, SWING and REACH steer the boom, from the cab or from the '
-                    'bucket, which has a seat of its own.',
+        description='A power company bucket truck with a knuckle boom. BEACONS runs its amber '
+                    'lights (not emergency lights, so it does not preempt signals); BOOM lifts '
+                    'the lower boom, opens the upper boom at its elbow and swings it to the '
+                    'left, the bucket staying level. With BOOM off, the panel\'s LIFT, ELBOW and '
+                    'SWING steer the boom, from the cab or from the bucket, which has a seat.',
         mass=7000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         ceiling_mph=82, drag=(0.5, 2.0),
         wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
-        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), BUCKET_SEAT],
+        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), KNUCKLE_SEAT],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
-        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations,
-        trailer_hitch=True, constants={'boom_present': 1.0}),
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=knuckle_animations,
+        trailer_hitch=True, constants={'boom_present': 1.0, 'elbow_present': 1.0}),
     'csm_signal_truck': dict(
         build=signal_truck,
-        description='A traffic signal maintenance truck: the bucket truck\'s boom, which the '
-                    'panel\'s LIFT, SWING and REACH steer (BOOM deploys it in one go), a seat in '
-                    'the bucket to work on a signal head from, and an arrow board on the back '
+        description='A traffic signal maintenance truck: a knuckle boom (BOOM deploys it; with '
+                    'BOOM off the panel\'s LIFT, ELBOW and SWING steer it), a seat in the bucket '
+                    'to work on a signal head from, and an arrow board on a frame behind the cab '
                     'that the panel\'s ARROW buttons step through left, right and caution. '
                     'BEACONS runs its amber lights, which do not preempt signals.',
         mass=7200, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         ceiling_mph=82, drag=(0.5, 2.1),
         wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
-        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), BUCKET_SEAT],
+        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), KNUCKLE_SEAT],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
-        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations,
-        trailer_hitch=True, constants={'boom_present': 1.0, 'arrow_present': 1.0}),
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=knuckle_animations,
+        trailer_hitch=True,
+        constants={'boom_present': 1.0, 'elbow_present': 1.0, 'arrow_present': 1.0}),
+    'csm_boom_truck': dict(
+        build=boom_truck,
+        description='A telescopic aerial boom truck, for the longest reach: a three-section boom '
+                    'that runs out 8 m. BOOM raises it, swings it to the left and runs it out; '
+                    'with BOOM off the panel\'s LIFT, SWING and REACH steer it, from the cab or '
+                    'from the bucket, which has a seat. BEACONS runs its amber lights.',
+        mass=8200, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=80, drag=(0.5, 2.1),
+        wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), TELE_SEAT],
+        engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=tele_animations,
+        trailer_hitch=True, constants={'boom_present': 1.0, 'reach_present': 1.0}),
     'csm_tow_truck': dict(
         build=tow_truck,
         description='A rollback tow truck. BED slides the flatbed back and tilts it; the panel '
@@ -3482,10 +3600,9 @@ def panel_json():
                                 'clampMin': lo, 'clampMax': hi}}
 
     # the boom by hand (with BOOM off), two columns of + and -; the arrow board's pattern
-    for k, (variable, (by, lo, hi, label)) in enumerate(BOOM_MANUAL.items()):
-        x, y = (220, 12 + 64 * k) if k < 2 else (265, 12)
-        components += [step((x, y), label + ' +', variable, by, lo, hi, 'boom_present'),
-                       step((x, y + 32), label + ' -', variable, -by, lo, hi, 'boom_present')]
+    for variable, (by, lo, hi, label, (x, y), show) in BOOM_MANUAL.items():
+        components += [step((x, y), label + ' +', variable, by, lo, hi, show),
+                       step((x, y + 32), label + ' -', variable, -by, lo, hi, show)]
     components += [step((265, 76), 'ARROW +', 'ARROWBOARD', 1, 0, 3, 'arrow_present'),
                    step((265, 108), 'ARROW -', 'ARROWBOARD', -1, 0, 3, 'arrow_present')]
     return {'panel': {'texture': 'mts:textures/guis/panel.png', 'textureWidth': 512,

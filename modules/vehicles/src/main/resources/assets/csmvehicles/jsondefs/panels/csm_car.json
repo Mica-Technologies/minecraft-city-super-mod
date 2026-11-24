@@ -366,7 +366,7 @@
           "action": "increment",
           "value": 5.0,
           "clampMin": 0.0,
-          "clampMax": 75.0
+          "clampMax": 80.0
         }
       },
       {
@@ -393,7 +393,7 @@
           "action": "increment",
           "value": -5.0,
           "clampMin": 0.0,
-          "clampMax": 75.0
+          "clampMax": 80.0
         }
       },
       {
@@ -466,15 +466,15 @@
         "text": "REACH +",
         "visibilityVariables": [
           [
-            "boom_present"
+            "reach_present"
           ]
         ],
         "clickAction": {
           "variable": "BOOM_REACH",
           "action": "increment",
-          "value": 0.25,
+          "value": 0.5,
           "clampMin": 0.0,
-          "clampMax": 4.0
+          "clampMax": 8.0
         }
       },
       {
@@ -493,15 +493,69 @@
         "text": "REACH -",
         "visibilityVariables": [
           [
-            "boom_present"
+            "reach_present"
           ]
         ],
         "clickAction": {
           "variable": "BOOM_REACH",
           "action": "increment",
-          "value": -0.25,
+          "value": -0.5,
           "clampMin": 0.0,
-          "clampMax": 4.0
+          "clampMax": 8.0
+        }
+      },
+      {
+        "pos": [
+          265,
+          12,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "text": "ELBOW +",
+        "visibilityVariables": [
+          [
+            "elbow_present"
+          ]
+        ],
+        "clickAction": {
+          "variable": "BOOM_ELBOW",
+          "action": "increment",
+          "value": 10.0,
+          "clampMin": 0.0,
+          "clampMax": 170.0
+        }
+      },
+      {
+        "pos": [
+          265,
+          44,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "text": "ELBOW -",
+        "visibilityVariables": [
+          [
+            "elbow_present"
+          ]
+        ],
+        "clickAction": {
+          "variable": "BOOM_ELBOW",
+          "action": "increment",
+          "value": -10.0,
+          "clampMin": 0.0,
+          "clampMax": 170.0
         }
       },
       {

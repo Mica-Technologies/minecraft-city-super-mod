@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A traffic signal maintenance truck: the bucket truck's boom, which the panel's LIFT, SWING and REACH steer (BOOM deploys it in one go), a seat in the bucket to work on a signal head from, and an arrow board on the back that the panel's ARROW buttons step through left, right and caution. BEACONS runs its amber lights, which do not preempt signals.",
+    "description": "A traffic signal maintenance truck: a knuckle boom (BOOM deploys it; with BOOM off the panel's LIFT, ELBOW and SWING steer it), a seat in the bucket to work on a signal head from, and an arrow board on a frame behind the cab that the panel's ARROW buttons step through left, right and caution. BEACONS runs its amber lights, which do not preempt signals.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -183,8 +183,8 @@
     {
       "pos": [
         0.0,
-        2.7199999999999998,
-        5.35
+        1.8699999999999999,
+        -2.37
       ],
       "types": [
         "seat"
@@ -193,7 +193,7 @@
       "dismountPos": [
         1.8,
         0.0,
-        5.0
+        -1.95
       ],
       "isController": true,
       "applyAfter": "bucket"
@@ -1631,8 +1631,8 @@
           {
             "pos": [
               -0.55,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1645,8 +1645,8 @@
           {
             "pos": [
               -0.37,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1659,8 +1659,8 @@
           {
             "pos": [
               -0.19,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1673,8 +1673,8 @@
           {
             "pos": [
               -0.01,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1687,8 +1687,8 @@
           {
             "pos": [
               0.17,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1701,8 +1701,8 @@
           {
             "pos": [
               0.33,
-              2.16,
-              -2.466
+              3.41,
+              2.634
             ],
             "axis": [
               0,
@@ -1715,8 +1715,8 @@
           {
             "pos": [
               0.45,
-              2.06,
-              -2.466
+              3.31,
+              2.634
             ],
             "axis": [
               0,
@@ -1729,8 +1729,8 @@
           {
             "pos": [
               0.57,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1743,8 +1743,8 @@
           {
             "pos": [
               0.45,
-              1.86,
-              -2.466
+              3.11,
+              2.634
             ],
             "axis": [
               0,
@@ -1757,8 +1757,8 @@
           {
             "pos": [
               0.33,
-              1.76,
-              -2.466
+              3.01,
+              2.634
             ],
             "axis": [
               0,
@@ -1796,8 +1796,8 @@
           {
             "pos": [
               0.55,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1810,8 +1810,8 @@
           {
             "pos": [
               0.37,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1824,8 +1824,8 @@
           {
             "pos": [
               0.19,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1838,8 +1838,8 @@
           {
             "pos": [
               0.01,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1852,8 +1852,8 @@
           {
             "pos": [
               -0.17,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1866,8 +1866,8 @@
           {
             "pos": [
               -0.33,
-              2.16,
-              -2.466
+              3.41,
+              2.634
             ],
             "axis": [
               0,
@@ -1880,8 +1880,8 @@
           {
             "pos": [
               -0.45,
-              2.06,
-              -2.466
+              3.31,
+              2.634
             ],
             "axis": [
               0,
@@ -1894,8 +1894,8 @@
           {
             "pos": [
               -0.57,
-              1.96,
-              -2.466
+              3.21,
+              2.634
             ],
             "axis": [
               0,
@@ -1908,8 +1908,8 @@
           {
             "pos": [
               -0.45,
-              1.86,
-              -2.466
+              3.11,
+              2.634
             ],
             "axis": [
               0,
@@ -1922,8 +1922,8 @@
           {
             "pos": [
               -0.33,
-              1.76,
-              -2.466
+              3.01,
+              2.634
             ],
             "axis": [
               0,
@@ -1961,8 +1961,8 @@
           {
             "pos": [
               0.68,
-              1.72,
-              -2.466
+              2.97,
+              2.634
             ],
             "axis": [
               0,
@@ -1975,8 +1975,8 @@
           {
             "pos": [
               -0.68,
-              2.2,
-              -2.466
+              3.45,
+              2.634
             ],
             "axis": [
               0,
@@ -2014,8 +2014,8 @@
           {
             "pos": [
               -0.68,
-              1.72,
-              -2.466
+              2.97,
+              2.634
             ],
             "axis": [
               0,
@@ -2028,8 +2028,8 @@
           {
             "pos": [
               0.68,
-              2.2,
-              -2.466
+              3.45,
+              2.634
             ],
             "axis": [
               0,
@@ -2054,12 +2054,12 @@
               90,
               0
             ],
-            "duration": 80,
-            "forwardsDelay": 100,
-            "reverseDelay": 100,
+            "duration": 60,
+            "forwardsDelay": 160,
+            "reverseDelay": 0,
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           },
@@ -2079,7 +2079,7 @@
             ],
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           }
@@ -2093,16 +2093,16 @@
             "animationType": "rotation",
             "variable": "BOOM",
             "axis": [
-              -55,
+              -70,
               0,
               0
             ],
-            "duration": 100,
+            "duration": 80,
             "forwardsDelay": 0,
-            "reverseDelay": 180,
+            "reverseDelay": 140,
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           },
@@ -2122,7 +2122,7 @@
             ],
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           }
@@ -2133,16 +2133,21 @@
         "applyAfter": "boom",
         "animations": [
           {
-            "animationType": "translation",
+            "animationType": "rotation",
             "variable": "BOOM",
             "axis": [
+              140,
               0,
-              0,
-              4.0
+              0
             ],
-            "duration": 100,
-            "forwardsDelay": 180,
-            "reverseDelay": 0
+            "duration": 80,
+            "forwardsDelay": 80,
+            "reverseDelay": 60,
+            "centerPoint": [
+              0.0,
+              2.59,
+              2.45
+            ]
           },
           {
             "animationType": "inhibitor",
@@ -2151,12 +2156,17 @@
             "clampMax": 1
           },
           {
-            "animationType": "translation",
-            "variable": "BOOM_REACH",
+            "animationType": "rotation",
+            "variable": "BOOM_ELBOW",
             "axis": [
+              1,
               0,
-              0,
-              1
+              0
+            ],
+            "centerPoint": [
+              0.0,
+              2.59,
+              2.45
             ]
           }
         ]
@@ -2169,17 +2179,34 @@
             "animationType": "rotation",
             "variable": "BOOM",
             "axis": [
-              55,
+              70,
               0,
               0
             ],
-            "duration": 100,
+            "duration": 80,
             "forwardsDelay": 0,
-            "reverseDelay": 180,
+            "reverseDelay": 140,
             "centerPoint": [
               0.0,
-              2.8,
-              5.0
+              2.59,
+              -1.95
+            ]
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM",
+            "axis": [
+              -140,
+              0,
+              0
+            ],
+            "duration": 80,
+            "forwardsDelay": 80,
+            "reverseDelay": 60,
+            "centerPoint": [
+              0.0,
+              2.59,
+              -1.95
             ]
           },
           {
@@ -2198,8 +2225,22 @@
             ],
             "centerPoint": [
               0.0,
-              2.8,
-              5.0
+              2.59,
+              -1.95
+            ]
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM_ELBOW",
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "centerPoint": [
+              0.0,
+              2.59,
+              -1.95
             ]
           }
         ]
@@ -2547,6 +2588,7 @@
   ],
   "constantValues": {
     "boom_present": 1.0,
+    "elbow_present": 1.0,
     "arrow_present": 1.0,
     "wipers_present": 1.0
   },
@@ -2561,7 +2603,7 @@
           "pos": [
             0,
             -0.25,
-            -2.68
+            -2.92
           ],
           "distance": 2
         }

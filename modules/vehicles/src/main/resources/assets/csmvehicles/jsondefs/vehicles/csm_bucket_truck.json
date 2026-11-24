@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A power company bucket truck. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals); BOOM raises the boom, swings it to the left and runs it out, the bucket staying level. With BOOM off, the panel's LIFT, SWING and REACH steer the boom, from the cab or from the bucket, which has a seat of its own.",
+    "description": "A power company bucket truck with a knuckle boom. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals); BOOM lifts the lower boom, opens the upper boom at its elbow and swings it to the left, the bucket staying level. With BOOM off, the panel's LIFT, ELBOW and SWING steer the boom, from the cab or from the bucket, which has a seat.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -183,8 +183,8 @@
     {
       "pos": [
         0.0,
-        2.7199999999999998,
-        5.35
+        1.8699999999999999,
+        -2.37
       ],
       "types": [
         "seat"
@@ -193,7 +193,7 @@
       "dismountPos": [
         1.8,
         0.0,
-        5.0
+        -1.95
       ],
       "isController": true,
       "applyAfter": "bucket"
@@ -1618,12 +1618,12 @@
               90,
               0
             ],
-            "duration": 80,
-            "forwardsDelay": 100,
-            "reverseDelay": 100,
+            "duration": 60,
+            "forwardsDelay": 160,
+            "reverseDelay": 0,
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           },
@@ -1643,7 +1643,7 @@
             ],
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           }
@@ -1657,16 +1657,16 @@
             "animationType": "rotation",
             "variable": "BOOM",
             "axis": [
-              -55,
+              -70,
               0,
               0
             ],
-            "duration": 100,
+            "duration": 80,
             "forwardsDelay": 0,
-            "reverseDelay": 180,
+            "reverseDelay": 140,
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           },
@@ -1686,7 +1686,7 @@
             ],
             "centerPoint": [
               0.0,
-              2.65,
+              2.325,
               -1.6
             ]
           }
@@ -1697,16 +1697,21 @@
         "applyAfter": "boom",
         "animations": [
           {
-            "animationType": "translation",
+            "animationType": "rotation",
             "variable": "BOOM",
             "axis": [
+              140,
               0,
-              0,
-              4.0
+              0
             ],
-            "duration": 100,
-            "forwardsDelay": 180,
-            "reverseDelay": 0
+            "duration": 80,
+            "forwardsDelay": 80,
+            "reverseDelay": 60,
+            "centerPoint": [
+              0.0,
+              2.59,
+              2.45
+            ]
           },
           {
             "animationType": "inhibitor",
@@ -1715,12 +1720,17 @@
             "clampMax": 1
           },
           {
-            "animationType": "translation",
-            "variable": "BOOM_REACH",
+            "animationType": "rotation",
+            "variable": "BOOM_ELBOW",
             "axis": [
+              1,
               0,
-              0,
-              1
+              0
+            ],
+            "centerPoint": [
+              0.0,
+              2.59,
+              2.45
             ]
           }
         ]
@@ -1733,17 +1743,34 @@
             "animationType": "rotation",
             "variable": "BOOM",
             "axis": [
-              55,
+              70,
               0,
               0
             ],
-            "duration": 100,
+            "duration": 80,
             "forwardsDelay": 0,
-            "reverseDelay": 180,
+            "reverseDelay": 140,
             "centerPoint": [
               0.0,
-              2.8,
-              5.0
+              2.59,
+              -1.95
+            ]
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM",
+            "axis": [
+              -140,
+              0,
+              0
+            ],
+            "duration": 80,
+            "forwardsDelay": 80,
+            "reverseDelay": 60,
+            "centerPoint": [
+              0.0,
+              2.59,
+              -1.95
             ]
           },
           {
@@ -1762,8 +1789,22 @@
             ],
             "centerPoint": [
               0.0,
-              2.8,
-              5.0
+              2.59,
+              -1.95
+            ]
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM_ELBOW",
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "centerPoint": [
+              0.0,
+              2.59,
+              -1.95
             ]
           }
         ]
@@ -2111,6 +2152,7 @@
   ],
   "constantValues": {
     "boom_present": 1.0,
+    "elbow_present": 1.0,
     "wipers_present": 1.0
   },
   "connectionGroups": [
@@ -2124,7 +2166,7 @@
           "pos": [
             0,
             -0.25,
-            -2.68
+            -2.92
           ],
           "distance": 2
         }
