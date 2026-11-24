@@ -714,6 +714,21 @@ place: the plow moves as one group, so on a short mount the lowered plow's A-fra
 air beside the truck. It is one group carried raised (its edge 0.32 off the road, its top just
 under the headlights) and PLOW lets it down 0.3 onto the road.
 
+**The plow clears snow.** It uses IV's own SNOWPLOW effector (`snowplow_json`,
+`csm_snowplow`):
+
+- The part is invisible, on a permanent slot (`isPermanent`, so the wrench cannot take it off)
+  at the lowered blade (`SNOWPLOW_SLOT`).
+- Each effector box removes the snow layer or snow block at its centre
+  (`WrapperWorld.removeSnow`). The four boxes sit 0.8 apart across the blade, closer than a
+  block, in the block just above the road.
+- It runs only while PLOW is down: the part's `activeAnimations` read PLOW, which it does not
+  declare, so it gets the truck's (as the chip bed's effectors do).
+
+Verified 2026-11-24: lowered, the truck cut a lane about 4 blocks wide through two-layer snow, a
+snow block wall and a two-high wall, leaving only what lay outside the blade's width. Only trucks
+placed after this change carry the part.
+
 **The dump truck's tail and chassis** are built so nothing floats:
 
 - the body rides on a black subframe from the frame up to its floor;

@@ -51,7 +51,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   maintenance truck (`csm_signal_truck`, `arrow_board` on ARROWBOARD), the reversing alarm
   parts on the work trucks (`BACKUP_ALARMS`, a white noise alarm fitted, a beeper to swap in,
   sounding on `engine_reversed_1`), the plow's curved
-  moldboard (`plow_moldboard`) lowered by PLOW, raked windshields as slanted pieces
+  moldboard (`plow_moldboard`) lowered by PLOW and clearing snow while down (`csm_snowplow`, an
+  invisible IV SNOWPLOW effector on a permanent slot), raked windshields as slanted pieces
   (`raked_windshield`, `Vehicle.slab`/`poly`),
   32-sided wheels with shoulders and a set-back rim face per style (`WHEELS`' style,
   `RIM_RATIO`), wheel openings cut from the body (`Vehicle.wheel_arch`, the police SUV), headlight cones (`LOW_BEAM`, `HIGH_BEAM`,

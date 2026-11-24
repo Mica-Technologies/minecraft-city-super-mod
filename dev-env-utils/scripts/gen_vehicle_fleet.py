@@ -2184,6 +2184,31 @@ BACKUP_ALARMS = {
 }
 BACKUP_ALARM_DEFAULT = 'csm_backup_alarm_whitenoise'
 
+# The plow clears snow: an invisible IV SNOWPLOW effector on a permanent slot at the lowered
+# blade. Each effector box removes the snow layer or snow block at its centre
+# (WrapperWorld.removeSnow), so the boxes sit 0.8 apart across the blade, closer than a block,
+# and in the block just above the road. It runs only while PLOW is down: PLOW is not declared on
+# the part, so it reads the truck's (APart.createComputedVariable), as the chip bed's do.
+SNOWPLOW_TYPE = 'effector_csm_snowplow'
+SNOWPLOW_SLOT = (0.0, -0.25, 7.15)   # the dump truck's ground is -0.55
+
+
+def snowplow_json():
+    xs = [-1.2, -0.4, 0.4, 1.2]
+    return {
+        'definitions': [{'name': 'CSM Snow Plow Blade', 'subName': '', 'extraMaterialLists': [[]]}],
+        'general': {'description': 'What makes the plow truck\'s plow clear snow layers and snow '
+                                   'blocks while PLOW is down. Comes with the truck.',
+                    'stackSize': 1, 'materialLists': [['minecraft:iron_ingot:0:4']]},
+        'generic': {'type': SNOWPLOW_TYPE, 'width': 0.25, 'height': 0.25,
+                    'activeAnimations': [vp.visible_on('PLOW')]},
+        'effector': {'type': 'snowplow', 'operationDelay': 1},
+        'collisionGroups': [{'collisionTypes': ['effector'], 'isInterior': True,
+                             'collisions': [{'pos': [x, 0, 0], 'width': 0.6, 'height': 0.6}
+                                            for x in xs]}],
+        'rendering': {'modelType': 'none'},
+    }
+
 
 def backup_alarm_obj():
     """A small alarm housing on a bracket, its grille facing back (-z), centred on the slot."""
@@ -3132,7 +3157,7 @@ FLEET = {
         seats=[(0.45, 0.85, 3.7, True), (-0.45, 0.85, 3.7, False)],
         engine_pos=(0.0, 0.6, 5.4), boxes=[-1.5, 1.0, 3.5, 5.6], box_width=2.5,
         box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP', 'PLOW'],
-        animated=dump_animations, trailer_hitch=True, backup_alarm=(0.86, 0.1, -2.6)),
+        animated=dump_animations, trailer_hitch=True, backup_alarm=(0.86, 0.1, -2.6), snowplow=True),
     'csm_bucket_truck': dict(
         build=bucket_truck,
         description='A power company bucket truck with a knuckle boom. BEACONS runs its amber '
@@ -3386,6 +3411,9 @@ def vehicle_json(name, v):
             slot['isController'] = True
         slot.update(seat[4] if len(seat) > 4 else {})   # e.g. a seat that rides the boom
         parts.append(slot)
+    if spec.get('snowplow'):
+        parts.append({'pos': list(SNOWPLOW_SLOT), 'types': [SNOWPLOW_TYPE], 'isPermanent': True,
+                      'defaultPart': '%s:csm_snowplow' % PACK})
     if 'backup_alarm' in spec:
         # under the tail, the white noise alarm fitted; the wrench takes it off or swaps it
         parts.append({'pos': list(spec['backup_alarm']), 'types': [BACKUP_ALARM_TYPE],
@@ -3817,6 +3845,11 @@ def catalogue():
         icon.paste(face, (3, 3), mask)
         item('parts', name, icon)
 
+    put(os.path.join(PACK_DIR, 'jsondefs', 'parts', 'csm_snowplow.json'),
+        vp.json_bytes(snowplow_json()))
+    plow_icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    ImageDraw.Draw(plow_icon).polygon([(1, 5), (14, 5), (12, 11), (3, 11)], fill=(230, 120, 20, 255))
+    item('parts', 'csm_snowplow', plow_icon)
     for name, (label, sound, housing, grille, _) in BACKUP_ALARMS.items():
         put(os.path.join(PACK_DIR, 'objmodels', 'parts', name + '.obj'),
             backup_alarm_obj().encode('utf-8'))

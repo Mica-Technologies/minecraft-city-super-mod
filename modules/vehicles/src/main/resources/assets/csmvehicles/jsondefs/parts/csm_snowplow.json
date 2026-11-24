@@ -1,0 +1,86 @@
+{
+  "definitions": [
+    {
+      "name": "CSM Snow Plow Blade",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "What makes the plow truck's plow clear snow layers and snow blocks while PLOW is down. Comes with the truck.",
+    "stackSize": 1,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:4"
+      ]
+    ]
+  },
+  "generic": {
+    "type": "effector_csm_snowplow",
+    "width": 0.25,
+    "height": 0.25,
+    "activeAnimations": [
+      {
+        "animationType": "visibility",
+        "variable": "PLOW",
+        "clampMin": 1,
+        "clampMax": 1
+      }
+    ]
+  },
+  "effector": {
+    "type": "snowplow",
+    "operationDelay": 1
+  },
+  "collisionGroups": [
+    {
+      "collisionTypes": [
+        "effector"
+      ],
+      "isInterior": true,
+      "collisions": [
+        {
+          "pos": [
+            -1.2,
+            0,
+            0
+          ],
+          "width": 0.6,
+          "height": 0.6
+        },
+        {
+          "pos": [
+            -0.4,
+            0,
+            0
+          ],
+          "width": 0.6,
+          "height": 0.6
+        },
+        {
+          "pos": [
+            0.4,
+            0,
+            0
+          ],
+          "width": 0.6,
+          "height": 0.6
+        },
+        {
+          "pos": [
+            1.2,
+            0,
+            0
+          ],
+          "width": 0.6,
+          "height": 0.6
+        }
+      ]
+    }
+  ],
+  "rendering": {
+    "modelType": "none"
+  }
+}
