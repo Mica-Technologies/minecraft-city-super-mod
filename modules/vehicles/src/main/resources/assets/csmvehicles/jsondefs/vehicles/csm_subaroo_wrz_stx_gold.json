@@ -1057,6 +1057,25 @@
             "reverseEndSound": "csmvehicles:door_close"
           }
         ]
+      },
+      {
+        "objectName": "steering_wheel",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "rudder",
+            "centerPoint": [
+              0.36,
+              0.515,
+              1.15
+            ],
+            "axis": [
+              0,
+              0,
+              6.0
+            ]
+          }
+        ]
       }
     ]
   },

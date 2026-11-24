@@ -1147,6 +1147,25 @@
         "objectName": "door_r_window",
         "applyAfter": "door_r",
         "animations": []
+      },
+      {
+        "objectName": "steering_wheel",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "rudder",
+            "centerPoint": [
+              0.45,
+              1.44,
+              3.9
+            ],
+            "axis": [
+              0,
+              0,
+              6.0
+            ]
+          }
+        ]
       }
     ]
   },

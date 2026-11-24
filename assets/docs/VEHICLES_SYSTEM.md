@@ -632,11 +632,28 @@ shut it.
 | Fire engine, ladder truck | four crew cab doors; a roll-up door on every compartment (3 or 4 a side) |
 | Ambulance | two cab doors, the module's curb-side door, two rear barn doors |
 | Police SUV | four doors, the rear hatch (lifts on its roof hinge) |
-| Dump, bucket and tow trucks | two cab doors |
+| Dump truck | two cab doors |
+| Bucket truck | two cab doors; a hinged door on each of the service body's compartments (4 a side), shelves behind |
+| Tow truck | two cab doors; two tool box doors a side |
 | Pickups | four doors, the tailgate (drops) |
+| Utility cap (part) | a compartment door each side and the rear door, all lifting on top hinges |
 | Impressa | four doors, the hatch |
 | WRZ STX | four doors, the trunk lid with its wing |
 | Transit bus | either door, clicked from the curb, works DOORS (both doors, as the driver's switch does) |
+
+**A click box that stays put blocks its own doorway.** The bus's door boxes first sat on the
+body; open, the doors slid away and the boxes stayed, so the click meant for the driver's seat
+hit the door box and shut the door. Every door's boxes now ride the door (`applyAfter`; the bus's
+through `clicks` entries that name the leaf). **A part's own box takes clicks too.** The utility
+cap's `generic` box is 2.0 wide, so it stands 0.15 behind the cap's rear door and is nearer than
+a box on the door's face: the rear door's boxes reach out past it.
+
+**Steering wheels turn** with the front wheels: the ring is its own object
+(`Vehicle.steering_wheel`), rotating about its column on IV's `rudder` (the front wheels' angle),
+`STEERING_RATIO` (6) times as far, the sign the official pack uses.
+
+**The bus's saloon lights**, a strip down each side of the ceiling, are lit while the engine runs
+(`engines_on`).
 
 **How a door is built** (`gen_vehicle_fleet.py`, `Vehicle.door`). A door is declared as a region
 of the body *before* the boxes it takes are added. Every box added afterwards that lies in the
@@ -718,7 +735,10 @@ lamps from its panel. Then every door vehicle spawned with all its doors open (a
 the door variables, through a command block for the long ones), seen whole by day, and one of each
 kind clicked shut where it stood open: an SUV door, its hatch, the STX's trunk, the H-150's
 tailgate, an ambulance barn leaf and a fire engine compartment (whose click boxes are scaled up
-into the rolled shutter, not swung). Not heard: the door sounds (the test client is muted).
+into the rolled shutter, not swung). Later the same day: a bucket truck compartment, a tow truck
+tool box and the utility cap's side and rear doors opened from clicks; the bus boarded through
+its open door to the driver's seat; the bus's steering wheel turned with A held; the saloon lights
+lit with the engine running. Not heard: the door sounds (the test client is muted).
 
 ---
 

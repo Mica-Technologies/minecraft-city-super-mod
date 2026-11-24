@@ -1192,6 +1192,25 @@
         "objectName": "door_hatch_window",
         "applyAfter": "door_hatch",
         "animations": []
+      },
+      {
+        "objectName": "steering_wheel",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "rudder",
+            "centerPoint": [
+              0.36,
+              0.545,
+              1.15
+            ],
+            "axis": [
+              0,
+              0,
+              6.0
+            ]
+          }
+        ]
       }
     ]
   },

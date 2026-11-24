@@ -400,6 +400,434 @@
           "variableType": "toggle"
         }
       ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "comp_1l",
+      "collisions": [
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -1.801
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -1.603
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -1.406
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -1.208
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -1.01
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -0.812
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -0.614
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -0.417
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            -0.219
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1l",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "comp_1r",
+      "collisions": [
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -1.801
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -1.603
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -1.406
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -1.208
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -1.01
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -0.812
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -0.614
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -0.417
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            -0.219
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_1r",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "comp_2l",
+      "collisions": [
+        {
+          "pos": [
+            0.92,
+            0.6,
+            0.219
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            0.417
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            0.614
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            0.812
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            1.01
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            1.208
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            1.406
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            1.603
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.6,
+            1.801
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2l",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "comp_2r",
+      "collisions": [
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            0.219
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            0.417
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            0.614
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            0.812
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            1.01
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            1.208
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            1.406
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            1.603
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.6,
+            1.801
+          ],
+          "width": 0.22,
+          "height": 0.4,
+          "variableName": "comp_2r",
+          "variableType": "toggle"
+        }
+      ]
     }
   ],
   "rendering": {
@@ -1172,6 +1600,113 @@
         "objectName": "door_r_window",
         "applyAfter": "door_r",
         "animations": []
+      },
+      {
+        "objectName": "comp_1l",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              1.0,
+              0.0,
+              -0.02
+            ],
+            "axis": [
+              0,
+              -95,
+              0
+            ],
+            "variable": "comp_1l",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "comp_1r",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -1.0,
+              0.0,
+              -0.02
+            ],
+            "axis": [
+              0,
+              95,
+              0
+            ],
+            "variable": "comp_1r",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "comp_2l",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              1.0,
+              0.0,
+              2.0
+            ],
+            "axis": [
+              0,
+              -95,
+              0
+            ],
+            "variable": "comp_2l",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "comp_2r",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -1.0,
+              0.0,
+              2.0
+            ],
+            "axis": [
+              0,
+              95,
+              0
+            ],
+            "variable": "comp_2r",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "steering_wheel",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "rudder",
+            "centerPoint": [
+              0.45,
+              1.44,
+              4.0
+            ],
+            "axis": [
+              0,
+              0,
+              6.0
+            ]
+          }
+        ]
       }
     ]
   },

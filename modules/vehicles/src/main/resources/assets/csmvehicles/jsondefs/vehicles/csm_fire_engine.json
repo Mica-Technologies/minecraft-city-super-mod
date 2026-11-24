@@ -2196,6 +2196,25 @@
             "reverseStartSound": "csmvehicles:rollup"
           }
         ]
+      },
+      {
+        "objectName": "steering_wheel",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "variable": "rudder",
+            "centerPoint": [
+              0.6,
+              1.49,
+              6.15
+            ],
+            "axis": [
+              0,
+              0,
+              6.0
+            ]
+          }
+        ]
       }
     ]
   },
