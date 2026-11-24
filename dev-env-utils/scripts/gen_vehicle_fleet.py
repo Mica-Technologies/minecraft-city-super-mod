@@ -105,6 +105,15 @@ HIGH_BEAM_LEVEL = 0.55   # the high beam's brightness: its flare's and cone's al
 HEADLIGHT_WHITE = '#FFF6E0'
 
 
+def turn_signal(sx):
+    """A turn lamp's brightness on side sx: lit on the flash cycle while its turn signal or the
+    hazards are on. Visibility animations are an AND and translations add, so the cycle is the
+    visibility and the two switches are translations: either one on lights it (an OR)."""
+    return [vp.visible_on('10_10_0_cycle'),
+            vp.lit_by('left_turn_signal' if sx > 0 else 'right_turn_signal'),
+            vp.lit_by('HAZARDS')]
+
+
 def beam(pos, kind):
     axis, diameter, length = kind
     return {'pos': pos, 'axis': axis, 'beamDiameter': diameter, 'beamLength': length}
@@ -123,6 +132,11 @@ DOOR_SOUNDS = ('door_open', 'door_close')
 ROLLUP_SOUNDS = ('rollup', 'rollup')
 EPS = 0.002
 STEERING_RATIO = 6.0     # steering wheel degrees per degree of the front wheels (45 at lock)
+# Wipers sweep up on a flash cycle while WIPERS is on: the cycle is lit for b - 1 of every
+# a + b + c ticks, and the rotation eases over WIPER_TICKS each way, so about 1.6 s a stroke.
+WIPER_CYCLE = '0_16_16_cycle'
+WIPER_TICKS = 14
+WIPER_SWEEP = 95         # degrees from parked
 
 
 def side_door(v, name, sx, w, z0, z1, y0, y1, extra=(), clicks_y=None, swing=DOOR_SWING,
@@ -282,6 +296,7 @@ class Vehicle:
         self.doors = []       # each: name, regions, animation, clicks, sounds, has_window
         self.lamp_doors = {}  # lamp object -> the doors (None: none) its boxes sit on
         self.steer = None     # the steering wheel's centre, once it has one
+        self.wiper_arms = []  # the wipers' animated objects
 
     def door(self, name, regions, animation, clicks, sounds=DOOR_SOUNDS, duration=DOOR_TICKS,
              close_at_start=False):
@@ -357,7 +372,7 @@ class Vehicle:
             objects.append({'objectName': 'steering_wheel', 'animations': [
                 {'animationType': 'rotation', 'variable': 'rudder', 'centerPoint': self.steer,
                  'axis': [0, 0, STEERING_RATIO]}]})
-        return objects, groups
+        return objects + self.wiper_arms, groups
 
     def steering_wheel(self, wx0, wx1, wy0, wy1, wz):
         """The steering wheel: a ring, so the road shows through it, as an object of its own
@@ -369,6 +384,32 @@ class Vehicle:
                        ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
             self.box(lo, hi, 'black', obj='steering_wheel')
         self.steer = [round((wx0 + wx1) / 2, 4), round((wy0 + wy1) / 2, 4), round(wz, 4)]
+
+    def wipers(self, x_half, bottom, up, normal, height):
+        """Two wiper arms along the foot of a windshield `2 x_half` wide, parked pointing to the
+        vehicle's right (-x), each sweeping up across the glass about the glass's own normal.
+        `bottom` is (y, z) at the foot of the glass, `up` the unit (dy, dz) up it, `normal` the
+        unit (dy, dz) out of it, `height` the glass's length up its face."""
+        width = 2 * x_half
+        length = min(0.45 * width, 0.9 * height)
+        (by, bz), (uy, uz), (ny, nz) = bottom, up, normal
+        # a hair up the glass and out of it, so the arms lie on it rather than in it
+        y = by + 0.05 * uy + 0.02 * ny
+        z = bz + 0.05 * uz + 0.02 * nz
+        for k, pivot in enumerate((x_half - 0.06, x_half - 0.06 - 0.5 * width)):
+            name = 'wiper_%d' % (k + 1)
+            self.box((pivot - length, y - 0.012, z - 0.012), (pivot, y + 0.012, z + 0.012),
+                     'black', obj=name)
+            self.box((pivot - 0.03, y - 0.03, z - 0.02), (pivot + 0.03, y + 0.03, z + 0.02),
+                     'black', obj=name)                                          # the pivot
+            self.wiper_arms.append({'objectName': name, 'animations': [
+                # off: the arm rests where it was parked
+                {'animationType': 'inhibitor', 'variable': 'WIPERS', 'clampMin': 0,
+                 'clampMax': 0},
+                {'animationType': 'rotation', 'variable': WIPER_CYCLE,
+                 'centerPoint': [round(pivot, 4), round(y, 4), round(z, 4)],
+                 'axis': [0, round(-ny * WIPER_SWEEP, 3) + 0.0, round(-nz * WIPER_SWEEP, 3)],
+                 'duration': WIPER_TICKS}]})
 
     def dome(self, lo, hi):
         """A cabin's dome light, on while any of its doors is open (each door's variable adds
@@ -479,13 +520,11 @@ class Vehicle:
                       'tail', '#FF0000', brake, [0, 0, -1], faces=back)
             self.lamp('Turn' + side, (xs[0], tail_y + 0.22, r - 0.03),
                       (xs[1], tail_y + 0.34, r), 'amber', '#FFA000',
-                      [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
-                       vp.lit_by('10_10_0_cycle')], [0, 0, -1], faces=back)
+                      turn_signal(sx), [0, 0, -1], faces=back)
             fxs = sorted((sx * (x_out - 0.05), sx * (x_out - 0.25)))
             self.lamp('TurnFront' + side, (fxs[0], head_y - 0.16, f), (fxs[1], head_y - 0.04, f + 0.03),
                       'amber', '#FFA000',
-                      [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
-                       vp.lit_by('10_10_0_cycle')], [0, 0, 1], faces=('s', 'e', 'w', 'u', 'd'))
+                      turn_signal(sx), [0, 0, 1], faces=('s', 'e', 'w', 'u', 'd'))
         if not corner_reverse:
             self.lamp('Reverse', (-0.15, tail_y, r - 0.03), (0.15, tail_y + 0.1, r), 'white',
                       '#FFFFFF', [vp.lit_by('engine_reversed_1')], [0, 0, -1], faces=back)
@@ -570,6 +609,8 @@ def cabin(v, w, floor, belt, top, z0, z1, lower='paint', upper=None, windows=(),
         # the steering wheel: a ring, so the road shows through it
         wx0, wx1, wy0, wy1, wz = driver_x - 0.16, driver_x + 0.16, fb - 0.2, fb + 0.08, z1 - 0.6
         v.steering_wheel(wx0, wx1, wy0, wy1, wz)
+        if front == 'windshield':
+            v.wipers(w - t, (fb, z1), (1.0, 0.0), (0.0, 1.0), win_top - fb)
 
 
 def fire_engine():
@@ -995,8 +1036,7 @@ def trailer_lights(v, rear_z, x_out, y):
                'tail', '#FF0000', brake, [0, 0, -1], faces=back)
         v.lamp('Turn' + side, (xs[0], y + 0.16, rear_z - 0.03), (xs[1], y + 0.26, rear_z),
                'amber', '#FFA000',
-               [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
-                vp.lit_by('10_10_0_cycle')], [0, 0, -1], faces=back)
+               turn_signal(sx), [0, 0, -1], faces=back)
 
 
 def trailer_tongue(v, front_z, coupler_z, y=0.0):
@@ -1251,8 +1291,17 @@ def raked_cab(v, w, belt, top, rake, steps=6):
     dx, wz = 0.42, roof_front - 0.38
     wx0, wx1, wy0, wy1 = dx - 0.16, dx + 0.16, belt - 0.2, belt + 0.08
     v.steering_wheel(wx0, wx1, wy0, wy1, wz)
+    raked_wipers(v, w - t, belt, c1, win_top, roof_front)
     v.dome((-0.15, top - 0.065, PICKUP_B_PILLAR - 0.15), (0.15, top - 0.05, PICKUP_B_PILLAR + 0.15))
     return roof_front
+
+
+def raked_wipers(v, x_half, belt, z_foot, win_top, z_head):
+    """Wipers on a windshield raked back from its foot (belt, z_foot) to its head (win_top,
+    z_head): they lie on, and sweep across, the sloping glass."""
+    dy, dz = win_top - belt, z_head - z_foot
+    n = math.hypot(dy, dz)
+    v.wipers(x_half, (belt, z_foot), (dy / n, dz / n), (-dz / n, dy / n), n)
 
 
 def pickup_bed(v, w, rail, arch):
@@ -1302,8 +1351,7 @@ def pickup_lights(v, f, r, head, turn_front, tails):
             return sorted((sx * box[0], sx * box[1]))
         hx = xs(head)
         v.headlight(side, (hx[0], head[2], f), (hx[1], head[3], f + 0.03), front)
-        signal = [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
-                  vp.lit_by('10_10_0_cycle')]
+        signal = turn_signal(sx)
         tx = xs(turn_front)
         v.lamp('TurnFront' + side, (tx[0], turn_front[2], f), (tx[1], turn_front[3], f + 0.03),
                'amber', '#FFA000', signal, [0, 0, 1], faces=front)
@@ -1585,6 +1633,7 @@ def car_cabin(v, c):
     dx, wz = 0.36, zfr - 0.1
     wx0, wx1, wy0, wy1 = dx - 0.15, dx + 0.15, belt - 0.22, belt + 0.05
     v.steering_wheel(wx0, wx1, wy0, wy1, wz)
+    raked_wipers(v, w - t, belt, zc, win_top, zfr)
 
 
 def car_doors(v, c, pillar, rear):
@@ -2820,9 +2869,14 @@ def vehicle_json(name, v):
     if animated:
         definition['rendering']['animatedObjects'] = animated
     definition['collisionGroups'] += door_groups
+    # the panel's FOG and WIPERS buttons show only on a vehicle that has fog lamps or wipers
+    constants = {}
     if any(light['objectName'].startswith('&Fog') for light in v.lights):
-        # the panel's FOG button shows only on a vehicle that has fog lamps
-        definition['constantValues'] = {'fog_present': 1.0}
+        constants['fog_present'] = 1.0
+    if v.wiper_arms:
+        constants['wipers_present'] = 1.0
+    if constants:
+        definition['constantValues'] = constants
     if 'initially_on' in spec:
         definition['rendering']['initialVariables'] = spec['initially_on']
     # Every vehicle can be towed, by the hookups other packs' tow trucks look for (and ours):
@@ -2905,7 +2959,7 @@ def trailer_json(name, v):
                     'materialLists': [['minecraft:iron_block:0:3', 'minecraft:iron_ingot:0:8']]},
         'motorized': {'isTrailer': True, 'emptyMass': spec['mass'],
                       'hookupVariables': ['electric_power', 'engine_reversed_1', 'engines_on',
-                                          'right_turn_signal', 'left_turn_signal',
+                                          'right_turn_signal', 'left_turn_signal', 'HAZARDS',
                                           'running_light', 'headlight', 'brake'],
                       'fuelCapacity': 0, 'defaultFuelQty': 0, 'axleRatio': 0,
                       'brakingFactor': 1.0, 'dragCoefficient': 0.5},
@@ -3030,7 +3084,10 @@ def panel_json():
     components += [special((111, y), (180, 216), 'custom_variable') for y in (12, 44, 76, 108)]
     # a column clear of the custom switches' labels, which are wider than their buttons
     components += [toggle((175, 12), 'HIGH BEAM', 'HIGHBEAM'),
-                   toggle((175, 44), 'FOG', 'FOG', visibilityVariables=[['fog_present']])]
+                   toggle((175, 44), 'FOG', 'FOG', visibilityVariables=[['fog_present']]),
+                   toggle((175, 76), 'WIPERS', 'WIPERS',
+                          visibilityVariables=[['wipers_present']]),
+                   toggle((175, 108), 'HAZARDS', 'HAZARDS')]
     return {'panel': {'texture': 'mts:textures/guis/panel.png', 'textureWidth': 512,
                       'textureHeight': 256, 'backgroundWidth': 400, 'backgroundHeight': 140,
                       'navBoxPosition': [108, 0], 'components': components}}

@@ -784,7 +784,7 @@
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "left_turn_signal",
+            "variable": "10_10_0_cycle",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -795,7 +795,16 @@
               1,
               0
             ],
-            "variable": "10_10_0_cycle"
+            "variable": "left_turn_signal"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "HAZARDS"
           }
         ],
         "blendableComponents": [
@@ -968,7 +977,7 @@
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "right_turn_signal",
+            "variable": "10_10_0_cycle",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -979,7 +988,16 @@
               1,
               0
             ],
-            "variable": "10_10_0_cycle"
+            "variable": "right_turn_signal"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "HAZARDS"
           }
         ],
         "blendableComponents": [
@@ -1163,6 +1181,58 @@
             ]
           }
         ]
+      },
+      {
+        "objectName": "wiper_1",
+        "animations": [
+          {
+            "animationType": "inhibitor",
+            "variable": "WIPERS",
+            "clampMin": 0,
+            "clampMax": 0
+          },
+          {
+            "animationType": "rotation",
+            "variable": "0_16_16_cycle",
+            "centerPoint": [
+              0.89,
+              0.9991,
+              2.9779
+            ],
+            "axis": [
+              0,
+              -68.407,
+              -65.92
+            ],
+            "duration": 14
+          }
+        ]
+      },
+      {
+        "objectName": "wiper_2",
+        "animations": [
+          {
+            "animationType": "inhibitor",
+            "variable": "WIPERS",
+            "clampMin": 0,
+            "clampMax": 0
+          },
+          {
+            "animationType": "rotation",
+            "variable": "0_16_16_cycle",
+            "centerPoint": [
+              -0.06,
+              0.9991,
+              2.9779
+            ],
+            "axis": [
+              0,
+              -68.407,
+              -65.92
+            ],
+            "duration": 14
+          }
+        ]
       }
     ]
   },
@@ -1204,6 +1274,9 @@
       "scale": 0.0
     }
   ],
+  "constantValues": {
+    "wipers_present": 1.0
+  },
   "connectionGroups": [
     {
       "groupName": "Towing",
