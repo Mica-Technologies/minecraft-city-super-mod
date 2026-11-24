@@ -7,7 +7,12 @@ import java.util.Set;
 import java.util.UUID;
 import mcinterface1122.WrapperWorld;
 import minecrafttransportsimulator.baseclasses.ComputedVariable;
+import minecrafttransportsimulator.entities.instances.APart;
 import minecrafttransportsimulator.entities.instances.EntityVehicleF_Physics;
+import minecrafttransportsimulator.entities.instances.PartSeat;
+import minecrafttransportsimulator.items.components.AItemPack;
+import minecrafttransportsimulator.jsondefs.JSONPartDefinition;
+import minecrafttransportsimulator.packloading.PackParser;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -31,12 +36,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
  * however many riders the truck has, and every client sees it through Immersive Vehicles' own
  * variable packets.</p>
  *
+ * <p>It also refits the bucket of a truck spawned before the bucket became a place to stand: an
+ * empty CSM sitting seat in a bucket slot is swapped for the slot's default part, the standing
+ * one, the way Immersive Vehicles itself moves a part (remove it, add the new one from its stack
+ * with no player). A seat with a rider waits until they get out; a seat from another pack is
+ * someone's choice and is left alone.</p>
+ *
  * @since 2026.11
  */
 public class BoomAutoDriver {
 
   /** How close counts as there, and how far a variable must move to count as steered. */
   private static final double EPS = 1e-3;
+
+  /** The sitting seat the buckets had before they became a place to stand. */
+  private static final String OLD_BUCKET_SEAT = "csm_vehicle_seat";
 
   private static final class Drive {
 
@@ -66,6 +80,7 @@ public class BoomAutoDriver {
         continue;
       }
       seen.add(vehicle.uniqueUUID);
+      refitBucket(vehicle);
       ComputedVariable boom = vehicle.getOrCreateVariable(BoomAxes.BOOM);
       ComputedVariable[] axes = {vehicle.getOrCreateVariable(BoomAxes.LIFT),
           vehicle.getOrCreateVariable(BoomAxes.second(constants)),
@@ -88,6 +103,38 @@ public class BoomAutoDriver {
       }
     }
     drives.keySet().retainAll(seen);
+  }
+
+  /**
+   * Swaps an empty old sitting seat in the truck's bucket for the slot's default part. Cheap
+   * enough to run every tick: a look at a dozen slots, and after the swap it matches nothing.
+   */
+  private static void refitBucket(EntityVehicleF_Physics vehicle) {
+    for (int slot = 0; slot < vehicle.definition.parts.size(); slot++) {
+      JSONPartDefinition placement = vehicle.definition.parts.get(slot);
+      if (!BoomAxes.BUCKET.equals(placement.applyAfter) || placement.defaultPart == null
+          || slot >= vehicle.partsInSlots.size()) {
+        continue;
+      }
+      APart part = vehicle.partsInSlots.get(slot);
+      if (!(part instanceof PartSeat) || part.rider != null || part.definition.seat == null
+          || part.definition.seat.standing
+          || !CsmVehicles.PACK_ID.equals(part.definition.packID)
+          || !OLD_BUCKET_SEAT.equals(part.definition.systemName)) {
+        continue;
+      }
+      String name = placement.defaultPart;
+      int colon = name.indexOf(':');
+      if (colon < 0) {
+        continue;
+      }
+      AItemPack<?> item = PackParser.getItem(name.substring(0, colon), name.substring(colon + 1));
+      if (item == null) {
+        continue;
+      }
+      vehicle.removePart(part, true, true);
+      vehicle.addPartFromStack(item.getNewStack(null), null, slot, true, false);
+    }
   }
 
   /** BOOM was flipped: deploy a stowed boom, stow any other. */

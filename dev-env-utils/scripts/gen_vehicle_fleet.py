@@ -1304,13 +1304,19 @@ def knuckle_animations():
     ]
 
 
-# The buckets' seats: each rides its bucket (applyAfter), and is a controller, since IV opens
-# the panel only for a controller seat and the boom is worked from the panel. Getting out puts
-# the rider on the ground beside the truck, not over the side of a raised bucket.
-TELE_SEAT = (0.0, BOOM_TIP[1] - 0.08, BOOM_TIP[2] + 0.35, True,
-             {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, BOOM_TIP[2]]})
-KNUCKLE_SEAT = (0.0, KNUCKLE_TIP[1] - 0.72, KNUCKLE_TIP[2] - 0.42, True,
-                {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, KNUCKLE_TIP[2]]})
+# The buckets' places: each rides its bucket (applyAfter), and the lineman stands in it
+# (csm_bucket_standing, a standing seat). IV puts a standing rider's feet on the seat's point,
+# so the slot is on the bucket's floor and the rim comes to the waist. It is not a controller,
+# so IV never drives the truck from up there; CSM's BoomControls knows the slot by its
+# applyAfter, turns WASD to the boom and opens the panel itself. Getting out puts the rider on
+# the ground beside the truck, not over the side of a raised bucket.
+BUCKET_STANDING = 'csm_bucket_standing'
+TELE_SEAT = (0.0, BOOM_TIP[1] - 0.23, BOOM_TIP[2] + 0.375, False,
+             {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, BOOM_TIP[2]],
+              'defaultPart': '%s:%s' % (PACK, BUCKET_STANDING)})
+KNUCKLE_SEAT = (0.0, KNUCKLE_TIP[1] - 0.85, KNUCKLE_TIP[2] - 0.415, False,
+                {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, KNUCKLE_TIP[2]],
+                 'defaultPart': '%s:%s' % (PACK, BUCKET_STANDING)})
 
 
 # The tow truck's bed: it slides back, then tilts its back end down onto the road.
@@ -2866,15 +2872,23 @@ def seat_texture():
     return img
 
 
-def seat_json(label='CSM Vehicle Seat'):
+def seat_json(label='CSM Vehicle Seat', standing=False):
     return {
         'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[]]}],
         'general': {'description': 'Comes in the CSM fleet\'s vehicles.', 'stackSize': 4,
                     'materialLists': [['minecraft:wool:0:2', 'minecraft:iron_ingot:0:1']]},
         'generic': {'type': 'seat'},
-        'seat': {},
+        'seat': {'standing': True} if standing else {},
         'rendering': {'modelType': 'obj'},
     }
+
+
+def bucket_standing_obj():
+    """Where a lineman stands in a boom's bucket: a rubber mat on the bucket's floor, as IV draws
+    a standing rider with their feet on the seat's point. No chair to see over."""
+    o = vp.Obj(tex=32)
+    o.box('body', (-0.32, 0.0, -0.3), (0.32, 0.02, 0.3), (0, 0, 16, 16))
+    return o.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py')
 
 
 ENGINES = {
@@ -3161,8 +3175,8 @@ FLEET = {
         description='A power company bucket truck with a knuckle boom. BEACONS runs its amber '
                     'lights (not emergency lights, so it does not preempt signals). Hold the '
                     'arrow keys (lift and swing) and [ ] (the elbow) to steer the boom from the '
-                    'cab or from the bucket, which has a seat; B, or the BOOM switch, drives it '
-                    'to its working pose or back to stowed. The bucket stays level.',
+                    'cab, or stand in the bucket and use WASD as well; B, or the BOOM switch, '
+                    'drives it to its working pose or back to stowed. The bucket stays level.',
         mass=7000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         ceiling_mph=82, drag=(0.5, 2.0),
         wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
@@ -3174,8 +3188,8 @@ FLEET = {
     'csm_signal_truck': dict(
         build=signal_truck,
         description='A traffic signal maintenance truck: a knuckle boom (hold the arrow keys and '
-                    '[ ] to steer it; B or BOOM deploys or stows it), a seat in the bucket '
-                    'to work on a signal head from, and an arrow board on a frame behind the cab '
+                    '[ ] to steer it, or WASD from the bucket; B or BOOM deploys or stows it), '
+                    'a bucket to stand in and work on a signal head from, and an arrow board on a frame behind the cab '
                     'that the panel\'s ARROW buttons step through left, right and caution. '
                     'BEACONS runs its amber lights, which do not preempt signals.',
         mass=7200, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
@@ -3191,8 +3205,8 @@ FLEET = {
         build=boom_truck,
         description='A telescopic aerial boom truck, for the longest reach: a three-section boom '
                     'that runs out 8 m. Hold the arrow keys (lift and swing) and [ ] (the reach) '
-                    'to steer it from the cab or from the bucket, which has a seat; B, or the '
-                    'BOOM switch, drives it to its working pose or back to stowed. BEACONS runs '
+                    'to steer it from the cab, or stand in the bucket and use WASD as well; B, or '
+                    'the BOOM switch, drives it to its working pose or back to stowed. BEACONS runs '
                     'its amber lights.',
         mass=8200, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         ceiling_mph=80, drag=(0.5, 2.1),
@@ -3887,6 +3901,15 @@ def catalogue():
         ImageDraw.Draw(seat_icon).rectangle((4, 2, 7, 12), fill=(36, 36, 40, 255))
         ImageDraw.Draw(seat_icon).rectangle((4, 10, 12, 12), fill=(36, 36, 40, 255))
         item('parts', seat, seat_icon)
+    put(os.path.join(PACK_DIR, 'objmodels', 'parts', BUCKET_STANDING + '.obj'),
+        bucket_standing_obj().encode('utf-8'))
+    put(os.path.join(PACK_DIR, 'textures', 'parts', BUCKET_STANDING + '.png'),
+        vp.png_bytes(seat_texture()))
+    put(os.path.join(PACK_DIR, 'jsondefs', 'parts', BUCKET_STANDING + '.json'),
+        vp.json_bytes(seat_json('CSM Bucket Standing Place', standing=True)))
+    mat_icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+    ImageDraw.Draw(mat_icon).rectangle((2, 10, 13, 12), fill=(36, 36, 40, 255))
+    item('parts', BUCKET_STANDING, mat_icon)
 
     for name in FLEET:
         if FLEET[name].get('trailer'):

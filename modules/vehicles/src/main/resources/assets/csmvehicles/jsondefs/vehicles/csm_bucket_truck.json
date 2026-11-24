@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A power company bucket truck with a knuckle boom. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals). Hold the arrow keys (lift and swing) and [ ] (the elbow) to steer the boom from the cab or from the bucket, which has a seat; B, or the BOOM switch, drives it to its working pose or back to stowed. The bucket stays level.",
+    "description": "A power company bucket truck with a knuckle boom. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals). Hold the arrow keys (lift and swing) and [ ] (the elbow) to steer the boom from the cab, or stand in the bucket and use WASD as well; B, or the BOOM switch, drives it to its working pose or back to stowed. The bucket stays level.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -183,19 +183,18 @@
     {
       "pos": [
         0.0,
-        1.8699999999999999,
-        -2.37
+        1.7399999999999998,
+        -2.3649999999999998
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_bucket_standing",
       "dismountPos": [
         1.8,
         0.0,
         -1.95
       ],
-      "isController": true,
       "applyAfter": "bucket"
     },
     {

@@ -696,7 +696,12 @@ all work on the same values there is never a jump between them:
     `PacketEntityVariableIncrement` clamped to the range, to the server and nothing locally. IV's
     panel does exactly that (`GUIPanel`), and the server passes it to every client.
   - **When:** keys are read straight from LWJGL, as IV reads its own, only with no screen open
-    and only for a player in a controller seat (the cab's or the bucket's).
+    and only for a player in the cab's controller seat or in the bucket.
+  - **WASD in the bucket.** There IV's own drive keys work the boom too, as the player has them
+    bound in IV's config: gas and brake (W/S) lift, turn left and right (A/D) swing, with the
+    same truck-relative sense as the arrows. They are read from `ControlsKeyboard.config`, never
+    through `isPressed()`, which keeps IV's own pressed state. A key held both ways, or an arrow
+    and a letter the same way, still moves at one rate. In the cab WASD drives as usual.
 - **The panel's buttons** step the same variables (`BOOM_MANUAL`: 5 degrees, 10, 10 and 0.5 m a
   click). Which buttons show is set by the constants `boom_present`, `elbow_present` and
   `reach_present`.
@@ -712,9 +717,11 @@ all work on the same values there is never a jump between them:
 The poses and ranges are the truck's own constants (`boom_constants`: `boom_lift_max`,
 `boom_elbow_max` or `boom_reach_max`, `boom_deploy_*`), which is where the Java reads them.
 
-**The HUD.** A player in a boom truck's controller seat sees a readout above IV's dashboard:
-LIFT, ELBOW or REACH and SWING, each with its value and keys, and the B line ("B: deploy" when
-stowed, "B: stow" otherwise). Key names come from the bindings, so a rebind shows.
+**The HUD.** A player in a boom truck's controller seat or bucket sees a readout above IV's
+dashboard: LIFT, ELBOW or REACH and SWING, each with its value and keys, and the B line ("B:
+deploy" when stowed, "B: stow" otherwise). Key names come from the bindings, so a rebind shows.
+In the bucket the lift and swing rows add IV's keys ("Up / Down, W / S"); IV draws no dashboard
+there, as the bucket is not a controller seat.
 
 Verified 2026-11-24:
 
@@ -727,11 +734,46 @@ Verified 2026-11-24:
 A truck saved under the old animations with BOOM on loads stowed with its switch on, and one B
 deploys it.
 
-**The bucket seats** (`KNUCKLE_SEAT`, `TELE_SEAT`): a seat slot with `applyAfter: bucket`, so
-its rider goes up with the boom, and `dismountPos` on the ground beside the truck. It is a
-controller, because IV opens the panel only for a controller seat
-(`ControlSystem.controlGroundVehicle`) and the boom keys work only from one; so a player in the
-bucket could also drive. Verified: on the telescopic boom, steered 40 degrees up, 60 round and
+**The bucket's place** (`KNUCKLE_SEAT`, `TELE_SEAT`): a seat slot with `applyAfter: bucket`, so
+its rider goes up with the boom, and `dismountPos` on the ground beside the truck.
+
+- **Standing.** Its default part is `csm_bucket_standing`, a seat part with `seat.standing`
+  and only a rubber mat for a model. IV puts a standing rider's feet on the seat's point (no
+  seat offset, `WrapperEntity.getSeatOffset`) and their eyes 1.62 above it, so the slot sits on
+  the bucket's floor (`ty - 0.85` on the knuckle bucket, `ty - 0.23` on the telescopic one) and
+  the rim comes to the lineman's waist: they see over it and down to the road.
+- **Not a controller.** IV drives the truck from any controller seat
+  (`ControlSystem.controlGroundVehicle` returns before gas, brake and steering only for a
+  non-controller), so until 2026-11-24 the bucket's rider could drive with WASD. Now IV never
+  drives from it; `BoomControls` knows the slot by its `applyAfter` and turns WASD to the boom.
+  The server takes the boom's increments from any rider: IV's variable packets check no seat.
+- **The panel.** IV opens it only for a controller seat, so `BoomControls` opens and closes
+  `GUIPanel` on IV's panel key (U) for the bucket, with IV's own guards
+  (`canPlayerStartEngines`, not over another screen, not while its text is being edited).
+- **Climbing up from the cab** leaves no controller in the truck, so IV's autostart (when on)
+  stops the engine and sets the parking brake, as it does for any driver getting out. The boom
+  needs neither.
+- **Trucks placed before this** were spawned with the sitting seat (`defaultPart` is read only
+  at spawn). `BoomAutoDriver.refitBucket` swaps it on the server: an empty `csm_vehicle_seat`
+  in a bucket slot is removed and the slot's default part added from its stack with no player,
+  as IV itself moves a part (`removePart`, then `addPartFromStack`). It checks every tick
+  (a dozen slots per boom truck), so a seat with a rider should be swapped once they get out
+  (not yet seen in game). A seat from another pack is left alone, but a CSM sitting seat fitted
+  to a bucket by hand is swapped too. Verified on a copy of the demo world, whose 12 boom
+  trucks all had `csm_vehicle_seat` in `part_8` on disk: on load every one held
+  `csm_bucket_standing`, with the cab seats unchanged. Standing in one refitted bucket worked
+  as in a new truck.
+- **Verified 2026-11-24.** Control: in a cab, holding W set the truck's `throttle` to 1 (read
+  from its NBT mid-hold) and the truck rolled off. In the refitted demo bucket, holding W
+  raised LIFT and no `throttle` was set at all (IV sends throttle from the keys whether or not
+  the engine runs, so its absence is the evidence). On freshly
+  spawned trucks: in the knuckle bucket, W held raised LIFT to
+  its 80 degree stop and A swung 45 left, with the truck not moving; `]`
+  opened the elbow; U opened the panel and U again closed it; B stowed. In third person the
+  rider stands with the rim at the waist, on both the knuckle and the telescopic bucket (W and D
+  there too). From the cab, W drove the truck 22 blocks with the boom left stowed.
+
+Verified before the standing change: on the telescopic boom, steered 40 degrees up, 60 round and
 2 m out from the bucket, riding up to 12 m; on the knuckle boom, entered from the ground at the
 rear (5.7 m), 30 up, 120 at the elbow and 60 round from the bucket, riding up to 12.1 m; got out
 on the ground both times. The knuckle's one-touch deploy, the signal truck's knuckle steered by

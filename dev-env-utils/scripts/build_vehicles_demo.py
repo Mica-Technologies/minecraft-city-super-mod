@@ -362,7 +362,7 @@ PARTS = ['csm_lightbar_led_redblue', 'csm_lightbar_led_red', 'csm_lightbar_led_r
          'csm_wheel_truck', 'csm_wheel_van', 'csm_wheel_car', 'csm_wheel_compact',
          'csm_wheel_sport', 'csm_wheel_sport_gold', 'csm_engine_diesel', 'csm_engine_petrol',
          'csm_engine_flat4', 'csm_engine_turbo4', 'csm_vehicle_seat', 'csm_vehicle_seat_low',
-         'csm_pickup_cap', 'csm_chipbed', 'csm_backup_alarm_whitenoise',
+         'csm_bucket_standing', 'csm_pickup_cap', 'csm_chipbed', 'csm_backup_alarm_whitenoise',
          'csm_backup_alarm_beeper']
 
 
