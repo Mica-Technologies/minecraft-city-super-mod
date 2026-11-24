@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A power company bucket truck with a knuckle boom. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals); BOOM lifts the lower boom, opens the upper boom at its elbow and swings it to the left, the bucket staying level. With BOOM off, the panel's LIFT, ELBOW and SWING steer the boom, from the cab or from the bucket, which has a seat.",
+    "description": "A power company bucket truck with a knuckle boom. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals). Hold the arrow keys (lift and swing) and [ ] (the elbow) to steer the boom from the cab or from the bucket, which has a seat; B, or the BOOM switch, drives it to its working pose or back to stowed. The bucket stays level.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -1623,29 +1623,6 @@
         "animations": [
           {
             "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              0,
-              90,
-              0
-            ],
-            "duration": 60,
-            "forwardsDelay": 160,
-            "reverseDelay": 0,
-            "centerPoint": [
-              0.0,
-              2.325,
-              -1.6
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "rotation",
             "variable": "BOOM_SWING",
             "axis": [
               0,
@@ -1664,29 +1641,6 @@
         "objectName": "boom",
         "applyAfter": "boom_turret",
         "animations": [
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              -70,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 0,
-            "reverseDelay": 140,
-            "centerPoint": [
-              0.0,
-              2.325,
-              -1.6
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "rotation",
             "variable": "BOOM_LIFT",
@@ -1709,29 +1663,6 @@
         "animations": [
           {
             "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              140,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 80,
-            "reverseDelay": 60,
-            "centerPoint": [
-              0.0,
-              2.59,
-              2.45
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
-          {
-            "animationType": "rotation",
             "variable": "BOOM_ELBOW",
             "axis": [
               1,
@@ -1750,46 +1681,6 @@
         "objectName": "bucket",
         "applyAfter": "boom_upper",
         "animations": [
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              70,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 0,
-            "reverseDelay": 140,
-            "centerPoint": [
-              0.0,
-              2.59,
-              -1.95
-            ]
-          },
-          {
-            "animationType": "rotation",
-            "variable": "BOOM",
-            "axis": [
-              -140,
-              0,
-              0
-            ],
-            "duration": 80,
-            "forwardsDelay": 80,
-            "reverseDelay": 60,
-            "centerPoint": [
-              0.0,
-              2.59,
-              -1.95
-            ]
-          },
-          {
-            "animationType": "inhibitor",
-            "variable": "BOOM",
-            "clampMin": 1,
-            "clampMax": 1
-          },
           {
             "animationType": "rotation",
             "variable": "BOOM_LIFT",
@@ -2164,6 +2055,11 @@
   "constantValues": {
     "boom_present": 1.0,
     "elbow_present": 1.0,
+    "boom_lift_max": 80.0,
+    "boom_elbow_max": 170.0,
+    "boom_deploy_lift": 70.0,
+    "boom_deploy_elbow": 140.0,
+    "boom_deploy_swing": 90.0,
     "wipers_present": 1.0
   },
   "connectionGroups": [

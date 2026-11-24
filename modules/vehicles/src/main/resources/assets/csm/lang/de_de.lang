@@ -1,0 +1,17 @@
+key.categories.csm_vehicles=CSM: Fahrzeuge
+key.csm_vehicles.boom_lift_up=Ausleger: heben
+key.csm_vehicles.boom_lift_down=Ausleger: senken
+key.csm_vehicles.boom_swing_left=Ausleger: nach links schwenken
+key.csm_vehicles.boom_swing_right=Ausleger: nach rechts schwenken
+key.csm_vehicles.boom_elbow_out=Ausleger: Knick öffnen / ausfahren
+key.csm_vehicles.boom_elbow_in=Ausleger: Knick schließen / einfahren
+key.csm_vehicles.boom_toggle=Ausleger: ausfahren / einfahren per Tastendruck
+csm_vehicles.boom.hud.title=AUSLEGER
+csm_vehicles.boom.hud.lift=HEBEN
+csm_vehicles.boom.hud.elbow=KNICK
+csm_vehicles.boom.hud.reach=REICHWEITE
+csm_vehicles.boom.hud.swing=SCHWENK
+csm_vehicles.boom.hud.left=links
+csm_vehicles.boom.hud.right=rechts
+csm_vehicles.boom.hud.deploy=%s: ausfahren
+csm_vehicles.boom.hud.stow=%s: einfahren

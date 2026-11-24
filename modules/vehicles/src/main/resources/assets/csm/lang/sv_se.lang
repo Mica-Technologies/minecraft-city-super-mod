@@ -1,0 +1,17 @@
+key.categories.csm_vehicles=CSM: Fordon
+key.csm_vehicles.boom_lift_up=Bom: höj
+key.csm_vehicles.boom_lift_down=Bom: sänk
+key.csm_vehicles.boom_swing_left=Bom: sväng vänster
+key.csm_vehicles.boom_swing_right=Bom: sväng höger
+key.csm_vehicles.boom_elbow_out=Bom: öppna knäleden / skjut ut
+key.csm_vehicles.boom_elbow_in=Bom: stäng knäleden / dra in
+key.csm_vehicles.boom_toggle=Bom: fäll ut / fäll in med en knapp
+csm_vehicles.boom.hud.title=BOM
+csm_vehicles.boom.hud.lift=LYFT
+csm_vehicles.boom.hud.elbow=KNÄLED
+csm_vehicles.boom.hud.reach=RÄCKVIDD
+csm_vehicles.boom.hud.swing=SVÄNG
+csm_vehicles.boom.hud.left=vänster
+csm_vehicles.boom.hud.right=höger
+csm_vehicles.boom.hud.deploy=%s: fäll ut
+csm_vehicles.boom.hud.stow=%s: fäll in
