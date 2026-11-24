@@ -17,7 +17,12 @@ its lights cannot disagree:
     intersection with a CSM preempt detector calls the emergency preempt;
   - the siren's three tones are the siren speaker's (`siren`, `siren_yelp`, `siren_hilo`), so the
     default panel's four custom switches are the lights and the three tones;
-  - headlights, brake, turn and reverse lights run on IV's own variables.
+  - headlights, brake, turn and reverse lights run on IV's own variables; the headlamps throw
+    cones (low beam, and high beam on HIGHBEAM), and some cars have fog lamps on FOG, both
+    switched from our own panel (csm_car).
+
+Doors open: a door is a region of the body declared before the boxes it takes (Vehicle.door),
+which are cut at its edges into the door's own object, so the wall and the door agree.
 
 Immersive Vehicles' coordinates: +z forward, +y up, +x the vehicle's LEFT. A wheel slot's pos is
 its axle; the vehicle settles on its wheels, so here the rear axle is the origin and the ground is
@@ -83,6 +88,173 @@ LAMP_LIT = {'lamp_red': '#FF1E10', 'lamp_blue': '#1E46FF', 'lamp_white': '#EEF4F
             'emitter': '#DCEBFF'}
 
 
+def unit(x, y, z):
+    n = math.sqrt(x * x + y * y + z * z)
+    return [round(x / n, 4), round(y / n, 4), round(z / n, 4)]
+
+
+# Headlight cones. IV draws a cone for a light's blendable component that has a beamDiameter: its
+# apex 0.15 behind `pos`, `beamDiameter` metres across at `beamLength` along the (unit) axis, in
+# the blended pass only and faded by the daylight at the vehicle ((1 - sky light) x brightness),
+# so they show at night and not at noon. The low beam dips to the road; the high beam reaches
+# further on HIGHBEAM; the fog lamps throw a wide, short cone on FOG.
+LOW_BEAM = (unit(0, -0.08, 1), 4.5, 12.0)     # axis, diameter, length
+HIGH_BEAM = (unit(0, -0.015, 1), 6.5, 30.0)
+FOG_BEAM = (unit(0, -0.14, 1), 7.0, 6.0)
+HIGH_BEAM_LEVEL = 0.55   # the high beam's brightness: its flare's and cone's alpha
+HEADLIGHT_WHITE = '#FFF6E0'
+
+
+def beam(pos, kind):
+    axis, diameter, length = kind
+    return {'pos': pos, 'axis': axis, 'beamDiameter': diameter, 'beamLength': length}
+
+
+# Doors. A door is a region of the body: every thin shell box added inside it (the wall, the
+# glass, lettering, handles, stripes) is cut along the region's edges and the piece inside goes
+# into the door's own object, so the wall and the door that opens in it come from the same
+# boxes and cannot disagree. Glass goes into `<door>_window`, which IV draws as glass and which
+# rides the door (applyAfter). Lamps are never taken. The door's variable is its object name;
+# clicking its boxes toggles it, the boxes riding the door as it swings (IV's own convention,
+# the official Mustang's), so a closed door is in front of its seat: open it, then get in.
+DOOR_TICKS = 12          # how long a door takes to open or shut
+DOOR_SWING = 70          # degrees a side door opens
+DOOR_SOUNDS = ('door_open', 'door_close')
+ROLLUP_SOUNDS = ('rollup', 'rollup')
+EPS = 0.002
+
+
+def side_door(v, name, sx, w, z0, z1, y0, y1, extra=(), clicks_y=None, swing=DOOR_SWING,
+              hinge='front', mirror=None):
+    """A hinged side door on side sx (+1 left, -1 right) of a body `w` wide: the shell between
+    z0 and z1, y0 and y1, plus any `extra` (z0, z1, y0, y1) regions (a front door's lower half
+    running forward under the A-pillar). Hinged at its front edge, as a car's doors are, unless
+    `hinge` is 'rear'. Click boxes run along it at the belt of `clicks_y` (y0..y1 by default).
+    `mirror` (z0, z1, y0, y1) takes a door mirror standing out to 0.3 from the body, as a car's
+    and a pickup's are mounted; a truck's cab mirrors stay on the cab."""
+    xa, xb = sorted((sx * (w - WALL - EPS), sx * (w + 0.06)))
+    regions = [((xa, y0, z0), (xb, y1, z1), 'yz')]
+    for e0, e1, f0, f1 in extra:
+        regions.append(((xa, f0, e0), (xb, f1, e1), 'yz'))
+    if mirror:
+        ma, mb = sorted((sx * (w - EPS), sx * (w + 0.3)))
+        regions.append(((ma, mirror[2], mirror[0]), (mb, mirror[3], mirror[1]), ''))
+    front = max([z1] + [e[1] for e in extra])
+    back = min([z0] + [e[0] for e in extra])
+    hz = front if hinge == 'front' else back
+    # the Mustang's signs: +x (left) opens on a negative turn about y, the right on a positive
+    turn = -sx * swing if hinge == 'front' else sx * swing
+    cy0, cy1 = clicks_y or (y0, y1)
+    v.door(name, regions, {'animationType': 'rotation', 'centerPoint': [sx * w, 0.0, hz],
+                           'axis': [0, turn, 0]},
+           click_row(((sx * (w - 0.08), z0 + 0.1), (sx * (w - 0.08), z1 - 0.1)), cy0, cy1))
+
+
+def rollup_door(v, name, sx, w, z0, z1, y0, y1):
+    """A roll-up compartment door on side sx: it shrinks up into its top as the slats wind onto
+    the drum. IV scales by axis x (value x |axis| + offset), a zero component meaning 1, so a y
+    axis of -0.96 with an offset of -1 is a y scale of 1 shut and 0.04 open, about the door's
+    top edge. Its shelves (a recess panel just behind it) must be added before this is
+    declared, or the door would take them."""
+    xa, xb = sorted((sx * (w - EPS), sx * (w + 0.04)))
+    v.door(name, [((xa, y0, z0), (xb, y1, z1), 'z')],
+           {'animationType': 'scaling', 'centerPoint': [sx * w, y1, round((z0 + z1) / 2, 3)],
+            'axis': [0, -0.96, 0], 'offset': -1.0},
+           click_row(((sx * (w - 0.06), z0 + 0.1), (sx * (w - 0.06), z1 - 0.1)), y0 + 0.2,
+                     y1 - 0.2),
+           sounds=ROLLUP_SOUNDS, duration=18, close_at_start=True)
+
+
+def compartment_shelves(v, w, z0, z1, y0, y1):
+    """What an open compartment shows: a dark recess with shelves, just behind the door's
+    face on both sides, so it is hidden while the door is down."""
+    for sx in (1, -1):
+        xa, xb = sorted((sx * (w + 0.001), sx * (w + 0.004)))
+        v.box((xa, y0, z0), (xb, y1, z1), 'black', faces=('e', 'w'))
+        sa, sb = sorted((sx * (w + 0.001), sx * (w + 0.006)))   # still behind the door's face
+        for k in range(1, 3):
+            y = y0 + (y1 - y0) * k / 3
+            v.box((sa, y - 0.03, z0), (sb, y, z1), 'chrome', faces=('e', 'w', 'u'))
+
+
+FIRE_COMPARTMENTS = ((-2.2, -0.9), (-0.8, 0.9), (1.0, 2.4))
+LADDER_COMPARTMENTS = ((-3.1, -1.6), (-1.5, 0.6), (0.7, 2.6), (2.7, 4.5))
+
+
+def crew_cab_doors(v, w, rear, pillar, front, floor=0.4, win_top=2.4):
+    """A fire apparatus crew cab's four doors: the rear pair from `rear` to the B-pillar, the
+    front pair from there to `front`, each hinged at its front edge."""
+    for side, sx in (('l', 1), ('r', -1)):
+        side_door(v, 'door_f' + side, sx, w, pillar, front, floor, win_top,
+                  clicks_y=(floor + 0.2, win_top - 0.5))
+        side_door(v, 'door_r' + side, sx, w, rear, pillar, floor, win_top,
+                  clicks_y=(floor + 0.2, win_top - 0.5))
+
+
+def rollup_compartments(v, w, spans, y0, y1):
+    """Roll-up doors on both sides over each (z0, z1) of `spans`, with their shelves."""
+    for k, (z0, z1) in enumerate(spans):
+        compartment_shelves(v, w, z0, z1, y0, y1)
+        for side, sx in (('l', 1), ('r', -1)):
+            rollup_door(v, 'comp_%d%s' % (k + 1, side), sx, w, z0, z1, y0, y1)
+
+
+def rear_hatch(v, name, x_half, y0, y1, z0, z1, hinge, turn, split='y', click_z=None,
+               click_y=None):
+    """A door across the back hinged about x: a hatch or a trunk lid lifting (`turn` positive
+    swings what is below the hinge back and up), a tailgate dropping (negative). `hinge` is
+    (y, z); the region x within +-x_half, y0..y1, z0..z1, cut along `split`."""
+    cz = click_z if click_z is not None else z0 + 0.09
+    cy0, cy1 = click_y or (y0, y1)
+    v.door(name, [((-x_half, y0, z0), (x_half, y1, z1), split)],
+           {'animationType': 'rotation', 'centerPoint': [0.0, hinge[0], hinge[1]],
+            'axis': [turn, 0, 0]},
+           click_row(((x_half - 0.1, cz), (-x_half + 0.1, cz)), cy0, cy1))
+
+
+def click_row(ends, y0, y1, size=0.22):
+    """Click boxes (centre, width, height) in a row from ends[0] to ends[1], each (x, z), at
+    y0..y1. IV's collision box is `width` in both x and z, so a door is a row of small cubes."""
+    (xa, za), (xb, zb) = ends
+    span = math.hypot(xb - xa, zb - za)
+    n = max(1, int(math.ceil(span / size)))
+    out = []
+    for k in range(n):
+        f = (k + 0.5) / n if n > 1 else 0.5
+        out.append(([round(xa + (xb - xa) * f, 3), round((y0 + y1) / 2, 3),
+                     round(za + (zb - za) * f, 3)], size, round(y1 - y0, 3)))
+    return out
+
+
+def _cut(lo, hi, region):
+    """The part of box lo..hi inside `region` and the parts outside it, or (None, [box]) if it
+    does not lie in the region: on the region's unsplit axes the box must lie within it."""
+    rlo, rhi, split = region
+    axes = 'xyz'
+    for a in range(3):
+        if axes[a] in split:
+            if hi[a] <= rlo[a] + EPS or lo[a] >= rhi[a] - EPS:
+                return None, [(lo, hi)]
+        elif lo[a] < rlo[a] - EPS or hi[a] > rhi[a] + EPS:
+            return None, [(lo, hi)]
+    lo, hi = list(lo), list(hi)
+    outside = []
+    for a in range(3):
+        if axes[a] not in split:
+            continue
+        if lo[a] < rlo[a] - EPS:
+            olo, ohi = list(lo), list(hi)
+            ohi[a] = rlo[a]
+            outside.append((tuple(olo), tuple(ohi)))
+            lo[a] = rlo[a]
+        if hi[a] > rhi[a] + EPS:
+            olo, ohi = list(lo), list(hi)
+            olo[a] = rhi[a]
+            outside.append((tuple(olo), tuple(ohi)))
+            hi[a] = rhi[a]
+    return (tuple(lo), tuple(hi)), outside
+
+
 # ------------------------------------------------------------------------------------------
 # Building a vehicle
 # ------------------------------------------------------------------------------------------
@@ -96,11 +268,109 @@ class Vehicle:
         self.lamp_groups = {}  # (cell, colour, animations) -> that lamp object's light
         self.outline = []     # (lo, hi, cell name) for the item icon
         self.count = 0
+        self.doors = []       # each: name, regions, animation, clicks, sounds, has_window
+        self.lamp_doors = {}  # lamp object -> the doors (None: none) its boxes sit on
+
+    def door(self, name, regions, animation, clicks, sounds=DOOR_SOUNDS, duration=DOOR_TICKS,
+             close_at_start=False):
+        """Declare a door before the boxes it takes are added. `regions` are (lo, hi, split
+        axes); `animation` is its IV animation, less the variable, timing and sounds. The
+        opening sound plays as it starts to open; the closing one as it shuts (a door's thump),
+        or with `close_at_start` as it starts to close (a roll-up's rattle runs the whole way)."""
+        anim = dict(animation, variable=name, duration=duration)
+        if sounds:
+            anim['forwardsStartSound'] = '%s:%s' % (PACK, sounds[0])
+            anim['reverseStartSound' if close_at_start else 'reverseEndSound'] = \
+                '%s:%s' % (PACK, sounds[1])
+        self.doors.append({'name': name, 'regions': regions, 'animation': anim,
+                           'clicks': clicks, 'window': False, 'boxes': 0})
 
     def box(self, lo, hi, name, faces=('n', 's', 'e', 'w', 'u', 'd'), obj=None):
         self.count += 1
-        self.obj.box(obj or 'body', lo, hi, CELLS[name], faces)
+        obj = obj or 'body'
         self.outline.append((lo, hi, name))
+        pieces = [(tuple(lo), tuple(hi))]
+        if obj.startswith('&'):
+            # a lamp is never cut; one wholly on a door rides it (applyAfter), if all of its
+            # object's boxes are on that door
+            holder = None
+            for door in self.doors:
+                for region in door['regions']:
+                    inside, outside = _cut(tuple(lo), tuple(hi), region)
+                    if inside is not None and not outside:
+                        holder = door['name']
+            self.lamp_doors.setdefault(obj, set()).add(holder)
+        if obj in ('body', 'window'):
+            for door in self.doors:
+                kept = []
+                for plo, phi in pieces:
+                    rest = [(plo, phi)]
+                    for region in door['regions']:
+                        nxt = []
+                        for qlo, qhi in rest:
+                            inside, outside = _cut(qlo, qhi, region)
+                            if inside is not None:
+                                target = door['name'] + ('_window' if obj == 'window' else '')
+                                door['window'] |= obj == 'window'
+                                door['boxes'] += 1
+                                self.obj.box(target, inside[0], inside[1], CELLS[name], faces)
+                            nxt.extend(outside)
+                        rest = nxt
+                    kept.extend(rest)
+                pieces = kept
+        for plo, phi in pieces:
+            self.obj.box(obj, plo, phi, CELLS[name], faces)
+
+    def door_json(self):
+        """The doors' animated objects and click groups."""
+        objects, groups = [], []
+        for door in self.doors:
+            if not door['boxes']:
+                raise ValueError('door %s took no boxes' % door['name'])
+            objects.append({'objectName': door['name'], 'animations': [door['animation']]})
+            if door['window']:
+                objects.append({'objectName': door['name'] + '_window',
+                                'applyAfter': door['name'], 'animations': []})
+            groups.append({'collisionTypes': ['click'], 'applyAfter': door['name'],
+                           'collisions': [{'pos': pos, 'width': width, 'height': height,
+                                           'variableName': door['name'],
+                                           'variableType': 'toggle'}
+                                          for pos, width, height in door['clicks']]})
+        for lamp, holders in self.lamp_doors.items():
+            if len(holders) == 1 and None not in holders:
+                objects.append({'objectName': lamp, 'applyAfter': next(iter(holders)),
+                                'animations': []})
+        return objects, groups
+
+    def dome(self, lo, hi):
+        """A cabin's dome light, on while any of its doors is open (each door's variable adds
+        to its brightness, as running and brake lights add on a tail lamp). Only the doors
+        named door_*: a tailgate, trunk or compartment lights no cabin."""
+        doors = [d['name'] for d in self.doors if d['name'].startswith('door_')]
+        if doors:
+            self.lamp('Dome', lo, hi, 'white', '#FFE6B8',
+                      [vp.lit_by(d) for d in doors], [0, -1, 0], 0.5, faces=('d',))
+
+    def headlight(self, side, lo, hi, faces):
+        """A headlamp: its low beam on IV's `headlight`, and a high beam on HIGHBEAM from a box
+        hidden inside the lamp (a light is bound to its object, so the high beam needs one of
+        its own; not emissive, so it adds only its flare and its longer cone)."""
+        self.lamp('Headlight' + side, lo, hi, 'headlight', HEADLIGHT_WHITE,
+                  [vp.visible_on('headlight')], [0, 0, 1], 0.6, faces=faces, cone=LOW_BEAM)
+        ilo = (lo[0] + 0.02, lo[1] + 0.02, lo[2] + 0.004)
+        ihi = (hi[0] - 0.02, hi[1] - 0.02, hi[2] - 0.004)
+        # at full brightness the long cone washed out everything seen head-on; at 0.55 it reads
+        # as more light down the road without hiding it
+        self.lamp('HighBeam' + side, ilo, ihi, 'headlight', '#FFFFFF',
+                  [vp.visible_on('headlight'), vp.visible_on('HIGHBEAM'),
+                   {'animationType': 'translation', 'axis': [0, HIGH_BEAM_LEVEL, 0],
+                    'variable': 'HIGHBEAM'}],
+                  [0, 0, 1], 1.2, faces=faces, cone=HIGH_BEAM, emissive=False)
+
+    def fog_lamp(self, side, lo, hi, faces=('s',)):
+        """A fog lamp on FOG, with a wide, short cone."""
+        self.lamp('Fog' + side, lo, hi, 'headlight', '#FFF0D0', [vp.visible_on('FOG')],
+                  [0, 0, 1], 0.5, faces=faces, cone=FOG_BEAM)
 
     def group(self, obj, boxes):
         """Boxes `(lo, hi, cell name)` as one OBJ object named `obj`, which IV animates as one."""
@@ -114,21 +384,25 @@ class Vehicle:
         self.box((-hi[0], lo[1], lo[2]), (-lo[0], hi[1], hi[2]), name, faces)
 
     def lamp(self, name, lo, hi, cell_name, colour, animations, axis, size=0.35,
-             faces=('n', 's', 'e', 'w', 'u', 'd')):
+             faces=('n', 's', 'e', 'w', 'u', 'd'), cone=None, emissive=True):
         """A lamp. Lamps of one cell and colour that light on the same animations are one object
         (named for the first of them) carrying every one's flare: they could not be told apart
-        anyway, and each object is a draw of its own every frame."""
-        key = (cell_name, colour, json.dumps(animations, sort_keys=True))
+        anyway, and each object is a draw of its own every frame. `cone` adds a beam (LOW_BEAM,
+        HIGH_BEAM, FOG_BEAM) from the lamp's face."""
+        key = (cell_name, colour, emissive, json.dumps(animations, sort_keys=True))
         light = self.lamp_groups.get(key)
         if light is None:
-            light = {'objectName': '&' + name, 'emissive': True, 'isElectric': True,
+            light = {'objectName': '&' + name, 'emissive': emissive, 'isElectric': True,
                      'color': colour, 'brightnessAnimations': animations}
             self.lamp_groups[key] = light
             self.lights.append(light)
         self.box(lo, hi, cell_name, faces, obj=light['objectName'])
+        centre = [round((lo[k] + hi[k]) / 2, 4) for k in range(3)]
         if axis:
-            centre = [round((lo[k] + hi[k]) / 2, 4) for k in range(3)]
             light.setdefault('blendableComponents', []).append(vp.flare(centre, axis, size))
+        if cone:
+            front = [centre[0], centre[1], round(hi[2], 4)]
+            light.setdefault('blendableComponents', []).append(beam(front, cone))
 
     def lightbar(self, x_half, y, z, colours, variable='EMERLTS', emitter=True):
         """A roof lightbar: eight modules flashing in pairs, left then right, the emitter in the
@@ -158,15 +432,15 @@ class Vehicle:
         self.lamp(name, lo, hi, colour, LAMP_LIT[colour],
                   [vp.visible_on(variable), vp.lit_by(cycle)], axis)
 
-    def road_lights(self, front_z, rear_z, x_out, head_y, tail_y):
-        """Headlights, tail and brake lights, turn signals and reversing lights."""
+    def road_lights(self, front_z, rear_z, x_out, head_y, tail_y, corner_reverse=False):
+        """Headlights, tail and brake lights, turn signals and reversing lights. The reversing
+        lamp is one in the middle of the tail, or with `corner_reverse` one above each tail
+        lamp, for a body whose middle is doors."""
         f, r = front_z, rear_z
-        self.lamp('HeadlightL', (x_out - 0.35, head_y, f), (x_out - 0.05, head_y + 0.2, f + 0.03),
-                  'headlight', '#FFF6E0', [vp.visible_on('headlight')], [0, 0, 1], 0.6,
-                  faces=('s', 'e', 'w', 'u', 'd'))
-        self.lamp('HeadlightR', (-x_out + 0.05, head_y, f), (-x_out + 0.35, head_y + 0.2, f + 0.03),
-                  'headlight', '#FFF6E0', [vp.visible_on('headlight')], [0, 0, 1], 0.6,
-                  faces=('s', 'e', 'w', 'u', 'd'))
+        self.headlight('L', (x_out - 0.35, head_y, f), (x_out - 0.05, head_y + 0.2, f + 0.03),
+                       ('s', 'e', 'w', 'u', 'd'))
+        self.headlight('R', (-x_out + 0.05, head_y, f), (-x_out + 0.35, head_y + 0.2, f + 0.03),
+                       ('s', 'e', 'w', 'u', 'd'))
         brake = [{'animationType': 'translation', 'axis': [0, 0.5, 0],
                   'variable': 'running_light'},
                  {'animationType': 'translation', 'axis': [0, 1, 0], 'variable': 'brake'}]
@@ -184,8 +458,15 @@ class Vehicle:
                       'amber', '#FFA000',
                       [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
                        vp.lit_by('10_10_0_cycle')], [0, 0, 1], faces=('s', 'e', 'w', 'u', 'd'))
-        self.lamp('Reverse', (-0.15, tail_y, r - 0.03), (0.15, tail_y + 0.1, r), 'white', '#FFFFFF',
-                  [vp.lit_by('engine_reversed_1')], [0, 0, -1], faces=back)
+        if not corner_reverse:
+            self.lamp('Reverse', (-0.15, tail_y, r - 0.03), (0.15, tail_y + 0.1, r), 'white',
+                      '#FFFFFF', [vp.lit_by('engine_reversed_1')], [0, 0, -1], faces=back)
+            return
+        for sx in (1, -1):
+            xs = sorted((sx * (x_out - 0.05), sx * (x_out - 0.30)))
+            self.lamp('Reverse', (xs[0], tail_y + 0.36, r - 0.03), (xs[1], tail_y + 0.46, r),
+                      'white', '#FFFFFF', [vp.lit_by('engine_reversed_1')], [0, 0, -1],
+                      faces=back)
 
 
 def _spans(z0, z1, cut):
@@ -272,6 +553,8 @@ def fire_engine():
     v = Vehicle()
     g = -0.55                                  # the ground, below the axle
     w = 1.25
+    crew_cab_doors(v, w, 3.7, 4.6, 6.65)
+    rollup_compartments(v, w, FIRE_COMPARTMENTS, 0.4, 2.2)
     v.box((-0.5, -0.15, -2.3), (0.5, 0.25, 6.9), 'black')                      # frame
     v.box((-w, 0.25, 3.65), (w, 0.4, 6.75), 'paint')                           # cab sill
     cabin(v, w, 0.4, 1.55, 2.55, 3.65, 6.75, windows=[(3.75, 4.55), (4.65, 6.55)],
@@ -283,7 +566,7 @@ def fire_engine():
     v.both((w, 1.9, 6.4), (w + 0.25, 2.3, 6.5), 'chrome')                      # mirrors
     # the body: compartments with roll-up doors, the pump panel, the hose bed
     v.box((-w, 0.25, -2.3), (w, 2.35, 3.6), 'paint')
-    for z0, z1 in ((-2.2, -0.9), (-0.8, 0.9), (1.0, 2.4)):
+    for z0, z1 in FIRE_COMPARTMENTS:
         v.both((w, 0.4, z0), (w + 0.01, 2.2, z1), 'door', faces=('e', 'w'))
     v.both((w, 0.5, 2.5), (w + 0.02, 2.2, 3.5), 'chrome', faces=('e', 'w'))   # pump panel
     v.both((w + 0.025, 1.05, -2.3), (w + 0.035, 1.25, 3.6), 'stripe', faces=('e', 'w'))
@@ -308,6 +591,7 @@ def fire_engine():
         v.warning('Grille' + side, (fx[0], 1.0, 6.75), (fx[1], 1.15, 6.78), 'lamp_red',
                   0 if sx > 0 else 1, [0, 0, 1])
     v.road_lights(6.75, -2.3, w, 0.7, 0.45)
+    v.dome((-0.2, 2.485, 4.9), (0.2, 2.5, 5.3))
     return v, g
 
 
@@ -315,6 +599,18 @@ def ambulance():
     """A Type III ambulance: a van cab and a modular box behind it."""
     v = Vehicle()
     g = -0.4
+    # the cab's two doors; the module's curb-side door and its rear barn doors, whose leaves
+    # stop short of the corner posts the tail lamps stand on
+    for side, sx in (('l', 1), ('r', -1)):
+        side_door(v, 'door_' + side, sx, 1.0, 3.0, 3.95, 0.3, 1.95, clicks_y=(0.45, 1.5))
+    side_door(v, 'door_side', -1, 1.15, 1.2, 2.6, 0.3, 2.3, clicks_y=(0.5, 1.9))
+    leaf = 0.62
+    for side, sx in (('l', 1), ('r', -1)):
+        xa, xb = sorted((0.0, sx * leaf))
+        v.door('door_rear' + side, [((xa, 0.3, -1.98), (xb, 2.3, -1.9 + EPS), 'xy')],
+               {'animationType': 'rotation', 'centerPoint': [sx * leaf, 0.0, -1.95],
+                'axis': [0, -sx * 100, 0]},
+               click_row(((sx * 0.12, -1.86), (sx * (leaf - 0.12), -1.86)), 0.5, 1.9, 0.2))
     v.box((-0.45, -0.1, -1.95), (0.45, 0.2, 5.1), 'black')
     # the van cab and its hood
     v.box((-1.0, 0.2, 2.95), (1.0, 0.3, 4.0), 'paint2')                        # cab sill
@@ -349,7 +645,9 @@ def ambulance():
         sx0 = sorted((sx * w, sx * (w + 0.03)))
         v.warning('Side' + side, (sx0[0], 2.3, 1.0), (sx0[1], 2.5, 1.4), 'lamp_red',
                   0 if sx > 0 else 1, [sx, 0, 0])
-    v.road_lights(5.0, -1.95, 0.95, 0.55, 0.5)
+    v.road_lights(5.0, -1.95, 0.95, 0.55, 0.5, corner_reverse=True)
+    v.dome((-0.15, 1.985, 3.3), (0.15, 2.0, 3.6))           # the cab
+    v.dome((-0.25, 2.535, 0.2), (0.25, 2.55, 0.8))          # the patient module
     return v, g
 
 
@@ -358,6 +656,13 @@ def police_suv():
     v = Vehicle()
     g = -0.39
     w = 1.0
+    # four doors, hinged at their front edges, and the rear hatch, hinged at the roof
+    for side, sx in (('l', 1), ('r', -1)):
+        side_door(v, 'door_f' + side, sx, w, 1.25, 2.8, 0.0, 1.52, clicks_y=(0.15, 1.35),
+                  mirror=(2.55, 2.75, 0.95, 1.25))
+        side_door(v, 'door_r' + side, sx, w, 0.05, 1.25, 0.0, 1.52, clicks_y=(0.15, 1.35))
+    rear_hatch(v, 'door_hatch', w - WALL, 0.75, 1.57, -1.0, -0.9 + EPS, (1.57, -0.95), 80,
+               click_y=(0.8, 1.45))
     v.box((-w, -0.05, 2.85), (w, 0.75, 4.1), 'paint2')                        # engine bay
     v.box((-w, -0.05, -1.05), (w, 0.75, -0.95), 'paint2')                     # rear sill
     v.box((-w, -0.05, -0.95), (w, 0.0, 2.85), 'paint2')                       # underbody
@@ -382,6 +687,7 @@ def police_suv():
         v.warning('Rear' + side, (xs[0], 1.4, -0.98), (xs[1], 1.48, -0.96), col,
                   1 if sx > 0 else 0, [0, 0, -1])
     v.road_lights(4.1, -1.05, w, 0.5, 0.45)
+    v.dome((-0.15, 1.555, 1.0), (0.15, 1.57, 1.3))
     return v, g
 
 
@@ -412,6 +718,8 @@ def ladder_truck():
     v = Vehicle()
     g = -0.55
     w = 1.25
+    crew_cab_doors(v, w, 4.7, 5.6, 7.65)
+    rollup_compartments(v, w, LADDER_COMPARTMENTS, 0.4, 1.85)
     v.box((-0.5, -0.15, -3.2), (0.5, 0.25, 8.0), 'black')                      # frame
     v.box((-w, 0.25, 4.65), (w, 0.4, 7.75), 'paint')                           # cab sill
     cabin(v, w, 0.4, 1.55, 2.55, 4.65, 7.75, windows=[(4.75, 5.55), (5.65, 7.55)],
@@ -423,7 +731,7 @@ def ladder_truck():
     v.both((w, 1.9, 7.4), (w + 0.25, 2.3, 7.5), 'chrome')
     # the body, lower than the pumper's so the ladder clears the cab
     v.box((-w, 0.25, -3.2), (w, 2.0, 4.6), 'paint')
-    for z0, z1 in ((-3.1, -1.6), (-1.5, 0.6), (0.7, 2.6), (2.7, 4.5)):
+    for z0, z1 in LADDER_COMPARTMENTS:
         v.both((w, 0.4, z0), (w + 0.01, 1.85, z1), 'door', faces=('e', 'w'))
     v.both((w + 0.025, 1.0, -3.2), (w + 0.035, 1.18, 4.6), 'stripe', faces=('e', 'w'))
     v.box((-w + 0.05, 2.0, -3.15), (w - 0.05, 2.05, 4.55), 'black', faces=('u',))
@@ -467,6 +775,7 @@ def ladder_truck():
         v.warning('Grille' + side, (fx[0], 1.0, 7.75), (fx[1], 1.15, 7.78), 'lamp_red',
                   0 if sx > 0 else 1, [0, 0, 1])
     v.road_lights(7.75, -3.2, w, 0.7, 0.45)
+    v.dome((-0.2, 2.485, 5.9), (0.2, 2.5, 6.3))
     return v, g
 
 
@@ -488,6 +797,9 @@ def conventional_cab(v, w, front_z):
     """A conventional cab: a long hood, the cab behind it, the windshield above the hood."""
     hood = front_z - 1.8
     back = hood - 1.5
+    for side, sx in (('l', 1), ('r', -1)):
+        side_door(v, 'door_' + side, sx, w, back + 0.1, hood - 0.05, 0.4, 2.35,
+                  clicks_y=(0.6, 1.9))
     v.box((-w, 0.25, hood), (w, 1.45, front_z), 'paint')                       # hood
     v.box((-w, 0.25, back), (w, 0.4, hood), 'paint')                           # cab sill
     cabin(v, w, 0.4, 1.5, 2.45, back, hood, windows=[(back + 0.2, hood - 0.15)], win_top=2.35,
@@ -498,6 +810,8 @@ def conventional_cab(v, w, front_z):
     v.box((-w - 0.05, -0.05, front_z), (w + 0.05, 0.3, front_z + 0.25), 'chrome')
     v.both((w, 0.3, hood + 0.2), (w + 0.12, 0.9, front_z - 0.3), 'black')     # fenders
     v.both((w, 1.85, hood - 0.1), (w + 0.25, 2.25, hood), 'chrome')            # mirrors
+    mid = (back + hood) / 2
+    v.dome((-0.15, 2.385, mid - 0.15), (0.15, 2.4, mid + 0.15))
     return back
 
 
@@ -855,6 +1169,9 @@ def door_animations():
 PICKUP_FRONT, PICKUP_REAR = 4.63, -1.25   # a 5.9 m truck on a 3.68 m wheelbase
 PICKUP_CAB = (0.5, 3.0)                   # the cab's back wall and the cowl
 PICKUP_BED_FRONT = 0.45                   # a 5.5 ft bed, from here back to the tailgate
+PICKUP_B_PILLAR = 1.3                     # where the front and rear doors meet
+# a handle near the back edge of each door, so each rides its own door
+PICKUP_HANDLES = (PICKUP_CAB[0] + 0.12, PICKUP_B_PILLAR + 0.08)
 PICKUP_ARCHES = [(-0.48, 0.48), (3.2, 4.16)]   # the wheel openings (axles at 0 and 3.68)
 PICKUP_SEATS = [(0.42, 0.35, 1.6, True), (-0.42, 0.35, 1.6, False),
                 (0.42, 0.35, 0.85, False), (-0.42, 0.35, 0.85, False)]
@@ -869,8 +1186,17 @@ def raked_cab(v, w, belt, top, rake, steps=6):
     t = WALL
     roof_front = c1 - rake
     win_top = top - 0.08
+    # four doors meeting at the B-pillar; the front pair's lower half runs on under the
+    # A-pillar to the cowl, as a real truck's does
+    for side, sx in (('l', 1), ('r', -1)):
+        side_door(v, 'door_f' + side, sx, w, PICKUP_B_PILLAR, roof_front, 0.1, win_top,
+                  extra=[(roof_front, c1 - 0.1, 0.1, belt)], clicks_y=(0.25, belt + 0.3),
+                  mirror=(roof_front, roof_front + 0.16, 0.9, 1.32))
+        side_door(v, 'door_r' + side, sx, w, c0 + 0.05, PICKUP_B_PILLAR, 0.1, win_top,
+                  clicks_y=(0.25, belt + 0.3))
     v.box((-w, 0.0, c0), (w, 0.1, c1), 'paint')                               # sill
-    cabin(v, w, 0.1, belt, top, c0, roof_front, windows=[(c0 + 0.15, 1.6), (1.7, roof_front)],
+    cabin(v, w, 0.1, belt, top, c0, roof_front,
+          windows=[(c0 + 0.15, PICKUP_B_PILLAR - 0.05), (PICKUP_B_PILLAR + 0.05, roof_front)],
           win_top=win_top, front='open', rear='window')
     for sx in (1, -1):
         xa, xb = sorted((sx * (w - t), sx * w))
@@ -897,12 +1223,18 @@ def raked_cab(v, w, belt, top, rake, steps=6):
                    ((wx0, wy0 + 0.035, wz - 0.02), (wx0 + 0.035, wy1 - 0.035, wz + 0.02)),
                    ((wx1 - 0.035, wy0 + 0.035, wz - 0.02), (wx1, wy1 - 0.035, wz + 0.02))):
         v.box(lo, hi, 'black')
+    v.dome((-0.15, top - 0.065, PICKUP_B_PILLAR - 0.15), (0.15, top - 0.05, PICKUP_B_PILLAR + 0.15))
     return roof_front
 
 
 def pickup_bed(v, w, rail, arch):
-    """The bed: sides cut round the rear wheels, wheel tubs, floor, front wall and tailgate."""
+    """The bed: sides cut round the rear wheels, wheel tubs, floor, front wall and tailgate.
+    The tailgate drops on its bottom hinge; its handle, name and lip go with it, the tail
+    lamps on the bed's corners stay."""
     r, bf = PICKUP_REAR, PICKUP_BED_FRONT
+    # between the tail lamps (from x 0.76 out), which stand on the bed's corners
+    rear_hatch(v, 'tailgate', 0.745, 0.15, rail + 0.03, r - 0.06, r + WALL, (0.15, r),
+               -90, split='x', click_z=r + 0.03, click_y=(0.45, rail - 0.05))
     for sx in (1, -1):
         xa, xb = sorted((sx * (w - WALL), sx * w))
         for a, b in _spans(r, bf, PICKUP_ARCHES[:1]):
@@ -941,8 +1273,7 @@ def pickup_lights(v, f, r, head, turn_front, tails):
         def xs(box):
             return sorted((sx * box[0], sx * box[1]))
         hx = xs(head)
-        v.lamp('Headlight' + side, (hx[0], head[2], f), (hx[1], head[3], f + 0.03),
-               'headlight', '#FFF6E0', [vp.visible_on('headlight')], [0, 0, 1], 0.6, faces=front)
+        v.headlight(side, (hx[0], head[2], f), (hx[1], head[3], f + 0.03), front)
         signal = [vp.visible_on('left_turn_signal' if sx > 0 else 'right_turn_signal'),
                   vp.lit_by('10_10_0_cycle')]
         tx = xs(turn_front)
@@ -990,7 +1321,7 @@ def pickup_h150():
             v.both((w - WALL, arch - 0.16, z0 + (0.06 if z0 == a0 else 0)),
                    (w, arch - 0.1, z1 - (0.06 if z1 == a1 else 0)), 'paint')
     # the sides
-    for z in (1.3, c1 - 0.85):
+    for z in PICKUP_HANDLES:
         v.both((w, 0.8, z), (w + 0.012, 0.84, z + 0.14), 'trim', faces=('e', 'w'))
     v.both((w, 0.92, roof_front + 0.04), (w + 0.2, 1.14, roof_front + 0.14), 'black')
     for a, b in _spans(r, f, PICKUP_ARCHES):
@@ -1048,7 +1379,7 @@ def pickup_silverline():
     for a, b in _spans(r, f, [(a0 - 0.08, a1 + 0.08) for a0, a1 in PICKUP_ARCHES]):
         v.both((w, 0.7, a), (w + 0.015, 0.74, b), 'paint')
         v.both((w, 0.12, a), (w + 0.008, 0.2, b), 'stripe', faces=('e', 'w'))
-    for z in (1.3, c1 - 0.85):
+    for z in PICKUP_HANDLES:
         v.both((w, 0.84, z), (w + 0.012, 0.88, z + 0.14), 'trim', faces=('e', 'w'))
     v.both((w, 0.98, roof_front + 0.02), (w + 0.26, 1.3, roof_front + 0.14), 'paint')
     v.both((w - 0.1, 0.02, c0 + 0.1), (w + 0.06, 0.07, c1 - 0.1), 'trim')    # step
@@ -1067,9 +1398,9 @@ def pickup_silverline():
     v.box((-0.13, 0.6, f + 0.06), (0.13, 0.73, f + 0.07), 'badge', faces=('s',))
     v.box((-w, 0.0, f), (w, 0.33, f + 0.15), 'trim')                          # bumper
     v.box((-w + 0.05, 0.12, f + 0.15), (w - 0.05, 0.16, f + 0.17), 'black')   # step pad
-    for sx in (1, -1):
+    for side, sx in (('L', 1), ('R', -1)):
         xa, xb = sorted((sx * 0.55, sx * 0.75))
-        v.box((xa, 0.18, f + 0.15), (xb, 0.26, f + 0.155), 'headlight', faces=('s',))  # fogs
+        v.fog_lamp(side, (xa, 0.18, f + 0.15), (xb, 0.26, f + 0.155))             # fogs
     v.box((-0.85, -0.06, f - 0.05), (0.85, 0.0, f + 0.1), 'black')            # air dam
     pickup_lights(v, f, r, (0.64, 0.97, 0.72, 0.94), (0.8, 0.97, 0.5, 0.63),
                   [('brake', (0.8, 0.99, 0.62, 0.92)), ('brake', (0.88, 0.99, 0.5, 0.62)),
@@ -1215,6 +1546,19 @@ def car_cabin(v, c):
         v.box(lo, hi, 'black')
 
 
+def car_doors(v, c, pillar, rear):
+    """A car's four doors, meeting at the B-pillar: the rear pair from `rear`, the front pair
+    to the end of the side glass, their lower half running on under the A-pillar."""
+    w = c['w']
+    for side, sx in (('l', 1), ('r', -1)):
+        side_door(v, 'door_f' + side, sx, w, pillar, c['zfr'], 0.0, c['win_top'],
+                  extra=[(c['zfr'], c['zc'] - 0.15, 0.0, c['belt'])],
+                  clicks_y=(0.1, c['belt'] + 0.2),
+                  mirror=(c['zfr'], c['zfr'] + 0.2, c['belt'] - 0.01, c['belt'] + 0.15))
+        side_door(v, 'door_r' + side, sx, w, rear, pillar, 0.0, c['win_top'],
+                  clicks_y=(0.1, c['belt'] + 0.2))
+
+
 def sloped_hood(v, w, arch_top, z0, z1, h0, h1, steps=4):
     """A hood falling from h0 at the cowl (z0) to h1 at the nose (z1), in steps."""
     for i in range(steps):
@@ -1256,6 +1600,10 @@ def impressa():
     g = -0.32
     c = IMPRESSA
     w, f, r = c['w'], IMPRESSA_FRONT, IMPRESSA_REAR
+    car_doors(v, c, 0.5, -0.15)
+    # the hatch: the rear glass and the tail below it down to the bumper, hinged at the roof
+    rear_hatch(v, 'door_hatch', w - WALL, 0.3, c['top'] + EPS, r - 0.01, c['zr'] + EPS,
+               (c['top'], c['zr']), 75, split='xy', click_z=r + 0.05, click_y=(0.35, 0.6))
     car_cabin(v, c)
     solid_section(v, w, c['zc'], f, c['rocker'], c['arch_top'], c['arches'], c['arch_top'])
     sloped_hood(v, w, c['arch_top'], c['zc'], f, c['belt'] - 0.03, 0.42)
@@ -1276,14 +1624,16 @@ def impressa():
     v.box((-0.44, 0.285, f + 0.015), (0.44, 0.315, f + 0.03), 'trim')
     v.box((-0.075, 0.26, f + 0.03), (0.075, 0.34, f + 0.036), 'badge', faces=('s',))
     v.box((-0.45, -0.09, f), (0.45, 0.1, f + 0.01), 'mesh', faces=('s',))
-    for sx in (1, -1):
+    for side, sx in (('L', 1), ('R', -1)):
         xa, xb = sorted((sx * 0.55, sx * 0.74))
         v.box((xa, -0.04, f), (xb, 0.06, f + 0.01), 'black', faces=('s',))
         v.box((xa, 0.06, f), (xb, 0.085, f + 0.02), 'chrome')
+        v.fog_lamp(side, (xa + 0.04, -0.02, f + 0.01), (xb - 0.04, 0.045, f + 0.015))
     v.box((-0.82, -0.18, f - 0.05), (0.82, -0.14, f + 0.03), 'black')         # lip
     pickup_lights(v, f, r, (0.44, 0.86, 0.32, 0.41), (0.7, 0.86, 0.25, 0.31),
                   [('brake', (0.55, 0.88, 0.4, 0.5)), ('brake', (0.8, 0.88, 0.5, 0.56)),
                    ('turn', (0.7, 0.88, 0.33, 0.39)), ('reverse', (0.55, 0.68, 0.33, 0.39))])
+    v.dome((-0.15, c['top'] - 0.065, 0.35), (0.15, c['top'] - 0.05, 0.65))
     return v, g
 
 
@@ -1296,10 +1646,15 @@ def wrz_stx():
     g = -0.33
     c = STX
     w, f, r = c['w'], STX_FRONT, STX_REAR
+    deck = c['belt'] + 0.02
+    car_doors(v, c, 0.55, 0.0)
+    # the trunk lid: the deck and the tail's upper half with the wing, hinged at the foot of
+    # the rear glass (wide enough to take the wing's end plates whole)
+    rear_hatch(v, 'trunk', w - 0.03, 0.38, deck + 0.31, r - 0.01, c['zf'] + EPS,
+               (deck, c['zf']), 55, split='xy', click_z=r + 0.05, click_y=(0.4, deck))
     car_cabin(v, c)
     solid_section(v, w, c['zc'], f, c['rocker'], c['arch_top'], c['arches'], c['arch_top'])
     sloped_hood(v, w, c['arch_top'], c['zc'], f, c['belt'] - 0.03, 0.42)
-    deck = c['belt'] + 0.02
     solid_section(v, w, r, c['zf'], c['rocker'], deck, c['arches'], c['arch_top'])
     # the hood scoop, on the hood's second step
     hy = c['belt'] - 0.03 + (0.42 - c['belt'] + 0.03) / 3
@@ -1342,6 +1697,7 @@ def wrz_stx():
     pickup_lights(v, f, r, (0.42, 0.86, 0.32, 0.42), (0.7, 0.86, 0.25, 0.31),
                   [('brake', (0.58, 0.88, 0.44, 0.55)), ('brake', (0.5, 0.58, 0.5, 0.55)),
                    ('turn', (0.74, 0.88, 0.39, 0.44)), ('reverse', (0.5, 0.58, 0.44, 0.49))])
+    v.dome((-0.15, c['top'] - 0.065, 0.45), (0.15, c['top'] - 0.05, 0.75))
     return v, g
 
 
@@ -2181,7 +2537,12 @@ FLEET = {
                for sx in (1, -1)],
         engine_pos=(0.0, 0.5, -2.8), boxes=[-2.2, 0.3, 2.8, 5.3, 7.8, 9.3], box_width=2.55,
         box_height=2.9, box_y=1.1, switches=['DOORS', 'TSP'], initially_on=['TSP'],
-        animated=door_animations),
+        animated=door_animations,
+        # either door, clicked from the curb, works both (as the driver's DOORS switch does)
+        clicks=[(pos, width, height, 'DOORS', 'toggle')
+                for z0, z1 in ((8.35, 9.4), (3.2, 4.3))
+                for pos, width, height in click_row(((-1.2, z0 + 0.15), (-1.2, z1 - 0.15)),
+                                                    0.2, 2.0, 0.25)]),
     'csm_ambulance': dict(
         build=ambulance,
         description='A Type III ambulance. Switch EMERLTS on and it runs its lights, and '
@@ -2387,7 +2748,7 @@ def vehicle_json(name, v):
                       'crossSectionalArea': spec.get('drag', (0.5, 0))[1],
                       'hasHeadlights': True, 'hasRunningLights': True,
                       'hasTurnSignals': True, 'litVariable': 'headlight',
-                      'panel': 'mts:default_car',
+                      'panel': '%s:%s' % (PACK, PANEL),
                       'hudTexture': '%s:textures/guis/%s_hud.png' % (PACK, name)},
         'parts': parts,
         'collisionGroups': [{
@@ -2409,8 +2770,14 @@ def vehicle_json(name, v):
         },
     }
     definition['instruments'] = instruments(v)
-    if 'animated' in spec:
-        definition['rendering']['animatedObjects'] = spec['animated']()
+    door_objects, door_groups = v.door_json()
+    animated = (spec['animated']() if 'animated' in spec else []) + door_objects
+    if animated:
+        definition['rendering']['animatedObjects'] = animated
+    definition['collisionGroups'] += door_groups
+    if any(light['objectName'].startswith('&Fog') for light in v.lights):
+        # the panel's FOG button shows only on a vehicle that has fog lamps
+        definition['constantValues'] = {'fog_present': 1.0}
     if 'initially_on' in spec:
         definition['rendering']['initialVariables'] = spec['initially_on']
     # Every vehicle can be towed, by the hookups other packs' tow trucks look for (and ours):
@@ -2576,12 +2943,51 @@ def instrument_sheet():
     return img
 
 
+# The panel (U): IV's default car panel, the same components in the same places, plus a fifth
+# column with HIGH BEAM and FOG. They are buttons of their own rather than custom variables, so
+# they do not take the four custom switch slots the fire apparatus already fill; FOG shows only
+# on a vehicle whose definition sets the constant fog_present.
+PANEL = 'csm_car'
+
+
+def panel_json():
+    def special(pos, start, kind, **extra):
+        return dict({'pos': [pos[0], pos[1], 0], 'width': 20, 'height': 20,
+                     'textureStart': [start[0], start[1], 0], 'specialComponent': kind}, **extra)
+
+    def toggle(pos, text, variable, **extra):
+        return dict({'pos': [pos[0], pos[1], 0], 'width': 20, 'height': 20,
+                     'textureStart': [180, 216, 0], 'text': text, 'statusVariable': variable,
+                     'clickAction': {'variable': variable, 'action': 'toggle'}}, **extra)
+
+    components = [
+        special((15, 12), (0, 196), 'car_light'),
+        special((15, 44), (20, 176), 'turn_signal'),
+        special((15, 76), (140, 216), 'autopilot', text='CRUISE',
+                visibilityVariables=[['autopilot_present']], statusVariable='autopilot_active'),
+        dict(special((21, 108), (340, 196), 'beacon_box'), width=40),
+        special((47, 12), (80, 196), 'engine_control'),
+        special((47, 44), (80, 196), 'engine_control'),
+        special((47, 76), (80, 196), 'engine_control'),
+        toggle((47, 76), 'REVERSE', 'reverser', visibilityVariables=[['reverser_present']]),
+    ]
+    components[-1]['textureStart'] = [120, 216, 0]
+    components += [special((79, y), (100, 216), 'trailer') for y in (12, 44, 76)]
+    components += [special((111, y), (180, 216), 'custom_variable') for y in (12, 44, 76, 108)]
+    # a column clear of the custom switches' labels, which are wider than their buttons
+    components += [toggle((175, 12), 'HIGH BEAM', 'HIGHBEAM'),
+                   toggle((175, 44), 'FOG', 'FOG', visibilityVariables=[['fog_present']])]
+    return {'panel': {'texture': 'mts:textures/guis/panel.png', 'textureWidth': 512,
+                      'textureHeight': 256, 'backgroundWidth': 400, 'backgroundHeight': 140,
+                      'navBoxPosition': [108, 0], 'components': components}}
+
+
 # The HUD: our own panel, with the keys that work the vehicle printed either side of the gauges.
 # IV draws its top half by default (the half-HUD), so everything sits in y 0 to 70.
 SWITCH_LABELS = {'EMERLTS': 'LIGHTBAR', 'siren': 'WAIL', 'siren_yelp': 'YELP',
                  'siren_hilo': 'HI-LO', 'AERIAL': 'LADDER', 'BEACONS': 'BEACONS',
                  'DUMP': 'DUMP BODY', 'BOOM': 'BOOM', 'BED': 'BED', 'DOORS': 'DOORS',
-                 'TSP': 'TSP'}
+                 'TSP': 'TSP', 'HIGHBEAM': 'HIGH BEAM', 'FOG': 'FOG LAMPS'}
 CONTROLS = [('W S', 'GAS BRAKE'), ('G', 'LIGHTS'), ('C', 'HORN'), ('N', 'PARK'),
             ('X', 'VIEW'), ('SHIFT', 'GET OUT')]
 
@@ -2731,10 +3137,16 @@ def catalogue():
         if FLEET[name].get('trailer'):
             continue  # nobody drives a trailer: no HUD
         switches = FLEET[name].get('switches', ['EMERLTS', 'siren', 'siren_yelp', 'siren_hilo'])
+        # the panel's own light buttons, for the vehicles that have those lamps
+        lights = [l['objectName'] for l in FLEET[name]['build']()[0].lights]
+        switches = switches + [sw for sw, lamp in (('HIGHBEAM', '&HighBeam'), ('FOG', '&Fog'))
+                               if any(l.startswith(lamp) for l in lights)]
         put(os.path.join(PACK_DIR, 'textures', 'guis', name + '_hud.png'),
             vp.png_bytes(hud_texture(switches)))
         put(os.path.join(PACK_DIR, 'textures', 'guis', name + '_hud_lit.png'),
             vp.png_bytes(hud_texture(switches, lit=True)))
+
+    put(os.path.join(PACK_DIR, 'jsondefs', 'panels', PANEL + '.json'), vp.json_bytes(panel_json()))
 
     sheet = instrument_sheet()
     put(os.path.join(PACK_DIR, 'textures', 'instruments.png'), vp.png_bytes(sheet))

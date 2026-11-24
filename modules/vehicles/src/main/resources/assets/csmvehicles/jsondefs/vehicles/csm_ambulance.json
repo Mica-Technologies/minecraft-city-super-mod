@@ -59,7 +59,7 @@
     "hasRunningLights": true,
     "hasTurnSignals": true,
     "litVariable": "headlight",
-    "panel": "mts:default_car",
+    "panel": "csmvehicles:csm_car",
     "hudTexture": "csmvehicles:textures/guis/csm_ambulance_hud.png"
   },
   "parts": [
@@ -264,6 +264,244 @@
           ],
           "width": 2.3,
           "height": 2.8
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_l",
+      "collisions": [
+        {
+          "pos": [
+            0.92,
+            0.975,
+            3.194
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.975,
+            3.381
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.975,
+            3.569
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_l",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.92,
+            0.975,
+            3.756
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_l",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_r",
+      "collisions": [
+        {
+          "pos": [
+            -0.92,
+            0.975,
+            3.194
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.975,
+            3.381
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.975,
+            3.569
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_r",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.92,
+            0.975,
+            3.756
+          ],
+          "width": 0.22,
+          "height": 1.05,
+          "variableName": "door_r",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_side",
+      "collisions": [
+        {
+          "pos": [
+            -1.07,
+            1.2,
+            1.4
+          ],
+          "width": 0.22,
+          "height": 1.4,
+          "variableName": "door_side",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -1.07,
+            1.2,
+            1.6
+          ],
+          "width": 0.22,
+          "height": 1.4,
+          "variableName": "door_side",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -1.07,
+            1.2,
+            1.8
+          ],
+          "width": 0.22,
+          "height": 1.4,
+          "variableName": "door_side",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -1.07,
+            1.2,
+            2.0
+          ],
+          "width": 0.22,
+          "height": 1.4,
+          "variableName": "door_side",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -1.07,
+            1.2,
+            2.2
+          ],
+          "width": 0.22,
+          "height": 1.4,
+          "variableName": "door_side",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -1.07,
+            1.2,
+            2.4
+          ],
+          "width": 0.22,
+          "height": 1.4,
+          "variableName": "door_side",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_rearl",
+      "collisions": [
+        {
+          "pos": [
+            0.215,
+            1.2,
+            -1.86
+          ],
+          "width": 0.2,
+          "height": 1.4,
+          "variableName": "door_rearl",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            0.405,
+            1.2,
+            -1.86
+          ],
+          "width": 0.2,
+          "height": 1.4,
+          "variableName": "door_rearl",
+          "variableType": "toggle"
+        }
+      ]
+    },
+    {
+      "collisionTypes": [
+        "click"
+      ],
+      "applyAfter": "door_rearr",
+      "collisions": [
+        {
+          "pos": [
+            -0.215,
+            1.2,
+            -1.86
+          ],
+          "width": 0.2,
+          "height": 1.4,
+          "variableName": "door_rearr",
+          "variableType": "toggle"
+        },
+        {
+          "pos": [
+            -0.405,
+            1.2,
+            -1.86
+          ],
+          "width": 0.2,
+          "height": 1.4,
+          "variableName": "door_rearr",
+          "variableType": "toggle"
         }
       ]
     }
@@ -778,6 +1016,20 @@
           },
           {
             "pos": [
+              0.75,
+              0.65,
+              5.03
+            ],
+            "axis": [
+              0.0,
+              -0.0797,
+              0.9968
+            ],
+            "beamDiameter": 4.5,
+            "beamLength": 12.0
+          },
+          {
+            "pos": [
               -0.75,
               0.65,
               5.015
@@ -789,6 +1041,107 @@
             ],
             "flareHeight": 0.6,
             "flareWidth": 0.6
+          },
+          {
+            "pos": [
+              -0.75,
+              0.65,
+              5.03
+            ],
+            "axis": [
+              0.0,
+              -0.0797,
+              0.9968
+            ],
+            "beamDiameter": 4.5,
+            "beamLength": 12.0
+          }
+        ]
+      },
+      {
+        "objectName": "&HighBeamL",
+        "emissive": false,
+        "isElectric": true,
+        "color": "#FFFFFF",
+        "brightnessAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "headlight",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "visibility",
+            "variable": "HIGHBEAM",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.55,
+              0
+            ],
+            "variable": "HIGHBEAM"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.75,
+              0.65,
+              5.015
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 1.2,
+            "flareWidth": 1.2
+          },
+          {
+            "pos": [
+              0.75,
+              0.65,
+              5.026
+            ],
+            "axis": [
+              0.0,
+              -0.015,
+              0.9999
+            ],
+            "beamDiameter": 6.5,
+            "beamLength": 30.0
+          },
+          {
+            "pos": [
+              -0.75,
+              0.65,
+              5.015
+            ],
+            "axis": [
+              0,
+              0,
+              1
+            ],
+            "flareHeight": 1.2,
+            "flareWidth": 1.2
+          },
+          {
+            "pos": [
+              -0.75,
+              0.65,
+              5.026
+            ],
+            "axis": [
+              0.0,
+              -0.015,
+              0.9999
+            ],
+            "beamDiameter": 6.5,
+            "beamLength": 30.0
           }
         ]
       },
@@ -973,8 +1326,22 @@
         "blendableComponents": [
           {
             "pos": [
-              0.0,
-              0.55,
+              0.775,
+              0.91,
+              -1.965
+            ],
+            "axis": [
+              0,
+              0,
+              -1
+            ],
+            "flareHeight": 0.35,
+            "flareWidth": 0.35
+          },
+          {
+            "pos": [
+              -0.775,
+              0.91,
               -1.965
             ],
             "axis": [
@@ -986,6 +1353,221 @@
             "flareWidth": 0.35
           }
         ]
+      },
+      {
+        "objectName": "&Dome",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#FFE6B8",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_l"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_r"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_side"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_rearl"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "door_rearr"
+          }
+        ],
+        "blendableComponents": [
+          {
+            "pos": [
+              0.0,
+              1.9925,
+              3.45
+            ],
+            "axis": [
+              0,
+              -1,
+              0
+            ],
+            "flareHeight": 0.5,
+            "flareWidth": 0.5
+          },
+          {
+            "pos": [
+              0.0,
+              2.5425,
+              0.5
+            ],
+            "axis": [
+              0,
+              -1,
+              0
+            ],
+            "flareHeight": 0.5,
+            "flareWidth": 0.5
+          }
+        ]
+      }
+    ],
+    "animatedObjects": [
+      {
+        "objectName": "door_l",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              1.0,
+              0.0,
+              3.95
+            ],
+            "axis": [
+              0,
+              -70,
+              0
+            ],
+            "variable": "door_l",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_l_window",
+        "applyAfter": "door_l",
+        "animations": []
+      },
+      {
+        "objectName": "door_r",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -1.0,
+              0.0,
+              3.95
+            ],
+            "axis": [
+              0,
+              70,
+              0
+            ],
+            "variable": "door_r",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_r_window",
+        "applyAfter": "door_r",
+        "animations": []
+      },
+      {
+        "objectName": "door_side",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -1.15,
+              0.0,
+              2.6
+            ],
+            "axis": [
+              0,
+              70,
+              0
+            ],
+            "variable": "door_side",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_rearl",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              0.62,
+              0.0,
+              -1.95
+            ],
+            "axis": [
+              0,
+              -100,
+              0
+            ],
+            "variable": "door_rearl",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_rearl_window",
+        "applyAfter": "door_rearl",
+        "animations": []
+      },
+      {
+        "objectName": "door_rearr",
+        "animations": [
+          {
+            "animationType": "rotation",
+            "centerPoint": [
+              -0.62,
+              0.0,
+              -1.95
+            ],
+            "axis": [
+              0,
+              100,
+              0
+            ],
+            "variable": "door_rearr",
+            "duration": 12,
+            "forwardsStartSound": "csmvehicles:door_open",
+            "reverseEndSound": "csmvehicles:door_close"
+          }
+        ]
+      },
+      {
+        "objectName": "door_rearr_window",
+        "applyAfter": "door_rearr",
+        "animations": []
       }
     ]
   },

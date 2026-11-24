@@ -1,0 +1,302 @@
+{
+  "panel": {
+    "texture": "mts:textures/guis/panel.png",
+    "textureWidth": 512,
+    "textureHeight": 256,
+    "backgroundWidth": 400,
+    "backgroundHeight": 140,
+    "navBoxPosition": [
+      108,
+      0
+    ],
+    "components": [
+      {
+        "pos": [
+          15,
+          12,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          0,
+          196,
+          0
+        ],
+        "specialComponent": "car_light"
+      },
+      {
+        "pos": [
+          15,
+          44,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          20,
+          176,
+          0
+        ],
+        "specialComponent": "turn_signal"
+      },
+      {
+        "pos": [
+          15,
+          76,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          140,
+          216,
+          0
+        ],
+        "specialComponent": "autopilot",
+        "text": "CRUISE",
+        "visibilityVariables": [
+          [
+            "autopilot_present"
+          ]
+        ],
+        "statusVariable": "autopilot_active"
+      },
+      {
+        "pos": [
+          21,
+          108,
+          0
+        ],
+        "width": 40,
+        "height": 20,
+        "textureStart": [
+          340,
+          196,
+          0
+        ],
+        "specialComponent": "beacon_box"
+      },
+      {
+        "pos": [
+          47,
+          12,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          80,
+          196,
+          0
+        ],
+        "specialComponent": "engine_control"
+      },
+      {
+        "pos": [
+          47,
+          44,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          80,
+          196,
+          0
+        ],
+        "specialComponent": "engine_control"
+      },
+      {
+        "pos": [
+          47,
+          76,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          80,
+          196,
+          0
+        ],
+        "specialComponent": "engine_control"
+      },
+      {
+        "pos": [
+          47,
+          76,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          120,
+          216,
+          0
+        ],
+        "text": "REVERSE",
+        "statusVariable": "reverser",
+        "clickAction": {
+          "variable": "reverser",
+          "action": "toggle"
+        },
+        "visibilityVariables": [
+          [
+            "reverser_present"
+          ]
+        ]
+      },
+      {
+        "pos": [
+          79,
+          12,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          100,
+          216,
+          0
+        ],
+        "specialComponent": "trailer"
+      },
+      {
+        "pos": [
+          79,
+          44,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          100,
+          216,
+          0
+        ],
+        "specialComponent": "trailer"
+      },
+      {
+        "pos": [
+          79,
+          76,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          100,
+          216,
+          0
+        ],
+        "specialComponent": "trailer"
+      },
+      {
+        "pos": [
+          111,
+          12,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "specialComponent": "custom_variable"
+      },
+      {
+        "pos": [
+          111,
+          44,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "specialComponent": "custom_variable"
+      },
+      {
+        "pos": [
+          111,
+          76,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "specialComponent": "custom_variable"
+      },
+      {
+        "pos": [
+          111,
+          108,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "specialComponent": "custom_variable"
+      },
+      {
+        "pos": [
+          175,
+          12,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "text": "HIGH BEAM",
+        "statusVariable": "HIGHBEAM",
+        "clickAction": {
+          "variable": "HIGHBEAM",
+          "action": "toggle"
+        }
+      },
+      {
+        "pos": [
+          175,
+          44,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "text": "FOG",
+        "statusVariable": "FOG",
+        "clickAction": {
+          "variable": "FOG",
+          "action": "toggle"
+        },
+        "visibilityVariables": [
+          [
+            "fog_present"
+          ]
+        ]
+      }
+    ]
+  }
+}

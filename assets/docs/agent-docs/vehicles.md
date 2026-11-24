@@ -13,7 +13,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   The tree crew's chip bed (its crate and collector/crafter effectors, under the `treecrew/`
   subfolder the pack definition activates with `csm_parks`) is written here too.
   `gen_vehicle_sounds.py [name ...]` synthesises the siren's wail, yelp and hi-lo, the
-  chipper's running loop and crunch, and the fleet's engine and horn sounds.
+  chipper's running loop and crunch, the fleet's engine and horn sounds, and the doors'
+  (`door_open`, `door_close`, `rollup`).
   `gen_vehicle_fleet.py` writes the fleet: the fire engine, ladder truck (its aerial three
   objects chained by `applyAfter`, deployed by one AERIAL switch), ambulance, police SUV, and the
   public works dump truck, power company bucket truck and rollback tow truck (amber BEACONS,
@@ -33,7 +34,13 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   chip bed's own part), the equipment trailer (a mounted `tow_flatbed` deck worked by a click on
   its tie-down) and the self-propelled stump grinder (GRIND lowers the boom; the grinding is
   `StumpGrinderMachines` through Core's `CsmStumpGrinders`, Parks' rules), the trailers on
-  `trailer_standard` hookups and a rear `trailer_standard` hitch on the work trucks; `--check`
+  `trailer_standard` hookups and a rear `trailer_standard` hitch on the work trucks. Working
+  doors on every vehicle (`Vehicle.door`: a region declared before the boxes it takes, which are
+  cut at its edges into the door's object; glass into `<door>_window`; click rows that ride the
+  door; side doors, hatches, trunk, tailgates, barn doors, roll-up compartments by SCALING), a
+  dome light per cab on the `door_*` variables, headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
+  `FOG_BEAM` on the lamps' blendable components), and the `csm_car` panel with HIGH BEAM and FOG
+  buttons; `--check`
 - `build_vehicles_demo.py` -- builds the Vehicles demo world in a flat creative world loaded in
   a dev client with every module, over MCMCP: a junction of Main St and four-lane Transit Ave on
   far-side mast arms, an ADVANCED controller with a detector-called preempt on each approach and
