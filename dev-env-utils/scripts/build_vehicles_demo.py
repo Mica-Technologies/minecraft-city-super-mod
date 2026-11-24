@@ -2,7 +2,7 @@
 """
 build_vehicles_demo.py -- builds the Vehicles demo world, over MCMCP.
 
-Load a fresh FLAT creative world named "Vehicles Demo" in a dev client with every module (CSM:
+Load a fresh FLAT creative world named "CSM Vehicles Demo" in a dev client with every module (CSM:
 Vehicles needs Roads and Immersive Vehicles; the bus stop is Transit's, and the chip bed in the
 parts chest is only a part with Parks), stand where the intersection should go, and run this. It
 lays out:
