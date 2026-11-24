@@ -299,6 +299,26 @@ class Vehicle:
         self.lamp_doors = {}  # lamp object -> the doors (None: none) its boxes sit on
         self.steer = None     # the steering wheel's centre, once it has one
         self.wiper_arms = []  # the wipers' animated objects
+        self.arches = []      # wheel openings cut from every body box added after them
+
+    def wheel_arch(self, w, z, top, depth=0.38, half=0.47):
+        """A wheel opening each side, centred on the axle at z, up to `top`, cut `depth` into
+        the body from its side: every body box added afterwards loses what falls in it (the cut
+        faces close the opening), and a black liner under its roof and on its inner wall makes
+        it read as a wheel well. Declare it before the boxes it cuts."""
+        for sx in (1, -1):
+            xa, xb = sorted((sx * (w - depth), sx * (w + 0.2)))
+            self.arches.append(((xa, -1.0, z - half), (xb, top, z + half), 'xyz'))
+        for sx in (1, -1):
+            # written straight into the body, past the cut (which would take them); the top
+            # shows from the cab as the wheel tub, where the cut notches the floor
+            la, lb = sorted((sx * (w - depth), sx * w))
+            ia, ib = sorted((sx * (w - depth + 0.001), sx * (w - depth + 0.006)))
+            for lo, hi, faces in (((la, top - 0.006, z - half), (lb, top - 0.001, z + half),
+                                   ('d', 'u')),
+                                  ((ia, -0.05, z - half), (ib, top, z + half), ('e', 'w'))):
+                self.obj.box('body', lo, hi, CELLS['black'], faces)
+                self.outline.append((lo, hi, 'black'))
 
     def door(self, name, regions, animation, clicks, sounds=DOOR_SOUNDS, duration=DOOR_TICKS,
              close_at_start=False):
@@ -330,6 +350,12 @@ class Vehicle:
                         holder = door['name']
             self.lamp_doors.setdefault(obj, set()).add(holder)
         if obj in ('body', 'window'):
+            for region in self.arches:          # wheel openings: what falls in them is gone
+                kept = []
+                for plo, phi in pieces:
+                    inside, outside = _cut(plo, phi, region)
+                    kept.extend(outside if inside is not None else [(plo, phi)])
+                pieces = kept
             for door in self.doors:
                 kept = []
                 for plo, phi in pieces:
@@ -752,6 +778,10 @@ def police_suv():
     v = Vehicle()
     g = -0.39
     w = 1.0
+    # wheel openings over both axles: without them the body hid all but the bottom of the
+    # wheels; the rear doors and the front doors' lower corners take the arches' notch
+    for z in (0.0, 3.0):
+        v.wheel_arch(w, z, 0.5)
     # four doors, hinged at their front edges, and the rear hatch, hinged at the roof
     for side, sx in (('l', 1), ('r', -1)):
         side_door(v, 'door_f' + side, sx, w, 1.25, 2.8, 0.0, 1.52, clicks_y=(0.15, 1.35),
@@ -1644,7 +1674,9 @@ def car_cabin(v, c):
     v.box((-0.55, floor - 0.04, zf), (0.55, floor + 0.01, zc), 'black')
     for a, b in cut:
         for sx in (1, -1):
-            ta, tb = sorted((sx * 0.55, sx * (w - t)))
+            # inboard of the tyre (its inside face is at 0.645 on both cars): out to the body
+            # side it stood in front of the rim, whose face is set back into the tyre
+            ta, tb = sorted((sx * 0.55, sx * 0.62))
             v.box((ta, c['rocker'], a), (tb, arch_top, b), 'black')           # wheel tub
     for sx in (1, -1):
         xa, xb = sorted((sx * (w - t), sx * w))
@@ -2245,75 +2277,171 @@ def vehicle_icon(v, ground, texture):
 # ------------------------------------------------------------------------------------------
 
 WHEELS = {
-    # name: (label, diameter, tyre width, rim colour)
-    'csm_wheel_truck': ('CSM Truck Wheel', 1.1, 0.34, (196, 200, 206)),
-    'csm_wheel_van': ('CSM Van Wheel', 0.8, 0.26, (196, 200, 206)),
-    'csm_wheel_car': ('CSM Car Wheel', 0.78, 0.26, (40, 40, 44)),
-    'csm_wheel_compact': ('CSM Compact Alloy Wheel', 0.64, 0.22, (196, 200, 206)),
-    'csm_wheel_sport': ('CSM Sport Wheel', 0.66, 0.25, (64, 66, 70)),
-    'csm_wheel_sport_gold': ('CSM Sport Wheel (Gold)', 0.66, 0.25, (200, 164, 72)),
+    # name: (label, diameter, tyre width, rim colour, rim style)
+    'csm_wheel_truck': ('CSM Truck Wheel', 1.1, 0.34, (196, 200, 206), 'truck'),
+    'csm_wheel_van': ('CSM Van Wheel', 0.8, 0.26, (196, 200, 206), 'spoke6'),
+    'csm_wheel_car': ('CSM Car Wheel', 0.78, 0.26, (40, 40, 44), 'steel'),
+    'csm_wheel_compact': ('CSM Compact Alloy Wheel', 0.64, 0.22, (196, 200, 206), 'spoke5'),
+    'csm_wheel_sport': ('CSM Sport Wheel', 0.66, 0.25, (64, 66, 70), 'spoke10'),
+    'csm_wheel_sport_gold': ('CSM Sport Wheel (Gold)', 0.66, 0.25, (200, 164, 72), 'spoke10'),
 }
-WT = 32  # wheel textures
+# The rim's diameter as a share of the tyre's, by style: a 22.5 in truck wheel, 17 in steel,
+# 16 in alloys on the vans and the compact, 18 in sport wheels.
+RIM_RATIO = {'truck': 0.55, 'steel': 0.56, 'spoke6': 0.6, 'spoke5': 0.62, 'spoke10': 0.7}
+WT = 64  # wheel textures
+# Wheel texture regions (pixels): the tread, the sidewall (radially across u), the rim lip's
+# barrel, and the rim's face (a disc).
+TREAD_CELL = (0, 0, 32, 32)
+WALL_CELL = (32, 0, 64, 32)
+BARREL_CELL = (0, 32, 32, 64)
+RIM_CELL = (32, 32, 64, 64)
+WHEEL_SIDES = 32       # a rounder tyre; still one object, so it costs a draw as before
 
 
-def wheel_obj(diameter, width, sides=16):
-    """A tyre and rim centred on the axle (the part's origin), turning about +x."""
+def wheel_obj(diameter, width, style='steel', sides=WHEEL_SIDES):
+    """A tyre and rim centred on the axle (the part's origin), turning about +x, outside +x.
+
+    One object, IV drawing each object on its own: the tread, a rounded shoulder each side, the
+    sidewall down to the rim, then on the outside the rim's lip and its face set back into it,
+    textured per style; on the inside a plain disc."""
     r = diameter / 2
-    lines = ['# generated by dev-env-utils/scripts/gen_vehicle_fleet.py']
-    v = vt = vn = 0
+    hw = width / 2
+    shoulder = min(0.045, width * 0.16)      # the shoulder's run in from each side ...
+    drop = diameter * 0.035                  # ... and down from the tread
+    tw = hw - shoulder
+    rr = r * RIM_RATIO[style]
+    dish = min(0.04, width * 0.15)           # how far the rim's face sits back in its lip
+    lines = ['# generated by dev-env-utils/scripts/gen_vehicle_fleet.py', 'o wheel']
+    count = {'v': 0, 'vn': 0}
 
-    def quad(name, pts, uvs, normal):
-        nonlocal v, vt, vn
-        if v == 0:
-            lines.append('o wheel')  # one object: IV draws each object on its own
+    def uv_in(cell, u, w):
+        x0, y0, x1, y1 = cell
+        return ((x0 + 0.5 + (x1 - x0 - 1) * u) / WT, (y0 + 0.5 + (y1 - y0 - 1) * w) / WT)
+
+    def face(pts, uvs, normal):
+        """A polygon, wound counter-clockwise as seen from the side its normal points to."""
+        a, b, c = pts[0], pts[1], pts[2]
+        cr = [(b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]),
+              (b[2] - a[2]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[2] - a[2]),
+              (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])]
+        if sum(cr[k] * normal[k] for k in range(3)) < 0:
+            pts, uvs = pts[::-1], uvs[::-1]
         for p in pts:
             lines.append('v %.5f %.5f %.5f' % p)
         for u, w in uvs:
             lines.append('vt %.6f %.6f' % (u, 1.0 - w))
         lines.append('vn %.4f %.4f %.4f' % normal)
-        vn += 1
-        lines.append('f ' + ' '.join('%d/%d/%d' % (v + i + 1, vt + i + 1, vn)
-                                     for i in range(len(pts))))
-        v += len(pts)
-        vt += len(uvs)
+        count['vn'] += 1
+        v0 = count['v']
+        lines.append('f ' + ' '.join('%d/%d/%d' % (v0 + k + 1, v0 + k + 1, count['vn'])
+                                     for k in range(len(pts))))
+        count['v'] += len(pts)
 
-    hw = width / 2
+    def ring(x, rad, a):
+        return (x, rad * math.cos(a), rad * math.sin(a))
+
+    sn = math.hypot(drop, shoulder)
     for i in range(sides):
-        a0 = 2 * math.pi * i / sides
-        a1 = 2 * math.pi * (i + 1) / sides
-        y0, z0, y1, z1 = r * math.cos(a0), r * math.sin(a0), r * math.cos(a1), r * math.sin(a1)
+        a0, a1 = 2 * math.pi * i / sides, 2 * math.pi * (i + 1) / sides
         am = (a0 + a1) / 2
-        # the tread, facing out from the axle
-        quad('tread%d' % i, [(hw, y0, z0), (-hw, y0, z0), (-hw, y1, z1), (hw, y1, z1)],
-             [(0.02, 0.02), (0.48, 0.02), (0.48, 0.48), (0.02, 0.48)],
-             (0, math.cos(am), math.sin(am)))
-        # the sidewalls and rim faces: a fan from the hub, the inner disc in rim colour
-        for sx, name in ((1, 'out'), (-1, 'in')):
-            pts = [(sx * hw, 0, 0), (sx * hw, y0, z0), (sx * hw, y1, z1)]
-            if sx < 0:
-                pts = [pts[0], pts[2], pts[1]]
-            uv = [(0.75, 0.75), (0.75 + 0.24 * math.cos(a0), 0.75 + 0.24 * math.sin(a0)),
-                  (0.75 + 0.24 * math.cos(a1), 0.75 + 0.24 * math.sin(a1))]
-            if sx < 0:
-                uv = [uv[0], uv[2], uv[1]]
-            quad('side_%s%d' % (name, i), pts, uv, (sx, 0, 0))
+        c, s = math.cos(am), math.sin(am)
+        f0, f1 = (i % 4) / 4.0, (i % 4 + 1) / 4.0        # the tread pattern every 4 sides
+        face([ring(-tw, r, a0), ring(tw, r, a0), ring(tw, r, a1), ring(-tw, r, a1)],
+             [uv_in(TREAD_CELL, 0, f0), uv_in(TREAD_CELL, 1, f0), uv_in(TREAD_CELL, 1, f1),
+              uv_in(TREAD_CELL, 0, f1)], (0, c, s))
+        for sx in (1, -1):
+            # the shoulder, rounding from the tread down onto the sidewall
+            face([ring(sx * tw, r, a0), ring(sx * hw, r - drop, a0), ring(sx * hw, r - drop, a1),
+                  ring(sx * tw, r, a1)],
+                 [uv_in(WALL_CELL, 1, 0), uv_in(WALL_CELL, 0.92, 0), uv_in(WALL_CELL, 0.92, 1),
+                  uv_in(WALL_CELL, 1, 1)],
+                 (sx * drop / sn, c * shoulder / sn, s * shoulder / sn))
+            # the sidewall, from the shoulder down to the rim
+            face([ring(sx * hw, r - drop, a0), ring(sx * hw, rr, a0), ring(sx * hw, rr, a1),
+                  ring(sx * hw, r - drop, a1)],
+                 [uv_in(WALL_CELL, 0.92, 0), uv_in(WALL_CELL, 0, 0), uv_in(WALL_CELL, 0, 1),
+                  uv_in(WALL_CELL, 0.92, 1)], (sx, 0, 0))
+        # outside: the rim's lip, a short barrel facing the axle, and its face set back in it
+        xo, xf = hw, hw - dish
+        face([ring(xo, rr, a0), ring(xf, rr, a0), ring(xf, rr, a1), ring(xo, rr, a1)],
+             [uv_in(BARREL_CELL, 0, f0), uv_in(BARREL_CELL, 1, f0), uv_in(BARREL_CELL, 1, f1),
+              uv_in(BARREL_CELL, 0, f1)], (0, -c, -s))
+        cx, cy = (RIM_CELL[0] + RIM_CELL[2]) / 2 / WT, (RIM_CELL[1] + RIM_CELL[3]) / 2 / WT
+        rad = (RIM_CELL[2] - RIM_CELL[0] - 1) / 2 / WT
+        face([(xf, 0.0, 0.0), ring(xf, rr, a0), ring(xf, rr, a1)],
+             [(cx, cy), (cx + rad * math.cos(a0), cy + rad * math.sin(a0)),
+              (cx + rad * math.cos(a1), cy + rad * math.sin(a1))], (1, 0, 0))
+        # inside: a plain disc, the back of the wheel
+        face([(-hw, 0.0, 0.0), ring(-hw, rr, a0), ring(-hw, rr, a1)],
+             [uv_in(WALL_CELL, 0, 0.5)] * 3, (-1, 0, 0))
     return '\n'.join(lines) + '\n'
 
 
-def wheel_texture(rim):
+def wheel_texture(rim, style):
+    """The tread (grooves round it, sipes across), the sidewall (a raised bead ring), the rim's
+    barrel, and its face in the style's pattern, drawn four times over and scaled down."""
     img = Image.new('RGBA', (WT, WT), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    d.rectangle((0, 0, 15, 15), fill=(26, 26, 28, 255))           # tread
-    for y in range(1, 16, 3):
-        d.line((0, y, 15, y), fill=(14, 14, 16, 255))
-    d.ellipse((16, 16, 31, 31), fill=(30, 30, 32, 255))           # sidewall
-    d.ellipse((19, 19, 28, 28), fill=rim + (255,))                # rim
-    d.ellipse((22, 22, 25, 25), fill=shade(rim, 0.6) + (255,))    # hub
+    x0, y0, x1, y1 = TREAD_CELL
+    d.rectangle((x0, y0, x1 - 1, y1 - 1), fill=(30, 30, 32, 255))
+    for gx in (7, 15, 16, 24):                                    # grooves round the tyre
+        d.line((x0 + gx, y0, x0 + gx, y1 - 1), fill=(12, 12, 14, 255))
+    for gy in range(2, 32, 8):                                    # sipes across the tread
+        d.line((x0, y0 + gy, x0 + 6, y0 + gy + 2), fill=(18, 18, 20, 255))
+        d.line((x0 + 25, y0 + gy + 2, x1 - 1, y0 + gy), fill=(18, 18, 20, 255))
+    x0, y0, x1, y1 = WALL_CELL
+    for k in range(x1 - x0):                                      # sidewall, rim to tread
+        t = k / (x1 - x0 - 1)
+        tone = 34 + int(10 * t) + (14 if 0.55 < t < 0.6 else 0)   # the raised bead ring
+        d.line((x0 + k, y0, x0 + k, y1 - 1), fill=(tone, tone, tone + 2, 255))
+    x0, y0, x1, y1 = BARREL_CELL
+    d.rectangle((x0, y0, x1 - 1, y1 - 1), fill=shade(rim, 0.7) + (255,))
+    # the face, at four times size for clean edges, then scaled into its cell
+    S = 4 * (RIM_CELL[2] - RIM_CELL[0])
+    face = Image.new('RGBA', (S, S), (0, 0, 0, 0))
+    fd = ImageDraw.Draw(face)
+    c, R = S / 2, S / 2 - 1
+    dark = (22, 22, 24, 255)
+    rimc = rim + (255,)
+    if style in ('truck', 'steel'):
+        fd.ellipse((0, 0, S - 1, S - 1), fill=rimc)
+        fd.ellipse((c - R * 0.86, c - R * 0.86, c + R * 0.86, c + R * 0.86),
+                   fill=shade(rim, 0.85) + (255,))
+        holes = 10 if style == 'truck' else 8
+        for k in range(holes):                                    # hand holes
+            a = 2 * math.pi * (k + 0.5) / holes
+            hx, hy = c + R * 0.62 * math.cos(a), c + R * 0.62 * math.sin(a)
+            hr = R * (0.09 if style == 'truck' else 0.12)
+            fd.ellipse((hx - hr, hy - hr, hx + hr, hy + hr), fill=dark)
+        fd.ellipse((c - R * 0.36, c - R * 0.36, c + R * 0.36, c + R * 0.36),
+                   fill=shade(rim, 0.6) + (255,))                 # the hub
+        if style == 'truck':
+            for k in range(10):                                   # lug nuts round the hub
+                a = 2 * math.pi * k / 10
+                nx, ny = c + R * 0.29 * math.cos(a), c + R * 0.29 * math.sin(a)
+                fd.ellipse((nx - R * 0.045, ny - R * 0.045, nx + R * 0.045, ny + R * 0.045),
+                           fill=(230, 232, 236, 255))
+        fd.ellipse((c - R * 0.14, c - R * 0.14, c + R * 0.14, c + R * 0.14),
+                   fill=shade(rim, 0.45) + (255,))
+    else:
+        spokes = {'spoke5': 5, 'spoke6': 6, 'spoke10': 10}[style]
+        fd.ellipse((0, 0, S - 1, S - 1), fill=rimc)               # the outer rim
+        fd.ellipse((c - R * 0.86, c - R * 0.86, c + R * 0.86, c + R * 0.86), fill=dark)
+        width = R * (0.3 if spokes == 5 else 0.24 if spokes == 6 else 0.11)
+        for k in range(spokes):
+            a = 2 * math.pi * k / spokes
+            fd.line((c + R * 0.2 * math.cos(a), c + R * 0.2 * math.sin(a),
+                     c + R * 0.9 * math.cos(a), c + R * 0.9 * math.sin(a)),
+                    fill=rimc, width=max(2, int(width)))
+        fd.ellipse((c - R * 0.3, c - R * 0.3, c + R * 0.3, c + R * 0.3), fill=rimc)
+        fd.ellipse((c - R * 0.16, c - R * 0.16, c + R * 0.16, c + R * 0.16),
+                   fill=shade(rim, 0.55) + (255,))                # the centre cap
+    img.paste(face.resize((RIM_CELL[2] - RIM_CELL[0],) * 2, Image.LANCZOS), RIM_CELL[:2])
     return img
 
 
 def wheel_json(name):
-    label, diameter, width, _ = WHEELS[name]
+    label, diameter, width = WHEELS[name][:3]
     return {
         'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[]]}],
         'general': {'description': 'Comes on the CSM fleet\'s vehicles; fits any wheel slot it '
@@ -3262,17 +3390,20 @@ def catalogue():
                 vp.png_bytes(texture))
             item('vehicles', name + livery[0], vehicle_icon(v, ground, texture))
 
-    for name, (label, diameter, width, rim) in WHEELS.items():
+    for name, (label, diameter, width, rim, style) in WHEELS.items():
         put(os.path.join(PACK_DIR, 'objmodels', 'parts', name + '.obj'),
-            wheel_obj(diameter, width).encode('utf-8'))
-        put(os.path.join(PACK_DIR, 'textures', 'parts', name + '.png'),
-            vp.png_bytes(wheel_texture(rim)))
+            wheel_obj(diameter, width, style).encode('utf-8'))
+        texture = wheel_texture(rim, style)
+        put(os.path.join(PACK_DIR, 'textures', 'parts', name + '.png'), vp.png_bytes(texture))
         put(os.path.join(PACK_DIR, 'jsondefs', 'parts', name + '.json'),
             vp.json_bytes(wheel_json(name)))
+        # the icon: the tyre round the wheel's own face
         icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
-        dd = ImageDraw.Draw(icon)
-        dd.ellipse((1, 1, 14, 14), fill=(26, 26, 28, 255))
-        dd.ellipse((5, 5, 10, 10), fill=rim + (255,))
+        ImageDraw.Draw(icon).ellipse((0, 0, 15, 15), fill=(26, 26, 28, 255))
+        face = texture.crop(RIM_CELL).resize((10, 10), Image.LANCZOS)
+        mask = Image.new('L', (10, 10), 0)
+        ImageDraw.Draw(mask).ellipse((0, 0, 9, 9), fill=255)
+        icon.paste(face, (3, 3), mask)
         item('parts', name, icon)
 
     cap = pickup_cap()

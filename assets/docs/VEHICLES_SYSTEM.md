@@ -670,6 +670,21 @@ visor each side and, except in the bus (whose aisle runs there), a console with 
 the front seats, 0.1 either side of the middle because the cars' front seats stand from 0.11. The
 seat part has side bolsters and a headrest on two posts, still one object.
 
+**Wheels** (`wheel_obj`, `wheel_texture`): still one object each (IV draws every object on its
+own), now 32 sides with a rounded shoulder between the tread and each sidewall, the sidewall
+down to the rim, and on the outside the rim's lip with its face set back into it (`dish`). Each
+wheel has a rim style (`WHEELS`' last field) for its face and its size in the tyre
+(`RIM_RATIO`): `truck` (steel, hand holes, ten lug nuts), `steel` (the XL's black steel),
+`spoke6` (the vans' alloys), `spoke5` (the Impressa), `spoke10` (the STX, grey or gold). Faces
+are drawn at four times size and scaled into a 64 px texture; the item icon is the wheel's own
+face in its tyre. **A set-back rim can be hidden by the body:** the cars' rear wheel tubs ran out
+to the body side and stood in front of the rim's face, so they now stop inboard of the tyre.
+
+**Wheel openings** (`Vehicle.wheel_arch`): a region cut from every body box added after it (as a
+door region, but what falls in it is dropped), the cut faces closing the opening, with a black
+liner on its roof and inner wall written past the cut. The police SUV had none and hid all but
+the bottom of its wheels; its rear doors and front doors' lower corners now take the notch.
+
 **Hazards.** The panel's HAZARDS flashes all the turn lamps (`turn_signal`). A turn lamp's
 visibility is the flash cycle and its brightness the sum of two translations, its own turn
 signal and HAZARDS: visibilities AND and translations add, so either one lights it. Trailers
@@ -763,7 +778,9 @@ lit with the engine running. Then WIPERS and HAZARDS from the police SUV's panel
 the upright windshield and its turn lamps flashed together; an Impressa spawned with both on swept
 its raked windshield. Then the cab fittings seen from the drivers' seats of the police SUV (its
 cluster lit with its lights on), the Impressa, the H-150 and the fire engine, and the SUV's seats
-and console from the back. Not heard: the door sounds (the test client is muted).
+and console from the back. Then the new wheels on an Impressa, a gold-wheeled STX, the police SUV
+(in its new openings), a bucket truck and a service pickup. Not heard: the door sounds (the test
+client is muted).
 
 ---
 
