@@ -899,6 +899,23 @@
     ],
     "lightObjects": [
       {
+        "objectName": "&Dash",
+        "emissive": true,
+        "isElectric": true,
+        "color": "#BFE3FF",
+        "brightnessAnimations": [
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              0.6,
+              0
+            ],
+            "variable": "running_light"
+          }
+        ]
+      },
+      {
         "objectName": "&Dome",
         "emissive": true,
         "isElectric": true,
