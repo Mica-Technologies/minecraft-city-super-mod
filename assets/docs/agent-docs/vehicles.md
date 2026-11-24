@@ -43,6 +43,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   INHIBITOR on WIPERS, then a rotation on a flash cycle; raked glass turns about its normal),
   hazards (turn lamps visible on the cycle, lit by the turn signal plus HAZARDS), cab fittings
   (`interior`: a cluster lit on `running_light`, mirror, visors, console; the seat's headrest),
+  the boom steered by hand from the panel (`BOOM_MANUAL`, an INHIBITOR on BOOM between the
+  preset and the manual animations) with a seat riding the bucket (`BUCKET_SEAT`), the
+  signal maintenance truck (`csm_signal_truck`, `arrow_board` on ARROWBOARD), the plow's curved
+  moldboard (`plow_moldboard`) lowered by PLOW, raked windshields as slanted pieces
+  (`raked_windshield`, `Vehicle.slab`/`poly`),
   32-sided wheels with shoulders and a set-back rim face per style (`WHEELS`' style,
   `RIM_RATIO`), wheel openings cut from the body (`Vehicle.wheel_arch`, the police SUV), headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
   `FOG_BEAM` on the lamps' blendable components), and the `csm_car` panel with HIGH BEAM, FOG,

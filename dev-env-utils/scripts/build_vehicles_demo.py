@@ -343,6 +343,7 @@ ROW_B = (['csm_transit_bus_' + s for s in ('metro', 'cityline', 'riverway', 'ver
          + ['csm_tow_truck_' + s for s in ('white', 'red', 'yellow', 'black')]
          + ['csm_dpw_truck_' + s for s in ('orange', 'yellow', 'white')]
          + ['csm_bucket_truck_' + s for s in ('white', 'yellow', 'green')]
+         + ['csm_signal_truck_' + s for s in ('signals', 'highway', 'yellow')]
          + ['csm_chipper_trailer_orange', 'csm_equipment_trailer_black',
             'csm_stump_grinder_orange'])
 
@@ -380,7 +381,7 @@ def model_of(item):
         if item.startswith(prefix):
             return obj
     for m in ('fire_engine', 'ladder_truck', 'ambulance', 'police_suv', 'transit_bus',
-              'tow_truck', 'dpw_truck', 'bucket_truck', 'chipper_trailer',
+              'tow_truck', 'dpw_truck', 'bucket_truck', 'signal_truck', 'chipper_trailer',
               'equipment_trailer', 'stump_grinder'):
         if item.startswith('csm_' + m):
             return 'csm_' + m
@@ -471,6 +472,7 @@ SHOW_X0, SHOW_Z = 145, 22          # the first bay's centre, and the nose line (
 SHOW_BAY = 9                       # wide enough for doors swung open both sides
 SHOWROOM = ['csm_fire_engine_red', 'csm_ladder_truck_red', 'csm_ambulance_red',
             'csm_police_suv_blackwhite', 'csm_dpw_truck_orange', 'csm_bucket_truck_white',
+            'csm_signal_truck_signals',
             'csm_tow_truck_white', 'csm_transit_bus_metro', 'csm_pickup_h150_xl_white',
             'csm_pickup_h150_service_publicworks', 'csm_pickup_silverline_black',
             'csm_subaroo_impressa_red', 'csm_subaroo_wrz_stx_gold_blue']
@@ -479,8 +481,9 @@ SHOW_SIGNS = {
     'csm_ladder_truck': ["Ladder truck", "4 crew doors,", "8 roll-up", "compartments"],
     'csm_ambulance': ["Ambulance", "cab doors, curb", "door, rear barn", "doors"],
     'csm_police_suv': ["Police SUV", "4 doors, hatch,", "wheel arches"],
-    'csm_dpw_truck': ["Dump truck", "cab doors", "DUMP on panel"],
-    'csm_bucket_truck': ["Bucket truck", "cab doors, 8", "compartment", "doors"],
+    'csm_dpw_truck': ["Dump truck", "cab doors; DUMP", "PLOW lowers", "the plow"],
+    'csm_bucket_truck': ["Bucket truck", "ride the bucket;", "panel LIFT SWING", "REACH (BOOM off)"],
+    'csm_signal_truck': ["Signal truck", "boom as bucket", "truck; panel", "ARROW +/- board"],
     'csm_tow_truck': ["Tow truck", "cab doors,", "4 tool box", "doors"],
     'csm_transit_bus': ["Metro bus", "click a door:", "both open", "saloon lights"],
     'csm_pickup_h150': ["H-150", "4 doors and", "tailgate; the", "service: cap doors"],

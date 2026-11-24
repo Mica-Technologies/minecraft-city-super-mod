@@ -665,6 +665,43 @@ the animations after it do not run, so the arm rests) and a rotation on the flas
 arms on the slope, turning about the glass's own normal (`raked_wipers`), so they stay on it.
 The WIPERS button shows only on a vehicle with the constant `wipers_present`.
 
+**The boom by hand** (`BOOM_MANUAL`, `boom_animations`): the bucket truck and the signal truck
+keep BOOM's one-touch deploy, and with BOOM off the panel's LIFT, SWING and REACH (+ and -)
+step `BOOM_LIFT` (0-75 degrees, 5 a click), `BOOM_SWING` (-180 to 180, 10, + to the truck's
+left) and `BOOM_REACH` (0-4 m, 0.25), IV clamping them (an INCREMENT click action's
+`clampMin`/`clampMax`). Each boom object runs its BOOM animation, then an INHIBITOR on BOOM
+(clamp 1..1: while it is on, the animations after it do not run), then its manual one, so the
+two never add: verified with the boom left at 40 degrees, 60 and 2 m by hand, BOOM on gave the
+preset alone. The steps are instant, as IV eases only 0-1 switches. The bucket counter-rotates
+by both lifts and stays level.
+
+**The bucket seat** (`BUCKET_SEAT`): a seat slot with `applyAfter: bucket`, so its rider goes up
+with the boom, and `dismountPos` on the ground beside the truck. It is a controller, because IV
+opens the panel only for a controller seat (`ControlSystem.controlGroundVehicle`) and the boom
+is worked from the panel; so a player in the bucket could also drive. Verified: entered from the
+ground with the boom stowed, steered 40 degrees up, 60 round and 2 m out from the bucket's own
+panel, rode up to 12 m, got out on the ground.
+
+**The signal maintenance truck** (`csm_signal_truck`, `signal_truck`): the bucket truck with an
+arrow board on posts at the back of the body (`arrow_board`). `ARROWBOARD` picks its pattern,
+stepped by the panel's ARROW + and - (0 dark, 1 an arrow to the truck's left, 2 to its right, 3
+caution, the corners flashing in pairs), each pattern lamps lit by a visibility on its value.
+Liveries: TRAFFIC SIGNALS (public works orange, and yellow) and HIGHWAY DEPT (white and
+orange). The boom and arrow buttons show only on vehicles with the constants `boom_present`
+and `arrow_present`.
+
+**The plow** (`plow_boxes`, `plow_moldboard`): a moldboard curving back in the middle and
+rolling forward at the top, written as slanted segments sharing their edges (`Vehicle.slab`), a
+black cutting edge, end plates, ribs, an A-frame back to a mount with a lift cylinder, and a
+marker rod at each end. It is one group carried raised (its edge 0.32 off the road, its top just
+under the headlights) and PLOW lets it down 0.3 onto the road.
+
+**Raked windshields** (`raked_windshield`): the pickups' and cars' windshields are one sloped
+pane (`Vehicle.slab`), a slim slanted A-pillar each side and a triangle of side glass under it
+(`Vehicle.poly`). They were stepped boxes, which put a staircase of pillar across the driver's
+view and a seam in the glass at every step. The mirror and visors were made smaller and set
+higher for the same reason.
+
 **Cab fittings** (`interior`): every driver's cab has an instrument cluster on the dash face behind
 the steering wheel (the `gauges` cell: two dials; a lamp lit 0.6 on `running_light`, so it glows
 when the lights are on), a rear-view mirror on a stem from the roof (the `mirror` cell), a sun

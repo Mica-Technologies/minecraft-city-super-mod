@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A power company bucket truck. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals); BOOM raises the boom, swings it to the left and runs it out, the bucket staying level.",
+    "description": "A power company bucket truck. BEACONS runs its amber lights (not emergency lights, so it does not preempt signals); BOOM raises the boom, swings it to the left and runs it out, the bucket staying level. With BOOM off, the panel's LIFT, SWING and REACH steer the boom, from the cab or from the bucket, which has a seat of its own.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -179,6 +179,24 @@
         0.0,
         3.5
       ]
+    },
+    {
+      "pos": [
+        0.0,
+        2.7199999999999998,
+        5.35
+      ],
+      "types": [
+        "seat"
+      ],
+      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "dismountPos": [
+        1.8,
+        0.0,
+        5.0
+      ],
+      "isController": true,
+      "applyAfter": "bucket"
     },
     {
       "pos": [
@@ -1608,6 +1626,26 @@
               2.65,
               -1.6
             ]
+          },
+          {
+            "animationType": "inhibitor",
+            "variable": "BOOM",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM_SWING",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "centerPoint": [
+              0.0,
+              2.65,
+              -1.6
+            ]
           }
         ]
       },
@@ -1631,6 +1669,26 @@
               2.65,
               -1.6
             ]
+          },
+          {
+            "animationType": "inhibitor",
+            "variable": "BOOM",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM_LIFT",
+            "axis": [
+              -1,
+              0,
+              0
+            ],
+            "centerPoint": [
+              0.0,
+              2.65,
+              -1.6
+            ]
           }
         ]
       },
@@ -1649,6 +1707,21 @@
             "duration": 100,
             "forwardsDelay": 180,
             "reverseDelay": 0
+          },
+          {
+            "animationType": "inhibitor",
+            "variable": "BOOM",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "translation",
+            "variable": "BOOM_REACH",
+            "axis": [
+              0,
+              0,
+              1
+            ]
           }
         ]
       },
@@ -1667,6 +1740,26 @@
             "duration": 100,
             "forwardsDelay": 0,
             "reverseDelay": 180,
+            "centerPoint": [
+              0.0,
+              2.8,
+              5.0
+            ]
+          },
+          {
+            "animationType": "inhibitor",
+            "variable": "BOOM",
+            "clampMin": 1,
+            "clampMax": 1
+          },
+          {
+            "animationType": "rotation",
+            "variable": "BOOM_LIFT",
+            "axis": [
+              1,
+              0,
+              0
+            ],
             "centerPoint": [
               0.0,
               2.8,
@@ -2017,6 +2110,7 @@
     }
   ],
   "constantValues": {
+    "boom_present": 1.0,
     "wipers_present": 1.0
   },
   "connectionGroups": [

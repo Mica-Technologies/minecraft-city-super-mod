@@ -320,6 +320,42 @@ class Vehicle:
                 self.obj.box('body', lo, hi, CELLS['black'], faces)
                 self.outline.append((lo, hi, 'black'))
 
+    def poly(self, obj, points, normal, name):
+        """A flat polygon of 3 or 4 corners, in the cell `name`, wound to face `normal`. Not cut
+        by door regions: for geometry no door takes (a windshield, its pillars)."""
+        a, b, c = points[0], points[1], points[2]
+        cr = [(b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]),
+              (b[2] - a[2]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[2] - a[2]),
+              (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0])]
+        if sum(cr[k] * normal[k] for k in range(3)) < 0:
+            points = points[::-1]
+        u0, v0, u1, v1 = (q / float(T) for q in CELLS[name])
+        e = 0.25 / T
+        uvs = [(u0 + e, v1 - e), (u1 - e, v1 - e), (u1 - e, v0 + e), (u0 + e, v0 + e)]
+        self.obj.quad(obj, [tuple(round(q, 5) for q in p) for p in points],
+                      uvs[:len(points)], tuple(round(q, 4) for q in normal))
+        lo = tuple(min(p[k] for p in points) for k in range(3))
+        hi = tuple(max(p[k] for p in points) for k in range(3))
+        self.outline.append((lo, hi, name))
+
+    def slab(self, x0, x1, foot, head, depth, name, obj='body'):
+        """A slanted plate from x0 to x1: its outer face runs from `foot` (y, z) to `head`, and it
+        is `depth` thick inward, square to that face. A windshield's glass or pillar as one
+        piece, where boxes made a staircase the driver looked out through."""
+        (y0, z0), (y1, z1) = foot, head
+        ln = math.hypot(y1 - y0, z1 - z0)
+        uy, uz = (y1 - y0) / ln, (z1 - z0) / ln
+        ny, nz = -uz, uy                                   # out of the face (forward, up)
+        fi = (y0 - ny * depth, z0 - nz * depth)
+        hi = (y1 - ny * depth, z1 - nz * depth)
+        P = lambda x, yz: (x, yz[0], yz[1])                # noqa: E731
+        self.poly(obj, [P(x0, foot), P(x1, foot), P(x1, head), P(x0, head)], (0, ny, nz), name)
+        self.poly(obj, [P(x0, fi), P(x1, fi), P(x1, hi), P(x0, hi)], (0, -ny, -nz), name)
+        for x, sx in ((x0, -1), (x1, 1)):
+            self.poly(obj, [P(x, foot), P(x, head), P(x, hi), P(x, fi)], (sx, 0, 0), name)
+        self.poly(obj, [P(x0, foot), P(x1, foot), P(x1, fi), P(x0, fi)], (0, -uy, -uz), name)
+        self.poly(obj, [P(x0, head), P(x1, head), P(x1, hi), P(x0, hi)], (0, uy, uz), name)
+
     def door(self, name, regions, animation, clicks, sounds=DOOR_SOUNDS, duration=DOOR_TICKS,
              close_at_start=False):
         """Declare a door before the boxes it takes are added. `regions` are (lo, hi, split
@@ -573,14 +609,15 @@ def interior(v, w, dash_face_z, dash_top, driver_x, win_top, glass_z, roof_y, co
     v.lamp('Dash', (x0, dash_top - 0.17, dash_face_z - 0.006), (x1, dash_top - 0.03, dash_face_z),
            'gauges', '#BFE3FF', [{'animationType': 'translation', 'axis': [0, 0.6, 0],
                                   'variable': 'running_light'}], None, faces=('n',))
-    v.box((-0.12, win_top - 0.09, glass_z - 0.07), (0.12, win_top - 0.02, glass_z - 0.04),
+    # the mirror and visors kept small and high: they are in the driver's view of the road
+    v.box((-0.09, win_top - 0.07, glass_z - 0.07), (0.09, win_top - 0.02, glass_z - 0.045),
           'black')                                                              # mirror
-    v.box((-0.11, win_top - 0.085, glass_z - 0.0705), (0.11, win_top - 0.025, glass_z - 0.07),
-          'mirror', faces=('n',))
-    v.box((-0.01, win_top - 0.02, glass_z - 0.06), (0.01, roof_y, glass_z - 0.05), 'black')
+    v.box((-0.083, win_top - 0.065, glass_z - 0.0705), (0.083, win_top - 0.025,
+                                                         glass_z - 0.07), 'mirror', faces=('n',))
+    v.box((-0.01, win_top - 0.02, glass_z - 0.06), (0.01, roof_y, glass_z - 0.055), 'black')
     for sx in (1, -1):                                                          # sun visors
-        xa, xb = sorted((sx * 0.06, sx * (w - 0.12)))
-        v.box((xa, roof_y - 0.03, glass_z - 0.32), (xb, roof_y - 0.005, glass_z - 0.04),
+        xa, xb = sorted((sx * 0.12, sx * (w - 0.18)))
+        v.box((xa, roof_y - 0.02, glass_z - 0.26), (xb, roof_y - 0.005, glass_z - 0.05),
               'interior')
     if console:
         z0, z1, floor = console
@@ -944,6 +981,54 @@ def conventional_cab(v, w, front_z):
 DUMP_HINGE = (0.0, 0.95, -2.5)
 
 
+PLOW_RAISED = -0.23    # the cutting edge's foot carried raised; PLOW lowers it PLOW_DROP
+PLOW_DROP = 0.3
+PLOW_HEIGHT = 0.9
+PLOW_HALF = 1.55
+
+
+def plow_boxes(z_front):
+    """A snow plow's boxes, as one group (PLOW lowers it): a black cutting edge at the
+    moldboard's foot, end plates, ribs behind, an A-frame back to the truck's mount, and a
+    marker rod at each end with an orange tip. The moldboard itself, curving back in the middle
+    and rolling forward at the top as a real one throws the snow, is plow_moldboard's."""
+    yb, top = PLOW_RAISED, PLOW_RAISED + PLOW_HEIGHT
+    w = PLOW_HALF
+
+    def z_at(t):
+        return z_front - 0.22 * math.sin(math.pi * t) + 0.12 * t
+
+    boxes = []
+    back = min(z_at(k / 20.0) for k in range(21)) - 0.05
+    boxes.append(((-w, yb - 0.03, z_front - 0.02), (w, yb + 0.08, z_front + 0.03), 'black'))
+    for sx in (1, -1):
+        xa, xb = sorted((sx * w, sx * (w + 0.04)))
+        boxes.append(((xa, yb, back - 0.02), (xb, top, z_front + 0.1), 'blade'))      # ends
+        for x in (0.45, 1.15):
+            ra, rb = sorted((sx * (x - 0.03), sx * (x + 0.03)))
+            boxes.append(((ra, yb + 0.05, back - 0.1), (rb, top - 0.05, back), 'black'))
+        fa, fb = sorted((sx * 0.26, sx * 0.4))                                    # A-frame
+        boxes.append(((fa, yb + 0.22, 6.75), (fb, yb + 0.34, back - 0.1), 'black'))
+        ma, mb = sorted((sx * (w - 0.06), sx * (w - 0.03)))                       # markers
+        boxes.append(((ma, top, back - 0.05), (mb, top + 0.6, back - 0.02), 'chrome'))
+        ta, tb = sorted((sx * (w - 0.075), sx * (w - 0.015)))
+        boxes.append(((ta, top + 0.6, back - 0.065), (tb, top + 0.66, back - 0.005), 'blade'))
+    return boxes
+
+
+def plow_moldboard(v, z_front, segments=8):
+    """The plow's curved face, written into the plow's object as slanted segments sharing their
+    edges (Vehicle.slab), so it reads as one smooth curve rather than stepped slats."""
+    yb = PLOW_RAISED
+
+    def at(t):
+        return (yb + PLOW_HEIGHT * t, z_front - 0.22 * math.sin(math.pi * t) + 0.12 * t)
+
+    for i in range(segments):
+        v.slab(-PLOW_HALF, PLOW_HALF, at(i / segments), at((i + 1) / segments), 0.05, 'blade',
+               obj='plow')
+
+
 def dpw_truck():
     """A public works dump truck: a conventional cab, a plow blade, amber beacons, and a dump
     body the DUMP switch tips up about its back edge."""
@@ -953,9 +1038,12 @@ def dpw_truck():
     v.box((-0.5, -0.15, -2.7), (0.5, 0.25, 6.5), 'black')
     back = conventional_cab(v, w, 6.3)
     v.box((-0.5, 0.25, back - 0.6), (0.5, 0.95, back), 'black')               # cab-to-body gap
-    # the plow on its frame mount
+    # the plow's mount on the frame, and the lift tower its cylinder works from
     v.box((-0.3, 0.0, 6.55), (0.3, 0.4, 6.75), 'black')
-    v.box((-1.55, -0.45, 6.75), (1.55, 0.55, 6.95), 'blade')
+    v.box((-0.08, 0.4, 6.6), (0.08, 0.95, 6.72), 'black')
+    v.box((-0.035, 0.45, 6.72), (0.035, 0.92, 6.79), 'chrome')                # lift cylinder
+    v.group('plow', plow_boxes(7.35))   # out ahead of the mount, on its A-frame
+    plow_moldboard(v, 7.35)
     hx, hy, hz = DUMP_HINGE
     v.group('dump_body', [
         ((-1.25, hy, hz), (1.25, hy + 0.1, 2.55), 'bed'),                       # floor
@@ -978,7 +1066,11 @@ def dpw_truck():
 
 def dump_animations():
     return [{'objectName': 'dump_body', 'animations': [
-        aerial_animation('rotation', [-45, 0, 0], (0, 80, 0), DUMP_HINGE, variable='DUMP')]}]
+        aerial_animation('rotation', [-45, 0, 0], (0, 80, 0), DUMP_HINGE, variable='DUMP')]},
+            # carried raised; PLOW lets it down onto the road
+            {'objectName': 'plow', 'animations': [
+                aerial_animation('translation', [0, -PLOW_DROP, 0], (0, 30, 0), None,
+                                 variable='PLOW')]}]
 
 
 BOOM_PIVOT = (0.0, 2.65, -1.6)
@@ -988,10 +1080,46 @@ BOOM_TURN = (100, 80, 100)
 BOOM_EXTEND = (180, 100, 0)
 
 
-def bucket_truck():
+def arrow_board(v, rear_z, y0):
+    """A lit arrow board on posts at the back of a body whose top is y0, facing the traffic
+    behind. ARROWBOARD picks its pattern (the panel's ARROW buttons step it): 1 an arrow to the
+    vehicle's left, 2 to its right, 3 caution (the corners flashing in pairs), 0 dark."""
+    z = rear_z + 0.04
+    v.box((-0.82, y0 + 0.05, z), (0.82, y0 + 0.77, z + 0.06), 'black')        # the board
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.5, sx * 0.56))
+        v.box((xa, y0, z + 0.06), (xb, y0 + 0.05, z + 0.1), 'chrome')          # posts
+    mid = y0 + 0.41
+    shaft = [-0.55, -0.37, -0.19, -0.01, 0.17]
+    head = [(0.33, 0.2), (0.45, 0.1), (0.57, 0.0), (0.45, -0.1), (0.33, -0.2)]
+
+    def pattern(value):
+        return {'animationType': 'visibility', 'variable': 'ARROWBOARD', 'clampMin': value,
+                'clampMax': value}
+
+    def lamp(name, x, y, animations):
+        v.lamp(name, (x - 0.045, y - 0.045, z - 0.012), (x + 0.045, y + 0.045, z),
+               'lamp_amber', LAMP_LIT['lamp_amber'], animations, [0, 0, -1], 0.25,
+               faces=('n',))
+
+    for sx, value, name in ((1, 1, 'ArrowLeft'), (-1, 2, 'ArrowRight')):
+        # +x is the vehicle's left, and the driver behind sees it on their left too
+        for x in shaft:
+            lamp(name, sx * x, mid, [pattern(value), vp.lit_by('0_12_8_cycle')])
+        for x, dy in head:
+            lamp(name, sx * x, mid + dy, [pattern(value), vp.lit_by('0_12_8_cycle')])
+    for k, (x, y) in enumerate(((0.68, y0 + 0.17), (-0.68, y0 + 0.65), (-0.68, y0 + 0.17),
+                                (0.68, y0 + 0.65))):
+        lamp('Caution' + 'AB'[k // 2], x, y,
+             [pattern(3), vp.lit_by('0_10_10_cycle' if k < 2 else '10_10_0_cycle')])
+
+
+def bucket_truck(arrow=False):
     """A power company bucket truck: a conventional cab, a service body with compartments, and a
-    boom with an insulated bucket. The BOOM switch raises it, swings it to the left and runs the
-    upper boom out, the bucket staying level all the way."""
+    boom with an insulated bucket a lineman rides in. The BOOM switch raises it, swings it to the
+    left and runs the upper boom out, the bucket staying level all the way; with BOOM off, the
+    panel's LIFT, SWING and REACH steer it. With `arrow`, the signal maintenance truck: the same
+    with an arrow board at the back."""
     v = Vehicle()
     g = -0.55
     w = 1.15
@@ -1020,22 +1148,60 @@ def bucket_truck():
         v.warning('RearBeacon' + side, (xs[0], 1.55, -2.5), (xs[1], 1.75, -2.3), 'lamp_amber',
                   0 if sx > 0 else 1, [0, 0, -1], variable='BEACONS')
     v.road_lights(6.13, -2.5, 1.1, 0.75, 0.45)
+    if arrow:
+        arrow_board(v, -2.5, 1.55)
     return v, g
 
 
+def signal_truck():
+    return bucket_truck(arrow=True)
+
+
+# The boom by hand, from the panel (and from the bucket, whose seat is a controller): each
+# button steps its variable, IV clamping it to the range.
+BOOM_MANUAL = {
+    # variable: (step a click, minimum, maximum, the panel label)
+    'BOOM_LIFT': (5.0, 0.0, 75.0, 'LIFT'),         # degrees up from the rest
+    'BOOM_SWING': (10.0, -180.0, 180.0, 'SWING'),  # degrees, + to the truck's left
+    'BOOM_REACH': (0.25, 0.0, 4.0, 'REACH'),       # metres the upper boom runs out
+}
+
+
 def boom_animations():
+    """The boom's animated objects. Each runs the one-touch BOOM sequence, then an INHIBITOR on
+    BOOM (while it is on, the animations after it do not run), then its manual step: so BOOM
+    deploys and stows the boom, and with BOOM off the panel's LIFT, SWING and REACH steer it.
+    The bucket turns back by both raises, so it stays level either way."""
     pivot, tip = BOOM_PIVOT, BOOM_TIP
+    hold = {'animationType': 'inhibitor', 'variable': 'BOOM', 'clampMin': 1, 'clampMax': 1}
+
+    def by_hand(kind, axis, variable, centre=None):
+        anim = {'animationType': kind, 'variable': variable, 'axis': axis}
+        if centre is not None:
+            anim['centerPoint'] = list(centre)
+        return anim
+
     return [
         {'objectName': 'boom_turret', 'animations': [
-            aerial_animation('rotation', [0, 90, 0], BOOM_TURN, pivot, 'BOOM')]},
+            aerial_animation('rotation', [0, 90, 0], BOOM_TURN, pivot, 'BOOM'), hold,
+            by_hand('rotation', [0, 1, 0], 'BOOM_SWING', pivot)]},
         {'objectName': 'boom', 'applyAfter': 'boom_turret', 'animations': [
-            aerial_animation('rotation', [-55, 0, 0], BOOM_RAISE, pivot, 'BOOM')]},
+            aerial_animation('rotation', [-55, 0, 0], BOOM_RAISE, pivot, 'BOOM'), hold,
+            by_hand('rotation', [-1, 0, 0], 'BOOM_LIFT', pivot)]},
         {'objectName': 'boom_upper', 'applyAfter': 'boom', 'animations': [
-            aerial_animation('translation', [0, 0, 4.0], BOOM_EXTEND, None, 'BOOM')]},
-        # the bucket turns back as the boom raises, so it stays level
+            aerial_animation('translation', [0, 0, 4.0], BOOM_EXTEND, None, 'BOOM'), hold,
+            by_hand('translation', [0, 0, 1], 'BOOM_REACH')]},
         {'objectName': 'bucket', 'applyAfter': 'boom_upper', 'animations': [
-            aerial_animation('rotation', [55, 0, 0], BOOM_RAISE, tip, 'BOOM')]},
+            aerial_animation('rotation', [55, 0, 0], BOOM_RAISE, tip, 'BOOM'), hold,
+            by_hand('rotation', [1, 0, 0], 'BOOM_LIFT', tip)]},
     ]
+
+
+# The bucket's seat: it rides the bucket (applyAfter), and is a controller, since IV opens the
+# panel only for a controller seat and the boom is worked from the panel. Getting out puts the
+# rider on the ground beside the truck, not over the side of a raised bucket.
+BUCKET_SEAT = (0.0, BOOM_TIP[1] - 0.08, BOOM_TIP[2] + 0.35, True,
+               {'applyAfter': 'bucket', 'dismountPos': [1.8, 0.0, BOOM_TIP[2]]})
 
 
 # The tow truck's bed: it slides back, then tilts its back end down onto the road.
@@ -1311,11 +1477,11 @@ PICKUP_SEATS = [(0.42, 0.35, 1.6, True), (-0.42, 0.35, 1.6, False),
                 (0.42, 0.35, 0.85, False), (-0.42, 0.35, 0.85, False)]
 
 
-def raked_cab(v, w, belt, top, rake, steps=6):
+def raked_cab(v, w, belt, top, rake):
     """A crew cab whose windshield leans back `rake` from the cowl to the roof, as a real
     truck's does rather than standing upright like the fleet's cab-overs. The greenhouse behind
     the windshield is the ordinary hollow cabin; the windshield, the A-pillars and the glass
-    under them are written as `steps` steps."""
+    under them are slanted pieces (raked_windshield)."""
     c0, c1 = PICKUP_CAB
     t = WALL
     roof_front = c1 - rake
@@ -1337,17 +1503,7 @@ def raked_cab(v, w, belt, top, rake, steps=6):
         v.box((xa, 0.1, roof_front), (xb, belt, c1), 'paint')                 # cowl sides
     v.box((-w + t, 0.1, c1 - t), (w - t, belt, c1), 'paint')                  # firewall
     v.box((-w + t, win_top, roof_front - t), (w - t, top - 0.05, roof_front), 'paint')
-    for i in range(steps):
-        y0 = belt + (win_top - belt) * i / steps
-        y1 = belt + (win_top - belt) * (i + 1) / steps
-        za, zb = c1 - rake * (i + 1) / steps, c1 - rake * i / steps
-        v.box((-w + t, y0, za), (w - t, y1, zb), 'glass', obj='window')       # windshield
-        for sx in (1, -1):
-            xa, xb = sorted((sx * (w - t), sx * w))
-            v.box((xa, y0, za), (xb, y1, zb), 'paint')                        # A-pillar
-            if za - roof_front > 0.005:
-                ga, gb = sorted((sx * (w - t * 0.7), sx * (w - t * 0.3)))
-                v.box((ga, y0, roof_front), (gb, y1, za), 'glass', obj='window')
+    raked_windshield(v, w, belt, win_top, c1, roof_front)
     # the dash, under the windshield, and the steering wheel: a ring, so the road shows through
     v.box((-w + t, belt - 0.3, roof_front - 0.3), (w - t, belt - 0.02, c1 - t), 'black')
     dx, wz = 0.42, roof_front - 0.38
@@ -1648,6 +1804,23 @@ def rake(v, w, belt, win_top, z_foot, z_head, steps, side_glass):
                     v.box((xa, y0, fa), (xb, y1, fb), 'paint')
 
 
+def raked_windshield(v, w, belt, win_top, z_foot, z_head):
+    """A windshield raked back from its foot (belt line at z_foot) to its head (window top at
+    z_head) in slanted pieces: the glass as one pane, a slim A-pillar each side, and under each
+    pillar a triangle of side glass back to z_head. Stepped boxes made the pillars a staircase
+    across the driver's view and left a seam in the glass at every step."""
+    t = WALL
+    foot, head = (belt, z_foot), (win_top, z_head)
+    v.slab(-w + t, w - t, foot, head, 0.012, 'glass', obj='window')
+    for sx in (1, -1):
+        xa, xb = sorted((sx * (w - t), sx * w))
+        v.slab(xa, xb, foot, head, 0.07, 'paint')                         # the A-pillar
+        gx = sx * (w - t * 0.5)
+        tri = [(gx, belt, z_foot), (gx, belt, z_head), (gx, win_top, z_head)]
+        v.poly('window', tri, (sx, 0, 0), 'glass')                         # side glass, out
+        v.poly('window', tri, (-sx, 0, 0), 'glass')                        # and in
+
+
 def solid_section(v, w, z0, z1, bottom, top, arches, arch_top):
     """A closed piece of body from z0 to z1 (the nose, the tail): the wheel openings cut from
     it below arch_top, the wheel well between them in black."""
@@ -1694,7 +1867,7 @@ def car_cabin(v, c):
     v.box((-w, top - 0.05, zr), (w, top, zfr), 'paint')                       # roof
     v.box((-w + t, win_top, zfr - t), (w - t, top - 0.05, zfr), 'paint')
     v.box((-w + t, win_top, zr), (w - t, top - 0.05, zr + t), 'paint')
-    rake(v, w, belt, win_top, zc, zfr, c.get('steps', 5), True)
+    raked_windshield(v, w, belt, win_top, zc, zfr)
     rake(v, w, belt, win_top, zf, zr, c.get('steps', 5), c['quarter_glass'])
     # the dash under the windshield and the steering wheel, a ring
     v.box((-w + t, belt - 0.25, zfr - 0.02), (w - t, belt - 0.02, zc), 'black')
@@ -1958,6 +2131,15 @@ LIVERIES = {
         ('_emberline', 'Transit Bus (EMBERLINE)', '#B02420', '#F2F2EE', '#383A3E', 'EMBERLINE',
          '#B02420', '20 EXPRESS'),
     ],
+    # the city's traffic signal shop (public works orange), and the state highway department
+    'csm_signal_truck': [
+        ('_signals', 'Traffic Signal Truck', '#E8761C', '#F2F2EE', '#1C1C1C', 'TRAFFIC SIGNALS',
+         '#1C1C1C'),
+        ('_highway', 'Traffic Signal Truck (Highway Dept)', '#F2F2EE', '#F2F2EE', '#E8761C',
+         'HIGHWAY DEPT', '#E8761C'),
+        ('_yellow', 'Traffic Signal Truck (Yellow)', '#E8C21A', '#E8C21A', '#1C1C1C',
+         'TRAFFIC SIGNALS', '#1C1C1C'),
+    ],
     'csm_bucket_truck': [
         ('_white', 'Power Company Bucket Truck', '#F2F2EE', '#F2F2EE', '#1E4AA0', 'CITY POWER',
          '#1E4AA0'),
@@ -2060,6 +2242,7 @@ DECAL_ON = {'csm_chipper_trailer': 'paint', 'csm_equipment_trailer': 'paint',
             'csm_stump_grinder': 'paint',
             'csm_fire_engine': 'paint', 'csm_ladder_truck': 'paint', 'csm_ambulance': 'paint2',
             'csm_police_suv': 'paint2', 'csm_dpw_truck': 'paint', 'csm_bucket_truck': 'paint',
+            'csm_signal_truck': 'paint',
             'csm_tow_truck': 'paint', 'csm_transit_bus': 'paint2',
             'csm_pickup_h150_xl': 'paint', 'csm_pickup_h150_xlt': 'paint',
             'csm_pickup_silverline': 'paint', 'csm_pickup_h150_service': 'paint',
@@ -2769,26 +2952,42 @@ FLEET = {
         build=dpw_truck,
         description='A public works dump truck with a plow. BEACONS runs its amber lights (they '
                     'are not emergency lights, so it does not preempt signals); DUMP tips the '
-                    'body.',
+                    'body; PLOW lets the plow down onto the road (it is carried raised).',
         mass=8000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         ceiling_mph=82, drag=(0.5, 2.0),
         wheels=[(0.95, 4.6, True), (0.95, 0.0, False), (0.62, 0.0, False)],
         seats=[(0.45, 0.85, 3.7, True), (-0.45, 0.85, 3.7, False)],
         engine_pos=(0.0, 0.6, 5.4), boxes=[-1.5, 1.0, 3.5, 5.6], box_width=2.5,
-        box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP'], animated=dump_animations,
-        trailer_hitch=True),
+        box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP', 'PLOW'],
+        animated=dump_animations, trailer_hitch=True),
     'csm_bucket_truck': dict(
         build=bucket_truck,
         description='A power company bucket truck. BEACONS runs its amber lights (not emergency '
                     'lights, so it does not preempt signals); BOOM raises the boom, swings it to '
-                    'the left and runs it out, the bucket staying level.',
+                    'the left and runs it out, the bucket staying level. With BOOM off, the '
+                    'panel\'s LIFT, SWING and REACH steer the boom, from the cab or from the '
+                    'bucket, which has a seat of its own.',
         mass=7000, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
         ceiling_mph=82, drag=(0.5, 2.0),
         wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
-        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False)],
+        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), BUCKET_SEAT],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations,
-        trailer_hitch=True),
+        trailer_hitch=True, constants={'boom_present': 1.0}),
+    'csm_signal_truck': dict(
+        build=signal_truck,
+        description='A traffic signal maintenance truck: the bucket truck\'s boom, which the '
+                    'panel\'s LIFT, SWING and REACH steer (BOOM deploys it in one go), a seat in '
+                    'the bucket to work on a signal head from, and an arrow board on the back '
+                    'that the panel\'s ARROW buttons step through left, right and caution. '
+                    'BEACONS runs its amber lights, which do not preempt signals.',
+        mass=7200, wheel='csm_wheel_truck', engine='csm_engine_diesel', horn='horn_air',
+        ceiling_mph=82, drag=(0.5, 2.1),
+        wheels=[(0.95, 4.4, True), (0.95, 0.0, False), (0.62, 0.0, False)],
+        seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), BUCKET_SEAT],
+        engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
+        box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=boom_animations,
+        trailer_hitch=True, constants={'boom_present': 1.0, 'arrow_present': 1.0}),
     'csm_tow_truck': dict(
         build=tow_truck,
         description='A rollback tow truck. BED slides the flatbed back and tilts it; the panel '
@@ -2988,12 +3187,14 @@ def vehicle_json(name, v):
             parts.append(slot)
             if spec.get('awd') or not steer:
                 driven.append(len(parts))
-    for x, y, z, controller in spec['seats']:
+    for seat in spec['seats']:
+        x, y, z, controller = seat[:4]
         slot = {'pos': [x, y, z], 'types': ['seat'],
                 'defaultPart': '%s:%s' % (PACK, spec.get('seat', 'csm_vehicle_seat')),
                 'dismountPos': [x + (1.6 if x >= 0 else -1.6), 0.0, z]}
         if controller:
             slot['isController'] = True
+        slot.update(seat[4] if len(seat) > 4 else {})   # e.g. a seat that rides the boom
         parts.append(slot)
     if 'cap' in spec:
         x, y, z = PICKUP_CAP_SLOT
@@ -3054,7 +3255,7 @@ def vehicle_json(name, v):
         definition['rendering']['animatedObjects'] = animated
     definition['collisionGroups'] += door_groups
     # the panel's FOG and WIPERS buttons show only on a vehicle that has fog lamps or wipers
-    constants = {}
+    constants = dict(spec.get('constants', {}))     # e.g. which of the panel's buttons show
     if any(light['objectName'].startswith('&Fog') for light in v.lights):
         constants['fog_present'] = 1.0
     if v.wiper_arms:
@@ -3272,6 +3473,21 @@ def panel_json():
                    toggle((175, 76), 'WIPERS', 'WIPERS',
                           visibilityVariables=[['wipers_present']]),
                    toggle((175, 108), 'HAZARDS', 'HAZARDS')]
+
+    def step(pos, text, variable, by, lo, hi, show):
+        return {'pos': [pos[0], pos[1], 0], 'width': 20, 'height': 20,
+                'textureStart': [180, 216, 0], 'text': text,
+                'visibilityVariables': [[show]],
+                'clickAction': {'variable': variable, 'action': 'increment', 'value': by,
+                                'clampMin': lo, 'clampMax': hi}}
+
+    # the boom by hand (with BOOM off), two columns of + and -; the arrow board's pattern
+    for k, (variable, (by, lo, hi, label)) in enumerate(BOOM_MANUAL.items()):
+        x, y = (220, 12 + 64 * k) if k < 2 else (265, 12)
+        components += [step((x, y), label + ' +', variable, by, lo, hi, 'boom_present'),
+                       step((x, y + 32), label + ' -', variable, -by, lo, hi, 'boom_present')]
+    components += [step((265, 76), 'ARROW +', 'ARROWBOARD', 1, 0, 3, 'arrow_present'),
+                   step((265, 108), 'ARROW -', 'ARROWBOARD', -1, 0, 3, 'arrow_present')]
     return {'panel': {'texture': 'mts:textures/guis/panel.png', 'textureWidth': 512,
                       'textureHeight': 256, 'backgroundWidth': 400, 'backgroundHeight': 140,
                       'navBoxPosition': [108, 0], 'components': components}}
@@ -3282,7 +3498,7 @@ def panel_json():
 SWITCH_LABELS = {'EMERLTS': 'LIGHTBAR', 'siren': 'WAIL', 'siren_yelp': 'YELP',
                  'siren_hilo': 'HI-LO', 'AERIAL': 'LADDER', 'BEACONS': 'BEACONS',
                  'DUMP': 'DUMP BODY', 'BOOM': 'BOOM', 'BED': 'BED', 'DOORS': 'DOORS',
-                 'TSP': 'TSP', 'HIGHBEAM': 'HIGH BEAM', 'FOG': 'FOG LAMPS'}
+                 'TSP': 'TSP', 'HIGHBEAM': 'HIGH BEAM', 'FOG': 'FOG LAMPS', 'PLOW': 'PLOW'}
 CONTROLS = [('W S', 'GAS BRAKE'), ('G', 'LIGHTS'), ('C', 'HORN'), ('N', 'PARK'),
             ('X', 'VIEW'), ('SHIFT', 'GET OUT')]
 
