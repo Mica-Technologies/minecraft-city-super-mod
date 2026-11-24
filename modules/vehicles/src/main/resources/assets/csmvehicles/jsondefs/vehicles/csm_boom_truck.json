@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A telescopic aerial boom truck, for the longest reach: a three-section boom that runs out 8 m. Hold the arrow keys (lift and swing) and [ ] (the reach) to steer it from the cab or from the bucket, which has a seat; B, or the BOOM switch, drives it to its working pose or back to stowed. BEACONS runs its amber lights.",
+    "description": "A telescopic aerial boom truck, for the longest reach: a three-section boom that runs out 8 m. Hold the arrow keys (lift and swing) and [ ] (the reach) to steer it from the cab, or stand in the bucket and use WASD as well; B, or the BOOM switch, drives it to its working pose or back to stowed. BEACONS runs its amber lights.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -183,19 +183,18 @@
     {
       "pos": [
         0.0,
-        2.7199999999999998,
-        5.35
+        2.57,
+        5.375
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_bucket_standing",
       "dismountPos": [
         1.8,
         0.0,
         5.0
       ],
-      "isController": true,
       "applyAfter": "bucket"
     },
     {

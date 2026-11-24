@@ -8,10 +8,14 @@ import minecrafttransportsimulator.baseclasses.ComputedVariable;
 import minecrafttransportsimulator.entities.components.AEntityB_Existing;
 import minecrafttransportsimulator.entities.instances.EntityVehicleF_Physics;
 import minecrafttransportsimulator.entities.instances.PartSeat;
+import minecrafttransportsimulator.guis.components.AGUIBase;
+import minecrafttransportsimulator.guis.instances.GUIPanel;
+import minecrafttransportsimulator.jsondefs.JSONConfigClient;
 import minecrafttransportsimulator.mcinterface.IWrapperPlayer;
 import minecrafttransportsimulator.mcinterface.InterfaceManager;
 import minecrafttransportsimulator.packets.instances.PacketEntityVariableIncrement;
 import minecrafttransportsimulator.packets.instances.PacketEntityVariableToggle;
+import minecrafttransportsimulator.systems.ControlSystem.ControlsKeyboard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -39,6 +43,12 @@ import org.lwjgl.input.Keyboard;
  * <p>The keys are listed under CSM: Vehicles in Controls and can be rebound there; the HUD names
  * whatever they are bound to.</p>
  *
+ * <p>The bucket's place is a standing seat that is not a controller, so Immersive Vehicles never
+ * drives the truck from it. There Immersive Vehicles' own drive keys (WASD, as the player has
+ * them bound) work the boom as well: gas and brake lift, turn left and right swing. And as IV
+ * opens its panel only for a controller seat, this opens and closes it on IV's panel key for the
+ * bucket, with the same guards IV uses.</p>
+ *
  * <p>Client only: {@link CsmVehicles} registers it only on the client side.</p>
  *
  * @since 2026.11
@@ -59,6 +69,7 @@ public final class BoomControls {
   private final KeyBinding boomKey = key("boom_toggle", Keyboard.KEY_B);
 
   private boolean boomWasDown;
+  private boolean panelWasDown;
 
   private BoomControls() {
   }
@@ -78,8 +89,8 @@ public final class BoomControls {
     return new KeyBinding("key.csm_vehicles." + name, code, CATEGORY);
   }
 
-  /** The boom truck the player is in a controller seat of, or null. */
-  private static EntityVehicleF_Physics operated() {
+  /** The seat the player is in, when it is a boom truck's controller seat or its bucket. */
+  private static PartSeat operatingSeat() {
     if (InterfaceManager.clientInterface == null) {
       return null;
     }
@@ -92,16 +103,33 @@ public final class BoomControls {
       return null;
     }
     PartSeat seat = (PartSeat) riding;
-    if (!seat.placementDefinition.isController) {
+    if (!seat.placementDefinition.isController && !inBucket(seat)) {
       return null;
     }
-    EntityVehicleF_Physics vehicle = seat.vehicleOn;
-    return BoomAxes.constants(vehicle) != null ? vehicle : null;
+    return BoomAxes.constants(seat.vehicleOn) != null ? seat : null;
+  }
+
+  /** Whether the seat rides the boom's bucket ({@code applyAfter: bucket} in the truck's JSON). */
+  private static boolean inBucket(PartSeat seat) {
+    return BoomAxes.BUCKET.equals(seat.placementDefinition.applyAfter);
   }
 
   private static boolean down(KeyBinding binding) {
-    int code = binding.getKeyCode();
+    return binding != null && down(binding.getKeyCode());
+  }
+
+  private static boolean down(int code) {
     return code > 0 && code < Keyboard.KEYBOARD_SIZE && Keyboard.isKeyDown(code);
+  }
+
+  /**
+   * Whether one of Immersive Vehicles' keys is held, read from its binding rather than through
+   * {@code isPressed()}, which keeps IV's own pressed state and would upset its momentary keys.
+   * A key bound to a mouse button is not read.
+   */
+  private static boolean down(ControlsKeyboard control) {
+    JSONConfigClient.ConfigKeyboard config = control.config;
+    return config != null && !config.isMouseButton && down(config.keyCode);
   }
 
   @SubscribeEvent
@@ -110,17 +138,31 @@ public final class BoomControls {
       return;
     }
     Minecraft mc = Minecraft.getMinecraft();
-    EntityVehicleF_Physics vehicle = mc.currentScreen == null ? operated() : null;
+    PartSeat seat = operatingSeat();
+    boolean bucket = seat != null && inBucket(seat);
+    // the panel key works with the panel open too, so it can close it
+    boolean panelDown = bucket && down(ControlsKeyboard.CAR_PANEL);
+    if (panelDown && !panelWasDown) {
+      togglePanel(seat.vehicleOn);
+    }
+    panelWasDown = panelDown;
+
+    EntityVehicleF_Physics vehicle = mc.currentScreen == null && seat != null ? seat.vehicleOn
+        : null;
     if (vehicle == null) {
       boomWasDown = false;
       return;
     }
     Map<String, Double> constants = BoomAxes.constants(vehicle);
-    hold(vehicle, BoomAxes.LIFT, liftUp, liftDown, BoomAxes.LIFT_RATE, 0,
-        BoomAxes.liftMax(constants));
-    hold(vehicle, BoomAxes.SWING, swingLeft, swingRight, BoomAxes.SWING_RATE,
-        -BoomAxes.SWING_LIMIT, BoomAxes.SWING_LIMIT);
-    hold(vehicle, BoomAxes.second(constants), secondOut, secondIn,
+    hold(vehicle, BoomAxes.LIFT,
+        down(liftUp) || bucket && down(ControlsKeyboard.CAR_GAS),
+        down(liftDown) || bucket && down(ControlsKeyboard.CAR_BRAKE),
+        BoomAxes.LIFT_RATE, 0, BoomAxes.liftMax(constants));
+    hold(vehicle, BoomAxes.SWING,
+        down(swingLeft) || bucket && down(ControlsKeyboard.CAR_TURN_L),
+        down(swingRight) || bucket && down(ControlsKeyboard.CAR_TURN_R),
+        BoomAxes.SWING_RATE, -BoomAxes.SWING_LIMIT, BoomAxes.SWING_LIMIT);
+    hold(vehicle, BoomAxes.second(constants), down(secondOut), down(secondIn),
         BoomAxes.secondRate(constants), 0, BoomAxes.secondMax(constants));
     boolean boomDown = down(boomKey);
     if (boomDown && !boomWasDown) {
@@ -130,9 +172,28 @@ public final class BoomControls {
     boomWasDown = boomDown;
   }
 
-  private static void hold(EntityVehicleF_Physics vehicle, String variable, KeyBinding more,
-      KeyBinding less, double rate, double min, double max) {
-    int direction = (down(more) ? 1 : 0) - (down(less) ? 1 : 0);
+  /**
+   * Opens IV's panel for the bucket, or closes it, as IV does for a controller seat
+   * ({@code ControlSystem.controlPanel}): only for a player who could start the truck, closing it
+   * unless its text is being edited, and opening it only with no other screen up.
+   */
+  private static void togglePanel(EntityVehicleF_Physics vehicle) {
+    if (!vehicle.canPlayerStartEngines(InterfaceManager.clientInterface.getClientPlayer())) {
+      return;
+    }
+    if (AGUIBase.activeInputGUI instanceof GUIPanel) {
+      if (!AGUIBase.activeInputGUI.editingText) {
+        AGUIBase.activeInputGUI.close();
+      }
+    } else if (!InterfaceManager.clientInterface.isGUIOpen()) {
+      new GUIPanel(vehicle);
+    }
+  }
+
+  /** Moves an axis while either way is held; both at once, or two keys one way, is one rate. */
+  private static void hold(EntityVehicleF_Physics vehicle, String variable, boolean more,
+      boolean less, double rate, double min, double max) {
+    int direction = (more ? 1 : 0) - (less ? 1 : 0);
     if (direction == 0) {
       return;
     }
@@ -154,10 +215,12 @@ public final class BoomControls {
     if (mc.gameSettings.hideGUI || mc.gameSettings.showDebugInfo) {
       return;
     }
-    EntityVehicleF_Physics vehicle = operated();
-    if (vehicle == null) {
+    PartSeat seat = operatingSeat();
+    if (seat == null) {
       return;
     }
+    EntityVehicleF_Physics vehicle = seat.vehicleOn;
+    boolean bucket = inBucket(seat);
     Map<String, Double> constants = BoomAxes.constants(vehicle);
     boolean elbow = BoomAxes.hasElbow(constants);
     double lift = vehicle.getOrCreateVariable(BoomAxes.LIFT).currentValue;
@@ -167,7 +230,8 @@ public final class BoomControls {
 
     List<String[]> rows = new ArrayList<>();
     rows.add(new String[]{I18n.format("csm_vehicles.boom.hud.lift"),
-        String.format(Locale.ROOT, "%.0f°", lift), keys(liftUp, liftDown)});
+        String.format(Locale.ROOT, "%.0f°", lift), keys(liftUp, liftDown)
+        + (bucket ? ", " + keys(ControlsKeyboard.CAR_GAS, ControlsKeyboard.CAR_BRAKE) : "")});
     rows.add(elbow
         ? new String[]{I18n.format("csm_vehicles.boom.hud.elbow"),
         String.format(Locale.ROOT, "%.0f°", second), keys(secondOut, secondIn)}
@@ -177,7 +241,9 @@ public final class BoomControls {
         : I18n.format(swing > 0 ? "csm_vehicles.boom.hud.left" : "csm_vehicles.boom.hud.right");
     rows.add(new String[]{I18n.format("csm_vehicles.boom.hud.swing"),
         String.format(Locale.ROOT, "%.0f° %s", Math.abs(swing), side).trim(),
-        keys(swingLeft, swingRight)});
+        keys(swingLeft, swingRight)
+            + (bucket ? ", " + keys(ControlsKeyboard.CAR_TURN_L, ControlsKeyboard.CAR_TURN_R)
+            : "")});
     String boomLine = I18n.format(stowed ? "csm_vehicles.boom.hud.deploy"
         : "csm_vehicles.boom.hud.stow", keyName(boomKey));
 
@@ -217,13 +283,30 @@ public final class BoomControls {
     return keyName(a) + " / " + keyName(b);
   }
 
+  /** Two of Immersive Vehicles' keys as the player has them bound in IV's config, e.g. W / S. */
+  private static String keys(ControlsKeyboard a, ControlsKeyboard b) {
+    return keyName(a) + " / " + keyName(b);
+  }
+
+  private static String keyName(ControlsKeyboard control) {
+    JSONConfigClient.ConfigKeyboard config = control.config;
+    if (config == null || config.isMouseButton) {
+      return "?";
+    }
+    String name = Keyboard.getKeyName(config.keyCode);
+    return name == null ? "?" : prettyKey(name);
+  }
+
   /**
    * A key's name as it is printed on the key. LWJGL names the punctuation keys in words, so those
    * get their symbol; the rest are written as words, not shouted. Arrow glyphs come from the
    * small unicode font and are hard to read, so the arrow keys keep their names.
    */
   static String keyName(KeyBinding binding) {
-    String name = binding.getDisplayName();
+    return prettyKey(binding.getDisplayName());
+  }
+
+  private static String prettyKey(String name) {
     switch (name) {
       case "LBRACKET":
         return "[";

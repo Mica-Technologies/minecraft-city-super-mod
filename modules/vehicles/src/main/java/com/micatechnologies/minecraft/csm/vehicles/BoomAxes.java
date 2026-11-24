@@ -20,6 +20,9 @@ final class BoomAxes {
   /** The one-touch switch: the panel's BOOM button, or B. */
   static final String BOOM = "BOOM";
 
+  /** The bucket's object: the bucket's place is the seat slot that rides it (applyAfter). */
+  static final String BUCKET = "bucket";
+
   /** Degrees the lower boom is raised. */
   static final String LIFT = "BOOM_LIFT";
 

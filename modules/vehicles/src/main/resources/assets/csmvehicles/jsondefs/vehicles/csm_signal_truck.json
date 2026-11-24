@@ -23,7 +23,7 @@
     }
   ],
   "general": {
-    "description": "A traffic signal maintenance truck: a knuckle boom (hold the arrow keys and [ ] to steer it; B or BOOM deploys or stows it), a seat in the bucket to work on a signal head from, and an arrow board on a frame behind the cab that the panel's ARROW buttons step through left, right and caution. BEACONS runs its amber lights, which do not preempt signals.",
+    "description": "A traffic signal maintenance truck: a knuckle boom (hold the arrow keys and [ ] to steer it, or WASD from the bucket; B or BOOM deploys or stows it), a bucket to stand in and work on a signal head from, and an arrow board on a frame behind the cab that the panel's ARROW buttons step through left, right and caution. BEACONS runs its amber lights, which do not preempt signals.",
     "materialLists": [
       [
         "minecraft:iron_block:0:6",
@@ -183,19 +183,18 @@
     {
       "pos": [
         0.0,
-        1.8699999999999999,
-        -2.37
+        1.7399999999999998,
+        -2.3649999999999998
       ],
       "types": [
         "seat"
       ],
-      "defaultPart": "csmvehicles:csm_vehicle_seat",
+      "defaultPart": "csmvehicles:csm_bucket_standing",
       "dismountPos": [
         1.8,
         0.0,
         -1.95
       ],
-      "isController": true,
       "applyAfter": "bucket"
     },
     {
