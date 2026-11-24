@@ -14,7 +14,9 @@ chipper_chip (one log through the knives); and the fleet's engines and horns: a 
 V8's idle (looped; Immersive Vehicles raises the pitch with the revs), cranking (looped) and
 start, an air horn and a car horn (looped while the horn is held); and the doors: door_open
 (the latch letting go), door_close (the thump and the latch catching) and rollup (a fire
-compartment's roll-up door), played once at the ends of a door's swing.
+compartment's roll-up door), played once at the ends of a door's swing; and the reversing
+alarms, backup_whitenoise (broadband bursts) and backup_beeper (the classic beep), both
+recreated from measurements of real recordings (pattern, pitch, spectrum), not cut from them.
 
 Immersive Vehicles plays a pack sound named "<packID>:<name>" from assets/<packID>/sounds/
 <name>.ogg, with no sounds.json, so the module's CSM sound enum and sounds.json have no part in
@@ -233,6 +235,50 @@ def rollup(seconds=0.9):
     return out
 
 
+def gate(n, period, on, attack=0.02, release=0.03):
+    """An on/off envelope over n samples: on for `on` of every `period` seconds, ramped in and
+    out, starting on and ending off, so it loops clean."""
+    t = (np.arange(n) / RATE) % period
+    up = np.clip(t / attack, 0, 1)
+    down = np.clip((on - t) / release, 0, 1)
+    return np.where(t < on, np.minimum(up, down), 0.0)
+
+
+# The white noise ("broadband") reversing alarm, after a recording of a real one: bursts 0.38 s
+# long every 0.745 s, noise loudest from 1 to 1.6 kHz with a second rise about 3 to 4 kHz,
+# falling away under 800 Hz and over 6 kHz (third-octave levels, dB, measured off the bursts).
+WHITENOISE_BANDS = ((250, 6), (315, 5), (400, 6), (500, 11), (630, 10), (800, 15),
+                    (1000, 25), (1250, 23), (1600, 22), (2000, 18), (2500, 15), (3150, 20),
+                    (4000, 22), (5000, 14), (6300, 15), (8000, 9), (10000, 3), (12500, -4))
+
+
+def backup_whitenoise(periods=4, period=0.745, on=0.38):
+    """The white noise reversing alarm: band-shaped noise, gated to its bursts. Recreated from
+    the measured pattern and spectrum, not cut from the recording."""
+    n = int(round(period * RATE)) * periods
+    rng = np.random.RandomState(51)
+    spec = np.fft.rfft(rng.normal(0, 1, n))
+    f = np.fft.rfftfreq(n, 1 / RATE)
+    cs = np.log([c for c, _ in WHITENOISE_BANDS])
+    gains = np.array([g for _, g in WHITENOISE_BANDS], dtype=float)
+    shape = np.interp(np.log(np.maximum(f, 1.0)), cs, gains, left=gains[0] - 20,
+                      right=gains[-1] - 20)
+    noise = np.fft.irfft(spec * 10 ** (shape / 20), n)
+    return noise * gate(n, period, on)
+
+
+def backup_beeper(periods=2, period=1.03, on=0.54, pitch=1186.0):
+    """The classic reversing beeper: a 1,186 Hz tone with its weak 2nd and 3rd harmonics
+    (-33 and -40 dB), 0.54 s on every 1.03 s. Recreated from a recording's measurements; the
+    recording's background noise has no part in it."""
+    n = int(round(period * RATE)) * periods
+    t = np.arange(n) / RATE
+    f = round(pitch * n / RATE) * RATE / n          # whole cycles over the loop
+    tone = (np.sin(2 * np.pi * f * t) + 10 ** (-33 / 20) * np.sin(2 * np.pi * 2 * f * t)
+            + 10 ** (-40 / 20) * np.sin(2 * np.pi * 3 * f * t))
+    return tone * gate(n, period, on, attack=0.012, release=0.02)
+
+
 def diesel_idle():
     return engine_idle(26.0, 2.0, ((1, 1.0), (2, 0.6), (3, 0.45), (4, 0.2), (6, 0.12)), 0.35, 21)
 
@@ -259,6 +305,8 @@ SOUNDS = {
     'door_open': door_open,
     'door_close': door_close,
     'rollup': rollup,
+    'backup_whitenoise': backup_whitenoise,
+    'backup_beeper': backup_beeper,
 }
 
 

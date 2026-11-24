@@ -714,6 +714,18 @@ place: the plow moves as one group, so on a short mount the lowered plow's A-fra
 air beside the truck. It is one group carried raised (its edge 0.32 off the road, its top just
 under the headlights) and PLOW lets it down 0.3 onto the road.
 
+**The dump truck's tail and chassis** are built so nothing floats:
+
+- the body rides on a black subframe from the frame up to its floor;
+- a light panel across the frame end carries the tail, turn and reversing lamps and the rear
+  beacons, with hinge brackets from the panel up to the body floor;
+- a low underride bar hangs on two hangers below the panel, with the reversing alarm under the
+  panel's outer end;
+- mud flaps on brackets sit behind the rear wheels.
+
+Before this, the lamps and beacons hung in the air beside a 1 m frame end, and the body floated
+0.7 above the rails.
+
 **Raked windshields** (`raked_windshield`): the pickups' and cars' windshields are one sloped
 pane (`Vehicle.slab`), a slim slanted A-pillar each side and a triangle of side glass under it
 (`Vehicle.poly`). They were stepped boxes, which put a staircase of pillar across the driver's
@@ -786,6 +798,39 @@ with two shelves (`compartment_shelves`). The roll-up runs 18 ticks to the `roll
 **The dome light.** A cab with doors has a dome lamp (`Vehicle.dome`) whose brightness is one
 translation per `door_*` variable: they add, so it is on while any door is open. Tailgates, trunks
 and compartments (not `door_*`) light no cabin.
+
+## Reversing alarms
+
+The work trucks have a reversing alarm (the dump/plow truck, the bucket, signal, boom and tow
+trucks). It is a part, not part of the body, so the wrench takes it off and either kind goes on.
+It sits on a slot of its own type (`generic_csm_backup_alarm`, `BACKUP_ALARM_TYPE`) under the
+tail beside the frame rail, the spec's `backup_alarm` position. The white noise alarm comes
+fitted (`BACKUP_ALARM_DEFAULT`).
+
+- **`csm_backup_alarm_whitenoise`**: a black housing. It plays `backup_whitenoise`, a
+  broadband alarm.
+- **`csm_backup_alarm_beeper`**: a yellow housing. It plays `backup_beeper`, the classic beep.
+
+Each part has one looping sound with a visibility animation on `vehicle_engine_reversed_1`. The `vehicle_` prefix matters. A part resolves the vehicle's computed variables (`engine_*`, `brake` and the like) only through that prefix (`APart.createComputedVariable`), and the bare `engine_reversed_1` on a part is silently 0. Switch variables such as the siren speaker's `siren` reach a part without the prefix, which is why that part works without one. `engine_reversed` is IV's "gear < 0" (`PartEngine`), so the alarm runs while the truck is in reverse, moving or not, as a real one wired to the reverse light does.
+
+Both sounds are recreated in `gen_vehicle_sounds.py` from measurements of real recordings; no
+audio is cut from them.
+
+- **The white noise alarm:** bursts of 0.38 s every 0.745 s, of noise shaped to the
+  recording's third-octave levels (`WHITENOISE_BANDS`). It peaks at 1-1.6 kHz, with a second
+  rise at 3-4 kHz.
+- **The beeper:** a 1,186 Hz tone with its weak 2nd and 3rd harmonics (-33 and -40 dB), on
+  0.54 s of every 1.03 s. That recording's background static has no part in it.
+
+Each sound is a whole number of periods, starting on a burst, so it loops clean.
+
+**Verified** 2026-11-24, by ear in an unmuted client with the user listening:
+
+- a DPW truck backing up gave the white noise alarm;
+- the wrench took that part off and fitted the beeper;
+- the same truck then beeped in reverse.
+
+The truck was driven with fuel use set to 0 in the dev run's `mtsconfig.json` for the test, then put back. Trucks placed before the alarm existed do not have one, because IV fits default parts only when a vehicle is created.
 
 ## Headlights, high beams and fog lamps
 
