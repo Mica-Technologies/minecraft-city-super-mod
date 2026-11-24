@@ -50,8 +50,12 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
 - `build_vehicles_demo.py` -- builds the Vehicles demo world in a flat creative world loaded in
   a dev client with every module, over MCMCP: a junction of Main St and four-lane Transit Ave on
   far-side mast arms, an ADVANCED controller with a detector-called preempt on each approach and
-  detector-called transit priority with queue jump add-ons on Transit Ave, a CITYLINE stop, and a
-  parking lot holding every livery of every vehicle plus a chest of the pack's parts. Vehicles
-  are placed with their items (an item given NBT spawns without default parts), each from beside
+  detector-called transit priority with queue jump add-ons on Transit Ave, a CITYLINE stop, a
+  parking lot holding every livery of every vehicle (emergency, buses and work trucks, and a
+  third row of the pickups and Subaroos) plus a chest of the pack's parts, and a showroom east of
+  the lot: one of every model with each door clicked open from outside (the click boxes read
+  from the vehicle's JSON, and the utility cap's), with signs on what to try. Vehicles are
+  placed with their items (an item given NBT spawns without default parts), each from beside
   its bay so the 90-degree placement points it into the bay, filling from the far end;
-  `--only roads|lot|vehicles`
+  `--only roads|lot|vehicles|showroom`; `--instance run-f2eb58` drives the game through the
+  MCMCP orchestrator (prefer it to the fixed ports). Built 2026-11-24 as "CSM Vehicles Demo"

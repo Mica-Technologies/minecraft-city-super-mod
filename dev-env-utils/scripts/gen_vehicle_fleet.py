@@ -1373,9 +1373,11 @@ def pickup_bed(v, w, rail, arch):
     The tailgate drops on its bottom hinge; its handle, name and lip go with it, the tail
     lamps on the bed's corners stay."""
     r, bf = PICKUP_REAR, PICKUP_BED_FRONT
-    # between the tail lamps (from x 0.76 out), which stand on the bed's corners
+    # between the tail lamps (from x 0.76 out), which stand on the bed's corners. Its click
+    # boxes stand 0.2 behind it: a fitted utility cap's own part box reaches 0.15 past the
+    # tailgate and, being nearer, took every click meant for it
     rear_hatch(v, 'tailgate', 0.745, 0.15, rail + 0.03, r - 0.06, r + WALL, (0.15, r),
-               -90, split='x', click_z=r + 0.03, click_y=(0.45, rail - 0.05))
+               -90, split='x', click_z=r - 0.2, click_y=(0.45, rail - 0.05))
     for sx in (1, -1):
         xa, xb = sorted((sx * (w - WALL), sx * w))
         for a, b in _spans(r, bf, PICKUP_ARCHES[:1]):

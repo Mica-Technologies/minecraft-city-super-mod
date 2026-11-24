@@ -646,7 +646,9 @@ body; open, the doors slid away and the boxes stayed, so the click meant for the
 hit the door box and shut the door. Every door's boxes now ride the door (`applyAfter`; the bus's
 through `clicks` entries that name the leaf). **A part's own box takes clicks too.** The utility
 cap's `generic` box is 2.0 wide, so it stands 0.15 behind the cap's rear door and is nearer than
-a box on the door's face: the rear door's boxes reach out past it.
+a box on the door's face: the rear door's boxes reach out past it, and so do the pickups'
+tailgate boxes (0.2 behind the tailgate), which the cap's box otherwise covered whenever a cap
+was fitted.
 
 **Steering wheels turn** with the front wheels: the ring is its own object
 (`Vehicle.steering_wheel`), rotating about its column on IV's `rudder` (the front wheels' angle),
@@ -798,6 +800,11 @@ the module uses. Compile against what the packs ship.
 ---
 
 ## Testing in game
+
+**The demo world**, "CSM Vehicles Demo" (built by `build_vehicles_demo.py` in a dev client with
+every module): the preempt junction of Main St and Transit Ave, a lot with every livery, and a
+showroom east of the lot with one of every model, its doors clicked open, and signs on what to
+try (the panel's switches, getting in, `/time set 18000` for the light cones).
 
 ```
 ./gradlew runClient -PcsmRunModules=vehicles
