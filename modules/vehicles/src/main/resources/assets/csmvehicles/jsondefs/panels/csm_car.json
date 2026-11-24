@@ -296,6 +296,51 @@
             "fog_present"
           ]
         ]
+      },
+      {
+        "pos": [
+          175,
+          76,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "text": "WIPERS",
+        "statusVariable": "WIPERS",
+        "clickAction": {
+          "variable": "WIPERS",
+          "action": "toggle"
+        },
+        "visibilityVariables": [
+          [
+            "wipers_present"
+          ]
+        ]
+      },
+      {
+        "pos": [
+          175,
+          108,
+          0
+        ],
+        "width": 20,
+        "height": 20,
+        "textureStart": [
+          180,
+          216,
+          0
+        ],
+        "text": "HAZARDS",
+        "statusVariable": "HAZARDS",
+        "clickAction": {
+          "variable": "HAZARDS",
+          "action": "toggle"
+        }
       }
     ]
   }

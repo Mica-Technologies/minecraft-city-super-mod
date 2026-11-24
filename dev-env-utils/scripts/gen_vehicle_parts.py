@@ -551,11 +551,15 @@ def chipbed_json():
             'lightObjects': [
                 tail_light('&LightBrakeLeft', '#FF0000', brake, [BED_HALF - 0.21, 0.30, r]),
                 tail_light('&LightBrakeRight', '#FF0000', brake, [-BED_HALF + 0.21, 0.30, r]),
+                # lit on the flash cycle by the turn signal or by the CSM vehicles' HAZARDS
+                # (translations add, so either lights it)
                 tail_light('&LightTurnLeftBack', '#FFA000',
-                           [visible_on('left_turn_signal'), lit_by('0_10_10_cycle')],
+                           [visible_on('0_10_10_cycle'), lit_by('left_turn_signal'),
+                            lit_by('HAZARDS')],
                            [BED_HALF - 0.21, 0.48, r]),
                 tail_light('&LightTurnRightBack', '#FFA000',
-                           [visible_on('right_turn_signal'), lit_by('0_10_10_cycle')],
+                           [visible_on('0_10_10_cycle'), lit_by('right_turn_signal'),
+                            lit_by('HAZARDS')],
                            [-BED_HALF + 0.21, 0.48, r]),
                 tail_light('&LightReverse', '#FFFFFF',
                            [lit_by('transmission_reversed')], [BED_HALF - 0.21, 0.60, r]),

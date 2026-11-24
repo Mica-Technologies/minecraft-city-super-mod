@@ -655,6 +655,20 @@ a box on the door's face: the rear door's boxes reach out past it.
 **The bus's saloon lights**, a strip down each side of the ceiling, are lit while the engine runs
 (`engines_on`).
 
+**Wipers** (`Vehicle.wipers`): two arms along the foot of every driver's windshield, parked
+pointing to the vehicle's right, sweeping up 95 degrees while the panel's WIPERS is on. Each arm
+is an object of its own whose animations are an INHIBITOR on WIPERS (clamp 0..0: while it is off,
+the animations after it do not run, so the arm rests) and a rotation on the flash cycle
+`0_16_16_cycle`, eased over 14 ticks each way. A raked windshield (the pickups, the cars) has its
+arms on the slope, turning about the glass's own normal (`raked_wipers`), so they stay on it.
+The WIPERS button shows only on a vehicle with the constant `wipers_present`.
+
+**Hazards.** The panel's HAZARDS flashes all the turn lamps (`turn_signal`). A turn lamp's
+visibility is the flash cycle and its brightness the sum of two translations, its own turn
+signal and HAZARDS: visibilities AND and translations add, so either one lights it. Trailers
+carry HAZARDS over the hitch (`hookupVariables`), and so does the chip bed's tail lamps on
+another pack's truck, when that truck has a HAZARDS variable.
+
 **How a door is built** (`gen_vehicle_fleet.py`, `Vehicle.door`). A door is declared as a region
 of the body *before* the boxes it takes are added. Every box added afterwards that lies in the
 region is cut along the region's edges (`_cut`, along the axes the region names), and the piece
@@ -715,7 +729,7 @@ hidden inside each headlamp, not emissive (it adds only its flare and its cone).
 animations are two visibilities (an AND: any false is 0) and a translation of 0.55. At 1 the long
 cone washed out everything seen head-on. The Silverline and the Impressa have fog lamps.
 
-**The panel.** HIGH BEAM and FOG are buttons on our own panel (`csmvehicles:csm_car`,
+**The panel.** HIGH BEAM and FOG (and WIPERS and HAZARDS, below) are buttons on our own panel (`csmvehicles:csm_car`,
 `jsondefs/panels/csm_car.json`): IV's default car panel component for component, plus a fifth
 column. They are not custom variables, because the default panel has four custom switch slots and
 the fire apparatus already fill them. A panel button with a `clickAction` toggles any variable,
@@ -738,7 +752,9 @@ tailgate, an ambulance barn leaf and a fire engine compartment (whose click boxe
 into the rolled shutter, not swung). Later the same day: a bucket truck compartment, a tow truck
 tool box and the utility cap's side and rear doors opened from clicks; the bus boarded through
 its open door to the driver's seat; the bus's steering wheel turned with A held; the saloon lights
-lit with the engine running. Not heard: the door sounds (the test client is muted).
+lit with the engine running. Then WIPERS and HAZARDS from the police SUV's panel: its wipers swept
+the upright windshield and its turn lamps flashed together; an Impressa spawned with both on swept
+its raked windshield. Not heard: the door sounds (the test client is muted).
 
 ---
 

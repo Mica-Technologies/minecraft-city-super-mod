@@ -39,9 +39,11 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   cut at its edges into the door's object; glass into `<door>_window`; click rows that ride the
   door; side doors, hatches, trunk, tailgates, barn doors, roll-up compartments by SCALING,
   hinged utility body and tool box doors, the utility cap's doors), a dome light per cab on the
-  `door_*` variables, steering wheels turning on `rudder`, the bus's saloon lights, headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
-  `FOG_BEAM` on the lamps' blendable components), and the `csm_car` panel with HIGH BEAM and FOG
-  buttons; `--check`
+  `door_*` variables, steering wheels turning on `rudder`, the bus's saloon lights, wipers (an
+  INHIBITOR on WIPERS, then a rotation on a flash cycle; raked glass turns about its normal),
+  hazards (turn lamps visible on the cycle, lit by the turn signal plus HAZARDS), headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
+  `FOG_BEAM` on the lamps' blendable components), and the `csm_car` panel with HIGH BEAM, FOG,
+  WIPERS and HAZARDS buttons; `--check`
 - `build_vehicles_demo.py` -- builds the Vehicles demo world in a flat creative world loaded in
   a dev client with every module, over MCMCP: a junction of Main St and four-lane Transit Ave on
   far-side mast arms, an ADVANCED controller with a detector-called preempt on each approach and

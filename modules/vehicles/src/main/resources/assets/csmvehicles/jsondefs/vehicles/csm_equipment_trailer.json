@@ -33,6 +33,7 @@
       "engines_on",
       "right_turn_signal",
       "left_turn_signal",
+      "HAZARDS",
       "running_light",
       "headlight",
       "brake"
@@ -205,7 +206,7 @@
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "left_turn_signal",
+            "variable": "10_10_0_cycle",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -216,7 +217,16 @@
               1,
               0
             ],
-            "variable": "10_10_0_cycle"
+            "variable": "left_turn_signal"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "HAZARDS"
           }
         ],
         "blendableComponents": [
@@ -244,7 +254,7 @@
         "brightnessAnimations": [
           {
             "animationType": "visibility",
-            "variable": "right_turn_signal",
+            "variable": "10_10_0_cycle",
             "clampMin": 1,
             "clampMax": 1
           },
@@ -255,7 +265,16 @@
               1,
               0
             ],
-            "variable": "10_10_0_cycle"
+            "variable": "right_turn_signal"
+          },
+          {
+            "animationType": "translation",
+            "axis": [
+              0,
+              1,
+              0
+            ],
+            "variable": "HAZARDS"
           }
         ],
         "blendableComponents": [
