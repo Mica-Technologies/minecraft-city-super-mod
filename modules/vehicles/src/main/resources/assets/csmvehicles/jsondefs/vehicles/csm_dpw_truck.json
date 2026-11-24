@@ -182,6 +182,17 @@
     },
     {
       "pos": [
+        0.86,
+        0.1,
+        -2.6
+      ],
+      "types": [
+        "generic_csm_backup_alarm"
+      ],
+      "defaultPart": "csmvehicles:csm_backup_alarm_whitenoise"
+    },
+    {
+      "pos": [
         0.0,
         0.6,
         5.4
@@ -1326,7 +1337,7 @@
           "pos": [
             0,
             -0.25,
-            -2.9
+            -3.07
           ],
           "distance": 2
         }

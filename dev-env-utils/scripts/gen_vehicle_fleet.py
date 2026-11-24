@@ -1064,6 +1064,21 @@ def dpw_truck():
         ((-1.27, hy + 0.5, hz + 0.2), (-1.25, hy + 0.7, 2.4), 'stripe'),
     ])
     v.lightbar(0.85, 2.5, back + 0.6, ['lamp_amber'] * 8, variable='BEACONS', emitter=False)
+    # the tail: a light panel across the frame end that the lamps sit on, the body's hinge
+    # brackets up to its floor, a low underride bumper on hangers, and mud flaps behind the
+    # rear wheels, so nothing at the back hangs in the air
+    v.box((-1.1, 0.2, -2.69), (1.1, 0.8, -2.5), 'black')                       # light panel
+    v.box((-0.55, 0.25, -2.5), (0.55, hy, back - 0.6), 'black')                # body subframe
+    for sx in (1, -1):
+        xa, xb = sorted((sx * 0.5, sx * 0.62))
+        v.box((xa, 0.8, -2.62), (xb, hy, -2.42), 'black')                       # hinge bracket
+        xa, xb = sorted((sx * 0.38, sx * 0.48))
+        v.box((xa, -0.04, -2.84), (xb, 0.2, -2.69), 'black')                    # bumper hanger
+        xa, xb = sorted((sx * 0.72, sx * 1.22))
+        v.box((xa, -0.4, -0.66), (xb, 0.32, -0.64), 'black')                    # mud flap
+        xa, xb = sorted((sx * 0.5, sx * 0.97))
+        v.box((xa, 0.24, -0.68), (xb, 0.32, -0.62), 'black')                    # its bracket
+    v.box((-1.1, -0.2, -2.92), (1.1, -0.04, -2.8), 'black')                    # underride bar
     for side, sx in (('L', 1), ('R', -1)):
         xs = sorted((sx * 0.75, sx * 1.0))
         v.warning('RearBeacon' + side, (xs[0], 0.55, -2.75), (xs[1], 0.75, -2.7), 'lamp_amber',
@@ -2151,6 +2166,60 @@ def pickup_cap_json(v):
     }
 
 
+# Reversing alarms: a part on its own slot under the work trucks' tails, so it can
+# be taken off with the wrench or swapped for the other kind. Each sounds while the engine is in
+# reverse (IV's engine_reversed_1; a part must ask for vehicle_engine_reversed_1, as APart
+# hands only vehicle_-prefixed names to its vehicle's computed variables). The white noise
+# alarm comes fitted.
+BACKUP_ALARM_TYPE = 'generic_csm_backup_alarm'
+BACKUP_ALARMS = {
+    # name: (label, sound, housing colour, grille colour, description)
+    'csm_backup_alarm_whitenoise': (
+        'CSM White Noise Backup Alarm', 'backup_whitenoise', (32, 34, 38), (120, 128, 138),
+        'A broadband ("white noise") reversing alarm: a directional shush, heard where it '
+        'matters and not down the street. Sounds while the vehicle is in reverse.'),
+    'csm_backup_alarm_beeper': (
+        'CSM Backup Beeper', 'backup_beeper', (214, 172, 40), (36, 36, 38),
+        'The classic reversing beeper. Sounds while the vehicle is in reverse.'),
+}
+BACKUP_ALARM_DEFAULT = 'csm_backup_alarm_whitenoise'
+
+
+def backup_alarm_obj():
+    """A small alarm housing on a bracket, its grille facing back (-z), centred on the slot."""
+    o = vp.Obj(tex=32)
+    housing, grille = (0, 0, 16, 16), (16, 0, 32, 16)
+    o.box('body', (-0.09, -0.06, -0.035), (0.09, 0.06, 0.04), housing,
+          faces=('s', 'e', 'w', 'u', 'd'))
+    o.box('body', (-0.08, -0.05, -0.04), (0.08, 0.05, -0.035), grille, faces=('n', 'e', 'w',
+                                                                              'u', 'd'))
+    o.box('body', (-0.025, 0.06, -0.015), (0.025, 0.11, 0.015), housing)        # bracket
+    return o.text().replace('gen_vehicle_parts.py', 'gen_vehicle_fleet.py')
+
+
+def backup_alarm_texture(housing, grille):
+    img = Image.new('RGBA', (32, 32), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, 15, 15), fill=housing + (255,))
+    d.rectangle((16, 0, 31, 15), fill=shade(grille, 0.5) + (255,))
+    for y in range(2, 15, 3):                                    # the grille's slots
+        d.line((18, y, 29, y), fill=grille + (255,))
+    return img
+
+
+def backup_alarm_json(name):
+    label, sound, _, _, description = BACKUP_ALARMS[name]
+    return {
+        'definitions': [{'name': label, 'subName': '', 'extraMaterialLists': [[]]}],
+        'general': {'description': description, 'type': BACKUP_ALARM_TYPE, 'stackSize': 4,
+                    'materialLists': [['minecraft:iron_ingot:0:1', 'minecraft:redstone:0:1',
+                                       'minecraft:noteblock:0:1']]},
+        'generic': {'width': 0.2, 'height': 0.15},
+        'rendering': {'sounds': [{'name': '%s:%s' % (PACK, sound), 'looping': True,
+                                  'activeAnimations': [vp.visible_on('vehicle_engine_reversed_1')]}]},
+    }
+
+
 # ------------------------------------------------------------------------------------------
 # Liveries and textures
 # ------------------------------------------------------------------------------------------
@@ -3063,7 +3132,7 @@ FLEET = {
         seats=[(0.45, 0.85, 3.7, True), (-0.45, 0.85, 3.7, False)],
         engine_pos=(0.0, 0.6, 5.4), boxes=[-1.5, 1.0, 3.5, 5.6], box_width=2.5,
         box_height=2.6, box_y=1.1, switches=['BEACONS', 'DUMP', 'PLOW'],
-        animated=dump_animations, trailer_hitch=True),
+        animated=dump_animations, trailer_hitch=True, backup_alarm=(0.86, 0.1, -2.6)),
     'csm_bucket_truck': dict(
         build=bucket_truck,
         description='A power company bucket truck with a knuckle boom. BEACONS runs its amber '
@@ -3077,7 +3146,8 @@ FLEET = {
         seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), KNUCKLE_SEAT],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=knuckle_animations,
-        trailer_hitch=True, constants={'boom_present': 1.0, 'elbow_present': 1.0}),
+        trailer_hitch=True, constants={'boom_present': 1.0, 'elbow_present': 1.0},
+        backup_alarm=(0.62, 0.12, -2.44)),
     'csm_signal_truck': dict(
         build=signal_truck,
         description='A traffic signal maintenance truck: a knuckle boom (BOOM deploys it; with '
@@ -3092,7 +3162,8 @@ FLEET = {
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=knuckle_animations,
         trailer_hitch=True,
-        constants={'boom_present': 1.0, 'elbow_present': 1.0, 'arrow_present': 1.0}),
+        constants={'boom_present': 1.0, 'elbow_present': 1.0, 'arrow_present': 1.0},
+        backup_alarm=(0.62, 0.12, -2.44)),
     'csm_boom_truck': dict(
         build=boom_truck,
         description='A telescopic aerial boom truck, for the longest reach: a three-section boom '
@@ -3105,7 +3176,8 @@ FLEET = {
         seats=[(0.45, 0.85, 3.5, True), (-0.45, 0.85, 3.5, False), TELE_SEAT],
         engine_pos=(0.0, 0.6, 5.2), boxes=[-1.5, 1.0, 3.4, 5.4], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BOOM'], animated=tele_animations,
-        trailer_hitch=True, constants={'boom_present': 1.0, 'reach_present': 1.0}),
+        trailer_hitch=True, constants={'boom_present': 1.0, 'reach_present': 1.0},
+        backup_alarm=(0.62, 0.12, -2.44)),
     'csm_tow_truck': dict(
         build=tow_truck,
         description='A rollback tow truck. BED slides the flatbed back and tilts it; the panel '
@@ -3117,7 +3189,7 @@ FLEET = {
         seats=[(0.45, 0.85, 3.8, True), (-0.45, 0.85, 3.8, False)],
         engine_pos=(0.0, 0.6, 5.5), boxes=[-2.0, 0.5, 3.0, 5.5], box_width=2.5,
         box_height=2.4, box_y=1.0, switches=['BEACONS', 'BED'], animated=bed_animations,
-        hitches=tow_hitches, trailer_hitch=True),
+        hitches=tow_hitches, trailer_hitch=True, backup_alarm=(0.62, 0.12, -3.24)),
     'csm_transit_bus': dict(
         build=transit_bus,
         description='A 40 ft low-floor city bus. DOORS opens the front and rear doors. TSP, on '
@@ -3314,6 +3386,10 @@ def vehicle_json(name, v):
             slot['isController'] = True
         slot.update(seat[4] if len(seat) > 4 else {})   # e.g. a seat that rides the boom
         parts.append(slot)
+    if 'backup_alarm' in spec:
+        # under the tail, the white noise alarm fitted; the wrench takes it off or swaps it
+        parts.append({'pos': list(spec['backup_alarm']), 'types': [BACKUP_ALARM_TYPE],
+                      'defaultPart': '%s:%s' % (PACK, BACKUP_ALARM_DEFAULT)})
     if 'cap' in spec:
         x, y, z = PICKUP_CAP_SLOT
         slot = {'pos': [x, spec.get('rail', y), z], 'types': [PICKUP_CAP_TYPE]}
@@ -3739,6 +3815,22 @@ def catalogue():
         mask = Image.new('L', (10, 10), 0)
         ImageDraw.Draw(mask).ellipse((0, 0, 9, 9), fill=255)
         icon.paste(face, (3, 3), mask)
+        item('parts', name, icon)
+
+    for name, (label, sound, housing, grille, _) in BACKUP_ALARMS.items():
+        put(os.path.join(PACK_DIR, 'objmodels', 'parts', name + '.obj'),
+            backup_alarm_obj().encode('utf-8'))
+        put(os.path.join(PACK_DIR, 'textures', 'parts', name + '.png'),
+            vp.png_bytes(backup_alarm_texture(housing, grille)))
+        put(os.path.join(PACK_DIR, 'jsondefs', 'parts', name + '.json'),
+            vp.json_bytes(backup_alarm_json(name)))
+        icon = Image.new('RGBA', (16, 16), (0, 0, 0, 0))
+        dd = ImageDraw.Draw(icon)
+        dd.rectangle((2, 4, 13, 12), fill=housing + (255,))
+        dd.rectangle((4, 6, 11, 10), fill=shade(grille, 0.5) + (255,))
+        for y in (7, 9):
+            dd.line((5, y, 10, y), fill=grille + (255,))
+        dd.rectangle((6, 1, 9, 4), fill=housing + (255,))
         item('parts', name, icon)
 
     cap = pickup_cap()

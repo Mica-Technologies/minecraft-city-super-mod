@@ -1,0 +1,43 @@
+{
+  "definitions": [
+    {
+      "name": "CSM White Noise Backup Alarm",
+      "subName": "",
+      "extraMaterialLists": [
+        []
+      ]
+    }
+  ],
+  "general": {
+    "description": "A broadband (\"white noise\") reversing alarm: a directional shush, heard where it matters and not down the street. Sounds while the vehicle is in reverse.",
+    "type": "generic_csm_backup_alarm",
+    "stackSize": 4,
+    "materialLists": [
+      [
+        "minecraft:iron_ingot:0:1",
+        "minecraft:redstone:0:1",
+        "minecraft:noteblock:0:1"
+      ]
+    ]
+  },
+  "generic": {
+    "width": 0.2,
+    "height": 0.15
+  },
+  "rendering": {
+    "sounds": [
+      {
+        "name": "csmvehicles:backup_whitenoise",
+        "looping": true,
+        "activeAnimations": [
+          {
+            "animationType": "visibility",
+            "variable": "vehicle_engine_reversed_1",
+            "clampMin": 1,
+            "clampMax": 1
+          }
+        ]
+      }
+    ]
+  }
+}

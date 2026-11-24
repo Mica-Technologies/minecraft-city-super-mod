@@ -14,7 +14,8 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   subfolder the pack definition activates with `csm_parks`) is written here too.
   `gen_vehicle_sounds.py [name ...]` synthesises the siren's wail, yelp and hi-lo, the
   chipper's running loop and crunch, the fleet's engine and horn sounds, and the doors'
-  (`door_open`, `door_close`, `rollup`).
+  (`door_open`, `door_close`, `rollup`), and the reversing alarms (`backup_whitenoise`,
+  `backup_beeper`, recreated from measured recordings: burst timing, pitch, band levels).
   `gen_vehicle_fleet.py` writes the fleet: the fire engine, ladder truck (its aerial three
   objects chained by `applyAfter`, deployed by one AERIAL switch), ambulance, police SUV, and the
   public works dump truck, power company bucket truck and rollback tow truck (amber BEACONS,
@@ -47,7 +48,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   three-section telescopic boom on the boom truck (`csm_boom_truck`, LIFT/SWING/REACH), steered
   by hand from the panel (`BOOM_MANUAL`, an INHIBITOR on BOOM between the preset and the manual
   animations) with a seat riding each bucket (`KNUCKLE_SEAT`, `TELE_SEAT`), the signal
-  maintenance truck (`csm_signal_truck`, `arrow_board` on ARROWBOARD), the plow's curved
+  maintenance truck (`csm_signal_truck`, `arrow_board` on ARROWBOARD), the reversing alarm
+  parts on the work trucks (`BACKUP_ALARMS`, a white noise alarm fitted, a beeper to swap in,
+  sounding on `engine_reversed_1`), the plow's curved
   moldboard (`plow_moldboard`) lowered by PLOW, raked windshields as slanted pieces
   (`raked_windshield`, `Vehicle.slab`/`poly`),
   32-sided wheels with shoulders and a set-back rim face per style (`WHEELS`' style,
