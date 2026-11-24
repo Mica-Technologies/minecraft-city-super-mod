@@ -42,7 +42,9 @@ covers. Scripts live in `dev-env-utils/scripts/` (Python 3, Pillow) and are run 
   `door_*` variables, steering wheels turning on `rudder`, the bus's saloon lights, wipers (an
   INHIBITOR on WIPERS, then a rotation on a flash cycle; raked glass turns about its normal),
   hazards (turn lamps visible on the cycle, lit by the turn signal plus HAZARDS), cab fittings
-  (`interior`: a cluster lit on `running_light`, mirror, visors, console; the seat's headrest), headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
+  (`interior`: a cluster lit on `running_light`, mirror, visors, console; the seat's headrest),
+  32-sided wheels with shoulders and a set-back rim face per style (`WHEELS`' style,
+  `RIM_RATIO`), wheel openings cut from the body (`Vehicle.wheel_arch`, the police SUV), headlight cones (`LOW_BEAM`, `HIGH_BEAM`,
   `FOG_BEAM` on the lamps' blendable components), and the `csm_car` panel with HIGH BEAM, FOG,
   WIPERS and HAZARDS buttons; `--check`
 - `build_vehicles_demo.py` -- builds the Vehicles demo world in a flat creative world loaded in
