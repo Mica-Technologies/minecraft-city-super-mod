@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import mcinterface1122.WrapperWorld;
 import minecrafttransportsimulator.baseclasses.ComputedVariable;
 import minecrafttransportsimulator.entities.instances.APart;
@@ -61,7 +62,8 @@ public class BoomAutoDriver {
     final double[] set = new double[3];
   }
 
-  private final Map<UUID, Drive> drives = new HashMap<>();
+  /** Per world: every loaded world ticks on its own, and each prunes only its own trucks. */
+  private final Map<World, Map<UUID, Drive>> worlds = new WeakHashMap<>();
 
   @SubscribeEvent
   public void onWorldTick(TickEvent.WorldTickEvent event) {
@@ -73,6 +75,7 @@ public class BoomAutoDriver {
     if (wrapper == null) {
       return;
     }
+    Map<UUID, Drive> drives = worlds.computeIfAbsent(world, w -> new HashMap<>());
     Set<UUID> seen = new HashSet<>();
     for (EntityVehicleF_Physics vehicle : wrapper.getEntitiesOfType(EntityVehicleF_Physics.class)) {
       Map<String, Double> constants = BoomAxes.constants(vehicle);
