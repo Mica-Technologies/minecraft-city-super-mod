@@ -18,7 +18,8 @@ import org.apache.logging.log4j.Logger;
  * registering {@link IvPreemptSource} with Core's {@link CsmPreemptSources}: an intersection
  * preempts for any Immersive Vehicles vehicle running its emergency lights towards it. And it
  * grinds stumps under the pack's stump grinder ({@link StumpGrinderMachines}), by CSM: Parks &amp;
- * Greenery's rules through Core's {@code CsmStumpGrinders}.</p>
+ * Greenery's rules through Core's {@code CsmStumpGrinders}. And it lifts a vehicle that has
+ * sunk into blocks back out ({@link VehicleRescue}).</p>
  *
  * <p>Immersive Vehicles is a hard dependency: without it this module has nothing to do. The
  * dependency pins Core and Roads to this exact version, like every module.</p>
@@ -56,9 +57,11 @@ public class CsmVehicles {
     CsmPreemptSources.register(new IvPreemptSource());
     MinecraftForge.EVENT_BUS.register(new StumpGrinderMachines());
     MinecraftForge.EVENT_BUS.register(new BoomAutoDriver());
-    // BoomControls is client-only (keys, HUD); a dedicated server never loads the class
+    MinecraftForge.EVENT_BUS.register(new VehicleRescue());
+    // BoomControls and VehicleRescueKey are client-only (keys, HUD); a dedicated server never loads the class
     if (event.getSide().isClient()) {
       BoomControls.register();
+      VehicleRescueKey.register();
     }
   }
 }

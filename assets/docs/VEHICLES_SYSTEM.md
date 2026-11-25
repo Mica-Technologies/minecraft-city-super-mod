@@ -983,6 +983,57 @@ client is muted).
 
 ---
 
+## Getting unstuck
+
+With lag or a wonky turn, an IV vehicle can end up partly inside blocks: sunk into the ground, a
+road deck or a wall. IV boosts a wheel out of the ground only when nothing is above it, so a vehicle
+with blocks over its wheels stays stuck, and its collision holds it in every direction.
+`VehicleRescue` (server, every IV vehicle, not only the pack's) gets it out.
+
+- **Automatic.** Each tick it tests every vehicle's block collision boxes (body and wheels, the
+  boxes IV collides with), each shrunk by 1/8 block so a wheel resting a hair into the road never
+  counts. Leaves and liquids never count, as IV ignores them. A vehicle with a box inside a solid
+  block for 60 ticks (3 seconds) in a row is lifted straight up to the first height where every box
+  is clear, in 1/16 block steps, at most 32 blocks. The lowest clear height is the top of what it
+  was stuck in, so a truck that fell through a road comes back up onto it. Heading, parts, fuel,
+  inventory and riders all stay. A tunnel or a garage is open air, so a vehicle driven into one is
+  never touched. With no room within 32 blocks it is left alone and tried again in 30 seconds.
+- **The unstick key** (Home by default, under CSM: Vehicles in Controls; `VehicleRescueKey`, any
+  seat of any vehicle). It flips the vehicle's `csm_unstick` variable through IV's own toggle
+  packet, and a flip acts at once:
+  - inside a block by even a little (the test shrunk only 0.02 at the sides and top): lifted as
+    above, with no wait;
+  - in no block but with blocks directly above (the air pocket under a road it fell through, or
+    a hole): it climbs up through them to the first clear height on top. This also takes a
+    vehicle in a parking garage up to the deck above, which is what the key is for;
+  - nothing above: it says the vehicle isn't stuck.
+- **The move.** It is IV's own server movement: the position moves, the server's sync total
+  (`serverDeltaM`) takes the move, and every client gets the `PacketVehicleServerMovement` IV sends
+  each tick, so clients slide the vehicle up with their usual correction. A load mounted on a
+  flatbed is never tested or moved; it rides its hitch. A towed trailer that is not mounted is
+  tested on its own.
+- **Chat.** Every player riding is told what happened (`csm_vehicles.rescue.*`), and the server
+  log gets a `Lifted stuck vehicle` line.
+
+Its watch list is kept per world, so each dimension ticking prunes only its own vehicles.
+`BoomAutoDriver` was fixed the same way: one map across worlds was wiped every tick by any second
+loaded dimension, so B could never start a drive on a server with the Nether loaded.
+
+**Verified 2026-11-24** (Roads + Vehicles dev client, flat world, one bucket truck):
+- A placed truck left alone 6 seconds was not lifted.
+- Stone filled 2 and then 3 blocks deep around it was climbed out of by IV's own wheel boost, with
+  no rescue. This is IV's behaviour, not a bug: the boost works while a wheel has open air above.
+- Fully encased in stone, the truck was lifted 3.06 blocks onto the top after 3 seconds, at the
+  same height above the surface as when it was placed. The client saw it there too.
+- In the cab on open ground, Home said "isn't stuck".
+- Under a 2-block ceiling with air between (the pocket under a road), nothing happened on its own.
+  Home climbed it 6.7 blocks onto the ceiling with the rider aboard, and W then drove it off
+  normally.
+- Not tested in game: the multi-dimension fix (a single-player flat world unloads its other
+  dimensions), and a towed trailer being rescued.
+
+---
+
 ## Build
 
 `csm_vehicles` is the module system's one module that depends on another mod. Its `modules.gradle`
